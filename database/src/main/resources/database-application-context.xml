@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation=
+                "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+        >
+
+    <context:annotation-config/>
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="false"/>
+        <property name="generateDdl" value="true"/>
+    </bean>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceXmlLocation" value="classpath:/db/persistence.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean name="userDao" class="eu.europeana.database.dao.UserDaoImpl"/>
+
+    <bean name="searchTermDao" class="eu.europeana.database.dao.SearchTermDaoImpl"/>
+
+    <bean name="partnerDao" class="eu.europeana.database.dao.PartnerDaoImpl"/>
+
+    <bean name="messageDao" class="eu.europeana.database.dao.MessageDaoImpl"/>
+
+    <bean name="dashboardDao" class="eu.europeana.database.dao.DashboardDaoImpl"/>
+
+    <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
+
+    <bean id="databaseToSolrIndexer" class="eu.europeana.database.migration.outgoing.DatabaseToSolrIndexer">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="httpClient" ref="httpClient"/>
+        <property name="chunkSize" value="${solr.chunkSize}"/>
+        <property name="targetUrl" value="${solr.updateUrl}"/>
+    </bean>
+
+    <bean id="databaseCacheMaintainer" class="eu.europeana.database.migration.outgoing.CacheBuilder">
+        <property name="chunkSize" value="30"/>
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="digitalObjectCache" ref="digitalObjectCache"/>
+    </bean>
+
+    <bean id="digitalObjectCache" class="eu.europeana.cache.DigitalObjectCacheImpl">
+        <property name="imageMagickPath" value="${cache.imageMagickPath}"/>
+        <property name="root" value="${cache.cacheRoot}"/>
+    </bean>
+
+    <!--httpClient -->
+    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+        <property name="maxTotalConnections" value="512"/>
+        <property name="defaultMaxConnectionsPerHost" value="64"/>
+    </bean>
+
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg>
+            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+                <property name="params" ref="connectionManagerParams"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+</beans>

@@ -1,0 +1,424 @@
+#ft {
+    padding: 40px 0 0 0;
+}
+
+/* search results table
+=======================*/
+#multiview {
+    clear: both;
+}
+
+#yui-main #display{
+    background: url(../images/page-border.gif) 0px 80px no-repeat;
+}
+
+#multi {
+    float: left;
+    clear: both;
+    width: 680px;
+    margin: 1px 0 0 13px;
+    padding: 0 0 0 0;
+    border-collapse: collapse;
+    background-color: transparent;
+    font-size: 85%;
+    font-weight: normal;
+    line-height: 1.2;
+    color: #5a5b5e;
+}
+
+*html #multi {
+    margin: 0 0 0 4px;
+}
+
+#multi h2 {
+    font-weight: bold;
+    font-size: 100%;
+    color: #000;
+    margin: 0 0 0 0;
+    padding: 5px 0 0 0;
+    background: url(../images/linedots.gif);
+    background-position: 0 0;
+    background-repeat: repeat-x;
+    width: 170px;
+
+}
+
+#multi ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    width: 170px;
+}
+
+#multi ul li {
+    margin: 0 0 0 0;
+    padding: 0;
+    display: inline-block;
+    width: 170px;
+    border: none;
+}
+
+#multi td {
+    margin: 0;
+    padding: 10px 7px 10px 7px;
+    vertical-align: top;
+    border: none;
+}
+
+*html
+#multi td {
+    margin: 0;
+    padding: 5px 2px 10px 2px;
+    vertical-align: top;
+    border: none;
+}
+
+#multi tr td img {
+    margin: 0;
+    padding: 0 0 10px 0;
+}
+
+#multi td.IMAGE {
+    background: url(../images/dotted-image.gif);
+    background-position: 6px bottom;
+    background-repeat: no-repeat;
+}
+
+#multi td.VIDEO {
+    background: url(../images/dotted-video.gif);
+    background-position: 6px bottom;
+    background-repeat: no-repeat;
+}
+
+#multi td.SOUND {
+    background: url(../images/dotted-sound.gif);
+    background-position: 6px bottom;
+    background-repeat: no-repeat;
+}
+
+#multi td.TEXT {
+    background: url(../images/dotted-page.gif);
+    background-position: 6px bottom;
+    background-repeat: no-repeat;
+}
+
+*html #multi td.image, *html #multi td.video, *html #multi td.sound, *html #multi td.page {
+    background-position: 1px bottom;
+}
+
+#multi.list td {
+    margin: 0;
+    padding: 0px;
+    vertical-align: top;
+    border: none;
+}
+
+#multi.list tr td img {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#multi.list td.IMAGE {
+    background-position: right bottom;
+}
+
+#multi.list td.VIDEO {
+    background-position: right bottom;
+}
+
+#multi.list td.SOUND {
+    background-position: right bottom;
+}
+
+#multi.list td.TEXT {
+    background-position: right bottom;
+}
+
+.brief-thumb-container {
+    width: 170px;
+    height: 120px;
+    overflow: hidden;
+    scrolling: none;
+    text-align: left;
+}
+
+.brief-thumb-container-listview {
+    width: 85px;
+    height: 70px;
+    overflow: hidden;
+    scrolling: none;
+    text-align: left;
+}
+
+.related-thumb-container {
+    width: 40px;
+    max-height: 40px;
+    overflow: hidden;
+    scrolling: none;
+    text-align: left;
+}
+
+/* pagination*/
+/*=======================*/
+.pagination {
+    position: relative;
+    float: left;
+    width: 720px;
+    height: 31px;
+    margin: 12px 0 10px 20px;
+    padding: 0 0 0 0;
+    background: white url(../images/top-bot-dot.gif) 0 0;
+    background-repeat: repeat-x;
+}
+
+*html .pagination {
+    position: relative;
+    float: left;
+    width: 720px;
+    height: 31px;
+    margin: 12px 0 10px 10px;
+    padding: 0 0 0 0;
+    background: pink url(../images/top-bot-dot.gif) 0 0;
+    background-repeat: repeat-x;
+}
+
+/* pagination nav
+=======================*/
+
+.viewselect {
+    position: absolute;
+    left: 0;
+    margin: 0 0 0 0;
+    padding: 8px 0 0 0;
+    width: auto;
+}
+
+.viewselect a:link, .viewselect a:visited, .viewselect a:hover {
+    text-decoration: none;
+    font-weight: normal;
+    color: #333;
+    font-size: 85%;
+}
+
+.viewselect a span {
+    text-decoration: underline;
+}
+
+.nav {
+    width: 590px;
+}
+
+.pagination .nav.brief {
+    position: relative;
+    left: 90px;
+
+}
+
+.pagination .nav.full {
+    position: relative;
+    left: 340px;
+    width: 100px;
+}
+
+.pagination .nav ul {
+    font-size: 85%;
+    margin: 8px 0 0 0;
+    padding: 0;
+    list-style: none;
+    z-index: 10;
+}
+
+.pagination .nav ul li {
+    display: inline;
+    float: left;
+    list-style: none;
+    color: #999;
+    margin: 0 5px 0 0;
+    padding: 0;
+    border: none;
+    width: auto;
+    min-width: 20px;
+
+}
+
+.pagination .nav ul li.strong {
+    font-weight: bold;
+    color: #666;
+}
+
+.pagination .nav ul li.first {
+    margin-right: 30px;
+    width: auto;
+}
+
+.pagination .nav ul li.strong {
+    margin-right: 10px;
+    width: auto;
+}
+
+.pagination .nav ul a, .pagination .nav ul a:visited {
+    margin: 0;
+    padding: 0 0 0 0;
+    text-decoration: none;
+    color: #999;
+}
+
+.pagination .nav ul a:hover {
+    color: #333;
+    background: none;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.pagination .nav ul li a strong {
+    font-weight: normal;
+    color: #333;
+    text-decoration: underline;
+}
+
+.printpage {
+    position: absolute;
+    right: 0;
+    margin: -8px 4px 0 0 !important;
+    margin: -21px 4px 0 0;
+    padding: 0 0 0 0;
+    width: 22px;
+}
+
+/* breadcrumb
+=======================*/
+
+#breadcrumb ul {
+    font-size: 90%;
+    margin: 2.25em 0 1em 0;
+    padding: 0;
+    float: left;
+    width: 680px;
+    list-style: none;
+}
+
+*html
+#breadcrumb ul {
+    font-size: 85%;
+    padding: 0 0 1em 0;
+}
+
+#breadcrumb ul li {
+    color: #999;
+    float: left;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    border: none;
+    min-width: 15px;
+}
+
+#breadcrumb ul a {
+    padding: 0 4px 0 0;
+    text-decoration: none;
+    color: #666;
+    float: left;
+    display: block;
+}
+
+#breadcrumb ul a:hover {
+    color: #666;
+    background: none;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#breadcrumb ul .first {
+    background: none;
+    font-weight: bold;
+    cursor: default;
+    color: #333;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+#breadcrumb li a strong {
+    font-weight: normal;
+    color: #d300c5;
+}
+
+/* result tabs */
+
+#navResultTabs {
+    margin: 0;
+    padding: 0;
+    clear: both;
+}
+
+#navResultTabs ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+#navResultTabs li {
+    display: block;
+    margin: 0;
+    padding: 0;
+    float: left;
+    background: url(../images/tabview-tab-grad-bg.gif) no-repeat top left;
+    border-bottom: solid 1px #ccc;
+    width: 152px;
+    font-size: 0.9em;
+}
+
+#navResultTabs a {
+    display: block;
+    width: 152px;
+    text-decoration: none;
+    background: transparent;
+    margin: 0;
+    padding: 8px 0 3px 0px;
+    color: #666666;
+}
+
+#navResultTabs a em {
+    cursor: default;
+    padding: 0 0 0 20px;
+    font-weight: bold;
+}
+
+#navResultTabs ul li.selected {
+    background: url(../images/tabview-tab-white-bg.gif) no-repeat top left;
+    border-bottom: solid 1px #fff;
+    color: #26a097; /* green */
+}
+
+#navResultTabs ul li a:hover, #navResultTabs ul li a:active, #navResultTabs ul li.selected a {
+    outline: 0;
+    background: url(../images/tabview-tab-white-bg.gif) no-repeat top left;
+    width: 152px;
+    color: #26a097; /* green */
+    border: none;
+}
+
+#no-result {
+    height: 200px;
+    font-weight: bold;
+    margin: 40px 20px;
+}
+
+.mbf-item {
+    display: none;
+}
+
+#infoText {
+    margin: 20px 0 0 0;
+    font-size: .85em;
+    text-align: center;
+    background: #eaeaea;
+    padding: .5em;
+}
+
+form input.error {
+    display: block;
+}
+
+label.error {
+    display: block;
+}

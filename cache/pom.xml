@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.0 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europeana</groupId>
+    <artifactId>cache</artifactId>
+    <packaging>jar</packaging>
+    <name>The Digital Object Cache</name>
+    <version>1.0.1</version>
+    <description>Cache shared by multiple projects</description>
+    <inceptionYear>2008</inceptionYear>
+ 
+  <parent>
+    <groupId>eu.europeana</groupId>
+    <artifactId>europeana</artifactId>
+    <version>1</version>
+  </parent>
+
+   <developers>
+        <developer>
+            <name>Sjoerd Siebinga</name>
+            <email>sjoerd.siebinga@gmail.com</email>
+            <roles>
+                <role>architect</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Gerald de Jong</name>
+            <email>geralddejong@gmail.com</email>
+            <roles>
+                <role>consultant</role>
+            </roles>
+        </developer>
+    </developers>
+    <organization>
+        <name>Europeana Foundation</name>
+        <url>http://www.europeana.eu</url>
+    </organization>
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <groups>regression</groups>
+                    <parallel>true</parallel>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

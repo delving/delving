@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europeana</groupId>
+    <artifactId>cache-servlet</artifactId>
+    <packaging>war</packaging>
+    <name>Servlet for accessing the cache</name>
+    <version>1.0</version>
+    <description>Servlet</description>
+    <inceptionYear>2008</inceptionYear>
+ 
+  <parent>
+    <groupId>eu.europeana</groupId>
+    <artifactId>europeana</artifactId>
+    <version>1</version>
+  </parent>
+
+    <developers>
+        <developer>
+            <name>Gerald de Jong</name>
+            <email>geralddejong@gmail.com</email>
+            <roles>
+                <role>consultant</role>
+            </roles>
+        </developer>
+    </developers>
+    <organization>
+        <name>Europeana Foundation</name>
+        <url>http://www.europeana.eu</url>
+    </organization>
+    <build>
+        <defaultGoal>package</defaultGoal>
+        <finalName>cache</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <groups>regression</groups>
+                    <parallel>true</parallel>
+                    <includes>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>eu.europeana</groupId>
+            <artifactId>cache</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europeana</groupId>
+            <artifactId>query</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>6.1.16</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <properties>
+    </properties>
+</project>

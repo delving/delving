@@ -1,0 +1,90 @@
+.jcarousel-skin-tango .jcarousel-container {
+    background: transparent;
+    position: absolute;
+    top: 350px;
+}
+
+.jcarousel-skin-tango .jcarousel-container-horizontal {
+    width: 500px;
+    padding: 0 40px;
+}
+
+.jcarousel-skin-tango .jcarousel-clip-horizontal {
+    width:  500px;
+}
+
+.jcarousel-skin-tango .jcarousel-item {
+    width: 75px;
+    height: 110px;
+}
+
+.jcarousel-container .jcarousel-list li img {
+    position: absolute;
+    bottom: 0px;
+}
+
+.jcarousel-skin-tango .jcarousel-item-horizontal {
+    margin-right: 10px;
+}
+
+.jcarousel-skin-tango .jcarousel-item-placeholder {
+    background: #fff;
+    color: #000;
+}
+.jcarousel-skin-tango .jcarousel-next-horizontal {
+    position: absolute;
+    top: 43px;
+    right: 0px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: transparent url(../images/right-enabled.gif) no-repeat 0 0;
+}
+.jcarousel-skin-tango .jcarousel-next-disabled-horizontal,
+.jcarousel-skin-tango .jcarousel-next-disabled-horizontal:hover,
+.jcarousel-skin-tango .jcarousel-next-disabled-horizontal:active {
+    cursor: default;
+    background: transparent url(../images/right-disabled.gif) no-repeat 0 0;
+}
+
+.jcarousel-skin-tango .jcarousel-prev-horizontal {
+    position: absolute;
+    top: 43px;
+    left: 5px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: transparent url(../images/left-enabled.gif) no-repeat 0 0;
+}
+.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal,
+.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal:hover,
+.jcarousel-skin-tango .jcarousel-prev-disabled-horizontal:active {
+    cursor: default;
+    background: transparent url(../images/left-disabled.gif) no-repeat 0 0;
+}
+
+.category_IMAGE img {
+	padding-left: 15px;
+	background-color:#f47821;
+	background-image: url(../images/grad1.gif);
+	background-repeat:repeat-x;
+	background-position: top;
+}
+.category_TEXT img {
+	padding-left: 15px;
+	background-color:#a22e92;
+	background-image: url(../images/grad2.gif);
+	background-repeat:repeat-x;
+	background-position: top;
+}
+.category_SOUND img {
+	padding-left: 15px;
+	background-color:#25a596;
+	background-image: url(../images/grad3.gif);
+	background-repeat:repeat-x;
+	background-position: top;
+}
+.category_VIDEO img {
+	padding-left: 15px;
+	background-color:#CC3366;
+}

@@ -1,0 +1,192 @@
+/**
+ * Copyright (c) 2006-2007, Bill W. Scott
+ * All rights reserved.
+ *
+ * This work is licensed under the Creative Commons Attribution 2.5 License. To view a copy
+ * of this license, visit http://creativecommons.org/licenses/by/2.5/ or send a letter to
+ * Creative Commons, 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
+ *
+ * This work was created by Bill Scott (billwscott.com, looksgoodworkswell.com).
+ *
+ * The only attribution I require is to keep this notice of copyright & license
+ * in this original source file.
+ *
+ * Version 0.6.1 - 07.08.2007
+ *
+ */
+
+/**
+ * Standard Configuration. It is advised that this section NOT be modified as the
+ * carousel.js expects the behavior outlined below.
+ **/
+#mycarousel .carousel-component {
+	position:relative;
+	overflow:hidden;   /* causes the clipping */
+	display:none; /* component turns it on when first item is rendered */
+}
+
+.carousel-component ul.carousel-list {
+	width:10000000px;
+	position:relative;
+	z-index:1;
+}
+
+.carousel-component .carousel-list li {
+	float:left;
+	list-style:none;
+	overflow:visible;
+}
+
+/**
+ * VERTICAL CAROUSEL DEFAULTS
+ **/
+.carousel-component .carousel-vertical li {
+	margin-bottom:0px;
+
+	/* Fix for extra spacing in IE */
+	float:left;
+    clear:left;
+
+	/* Force the LI to respect the HEIGHT specified */
+	overflow:hidden;
+	display:block;
+}
+
+/* For vertical carousel, not set, width defaults to auto */
+/* Note if you explicitly set width to auto, this might cause */
+/* problems with Safari... as in up/down button not working in some examples. */
+.carousel-component ul.carousel-vertical {
+/*	width:auto;*/
+}
+
+.carousel-component .carousel-clip-region {
+	overflow:hidden; /* Secret to the clipping */
+	margin:0 auto;
+	position:relative;
+    padding: 0 10px;
+    border: 0;
+}
+
+/**
+ * ==============================================================================
+ * Safe to override. It is safe to override background, padding, margin, color,
+ * text alignment, fonts, etc. Define a separate CSS file and override your style
+ * preferences.
+ **/
+
+.carousel-component {
+	background:#e2edfa;
+	padding:0px;
+	/*-moz-border-radius:6px;*/
+	/*color:#618cbe;*/
+    height: 200px;
+}
+.carousel-component ul.carousel-list {
+	margin:0px;
+	padding:0px;
+	line-height:0px;
+}
+.carousel-component .carousel-list li {
+	text-align:center;
+	margin:0 20px 0 10px;
+	padding:0px;
+	font:10px verdana,arial,sans-serif;
+	color:#666;
+}
+.carousel-component .carousel-vertical li {
+}
+.carousel-component ul.carousel-vertical {
+}
+/* =================================================================== */
+
+/* carousel */
+
+#mycarousel.carousel-component {
+	background-color:transparent;
+	margin:0;
+    padding: 0;
+	width:auto;
+	text-align:center;
+    border: 0;
+}
+
+
+#mycarousel.carousel-component .carousel-list li {
+	width:79px;
+	height:200px;
+	position:relative;
+	border:0;
+}
+.carousel-component .carousel-list li a {
+	display:block;
+	border:0px solid #ffffff;
+	outline:none;
+}
+.carousel-component .carousel-list li a:hover {
+	border:0px solid #ffffff;
+	bottom:0px;
+}
+.carousel-component .carousel-list li img {
+	border:0px solid #999;
+	display:block;
+	position:absolute;
+	left:0;
+	bottom:0px;
+	width:70px;
+
+}
+#mycarousel.carousel-component .carousel-prev {
+    float: left;
+    position: relative;
+    top: 150px;
+    left: 10px;
+    cursor: pointer;
+}
+.carousel-component .carousel-next {
+    float: right;
+    position: relative;
+    top: 150px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.speechbubble {
+    display: none;
+    position:absolute; left:-20px;
+    height:80px;
+    width:120px;
+    background-image:url(../images/speechbubble2.gif);
+    background-repeat:no-repeat;
+    text-align:left;
+    padding:5px 5px 5px 8px;
+    z-index: 10000;
+}
+
+
+.category_IMAGE img {
+	padding-left: 15px;
+	background-color:#f47821;
+	background-image: url(../images/grad1.gif);
+	background-repeat:repeat-x;
+	background-position: top;
+}
+.category_TEXT img {
+	padding-left: 15px;
+	background-color:#a22e92;
+	background-image: url(../images/grad2.gif);
+	background-repeat:repeat-x;
+	background-position: top;
+}
+.category_SOUND img {
+	padding-left: 15px;
+	background-color:#25a596;
+	background-image: url(../images/grad3.gif);
+	background-repeat:repeat-x;
+	background-position: top;
+}
+.category_VIDEO img {
+	padding-left: 15px;
+	background-color:#CC3366;
+}
+
+

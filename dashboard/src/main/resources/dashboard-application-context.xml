@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+        xsi:schemaLocation=
+                "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd"
+        >
+
+    <context:annotation-config/>
+
+    <!-- Take care of environment specific settings -->
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:europeana.properties</value>
+                <value>file:${europeana.config}</value>
+                <value>file:./europeana.properties</value>
+                <value>file:../europeana.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${db.driverClass}"/>
+        <property name="jdbcUrl"     value="${db.jdbcUrl}"/>
+        <property name="user"        value="${db.user}"/>
+        <property name="password"    value="${db.password}"/>
+    </bean>
+
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="false"/>
+        <property name="generateDdl" value="true"/>
+    </bean>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceXmlLocation" value="classpath:/db/persistence.xml"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven proxy-target-class="true"/>
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+    <bean id="messageDao" class="eu.europeana.database.dao.MessageDaoImpl"/>
+
+    <bean id="dashboardDao" class="eu.europeana.database.dao.DashboardDaoImpl"/>
+
+    <bean id="languageDao" class="eu.europeana.database.dao.LanguageDaoImpl"/>
+
+    <bean id="normalizedImportRepository" class="eu.europeana.dashboard.server.incoming.ImportRepositoryImpl">
+        <property name="dataDirectory" value="${dashboard.normalized.import.repository}"/>
+    </bean>
+
+    <bean id="normalizedEseImporter" class="eu.europeana.dashboard.server.incoming.ESE2DatabaseImporterImpl">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="importRepository" ref="normalizedImportRepository"/>
+        <property name="normalized" value="true"/>
+    </bean>
+
+    <bean id="sandboxImportRepository" class="eu.europeana.dashboard.server.incoming.ImportRepositoryImpl">
+        <property name="dataDirectory" value="${dashboard.sandbox.import.repository}"/>
+    </bean>
+
+    <bean id="sandboxEseImporter" class="eu.europeana.dashboard.server.incoming.ESE2DatabaseImporterImpl">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="importRepository" ref="sandboxImportRepository"/>
+        <property name="normalized" value="false"/>
+    </bean>
+
+    <bean id="indexTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="databaseToSolrIndexer"/>
+                <!-- 2 options are available: run and runParallel -->
+                <property name="targetMethod" value="runParallel"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="${trigger.startDelay}"/>
+        <property name="repeatInterval" value="${trigger.repeatInterval}"/>
+    </bean>
+
+    <!-- httpClient -->
+    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+        <property name="maxTotalConnections"          value="20"/>
+        <property name="defaultMaxConnectionsPerHost" value="10"/>
+    </bean>
+
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg>
+            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+                <property name="params" ref="connectionManagerParams"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="databaseToSolrIndexer" class="eu.europeana.database.migration.outgoing.DatabaseToSolrIndexer">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="httpClient" ref="httpClient"/>
+        <property name="chunkSize" value="${solr.chunkSize}"/>
+        <property name="targetUrl" value="${solr.updateUrl}"/>
+    </bean>
+
+    <bean id="databaseCacheMaintainer" class="eu.europeana.database.migration.outgoing.CacheBuilder">
+        <property name="chunkSize" value="30"/>
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="digitalObjectCache" ref="digitalObjectCache"/>
+    </bean>
+
+    <bean id="digitalObjectCache" class="eu.europeana.cache.DigitalObjectCacheImpl">
+        <property name="imageMagickPath" value="${cache.imageMagickPath}"/>
+        <property name="root" value="${cache.cacheRoot}"/>
+    </bean>
+
+    <bean id="cacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="databaseCacheMaintainer"/>
+                <property name="targetMethod" value="run"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="${trigger.startDelay}"/>
+        <property name="repeatInterval" value="${trigger.repeatInterval}"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="indexTrigger"/>
+                <ref bean="cacheTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dashboardService" class="eu.europeana.dashboard.server.DashboardServiceImpl">
+        <property name="cacheUrl" value="${cacheUrl}"/>
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="normalizedImporter" ref="normalizedEseImporter"/>
+        <property name="sandboxImporter" ref="sandboxEseImporter"/>
+        <property name="messageDao" ref="messageDao"/>
+        <property name="languageDao" ref="languageDao"/>
+        <property name="indexDeleter" ref="databaseToSolrIndexer"/>
+        <property name="digitalObjectCache" ref="digitalObjectCache"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:security="http://www.springframework.org/schema/security"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation=
+                "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+                http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+                http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+        >
+
+    <!-- Annotation based controller Support -->
+    <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>-->
+
+    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>-->
+
+    <!-- Scan package for Controller Annotated Classes -->
+    <!--<context:component-scan base-package="eu.europeana.controller"/>-->
+
+    <!-- Freemarker Template config -->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="${template.path}"/>
+    </bean>
+
+
+    <context:annotation-config/>
+
+    <!-- Take care of environment specific settings -->
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:europeana.properties</value>
+                <value>file:${europeana.config}</value>
+                <value>file:./europeana.properties</value>
+                <value>file:../europeana.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
+
+    <util:map id="config">
+        <entry key="piwik.jsUrl"   value="${piwik.jsUrl}"/>
+        <entry key="piwik.logUrl"  value="${piwik.logUrl}"/>
+        <entry key="cacheUrl"      value="${cacheUrl}"/>
+        <entry key="feedback.to"   value="${feedback.to}"/>
+        <entry key="admin.to"      value="${admin.to}"/>
+        <entry key="exception.to"  value="${exception.to}"/>
+        <entry key="feedback.from" value="${feedback.from}"/>
+        <entry key="debug"         value="${debug}"/>
+        <entry key="piwik.enabled" value="${piwik.enabled}"/>
+        <entry key="message.static_pages" value="${message.static_pages}"/>
+        <entry key="message.network" value="${message.network}"/>
+    </util:map>
+
+    <!-- data source -->
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${db.driverClass}"/>
+        <property name="jdbcUrl"     value="${db.jdbcUrl}"/>
+        <property name="user"        value="${db.user}"/>
+        <property name="password"    value="${db.password}"/>
+    </bean>
+
+    <!-- httpClient -->
+    <!--<bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">-->
+        <!--<property name="maxTotalConnections"          value="512"/>-->
+        <!--<property name="defaultMaxConnectionsPerHost" value="64"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">-->
+        <!--<constructor-arg>-->
+            <!--<bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">-->
+                <!--<property name="params" ref="connectionManagerParams"/>-->
+            <!--</bean>-->
+        <!--</constructor-arg>-->
+    <!--</bean>-->
+
+    <!-- Query Factories -->
+    <bean id="queryModelFactory" class="eu.europeana.json.JsonQueryModelFactory">
+        <property name="simpleQueryModelFactory"    ref="solrQueryModelFactory"/>
+        <property name="advancedQueryModelFactory"  ref="solrQueryModelFactory"/>
+    </bean>
+    <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
+        <property name="baseUrl"      value ="${solr.selectUrl}"/>
+        <property name="httpClient"   ref   ="httpClient"/>
+    </bean>
+    <bean id="sqlQueryModelFactory" class="eu.europeana.json.sql.SqlQueryModelFactory">
+        <property name="baseUrl"      value ="${slqSearch.url}"/>
+        <property name="httpClient"   ref   ="httpClient"/>
+    </bean>
+
+    <!-- normal config -->
+    <security:http auto-config="true" create-session="never">
+
+        <security:intercept-url pattern="/secure/*.html"       access="ROLE_USER"/>
+        <security:intercept-url pattern="/myeuropeana.html"    access="ROLE_USER"/>
+        <security:intercept-url pattern="/*.ajax"              access="ROLE_USER"/>
+
+        <security:form-login login-page="/login.html"
+                             authentication-failure-url="/login.html?error=1"/>
+
+        <security:logout logout-url="/logout.html"/>
+        <security:remember-me token-repository-ref="tokenRepositoryService"/>
+
+    </security:http>
+
+
+    <!-- beans -->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host"        value="${smtp.host}"/>
+    </bean>
+
+    <bean id="daoUserDetailsService" class="eu.europeana.controller.util.UserDaoDetailsService">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="proposedSearchTermSampler" class="eu.europeana.controller.util.ProposedSearchTermSampler">
+        <property name="displayCount" value="3"/>
+        <property name="searchTermDao" ref="searchTermDao"/>
+    </bean>
+
+    <bean id="carouselItemSampler" class="eu.europeana.controller.util.CarouselItemSampler">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="displayCount" value="40"/>
+    </bean>
+
+    <bean id="partnerListSampler" class="eu.europeana.controller.util.PartnerListSampler">
+        <property name="partnerDao" ref="partnerDao"/>
+    </bean>
+
+    <security:authentication-provider user-service-ref="daoUserDetailsService">
+        <security:password-encoder hash="sha"/>
+    </security:authentication-provider>
+
+    <tx:annotation-driven proxy-target-class="true"/>
+
+    <bean name="tokenRepositoryService" class="eu.europeana.controller.util.TokenRepositoryService"/>
+
+    <bean name="tokenService" class="eu.europeana.controller.util.TokenService"/>
+
+    <!-- Email Senders -->
+    <bean id="emailSenderForExceptions" class="eu.europeana.util.EmailSender">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="template" value="/email/exception"/>
+    </bean>
+
+    <bean id="emailSenderForRegisterNotify" class="eu.europeana.util.EmailSender">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="template" value="/email/register-notify"/>
+    </bean>
+
+    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.util.EmailSender">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="template" value="/email/password-change-notify"/>
+    </bean>
+
+    <bean id="emailSenderForSendToFriend" class="eu.europeana.util.EmailSender">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="template" value="/email/to-friend"/>
+    </bean>
+
+    <bean id="emailSenderForUserFeedback" class="eu.europeana.util.EmailSender">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="template" value="/email/feedback"/>
+    </bean>
+
+    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.util.EmailSender">
+        <property name="mailSender" ref="mailSender"/>
+        <property name="template" value="/email/feedback-confirmation"/>
+    </bean>
+
+    <bean id="proposedSearchTermRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="proposedSearchTermSampler"/>
+                <property name="targetMethod" value="refresh"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="0"/>
+        <property name="repeatInterval" value="10000"/>
+    </bean>
+
+    <bean id="carouselItemRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="carouselItemSampler"/>
+                <property name="targetMethod" value="refresh"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="0"/>
+        <property name="repeatInterval" value="11000"/>
+    </bean>
+
+    <bean id="partnerListRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="partnerListSampler"/>
+                <property name="targetMethod" value="refresh"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="0"/>
+        <property name="repeatInterval" value="31000"/>
+    </bean>
+
+    <!--<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+        <!--<property name="triggers">-->
+            <!--<list>-->
+                <!--<ref bean="proposedSearchTermRefreshTrigger"/>-->
+                <!--<ref bean="carouselItemRefreshTrigger"/>-->
+                <!--<ref bean="partnerListRefreshTrigger"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!-- TODO is it still used? -->
+    <bean id="registrationEmailSender" class="eu.europeana.controller.util.TokenReplyEmailSender">
+        <property name="emailSenders">
+            <map>
+                <entry key="register">
+                    <bean class="eu.europeana.util.EmailSender">
+                        <property name="mailSender" ref="mailSender"/>
+                        <property name="template" value="/email/confirmation"/>
+                    </bean>
+                </entry>
+                <entry key="forgotPassword">
+                    <bean class="eu.europeana.util.EmailSender">
+                        <property name="mailSender" ref="mailSender"/>
+                        <property name="template" value="/email/forgot-password"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+        <property name="tokenService" ref="tokenService"/>
+        <property name="from" value="${system.from}"/>
+    </bean>
+
+    <bean id="messageSourceChoice" class="java.lang.String">
+        <constructor-arg value="${message.source}"/>
+    </bean>
+
+    <bean id="exceptionResolver" class="eu.europeana.controller.util.ExceptionResolver">
+        <property name="emailSender" ref="emailSenderForExceptions"/>
+        <property name="emailFrom" value="${system.from}"/>
+        <property name="targetEmailAddress" value="${exception.to}"/>
+        <property name="config" ref="config"/>
+    </bean>
+</beans>

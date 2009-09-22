@@ -1,0 +1,87 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ * Licensed under the EUPL, Version 1.1 or as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
+package eu.europeana.bootstrap;
+
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.webapp.WebAppContext;
+
+import java.io.File;
+import java.io.FileFilter;
+
+/**
+ * Bootstrap the entire system, including the portal, resolver and cache servlet
+ *
+ * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ */
+
+public class EuropeanaBackendStarter {
+
+    public static void main(String... args) throws Exception {
+        String root = "./";
+        if (checkDirectory(new File("."))) {
+            root = "./";
+        }
+        else if (checkDirectory(new File("../"))) {
+            root = "../";
+        }
+        else {
+            System.out.println("This bootstrap class must be started with home directory 'europeana'");
+            System.exit(1);
+        }
+        if (System.getProperty("europeana.config") == null) {
+            System.setProperty("europeana.config", root + "europeana.properties");
+        }
+        System.setProperty("solr.solr.home", root + "bootstrap/src/test/solr/solr");
+        int port = 8983;
+        if (args.length > 0) {
+            port = Integer.parseInt(args[0]);
+        }
+        Server server = new Server(port);
+        server.addHandler(new WebAppContext(root + "resolver/src/main/webapp", "/resolve"));
+        server.addHandler(new WebAppContext(root + "cache-servlet/src/main/webapp", "/cache"));
+//        server.addHandler(new WebAppContext(root + "portal-lite/src/main/webapp", "/portal"));
+        server.addHandler(new WebAppContext(root + "bootstrap/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
+        server.start();
+    }
+
+    private static boolean checkDirectory(File here) {
+        File[] subdirs = here.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isDirectory();
+            }
+        });
+        return checkFor("portal-lite", subdirs)
+                && checkFor("cache-servlet", subdirs)
+                && checkFor("bootstrap", subdirs)
+                && checkFor("resolver", subdirs);
+    }
+
+    private static boolean checkFor(String name, File[] subdirs) {
+        for (File subdir : subdirs) {
+            if (subdir.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+}

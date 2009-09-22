@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <!-- Freemarker Template config -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".ftl"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeRequestAttributes" value="false"/>
+        <property name="requestContextAttribute" value="requestContext"/>
+    </bean>
+
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+
+    <!-- Interceptors and Resolvers -->
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"/>
+    </bean>
+
+    <!-- The old session based storing of user changed locale -->
+    <!--<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>-->
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieMaxAge" value="3600"/>
+        <property name="defaultLocale" value="en"/>
+    </bean>
+
+    <bean id="formatInterceptor" class="eu.europeana.controller.util.FormatInterceptor"/>
+
+    <bean id="configInterceptor" class="eu.europeana.controller.util.ConfigInterceptor">
+        <property name="config" ref="config"/>
+    </bean>
+
+    <!-- UrlMappings -->
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localeChangeInterceptor"/>
+                <ref bean="formatInterceptor"/>
+                <ref bean="configInterceptor"/>
+            </list>
+        </property>
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+                <!--the ajax controllers-->
+                <prop key="/save-search.ajax">saveSearchController</prop>
+                <prop key="/save-item.ajax">saveItemController</prop>
+                <prop key="/save-social-tag.ajax">saveSocialTagController</prop>
+                <prop key="/email-to-friend.ajax">emailToFriendController</prop>
+                <prop key="/remove.ajax">removeController</prop>
+                <prop key="/tag-autocomplete.ajax">tagAutocompleteController</prop>
+
+                <!--the special brief doc with its different output formats-->
+                <prop key="/brief-doc.html">briefDocController</prop>
+                <prop key="/brief-doc.rss">briefDocController</prop>
+                <prop key="/brief-doc.rdf">briefDocController</prop>
+                <prop key="/brief-doc.srw">briefDocController</prop>
+                <prop key="/full-doc.html">fullDocController</prop>
+
+                <!--the dynamic controllers-->
+                <prop key="/bob.html">bobController</prop>
+                <prop key="/">indexController</prop>
+                <prop key="/index.html">indexController</prop>
+                <prop key="/login.html">loginController</prop>
+                <prop key="/logout.html">logoutController</prop>
+                <prop key="/myeuropeana.html">myEuropeanaController</prop>
+                <prop key="/register.html">registerController</prop>
+                <prop key="/change-password.html">changePasswordController</prop>
+                <prop key="/tag-grid.html">tagGridController</prop>
+                <prop key="/year-grid.html">yearGridController</prop>
+
+                <!--a special controller to introduce security-->
+                <prop key="/secure/*.html">switchToSecureController</prop>
+
+                <!-- a special controller to redirect isShownAt and isShownBy links-->
+                <prop key="redirect.html">redirectionController</prop>
+
+                <!-- Static page Controllers -->
+                <prop key="/advancedsearch.html">advancedSearchController</prop>
+                <prop key="/aboutus.html">aboutUsController</prop>
+                <prop key="/accessibility.html">accessibilityController</prop>
+                <prop key="/communities.html">communitiesController</prop>
+                <prop key="/contact.html">contactController</prop>
+                <prop key="/error.html">errorController</prop>
+                <prop key="/languagepolicy.html">languagePolicyController</prop>
+                <prop key="/new-content.html">newContentController</prop>
+                <prop key="/partners.html">partnersController</prop>
+                <prop key="/privacy.html">privacyController</prop>
+                <prop key="/sitemap.html">sitemapController</prop>
+                <prop key="/termsofservice.html">termsOfServiceController</prop>
+                <prop key="/thought-lab.html">thoughtLabController</prop>
+                <prop key="/using-europeana.html">usingEuropeanaController</prop>
+                <prop key="/remember-me-theft.html">rememberMeTheftController</prop>
+                <prop key="/thinkvideo.html">thinkVideoController</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="messageSource" class="eu.europeana.controller.util.SwitchableMessageSource">
+        <property name="sources">
+            <util:map>
+                <entry key="bundle">
+                    <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+                        <property name="basename" value="WEB-INF/classes/messages"/>
+                        <property name="fileEncodings" value="UTF-8"/>
+                        <property name="defaultEncoding" value="UTF-8"/>
+                    </bean>
+                </entry>
+                <entry key="database">
+                    <bean class="eu.europeana.database.DaoMessageSource">
+                        <property name="messageDao" ref="messageDao"/>
+                    </bean>
+                </entry>
+            </util:map>
+        </property>
+        <property name="choice" ref="messageSourceChoice"/>
+    </bean>
+
+    <!-- Controllers -->
+    <bean id="switchToSecureController" class="eu.europeana.controller.SwitchToSecureController"/>
+
+    <bean id="redirectionController" class="eu.europeana.controller.RedirectionController"/>
+
+    <bean id="loginController" class="eu.europeana.controller.LoginController">
+        <property name="registrationEmailSender" ref="registrationEmailSender"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="logoutController" class="eu.europeana.controller.LogoutController"/>
+
+    <bean id="indexController" class="eu.europeana.controller.IndexController">
+        <property name="proposedSearchTermSampler" ref="proposedSearchTermSampler"/>
+        <property name="carouselItemSampler" ref="carouselItemSampler"/>
+    </bean>
+
+    <bean id="briefDocController" class="eu.europeana.controller.BriefDocController">
+        <property name="queryModelFactory" ref="queryModelFactory"/>
+    </bean>
+
+    <bean id="fullDocController" class="eu.europeana.controller.FullDocController">
+        <property name="userDao" ref="userDao"/>
+        <property name="queryModelFactory" ref="queryModelFactory"/>
+    </bean>
+
+    <bean id="bobController" class="eu.europeana.controller.BobController">
+        <property name="queryModelFactory" ref="queryModelFactory"/>
+    </bean>
+
+    <bean id="yearGridController" class="eu.europeana.controller.YearGridController">
+        <property name="queryModelFactory" ref="queryModelFactory"/>
+    </bean>
+
+    <bean id="tagGridController" class="eu.europeana.controller.TagGridController">
+        <property name="queryModelFactory" ref="queryModelFactory"/>
+    </bean>
+
+    <bean id="thoughtLabController" class="eu.europeana.controller.ThougtLabController"/>
+
+    <bean id="myEuropeanaController" class="eu.europeana.controller.MyEuropeanaController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="registerController" class="eu.europeana.controller.RegisterController">
+        <property name="tokenService" ref="tokenService"/>
+        <property name="notifyEmailSender" ref="emailSenderForRegisterNotify"/>
+        <property name="userDao" ref="userDao"/>
+        <property name="successView" value="register-success"/>
+        <property name="formView" value="register"/>
+        <!--<property name="sessionForm" value="true"/>-->
+    </bean>
+
+    <bean id="changePasswordController" class="eu.europeana.controller.ChangePasswordController">
+        <property name="tokenService" ref="tokenService"/>
+        <property name="notifyEmailSender" ref="emailSenderForPasswordChangeNotify"/>
+        <property name="userDao" ref="userDao"/>
+        <property name="successView" value="register-success"/>
+        <!-- TODO change-password-success -->
+        <property name="formView" value="change-password"/>
+        <!--<property name="sessionForm" value="true"/>-->
+    </bean>
+
+    <bean id="saveSearchController" class="eu.europeana.controller.SaveSearchController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="saveItemController" class="eu.europeana.controller.SaveItemController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="saveSocialTagController" class="eu.europeana.controller.SaveSocialTagController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="removeController" class="eu.europeana.controller.RemoveController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="emailToFriendController" class="eu.europeana.controller.EmailToFriendController">
+        <property name="friendEmailSender" ref="emailSenderForSendToFriend"/>
+        <property name="subject" value="A link from Europeana"/>
+    </bean>
+
+    <!-- AjaxControllers -->
+    <bean id="tagAutocompleteController" class="eu.europeana.controller.TagAutoCompleteController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <!-- Static pages -->
+    <bean id="advancedSearchController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="advancedsearch"/>
+        <property name="notLoadableFromDb" value="true"/>
+    </bean>
+
+    <bean id="aboutUsController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="aboutus"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean id="accessibilityController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="accessibility"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean name="errorController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="error"/>
+        <property name="notLoadableFromDb" value="true"/>
+    </bean>
+
+    <bean id="languagePolicyController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="languagepolicy"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean id="newContentController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="newcontent"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean id="partnersController" class="eu.europeana.controller.PartnerPageController">
+        <property name="partnerListSampler" ref="partnerListSampler"/>
+        <property name="config" ref="config"/>
+    </bean>
+
+    <bean id="privacyController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="privacy"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean id="sitemapController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="sitemap"/>
+        <property name="notLoadableFromDb" value="true"/>
+    </bean>
+
+    <bean id="termsOfServiceController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="termsofservice"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean id="usingEuropeanaController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="usingeuropeana"/>
+        <property name="messageDao" ref="messageDao"/>
+    </bean>
+
+    <bean id="contactController" class="eu.europeana.controller.ContactController">
+        <property name="emailSender" ref="emailSenderForUserFeedback"/>
+        <property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>
+        <property name="successView" value="contact"/>
+        <property name="formView" value="contact"/>
+    </bean>
+
+    <bean id="communitiesController" class="eu.europeana.controller.CommunitiesController"/>
+
+    <bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="redirect:/login.html"/>
+    </bean>
+
+    <bean id="thinkVideoController" class="eu.europeana.controller.StaticPageController">
+        <property name="template" value="thinkvideo"/>
+        <property name="notLoadableFromDb" value="true"/>
+    </bean>
+
+</beans>

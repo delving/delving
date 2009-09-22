@@ -1,0 +1,61 @@
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<project name="Package open source distribution" default="package" basedir=".">
+    <description>
+        Package open source distribution of Europeana
+    </description>
+
+  <target name="package">
+      <property name="ostmp" location="../open-source-dist"/>
+      <property name="excludePattern" value="**/.svn/**,**/*.iml,**/*.eml,*/target/**,
+      **/integration*/**,**/EuropeanaIntegration.java,**/.project, **/.classpath"/>
+
+      <delete dir="${ostmp}" quiet="true"/>
+      <mkdir dir="${ostmp}" />
+
+      <!-- copy selected modules -->
+      <copy todir="${ostmp}">
+          <fileset dir="." includes="bootstrap/**" excludes="${excludePattern}" />
+          <fileset dir="." includes="cache/**" excludes="${excludePattern}" />
+          <fileset dir="." includes="cache-servlet/**" excludes="${excludePattern}" />
+          <!--<fileset dir="." includes="dashboard/**" excludes="${excludePattern}" />-->
+          <fileset dir="." includes="database/**" excludes="${excludePattern}" />
+          <!--<fileset dir="." includes="normalizer/**" excludes="${excludePattern}" />-->
+          <fileset dir="." includes="portal-core/**" excludes="${excludePattern}" />
+          <!--<fileset dir="." includes="portal-full/**" excludes="${excludePattern}" />-->
+          <fileset dir="." includes="portal-lite/**" excludes="${excludePattern}" />
+          <fileset dir="." includes="query/**" excludes="${excludePattern}" />
+          <fileset dir="." includes="resolver/**" excludes="${excludePattern}" />
+          <fileset file="pom.opensource.xml"/>
+          <fileset file="*.txt"/>
+          <fileset file="europeana.properties.template" />
+      </copy>
+
+      <!-- rename POM -->
+      <move file="${ostmp}/pom.opensource.xml" tofile="${ostmp}/pom.xml"/>
+
+      <!-- zip it all -->
+      <zip destfile="opensourcedist.zip" basedir="${ostmp}"/>
+      <delete dir="${ostmp}" quiet="true"/>
+
+  </target>
+</project>
