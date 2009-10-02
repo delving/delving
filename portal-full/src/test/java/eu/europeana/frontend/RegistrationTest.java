@@ -23,7 +23,7 @@ package eu.europeana.frontend;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import eu.europeana.PortalFull;
+import eu.europeana.PortalFullStarter;
 import eu.europeana.controller.util.TokenService;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Token;
@@ -57,7 +57,7 @@ public class RegistrationTest {
 
     @Before
     public void start() throws Exception {
-        server = new PortalFull().startServer();
+        server = new PortalFullStarter().startServer();
     }
 
     @After
@@ -73,7 +73,7 @@ public class RegistrationTest {
         // 1.
         //go to myeuropeana.
         //use a separate server for registration request.
-        Server regRequestServer = new PortalFull().startServer(8082);
+        Server regRequestServer = new PortalFullStarter().startServer(8082);
         HtmlPage loginPage = webClient.getPage("http://localhost:8082/portal/myeuropeana.html");
 
         //fill in and submit registration-request form
@@ -94,7 +94,7 @@ public class RegistrationTest {
 
         //follow registration url (from the new browser window)
         //and on a different server.
-        Server registrationServer = new PortalFull().startServer(8084);
+        Server registrationServer = new PortalFullStarter().startServer(8084);
         HtmlPage registerSuccessPage = completeRegistration(token, 8084);
         registrationServer.stop();
 

@@ -23,7 +23,7 @@ package eu.europeana.frontend;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import eu.europeana.PortalFull;
+import eu.europeana.PortalFullStarter;
 import eu.europeana.controller.util.TokenService;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Role;
@@ -59,7 +59,7 @@ public class ForgotPasswordTest {
 
     @Before
     public void start() throws Exception {
-        server = new PortalFull().startServer();
+        server = new PortalFullStarter().startServer();
     }
 
     @After
@@ -76,7 +76,7 @@ public class ForgotPasswordTest {
         // 1.
         //go to myeuropeana.
         //use a separate server to request password reset.
-        Server forgotServer = new PortalFull().startServer(8082);
+        Server forgotServer = new PortalFullStarter().startServer(8082);
         HtmlPage loginPage = webClient.getPage("http://localhost:8082/portal/myeuropeana.html");
 
         HtmlAnchor forgotPassword = (HtmlAnchor) loginPage.getElementById("forgotPassword");
@@ -101,7 +101,7 @@ public class ForgotPasswordTest {
 
         //follow registration url (from the new browser window)
         //and on a different server.
-        Server changePasswordServer = new PortalFull().startServer(8084);
+        Server changePasswordServer = new PortalFullStarter().startServer(8084);
         HtmlPage registerSuccessPage = changePassword(token, 8084);
         changePasswordServer.stop();
 

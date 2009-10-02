@@ -25,7 +25,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import eu.europeana.PortalFull;
+import eu.europeana.PortalFullStarter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class SearchTest {
 
     @Before
     public void before() throws Exception {
-        server = new PortalFull().startServer();
+        server = new PortalFullStarter().startServer();
 //        solrServer = new SolrStarter().start();
     }
 

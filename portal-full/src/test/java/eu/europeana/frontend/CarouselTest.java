@@ -24,7 +24,7 @@ package eu.europeana.frontend;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import eu.europeana.PortalFull;
+import eu.europeana.PortalFullStarter;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.dao.DashboardDao;
 import eu.europeana.database.domain.Role;
@@ -78,7 +78,7 @@ public class CarouselTest {
 
 	@Before
 	public void start() throws Exception {
-		PortalFull starter = new PortalFull();
+		PortalFullStarter starter = new PortalFullStarter();
 		System.out.println(System.getProperty("user.dir"));
 		server = starter.startServer(FrontendTestUtil.TEST_PORT);
 		if (!server.isRunning())

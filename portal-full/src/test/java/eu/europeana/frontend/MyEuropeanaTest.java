@@ -27,7 +27,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import eu.europeana.PortalFull;
+import eu.europeana.PortalFullStarter;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.User;
@@ -59,7 +59,7 @@ public class MyEuropeanaTest {
 
     @Before
     public void start() throws Exception {
-        server = new PortalFull().startServer();
+        server = new PortalFullStarter().startServer();
         User user = new User();
         user.setFirstName(FrontendTestUtil.FIRST_NAME);
         user.setLastName(FrontendTestUtil.LAST_NAME);

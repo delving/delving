@@ -23,7 +23,7 @@ package eu.europeana.frontend;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import eu.europeana.PortalFull;
+import eu.europeana.PortalFullStarter;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.User;
@@ -57,7 +57,7 @@ public class TokenBasedAuthenticationTest {
 
     @Before
     public void start() throws Exception {
-        server = new PortalFull().startServer();
+        server = new PortalFullStarter().startServer();
         User user = new User();
         user.setEmail(FrontendTestUtil.EMAIL);
         user.setPassword(FrontendTestUtil.PASSWORD);
@@ -140,7 +140,7 @@ public class TokenBasedAuthenticationTest {
         HtmlPage myEuropeanaPage = webClient.getPage("http://localhost:8080/portal/myeuropeana.html");
         Assert.assertEquals("Europeana - My Europeana", myEuropeanaPage.getTitleText());
 
-        org.mortbay.jetty.Server server2 = new PortalFull().startServer(8082);
+        org.mortbay.jetty.Server server2 = new PortalFullStarter().startServer(8082);
 
         //access secure page on the second page. Should still be logged in
         myEuropeanaPage = webClient.getPage("http://localhost:8082/portal/myeuropeana.html");
