@@ -85,9 +85,7 @@
                     2509 LK The Hague
                     </p>
                     <h4>To be added to the press list or for general communications</h4>
-                    <p><a  href="#" onclick="return ContactMe('info','europeana.eu');">Jonathan Purday</a><br  />
-                    Phone +31 [0] 70 314 0684
-                    </p>
+                    <p> <a onclick="return ContactMe('jonathan.purday','bl.uk');" href="#">Jonathan Purday</a> Phone 00 44 1937 546614 </p>
 
                     <h4>To contribute content to Europeana</h4>
                     <p>
