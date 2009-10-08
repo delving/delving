@@ -138,7 +138,9 @@
 
     <!-- beans -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host"        value="${smtp.host}"/>
+        <property name="host" value="${smtp.host}"/>
+        <property name="username" value="${smtp.username}"/>
+        <property name="password" value="${smtp.password}"/>
     </bean>
 
     <bean id="daoUserDetailsService" class="eu.europeana.controller.util.UserDaoDetailsService">
