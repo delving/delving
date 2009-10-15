@@ -26,10 +26,11 @@ public class CarouselItemSampler {
     }
 
     public List<CarouselItem> pickRandomItems() {
-        List<CarouselItem> selection = new ArrayList<CarouselItem>(cache);
-        while (selection.size() > displayCount) {
-            int index = (int)(Math.random()*selection.size());
-            selection.remove(index);
+        List<CarouselItem> copy = new ArrayList<CarouselItem>(cache);
+        List<CarouselItem> selection = new ArrayList<CarouselItem>();
+        while (displayCount-- > 0 && !copy.isEmpty()) {
+            int index = (int)(Math.random()*copy.size());
+            selection.add(copy.remove(index));
         }
         return selection;
     }
