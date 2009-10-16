@@ -292,7 +292,7 @@
     </dependencies>
     <properties>
         <spring.version>2.5.5</spring.version>
-        <gwtVersion>1.5.3</gwtVersion>
+        <gwtVersion>1.7.1</gwtVersion>
         <google.webtoolkit.home>${env.GWT_HOME}</google.webtoolkit.home>
         <jetty.version>6.1.7</jetty.version>
     </properties>

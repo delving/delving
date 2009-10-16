@@ -1,9 +1,11 @@
 package eu.europeana.dashboard.client.widgets;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -46,8 +48,8 @@ public class UsersWidget extends DashboardWidget {
             }
             roleBox.addItem(role.toString());
         }
-        roleBox.addChangeListener(new ChangeListener() {
-            public void onChange(Widget sender) {
+        roleBox.addChangeHandler(new ChangeHandler() {
+            public void onChange(ChangeEvent sender) {
                 world.service().setUserRole(userChooser.getSelectedUser().getId(), RoleX.values()[roleBox.getSelectedIndex()], new Reply<Void>() {
                     public void onSuccess(Void result) {
                         // not sure what to do
@@ -59,17 +61,17 @@ public class UsersWidget extends DashboardWidget {
         verifyDialog = new VerifyDialog(world.messages());
         userChooser.setListener(new UserChooser.Listener() {
             public void userSelected(UserX user) {
-                enabledBox.setChecked(user.isEnabled());
+                enabledBox.setValue(user.isEnabled());
                 roleBox.setSelectedIndex(user.getRole().ordinal());
                 languagesBox.setText(user.getLanguages());
                 projectIdBox.setText(user.getProjectId());
                 providerIdBox.setText(user.getProviderId());
             }
         });
-        enabledBox.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        enabledBox.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 if (userChooser.getSelectedUser() != null) {
-                    world.service().setUserEnabled(userChooser.getSelectedUser().getId(), enabledBox.isChecked(), new Reply<Void>() {
+                    world.service().setUserEnabled(userChooser.getSelectedUser().getId(), enabledBox.getValue(), new Reply<Void>() {
                         public void onSuccess(Void result) {
                             // not sure what to do
                         }
@@ -77,8 +79,8 @@ public class UsersWidget extends DashboardWidget {
                 }
             }
         });
-        deleteButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        deleteButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 verifyDialog.ask(deleteButton, world.messages().deleteCaption(), world.messages().deleteThisUserQuestion(), new Runnable() {
                     public void run() {
                         world.service().removeUser(userChooser.getSelectedUser().getId(), new Reply<Void>() {
@@ -109,8 +111,8 @@ public class UsersWidget extends DashboardWidget {
 
     private Widget createLanguagesPanel() {
         Button submit = new Button(world.messages().submit());
-        submit.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        submit.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 world.service().setUserLanguages(userChooser.getSelectedUser().getId(), languagesBox.getText(), new Reply<Void>() {
                     public void onSuccess(Void result) {
                         // todo: update the user object contents, back to normal appearance
@@ -128,8 +130,8 @@ public class UsersWidget extends DashboardWidget {
 
     private Widget createProjectIdPanel() {
         Button submit = new Button(world.messages().submit());
-        submit.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        submit.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 world.service().setUserProjectId(userChooser.getSelectedUser().getId(), projectIdBox.getText(), new Reply<Void>() {
                     public void onSuccess(Void result) {
                         // todo: update the user object contents, back to normal appearance
@@ -147,8 +149,8 @@ public class UsersWidget extends DashboardWidget {
 
     private Widget createProviderIdPanel() {
         Button submit = new Button(world.messages().submit());
-        submit.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        submit.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 world.service().setUserProviderId(userChooser.getSelectedUser().getId(), providerIdBox.getText(), new Reply<Void>() {
                     public void onSuccess(Void result) {
                         // todo: update the user object contents, back to normal appearance
