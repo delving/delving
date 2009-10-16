@@ -22,6 +22,8 @@ import eu.europeana.dashboard.client.dto.UserX;
  * A widget for editing users
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ *
+ * modified by Nicola
  */
 
 public class UsersWidget extends DashboardWidget {
