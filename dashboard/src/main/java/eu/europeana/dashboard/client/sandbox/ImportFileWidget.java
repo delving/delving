@@ -1,6 +1,8 @@
 package eu.europeana.dashboard.client.sandbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
@@ -85,8 +87,8 @@ public class ImportFileWidget extends DashboardWidget {
                 case IMPORTING:
                     panel.add(new HTML(theFileIs+world.messages().importing()));
                     Button cancelImport = new Button(world.messages().abortImport());
-                    cancelImport.addClickListener(new ClickListener() {
-                        public void onClick(Widget sender) {
+                    cancelImport.addClickHandler(new ClickHandler() {
+                        public void onClick(ClickEvent sender) {
                             world.service().abortImport(collectionHolder.getImportFile(), false, new Reply<ImportFile>() {
                                 public void onSuccess(ImportFile result) {
                                     collectionHolder.setImportFile(result);
@@ -141,8 +143,8 @@ public class ImportFileWidget extends DashboardWidget {
 
     private void addDeleteClickable() {
         Button delete = new Button(world.messages().deleteFile());
-        delete.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        delete.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 world.service().deleteImportFile(collectionHolder.getImportFile(), false, new Reply<Boolean>() {
                     public void onSuccess(Boolean result) {
                         collectionHolder.clearImportFile();
