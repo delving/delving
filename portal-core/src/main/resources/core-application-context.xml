@@ -56,19 +56,6 @@
 
     <!-- Take care of environment specific settings -->
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:europeana.properties</value>
-                <value>file:${europeana.config}</value>
-                <value>file:./europeana.properties</value>
-                <value>file:../europeana.properties</value>
-            </list>
-        </property>
-        <property name="ignoreResourceNotFound" value="true"/>
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-    </bean>
-
     <util:map id="config">
         <entry key="piwik.jsUrl"   value="${piwik.jsUrl}"/>
         <entry key="piwik.logUrl"  value="${piwik.logUrl}"/>
@@ -115,10 +102,10 @@
         <property name="baseUrl"      value ="${solr.selectUrl}"/>
         <property name="httpClient"   ref   ="httpClient"/>
     </bean>
-    <bean id="sqlQueryModelFactory" class="eu.europeana.json.sql.SqlQueryModelFactory">
-        <property name="baseUrl"      value ="${slqSearch.url}"/>
-        <property name="httpClient"   ref   ="httpClient"/>
-    </bean>
+    <!--<bean id="sqlQueryModelFactory" class="eu.europeana.json.sql.SqlQueryModelFactory">-->
+        <!--<property name="baseUrl"      value ="${slqSearch.url}"/>-->
+        <!--<property name="httpClient"   ref   ="httpClient"/>-->
+    <!--</bean>-->
 
     <!-- normal config -->
     <security:http auto-config="true" create-session="never">

@@ -50,7 +50,6 @@ public class DataMigration {
 
     public DataMigration(String importDirectory) {
         this.importDirectory = importDirectory;
-
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/database-application-context.xml",
                 "/test-application-context.xml"

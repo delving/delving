@@ -24,9 +24,6 @@ package eu.europeana.bootstrap;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
-import java.io.File;
-import java.io.FileFilter;
-
 /**
  * Bootstrap the entire system, including the portal, resolver and cache servlet
  *
@@ -36,9 +33,6 @@ import java.io.FileFilter;
 public class EuropeanaIntegration {
 
     public static void main(String... args) throws Exception {
-        if (System.getProperty("europeana.config") == null) {
-            System.setProperty("europeana.config", "./europeana.properties"); // todo: instead, give the VM a -Deuropeana.config=...
-        }
         System.setProperty("solr.solr.home", "./bootstrap/src/test/solr/solr");
         int port = 8983;
         if (args.length > 0) {
@@ -52,24 +46,4 @@ public class EuropeanaIntegration {
         server.addHandler(new WebAppContext("./bootstrap/src/test/resources/integration/0.3.1/dashboard.war", "/dashboard"));
         server.start();
     }
-
-    private static boolean checkDirectory() {
-        File here = new File(".");
-        File [] subdirs = here.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
-        return checkFor("portal-lite", subdirs) && checkFor("cache-servlet", subdirs) && checkFor("resolver", subdirs);
-    }
-
-    private static boolean checkFor(String name, File[] subdirs) {
-        for (File subdir : subdirs) {
-            if (subdir.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

@@ -35,17 +35,9 @@
 
     <!-- Take care of environment specific settings -->
 
+    <bean id="europeanaProperties" class="eu.europeana.query.EuropeanaProperties"/>
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:europeana.properties</value>
-                <value>file:${europeana.config}</value>
-                <value>file:./europeana.properties</value>
-                <value>file:../europeana.properties</value>
-            </list>
-        </property>
-        <property name="ignoreResourceNotFound" value="true"/>
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="properties" ref="europeanaProperties"/>
     </bean>
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">

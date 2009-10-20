@@ -85,6 +85,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!--this is just for the EuropeanaProperties.java-->
+            <groupId>eu.europeana</groupId>
+            <artifactId>query</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.5</version>

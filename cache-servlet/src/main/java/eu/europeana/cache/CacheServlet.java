@@ -22,6 +22,7 @@
 package eu.europeana.cache;
 
 import eu.europeana.query.DocType;
+import eu.europeana.query.EuropeanaProperties;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Properties;
 
 /**
  * This servlet delivers the cached versions of the uri.
@@ -63,18 +63,7 @@ public class CacheServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        String europeanaConfigFile = System.getProperty("europeana.config");
-        if (europeanaConfigFile == null) {
-            throw new ServletException("Cannot find system property 'europeana.config'");
-        }
-        Properties properties = new Properties();
-        try {
-            FileInputStream fileInputStream = new FileInputStream(europeanaConfigFile);
-            properties.load(fileInputStream);
-        }
-        catch (IOException e) {
-            throw new ServletException("Cannot load properties from the file '" + europeanaConfigFile + "'");
-        }
+        EuropeanaProperties properties = new EuropeanaProperties();
         DigitalObjectCacheImpl digitalObjectCache = new DigitalObjectCacheImpl();
         String cacheRoot = properties.getProperty("cache.cacheRoot");
         if (cacheRoot == null) {

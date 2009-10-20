@@ -31,21 +31,6 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
         >
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:europeana.properties</value>
-                <value>file:${europeana.config}</value>
-                <value>file:europeana.properties</value>
-            </list>
-        </property>
-        <property name="ignoreResourceNotFound" value="true"/>
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-    </bean>
-
-
-    <!-- data source -->
-
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="${db.driverClass}"/>
         <property name="jdbcUrl"     value="${db.jdbcUrl}"/>

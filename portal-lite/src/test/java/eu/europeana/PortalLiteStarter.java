@@ -18,11 +18,6 @@ public class PortalLiteStarter {
     }
 
     public Server startServer(int portNumber) throws Exception {
-        // if you want to override the default location of the europeana.config
-        // add -Deuropeana.config=/path/to/config/file to your VM parameters
-        if (System.getProperty("europeana.config") == null) {
-            System.setProperty("europeana.config", "../europeana.properties");
-        }
         File webappA = new File("./portal-lite/src/main/webapp");
         File webappB = new File("./src/main/webapp");
         WebAppContext webAppContext;

@@ -23,30 +23,23 @@ package eu.europeana.query;
 
 import org.apache.log4j.Logger;
 
-import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This class fetches the europeana.properties files, however folks have decided to define
- * its whearabouts.  It checks for expected keys, and installs all the properties as system
- * properties so they can be accessible from elsewhere.
+ * its whearabouts.  It checks for expected keys and refuses to instantiate if there are
+ * missing properties.
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class EuropeanaProperties {
-    private static final String LOADED_PROPERTY = "europeana.properties.loaded";
-    private boolean complete = true;
+public class EuropeanaProperties extends Properties {
 
     public EuropeanaProperties() {
-        Logger log = Logger.getLogger(getClass());
-        String europeanaPropertiesLoaded = System.getProperty(LOADED_PROPERTY);
-        if (europeanaPropertiesLoaded != null) {
-            log.info("Europeana properties already loaded into system properties in this JVM");
-            return;
-        }
         String configFile = System.getProperty("europeana.properties");
+        Logger log = Logger.getLogger(getClass());
         if (configFile == null) {
             log.info("System property 'europeana.properties' not found, checking environment.");
             configFile = System.getenv("europeana.properties");
@@ -64,31 +57,24 @@ public class EuropeanaProperties {
             );
             throw new RuntimeException("Configuration not available!");
         }
-        Properties properties = new Properties();
+        log.info("Going to load properties from '"+configFile+"'");
         try {
             FileInputStream fileInputStream = new FileInputStream(configFile);
-            properties.load(fileInputStream);
+            load(fileInputStream);
+            log.info("Loaded properties from '"+configFile+"'");
         }
         catch (IOException e) {
             log.fatal("Unable to load 'europeana.properties' from [" + configFile + "]!");
             throw new RuntimeException("Unable to load 'europeana.properties' file!");
         }
+        boolean complete = true;
         for (String expect : EXPECT) {
-            String value = properties.getProperty(expect); 
+            String value = getProperty(expect); 
             if (value == null) {
                 log.warn("Missing property '"+expect+"' in '"+configFile+"'");
                 complete = false;
             }
-            else {
-                log.info("System property '"+expect+"' set to '"+value+"'");
-                System.setProperty(expect, value);
-            }
         }
-        System.setProperty(LOADED_PROPERTY, "true");
-        log.info("System properties set from 'europeana.properties'.");
-    }
-
-    public void requireCompleteness() {
         if (!complete) {
             throw new IllegalStateException("Europeana configuration properties incomplete.  Check log for details.");
         }

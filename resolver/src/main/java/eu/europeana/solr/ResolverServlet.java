@@ -21,17 +21,16 @@
 
 package eu.europeana.solr;
 
+import eu.europeana.query.EuropeanaProperties;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
-import java.util.Properties;
 
 /**
  * This servlet redirects browsers to the place where the URI can be resolved
@@ -47,18 +46,7 @@ public class ResolverServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        String europeanaConfigFile = System.getProperty("europeana.config");
-        if (europeanaConfigFile == null) {
-            throw new ServletException("Cannot find system property 'europeana.config'");
-        }
-        Properties properties = new Properties();
-        try {
-            FileInputStream fileInputStream = new FileInputStream(europeanaConfigFile);
-            properties.load(fileInputStream);
-        }
-        catch (IOException e) {
-            throw new ServletException("Cannot load properties from the file '" + europeanaConfigFile + "'");
-        }
+        EuropeanaProperties properties = new EuropeanaProperties();
         displayPageUrl = properties.getProperty("displayPageUrl");
         if (displayPageUrl == null) {
             throw new ServletException("Requires 'displayPageUrl' init parameter.");

@@ -33,8 +33,12 @@
 
     <context:annotation-config/>
 
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+    <bean id="europeanaProperties" class="eu.europeana.query.EuropeanaProperties"/>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="europeanaProperties"/>
+    </bean>
 
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
         <property name="showSql" value="false"/>
@@ -67,8 +71,8 @@
     <bean id="databaseToSolrIndexer" class="eu.europeana.database.migration.outgoing.DatabaseToSolrIndexer">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="httpClient" ref="httpClient"/>
-        <property name="chunkSize" value="${solr.chunkSize}"/>
         <property name="targetUrl" value="${solr.updateUrl}"/>
+        <property name="chunkSize" value="${solr.chunkSize}"/>
     </bean>
 
     <bean id="databaseCacheMaintainer" class="eu.europeana.database.migration.outgoing.CacheBuilder">

@@ -21,16 +21,14 @@
 
 package eu.europeana.cache;
 
+import eu.europeana.query.EuropeanaProperties;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -50,24 +48,9 @@ public class DigitalObjectCacheTest {
 
     @Before
     public void setUp() throws IOException {
-        if (System.getProperty("europeana.config") == null) {
-            System.setProperty("europeana.config", "./europeana.properties");
-
-        }
-        String europeanaConfigFile = System.getProperty("europeana.config");
-        Properties properties = new Properties();
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(europeanaConfigFile);
-        } catch (FileNotFoundException e) {
-            //now mvn test runs properly
-            fileInputStream = new FileInputStream("../europeana.properties");
-        }
-        properties.load(fileInputStream);
-//           ("Cannot load properties from the file '" + europeanaConfigFile + "'");
         cache = new DigitalObjectCacheImpl();
         cache.setRoot(new File("/tmp/test-cache/repository"));
-        cache.setImageMagickPath(properties.getProperty("cache.imageMagickPath"));
+        cache.setImageMagickPath(new EuropeanaProperties().getProperty("cache.imageMagickPath"));
     }
 
     @After

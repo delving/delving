@@ -47,9 +47,6 @@ public class EuropeanaBackendStarter {
             System.out.println("This bootstrap class must be started with home directory 'europeana'");
             System.exit(1);
         }
-        if (System.getProperty("europeana.config") == null) {
-            System.setProperty("europeana.config", root + "europeana.properties");
-        }
         System.setProperty("solr.solr.home", root + "bootstrap/src/test/solr/solr");
         int port = 8983;
         if (args.length > 0) {
@@ -58,7 +55,6 @@ public class EuropeanaBackendStarter {
         Server server = new Server(port);
         server.addHandler(new WebAppContext(root + "resolver/src/main/webapp", "/resolve"));
         server.addHandler(new WebAppContext(root + "cache-servlet/src/main/webapp", "/cache"));
-//        server.addHandler(new WebAppContext(root + "portal-lite/src/main/webapp", "/portal"));
         server.addHandler(new WebAppContext(root + "bootstrap/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
         server.start();
     }
