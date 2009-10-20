@@ -56,8 +56,6 @@ public interface DashboardServiceAsync {
 
     void fetchImportFiles(boolean normalized, AsyncCallback<List<ImportFile>> async);
 
-    void deleteImportFile(ImportFile file, boolean normalized, AsyncCallback<Boolean> async);
-
     void commenceValidate(ImportFile file, Long collectionId, AsyncCallback<ImportFile> async);
 
     void commenceImport(ImportFile file, Long collectionId, boolean normalized, AsyncCallback<ImportFile> async);

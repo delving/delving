@@ -263,21 +263,6 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardDao.removeUser(userId);
     }
 
-    public boolean deleteImportFile(ImportFile importFile, boolean normalized) {
-        if (normalized) { // sandbox not handled, derive collection name is not used there
-            EuropeanaCollection collection = dashboardDao.fetchCollectionByFileName(importFile.getFileName());
-            if (collection == null) {
-                collection = dashboardDao.fetchCollectionByName(importFile.deriveCollectionName(), false);
-            }
-            if (collection != null) {
-                collection.setFileState(ImportFileState.NONEXISTENT);
-                dashboardDao.updateCollection(collection);
-            }
-        }
-        audit("delete import file "+importFile.getFileName());
-        return importer(normalized).getImportRepository().delete(importFile);
-    }
-
     public List<ImportFile> fetchImportFiles(boolean normalized) {
         return importer(normalized).getImportRepository().getAllFiles();
     }

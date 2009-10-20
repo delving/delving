@@ -60,14 +60,6 @@ public class ImportRepositoryImpl implements ImportRepository {
         return get(importFile.getState()).move(importFile.getFileName(), get(to));
     }
 
-    public boolean delete(ImportFile importFile) {
-        Folder folder = get(importFile.getFileName());
-        if (folder == null) {
-            return true;
-        }
-        return folder.delete(importFile.getFileName());
-    }
-
     public ImportFile checkStatus(String fileName) {
         for (Folder folder : folders) {
             if (folder.containsFile(fileName)) {

@@ -25,7 +25,5 @@ public interface ImportRepository {
 
     ImportFile transition(ImportFile importFile, ImportFileState to);
 
-    boolean delete(ImportFile importFile);
-
     ImportFile checkStatus(String fileName);
 }

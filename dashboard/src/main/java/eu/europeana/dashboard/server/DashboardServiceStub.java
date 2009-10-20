@@ -96,10 +96,6 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         service().removeUser(userId);
     }
 
-    public boolean deleteImportFile(ImportFile file, boolean normalized) {
-        return service().deleteImportFile(file, normalized);
-    }
-
     public ImportFile commenceValidate(ImportFile file, Long collectionId) {
         return service().commenceValidate(file, collectionId);
     }

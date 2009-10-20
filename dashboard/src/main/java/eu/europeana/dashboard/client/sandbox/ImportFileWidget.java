@@ -4,7 +4,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -108,7 +111,6 @@ public class ImportFileWidget extends DashboardWidget {
                     else {
                         panel.add(new HTML(theFileIs+world.messages().imported())); // maybe never used
                     }
-                    addDeleteClickable();
                     break;
                 case ERROR:
                     String error = collectionHolder.getCollection().getImportError();
@@ -133,27 +135,11 @@ public class ImportFileWidget extends DashboardWidget {
                                         "<div style=\"color: firebrick; font-family:monospace; font-size=small; \">"+error+"</div>"
                         ));
                     }
-                    addDeleteClickable();
                     break;
                 default:
                     throw new RuntimeException("Unknown state");
             }
         }
-    }
-
-    private void addDeleteClickable() {
-        Button delete = new Button(world.messages().deleteFile());
-        delete.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent sender) {
-                world.service().deleteImportFile(collectionHolder.getImportFile(), false, new Reply<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        collectionHolder.clearImportFile();
-                        refreshPanel();
-                    }
-                });
-            }
-        });
-        panel.add(delete);
     }
 
     private void checkStatus() {

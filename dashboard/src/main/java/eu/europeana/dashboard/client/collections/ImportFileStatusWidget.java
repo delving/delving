@@ -72,7 +72,6 @@ public class ImportFileStatusWidget extends DashboardWidget {
                     });
                     panel.add(commenceImport);
                     panel.add(new HTML(world.messages().or()));
-                    addDeleteClickable();
                     break;
                 case IMPORTING:
                     panel.add(new HTML(world.messages().importing()));
@@ -91,11 +90,9 @@ public class ImportFileStatusWidget extends DashboardWidget {
                     break;
                 case IMPORTED:
                     panel.add(new HTML(world.messages().imported()));
-                    addDeleteClickable();
                     break;
                 case ERROR:
                     panel.add(new HTML(world.messages().haltedWithAnError()));
-                    addDeleteClickable();
                     break;
                 default:
                     throw new RuntimeException("Unknown state");
@@ -105,21 +102,6 @@ public class ImportFileStatusWidget extends DashboardWidget {
 
     public void waitForFile() {
         checkTransitionFromState(ImportFile.State.NONEXISTENT);
-    }
-
-    private void addDeleteClickable() {
-        Button delete = new Button(world.messages().delete());
-        delete.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                world.service().deleteImportFile(holder.getImportFile(), true, new Reply<Boolean>() {
-                    public void onSuccess(Boolean result) {
-                        holder.clearImportFile();
-                        refreshPanel();
-                    }
-                });
-            }
-        });
-        panel.add(delete);
     }
 
     private void checkTransitionFromState(ImportFile.State currentState) {

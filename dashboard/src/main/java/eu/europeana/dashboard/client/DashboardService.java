@@ -48,7 +48,6 @@ public interface DashboardService extends RemoteService {
     EuropeanaCollectionX updateCollectionCounters(EuropeanaCollectionX collection);
 
     List<ImportFile> fetchImportFiles(boolean normalized);
-    boolean deleteImportFile(ImportFile file, boolean normalized);
     ImportFile commenceValidate(ImportFile file, Long collectionId);
     ImportFile commenceImport(ImportFile file, Long collectionId, boolean normalized);
     ImportFile abortImport(ImportFile file, boolean normalized);
