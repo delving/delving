@@ -42,7 +42,13 @@ public class EuropeanaProperties extends Properties {
         Logger log = Logger.getLogger(getClass());
         if (configFile == null) {
             log.info("System property 'europeana.properties' not found, checking environment.");
-            configFile = System.getenv("europeana.properties");
+            configFile = System.getenv("EUROPEANA_PROPERTIES");
+            if (configFile != null) {
+                log.info("Found environment variable EUROPEANA_PROPERTIES");
+            }
+            else { // todo
+                System.out.println(System.getenv());
+            }
         }
         if (configFile == null) {
             log.warn("No 'europeana.properties' found in system properties or environment, checking for legacy 'europeana.config'.");
@@ -53,7 +59,7 @@ public class EuropeanaProperties extends Properties {
                     "Configuration not available!\n" +
                             "Solutions:\n" +
                             "1) Start the JVM with parameter -Deuropeana.properties=/path/to/europeana.properties\n" +
-                            "2) Set the environment variable 'europeana.properties' to /path/to/europeana.properties"
+                            "2) Set the environment variable 'EUROPEANA_PROPERTIES' to /path/to/europeana.properties"
             );
             throw new RuntimeException("Configuration not available!");
         }

@@ -29,7 +29,14 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 /**
  * Cache digital objects which can be fetched from remote sites
@@ -260,7 +267,7 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
     private void executeImageMagick(File directory, String... arguments) throws IOException {
         String[] command = new String[arguments.length + 1];
         int index = 0;
-        command[index++] = imageMagickPath + "convert";
+        command[index++] = imageMagickPath + "/convert";
         for (String argument : arguments) {
             command[index++] = argument;
         }
