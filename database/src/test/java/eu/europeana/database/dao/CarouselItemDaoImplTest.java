@@ -22,7 +22,13 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.User;
+import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -78,24 +82,6 @@ public class CarouselItemDaoImplTest {
         assertNotNull(item.getLanguage());
         assertNotNull(item.getCreator());
         System.out.println(item.getTitle());
-    }
-
-    @Test
-    public void testGetRandomCarouselItems() throws Exception {
-        List<CarouselItem> list = dashboardDao.getAllCarouselItems();
-        List<CarouselItem> selection = new ArrayList<CarouselItem>(list);
-        int displayCount = 4;
-        List<CarouselItem> result1 = randomSelection(displayCount, selection);
-        List<CarouselItem> result2 = randomSelection(displayCount, selection);
-        assertNotSame(result1,  result2);
-    }
-
-    private List<CarouselItem> randomSelection(int displayCount, List<CarouselItem> selection) {
-        while (selection.size() > displayCount) {
-            int index = (int)(Math.random()*selection.size());
-            selection.remove(index);
-        }
-        return selection;
     }
 
     @Test
@@ -170,7 +156,7 @@ public class CarouselItemDaoImplTest {
         }
         savedItems = user.getSavedItems();
         assertNotNull(savedItems);
-        assertEquals("list should be 1", 1, dashboardDao.getAllCarouselItems().size());
+        assertEquals("list should be 1", 1, dashboardDao.fetchCarouselItems().size());
     }
 
     @Test

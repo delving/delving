@@ -40,6 +40,6 @@ public class CarouselItemSampler {
     }
 
     private List<CarouselItem> getData() {
-        return dashboardDao.getAllCarouselItems();
+        return dashboardDao.fetchCarouselItems();
     }
 }

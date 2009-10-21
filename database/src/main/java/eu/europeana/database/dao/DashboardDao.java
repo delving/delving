@@ -21,7 +21,24 @@
 
 package eu.europeana.database.dao;
 
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CacheingQueueEntry;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EditorPick;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.EuropeanaObject;
+import eu.europeana.database.domain.IndexingQueueEntry;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.QueueEntry;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.User;
 
 import java.util.List;
 import java.util.Set;
@@ -165,11 +182,6 @@ public interface DashboardDao {
 
     int findOrphans(EuropeanaCollection collection);
 
-    /*
-     * Carousel
-     */
-    List<CarouselItem> fetchCarouselItems();
-
     Boolean removeCarouselItem(Long id);
 
     CarouselItem createCarouselItem(String europeanaUri);
@@ -180,14 +192,11 @@ public interface DashboardDao {
 
     boolean addCarouselItem(SavedItem savedItem);
 
-    /*
-     *  People Are Currently Thinking About, or editor picks
-     */
     List<EditorPick> fetchEditorPicksItems();
 
     void removeFromEditorPick(SavedSearch savedSearch);
 
     EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
 
-    List<CarouselItem> getAllCarouselItems();
+    List<CarouselItem> fetchCarouselItems();
 }

@@ -873,15 +873,6 @@ public class DashboardDaoImpl implements DashboardDao {
 		return page;
 	}
 
-	/*
-	 * Carousel
-	 */
-	@Transactional
-	public List<CarouselItem> fetchCarouselItems() {
-		Query query = entityManager.createQuery("select item from CarouselItem item");
-		return (List<CarouselItem>) query.getResultList();
-	}
-
 //	@Transactional
 //	public boolean removeCarouselItem(Long id) {
 //		Query query = entityManager.createQuery("delete from CarouselItem as item where item.id = :id");
@@ -946,7 +937,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<CarouselItem> getAllCarouselItems() {
+    public List<CarouselItem> fetchCarouselItems() {
         Query q = entityManager.createQuery("select ci from CarouselItem ci");
         List<CarouselItem> results = (List<CarouselItem>) q.getResultList();
         for (CarouselItem item : results) {
