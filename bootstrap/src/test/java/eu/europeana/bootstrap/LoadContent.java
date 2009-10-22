@@ -21,10 +21,15 @@
 
 package eu.europeana.bootstrap;
 
-import eu.europeana.database.migration.DataMigration;
+import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.dao.DashboardDaoImpl;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.incoming.*;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
+import java.io.File;
+
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -34,26 +39,42 @@ public class LoadContent {
     private static final Logger log = Logger.getLogger(LoadContent.class);
 
     public static void main(String[] args) throws Exception {
-        // todo: use new ESEimporter for this functionality
-        DataMigration migration = new DataMigration("./bootstrap/src/main/resources/");
-        log.info("Start loading Static Content into the database");
-        try {
-            migration.importTables();
-        } catch (IOException e) {
-            log.error("Unable to find the import files");
-        }
-        log.info("Finish loading Static Content into the database");
+//        DataMigration migration = new DataMigration("./bootstrap/src/main/resources/");
+//        log.info("Start loading Static Content into the database");
+//        try {
+//            migration.importTables();
+//        } catch (IOException e) {
+//            log.error("Unable to find the import files");
+//        }
+//        log.info("Finish loading Static Content into the database");
+
+        
 
         SolrStarter solr = new SolrStarter();
         log.info("Starting Solr Server");
         solr.start();
-        // todo: remove later
+        // todo: remove later and replace with ESEImporter
+        ESEImporter importer = new ESEImporterImpl();
+
+        DashboardDao dashboardDao = new DashboardDaoImpl();
+
+        ImportRepository repository = new ImportRepositoryImpl();
+        ImportFile importFile = repository.moveToUploaded(new File("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml"));
+
+        final EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
+
+        importFile = importer.commenceImport(importFile, europeanaCollection.getId());
+
+        if (importFile.getState() == ImportFileState.ERROR) {
+            log.info("importing ");
+        } else {
+            log.info("Finished importing and indexing test collection");
+        }
 //        DataImporter importer = new DataImporter();
 //        log.info("Start importing test collection");
 //        String collectionFileName = importer.importFile("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
 //        importer.prepareCollectionForIndexing(collectionFileName);
 //        importer.runIndexer();
-        log.info("Finished importing and indexing test collection");
         Thread.sleep(10000);
         solr.stop();
         log.info("Stopping Solr server");
