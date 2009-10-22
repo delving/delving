@@ -75,7 +75,7 @@ public class ImportRepositoryImpl implements ImportRepository {
             log.info("File "+fileName+" already existed in folder "+folder.state+", deleting it");
             folder.delete(fileName);
         }
-        Folder uploadedFolder = folders.get(ImportFileState.UPLOADED.ordinal());
+        Folder uploadedFolder = get(ImportFileState.UPLOADED);
         File uploadedFile = uploadedFolder.createFile(fileName);
         if (!file.renameTo(uploadedFile)) {
             log.error("unable to move file from "+file.getAbsolutePath()+" to "+uploadedFile.getAbsolutePath());
