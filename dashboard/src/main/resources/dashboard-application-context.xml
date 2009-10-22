@@ -70,12 +70,15 @@
         <property name="normalized" value="false"/>
     </bean>
 
+    <bean id="indexJobRunner" class="eu.europeana.incoming.IndexJobRunner">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="eseImporter" ref="normalizedEseImporter"/>
+    </bean>
+
     <bean id="indexTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail">
             <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject">
-                    <bean class="eu.europeana.incoming.IndexJobRunner"/>
-                </property>
+                <property name="targetObject" ref="indexJobRunner"/>
                 <property name="targetMethod" value="runParallel"/>
                 <property name="concurrent" value="false"/>
             </bean>

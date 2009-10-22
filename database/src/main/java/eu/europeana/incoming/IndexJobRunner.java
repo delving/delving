@@ -68,13 +68,10 @@ public class IndexJobRunner {
         }
 
         public void run() {
-            while (true) {
-                IndexingQueueEntry queueEntry = dashboardDao.getIndexEntry(entry);
-                EuropeanaCollection collection = queueEntry.getCollection();
-                Long time = System.currentTimeMillis();
-                ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
-                eseImporter.commenceImport(importFile, queueEntry.getCollection().getId());
-            }
+            IndexingQueueEntry queueEntry = dashboardDao.getIndexEntry(entry);
+            EuropeanaCollection collection = queueEntry.getCollection();
+            ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
+            eseImporter.commenceImport(importFile, queueEntry.getCollection().getId());
         }
     }
 
