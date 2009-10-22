@@ -22,13 +22,7 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.User;
-import javax.xml.parsers.ParserConfigurationException;
+import eu.europeana.database.domain.*;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +69,8 @@ public class CarouselItemDaoImplTest {
     @Test
     public void testCreateNewCarouselItem() throws IOException, SAXException, ParserConfigurationException {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_1);
-        CarouselItem item = europeanaId.createCarouselItem();
+        // todo rewrite this to test create carouselItem from saved item
+        CarouselItem item = new SavedItem().createCarouselItem();
         assertNotNull(item);
         assertNotNull(item.getThumbnail());
         assertNotNull(item.getTitle());

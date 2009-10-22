@@ -21,44 +21,16 @@
 
 package eu.europeana.database.dao;
 
-import eu.europeana.database.domain.CacheState;
-import eu.europeana.database.domain.CacheingQueueEntry;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.DashboardLog;
-import eu.europeana.database.domain.EditorPick;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.EuropeanaObject;
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.MessageKey;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.QueueEntry;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class is an implementation of the DashboardDao using an injected JPA Entity Manager.
@@ -640,7 +612,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
 	@Transactional
 	public boolean addCarouselItem(SavedItem savedItem) {
-		CarouselItem carouselItem = savedItem.getEuropeanaId().createCarouselItem();
+		CarouselItem carouselItem = savedItem.createCarouselItem();
 		//        carouselItem.setSavedItem(savedItem);
 		savedItem.setCarouselItem(carouselItem);
 		entityManager.persist(carouselItem);
@@ -895,6 +867,7 @@ public class DashboardDaoImpl implements DashboardDao {
 		return success;
 	}
 
+    @Deprecated
 	@Transactional
 	public CarouselItem createCarouselItem(String europeanaUri) {
 		EuropeanaId europeanaId = (EuropeanaId) fetchEuropeanaId(europeanaUri);
@@ -913,9 +886,9 @@ public class DashboardDaoImpl implements DashboardDao {
 		if (europeanaId == null) {
 			return null;
 		}
-		CarouselItem carouselItem = europeanaId.createCarouselItem();
-        carouselItem.setEuropeanaId(europeanaId);
         SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
+        CarouselItem carouselItem = savedItem.createCarouselItem();
+        carouselItem.setEuropeanaId(europeanaId);
         carouselItem.setSavedItem(savedItem);
 		savedItem.setCarouselItem(carouselItem);
 		return carouselItem;

@@ -33,6 +33,7 @@ import eu.europeana.database.domain.SavedItem;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class SaveToCarouselController extends AbstractAjaxTriggerController {
     private DashboardDao dashboardDao;
 

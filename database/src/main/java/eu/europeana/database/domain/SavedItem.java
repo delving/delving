@@ -114,4 +114,17 @@ public class SavedItem implements Serializable {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public CarouselItem createCarouselItem() {
+        CarouselItem item = new CarouselItem();
+        item.setEuropeanaUri(getEuropeanaId().getEuropeanaUri());
+        item.setTitle(getTitle());
+        item.setCreator(getAuthor());
+        // add missing fields: year, language, provider
+        // maybe remove from carousel domain object
+
+        item.setType(getDocType());
+        item.setThumbnail(getEuropeanaObject());
+        return item;
+    }
 }

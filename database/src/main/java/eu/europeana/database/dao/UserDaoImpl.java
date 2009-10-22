@@ -135,7 +135,7 @@ public class UserDaoImpl implements UserDao {
         if (savedItem == null) {
             throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
         }
-        CarouselItem carouselItem = savedItem.getEuropeanaId().createCarouselItem();
+        CarouselItem carouselItem = savedItem.createCarouselItem();
         savedItem.setCarouselItem(carouselItem);
         return carouselItem;
     }
@@ -145,7 +145,7 @@ public class UserDaoImpl implements UserDao {
         if (savedItem == null) {
             throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItem.getId());
         }
-        CarouselItem carouselItem = savedItem.getEuropeanaId().createCarouselItem();
+        CarouselItem carouselItem = savedItem.createCarouselItem();
         savedItem.setCarouselItem(carouselItem);
         entityManager.persist(carouselItem);
         user = entityManager.merge(user);
