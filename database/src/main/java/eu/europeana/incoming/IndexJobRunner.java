@@ -26,9 +26,6 @@ import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.IndexingQueueEntry;
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -36,7 +33,6 @@ import java.util.concurrent.Executors;
 
 public class IndexJobRunner {
     private Logger log = Logger.getLogger(getClass());
-    private ExecutorService executor = Executors.newCachedThreadPool();
     private DashboardDao dashboardDao;
     private ESEImporter eseImporter;
 
@@ -56,23 +52,10 @@ public class IndexJobRunner {
         else {
             log.info("found collection to index: " + entry.getCollection().getName());
             dashboardDao.startIndexing(entry);
-            executor.execute(new IndexJob(entry));
-        }
-    }
-
-    private class IndexJob implements Runnable {
-        private IndexingQueueEntry entry;
-
-        private IndexJob(IndexingQueueEntry entry) {
-            this.entry = entry;
-        }
-
-        public void run() {
             IndexingQueueEntry queueEntry = dashboardDao.getIndexEntry(entry);
             EuropeanaCollection collection = queueEntry.getCollection();
             ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
             eseImporter.commenceImport(importFile, queueEntry.getCollection().getId());
         }
     }
-
 }
