@@ -25,4 +25,6 @@ public interface ImportRepository {
     ImportFile transition(ImportFile importFile, ImportFileState to);
 
     ImportFile checkStatus(String fileName);
+
+    ImportFile moveToUploaded(File file);
 }

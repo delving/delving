@@ -68,6 +68,21 @@ public class ImportRepositoryImpl implements ImportRepository {
         return null;
     }
 
+    public ImportFile moveToUploaded(File file) {
+        String fileName = file.getName();
+        Folder folder = get(fileName);
+        if (folder != null) {
+            log.info("File "+fileName+" already existed in folder "+folder.state+", deleting it");
+            folder.delete(fileName);
+        }
+        Folder uploadedFolder = folders.get(ImportFileState.UPLOADED.ordinal());
+        File uploadedFile = uploadedFolder.createFile(fileName);
+        if (!file.renameTo(uploadedFile)) {
+            log.error("unable to move file from "+file.getAbsolutePath()+" to "+uploadedFile.getAbsolutePath());
+        }
+        return new ImportFile(fileName, ImportFileState.UPLOADED);
+    }
+
     private Folder get(ImportFileState state) {
         return folders.get(state.ordinal());
     }
@@ -112,6 +127,10 @@ public class ImportRepositoryImpl implements ImportRepository {
             return getFileNames().contains(fileName);
         }
 
+        File createFile(String fileName) {
+            return new File(directory, fileName);
+        }
+
         ImportFile createImportFile(String fileName, boolean expectExisting) {
             boolean exists = getFileNames().contains(fileName);
             if (expectExisting != exists) {
@@ -120,7 +139,7 @@ public class ImportRepositoryImpl implements ImportRepository {
             if (!exists) {
                 getFileNames().add(fileName);
             }
-            File file = new File(directory, fileName);
+            File file = createFile(fileName);
             ImportFile importFile = new ImportFile(fileName, state.toString());
             importFile.setLastModified(new Date(file.lastModified()));
             return importFile;
