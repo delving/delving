@@ -10,7 +10,7 @@ import java.util.List;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public interface ESE2DatabaseImporter {
+public interface ESEImporter {
     ImportRepository getImportRepository();
     ImportFile commenceValidate(ImportFile importFile, Long collectionId);
     ImportFile commenceImport(ImportFile importFile, Long collectionId);

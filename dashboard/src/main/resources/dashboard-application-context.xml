@@ -77,7 +77,7 @@
         <property name="dataDirectory" value="${dashboard.normalized.import.repository}"/>
     </bean>
 
-    <bean id="normalizedEseImporter" class="eu.europeana.dashboard.server.incoming.ESE2DatabaseImporterImpl">
+    <bean id="normalizedEseImporter" class="eu.europeana.dashboard.server.incoming.ESEImporterImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="importRepository" ref="normalizedImportRepository"/>
         <property name="normalized" value="true"/>
@@ -87,7 +87,7 @@
         <property name="dataDirectory" value="${dashboard.sandbox.import.repository}"/>
     </bean>
 
-    <bean id="sandboxEseImporter" class="eu.europeana.dashboard.server.incoming.ESE2DatabaseImporterImpl">
+    <bean id="sandboxEseImporter" class="eu.europeana.dashboard.server.incoming.ESEImporterImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="importRepository" ref="sandboxImportRepository"/>
         <property name="normalized" value="false"/>

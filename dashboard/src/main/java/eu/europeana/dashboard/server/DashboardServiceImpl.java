@@ -23,16 +23,57 @@ package eu.europeana.dashboard.server;
 
 import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.dashboard.client.dto.*;
-import eu.europeana.dashboard.server.incoming.ESE2DatabaseImporter;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.ContributorX;
+import eu.europeana.dashboard.client.dto.CountryX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.EuropeanaIdX;
+import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.PartnerX;
+import eu.europeana.dashboard.client.dto.QueueEntryX;
+import eu.europeana.dashboard.client.dto.RoleX;
+import eu.europeana.dashboard.client.dto.SavedItemX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.StaticPageX;
+import eu.europeana.dashboard.client.dto.TranslationX;
+import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.dashboard.server.incoming.ESEImporter;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.MessageDao;
 import eu.europeana.database.dao.DashboardDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CacheState;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.CollectionState;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Country;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.EuropeanaObject;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.PartnerSector;
+import eu.europeana.database.domain.QueueEntry;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.Translation;
+import eu.europeana.database.domain.User;
 import eu.europeana.database.migration.outgoing.SolrIndexer;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -41,8 +82,8 @@ public class DashboardServiceImpl implements DashboardService {
     private Logger log = Logger.getLogger(getClass());
     private Map<String, Session> sessions = new ConcurrentHashMap<String,Session>();
     private String cacheUrl;
-    private ESE2DatabaseImporter normalizedImporter;
-    private ESE2DatabaseImporter sandboxImporter;
+    private ESEImporter normalizedImporter;
+    private ESEImporter sandboxImporter;
     private DashboardDao dashboardDao;
     private MessageDao messageDao;
     private LanguageDao languageDao;
@@ -53,11 +94,11 @@ public class DashboardServiceImpl implements DashboardService {
         this.cacheUrl = cacheUrl;
     }
 
-    public void setNormalizedImporter(ESE2DatabaseImporter normalizedImporter) {
+    public void setNormalizedImporter(ESEImporter normalizedImporter) {
         this.normalizedImporter = normalizedImporter;
     }
 
-    public void setSandboxImporter(ESE2DatabaseImporter sandboxImporter) {
+    public void setSandboxImporter(ESEImporter sandboxImporter) {
         this.sandboxImporter = sandboxImporter;
     }
 
@@ -245,7 +286,7 @@ public class DashboardServiceImpl implements DashboardService {
         return importer(normalized).getImportRepository().checkStatus(fileName);
     }
 
-    private ESE2DatabaseImporter importer(boolean normalized) {
+    private ESEImporter importer(boolean normalized) {
         return normalized ? normalizedImporter : sandboxImporter;
     }
 

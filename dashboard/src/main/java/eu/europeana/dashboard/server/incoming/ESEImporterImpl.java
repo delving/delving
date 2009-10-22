@@ -69,7 +69,7 @@ import java.util.zip.GZIPInputStream;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class ESE2DatabaseImporterImpl implements ESE2DatabaseImporter {
+public class ESEImporterImpl implements ESEImporter {
     private static final String RESOLVABLE_URI = "http://www.europeana.eu/resolve/record/";
     private static final DecimalFormat COUNT_FORMAT = new DecimalFormat("000000000");
     private static final String ESE_SCHEMA = "ESE-V3.2.xsd";
