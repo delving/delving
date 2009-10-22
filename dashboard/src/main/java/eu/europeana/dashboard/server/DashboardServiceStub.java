@@ -7,7 +7,7 @@ import eu.europeana.dashboard.client.dto.ContributorX;
 import eu.europeana.dashboard.client.dto.CountryX;
 import eu.europeana.dashboard.client.dto.DashboardLogX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
@@ -95,23 +95,23 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         service().removeUser(userId);
     }
 
-    public ImportFile commenceValidate(ImportFile file, Long collectionId) {
+    public ImportFileX commenceValidate(ImportFileX file, Long collectionId) {
         return service().commenceValidate(file, collectionId);
     }
 
-    public List<ImportFile> fetchImportFiles(boolean normalized) {
+    public List<ImportFileX> fetchImportFiles(boolean normalized) {
         return service().fetchImportFiles(normalized);
     }
 
-    public ImportFile commenceImport(ImportFile file, Long collectionId, boolean normalized) {
+    public ImportFileX commenceImport(ImportFileX file, Long collectionId, boolean normalized) {
         return service().commenceImport(file, collectionId, normalized);
     }
 
-    public ImportFile abortImport(ImportFile file, boolean normalized) {
+    public ImportFileX abortImport(ImportFileX file, boolean normalized) {
         return service().abortImport(file, normalized);
     }
 
-    public ImportFile checkImportFileStatus(String fileName, boolean normalized) {
+    public ImportFileX checkImportFileStatus(String fileName, boolean normalized) {
         return service().checkImportFileStatus(fileName, normalized);
     }
 

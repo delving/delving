@@ -1,6 +1,5 @@
-package eu.europeana.dashboard.server.incoming;
+package eu.europeana.incoming;
 
-import eu.europeana.dashboard.client.dto.ImportFile;
 import eu.europeana.database.domain.ImportFileState;
 
 import java.io.File;

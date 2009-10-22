@@ -1,6 +1,4 @@
-package eu.europeana.dashboard.server.incoming;
-
-import eu.europeana.dashboard.client.dto.ImportFile;
+package eu.europeana.incoming;
 
 import java.util.List;
 

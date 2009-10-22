@@ -29,7 +29,7 @@ import eu.europeana.dashboard.client.dto.CountryX;
 import eu.europeana.dashboard.client.dto.DashboardLogX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.EuropeanaIdX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
@@ -39,7 +39,6 @@ import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
 import eu.europeana.dashboard.client.dto.TranslationX;
 import eu.europeana.dashboard.client.dto.UserX;
-import eu.europeana.dashboard.server.incoming.ESEImporter;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.MessageDao;
 import eu.europeana.database.dao.DashboardDao;
@@ -63,7 +62,8 @@ import eu.europeana.database.domain.StaticPage;
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.database.domain.Translation;
 import eu.europeana.database.domain.User;
-import eu.europeana.database.migration.outgoing.SolrIndexer;
+import eu.europeana.incoming.ESEImporter;
+import eu.europeana.incoming.SolrIndexer;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -262,27 +262,27 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardDao.removeUser(userId);
     }
 
-    public List<ImportFile> fetchImportFiles(boolean normalized) {
-        return importer(normalized).getImportRepository().getAllFiles();
+    public List<ImportFileX> fetchImportFiles(boolean normalized) {
+        return DataTransfer.convert(importer(normalized).getImportRepository().getAllFiles());
     }
 
-    public ImportFile commenceValidate(ImportFile importFile, Long collectionId) {
+    public ImportFileX commenceValidate(ImportFileX importFile, Long collectionId) {
         audit("commence validate "+importFile.getFileName());
-        return importer(false).commenceValidate(importFile, collectionId);
+        return DataTransfer.convert(importer(false).commenceValidate(DataTransfer.convert(importFile), collectionId));
     }
 
-    public ImportFile commenceImport(ImportFile importFile, Long collectionId, boolean normalized) {
+    public ImportFileX commenceImport(ImportFileX importFile, Long collectionId, boolean normalized) {
         audit("commence import "+importFile.getFileName());
-        return importer(normalized).commenceImport(importFile, collectionId);
+        return DataTransfer.convert(importer(normalized).commenceImport(DataTransfer.convert(importFile), collectionId));
     }
 
-    public ImportFile abortImport(ImportFile importFile, boolean normalized) {
+    public ImportFileX abortImport(ImportFileX importFile, boolean normalized) {
         audit("abort import of "+importFile.getFileName());
-        return importer(normalized).abortImport(importFile);
+        return DataTransfer.convert(importer(normalized).abortImport(DataTransfer.convert(importFile)));
     }
 
-    public ImportFile checkImportFileStatus(String fileName, boolean normalized) {
-        return importer(normalized).getImportRepository().checkStatus(fileName);
+    public ImportFileX checkImportFileStatus(String fileName, boolean normalized) {
+        return DataTransfer.convert(importer(normalized).getImportRepository().checkStatus(fileName));
     }
 
     private ESEImporter importer(boolean normalized) {

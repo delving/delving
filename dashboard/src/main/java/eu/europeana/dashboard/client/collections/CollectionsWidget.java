@@ -38,7 +38,7 @@ import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.CacheStateX;
 import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
 
 import java.util.Date;
@@ -87,9 +87,9 @@ public class CollectionsWidget extends DashboardWidget {
         p.add(createCollectionSuggestBox());
         p.add(createStateSelectorPanel());
         mainPanel.add(p);
-        world.service().fetchImportFiles(true, new Reply<List<ImportFile>>() {
-            public void onSuccess(List<ImportFile> result) {
-                for (ImportFile file : result) {
+        world.service().fetchImportFiles(true, new Reply<List<ImportFileX>>() {
+            public void onSuccess(List<ImportFileX> result) {
+                for (ImportFileX file : result) {
                     setImportFile(file);
                 }
             }
@@ -109,7 +109,7 @@ public class CollectionsWidget extends DashboardWidget {
         }
         final ListBox fileStateBox = new ListBox();
         fileStateBox.addItem(world.messages().anyImportFileState());
-        for (ImportFile.State state : ImportFile.State.values()) {
+        for (ImportFileX.State state : ImportFileX.State.values()) {
             fileStateBox.addItem(state.toString());
         }
         Button select = new Button(world.messages().select());
@@ -120,7 +120,7 @@ public class CollectionsWidget extends DashboardWidget {
                 int fileStateIndex = fileStateBox.getSelectedIndex();
                 CollectionStateX collectionState = collectionIndex == 0 ? null : CollectionStateX.values()[collectionIndex - 1];
                 CacheStateX cacheState = cacheIndex == 0 ? null : CacheStateX.values()[cacheIndex - 1];
-                ImportFile.State fileState = fileStateIndex == 0 ? null : ImportFile.State.values()[fileStateIndex - 1];
+                ImportFileX.State fileState = fileStateIndex == 0 ? null : ImportFileX.State.values()[fileStateIndex - 1];
                 for (EuropeanaCollectionX collection : collectionList.getCollections(collectionState, cacheState, fileState)) {
                     if (!collectionPanels.containsKey(collection.getName())) {
                         addCollectionPanel(collection);
@@ -152,7 +152,7 @@ public class CollectionsWidget extends DashboardWidget {
     }
 
     private void setImportFileName(final String importFileName) {
-        ImportFile importFile = new ImportFile(importFileName, ImportFile.State.NONEXISTENT);
+        ImportFileX importFile = new ImportFileX(importFileName, ImportFileX.State.NONEXISTENT);
         EuropeanaCollectionX collection = collectionList.findByImportFile(importFile);
         if (collection != null) {
             CollectionPanel cp = collectionPanels.get(collection.getName());
@@ -182,7 +182,7 @@ public class CollectionsWidget extends DashboardWidget {
         }
     }
 
-    private void setImportFile(final ImportFile importFile) {
+    private void setImportFile(final ImportFileX importFile) {
         EuropeanaCollectionX collection = collectionList.findByImportFile(importFile);
         if (collection != null) {
             CollectionPanel cp = collectionPanels.get(collection.getName());
@@ -207,7 +207,7 @@ public class CollectionsWidget extends DashboardWidget {
         }
     }
 
-    private EuropeanaCollectionX createNewCollection(ImportFile importFile) {
+    private EuropeanaCollectionX createNewCollection(ImportFileX importFile) {
         EuropeanaCollectionX collection;
         collection = new EuropeanaCollectionX();
         collection.setName(importFile.deriveCollectionName());
@@ -249,9 +249,9 @@ public class CollectionsWidget extends DashboardWidget {
                 collectionList.updateCollection(collection);
             }
         });
-        if (collection.getFileState() != ImportFile.State.NONEXISTENT) {
-            world.service().checkImportFileStatus(collection.getFileName(), true, new Reply<ImportFile>() {
-                public void onSuccess(ImportFile result) {
+        if (collection.getFileState() != ImportFileX.State.NONEXISTENT) {
+            world.service().checkImportFileStatus(collection.getFileName(), true, new Reply<ImportFileX>() {
+                public void onSuccess(ImportFileX result) {
                     collectionPanel.setImportFile(result);
                 }
             });

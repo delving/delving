@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.database.migration.outgoing;
+package eu.europeana.incoming;
 
 import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.database.dao.DashboardDao;

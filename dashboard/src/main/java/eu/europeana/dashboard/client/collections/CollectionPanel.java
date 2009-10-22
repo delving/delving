@@ -12,7 +12,7 @@ import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
 
 /**
@@ -103,7 +103,7 @@ public class CollectionPanel extends DashboardWidget {
         importFileStatusWidget.refreshPanel();
     }
 
-    public void setImportFile(ImportFile importFile) {
+    public void setImportFile(ImportFileX importFile) {
         if (importFile == null) {
             holder.clearImportFile();
         }

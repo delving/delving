@@ -6,7 +6,7 @@ import eu.europeana.dashboard.client.dto.ContributorX;
 import eu.europeana.dashboard.client.dto.CountryX;
 import eu.europeana.dashboard.client.dto.DashboardLogX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
@@ -53,15 +53,15 @@ public interface DashboardServiceAsync {
 
     void updateCollectionCounters(EuropeanaCollectionX collection, AsyncCallback<EuropeanaCollectionX> async);
 
-    void fetchImportFiles(boolean normalized, AsyncCallback<List<ImportFile>> async);
+    void fetchImportFiles(boolean normalized, AsyncCallback<List<ImportFileX>> async);
 
-    void commenceValidate(ImportFile file, Long collectionId, AsyncCallback<ImportFile> async);
+    void commenceValidate(ImportFileX file, Long collectionId, AsyncCallback<ImportFileX> async);
 
-    void commenceImport(ImportFile file, Long collectionId, boolean normalized, AsyncCallback<ImportFile> async);
+    void commenceImport(ImportFileX file, Long collectionId, boolean normalized, AsyncCallback<ImportFileX> async);
 
-    void abortImport(ImportFile file, boolean normalized, AsyncCallback<ImportFile> async);
+    void abortImport(ImportFileX file, boolean normalized, AsyncCallback<ImportFileX> async);
 
-    void checkImportFileStatus(String fileName, boolean normalized, AsyncCallback<ImportFile> async);
+    void checkImportFileStatus(String fileName, boolean normalized, AsyncCallback<ImportFileX> async);
 
     void fetchMessageKeys(AsyncCallback<List<String>> async);
 

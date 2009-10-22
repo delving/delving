@@ -1,4 +1,4 @@
-package eu.europeana.dashboard.server.incoming;
+package eu.europeana.incoming;
 
 /**
  * Something went wrong during importing

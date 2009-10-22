@@ -21,9 +21,39 @@
 
 package eu.europeana.dashboard.server;
 
-import eu.europeana.dashboard.client.dto.*;
-import eu.europeana.database.domain.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.ContributorX;
+import eu.europeana.dashboard.client.dto.CountryX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.EuropeanaIdX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.PartnerX;
+import eu.europeana.dashboard.client.dto.RoleX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.StaticPageX;
+import eu.europeana.dashboard.client.dto.TranslationX;
+import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Country;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.PartnerSector;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.Translation;
+import eu.europeana.database.domain.User;
+import eu.europeana.incoming.ImportFile;
 import eu.europeana.query.DocType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Do all the conversions to data transfer objects from domain objects
@@ -182,4 +212,27 @@ public class DataTransfer {
         );
     }
 
+    public static ImportFileX convert(ImportFile importFile) {
+        return new ImportFileX(
+                importFile.getFileName(),
+                ImportFileX.State.valueOf(importFile.getState().toString()),
+                importFile.getLastModified()
+        );
+    }
+
+    public static ImportFile convert(ImportFileX importFile) {
+        return new ImportFile(
+                importFile.getFileName(),
+                ImportFileState.valueOf(importFile.getState().toString()),
+                importFile.getLastModified()
+        );
+    }
+
+    public static List<ImportFileX> convert(List<ImportFile> importFiles) {
+        List<ImportFileX> list = new ArrayList<ImportFileX>();
+        for (ImportFile importFile : importFiles) {
+            list.add(convert(importFile));
+        }
+        return list;
+    }
 }

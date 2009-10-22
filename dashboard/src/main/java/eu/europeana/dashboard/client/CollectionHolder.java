@@ -3,7 +3,7 @@ package eu.europeana.dashboard.client;
 import eu.europeana.dashboard.client.dto.CacheStateX;
 import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class CollectionHolder {
     private CollectionAddListener collectionAddListener;
     private List<CollectionUpdateListener> listeners = new ArrayList<CollectionUpdateListener>();
     private EuropeanaCollectionX collection;
-    private ImportFile importFile;
+    private ImportFileX importFile;
 
     public CollectionHolder(DashboardServiceAsync service, CollectionAddListener collectionAddListener, EuropeanaCollectionX collection) {
         this.service = service;
@@ -48,11 +48,11 @@ public class CollectionHolder {
         }
     }
 
-    public ImportFile getImportFile() {
+    public ImportFileX getImportFile() {
         return importFile;
     }
 
-    public void setImportFile(ImportFile importFile) {
+    public void setImportFile(ImportFileX importFile) {
         this.importFile = importFile;
         service.fetchCollection(collection.getName(), false, new Reply<EuropeanaCollectionX>() {
             public void onSuccess(EuropeanaCollectionX result) {
@@ -64,7 +64,7 @@ public class CollectionHolder {
     public void setImportFileName(String fileName) {
         this.importFile = null;
         collection.setFileName(fileName);
-        collection.setFileState(ImportFile.State.NONEXISTENT);
+        collection.setFileState(ImportFileX.State.NONEXISTENT);
         updateCollection();
     }
 

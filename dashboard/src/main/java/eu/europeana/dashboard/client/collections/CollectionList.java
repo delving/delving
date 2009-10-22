@@ -4,9 +4,13 @@ import com.google.gwt.user.client.ui.SuggestOracle;
 import eu.europeana.dashboard.client.dto.CacheStateX;
 import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Hold a list of collections and deliver a suggestion oracle
@@ -26,7 +30,7 @@ public class CollectionList {
         return new CollectionOracle();
     }
 
-    public List<EuropeanaCollectionX> getCollections(CollectionStateX collectionState, CacheStateX cacheState, ImportFile.State fileState) {
+    public List<EuropeanaCollectionX> getCollections(CollectionStateX collectionState, CacheStateX cacheState, ImportFileX.State fileState) {
         List<EuropeanaCollectionX> list = new ArrayList<EuropeanaCollectionX>();
         for (EuropeanaCollectionX collection : collections) {
             boolean included = true;
@@ -64,7 +68,7 @@ public class CollectionList {
         return null;
     }
 
-    public EuropeanaCollectionX findByImportFile(ImportFile importFile) {
+    public EuropeanaCollectionX findByImportFile(ImportFileX importFile) {
         EuropeanaCollectionX collection = findByFileName(importFile.getFileName());
         if (collection == null) {
             collection = findByCollectionName(importFile.deriveCollectionName());

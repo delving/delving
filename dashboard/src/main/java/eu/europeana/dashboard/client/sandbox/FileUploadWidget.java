@@ -1,10 +1,10 @@
 package eu.europeana.dashboard.client.sandbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.DashboardWidget;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 
 /**
  * a widget for uploading files
@@ -52,7 +52,7 @@ public class FileUploadWidget extends DashboardWidget {
                     Window.alert(world.messages().fileUploadNoFile());
                     event.cancel();
                 }
-                else if (!ImportFile.isCorrectSuffix(fileUpload.getFilename())) {
+                else if (!ImportFileX.isCorrectSuffix(fileUpload.getFilename())) {
                     Window.alert(world.messages().fileUploadWrongType());
                     event.cancel();
                 }

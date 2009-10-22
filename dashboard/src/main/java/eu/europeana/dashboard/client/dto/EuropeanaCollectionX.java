@@ -38,7 +38,7 @@ public class EuropeanaCollectionX implements IsSerializable {
     private String fileName;
     private String fileUserName;
     private Date collectionLastModified;
-    private ImportFile.State fileState = ImportFile.State.NONEXISTENT;
+    private ImportFileX.State fileState = ImportFileX.State.NONEXISTENT;
     private CacheStateX cacheState = CacheStateX.EMPTY;
     private CollectionStateX collectionState = CollectionStateX.EMPTY;
     private int totalRecords;
@@ -53,7 +53,7 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.name = name;
     }
 
-    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, ImportFile.State fileState, CacheStateX cacheState, CollectionStateX collectionState, int totalRecords, int totalObjects, int totalOrphans, String importError) {
+    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, ImportFileX.State fileState, CacheStateX cacheState, CollectionStateX collectionState, int totalRecords, int totalObjects, int totalOrphans, String importError) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -77,7 +77,7 @@ public class EuropeanaCollectionX implements IsSerializable {
                 fileName,
                 collectionLastModified,
                 fileUserName,
-                ImportFile.State.valueOf(fileState),
+                ImportFileX.State.valueOf(fileState),
                 CacheStateX.valueOf(cacheState),
                 CollectionStateX.valueOf(collectionState),
                 totalRecords,
@@ -131,11 +131,11 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.collectionLastModified = collectionLastModified;
     }
 
-    public ImportFile.State getFileState() {
+    public ImportFileX.State getFileState() {
         return fileState;
     }
 
-    public void setFileState(ImportFile.State fileState) {
+    public void setFileState(ImportFileX.State fileState) {
         this.fileState = fileState;
     }
 

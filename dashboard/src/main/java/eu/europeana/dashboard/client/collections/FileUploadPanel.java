@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.DashboardWidget;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 
 /**
  * a widget for uploading files
@@ -51,7 +51,7 @@ import eu.europeana.dashboard.client.dto.ImportFile;
                     Window.alert(world.messages().fileUploadNoFile());
                     event.setCancelled(true);
                 }
-                else if (!ImportFile.isCorrectSuffix(fileUpload.getFilename())) {
+                else if (!ImportFileX.isCorrectSuffix(fileUpload.getFilename())) {
                     Window.alert(world.messages().fileUploadWrongType());
                     event.setCancelled(true);
                 }

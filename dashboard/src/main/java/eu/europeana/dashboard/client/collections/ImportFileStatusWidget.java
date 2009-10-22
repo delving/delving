@@ -11,7 +11,7 @@ import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 
 /**
  * Hold an import file and present the appropriate widget for doing things with it.
@@ -47,24 +47,24 @@ public class ImportFileStatusWidget extends DashboardWidget {
             panel.add(new HTML(world.messages().noImportFilePresent()));
         }
         else {
-            final ImportFile importFile = holder.getImportFile();
+            final ImportFileX importFile = holder.getImportFile();
             panel.add(new HTML(world.messages().theFileIs(importFile.getFileName())));
             switch (importFile.getState()) {
                 case NONEXISTENT:
                     panel.add(new HTML(world.messages().noImportFilePresent()));
-                    checkTransitionFromState(ImportFile.State.NONEXISTENT);
+                    checkTransitionFromState(ImportFileX.State.NONEXISTENT);
                     break;
                 case UPLOADING:
                     panel.add(new HTML(world.messages().uploading()));
-                    checkTransitionFromState(ImportFile.State.UPLOADING);
+                    checkTransitionFromState(ImportFileX.State.UPLOADING);
                     break;
                 case UPLOADED:
                     panel.add(new HTML(world.messages().uploaded()));
                     Button commenceImport = new Button(world.messages().commenceImport());
                     commenceImport.addClickListener(new ClickListener() {
                         public void onClick(Widget sender) {
-                            world.service().commenceImport(importFile, holder.getCollection().getId(), true, new Reply<ImportFile>() {
-                                public void onSuccess(ImportFile result) {
+                            world.service().commenceImport(importFile, holder.getCollection().getId(), true, new Reply<ImportFileX>() {
+                                public void onSuccess(ImportFileX result) {
                                     holder.setImportFile(result);
                                 }
                             });
@@ -78,15 +78,15 @@ public class ImportFileStatusWidget extends DashboardWidget {
                     Button cancelImport = new Button(world.messages().abortImport());
                     cancelImport.addClickListener(new ClickListener() {
                         public void onClick(Widget sender) {
-                            world.service().abortImport(importFile, true, new Reply<ImportFile>() {
-                                public void onSuccess(ImportFile result) {
+                            world.service().abortImport(importFile, true, new Reply<ImportFileX>() {
+                                public void onSuccess(ImportFileX result) {
                                     holder.setImportFile(result);
                                 }
                             });
                         }
                     });
                     panel.add(cancelImport);
-                    checkTransitionFromState(ImportFile.State.IMPORTING);
+                    checkTransitionFromState(ImportFileX.State.IMPORTING);
                     break;
                 case IMPORTED:
                     panel.add(new HTML(world.messages().imported()));
@@ -101,10 +101,10 @@ public class ImportFileStatusWidget extends DashboardWidget {
     }
 
     public void waitForFile() {
-        checkTransitionFromState(ImportFile.State.NONEXISTENT);
+        checkTransitionFromState(ImportFileX.State.NONEXISTENT);
     }
 
-    private void checkTransitionFromState(ImportFile.State currentState) {
+    private void checkTransitionFromState(ImportFileX.State currentState) {
         if (statusCheckTimer != null) {
             if (!statusCheckTimer.checks(currentState)) {
                 statusCheckTimer.cancel();
@@ -119,20 +119,20 @@ public class ImportFileStatusWidget extends DashboardWidget {
     }
 
     private class StatusCheckTimer extends Timer {
-        private ImportFile.State currentState;
+        private ImportFileX.State currentState;
 
-        private StatusCheckTimer(ImportFile.State currentState) {
+        private StatusCheckTimer(ImportFileX.State currentState) {
             this.currentState = currentState;
         }
 
-        public boolean checks(ImportFile.State currentState) {
+        public boolean checks(ImportFileX.State currentState) {
             return this.currentState == currentState;
         }
 
         public void run() {
             GWT.log("checking for " + holder.getCollection().getFileName(), null);
-            world.service().checkImportFileStatus(holder.getCollection().getFileName(), true, new Reply<ImportFile>() {
-                public void onSuccess(ImportFile result) {
+            world.service().checkImportFileStatus(holder.getCollection().getFileName(), true, new Reply<ImportFileX>() {
+                public void onSuccess(ImportFileX result) {
                     if (result != null) {
                         holder.setImportFile(result);
                         if (result.getState() == currentState) {
@@ -143,7 +143,7 @@ public class ImportFileStatusWidget extends DashboardWidget {
                             statusCheckTimer = null;
                         }
                     }
-                    else if (currentState == ImportFile.State.NONEXISTENT) {
+                    else if (currentState == ImportFileX.State.NONEXISTENT) {
                         GWT.log("waiting for " + holder.getCollection().getName() + " from " + currentState, null);
                         StatusCheckTimer.this.schedule(STATUS_CHECK_DELAY);
                     }

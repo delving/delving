@@ -6,7 +6,7 @@ import eu.europeana.dashboard.client.dto.ContributorX;
 import eu.europeana.dashboard.client.dto.CountryX;
 import eu.europeana.dashboard.client.dto.DashboardLogX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFile;
+import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
@@ -46,11 +46,11 @@ public interface DashboardService extends RemoteService {
     List<QueueEntryX> fetchQueueEntries();
     EuropeanaCollectionX updateCollectionCounters(EuropeanaCollectionX collection);
 
-    List<ImportFile> fetchImportFiles(boolean normalized);
-    ImportFile commenceValidate(ImportFile file, Long collectionId);
-    ImportFile commenceImport(ImportFile file, Long collectionId, boolean normalized);
-    ImportFile abortImport(ImportFile file, boolean normalized);
-    ImportFile checkImportFileStatus(String fileName, boolean normalized);
+    List<ImportFileX> fetchImportFiles(boolean normalized);
+    ImportFileX commenceValidate(ImportFileX file, Long collectionId);
+    ImportFileX commenceImport(ImportFileX file, Long collectionId, boolean normalized);
+    ImportFileX abortImport(ImportFileX file, boolean normalized);
+    ImportFileX checkImportFileStatus(String fileName, boolean normalized);
 
     List<String> fetchMessageKeys();
     List<LanguageX> fetchLanguages();

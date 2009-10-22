@@ -90,7 +90,7 @@
         <property name="httpClient"   ref   ="httpClient"/>
     </bean>
 
-    <bean id="solrIndexer" class="eu.europeana.database.migration.outgoing.DatabaseToSolrIndexer">
+    <bean id="solrIndexer" class="eu.europeana.incoming.DatabaseToSolrIndexer">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="httpClient" ref="httpClient"/>
         <property name="targetUrl" value="${solr.updateUrl}"/>
@@ -98,7 +98,7 @@
         <property name="chunkSize" value="${solr.chunkSize}"/>
     </bean>
 
-    <bean id="databaseCacheMaintainer" class="eu.europeana.database.migration.outgoing.CacheBuilder">
+    <bean id="databaseCacheMaintainer" class="eu.europeana.incoming.CacheBuilder">
         <property name="chunkSize" value="30"/>
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="digitalObjectCache" ref="digitalObjectCache"/>

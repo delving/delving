@@ -1,8 +1,8 @@
 package eu.europeana.dashboard.server;
 
-import eu.europeana.dashboard.client.dto.ImportFile;
-import eu.europeana.dashboard.server.incoming.ImportRepository;
 import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.incoming.ImportFile;
+import eu.europeana.incoming.ImportRepository;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

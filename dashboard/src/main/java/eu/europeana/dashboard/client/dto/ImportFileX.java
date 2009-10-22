@@ -31,23 +31,26 @@ import java.util.Date;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class ImportFile implements IsSerializable {
+public class ImportFileX implements IsSerializable {
     private static final String XML_SUFFIX = ".xml";
     private static final String GZIP_XML_SUFFIX = ".xml.gz";
     private String fileName;
-    private ImportFile.State state;
+    private ImportFileX.State state;
     private Date lastModified;
 
-    public ImportFile(String fileName, ImportFile.State state) {
+    public ImportFileX(String fileName, State state, Date lastModified) {
         this.fileName = fileName;
         this.state = state;
+        this.lastModified = lastModified;
     }
 
-    public ImportFile(String fileName, String state) {
-        this(fileName, ImportFile.State.valueOf(state));
+    public ImportFileX(String fileName, State state) {
+        this.fileName = fileName;
+        this.state = state;
+        this.lastModified = new Date();
     }
 
-    public ImportFile() {
+    public ImportFileX() {
     }
 
     public String getFileName() {
@@ -58,7 +61,7 @@ public class ImportFile implements IsSerializable {
         this.state = state;
     }
 
-    public ImportFile.State getState() {
+    public ImportFileX.State getState() {
         return state;
     }
 
@@ -96,8 +99,8 @@ public class ImportFile implements IsSerializable {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ImportFile)) return false;
-        ImportFile otherFile = (ImportFile) other;
+        if (!(other instanceof ImportFileX)) return false;
+        ImportFileX otherFile = (ImportFileX) other;
         return otherFile.fileName.equals(fileName);
     }
 

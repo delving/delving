@@ -19,18 +19,16 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.dashboard.server.incoming;
+package eu.europeana.incoming;
 
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.ctc.wstx.stax.WstxOutputFactory;
-import eu.europeana.dashboard.client.dto.ImportFile;
 import eu.europeana.database.dao.DashboardDao;
 import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.migration.outgoing.SolrIndexer;
 import eu.europeana.query.DocType;
 import eu.europeana.query.ESERecord;
 import eu.europeana.query.RecordField;

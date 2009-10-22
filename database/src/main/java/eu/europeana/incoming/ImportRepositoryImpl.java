@@ -1,6 +1,5 @@
-package eu.europeana.dashboard.server.incoming;
+package eu.europeana.incoming;
 
-import eu.europeana.dashboard.client.dto.ImportFile;
 import eu.europeana.database.domain.ImportFileState;
 import org.apache.log4j.Logger;
 
@@ -70,10 +69,6 @@ public class ImportRepositoryImpl implements ImportRepository {
     }
 
     private Folder get(ImportFileState state) {
-        return folders.get(state.ordinal());
-    }
-
-    private Folder get(ImportFile.State state) {
         return folders.get(state.ordinal());
     }
 
