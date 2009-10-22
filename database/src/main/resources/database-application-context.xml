@@ -90,7 +90,7 @@
         <property name="httpClient"   ref   ="httpClient"/>
     </bean>
 
-    <bean id="solrIndexer" class="eu.europeana.incoming.DatabaseToSolrIndexer">
+    <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="httpClient" ref="httpClient"/>
         <property name="targetUrl" value="${solr.updateUrl}"/>
