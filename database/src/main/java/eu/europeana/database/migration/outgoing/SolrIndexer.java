@@ -22,7 +22,7 @@
 package eu.europeana.database.migration.outgoing;
 
 import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.query.RecordField;
+import eu.europeana.query.ESERecord;
 
 import java.util.List;
 import java.util.Map;
@@ -43,17 +43,16 @@ public interface SolrIndexer {
      * @return true if it worked
      */
     
-    boolean index(List<EuropeanaId> ids, Map<String,Map<RecordField, String>> records);
+    boolean index(List<EuropeanaId> ids, Map<String, ESERecord> records);
 
     /**
      * Reindex a single europeanaId
      *
      * @param europeanaId which one to reindex
-     * @param record the fields corresponding to one record
      * @return true if it worked
      */
 
-    boolean reindex(EuropeanaId europeanaId, Map<RecordField, String> record);
+    boolean reindex(EuropeanaId europeanaId);
 
     /**
      * Delete an entire collection from the index

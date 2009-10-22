@@ -21,11 +21,11 @@
 
 package eu.europeana.database.migration.outgoing;
 
-import eu.europeana.database.dao.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.query.RecordField;
+import eu.europeana.query.ESERecord;
+import eu.europeana.query.EuropeanaQueryException;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -74,7 +74,10 @@ public class DatabaseToSolrIndexer extends AbstractSolrIndexer implements Runnab
                 System.currentTimeMillis() - start));
         try {
             start = System.currentTimeMillis();
-            Map<String, Map<RecordField, String>> records = new TreeMap<String, Map<RecordField, String>>();
+            Map<String, ESERecord> records = new TreeMap<String, ESERecord>();
+            for (EuropeanaId id : newIds) {
+                records.put(id.getEuropeanaUri(), fetchRecordFromSolr(id.getEuropeanaUri()));
+            }
             // todo: where do the records come from?
             String xml = createAddRecordsXML(newIds, records);
             postUpdate(xml);
@@ -87,21 +90,21 @@ public class DatabaseToSolrIndexer extends AbstractSolrIndexer implements Runnab
             log.error("Unable to submit imported records for indexing!", e);
             // todo: this must somehow stop the process!
         }
+        catch (EuropeanaQueryException e) {
+            log.error("Unable to find record for indexing!", e);
+        }
     }
 
     public void runParallel() {
         IndexingQueueEntry entry = dashboardDao.getEntryForIndexing();
         if (entry == null) {
             log.debug("no collection found for indexing");
-        } else {
+        }
+        else {
             log.info("found collection to index: " + entry.getCollection().getName());
             dashboardDao.startIndexing(entry);
             executor.execute(new IndexJob(entry));
         }
-    }
-
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
     }
 
     private class IndexJob implements Runnable {

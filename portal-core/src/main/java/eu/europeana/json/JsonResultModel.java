@@ -21,7 +21,19 @@
 
 package eu.europeana.json;
 
-import eu.europeana.query.*;
+import eu.europeana.query.BriefDoc;
+import eu.europeana.query.BriefDocWindow;
+import eu.europeana.query.DocIdWindow;
+import eu.europeana.query.DocType;
+import eu.europeana.query.ESERecord;
+import eu.europeana.query.Facet;
+import eu.europeana.query.FacetCount;
+import eu.europeana.query.FacetType;
+import eu.europeana.query.FullDoc;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.RecordField;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -261,63 +273,85 @@ public class JsonResultModel implements ResultModel {
         private String[] dcTitle;
         private String[] dcType;
 
-
+        private ESERecord eseRecord;
 
         public FullDocImpl(JSONObject jsonObject) throws JSONException {
             id = JsonUtil.getString(jsonObject, RecordField.EUROPEANA_URI.toFieldNameString());
-            thumbnail = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_OBJECT.toFieldNameString());
-            europeanaType = DocType.get(JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, FacetType.TYPE.toString()));
-            europeanaYear = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, FacetType.YEAR.toString());
-            europeanaLanguage =  JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, FacetType.LANGUAGE.toString());
-            europeanaIsShownBy = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_IS_SHOWN_BY.toFieldNameString());
-            europeanaIsShownAt = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_IS_SHOWN_AT.toFieldNameString());
-            europeanaHasObject = JsonUtil.getBoolean(jsonObject, JsonUtil.Default.FALSE, RecordField.EUROPEANA_HAS_OBJECT.toFieldNameString());
-            europeanaUserTag = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_USER_TAG.toFieldNameString());
-            europeanaProvider = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, FacetType.PROVIDER.toString());
-            europeanaCountry = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, FacetType.COUNTRY.toString());
-            europeanaSource = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_SOURCE.toFieldNameString());
-            europeanaCollectionName = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_COLLECTION_NAME.toFieldNameString());
+            eseRecord = new ESERecord(id);
+            thumbnail = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_OBJECT);
+            europeanaType = DocType.get(getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_TYPE, FacetType.TYPE));
+            europeanaYear = getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.EUROPEANA_YEAR, FacetType.YEAR);
+            europeanaLanguage =  getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_LANGUAGE, FacetType.LANGUAGE);
+            europeanaIsShownBy = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_IS_SHOWN_BY);
+            europeanaIsShownAt = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_IS_SHOWN_AT);
+            europeanaHasObject = getBoolean(jsonObject, JsonUtil.Default.FALSE, RecordField.EUROPEANA_HAS_OBJECT);
+            europeanaUserTag = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_USER_TAG);
+            europeanaProvider = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_PROVIDER, FacetType.PROVIDER);
+            europeanaCountry = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_COUNTRY, FacetType.COUNTRY);
+            europeanaSource = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_SOURCE);
+            europeanaCollectionName = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_COLLECTION_NAME);
             // here the dcterms namespaces starts
-            dcTermsAlternative = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_ALTERNATIVE.toFieldNameString());
-            dcTermsConformsTo = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_CONFORMS_TO.toFieldNameString());
-            dcTermsCreated = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.DCTERMS_CREATED.toFieldNameString());
-            dcTermsExtent = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_EXTENT.toFieldNameString());
-            dcTermsHasFormat = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_HAS_FORMAT.toFieldNameString());
-            dcTermsHasPart = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_HAS_PART.toFieldNameString());
-            dcTermsHasVersion = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_HAS_VERSION.toFieldNameString());
-            dcTermsIsFormatOf = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_FORMAT_OF.toFieldNameString());
-            dcTermsIsPartOf = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_PART_OF.toFieldNameString());
-            dcTermsIsReferencedBy = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_REFERENCED_BY.toFieldNameString());
-            dcTermsIsReplacedBy = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_REPLACED_BY.toFieldNameString());
-            dcTermsIsRequiredBy = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_REQUIRED_BY.toFieldNameString());
-            dcTermsIssued = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.DCTERMS_ISSUED.toFieldNameString());
-            dcTermsIsVersionOf = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_VERSION_OF.toFieldNameString());
-            dcTermsMedium = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_MEDIUM.toFieldNameString());
-            dcTermsProvenance = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_PROVENANCE.toFieldNameString());
-            dcTermsReferences = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_REFERENCES.toFieldNameString());
-            dcTermsReplaces = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_REPLACES.toFieldNameString());
-            dcTermsRequires = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_REQUIRES.toFieldNameString());
-            dcTermsSpatial = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_SPATIAL.toFieldNameString());
-            dcTermsTableOfContents = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_TABLE_OF_CONTENTS.toFieldNameString());
-            dcTermsTemporal = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_TEMPORAL.toFieldNameString());
+            dcTermsAlternative = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_ALTERNATIVE);
+            dcTermsConformsTo = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_CONFORMS_TO);
+            dcTermsCreated = getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.DCTERMS_CREATED);
+            dcTermsExtent = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_EXTENT);
+            dcTermsHasFormat = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_HAS_FORMAT);
+            dcTermsHasPart = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_HAS_PART);
+            dcTermsHasVersion = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_HAS_VERSION);
+            dcTermsIsFormatOf = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_FORMAT_OF);
+            dcTermsIsPartOf = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_PART_OF);
+            dcTermsIsReferencedBy = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_REFERENCED_BY);
+            dcTermsIsReplacedBy = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_REPLACED_BY);
+            dcTermsIsRequiredBy = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_REQUIRED_BY);
+            dcTermsIssued = getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.DCTERMS_ISSUED);
+            dcTermsIsVersionOf = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_IS_VERSION_OF);
+            dcTermsMedium = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_MEDIUM);
+            dcTermsProvenance = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_PROVENANCE);
+            dcTermsReferences = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_REFERENCES);
+            dcTermsReplaces = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_REPLACES);
+            dcTermsRequires = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_REQUIRES);
+            dcTermsSpatial = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_SPATIAL);
+            dcTermsTableOfContents = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_TABLE_OF_CONTENTS);
+            dcTermsTemporal = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_TEMPORAL);
             // here the dc namespace starts
-            dcContributor = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_CONTRIBUTOR.toFieldNameString());
-            dcCoverage = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_COVERAGE.toFieldNameString());
-            dcCreator = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_CREATOR.toFieldNameString());
-            dcDate = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.DC_DATE.toFieldNameString());
-            dcDescription = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_DESCRIPTION.toFieldNameString());
-            dcFormat = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_FORMAT.toFieldNameString());
-            dcIdentifier = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_IDENTIFIER.toFieldNameString());
-            dcLanguage = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_LANGUAGE.toFieldNameString());
-            dcPublisher = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_PUBLISHER.toFieldNameString());
-            dcRelation = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_RELATION.toFieldNameString());
-            dcRights = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_RIGHTS.toFieldNameString());
-            dcSource = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_SOURCE.toFieldNameString());
-            dcSubject = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_SUBJECT.toFieldNameString());
-            dcTitle = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_TITLE.toFieldNameString());
-            dcType = JsonUtil.getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_TYPE.toFieldNameString());
+            dcContributor = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_CONTRIBUTOR);
+            dcCoverage = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_COVERAGE);
+            dcCreator = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_CREATOR);
+            dcDate = getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.DC_DATE);
+            dcDescription = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_DESCRIPTION);
+            dcFormat = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_FORMAT);
+            dcIdentifier = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_IDENTIFIER);
+            dcLanguage = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_LANGUAGE);
+            dcPublisher = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_PUBLISHER);
+            dcRelation = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_RELATION);
+            dcRights = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_RIGHTS);
+            dcSource = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_SOURCE);
+            dcSubject = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_SUBJECT);
+            dcTitle = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_TITLE);
+            dcType = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_TYPE);
         }
 
+        private String [] getStringArray(JSONObject jsonObject, JsonUtil.Default defaultValue, boolean insertHref, RecordField field) throws JSONException {
+            String [] array = JsonUtil.getStringArray(jsonObject, defaultValue, insertHref, field.toFieldNameString());
+            for (String value : array) {
+                eseRecord.put(field, value);
+            }
+            return array;
+        }
+
+        private String [] getStringArray(JSONObject jsonObject, JsonUtil.Default defaultValue, boolean insertHref, RecordField field, FacetType facetType) throws JSONException {
+            String [] array = JsonUtil.getStringArray(jsonObject, defaultValue, insertHref, facetType.toString());
+            for (String value : array) {
+                eseRecord.put(field, value);
+            }
+            return array;
+        }
+
+        private Boolean getBoolean(JSONObject jsonObject, JsonUtil.Default defaultValue, RecordField field) throws JSONException {
+            Boolean value = JsonUtil.getBoolean(jsonObject, defaultValue, field.toFieldNameString());
+            eseRecord.put(field, value.toString());
+            return value;
+        }
 
         public String getId() {
             return id;
@@ -353,6 +387,10 @@ public class JsonResultModel implements ResultModel {
 
         public String[] getEuropeanaCollectionName() {
             return europeanaCollectionName;
+        }
+
+        public ESERecord getESERecord() {
+            return eseRecord;
         }
 
         public String[] getEuropeanaSource() {
@@ -525,6 +563,9 @@ public class JsonResultModel implements ResultModel {
             );
         }
 
+        public ESERecord getEseRecord() {
+            return eseRecord;
+        }
     }
 
     private static class BriefDocWindowImpl implements BriefDocWindow {
