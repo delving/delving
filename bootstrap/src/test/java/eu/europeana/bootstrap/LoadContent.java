@@ -22,11 +22,14 @@
 package eu.europeana.bootstrap;
 
 import eu.europeana.database.dao.DashboardDao;
-import eu.europeana.database.dao.DashboardDaoImpl;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.incoming.*;
+import eu.europeana.incoming.ESEImporter;
+import eu.europeana.incoming.ImportFile;
+import eu.europeana.incoming.ImportRepository;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 
@@ -48,33 +51,38 @@ public class LoadContent {
 //        }
 //        log.info("Finish loading Static Content into the database");
 
-        
 
         SolrStarter solr = new SolrStarter();
         log.info("Starting Solr Server");
         solr.start();
-        // todo: remove later and replace with ESEImporter
-        ESEImporter importer = new ESEImporterImpl();
 
-        DashboardDao dashboardDao = new DashboardDaoImpl();
+        ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
+                "/database-application-context.xml",
+                "/dashboard-application-context.xml",
+        });
+        ESEImporter eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
+        DashboardDao dashboardDao = (DashboardDao) context.getBean("dashboardDao");
+        ImportRepository repository = (ImportRepository) context.getBean("normalizedImportRepository");
 
-        ImportRepository repository = new ImportRepositoryImpl();
         ImportFile importFile = repository.moveToUploaded(new File("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml"));
-
-        final EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
-
-        importFile = importer.commenceImport(importFile, europeanaCollection.getId());
+        EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
+        importFile = eseImporter.commenceImport(importFile, europeanaCollection.getId());
 
         if (importFile.getState() == ImportFileState.ERROR) {
             log.info("importing ");
-        } else {
+        }
+        else {
             log.info("Finished importing and indexing test collection");
         }
-//        DataImporter importer = new DataImporter();
-//        log.info("Start importing test collection");
-//        String collectionFileName = importer.importFile("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
-//        importer.prepareCollectionForIndexing(collectionFileName);
-//        importer.runIndexer();
+
+        Thread.sleep(10000);
+
+        while (europeanaCollection.getFileState() == ImportFileState.IMPORTING) {
+            log.info("waiting to leave IMPORTING state");
+            Thread.sleep(1000);
+            europeanaCollection = dashboardDao.fetchCollection(europeanaCollection.getId());
+        }
+
         Thread.sleep(10000);
         solr.stop();
         log.info("Stopping Solr server");
