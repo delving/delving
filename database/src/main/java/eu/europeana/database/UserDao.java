@@ -32,7 +32,6 @@ public interface UserDao {
     void updateUser(User user);
     User refreshUser(User user);
     User addSavedSearch(User user, SavedSearch savedSearch);
-    User addSavedItem(User user, String europeanaUri);
     User addSocialTag(User user, SocialTag socialTag);
     User addEditorPick(User user, EditorPick editorPick);
     User addCarouselItem(User user, CarouselItem carouselItem);
@@ -51,4 +50,6 @@ public interface UserDao {
     User removeSearchTerm(User user, Long savedSearchId);
 
     User addCarouselItem(User user, SavedItem savedItem);
+
+    User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
 }

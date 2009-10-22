@@ -113,12 +113,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Transactional
-    public User addSavedItem(User user, String europeanaUri) {
+    public User addSavedItem(User user, SavedItem savedItem, String europeanaUri) {
         EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
         if (europeanaId == null) {
-            throw new IllegalArgumentException("Unable to find europeana record identified by " + europeanaUri);
+            throw new IllegalArgumentException("Unable to find europeana record identified by " + europeanaId.getEuropeanaUri());
         }
-        SavedItem savedItem = europeanaId.createSavedItem();
         savedItem.setDateSaved(new Date());
         savedItem.setEuropeanaId(europeanaId);
         savedItem.setUser(user);

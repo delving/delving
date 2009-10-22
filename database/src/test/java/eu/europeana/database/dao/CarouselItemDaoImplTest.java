@@ -89,7 +89,7 @@ public class CarouselItemDaoImplTest {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
         User user = userDao.addUser(user1);
-        user = userDao.addSavedItem(user, EUROPEANA_URI_2);
+        user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_2);
         List<SavedItem> savedItems = user.getSavedItems();
         assertTrue(!savedItems.isEmpty());
         europeanaId.setOrphan(true);
@@ -105,7 +105,7 @@ public class CarouselItemDaoImplTest {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
         User user = userDao.addUser(user2);
-        user = userDao.addSavedItem(user, EUROPEANA_URI_1);
+        user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_1);
         user = userDao.refreshUser(user);
         List<SavedItem> savedItems = user.getSavedItems();
         assertNotNull(savedItems);
@@ -142,8 +142,8 @@ public class CarouselItemDaoImplTest {
         assertFalse("Orphan should be false", europeanaId1.isOrphan());
         assertTrue("Orphan should be true", europeanaId2.isOrphan());
         User user = userDao.addUser(user2);
-        user = userDao.addSavedItem(user, EUROPEANA_URI_1);
-        user = userDao.addSavedItem(user, EUROPEANA_URI_2);
+        user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_1);
+        user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_2);
         user = userDao.refreshUser(user);
         List<SavedItem> savedItems = user.getSavedItems();
         assertNotNull(savedItems);
