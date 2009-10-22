@@ -22,7 +22,6 @@
 package eu.europeana.bootstrap;
 
 import eu.europeana.database.migration.DataMigration;
-import eu.europeana.database.migration.incoming.DataImporter;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -35,6 +34,7 @@ public class LoadContent {
     private static final Logger log = Logger.getLogger(LoadContent.class);
 
     public static void main(String[] args) throws Exception {
+        // todo: use new ESEimporter for this functionality
         DataMigration migration = new DataMigration("./bootstrap/src/main/resources/");
         log.info("Start loading Static Content into the database");
         try {
@@ -47,11 +47,12 @@ public class LoadContent {
         SolrStarter solr = new SolrStarter();
         log.info("Starting Solr Server");
         solr.start();
-        DataImporter importer = new DataImporter();
-        log.info("Start importing test collection");
-        String collectionFileName = importer.importFile("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
-        importer.prepareCollectionForIndexing(collectionFileName);
-        importer.runIndexer();
+        // todo: remove later
+//        DataImporter importer = new DataImporter();
+//        log.info("Start importing test collection");
+//        String collectionFileName = importer.importFile("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
+//        importer.prepareCollectionForIndexing(collectionFileName);
+//        importer.runIndexer();
         log.info("Finished importing and indexing test collection");
         Thread.sleep(10000);
         solr.stop();

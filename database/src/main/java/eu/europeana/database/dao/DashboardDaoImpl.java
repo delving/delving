@@ -715,6 +715,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
 	@Transactional
 	public boolean removeSearchTerm(Language language, String term) {
+        // todo remove back reference to saved item
 		Query query = entityManager.createQuery("delete from SearchTerm as term where term.language = :language and term.proposedSearchTerm = :term");
 		query.setParameter("term", term);
 		query.setParameter("language", language);
