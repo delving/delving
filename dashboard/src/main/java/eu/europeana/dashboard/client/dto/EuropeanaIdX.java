@@ -20,7 +20,7 @@ public class EuropeanaIdX implements IsSerializable {
     private Float boostFactor;
     private String solrRecords;
 
-    public EuropeanaIdX(Long id, Integer timesViewed, Date created, Date lastViewed, Date lastModified, String europeanaUri, Float boostFactor, String solrRecords) {
+    public EuropeanaIdX(Long id, Integer timesViewed, Date created, Date lastViewed, Date lastModified, String europeanaUri, Float boostFactor) {
         this.id = id;
         this.timesViewed = timesViewed;
         this.created = created;
@@ -28,7 +28,6 @@ public class EuropeanaIdX implements IsSerializable {
         this.lastModified = lastModified;
         this.europeanaUri = europeanaUri;
         this.boostFactor = boostFactor;
-        this.solrRecords = solrRecords;
     }
 
     public EuropeanaIdX() {

@@ -11,10 +11,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class SavedItemX implements IsSerializable {
     private String title;
     private String uri;
+    private Long id;
 
-    public SavedItemX(String title, String uri) {
+    public SavedItemX(String title, String uri, Long id) {
         this.title = title;
         this.uri = uri;
+        this.id = id;
     }
 
     public SavedItemX() {
@@ -26,5 +28,9 @@ public class SavedItemX implements IsSerializable {
 
     public String getUri() {
         return uri;
+    }
+
+    public Long getId() {
+        return id;
     }
 }

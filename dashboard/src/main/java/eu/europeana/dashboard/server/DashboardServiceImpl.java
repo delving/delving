@@ -23,57 +23,16 @@ package eu.europeana.dashboard.server;
 
 import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.dashboard.client.dto.CarouselItemX;
-import eu.europeana.dashboard.client.dto.ContributorX;
-import eu.europeana.dashboard.client.dto.CountryX;
-import eu.europeana.dashboard.client.dto.DashboardLogX;
-import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.EuropeanaIdX;
-import eu.europeana.dashboard.client.dto.ImportFile;
-import eu.europeana.dashboard.client.dto.LanguageX;
-import eu.europeana.dashboard.client.dto.PartnerX;
-import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.RoleX;
-import eu.europeana.dashboard.client.dto.SavedItemX;
-import eu.europeana.dashboard.client.dto.SavedSearchX;
-import eu.europeana.dashboard.client.dto.StaticPageX;
-import eu.europeana.dashboard.client.dto.TranslationX;
-import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.dashboard.client.dto.*;
 import eu.europeana.dashboard.server.incoming.ESE2DatabaseImporter;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.MessageDao;
 import eu.europeana.database.dao.DashboardDao;
-import eu.europeana.database.domain.CacheState;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.Country;
-import eu.europeana.database.domain.DashboardLog;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.EuropeanaObject;
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.PartnerSector;
-import eu.europeana.database.domain.QueueEntry;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.database.domain.Translation;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 import eu.europeana.database.migration.outgoing.SolrIndexer;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -252,7 +211,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<SavedItem> savedItems = dashboardDao.fetchSavedItems(userId);
         List<SavedItemX> items = new ArrayList<SavedItemX>();
         for (SavedItem item : savedItems) {
-            items.add(new SavedItemX(item.getTitle(), item.getEuropeanaId().getEuropeanaUri()));
+            items.add(new SavedItemX(item.getTitle(), item.getEuropeanaId().getEuropeanaUri(), item.getId()));
         }
 
         return items;
@@ -333,9 +292,10 @@ public class DashboardServiceImpl implements DashboardService {
         return items;
     }
 
-    public CarouselItemX createCarouselItem(String europeanaUri) {
-        audit("create carousel item: "+europeanaUri);
-        CarouselItem item = dashboardDao.createCarouselItem(europeanaUri);
+    public CarouselItemX createCarouselItem(SavedItemX savedItemX) {
+        String europeanaUri = savedItemX.getUri();
+        audit("create carousel item: "+ europeanaUri);
+        CarouselItem item = dashboardDao.createCarouselItem(europeanaUri, savedItemX.getId());
         if (item == null) {
             return null;
         }

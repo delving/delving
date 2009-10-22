@@ -308,7 +308,6 @@ public class DashboardDaoImpl implements DashboardDao {
 		else {
 			log.debug("updating Id");
 			persistentId.setLastModified(now);
-			persistentId.setSolrRecords(detachedId.getSolrRecords());
 			persistentId.getSocialTags().size();
 			persistentId.setOrphan(false);
 			persistentId.getEditorPicks().size();
@@ -867,19 +866,7 @@ public class DashboardDaoImpl implements DashboardDao {
 		return success;
 	}
 
-    @Deprecated
-	@Transactional
-	public CarouselItem createCarouselItem(String europeanaUri) {
-		EuropeanaId europeanaId = (EuropeanaId) fetchEuropeanaId(europeanaUri);
-		if (europeanaId == null) {
-			return null;
-		}
-		CarouselItem carouselItem = europeanaId.createCarouselItem();
-		entityManager.persist(carouselItem);
-		return carouselItem;
-	}
-
-	@Transactional
+    @Transactional
 	public CarouselItem createCarouselItem(String europeanaUri, Long savedItemId) {
 		// check if this Europeana Id item does exist
 		EuropeanaId europeanaId = (EuropeanaId) fetchEuropeanaId(europeanaUri);

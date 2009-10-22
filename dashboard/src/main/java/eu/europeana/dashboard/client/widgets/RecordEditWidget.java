@@ -1,14 +1,6 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.EuropeanaIdX;
@@ -126,7 +118,7 @@ public class RecordEditWidget extends DashboardWidget {
                     europeanaId.getCreated()
             );
             stateLabel.setText(stateString);
-            solrRecords.setText(europeanaId.getSolrRecords());
+            solrRecords.setText(europeanaId.getSolrRecords()); // todo Gerald could you look at this one.
             setBoost(europeanaId.getBoostFactor());
         }
         formWidget.setVisible(europeanaId != null);
