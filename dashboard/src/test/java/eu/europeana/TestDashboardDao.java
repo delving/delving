@@ -165,7 +165,6 @@ public class TestDashboardDao {
         EuropeanaId europeanaId = new EuropeanaId(collection);
         europeanaId.setCreated(new Date());
         europeanaId.setLastModified(new Date());
-        europeanaId.setSolrRecords("<?xml version=\"1.0\"?>" + number + "\n<tag/>");
         europeanaId.setEuropeanaUri("http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735" + number);
         return europeanaId;
     }

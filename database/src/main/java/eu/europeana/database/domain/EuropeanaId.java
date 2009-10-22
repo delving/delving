@@ -21,9 +21,19 @@
 
 package eu.europeana.database.domain;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.hibernate.annotations.Index;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,10 +99,6 @@ public class EuropeanaId implements Serializable {
 
     @Column(nullable = true)
     private Float boostFactor;
-
-    @Deprecated
-    @Lob
-    private String solrRecords;
 
     public EuropeanaId() {
         this.orphan = false;
@@ -192,11 +198,6 @@ public class EuropeanaId implements Serializable {
 
     public void setEuropeanaObjects(List<EuropeanaObject> europeanaObjects) {
         this.europeanaObjects = europeanaObjects;
-    }
-
-    @Deprecated
-    public void setSolrRecords(String solrRecords) {
-        this.solrRecords = solrRecords;
     }
 
     public EuropeanaObject getEuropeanaObject(String url) {

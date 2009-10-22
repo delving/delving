@@ -79,34 +79,6 @@
         <property name="password"    value="${db.password}"/>
     </bean>
 
-    <!-- httpClient -->
-    <!--<bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">-->
-        <!--<property name="maxTotalConnections"          value="512"/>-->
-        <!--<property name="defaultMaxConnectionsPerHost" value="64"/>-->
-    <!--</bean>-->
-
-    <!--<bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">-->
-        <!--<constructor-arg>-->
-            <!--<bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">-->
-                <!--<property name="params" ref="connectionManagerParams"/>-->
-            <!--</bean>-->
-        <!--</constructor-arg>-->
-    <!--</bean>-->
-
-    <!-- Query Factories -->
-    <bean id="queryModelFactory" class="eu.europeana.json.JsonQueryModelFactory">
-        <property name="simpleQueryModelFactory"    ref="solrQueryModelFactory"/>
-        <property name="advancedQueryModelFactory"  ref="solrQueryModelFactory"/>
-    </bean>
-    <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
-        <property name="baseUrl"      value ="${solr.selectUrl}"/>
-        <property name="httpClient"   ref   ="httpClient"/>
-    </bean>
-    <!--<bean id="sqlQueryModelFactory" class="eu.europeana.json.sql.SqlQueryModelFactory">-->
-        <!--<property name="baseUrl"      value ="${slqSearch.url}"/>-->
-        <!--<property name="httpClient"   ref   ="httpClient"/>-->
-    <!--</bean>-->
-
     <!-- normal config -->
     <security:http auto-config="true" create-session="never">
 

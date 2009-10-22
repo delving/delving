@@ -50,7 +50,6 @@ import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Country;
 import eu.europeana.database.domain.DashboardLog;
 import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.EuropeanaObject;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.Language;
@@ -393,17 +392,10 @@ public class DashboardServiceImpl implements DashboardService {
         return DataTransfer.convert(dashboardDao.fetchEuropeanaId(uri));
     }
 
-    public EuropeanaIdX updateEuropeanaId(EuropeanaIdX europeanaId) {
-        audit("update europeana id: "+europeanaId.getEuropeanaUri());
-        EuropeanaId fresh = dashboardDao.updateEuropeanaId(europeanaId.getId(), europeanaId.getBoostFactor(), europeanaId.getSolrRecords());
-        indexer.reindex(fresh);
-        return DataTransfer.convert(fresh);
-    }
-
     public void disableAllCollections () {
         List<EuropeanaCollection> collections = dashboardDao.disableAllCollections();
         for (EuropeanaCollection collection : collections) {
-            indexer.delete(collection.getName());
+            indexer.deleteCollectionByName(collection.getName());
         }
     }
 
@@ -606,7 +598,7 @@ public class DashboardServiceImpl implements DashboardService {
                     case EMPTY:
                     case DISABLED:
                         dashboardDao.removeFromIndexQueue(current);
-                        if (!indexer.delete(current.getName())) {
+                        if (!indexer.deleteCollectionByName(current.getName())) {
                             log.warn("Unable to delete from the index!");
                         }
                         return;

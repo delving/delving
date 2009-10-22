@@ -68,10 +68,33 @@
 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
-    <bean id="databaseToSolrIndexer" class="eu.europeana.database.migration.outgoing.DatabaseToSolrIndexer">
+    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+        <property name="maxTotalConnections" value="512"/>
+        <property name="defaultMaxConnectionsPerHost" value="64"/>
+    </bean>
+
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg>
+            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+                <property name="params" ref="connectionManagerParams"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="queryModelFactory" class="eu.europeana.json.JsonQueryModelFactory">
+        <property name="simpleQueryModelFactory"    ref="solrQueryModelFactory"/>
+        <property name="advancedQueryModelFactory"  ref="solrQueryModelFactory"/>
+    </bean>
+    <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
+        <property name="baseUrl"      value ="${solr.selectUrl}"/>
+        <property name="httpClient"   ref   ="httpClient"/>
+    </bean>
+
+    <bean id="solrIndexer" class="eu.europeana.database.migration.outgoing.DatabaseToSolrIndexer">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="httpClient" ref="httpClient"/>
         <property name="targetUrl" value="${solr.updateUrl}"/>
+        <property name="queryModelFactory" value="queryModelFactory"/>
         <property name="chunkSize" value="${solr.chunkSize}"/>
     </bean>
 
@@ -86,18 +109,5 @@
         <property name="root" value="${cache.cacheRoot}"/>
     </bean>
 
-    <!--httpClient -->
-    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
-        <property name="maxTotalConnections" value="512"/>
-        <property name="defaultMaxConnectionsPerHost" value="64"/>
-    </bean>
-
-    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
-        <constructor-arg>
-            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
-                <property name="params" ref="connectionManagerParams"/>
-            </bean>
-        </constructor-arg>
-    </bean>
 
 </beans>

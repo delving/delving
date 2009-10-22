@@ -277,7 +277,8 @@ public class JsonResultModel implements ResultModel {
 
         public FullDocImpl(JSONObject jsonObject) throws JSONException {
             id = JsonUtil.getString(jsonObject, RecordField.EUROPEANA_URI.toFieldNameString());
-            eseRecord = new ESERecord(id);
+            eseRecord = new ESERecord();
+            eseRecord.put(RecordField.EUROPEANA_URI, id);
             thumbnail = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_OBJECT);
             europeanaType = DocType.get(getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_TYPE, FacetType.TYPE));
             europeanaYear = getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.EUROPEANA_YEAR, FacetType.YEAR);

@@ -21,7 +21,24 @@
 
 package eu.europeana.database.dao;
 
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CacheingQueueEntry;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EditorPick;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.EuropeanaObject;
+import eu.europeana.database.domain.IndexingQueueEntry;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.QueueEntry;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.User;
 
 import java.util.List;
 import java.util.Set;
@@ -118,8 +135,6 @@ public interface DashboardDao {
     User fetchUser(Long userId);
 
     EuropeanaId fetchEuropeanaId(String europeanaUri);
-
-    EuropeanaId updateEuropeanaId(Long id, float boostFactor, String solrRecords);
 
     List<Partner> fetchPartners();
 

@@ -25,7 +25,6 @@ import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.query.ESERecord;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * An interface that lets us send commands to Solr
@@ -38,12 +37,11 @@ public interface SolrIndexer {
     /**
      * Send a number of records to the index in one request.
      *
-     * @param ids which ids are to be indexed
-     * @param records a map, each record is a collectin of field-string mappings
+     * @param recordList a list of record objects, defined below
      * @return true if it worked
      */
     
-    boolean index(List<EuropeanaId> ids, Map<String, ESERecord> records);
+    boolean indexRecordList(List<Record> recordList);
 
     /**
      * Reindex a single europeanaId
@@ -52,7 +50,7 @@ public interface SolrIndexer {
      * @return true if it worked
      */
 
-    boolean reindex(EuropeanaId europeanaId);
+    boolean indexSingleRecord(EuropeanaId europeanaId);
 
     /**
      * Delete an entire collection from the index
@@ -61,5 +59,27 @@ public interface SolrIndexer {
      * @return true if it worked
      */
     
-    boolean delete(String collectionName);
+    boolean deleteCollectionByName(String collectionName);
+
+    /**
+     * For indexing record lists, combine the id with the record's fields
+     */
+    
+    public class Record {
+        private EuropeanaId europeanaId;
+        private ESERecord eseRecord;
+
+        public Record(EuropeanaId europeanaId, ESERecord eseRecord) {
+            this.europeanaId = europeanaId;
+            this.eseRecord = eseRecord;
+        }
+
+        public EuropeanaId getEuropeanaId() {
+            return europeanaId;
+        }
+
+        public ESERecord getEseRecord() {
+            return eseRecord;
+        }
+    }
 }

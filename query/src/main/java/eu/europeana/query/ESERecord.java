@@ -32,16 +32,7 @@ import java.util.List;
  */
 
 public class ESERecord implements Iterable<ESERecord.Field> {
-    private String europeanaUri;
     private List<Field> fields = new ArrayList<Field>();
-
-    public ESERecord(String europeanaUri) {
-        this.europeanaUri = europeanaUri;
-    }
-
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
 
     public void put(RecordField key, String value) {
         fields.add(new Field(key, value));

@@ -30,14 +30,15 @@ import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.migration.outgoing.SolrIndexer;
 import eu.europeana.query.DocType;
+import eu.europeana.query.ESERecord;
 import eu.europeana.query.RecordField;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
@@ -49,7 +50,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -74,9 +74,11 @@ public class ESEImporterImpl implements ESEImporter {
     private static final DecimalFormat COUNT_FORMAT = new DecimalFormat("000000000");
     private static final String ESE_SCHEMA = "ESE-V3.2.xsd";
     private Logger log = Logger.getLogger(getClass());
+    private SolrIndexer solrIndexer;
     private ImportRepository importRepository;
     private DashboardDao dashboardDao;
     private boolean normalized;
+    private int chunkSize = 1000;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
     private interface Processor {
@@ -93,6 +95,14 @@ public class ESEImporterImpl implements ESEImporter {
 
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
+    }
+
+    public void setSolrIndexer(SolrIndexer solrIndexer) {
+        this.solrIndexer = solrIndexer;
+    }
+
+    public void setChunkSize(int chunkSize) {
+        this.chunkSize = chunkSize;
     }
 
     public void setNormalized(boolean normalized) {
@@ -157,6 +167,7 @@ public class ESEImporterImpl implements ESEImporter {
         private ImportFile importFile;
         private Long collectionId;
         private EuropeanaCollection collection;
+        private List<SolrIndexer.Record> recordList = new ArrayList<SolrIndexer.Record>();
 
         private ImportProcessor(ImportFile importFile, Long collectionId) {
             this.importFile = importFile;
@@ -261,8 +272,7 @@ public class ESEImporterImpl implements ESEImporter {
             int recordCount = 0;
             boolean[] fieldFound = new boolean[RecordField.values().length];
             long time = System.currentTimeMillis();
-            ByteArrayOutputStream out = null;
-            XMLStreamWriter writer = null;
+            ESERecord eseRecord = null;
             while (thread != null) {
                 switch (xml.getEventType()) {
                     case XMLStreamConstants.START_DOCUMENT:
@@ -273,12 +283,7 @@ public class ESEImporterImpl implements ESEImporter {
                         if (isRecordElement(xml)) {
                             europeanaId = new EuropeanaId(collection);
                             Arrays.fill(fieldFound, false);
-                            out = new ByteArrayOutputStream();
-                            writer = outFactory.createXMLStreamWriter(out, "UTF-8");
-                            writer.writeStartDocument();
-                            writer.writeCharacters("\n");
-                            writer.writeStartElement("doc");
-                            writer.writeCharacters("\n");
+                            eseRecord = new ESERecord();
                         }
                         else if (europeanaId != null) {
                             RecordField field = getRecordField(xml.getPrefix(), xml.getLocalName(), recordCount);
@@ -297,23 +302,11 @@ public class ESEImporterImpl implements ESEImporter {
                                         break;
                                 }
                                 fieldFound[field.ordinal()] = true;
-                                writer.writeCharacters("\t");
-                                writer.writeStartElement("field");
-                                if (field.getFacetType() != null) {
-                                    writer.writeAttribute("name", field.getFacetType().toString());
-                                }
-                                else {
-                                    writer.writeAttribute("name", field.toFieldNameString());
-                                }
-                                if (language != null) {
-                                    writer.writeAttribute("lang", language);
-                                }
                                 if (text.length() > 10000) {
                                     text = text.substring(0, 9999);
                                 }
-                                writer.writeCharacters(text);
-                                writer.writeEndElement();
-                                writer.writeCharacters("\n");
+                                // language being ignored if (language != null) {...}
+                                eseRecord.put(field, text);
                             }
                         }
                         break;
@@ -324,9 +317,6 @@ public class ESEImporterImpl implements ESEImporter {
                                 log.info("imported " + recordCount + " records");
                             }
                             recordCount++;
-                            writer.writeEndElement();
-                            writer.writeCharacters("\n");
-                            writer.close();
                             if (normalized) {
                                 if (europeanaId.getEuropeanaUri() == null) {
                                     throw new ImportException("Normalized Record must have a field " + RecordField.EUROPEANA_URI, recordCount);
@@ -348,12 +338,11 @@ public class ESEImporterImpl implements ESEImporter {
                                 }
                                 europeanaId.setEuropeanaUri(RESOLVABLE_URI + collection.getName() + "/" + COUNT_FORMAT.format(recordCount));
                             }
-                            europeanaId.setSolrRecords(out.toString());
+                            recordList.add(new SolrIndexer.Record(europeanaId, eseRecord));
                             dashboardDao.saveEuropeanaId(europeanaId, objectUrls);
                             europeanaId = null;
                             objectUrls.clear();
-                            writer = null;
-                            out = null;
+                            eseRecord = null;
                         }
                         break;
 
@@ -361,7 +350,13 @@ public class ESEImporterImpl implements ESEImporter {
                         log.info("Document ended");
                         break;
                 }
+                if (recordList.size() >= chunkSize) {
+                    indexRecordList();
+                }
                 if (!xml.hasNext()) {
+                    if (!recordList.isEmpty()) {
+                        indexRecordList();
+                    }
                     break;
                 }
                 xml.next();
@@ -369,6 +364,16 @@ public class ESEImporterImpl implements ESEImporter {
             time = System.currentTimeMillis() - time;
             log.info("Processed " + recordCount + " records in " + (time / 60000.0) + " minutes");
             inputStream.close();
+        }
+
+        private boolean indexRecordList() {
+            if (solrIndexer.indexRecordList(new ArrayList<SolrIndexer.Record>(recordList))) {
+                recordList.clear();
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
         private void expectField(boolean[] found, RecordField recordField, int recordCount) throws ImportException {

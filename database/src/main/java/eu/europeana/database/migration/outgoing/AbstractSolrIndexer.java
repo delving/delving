@@ -45,8 +45,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -80,9 +78,9 @@ public class AbstractSolrIndexer implements SolrIndexer {
         this.chunkSize = chunkSize;
     }
 
-    public boolean index(List<EuropeanaId> ids, Map<String, ESERecord> records) {
+    public boolean indexRecordList(List<Record> recordList) {
         try {
-            String xml = createAddRecordsXML(ids, records);
+            String xml = createAddRecordsXML(recordList);
             postUpdate(xml);
             return true;
         }
@@ -92,14 +90,11 @@ public class AbstractSolrIndexer implements SolrIndexer {
         return false;
     }
 
-    public boolean reindex(EuropeanaId europeanaId) {
+    public boolean indexSingleRecord(EuropeanaId europeanaId) {
         try {
-            List<EuropeanaId> list = new ArrayList<EuropeanaId>();
-            list.add(europeanaId);
-            Map<String, ESERecord> records = new TreeMap<String, ESERecord>();
-            ESERecord record = fetchRecordFromSolr(europeanaId.getEuropeanaUri());
-            records.put(europeanaId.getEuropeanaUri(), record);
-            String xml = createAddRecordsXML(list, records);
+            List<Record> recordList = new ArrayList<Record>();
+            recordList.add(new Record(europeanaId, fetchRecordFromSolr(europeanaId.getEuropeanaUri())));
+            String xml = createAddRecordsXML(recordList);
             postUpdate(xml);
             return true;
         }
@@ -109,7 +104,7 @@ public class AbstractSolrIndexer implements SolrIndexer {
         return false;
     }
 
-    public boolean delete(String collectionName) {
+    public boolean deleteCollectionByName(String collectionName) {
         String xml = createDeleteRecordsXML(collectionName);
         try {
             postUpdate(xml);
@@ -157,27 +152,31 @@ public class AbstractSolrIndexer implements SolrIndexer {
         }
     }
 
-    protected String createAddRecordsXML(List<EuropeanaId> ids, Map<String,ESERecord> records) throws IOException {
+    protected String createAddRecordsXML(List<Record> recordList) throws IOException {
         StringBuilder out = new StringBuilder();
         out.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         out.append("<add>\n");
-        for (EuropeanaId id : ids) {
+        for (Record record : recordList) {
             out.append("\t<doc>\n");
-            ESERecord record = records.get(id.getEuropeanaUri());
             if (record == null) {
-                throw new IllegalStateException("Cannot find record for URI "+id.getEuropeanaUri());
+                throw new IllegalStateException("Cannot find record for URI "+record.getEuropeanaId().getEuropeanaUri());
             }
-            for (ESERecord.Field field : record) {
-                out.append("\t\t<field name=\"").append(field.getKey().toFieldNameString()).append("\">");
+            for (ESERecord.Field field : record.getEseRecord()) {
+                if (field.getKey().getFacetType() != null) {
+                    out.append("\t\t<field name=\"").append(field.getKey().getFacetType()).append("\">");
+                }
+                else {
+                    out.append("\t\t<field name=\"").append(field.getKey().toFieldNameString()).append("\">");
+                }
                 out.append(field.getValue());
                 out.append("</field>\n");
             }
-            for (SocialTag socialTag : id.getSocialTags()) {
+            for (SocialTag socialTag : record.getEuropeanaId().getSocialTags()) {
                 out.append("\t\t<field name=\"").append(RecordField.EUROPEANA_USER_TAG.toFieldNameString()).append("\">");
                 out.append(socialTag.getTag());
                 out.append("</field>\n");
             }
-            for (EditorPick editorPick : id.getEditorPicks()) {
+            for (EditorPick editorPick : record.getEuropeanaId().getEditorPicks()) {
                 out.append("\t\t<field name=\"").append(RecordField.EUROPEANA_EDITORS_PICK.toFieldNameString()).append("\">");
                 out.append(editorPick.getQuery());
                 out.append("</field>\n");

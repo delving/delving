@@ -21,16 +21,44 @@
 
 package eu.europeana.database.dao;
 
-import eu.europeana.database.domain.*;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
+import eu.europeana.database.domain.CacheState;
+import eu.europeana.database.domain.CacheingQueueEntry;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.CollectionState;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EditorPick;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.EuropeanaObject;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.IndexingQueueEntry;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.QueueEntry;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SearchTerm;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class is an implementation of the DashboardDao using an injected JPA Entity Manager.
@@ -348,18 +376,6 @@ public class DashboardDaoImpl implements DashboardDao {
 		else {
 			return result.get(0);
 		}
-	}
-
-	@Transactional(readOnly = true)
-	public EuropeanaId fetchEuropeanaId(String europeanaUri) {
-		Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
-		query.setParameter("europeanaUri", europeanaUri);
-		query.setMaxResults(1);
-		List<EuropeanaId> result = query.getResultList();
-		if (result.isEmpty()) {
-			return null;
-		}
-		return result.get(0);
 	}
 
 	@Transactional
@@ -761,21 +777,19 @@ public class DashboardDaoImpl implements DashboardDao {
 		return entityManager.find(User.class, userId);
 	}
 
-	@Transactional
-	public EuropeanaId updateEuropeanaId(Long id, float boostFactor, String solrRecords) {
-		EuropeanaId europeanaId = entityManager.find(EuropeanaId.class, id);
-		if (europeanaId == null) {
-			return null;
-		}
-		europeanaId.setBoostFactor(boostFactor);
-		europeanaId.setSolrRecords(solrRecords);
-		europeanaId.getSocialTags().size();
-		europeanaId.getEuropeanaObjects().size();
-		europeanaId.getEditorPicks().size();
-		return europeanaId;
-	}
+    @Transactional
+    public EuropeanaId fetchEuropeanaId(String europeanaUri) {
+        Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
+        query.setParameter("europeanaUri", europeanaUri);
+        query.setMaxResults(1);
+        List<EuropeanaId> result = query.getResultList();
+        if (result.isEmpty()) {
+            return null;
+        }
+		return result.get(0);
+    }
 
-	@Transactional
+    @Transactional
 	public List<Partner> fetchPartners() {
 		Query query = entityManager.createQuery("select p from Partner p order by p.sector");
 		return (List<Partner>) query.getResultList();
@@ -869,11 +883,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Transactional
 	public CarouselItem createCarouselItem(String europeanaUri, Long savedItemId) {
-		// check if this Europeana Id item does exist
-		EuropeanaId europeanaId = (EuropeanaId) fetchEuropeanaId(europeanaUri);
-		if (europeanaId == null) {
-			return null;
-		}
+        EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
         SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
         CarouselItem carouselItem = savedItem.createCarouselItem();
         carouselItem.setEuropeanaId(europeanaId);

@@ -32,7 +32,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:dashboard-application-context.xml
-            classpath:database-application-context.xml
         </param-value>
     </context-param>
     <listener>

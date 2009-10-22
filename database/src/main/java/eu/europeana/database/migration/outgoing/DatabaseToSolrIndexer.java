@@ -24,14 +24,12 @@ package eu.europeana.database.migration.outgoing;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.query.ESERecord;
 import eu.europeana.query.EuropeanaQueryException;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -74,12 +72,11 @@ public class DatabaseToSolrIndexer extends AbstractSolrIndexer implements Runnab
                 System.currentTimeMillis() - start));
         try {
             start = System.currentTimeMillis();
-            Map<String, ESERecord> records = new TreeMap<String, ESERecord>();
+            List<Record> recordList = new ArrayList<Record>(newIds.size());
             for (EuropeanaId id : newIds) {
-                records.put(id.getEuropeanaUri(), fetchRecordFromSolr(id.getEuropeanaUri()));
+                recordList.add(new Record(id, fetchRecordFromSolr(id.getEuropeanaUri())));
             }
-            // todo: where do the records come from?
-            String xml = createAddRecordsXML(newIds, records);
+            String xml = createAddRecordsXML(recordList);
             postUpdate(xml);
             log.info("Finished submitting " + newIds.size() + " ids to index in " + (System.currentTimeMillis() - start) + " millis.");
             start = System.currentTimeMillis();
