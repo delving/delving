@@ -239,6 +239,16 @@
             <artifactId>wstx-asl</artifactId>
             <version>3.2.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20070829</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>2.3.2</version>
+        </dependency>
     </dependencies>
     <properties>
         <spring.version>2.5.6</spring.version>

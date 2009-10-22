@@ -1,7 +1,14 @@
 package eu.europeana.json.solr;
 
 import eu.europeana.json.JsonResultModel;
-import eu.europeana.query.*;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.FacetType;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.QueryModel;
+import eu.europeana.query.QueryProblem;
+import eu.europeana.query.RecordFieldChoice;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
