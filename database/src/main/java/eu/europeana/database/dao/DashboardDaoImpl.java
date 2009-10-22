@@ -882,13 +882,15 @@ public class DashboardDaoImpl implements DashboardDao {
 	}
 
     @Transactional
-    public Boolean removeCarouselItem(Long savedItemId) {
-        // remove carousel item and give back a user
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
-        if (savedItem == null) {
-            throw new IllegalArgumentException("Unable to find saved item: " + savedItemId);
+    public Boolean removeCarouselItem(Long carouselItemId) {
+        CarouselItem carouselItem = entityManager.getReference(CarouselItem.class, carouselItemId);
+        if (carouselItem == null) {
+            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
         }
-        CarouselItem carouselItem = savedItem.getCarouselItem();
+        SavedItem savedItem = entityManager.getReference(SavedItem.class, carouselItem.getSavedItem().getId());
+        if (savedItem == null) {
+            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
+        }
         savedItem.setCarouselItem(null);
         entityManager.remove(carouselItem);
         entityManager.flush();
