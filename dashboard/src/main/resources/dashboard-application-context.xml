@@ -73,8 +73,9 @@
     <bean id="indexTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail">
             <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="solrIndexer"/>
-                <!-- 2 options are available: run and runParallel -->
+                <property name="targetObject">
+                    <bean class="eu.europeana.incoming.IndexJobRunner"/>
+                </property>
                 <property name="targetMethod" value="runParallel"/>
                 <property name="concurrent" value="false"/>
             </bean>
