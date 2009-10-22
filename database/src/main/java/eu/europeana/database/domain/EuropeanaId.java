@@ -195,11 +195,6 @@ public class EuropeanaId implements Serializable {
     }
 
     @Deprecated
-    public String getSolrRecords() {
-        return solrRecords;
-    }
-
-    @Deprecated
     public void setSolrRecords(String solrRecords) {
         this.solrRecords = solrRecords;
     }
