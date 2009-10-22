@@ -22,14 +22,45 @@
 package eu.europeana.database.migration.outgoing;
 
 import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.query.RecordField;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * An interface that lets us send a delete command to solr
+ * An interface that lets us send commands to Solr
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
 public interface SolrIndexer {
-    boolean reindex(EuropeanaId europeanaId);
+
+    /**
+     * Send a number of records to the index in one request.
+     *
+     * @param ids which ids are to be indexed
+     * @param records a map, each record is a collectin of field-string mappings
+     * @return true if it worked
+     */
+    
+    boolean index(List<EuropeanaId> ids, Map<String,Map<RecordField, String>> records);
+
+    /**
+     * Reindex a single europeanaId
+     *
+     * @param europeanaId which one to reindex
+     * @param record the fields corresponding to one record
+     * @return true if it worked
+     */
+
+    boolean reindex(EuropeanaId europeanaId, Map<RecordField, String> record);
+
+    /**
+     * Delete an entire collection from the index
+     *
+     * @param collectionName what is it called?
+     * @return true if it worked
+     */
+    
     boolean delete(String collectionName);
 }

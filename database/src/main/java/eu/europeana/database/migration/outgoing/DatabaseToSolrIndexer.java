@@ -25,10 +25,13 @@ import eu.europeana.database.dao.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.IndexingQueueEntry;
+import eu.europeana.query.RecordField;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -71,7 +74,9 @@ public class DatabaseToSolrIndexer extends AbstractSolrIndexer implements Runnab
                 System.currentTimeMillis() - start));
         try {
             start = System.currentTimeMillis();
-            String xml = createAddRecordsXML(newIds);
+            Map<String, Map<RecordField, String>> records = new TreeMap<String, Map<RecordField, String>>();
+            // todo: where do the records come from?
+            String xml = createAddRecordsXML(newIds, records);
             postUpdate(xml);
             log.info("Finished submitting " + newIds.size() + " ids to index in " + (System.currentTimeMillis() - start) + " millis.");
             start = System.currentTimeMillis();

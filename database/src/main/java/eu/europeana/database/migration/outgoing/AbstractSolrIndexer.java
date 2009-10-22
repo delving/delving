@@ -35,7 +35,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -64,19 +65,25 @@ public class AbstractSolrIndexer implements SolrIndexer {
         this.chunkSize = chunkSize;
     }
 
-    public AbstractSolrIndexer() {
-//         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
-//                "/database-application-context.xml",
-//                 "/test-application-context.xml"
-//        });
-//        dashboardDao = (DashboardDao) context.getBean("dashboardDao");
+    public boolean index(List<EuropeanaId> ids, Map<String, Map<RecordField, String>> records) {
+        try {
+            String xml = createAddRecordsXML(ids, records);
+            postUpdate(xml);
+            return true;
+        }
+        catch (Exception e) {
+            log.error("Problem posting record", e);
+        }
+        return false;
     }
 
-    public boolean reindex(EuropeanaId europeanaId) {
+    public boolean reindex(EuropeanaId europeanaId, Map<RecordField, String> record) {
         try {
             List<EuropeanaId> list = new ArrayList<EuropeanaId>();
             list.add(europeanaId);
-            String xml = createAddRecordsXML(list);
+            Map<String, Map<RecordField, String>> records = new TreeMap<String, Map<RecordField, String>>();
+            records.put(record.get(RecordField.EUROPEANA_URI), record);
+            String xml = createAddRecordsXML(list, records);
             postUpdate(xml);
             return true;
         }
@@ -134,26 +141,20 @@ public class AbstractSolrIndexer implements SolrIndexer {
         }
     }
 
-    protected String createAddRecordsXML(List<EuropeanaId> ids) throws IOException {
+    protected String createAddRecordsXML(List<EuropeanaId> ids, Map<String,Map<RecordField,String>> records) throws IOException {
         StringBuilder out = new StringBuilder();
         out.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         out.append("<add>\n");
         for (EuropeanaId id : ids) {
-            if (id.getBoostFactor() == null) {
-                out.append("\t<doc>\n");
+            out.append("\t<doc>\n");
+            Map<RecordField, String> record = records.get(id.getEuropeanaUri());
+            if (record == null) {
+                throw new IllegalStateException("Cannot find record for URI "+id.getEuropeanaUri());
             }
-            else {
-                out.append("\t<doc boost=\"").append(id.getBoostFactor()).append("\">\n");
-            }
-            out.append("\t\t<field name=\"europeana_uri\">");
-            out.append(id.getEuropeanaUri());
-            out.append("</field>\n");
-            StringTokenizer tok = new StringTokenizer(id.getSolrRecords(), "\n");
-            while (tok.hasMoreElements()) {
-                String line = tok.nextToken();
-                if (line.indexOf("field") > 0) {
-                    out.append('\t').append(line).append('\n');
-                }
+            for (Map.Entry<RecordField, String> entry : record.entrySet()) {
+                out.append("\t\t<field name=\"").append(entry.getKey().toFieldNameString()).append("\">");
+                out.append(entry.getValue());
+                out.append("</field>\n");
             }
             for (SocialTag socialTag : id.getSocialTags()) {
                 out.append("\t\t<field name=\"").append(RecordField.EUROPEANA_USER_TAG.toFieldNameString()).append("\">");
@@ -165,9 +166,6 @@ public class AbstractSolrIndexer implements SolrIndexer {
                 out.append(editorPick.getQuery());
                 out.append("</field>\n");
             }
-            out.append("\t\t<field name=\"").append(RecordField.EUROPEANA_COLLECTION_NAME.toFieldNameString()).append("\">");
-            out.append(id.getCollection().getName());
-            out.append("</field>\n");
             out.append("\t</doc>\n");
         }
         out.append("</add>\n");
