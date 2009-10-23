@@ -3,6 +3,9 @@ package eu.europeana.dashboard.client.widgets;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.CarouselItemX;
@@ -59,7 +62,7 @@ public class CarouselItemsWidget extends DashboardWidget {
                     int col = count % COLUMNS;
                     String imageSource = cacheUrl + "uri=" + URL.encode(item.getThumbnail()) + "&size=BRIEF_DOC&type=IMAGE";
                     HTML thumb = new HTML("<img src=\"" + imageSource + "\">");
-                    thumb.addClickListener(new PopupClickListener(item));
+                    thumb.addClickHandler(new PopupClickListener(item));
                     grid.setWidget(row, col, thumb);
                     count++;
                 }
@@ -81,7 +84,7 @@ public class CarouselItemsWidget extends DashboardWidget {
         }
 
         public void selectItem(final SavedItemX savedItem) {
-            world.service().createCarouselItem(savedItem, new Reply<CarouselItemX>() {
+            world.service().createCarouselItem(savedItem.getUri(), new Reply<CarouselItemX>() {
                 public void onSuccess(CarouselItemX result) {
                     if (result == null) {
                         Window.alert(world.messages().uriNotFound(savedItem.getUri()));
@@ -94,7 +97,7 @@ public class CarouselItemsWidget extends DashboardWidget {
         }
     }
 
-    private class PopupClickListener implements ClickListener {
+    private class PopupClickListener implements ClickHandler {
         private static final int OFFSET = 30;
         private CarouselItemX item;
 
@@ -102,8 +105,8 @@ public class CarouselItemsWidget extends DashboardWidget {
             this.item = item;
         }
 
-        public void onClick(Widget sender) {
-            popup.setPopupPosition(sender.getAbsoluteLeft() + OFFSET, sender.getAbsoluteTop() + 2 * OFFSET);
+        public void onClick(ClickEvent sender) {
+            popup.setPopupPosition(((Widget)sender.getSource()).getAbsoluteLeft() + OFFSET, ((Widget)sender.getSource()).getAbsoluteTop() + 2 * OFFSET);
             Grid grid = new Grid(6, 2);
             grid.setHTML(0, 0, world.messages().title());
             grid.setHTML(1, 0, world.messages().creator());
@@ -126,8 +129,8 @@ public class CarouselItemsWidget extends DashboardWidget {
             p.setWidth("100%");
             p.add(grid);
             Button delete = new Button(world.messages().deleteThisItem());
-            delete.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            delete.addClickHandler(new ClickHandler() {
+               public void onClick(ClickEvent sender) {
                     world.service().removeCarouselItem(item, new Reply<Boolean>() {
                         public void onSuccess(Boolean result) {
                             if (result) {
