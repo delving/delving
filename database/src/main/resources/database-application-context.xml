@@ -106,7 +106,7 @@
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="httpClient" ref="httpClient"/>
         <property name="targetUrl" value="${solr.updateUrl}"/>
-        <property name="queryModelFactory" value="queryModelFactory"/>
+        <property name="queryModelFactory" ref="queryModelFactory"/>
         <property name="chunkSize" value="${solr.chunkSize}"/>
     </bean>
 
