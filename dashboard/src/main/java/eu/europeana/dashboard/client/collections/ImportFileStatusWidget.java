@@ -3,7 +3,8 @@ package eu.europeana.dashboard.client.collections;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -61,8 +62,8 @@ public class ImportFileStatusWidget extends DashboardWidget {
                 case UPLOADED:
                     panel.add(new HTML(world.messages().uploaded()));
                     Button commenceImport = new Button(world.messages().commenceImport());
-                    commenceImport.addClickListener(new ClickListener() {
-                        public void onClick(Widget sender) {
+                    commenceImport.addClickHandler(new ClickHandler() {
+                        public void onClick(ClickEvent sender) {
                             world.service().commenceImport(importFile, holder.getCollection().getId(), true, new Reply<ImportFileX>() {
                                 public void onSuccess(ImportFileX result) {
                                     holder.setImportFile(result);
@@ -76,8 +77,8 @@ public class ImportFileStatusWidget extends DashboardWidget {
                 case IMPORTING:
                     panel.add(new HTML(world.messages().importing()));
                     Button cancelImport = new Button(world.messages().abortImport());
-                    cancelImport.addClickListener(new ClickListener() {
-                        public void onClick(Widget sender) {
+                    cancelImport.addClickHandler(new ClickHandler() {
+                        public void onClick(ClickEvent sender) {
                             world.service().abortImport(importFile, true, new Reply<ImportFileX>() {
                                 public void onSuccess(ImportFileX result) {
                                     holder.setImportFile(result);
