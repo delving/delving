@@ -58,7 +58,7 @@ public class LoadContent {
 
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/database-application-context.xml",
-                "/dashboard-application-context.xml",
+                "/bootstrap-application-context.xml"
         });
         ESEImporter eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         DashboardDao dashboardDao = (DashboardDao) context.getBean("dashboardDao");

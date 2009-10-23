@@ -81,6 +81,18 @@
         </constructor-arg>
     </bean>
 
+
+    <bean id="normalizedImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
+        <property name="dataDirectory" value="${dashboard.normalized.import.repository}"/>
+    </bean>
+
+    <bean id="normalizedEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
+        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="importRepository" ref="normalizedImportRepository"/>
+        <property name="solrIndexer" ref="solrIndexer"/>
+        <property name="normalized" value="true"/>
+    </bean>
+    
     <bean id="queryModelFactory" class="eu.europeana.json.JsonQueryModelFactory">
         <property name="simpleQueryModelFactory"    ref="solrQueryModelFactory"/>
         <property name="advancedQueryModelFactory"  ref="solrQueryModelFactory"/>
