@@ -1,7 +1,8 @@
 package eu.europeana.dashboard.client.widgets;
 
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -84,16 +85,16 @@ public class LogWidget extends DashboardWidget {
     private Widget createLogPanel() {
         grid.setWidth("900px");
         final Button up = new Button(world.messages().olderEntries());
-        up.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        up.addClickHandler(new ClickHandler() {
+                        public void onClick(ClickEvent sender) {
                 bottomId = topId;
                 topId = null;
                 refresh();
             }
         });
         final Button down = new Button(world.messages().newerEntries());
-        down.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        down.addClickHandler(new ClickHandler() {
+                        public void onClick(ClickEvent sender) {
                 topId = bottomId;
                 bottomId = null;
                 refresh();

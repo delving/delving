@@ -1,7 +1,8 @@
 package eu.europeana.dashboard.client.widgets;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -84,8 +85,8 @@ public class PartnerWidget extends DashboardWidget {
             HTML itemHtml = new HTML("<a href=\"" + partner.getUrl() + "\" target=\"_blank\">" + partner.getName() + "</a>&nbsp;&nbsp;&nbsp;");
             HTML remove = new HTML("x");
             remove.setStyleName("actionLink");
-            remove.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            remove.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent sender) {
                     world.service().removePartner(partner.getId(), new Reply<Boolean>() {
                         public void onSuccess(Boolean result) {
                             if (result) {
@@ -97,8 +98,8 @@ public class PartnerWidget extends DashboardWidget {
             });
             HTML edit = new HTML("e");
             edit.setStyleName("actionLink");
-            edit.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            edit.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent sender) {
                     prepareForInput();
                 }
             });
@@ -111,8 +112,8 @@ public class PartnerWidget extends DashboardWidget {
         private void buildMoreHtml() {
             HTML itemHtml = new HTML(world.messages().more());
             itemHtml.setStyleName("actionLink");
-            itemHtml.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            itemHtml.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent sender) {
                     prepareForInput();
                 }
             });
@@ -121,14 +122,14 @@ public class PartnerWidget extends DashboardWidget {
 
         private void buildPartnerFieldsPanel() {
             final Button submitButton = new Button(world.messages().submit());
-            submitButton.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            submitButton.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent sender) {
                     savePartner();
                 }
             });
             final Button revertButton = new Button(world.messages().revert());
-            revertButton.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            revertButton.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent sender) {
                     revertToItem();
                 }
             });

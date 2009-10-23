@@ -1,11 +1,11 @@
 package eu.europeana.dashboard.client.widgets;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -44,9 +44,9 @@ public class UserChooser extends DashboardWidget {
     protected Widget createWidget() {
         HorizontalPanel panel = new HorizontalPanel();
         suggestBox = new SuggestBox(new UserOracle());
-        suggestBox.addEventHandler(new SuggestionHandler() {
-            public void onSuggestionSelected(SuggestionEvent event) {
-                UserSuggestion suggestion = (UserSuggestion)event.getSelectedSuggestion();
+        suggestBox.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+            public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
+                UserSuggestion suggestion = (UserSuggestion)event.getSelectedItem();
                 selectedUser = suggestion.user;
                 if (listener != null) {
                     listener.userSelected(selectedUser);

@@ -1,16 +1,12 @@
 package eu.europeana.dashboard.client.sandbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HorizontalSplitPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.logical.shared.SelectionEvent;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -46,9 +42,9 @@ public class SandboxWidget extends DashboardWidget {
     public SandboxWidget(World world) {
         super(world);
         collectionListWidget = new CollectionListWidget(world);
-        collectionListWidget.setClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
-                browseDataSets.setChecked(true);
+        collectionListWidget.setClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent widget) {
+                browseDataSets.setValue(true);
                 showFilteredCollections();
             }
         });
@@ -98,7 +94,7 @@ public class SandboxWidget extends DashboardWidget {
             public void onSuccess(List<EuropeanaCollectionX> result) {
                 collectionListWidget.setCollections(result);
                 newDataSet.setEnabled(true);
-                newDataSet.setChecked(true);
+                newDataSet.setValue(true);
                 showNewCollection(result.size()+1);
                 queuePoller.schedule(STATUS_CHECK_DELAY);
             }
@@ -108,24 +104,24 @@ public class SandboxWidget extends DashboardWidget {
 
     private Widget createLeftWidget() {
         newDataSet = new RadioButton(ACTION_GROUP, world.messages().newDataSet());
-        newDataSet.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
+        newDataSet.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent widget) {
                 showNewCollection(collectionListWidget.getCollectionCount()+1);
             }
         });
         showDataSet = new RadioButton(ACTION_GROUP, world.messages().showDataSet());
-        showDataSet.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
+        showDataSet.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent widget) {
                 showSelectedCollection();
             }
         });
         selectedCollectionBox = new SuggestBox(collectionListWidget.getSuggestOracle());
-        selectedCollectionBox.addEventHandler(new SuggestionHandler() {
-            public void onSuggestionSelected(SuggestionEvent event) {
-                showDataSet.setChecked(true);
-                CollectionListWidget.CollectionSuggestion suggestion = (CollectionListWidget.CollectionSuggestion) event.getSelectedSuggestion();
+        selectedCollectionBox.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+            public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
+                showDataSet.setValue(true);
+                CollectionListWidget.CollectionSuggestion suggestion = (CollectionListWidget.CollectionSuggestion) event.getSelectedItem();
                 selectedCollection = suggestion.getCollection();
-                if (showDataSet.isChecked()) {
+                if (showDataSet.getValue()) {
                     showSelectedCollection();
                 }
             }
@@ -134,8 +130,8 @@ public class SandboxWidget extends DashboardWidget {
         showDataSetPanel.add(showDataSet);
         showDataSetPanel.add(selectedCollectionBox);
         browseDataSets = new RadioButton(ACTION_GROUP, world.messages().browseDataSets());
-        browseDataSets.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
+        browseDataSets.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent widget) {
                 showFilteredCollections();
             }
         });
@@ -191,7 +187,7 @@ public class SandboxWidget extends DashboardWidget {
             collectionListWidget.addCollection(collection);
             selectedCollection = collection;
             selectedCollectionBox.setText(collection.getName());
-            showDataSet.setChecked(true);
+            showDataSet.setValue(true);
             showSelectedCollection();
         }
     }

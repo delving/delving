@@ -1,7 +1,8 @@
 package eu.europeana.dashboard.client.collections;
 
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -57,8 +58,8 @@ public class CollectionStatusWidget extends DashboardWidget {
             case DISABLED:
                 panel.add(new HTML(setIs + world.messages().disabled()));
                 final Button enable = new Button(world.messages().commenceIndexing());
-                enable.addClickListener(new ClickListener() {
-                    public void onClick(Widget sender) {
+                enable.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent sender) {
                         askSetState(CollectionStateX.QUEUED, world.messages().areYouSureCollection(world.messages().indexAndEnable()));
                     }
                 });
@@ -75,8 +76,8 @@ public class CollectionStatusWidget extends DashboardWidget {
             case ENABLED:
                 panel.add(new HTML(setIs + " " + world.messages().enabled()));
                 final Button disable = new Button(world.messages().disable());
-                disable.addClickListener(new ClickListener() {
-                    public void onClick(Widget sender) {
+                disable.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent sender) {
                         askSetState(CollectionStateX.DISABLED, world.messages().areYouSureCollection(world.messages().disable()));
                     }
                 });
@@ -89,8 +90,8 @@ public class CollectionStatusWidget extends DashboardWidget {
 
     private Widget createAbortLink(final CollectionStateX abortedCollectionState, final String process) {
         final Button abort = new Button(world.messages().abort());
-        abort.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        abort.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 askSetState(abortedCollectionState, world.messages().areYouSureAbort(process));
             }
         });

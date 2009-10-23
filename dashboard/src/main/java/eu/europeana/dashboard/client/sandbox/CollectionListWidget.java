@@ -1,7 +1,8 @@
 package eu.europeana.dashboard.client.sandbox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.StackPanel;
@@ -29,7 +30,7 @@ public class CollectionListWidget extends DashboardWidget {
     private Map<FilterChoice, CheckBox> importFileState = new HashMap<FilterChoice, CheckBox>();
     private Map<FilterChoice, CheckBox> collectionState = new HashMap<FilterChoice, CheckBox>();
     private Map<FilterChoice, CheckBox> cacheState = new HashMap<FilterChoice, CheckBox>();
-    private ClickListener clickListener;
+    private ClickHandler clickHandler;
 
     public CollectionListWidget(World world) {
         super(world);
@@ -65,8 +66,8 @@ public class CollectionListWidget extends DashboardWidget {
         }
     }
 
-    public void setClickListener(ClickListener clickListener) {
-        this.clickListener = clickListener;
+    public void setClickHandler(ClickHandler clickHandler) {
+        this.clickHandler= clickHandler;
     }
 
     protected Widget createWidget() {
@@ -75,7 +76,7 @@ public class CollectionListWidget extends DashboardWidget {
         panel.setSpacing(8);
         for (FilterChoice fc : FilterChoice.values()) {
             CheckBox checkBox = importFileState.get(fc);
-            checkBox.addClickListener(clickListener);
+            checkBox.addClickHandler(clickHandler);
             panel.add(checkBox);
         }
         stack.add(panel, world.messages().importFileStateTitle());
@@ -83,7 +84,7 @@ public class CollectionListWidget extends DashboardWidget {
         panel.setSpacing(8);
         for (FilterChoice fc : FilterChoice.values()) {
             CheckBox checkBox = collectionState.get(fc);
-            checkBox.addClickListener(clickListener);
+            checkBox.addClickHandler(clickHandler);
             panel.add(checkBox);
         }
         stack.add(panel, world.messages().collectionStateTitle());
@@ -91,26 +92,27 @@ public class CollectionListWidget extends DashboardWidget {
         panel.setSpacing(8);
         for (FilterChoice fc : FilterChoice.values()) {
             CheckBox checkBox = cacheState.get(fc);
-            checkBox.addClickListener(clickListener);
+            checkBox.addClickHandler(clickHandler);
             panel.add(checkBox);
         }
         stack.add(panel, world.messages().cacheStateTitle());
         HTML selectAll = new HTML(world.messages().selectAll());
         selectAll.setStyleName("actionLink");
-        selectAll.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        selectAll.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 setAllChecked(true);
             }
         });
-        selectAll.addClickListener(clickListener);
+        selectAll.addClickHandler(clickHandler);     // Why ??? Nicola
         HTML selectNone = new HTML(world.messages().selectNone());
         selectNone.setStyleName("actionLink");
-        selectNone.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        selectNone.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 setAllChecked(false);
             }
         });
-        selectNone.addClickListener(clickListener);
+        selectNone.addClickHandler(clickHandler);  // Why ??? Nicola
+
         HorizontalPanel bp = new HorizontalPanel();
         bp.setSpacing(5);
         bp.add(selectAll);
@@ -123,13 +125,13 @@ public class CollectionListWidget extends DashboardWidget {
 
     private void setAllChecked(boolean checked) {
         for (CheckBox box : importFileState.values()) {
-            box.setChecked(checked);
+            box.setValue(checked);
         }
         for (CheckBox box : collectionState.values()) {
-            box.setChecked(checked);
+            box.setValue(checked);
         }
         for (CheckBox box : cacheState.values()) {
-            box.setChecked(checked);
+            box.setValue(checked);
         }
     }
 
@@ -137,9 +139,9 @@ public class CollectionListWidget extends DashboardWidget {
         List<EuropeanaCollectionX> list = new ArrayList<EuropeanaCollectionX>();
         for (EuropeanaCollectionX collection : collections) {
             if (
-                    collectionState.get(collection.getCollectionState().getFilterChoice()).isChecked() ||
-                    cacheState.get(collection.getCacheState().getFilterChoice()).isChecked() ||
-                    importFileState.get(collection.getFileState().getFilterChoice()).isChecked()
+                    collectionState.get(collection.getCollectionState().getFilterChoice()).getValue() ||
+                    cacheState.get(collection.getCacheState().getFilterChoice()).getValue() ||
+                    importFileState.get(collection.getFileState().getFilterChoice()).getValue()
             ) {
                 list.add(collection);
             }

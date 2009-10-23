@@ -1,7 +1,8 @@
 package eu.europeana.dashboard.client.collections;
 
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -57,8 +58,8 @@ public class CacheStatusWidget extends DashboardWidget {
             case UNCACHED:
                 panel.add(new HTML(theyAre + world.messages().notCached()));
                 final Button commence = new Button(world.messages().commenceCacheing());
-                commence.addClickListener(new ClickListener() {
-                    public void onClick(Widget sender) {
+                commence.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent sender) {
                         askSetState(CacheStateX.QUEUED, world.messages().areYouSureCollection(world.messages().cache()));
                     }
                 });
@@ -75,8 +76,8 @@ public class CacheStatusWidget extends DashboardWidget {
             case CACHED:
                 panel.add(new HTML(theyAre + world.messages().cached()));
                 final Button recache = new Button(world.messages().recache());
-                recache.addClickListener(new ClickListener() {
-                    public void onClick(Widget sender) {
+                recache.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent sender) {
                         askSetState(CacheStateX.QUEUED, world.messages().areYouSureCollection(world.messages().recache()));
                     }
                 });
@@ -89,8 +90,8 @@ public class CacheStatusWidget extends DashboardWidget {
 
     private Widget createAbortLink(final CacheStateX abortedCacheState, final String process) {
         final Button abort = new Button(world.messages().abort());
-        abort.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        abort.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent sender) {
                 askSetState(abortedCacheState, world.messages().areYouSureAbort(process));
             }
         });
