@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -16,7 +17,10 @@ import java.util.Locale;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/database-application-context.xml", "/test-application-context.xml"})
+@ContextConfiguration(locations = {
+        "/database-application-context.xml",
+        "/hypersonic-datasource.xml"
+})
 public class DaoMessageSourceTest {
 
     @Autowired
@@ -25,7 +29,9 @@ public class DaoMessageSourceTest {
     private DaoMessageSource daoMessageSource;
 
     @Before
-    public void before() {
+    public void before() throws IOException {
+        DataMigration dataMigration = new DataMigration(true);
+        dataMigration.importTables();
         daoMessageSource = new DaoMessageSource();
         daoMessageSource.setMessageDao(messageDao);
     }

@@ -22,7 +22,13 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.User;
+import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +39,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +48,7 @@ import java.util.List;
  * @since Mar 3, 2009: 5:19:40 AM
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/database-application-context.xml", "/test-application-context.xml"})
+@ContextConfiguration(locations = {"/database-application-context.xml", "/hypersonic-datasource.xml"})
 @Transactional
 public class CarouselItemDaoImplTest {
 
