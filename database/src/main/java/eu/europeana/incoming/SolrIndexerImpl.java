@@ -164,6 +164,8 @@ public class SolrIndexerImpl implements SolrIndexer {
             if (record == null) {
                 throw new IllegalStateException("Cannot find record for URI "+record.getEuropeanaId().getEuropeanaUri());
             }
+            appendField(out, RecordField.EUROPEANA_URI, record.getEuropeanaId().getEuropeanaUri());
+            appendField(out, RecordField.EUROPEANA_COLLECTION_NAME, record.getEuropeanaId().getCollection().getName());
             for (ESERecord.Field field : record.getEseRecord()) {
                 if (field.getKey().getFacetType() != null) {
                     out.append("\t\t<field name=\"").append(field.getKey().getFacetType()).append("\">");
@@ -175,19 +177,21 @@ public class SolrIndexerImpl implements SolrIndexer {
                 out.append("</field>\n");
             }
             for (SocialTag socialTag : record.getEuropeanaId().getSocialTags()) {
-                out.append("\t\t<field name=\"").append(RecordField.EUROPEANA_USER_TAG.toFieldNameString()).append("\">");
-                out.append(socialTag.getTag());
-                out.append("</field>\n");
+                appendField(out, RecordField.EUROPEANA_USER_TAG, socialTag.getTag());
             }
             for (EditorPick editorPick : record.getEuropeanaId().getEditorPicks()) {
-                out.append("\t\t<field name=\"").append(RecordField.EUROPEANA_EDITORS_PICK.toFieldNameString()).append("\">");
-                out.append(editorPick.getQuery());
-                out.append("</field>\n");
+                appendField(out, RecordField.EUROPEANA_EDITORS_PICK, editorPick.getQuery());
             }
             out.append("\t</doc>\n");
         }
         out.append("</add>\n");
         return out.toString();
+    }
+
+    private void appendField(StringBuilder out, RecordField recordField, String value) {
+        out.append("\t\t<field name=\"").append(recordField.toFieldNameString()).append("\">");
+        out.append(value);
+        out.append("</field>\n");
     }
 
     protected ESERecord fetchRecordFromSolr(String uri) throws EuropeanaQueryException {
