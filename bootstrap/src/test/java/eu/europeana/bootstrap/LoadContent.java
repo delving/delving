@@ -64,8 +64,12 @@ public class LoadContent {
         DashboardDao dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         ImportRepository repository = (ImportRepository) context.getBean("normalizedImportRepository");
 
-        ImportFile importFile = repository.moveToUploaded(new File("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml"));
-        EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
+        final File file = new File("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
+        EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByFileName(file.getName());
+        ImportFile importFile = repository.moveToUploaded(file);
+        if (europeanaCollection == null) {
+            europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
+        }
         importFile = eseImporter.commenceImport(importFile, europeanaCollection.getId());
 
         if (importFile.getState() == ImportFileState.ERROR) {
