@@ -1,5 +1,8 @@
-package eu.europeana.database;
+package eu.europeana.database.dao;
 
+import eu.europeana.database.DaoMessageSource;
+import eu.europeana.database.DataMigration;
+import eu.europeana.database.MessageDao;
 import eu.europeana.database.domain.Language;
 import junit.framework.Assert;
 import org.junit.Before;
