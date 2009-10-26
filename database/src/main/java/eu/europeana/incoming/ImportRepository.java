@@ -3,6 +3,7 @@ package eu.europeana.incoming;
 import eu.europeana.database.domain.ImportFileState;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,5 +27,5 @@ public interface ImportRepository {
 
     ImportFile checkStatus(String fileName);
 
-    ImportFile moveToUploaded(File file);
+    ImportFile copyToUploaded(File file) throws IOException;
 }

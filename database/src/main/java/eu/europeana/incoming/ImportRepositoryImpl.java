@@ -5,6 +5,9 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +71,7 @@ public class ImportRepositoryImpl implements ImportRepository {
         return null;
     }
 
-    public ImportFile moveToUploaded(File file) {
+    public ImportFile copyToUploaded(File file) throws IOException {
         String fileName = file.getName();
         Folder folder = get(fileName);
         if (folder != null) {
@@ -77,9 +80,17 @@ public class ImportRepositoryImpl implements ImportRepository {
         }
         Folder uploadedFolder = get(ImportFileState.UPLOADED);
         File uploadedFile = uploadedFolder.createFile(fileName);
-        if (!file.renameTo(uploadedFile)) {
-            log.error("unable to move file from "+file.getAbsolutePath()+" to "+uploadedFile.getAbsolutePath());
+        log.info("going to copy "+file.getAbsolutePath()+" to "+uploadedFile.getAbsolutePath());
+        FileInputStream in = new FileInputStream(file);
+        FileOutputStream out = new FileOutputStream(uploadedFile);
+        byte [] buffer = new byte[2048];
+        int chunk;
+        while ((chunk = in.read(buffer)) > 0) {
+            out.write(buffer, 0, chunk);
         }
+        in.close();
+        out.close();
+        log.info("done copying "+file.getAbsolutePath()+" to "+uploadedFile.getAbsolutePath());
         return new ImportFile(fileName, ImportFileState.UPLOADED);
     }
 
