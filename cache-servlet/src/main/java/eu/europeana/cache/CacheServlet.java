@@ -23,19 +23,14 @@ package eu.europeana.cache;
 
 import eu.europeana.query.DocType;
 import eu.europeana.query.EuropeanaProperties;
+import org.apache.log4j.Logger;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 
 /**
  * This servlet delivers the cached versions of the uri.
@@ -57,6 +52,8 @@ public class CacheServlet extends HttpServlet {
             {ItemSize.FULL_DOC.toString(), DocType.SOUND.toString(), "/cache/item-sound-large.gif"},
             {ItemSize.FULL_DOC.toString(), DocType.VIDEO.toString(), "/cache/item-video-large.gif"},
     };
+    private final int CACHE_DURATION_IN_SECOND = 60 * 60; // 1 hour
+    private final long CACHE_DURATION_IN_MS = CACHE_DURATION_IN_SECOND  * 1000;
 
     private Logger log = Logger.getLogger(getClass());
     private DigitalObjectCache digitalObjectCache;
@@ -124,6 +121,7 @@ public class CacheServlet extends HttpServlet {
             return false;
         }
         response.setContentType(mimeType.getType());
+        setCacheControlHeaders(response);
         OutputStream out = response.getOutputStream();
         InputStream in = new FileInputStream(cachedFile);
         try {
@@ -174,6 +172,7 @@ public class CacheServlet extends HttpServlet {
 
     private void respondWithDefaultImage(HttpServletResponse response, String type, ItemSize size) throws IOException {
         response.setContentType("image/png");
+        setCacheControlHeaders(response);
         String resource = DEFAULT_IMAGE;
         for (String[] array : TYPES) {
             if (array[0].equals(size.toString()) && array[1].equalsIgnoreCase(type)) {
@@ -193,5 +192,15 @@ public class CacheServlet extends HttpServlet {
             in.close();
             out.close();
         }
+    }
+
+    /** Sets the HTTP header that instruct cache control to the browser. */
+    private void setCacheControlHeaders(HttpServletResponse response) {
+        long now = System.currentTimeMillis();
+        response.addHeader("Cache-Control", "max-age=" + CACHE_DURATION_IN_SECOND);
+        response.addHeader("Cache-Control", "must-revalidate"); //optional
+        response.setDateHeader("Last-Modified", now);
+        response.setDateHeader("Expires", now + CACHE_DURATION_IN_MS);
+
     }
 }
