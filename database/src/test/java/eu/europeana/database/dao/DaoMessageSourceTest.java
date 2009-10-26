@@ -29,13 +29,13 @@ public class DaoMessageSourceTest {
     @Autowired
     private MessageDao messageDao;
 
-    private DaoMessageSource daoMessageSource;
+    private DaoMessageSource daoMessageSource = new DaoMessageSource();
 
     @Before
     public void before() throws IOException {
         DataMigration migration = new DataMigration();
+        migration.setMessageDao(messageDao);
         migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
-        daoMessageSource = new DaoMessageSource();
         daoMessageSource.setMessageDao(messageDao);
     }
 
