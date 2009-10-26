@@ -212,15 +212,14 @@ public class ESEImporterImpl implements ESEImporter {
                     collection = dashboardDao.updateCollectionCounters(collection.getId());
                     importFile = importRepository.transition(importFile, ImportFileState.IMPORTED);
                     collection.setFileState(ImportFileState.IMPORTED);
-                    if (collection.getCollectionState() == CollectionState.EMPTY) {// this must not happen
-                        collection.setCollectionState(CollectionState.DISABLED);
-                    }
+                    collection.setCollectionState(CollectionState.ENABLED);
                     if (collection.getCacheState() == CacheState.EMPTY) {
                         collection.setCacheState(CacheState.UNCACHED);
                     }
                 }
                 else {
                     log.info("Aborted importing " + importFile);
+                    collection.setCollectionState(CollectionState.DISABLED);
                     if (normalized) {
                         importFile = importRepository.transition(importFile, ImportFileState.UPLOADED);
                         collection.setFileState(ImportFileState.UPLOADED);
@@ -231,6 +230,7 @@ public class ESEImporterImpl implements ESEImporter {
                     }
                 }
                 collection = dashboardDao.updateCollection(collection);
+                dashboardDao.removeFromIndexQueue(collection);
             }
             catch (ImportException e) {
                 log.warn("Problem importing " + importFile + " to database, moving to error directory", e);
