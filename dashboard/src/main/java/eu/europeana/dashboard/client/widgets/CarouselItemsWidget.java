@@ -1,11 +1,10 @@
 package eu.europeana.dashboard.client.widgets;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.CarouselItemX;
@@ -84,7 +83,7 @@ public class CarouselItemsWidget extends DashboardWidget {
         }
 
         public void selectItem(final SavedItemX savedItem) {
-            world.service().createCarouselItem(savedItem.getUri(), new Reply<CarouselItemX>() {
+            world.service().createCarouselItem(savedItem, new Reply<CarouselItemX>() {
                 public void onSuccess(CarouselItemX result) {
                     if (result == null) {
                         Window.alert(world.messages().uriNotFound(savedItem.getUri()));
