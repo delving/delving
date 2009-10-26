@@ -22,7 +22,6 @@
 package eu.europeana.incoming;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import com.ctc.wstx.stax.WstxOutputFactory;
 import eu.europeana.database.dao.DashboardDao;
 import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CollectionState;
@@ -33,7 +32,6 @@ import eu.europeana.query.DocType;
 import eu.europeana.query.ESERecord;
 import eu.europeana.query.RecordField;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -262,7 +260,6 @@ public class ESEImporterImpl implements ESEImporter {
 
         private void importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, ImportException {
             XMLInputFactory inFactory = new WstxInputFactory();
-            XMLOutputFactory outFactory = new WstxOutputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
             EuropeanaId europeanaId = null;
@@ -285,7 +282,7 @@ public class ESEImporterImpl implements ESEImporter {
                         }
                         else if (europeanaId != null) {
                             RecordField field = getRecordField(xml.getPrefix(), xml.getLocalName(), recordCount);
-                            String language = fetchLanguage(xml);
+//                            String language = fetchLanguage(xml);
                             String text = xml.getElementText();
                             if (field == RecordField.EUROPEANA_URI) {
                                 europeanaId.setEuropeanaUri(text);
@@ -404,14 +401,14 @@ public class ESEImporterImpl implements ESEImporter {
             return "record".equals(xml.getName().getLocalPart());
         }
 
-        private String fetchLanguage(XMLStreamReader xml) {
-            for (int walk = 0; walk < xml.getAttributeCount(); walk++) {
-                if ("xml".equals(xml.getAttributePrefix(walk)) && "lang".equals(xml.getAttributeLocalName(walk))) {
-                    return xml.getAttributeValue(walk);
-                }
-            }
-            return null;
-        }
+//        private String fetchLanguage(XMLStreamReader xml) {
+//            for (int walk = 0; walk < xml.getAttributeCount(); walk++) {
+//                if ("xml".equals(xml.getAttributePrefix(walk)) && "lang".equals(xml.getAttributeLocalName(walk))) {
+//                    return xml.getAttributeValue(walk);
+//                }
+//            }
+//            return null;
+//        }
 
         public ImportFile getFile() {
             return importFile;

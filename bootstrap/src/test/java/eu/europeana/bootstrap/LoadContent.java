@@ -42,16 +42,6 @@ public class LoadContent {
     private static final Logger log = Logger.getLogger(LoadContent.class);
 
     public static void main(String[] args) throws Exception {
-//        DataMigration migration = new DataMigration("./bootstrap/src/main/resources/");
-//        log.info("Start loading Static Content into the database");
-//        try {
-//            migration.importTables();
-//        } catch (IOException e) {
-//            log.error("Unable to find the import files");
-//        }
-//        log.info("Finish loading Static Content into the database");
-
-
         SolrStarter solr = new SolrStarter();
         log.info("Starting Solr Server");
         solr.start();
@@ -71,22 +61,17 @@ public class LoadContent {
             europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
         }
         importFile = eseImporter.commenceImport(importFile, europeanaCollection.getId());
-
-        if (importFile.getState() == ImportFileState.ERROR) {
-            log.info("importing ");
-        }
-        else {
-            log.info("Finished importing and indexing test collection");
-        }
-
-        Thread.sleep(10000);
-
-        while (europeanaCollection.getFileState() == ImportFileState.IMPORTING) {
-            log.info("waiting to leave IMPORTING state");
-            Thread.sleep(1000);
+        log.info("Importing commenced for "+importFile);
+        while (europeanaCollection.getFileState() == ImportFileState.UPLOADED) {
+            log.info("waiting to leave UPLOADED state");
+            Thread.sleep(500);
             europeanaCollection = dashboardDao.fetchCollection(europeanaCollection.getId());
         }
-
+        while (europeanaCollection.getFileState() == ImportFileState.IMPORTING) {
+            log.info("waiting to leave IMPORTING state");
+            Thread.sleep(500);
+            europeanaCollection = dashboardDao.fetchCollection(europeanaCollection.getId());
+        }
         Thread.sleep(10000);
         solr.stop();
         log.info("Stopping Solr server");

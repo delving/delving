@@ -21,6 +21,7 @@
 
 package eu.europeana.incoming;
 
+import com.ctc.wstx.stax.WstxOutputFactory;
 import eu.europeana.database.dao.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EditorPick;
@@ -36,6 +37,9 @@ import eu.europeana.query.QueryProblem;
 import eu.europeana.query.RecordField;
 import eu.europeana.query.ResponseType;
 import eu.europeana.query.ResultModel;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -43,6 +47,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +60,7 @@ import java.util.List;
 
 public class SolrIndexerImpl implements SolrIndexer {
     protected Logger log = Logger.getLogger(getClass());
+    private XMLOutputFactory outFactory = new WstxOutputFactory();
     private HttpClient httpClient;
     protected DashboardDao dashboardDao;
     private QueryModelFactory queryModelFactory;
@@ -155,26 +161,17 @@ public class SolrIndexerImpl implements SolrIndexer {
         }
     }
 
-    protected String createAddRecordsXML(List<Record> recordList) throws IOException {
-        StringBuilder out = new StringBuilder();
-        out.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        out.append("<add>\n");
+    protected String createAddRecordsXML(List<Record> recordList) throws IOException, XMLStreamException {
+        StringWriter stringWriter = new StringWriter();
+        XMLStreamWriter out = outFactory.createXMLStreamWriter(stringWriter);
+        out.writeStartDocument("UTF-8", "1.0");
+        out.writeStartElement("add");
         for (Record record : recordList) {
-            out.append("\t<doc>\n");
-            if (record == null) {
-                throw new IllegalStateException("Cannot find record for URI "+record.getEuropeanaId().getEuropeanaUri());
-            }
+            out.writeStartElement("doc");
             appendField(out, RecordField.EUROPEANA_URI, record.getEuropeanaId().getEuropeanaUri());
             appendField(out, RecordField.EUROPEANA_COLLECTION_NAME, record.getEuropeanaId().getCollection().getName());
             for (ESERecord.Field field : record.getEseRecord()) {
-                if (field.getKey().getFacetType() != null) {
-                    out.append("\t\t<field name=\"").append(field.getKey().getFacetType()).append("\">");
-                }
-                else {
-                    out.append("\t\t<field name=\"").append(field.getKey().toFieldNameString()).append("\">");
-                }
-                out.append(field.getValue());
-                out.append("</field>\n");
+                appendField(out, field.getKey(), field.getValue());
             }
             for (SocialTag socialTag : record.getEuropeanaId().getSocialTags()) {
                 appendField(out, RecordField.EUROPEANA_USER_TAG, socialTag.getTag());
@@ -182,16 +179,27 @@ public class SolrIndexerImpl implements SolrIndexer {
             for (EditorPick editorPick : record.getEuropeanaId().getEditorPicks()) {
                 appendField(out, RecordField.EUROPEANA_EDITORS_PICK, editorPick.getQuery());
             }
-            out.append("\t</doc>\n");
+            out.writeEndElement();
         }
-        out.append("</add>\n");
-        return out.toString();
+        out.writeEndElement();
+        out.writeEndDocument();
+        return stringWriter.toString();
     }
 
-    private void appendField(StringBuilder out, RecordField recordField, String value) {
-        out.append("\t\t<field name=\"").append(recordField.toFieldNameString()).append("\">");
-        out.append(value);
-        out.append("</field>\n");
+    private void appendField(XMLStreamWriter out, RecordField recordField, String value) throws XMLStreamException {
+        if (recordField.getFacetType() != null) {
+            appendField(out, recordField.getFacetType().toString(), value);
+        }
+        else {
+            appendField(out, recordField.toFieldNameString(), value);
+        }
+    }
+
+    private void appendField(XMLStreamWriter out, String name, String value) throws XMLStreamException {
+        out.writeStartElement("field");
+        out.writeAttribute("name", name);
+        out.writeCharacters(value);
+        out.writeEndElement();
     }
 
     protected ESERecord fetchRecordFromSolr(String uri) throws EuropeanaQueryException {
