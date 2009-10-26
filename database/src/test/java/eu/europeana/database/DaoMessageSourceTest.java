@@ -30,8 +30,8 @@ public class DaoMessageSourceTest {
 
     @Before
     public void before() throws IOException {
-        DataMigration dataMigration = new DataMigration(true);
-        dataMigration.importTables();
+        DataMigration migration = new DataMigration();
+        migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
         daoMessageSource = new DaoMessageSource();
         daoMessageSource.setMessageDao(messageDao);
     }

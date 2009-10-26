@@ -22,7 +22,7 @@
 package eu.europeana.database;
 
 import com.thoughtworks.xstream.XStream;
-import static eu.europeana.database.DataMigration.MigrationTable.*;
+import static eu.europeana.database.DataMigration.Table.*;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.StaticPage;
@@ -63,7 +63,7 @@ public class DataMigration {
         this.partnerDao = partnerDao;
     }
 
-    private XStream getXStreamInstance(MigrationTable table) {
+    private XStream getXStreamInstance(Table table) {
         XStream xstream = new XStream();
         xstream.processAnnotations(new Class[]{table.getClassType()});
         xstream.alias(table.getRootXmlNode(), List.class);
@@ -71,7 +71,7 @@ public class DataMigration {
     }
 
     // filewriter get list, enum > write to file ; return int nr processed
-    public int dumpTable(MigrationTable table, List<?> itemList) throws IOException {
+    public int dumpTable(Table table, List<?> itemList) throws IOException {
         XStream xStream = getXStreamInstance(table);
         String output = xStream.toXML(itemList);
         File outputFile = new File(DIRECTORY + table.getFileName());
@@ -80,15 +80,20 @@ public class DataMigration {
     }
 
     // file reader get enum > persist to database ; return int nr processed
-    public int readTable(MigrationTable table, Reader reader) throws IOException {
+    public int readTable(Table table, Reader reader) throws IOException {
         XStream xStream = getXStreamInstance(table);
-        String stringReadFromFile = FileUtils.readFileToString(new File(DIRECTORY + table.getFileName()), "utf-8");
         List<Object> objects = (List<Object>) xStream.fromXML(reader);
         storeTable(table, objects);
         return objects.size();
     }
 
-    private void storeTable(MigrationTable table, List<Object> objects) {
+    public int readTableFromResource(Table table) throws IOException {
+        InputStream is = getClass().getResourceAsStream("/tables/"+table.getFileName());
+        Reader reader = new InputStreamReader(is, "utf-8");
+        return readTable(table, reader);
+    }
+
+    private void storeTable(Table table, List<Object> objects) {
         for (Object object : objects) {
             switch (table) {
                 case CONTRIBUTORS:
@@ -109,7 +114,7 @@ public class DataMigration {
         }
     }
 
-    public enum MigrationTable {
+    public enum Table {
         STATIC_PAGE("static-pages.xml", StaticPage.class, "StaticPages"),
         TRANSLATION_KEYS("translation-keys.xml", Translation.class, "TranslationKeys"),
         CONTRIBUTORS("contributors.xml", Contributor.class, "Contributors"),
@@ -119,7 +124,7 @@ public class DataMigration {
         private Class classType;
         private String rootXmlNode;
 
-        private MigrationTable(String fileName, Class classType, String rootXmlNode) {
+        private Table(String fileName, Class classType, String rootXmlNode) {
             this.fileName = fileName;
             this.classType = classType;
             this.rootXmlNode = rootXmlNode;
@@ -153,7 +158,7 @@ public class DataMigration {
         migration.setMessageDao(messageDao);
         migration.setPartnerDao(partnerDao);
         if (args.length == 1 && args[0].equalsIgnoreCase("import")) {
-            for (MigrationTable table : MigrationTable.values()) {
+            for (Table table : Table.values()) {
                 File file = new File(DIRECTORY + table.getFileName());
                 InputStream is = new FileInputStream(file);
                 Reader reader = new InputStreamReader(is, "utf-8");
