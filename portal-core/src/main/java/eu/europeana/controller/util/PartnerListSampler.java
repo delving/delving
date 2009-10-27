@@ -21,7 +21,7 @@
 
 package eu.europeana.controller.util;
 
-import eu.europeana.database.PartnerDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Partner;
 
@@ -35,12 +35,12 @@ import java.util.List;
  */
 
 public class PartnerListSampler {
-    private PartnerDao partnerDao;
+    private StaticInfoDao staticInfoDao;
     private List<Partner> partnerCache = new ArrayList<Partner>();
     private List<Contributor> contributorCache = new ArrayList<Contributor>();
 
-    public void setPartnerDao(PartnerDao partnerDao) {
-        this.partnerDao = partnerDao;
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
 
     public List<Partner> getPartnerCache() {
@@ -57,11 +57,11 @@ public class PartnerListSampler {
     }
 
     private List<Contributor> getContributorData() {
-        return partnerDao.getAllContributorItems();
+        return staticInfoDao.getAllContributorItems();
     }
 
     private List<Partner> getPartnerData() {
-        return partnerDao.getAllPartnerItems();
+        return staticInfoDao.getAllPartnerItems();
     }
 
 

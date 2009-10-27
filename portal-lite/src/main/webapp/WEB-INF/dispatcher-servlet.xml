@@ -115,7 +115,7 @@
                     </bean>
                 </entry>
                 <entry key="database">
-                    <bean class="eu.europeana.database.DaoMessageSource">
+                    <bean class="eu.europeana.database.integration.DaoMessageSource">
                         <property name="messageDao" ref="messageDao"/>
                     </bean>
                 </entry>

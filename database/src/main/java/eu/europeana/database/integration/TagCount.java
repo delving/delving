@@ -1,4 +1,4 @@
-package eu.europeana.database;
+package eu.europeana.database.integration;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>

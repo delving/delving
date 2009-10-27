@@ -50,7 +50,7 @@ public class DataMigration {
     private static final String DIRECTORY = "/tmp/";
     private static final Logger log = Logger.getLogger(DataMigration.class);
     private MessageDao messageDao;
-    private PartnerDao partnerDao;
+    private StaticInfoDao staticInfoDao;
 
     public DataMigration() {
     }
@@ -59,8 +59,8 @@ public class DataMigration {
         this.messageDao = messageDao;
     }
 
-    public void setPartnerDao(PartnerDao partnerDao) {
-        this.partnerDao = partnerDao;
+    public void setPartnerDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
 
     private XStream getXStreamInstance(Table table) {
@@ -97,10 +97,10 @@ public class DataMigration {
         for (Object object : objects) {
             switch (table) {
                 case CONTRIBUTORS:
-                    partnerDao.saveContributor((Contributor) object);
+                    staticInfoDao.saveContributor((Contributor) object);
                     break;
                 case PARTNERS:
-                    partnerDao.savePartner((Partner) object);
+                    staticInfoDao.savePartner((Partner) object);
                     break;
                 case TRANSLATION_KEYS:
                     Translation translation = (Translation) object;
@@ -153,10 +153,10 @@ public class DataMigration {
                 "/database-application-context.xml",
         });
         MessageDao messageDao = (MessageDao) context.getBean("messageDao");
-        PartnerDao partnerDao = (PartnerDao) context.getBean("partnerDao");
+        StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
         DataMigration migration = new DataMigration();
         migration.setMessageDao(messageDao);
-        migration.setPartnerDao(partnerDao);
+        migration.setPartnerDao(staticInfoDao);
         if (args.length == 1 && args[0].equalsIgnoreCase("import")) {
             for (Table table : Table.values()) {
                 File file = new File(DIRECTORY + table.getFileName());
@@ -168,8 +168,8 @@ public class DataMigration {
         else if (args.length == 1 && args[0].equalsIgnoreCase("export")) {
             migration.dumpTable(STATIC_PAGE, messageDao.getAllStaticPages());
             migration.dumpTable(TRANSLATION_KEYS, messageDao.getAllTranslationMessages());
-            migration.dumpTable(CONTRIBUTORS, partnerDao.getAllContributorItems());
-            migration.dumpTable(PARTNERS, partnerDao.getAllPartnerItems());
+            migration.dumpTable(CONTRIBUTORS, staticInfoDao.getAllContributorItems());
+            migration.dumpTable(PARTNERS, staticInfoDao.getAllPartnerItems());
         }
         else {
             throw new Exception("Needs parameter:  import|export");

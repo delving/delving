@@ -21,19 +21,29 @@
 
 package eu.europeana.database;
 
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.Translation;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// todo: this entire dao will be eliminated
+
 public interface MessageDao {
+
+    // todo: remove these.. move implementations to LanguageDao
     Translation setTranslation(String key, Language language, String value);
     List<String> fetchMessageKeyStrings();
     MessageKey fetchMessageKey(String key);
+    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
+
+    // todo: remove these.. move implementations to StaticInfoDaoImpl
     StaticPage fetchStaticPage (Language language, String pageName);
     void setStaticPage(StaticPageType pageType, Language language, String content);
-    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
     List<StaticPage> getAllStaticPages();
     List<MessageKey> getAllTranslationMessages();
 }

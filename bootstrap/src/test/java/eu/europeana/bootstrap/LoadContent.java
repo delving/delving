@@ -21,7 +21,7 @@
 
 package eu.europeana.bootstrap;
 
-import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.incoming.ESEImporter;

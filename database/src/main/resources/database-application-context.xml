@@ -60,7 +60,7 @@
 
     <bean name="searchTermDao" class="eu.europeana.database.dao.SearchTermDaoImpl"/>
 
-    <bean name="partnerDao" class="eu.europeana.database.dao.PartnerDaoImpl"/>
+    <bean name="staticInfoDao" class="eu.europeana.database.dao.StaticInfoDaoImpl"/>
 
     <bean name="messageDao" class="eu.europeana.database.dao.MessageDaoImpl"/>
 

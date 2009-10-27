@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.database.dao;
+package eu.europeana.database;
 
 import eu.europeana.database.domain.CacheingQueueEntry;
 import eu.europeana.database.domain.CarouselItem;
@@ -52,13 +52,7 @@ import java.util.Set;
 
 public interface DashboardDao {
 
-    User fetchUser(String email, String password);
-
-    void setUserRole(Long userId, Role role);
-
-    List<User> fetchUsers(String pattern);
-
-    void setUserEnabled(Long userId, boolean enabled);
+    // collections
 
     List<EuropeanaCollection> fetchCollections();
 
@@ -72,6 +66,12 @@ public interface DashboardDao {
 
     EuropeanaCollection updateCollection(EuropeanaCollection collection);
 
+    List<EuropeanaCollection> disableAllCollections();
+
+    void enableAllCollections();
+
+    // import
+
     EuropeanaCollection prepareForImport(Long collectionId);
 
     EuropeanaCollection setImportError(Long collectionId, String importError);
@@ -80,9 +80,23 @@ public interface DashboardDao {
 
     EuropeanaId getEuropeanaId(EuropeanaId europeanaId);
 
+    EuropeanaId fetchEuropeanaId(String europeanaUri);
+
+    void removeOrphanObject(String uri);
+
+    int findOrphans(EuropeanaCollection collection);
+
+    List<? extends QueueEntry> fetchQueueEntries();
+
+    // cacheing
+
     List<EuropeanaObject> getEuropeanaObjectsToCache(int maxResults, CacheingQueueEntry queueEntry);
 
     List<EuropeanaObject> getEuropeanaObjectOrphans(int maxResults);
+
+    boolean addToCacheQueue(EuropeanaCollection collection);
+
+    void removeFromCacheQueue(EuropeanaCollection collection);
 
     CacheingQueueEntry getEntryForCacheing();
 
@@ -90,15 +104,13 @@ public interface DashboardDao {
 
     void setObjectCachedError(EuropeanaObject object);
 
-    void removeOrphanObject(String uri);
+    void finishCaching(CacheingQueueEntry entry);
+
+    // index
 
     boolean addToIndexQueue(EuropeanaCollection collection);
 
     void removeFromIndexQueue(EuropeanaCollection collection);
-
-    boolean addToCacheQueue(EuropeanaCollection collection);
-
-    void removeFromCacheQueue(EuropeanaCollection collection);
 
     IndexingQueueEntry getIndexQueueHead();
 
@@ -110,89 +122,59 @@ public interface DashboardDao {
 
     void startIndexing(IndexingQueueEntry indexingQueueEntry);
 
-    List<? extends QueueEntry> fetchQueueEntries();
-
     EuropeanaCollection updateCollectionCounters(Long collectionId);
-
-    boolean addSearchTerm(Language language, String term);
-
-    boolean addSearchTerm(SavedSearch savedSearch);
-
-    List<String> fetchSearchTerms(Language language);
-
-    boolean removeSearchTerm(Language language, String term);
-
-    List<SavedItem> fetchSavedItems(Long userId);
-
-    SavedItem fetchSavedItemById(Long id);
-
-    List<SavedSearch> fetchSavedSearches(Long userId);
-
-    SavedSearch fetchSavedSearchById(Long id);
-
-    void removeUser(Long userId);
-
-    User fetchUser(Long userId);
-
-    EuropeanaId fetchEuropeanaId(String europeanaUri);
-
-    List<Partner> fetchPartners();
-
-    List<Contributor> fetchContributors();
-
-    Partner savePartner(Partner partner);
-
-    Contributor saveContributor(Contributor contributor);
-
-    boolean removePartner(Long partnerId);
-
-    boolean removeContributor(Long contributorId);
-
-    void log(String who, String what);
-
-    StaticPage fetchStaticPage(StaticPageType pageType, Language language);
-
-    StaticPage saveStaticPage(Long staticPageId, String content);
-
-    void setUserLanguages(Long userId, String languages);
-
-    void addMessagekey(String key);
-
-    void removeMessageKey(String key);
-
-    List<DashboardLog> fetchLogEntriesFrom(Long topId, int pageSize);
-
-    List<DashboardLog> fetchLogEntriesTo(Long bottomId, int pageSize);
 
     IndexingQueueEntry getEntryForIndexing();
 
-    void finishCaching(CacheingQueueEntry entry);
-
     IndexingQueueEntry getIndexEntry(IndexingQueueEntry detachedEntry);
 
-    List<EuropeanaCollection> disableAllCollections();
-
-    void enableAllCollections();
-
+    // todo: move the implementations to UserDaoImpl
+    User fetchUser(String email, String password);
+    void setUserRole(Long userId, Role role);
+    List<User> fetchUsers(String pattern);
+    void setUserEnabled(Long userId, boolean enabled);
+    void removeUser(Long userId);
+    User fetchUser(Long userId);
     void setUserProjectId(Long userId, String projectId);
-
     void setUserProviderId(Long userId, String providerId);
+    void setUserLanguages(Long userId, String languages);
+    List<SavedItem> fetchSavedItems(Long userId);
+    SavedItem fetchSavedItemById(Long id);
+    List<SavedSearch> fetchSavedSearches(Long userId);
+    SavedSearch fetchSavedSearchById(Long id);
 
-    int findOrphans(EuropeanaCollection collection);
+    // todo: eliminate these, move implementations to SearchTermDao
+    boolean addSearchTerm(Language language, String term);
+    boolean addSearchTerm(SavedSearch savedSearch);
+    List<String> fetchSearchTerms(Language language);
+    boolean removeSearchTerm(Language language, String term);
 
+    // todo: eliminate these, move implementations to StaticInfoDaoImpl
+    List<Partner> fetchPartners();
+    List<Contributor> fetchContributors();
+    Partner savePartner(Partner partner);
+    Contributor saveContributor(Contributor contributor);
+    boolean removePartner(Long partnerId);
+    boolean removeContributor(Long contributorId);
+    StaticPage fetchStaticPage(StaticPageType pageType, Language language);
+    StaticPage saveStaticPage(Long staticPageId, String content);
     Boolean removeCarouselItem(Long id);
-
     CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
-
     void removeFromCarousel(SavedItem savedItem);
-
     boolean addCarouselItem(SavedItem savedItem);
-
+    List<CarouselItem> fetchCarouselItems();
     List<EditorPick> fetchEditorPicksItems();
-
     void removeFromEditorPick(SavedSearch savedSearch);
-
     EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
 
-    List<CarouselItem> fetchCarouselItems();
+    // languages
+    // todo: eliminate these, move implementations to LanguageDaoImpl
+    void addMessagekey(String key);
+    void removeMessageKey(String key);
+
+    // dashboard log
+    void log(String who, String what);
+    List<DashboardLog> fetchLogEntriesFrom(Long topId, int pageSize);
+    List<DashboardLog> fetchLogEntriesTo(Long bottomId, int pageSize);
+
 }

@@ -22,14 +22,24 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.MessageDao;
-import eu.europeana.database.domain.*;
-import org.springframework.transaction.annotation.Transactional;
-
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.Translation;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.*;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+// todo: this entire dao will be eliminated
 
 @SuppressWarnings("unchecked")
 public class MessageDaoImpl implements MessageDao {

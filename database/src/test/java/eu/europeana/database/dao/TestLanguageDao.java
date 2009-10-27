@@ -1,10 +1,9 @@
 package eu.europeana.database.dao;
 
-import eu.europeana.database.DaoMessageSource;
 import eu.europeana.database.DataMigration;
 import eu.europeana.database.MessageDao;
 import eu.europeana.database.domain.Language;
-import junit.framework.Assert;
+import eu.europeana.database.integration.DaoMessageSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +15,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 /**
- * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author todo insert: "name" <email>
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,15 +23,17 @@ import java.util.Locale;
         "/database-application-context.xml",
         "/hypersonic-datasource.xml"
 })
-public class DaoMessageSourceTest {
+
+
+public class TestLanguageDao {
 
     @Autowired
-    private MessageDao messageDao;
+    private MessageDao messageDao; // todo: should be LanguageDao
 
     private DaoMessageSource daoMessageSource = new DaoMessageSource();
 
     @Before
-    public void before() throws IOException {
+    public void prepare() throws IOException {
         DataMigration migration = new DataMigration();
         migration.setMessageDao(messageDao);
         migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
@@ -44,6 +45,17 @@ public class DaoMessageSourceTest {
         //todo: finish this test
         Locale nl = new Locale(Language.NL.getCode());
         String zoek = daoMessageSource.getMessage("Search_t", null, nl);
-        Assert.assertEquals("Zoek", zoek);
+        junit.framework.Assert.assertEquals("Zoek", zoek);
     }
+
+// todo: thise methods must be tested here
+//    EnumSet<Language> getActiveLanguages();
+//    void setLanguageActive(Language language, boolean active);
+//    void addMessagekey(String key);
+//    void removeMessageKey(String key);
+//    Translation setTranslation(String key, Language language, String value);
+//    List<String> fetchMessageKeyStrings();
+//    MessageKey fetchMessageKey(String key);
+//    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
+
 }

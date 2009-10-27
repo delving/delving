@@ -21,16 +21,9 @@
 
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
-import eu.europeana.database.UserDao;
-import eu.europeana.database.dao.DashboardDao;
-import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.EditorPick;
-import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.User;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * When an editor wants to associate a saved search or saved item with the carousel and proposed search

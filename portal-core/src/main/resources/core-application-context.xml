@@ -117,7 +117,7 @@
     </bean>
 
     <bean id="partnerListSampler" class="eu.europeana.controller.util.PartnerListSampler">
-        <property name="partnerDao" ref="partnerDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <security:authentication-provider user-service-ref="daoUserDetailsService">

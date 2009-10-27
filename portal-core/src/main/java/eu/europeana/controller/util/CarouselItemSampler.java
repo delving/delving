@@ -1,6 +1,6 @@
 package eu.europeana.controller.util;
 
-import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CarouselItem;
 
 import java.util.ArrayList;

@@ -21,7 +21,7 @@
 
 package eu.europeana.controller;
 
-import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.SavedItem;
 

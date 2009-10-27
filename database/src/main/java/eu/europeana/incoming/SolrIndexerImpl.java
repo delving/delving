@@ -22,7 +22,7 @@
 package eu.europeana.incoming;
 
 import com.ctc.wstx.stax.WstxOutputFactory;
-import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EditorPick;
 import eu.europeana.database.domain.EuropeanaId;

@@ -23,7 +23,7 @@ package eu.europeana.translation;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import eu.europeana.database.PartnerDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Country;
 import eu.europeana.database.domain.Partner;
@@ -32,7 +32,12 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -57,7 +62,7 @@ public class ContributorFileLoader {
                 "/database-application-context.xml",
                 "/application-context.xml"
         });
-        PartnerDao partnerDao = (PartnerDao) context.getBean("partnerDao");
+        StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
         String inputFile = "portal/src/test/resources/Europeana_source_ver2-8_Relaunch20090317.xml";
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-8"));
         XStream stream = new XStream(new DomDriver());
@@ -72,7 +77,7 @@ public class ContributorFileLoader {
             contributor.setCountry(Country.get(provider.getCountry()));
             contributor.setUrl(provider.getUrl());
             contributor.setNumberOfPartners(provider.getPartners());
-            partnerDao.saveContributor(contributor);
+            staticInfoDao.saveContributor(contributor);
             LOG.info("saving contributor: " + provider.getOriginal_name());
         }
         LOG.info("Finished Loading Providers.");
@@ -87,7 +92,7 @@ public class ContributorFileLoader {
             partner.setName(provider.getOriginal_name());
             partner.setUrl(provider.getUrl());
             partner.setSector(PartnerSector.get(provider.getCountry().toString()));
-            partnerDao.savePartner(partner);
+            staticInfoDao.savePartner(partner);
             LOG.info("saving partner: " + partner.getName());
         }
     }

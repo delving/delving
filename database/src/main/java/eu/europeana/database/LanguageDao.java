@@ -12,6 +12,18 @@ import java.util.EnumSet;
  */
 
 public interface LanguageDao {
+
     EnumSet<Language> getActiveLanguages();
     void setLanguageActive(Language language, boolean active);
+
+    // todo: add these (implementations in DashboardDaoImpl)
+//    void addMessagekey(String key);
+//    void removeMessageKey(String key);
+
+    // todo: add these (implementations in MessageDaoImpl)
+//    Translation setTranslation(String key, Language language, String value);
+//    List<String> fetchMessageKeyStrings();
+//    MessageKey fetchMessageKey(String key);
+//    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
+
 }

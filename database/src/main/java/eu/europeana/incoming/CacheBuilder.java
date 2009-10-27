@@ -22,7 +22,7 @@
 package eu.europeana.incoming;
 
 import eu.europeana.cache.DigitalObjectCache;
-import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CacheingQueueEntry;
 import eu.europeana.database.domain.EuropeanaObject;

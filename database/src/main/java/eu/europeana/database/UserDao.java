@@ -21,22 +21,24 @@
 
 package eu.europeana.database;
 
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.EditorPick;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SearchTerm;
+import eu.europeana.database.domain.SocialTag;
+import eu.europeana.database.domain.User;
+import eu.europeana.database.integration.TagCount;
 
 import java.util.List;
 
 public interface UserDao {
+
     User fetchUserByEmail(String email);
     User addUser(User user);
     void removeUser(User user);
     void updateUser(User user);
     User refreshUser(User user);
-    User addSavedSearch(User user, SavedSearch savedSearch);
-    User addSocialTag(User user, SocialTag socialTag);
-    User addEditorPick(User user, EditorPick editorPick);
-    User addCarouselItem(User user, CarouselItem carouselItem);
-    CarouselItem addCarouselItem(User user, Long savedItem);
-    SearchTerm addSearchTerm(Long savedSearchId);
     boolean userNameExists(String userName);
     User remove(User user, Class<?> clazz, Long id);
     List<User> fetchUsers(String pattern);
@@ -45,11 +47,32 @@ public interface UserDao {
     void setUserEnabled(Long userId, boolean enabled);
     void setUserToAdministrator(Long userId, boolean administrator);
     void markAsViewed(String europeanaUri);
+    User addSocialTag(User user, SocialTag socialTag);
     List<TagCount> getSocialTagCounts(String query);
+    User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
+    User addSavedSearch(User user, SavedSearch savedSearch);
+
+    // todo: remove these (move implementations to StaticInfoDao)
     User removeCarouselItem(User user, Long savedItemId);
     User removeSearchTerm(User user, Long savedSearchId);
-
     User addCarouselItem(User user, SavedItem savedItem);
+    User addEditorPick(User user, EditorPick editorPick);
+    User addCarouselItem(User user, CarouselItem carouselItem);
+    CarouselItem addCarouselItem(User user, Long savedItem);
+    SearchTerm addSearchTerm(Long savedSearchId);
 
-    User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
+    // todo: add these (implementations are in DashboardDaoImpl)
+//    User fetchUser(String email, String password);
+//    void setUserRole(Long userId, Role role);
+//    void removeUser(Long userId);
+//    User fetchUser(Long userId);
+//    void setUserProjectId(Long userId, String projectId);
+//    void setUserProviderId(Long userId, String providerId);
+//    void setUserLanguages(Long userId, String languages);
+//    List<SavedItem> fetchSavedItems(Long userId);
+//    SavedItem fetchSavedItemById(Long id);
+//    List<SavedSearch> fetchSavedSearches(Long userId);
+//    SavedSearch fetchSavedSearchById(Long id);
+
+
 }

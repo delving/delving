@@ -21,7 +21,7 @@
 
 package eu.europeana.incoming;
 
-import eu.europeana.database.dao.DashboardDao;
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.IndexingQueueEntry;
 import org.apache.log4j.Logger;

@@ -1,5 +1,6 @@
-package eu.europeana.database;
+package eu.europeana.database.integration;
 
+import eu.europeana.database.MessageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
