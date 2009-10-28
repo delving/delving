@@ -7,13 +7,11 @@ import java.util.List;
 /**
  * @author vitali
  */
+
+// todo: remove this DAO, use this function in StaticInfoDao
+
 public interface SearchTermDao {
-    
+
     List<SearchTerm> getAllSearchTerms();
 
-    // todo: add these (implementations in DashboardDaoImpl)
-//    boolean addSearchTerm(Language language, String term);
-//    boolean addSearchTerm(SavedSearch savedSearch);
-//    List<String> fetchSearchTerms(Language language);
-//    boolean removeSearchTerm(Language language, String term);
 }

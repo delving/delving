@@ -55,6 +55,11 @@ public interface StaticInfoDao {
 //    List<EditorPick> fetchEditorPicksItems();
 //    void removeFromEditorPick(SavedSearch savedSearch);
 //    EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
+//    boolean addSearchTerm(Language language, String term);
+//    boolean addSearchTerm(SavedSearch savedSearch);
+//    List<String> fetchSearchTerms(Language language);
+//    boolean removeSearchTerm(Language language, String term);
+
 
     // todo: add these: (implementations in UserDaoImpl)
 //    User removeCarouselItem(User user, Long savedItemId);
@@ -73,5 +78,6 @@ public interface StaticInfoDao {
 
     // todo: add this (impl in SearchTermDaoImpl
 //    List<SearchTerm> getAllSearchTerms();
+
 
 }

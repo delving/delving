@@ -143,12 +143,6 @@ public interface DashboardDao {
     List<SavedSearch> fetchSavedSearches(Long userId);
     SavedSearch fetchSavedSearchById(Long id);
 
-    // todo: eliminate these, move implementations to SearchTermDao
-    boolean addSearchTerm(Language language, String term);
-    boolean addSearchTerm(SavedSearch savedSearch);
-    List<String> fetchSearchTerms(Language language);
-    boolean removeSearchTerm(Language language, String term);
-
     // todo: eliminate these, move implementations to StaticInfoDaoImpl
     List<Partner> fetchPartners();
     List<Contributor> fetchContributors();
@@ -166,6 +160,10 @@ public interface DashboardDao {
     List<EditorPick> fetchEditorPicksItems();
     void removeFromEditorPick(SavedSearch savedSearch);
     EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
+    boolean addSearchTerm(Language language, String term);
+    boolean addSearchTerm(SavedSearch savedSearch);
+    List<String> fetchSearchTerms(Language language);
+    boolean removeSearchTerm(Language language, String term);
 
     // languages
     // todo: eliminate these, move implementations to LanguageDaoImpl
