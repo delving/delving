@@ -324,4 +324,6 @@ public interface DashboardMessages extends Messages {
     String deleteFile();
 
     String noIAmSure();
+
+    String userName();
 }
