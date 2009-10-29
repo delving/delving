@@ -72,8 +72,9 @@
             <div class="yui-g first">
                 <div class="yui-u first">
                     <h1><@spring.message 'ShareYourIdeas_t' />:</h1>
+                    <#-- todo: replace with erasmus logo -->
                     <ul class="share-ideas">
-                      <li><a href="contact.html"><@spring.message 'SendUsFeedback_t' /></a></li>
+                        <li><a target="_blank" href="http://www.univie.ac.at/esec/php/wordpress/?p=459#more-459">Europeana wins Erasmus award</a><a target="_blank" href="http://www.univie.ac.at/esec/php/wordpress/?p=459#more-459"><img height="60" width="60" src="images/erasmus.png" class="erasmus"/></a></li>
                     </ul>
                 </div>
                 <div class="yui-u">
