@@ -217,7 +217,7 @@ public class ESEImporterImpl implements ESEImporter {
                 }
                 else {
                     log.info("Aborted importing " + importFile);
-                    collection.setCollectionState(CollectionState.DISABLED);
+                    collection.setCollectionState(CollectionState.EMPTY);
                     if (normalized) {
                         importFile = importRepository.transition(importFile, ImportFileState.UPLOADED);
                         collection.setFileState(ImportFileState.UPLOADED);

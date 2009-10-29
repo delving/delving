@@ -43,8 +43,6 @@ public interface DashboardMessages extends Messages {
 
     String commenceImport();
 
-    String or();
-
     String delete();
 
     String importing();

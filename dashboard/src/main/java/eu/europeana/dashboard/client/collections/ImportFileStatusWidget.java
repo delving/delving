@@ -1,10 +1,10 @@
 package eu.europeana.dashboard.client.collections;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -72,7 +72,6 @@ public class ImportFileStatusWidget extends DashboardWidget {
                         }
                     });
                     panel.add(commenceImport);
-                    panel.add(new HTML(world.messages().or()));
                     break;
                 case IMPORTING:
                     panel.add(new HTML(world.messages().importing()));
