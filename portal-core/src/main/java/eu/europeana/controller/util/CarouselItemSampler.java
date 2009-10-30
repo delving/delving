@@ -1,10 +1,11 @@
 package eu.europeana.controller.util;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CarouselItem;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Pick some objects from serch terms
@@ -26,7 +27,7 @@ public class CarouselItemSampler {
     }
 
     public List<CarouselItem> pickRandomItems() {
-        List<CarouselItem> copy = new ArrayList<CarouselItem>(cache);
+        List<CarouselItem> copy = new LinkedList<CarouselItem>(cache);
         List<CarouselItem> selection = new ArrayList<CarouselItem>();
         while (displayCount-- > 0 && !copy.isEmpty()) {
             int index = (int)(Math.random()*copy.size());
