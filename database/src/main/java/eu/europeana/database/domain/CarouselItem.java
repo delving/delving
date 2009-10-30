@@ -182,4 +182,14 @@ public class CarouselItem implements Serializable {
     public void setSavedItem(SavedItem savedItem) {
         this.savedItem = savedItem;
     }
+
+    @Override
+    public String toString() {
+        return "CarouselItem{" +
+                "europeanaUri='" + europeanaUri + '\'' +
+                ", title='" + title + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", creator='" + creator + '\'' +
+                '}';
+    }
 }

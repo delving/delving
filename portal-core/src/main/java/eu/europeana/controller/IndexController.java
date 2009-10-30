@@ -31,7 +31,7 @@ public class IndexController extends AbstractPortalController {
         Language language = ControllerUtil.getLocale(request);
         model.setView("index_orig");
         model.put("proposedSearchTerms", proposedSearchTermSampler.pickRandomItems(language));
-        model.put("carouselItems", carouselItemSampler.pickRandomItems());
+        model.put("carouselItems", carouselItemSampler.pickShuffledRandomItems());
     }
 
 }

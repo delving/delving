@@ -52,7 +52,7 @@ public class CacheServlet extends HttpServlet {
             {ItemSize.FULL_DOC.toString(), DocType.SOUND.toString(), "/cache/item-sound-large.gif"},
             {ItemSize.FULL_DOC.toString(), DocType.VIDEO.toString(), "/cache/item-video-large.gif"},
     };
-    private final int CACHE_DURATION_IN_SECOND = 60 * 60; // 1 hour
+    private final int CACHE_DURATION_IN_SECOND = 60 * 60 * 2; // 2 hour
     private final long CACHE_DURATION_IN_MS = CACHE_DURATION_IN_SECOND  * 1000;
 
     private Logger log = Logger.getLogger(getClass());

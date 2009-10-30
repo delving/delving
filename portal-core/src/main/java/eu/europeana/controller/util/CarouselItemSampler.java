@@ -26,7 +26,7 @@ public class CarouselItemSampler {
         this.displayCount = displayCount;
     }
 
-    public void setCache(List<CarouselItem> cache) {
+    void setCache(List<CarouselItem> cache) {
         this.cache = cache;
     }
 
