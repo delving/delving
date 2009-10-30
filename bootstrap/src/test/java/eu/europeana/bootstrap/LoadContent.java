@@ -22,6 +22,9 @@
 package eu.europeana.bootstrap;
 
 import eu.europeana.database.DashboardDao;
+import eu.europeana.database.DataMigration;
+import eu.europeana.database.MessageDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.incoming.ESEImporter;
@@ -41,18 +44,37 @@ import java.io.File;
 public class LoadContent {
     private static final Logger log = Logger.getLogger(LoadContent.class);
 
+
     public static void main(String[] args) throws Exception {
-        SolrStarter solr = new SolrStarter();
-        log.info("Starting Solr Server");
-        solr.start();
 
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/database-application-context.xml",
                 "/bootstrap-application-context.xml"
         });
+
         ESEImporter eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         DashboardDao dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         ImportRepository repository = (ImportRepository) context.getBean("normalizedImportRepository");
+        MessageDao messageDao = (MessageDao) context.getBean("messageDao");
+        StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
+
+        // load static content etc.
+        log.info("Start loading static content.");
+        DataMigration migration = new DataMigration();
+        migration.setMessageDao(messageDao);
+        migration.setPartnerDao(staticInfoDao);
+        migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
+        migration.readTableFromResource(DataMigration.Table.PARTNERS);
+        migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
+        migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
+        log.info("Finished loading static content.");
+
+
+        // import and index sample records
+        SolrStarter solr = new SolrStarter();
+        log.info("Starting Solr Server");
+        solr.start();
+
 
         final File file = new File("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
         EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByFileName(file.getName());
@@ -75,5 +97,7 @@ public class LoadContent {
         Thread.sleep(10000);
         solr.stop();
         log.info("Stopping Solr server");
+
+        // check if default user exist otherwise create 
     }
 }

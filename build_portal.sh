@@ -13,8 +13,9 @@ cd ../portal-core; $INSTALL
 # Packaging of War files
 cd ../portal-full; $PACKAGE
 cd ../portal-lite; $PACKAGE
-if [[ BUILD_ALL = true ]]; then
+if [[ BUILD_ALL ]]; then
 	#statements
+	echo "building extra modules"
 	cd ../cache-servlet; $PACKAGE
 	cd ../resolver; $PACKAGE
 	cd ../dashboard; $PACKAGE
