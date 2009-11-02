@@ -4,6 +4,7 @@ import eu.europeana.json.solr.SolrQueryModelFactory;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryModel;
 import eu.europeana.query.QueryModelFactory;
+import org.apache.commons.httpclient.HttpClient;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -29,6 +30,7 @@ public class DocIdWindowPagerTest {
     @BeforeClass
     public static void setUp() throws IOException {
         factory = new SolrQueryModelFactory();
+        factory.setHttpClient(new HttpClient());
         factory.setBaseUrl("http://localhost:8983/solr/select"); //TODO
     }
 
