@@ -33,7 +33,6 @@ import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.SavedItemX;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
@@ -55,7 +54,6 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.PartnerSector;
 import eu.europeana.database.domain.QueueEntry;
-import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.StaticPage;
@@ -213,11 +211,6 @@ public class DashboardServiceImpl implements DashboardService {
         return DataTransfer.convert(dashboardDao.updateCollectionCounters(collection.getId()));
     }
 
-    public void setUserRole(Long userId, RoleX role) {
-        audit("set user "+userId+" to role "+role);
-        dashboardDao.setUserRole(userId, Role.valueOf(role.toString()));
-    }
-
     public List<UserX> fetchUsers(String pattern) {
         List<UserX> users = new ArrayList<UserX>();
         List<User> userList = dashboardDao.fetchUsers(pattern);
@@ -227,24 +220,8 @@ public class DashboardServiceImpl implements DashboardService {
         return users;
     }
 
-    public void setUserEnabled(Long userId, boolean enabled) {
-        audit("set user "+userId+" enabled "+enabled);
-        dashboardDao.setUserEnabled(userId, enabled);
-    }
-
-    public void setUserLanguages(Long userId, String languages) {
-        audit("set user "+userId+" languages "+languages);
-        dashboardDao.setUserLanguages(userId, languages);
-    }
-
-    public void setUserProjectId(Long userId, String projectId) {
-        audit("set user "+userId+" projectId "+projectId);
-        dashboardDao.setUserProjectId(userId, projectId);
-    }
-
-    public void setUserProviderId(Long userId, String providerId) {
-        audit("set user "+userId+" projectId "+providerId);
-        dashboardDao.setUserProviderId(userId, providerId);
+    public UserX updateUser(UserX user) {
+        return DataTransfer.convert(dashboardDao.updateUser(DataTransfer.convert(user)));
     }
 
     public List<SavedItemX> fetchSavedItems(Long userId) {

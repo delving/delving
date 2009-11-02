@@ -241,6 +241,8 @@ public interface DashboardMessages extends Messages {
 
     String userEnabled();
 
+    String updateThisUser();
+
     String deleteThisUser();
 
     String messageKey();
@@ -326,4 +328,12 @@ public interface DashboardMessages extends Messages {
     String noIAmSure();
 
     String userName();
+
+    String firstName();
+
+    String lastName();
+
+    String newsletter();
+
+    String rolePrompt();
 }

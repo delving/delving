@@ -11,7 +11,6 @@ import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.SavedItemX;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
@@ -63,28 +62,12 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         return service().login(email, password);
     }
 
-    public void setUserRole(Long userId, RoleX role) {
-        service().setUserRole(userId, role);
-    }
-
     public List<UserX> fetchUsers(String pattern) {
         return service().fetchUsers(pattern);
     }
 
-    public void setUserEnabled(Long userId, boolean enabled) {
-        service().setUserEnabled(userId, enabled);
-    }
-
-    public void setUserLanguages(Long userId, String languages) {
-        service().setUserLanguages(userId, languages);
-    }
-
-    public void setUserProjectId(Long userId, String projectId) {
-        service().setUserProjectId(userId, projectId);
-    }
-
-    public void setUserProviderId(Long userId, String providerId) {
-        service().setUserProviderId(userId, providerId);
+    public UserX updateUser(UserX user) {
+        return service().updateUser(user);
     }
 
     public List<SavedItemX> fetchSavedItems(Long userId) {

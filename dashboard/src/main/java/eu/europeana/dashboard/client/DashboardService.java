@@ -10,7 +10,6 @@ import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.SavedItemX;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
@@ -30,12 +29,8 @@ import java.util.Set;
 public interface DashboardService extends RemoteService {
 
     UserX login(String email, String password);
-    void setUserRole(Long userId, RoleX role);
     List<UserX> fetchUsers(String pattern);
-    void setUserEnabled(Long userId, boolean enabled);
-    void setUserLanguages(Long userId, String languages);
-    void setUserProjectId(Long userId, String projectId);
-    void setUserProviderId(Long userId, String providerId);
+    UserX updateUser(UserX user);
     List<SavedItemX> fetchSavedItems(Long userId);
     void removeUser(Long userId);
 

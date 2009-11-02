@@ -45,6 +45,7 @@ import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.PartnerSector;
+import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.StaticPage;
 import eu.europeana.database.domain.Translation;
@@ -183,6 +184,22 @@ public class DataTransfer {
                 user.getRegistrationDate(),
                 user.getLastLogin(),
                 RoleX.valueOf(user.getRole().toString()),
+                user.isEnabled()
+        );
+    }
+
+    public static User convert(UserX user) {
+        return new User(
+                user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getLanguages(),
+                user.getProjectId(),
+                user.getProviderId(),
+                user.isNewsletter(),
+                Role.valueOf(user.getRole().toString()),
                 user.isEnabled()
         );
     }

@@ -99,6 +99,23 @@ public class User implements Serializable {
     @Transient
     private List<SocialTagList> socialTagLists;
 
+    public User(Long id, String userName, String email, String firstName, String lastName, String languages, String projectId, String providerId, boolean newsletter, Role role, boolean enabled) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.languages = languages;
+        this.projectId = projectId;
+        this.providerId = providerId;
+        this.newsletter = newsletter;
+        this.role = role;
+        this.enabled = enabled;
+    }
+
+    public User() {
+    }
+
     public Long getId() {
         return id;
     }

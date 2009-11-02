@@ -33,7 +33,6 @@ import eu.europeana.database.domain.IndexingQueueEntry;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.QueueEntry;
-import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.StaticPage;
@@ -130,14 +129,10 @@ public interface DashboardDao {
 
     // todo: move the implementations to UserDaoImpl
     User fetchUser(String email, String password);
-    void setUserRole(Long userId, Role role);
     List<User> fetchUsers(String pattern);
-    void setUserEnabled(Long userId, boolean enabled);
     void removeUser(Long userId);
     User fetchUser(Long userId);
-    void setUserProjectId(Long userId, String projectId);
-    void setUserProviderId(Long userId, String providerId);
-    void setUserLanguages(Long userId, String languages);
+    User updateUser(User user);
     List<SavedItem> fetchSavedItems(Long userId);
     SavedItem fetchSavedItemById(Long id);
     List<SavedSearch> fetchSavedSearches(Long userId);

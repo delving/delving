@@ -10,7 +10,6 @@ import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.PartnerX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.SavedItemX;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
@@ -25,17 +24,9 @@ public interface DashboardServiceAsync {
 
     void login(String email, String password, AsyncCallback<UserX> async);
 
-    void setUserRole(Long userId, RoleX role, AsyncCallback<Void> async);
-
     void fetchUsers(String pattern, AsyncCallback<List<UserX>> async);
 
-    void setUserEnabled(Long userId, boolean enabled, AsyncCallback<Void> async);
-
-    void setUserLanguages(Long userId, String languages, AsyncCallback<Void> async);
-
-    void setUserProjectId(Long userId, String projectId, AsyncCallback<Void> async);
-
-    void setUserProviderId(Long userId, String providerId, AsyncCallback<Void> async);
+    void updateUser(UserX user, AsyncCallback<UserX> async);
 
     void fetchSavedItems(Long userId, AsyncCallback<List<SavedItemX>> async);
 
