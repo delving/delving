@@ -73,6 +73,15 @@ public class MessageDaoImpl implements MessageDao {
     }
 
     @Transactional
+	public MessageKey fetchMessageKey(String key) {
+	    Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
+	    query.setParameter("key", key);
+	    MessageKey messageKey = (MessageKey) query.getSingleResult();
+	    messageKey.getTranslations().size();
+	    return messageKey;
+	}
+
+	@Transactional
     public Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes) {
         Map<String, List<Translation>> translations = new TreeMap<String, List<Translation>>();
         for (String languageCode : languageCodes) {
@@ -102,15 +111,6 @@ public class MessageDaoImpl implements MessageDao {
     public List<MessageKey> getAllTranslationMessages() {
         Query query = entityManager.createQuery("select trans from Translation as trans");
         return query.getResultList();
-    }
-
-    @Transactional
-    public MessageKey fetchMessageKey(String key) {
-        Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
-        query.setParameter("key", key);
-        MessageKey messageKey = (MessageKey) query.getSingleResult();
-        messageKey.getTranslations().size();
-        return messageKey;
     }
 
     @Transactional

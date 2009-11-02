@@ -1,8 +1,13 @@
 package eu.europeana.database;
 
 import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
+import eu.europeana.database.domain.Translation;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The language enum contains activeByDefault as boolean, but the database
@@ -25,5 +30,11 @@ public interface LanguageDao {
 //    List<String> fetchMessageKeyStrings();
 //    MessageKey fetchMessageKey(String key);
 //    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
+    //refactoring methods formerly defined in  MessageDao
+    Translation setTranslation(String key, Language language, String value);
+    List<String> fetchMessageKeyStrings();
+    MessageKey fetchMessageKey(String key);
+    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
+  //end methods from MessageDao
 
 }

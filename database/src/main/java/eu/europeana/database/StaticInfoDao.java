@@ -22,7 +22,11 @@
 package eu.europeana.database;
 
 import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
 
 import java.util.List;
 
@@ -37,6 +41,12 @@ public interface StaticInfoDao {
     void saveContributor(Contributor contributor);
     void savePartner(Partner partner);
 
+    //refactoring methods formerly defined in MessageDao
+    StaticPage fetchStaticPage (Language language, String pageName);
+    void setStaticPage(StaticPageType pageType, Language language, String content);
+    List<StaticPage> getAllStaticPages();
+    List<MessageKey> getAllTranslationMessages();
+    //end methods formerly defined in MessageDao
 
     // todo: add these (implementations in DashboardDaoImpl)
 //    List<Partner> fetchPartners();

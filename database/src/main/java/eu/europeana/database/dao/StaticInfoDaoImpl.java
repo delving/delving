@@ -23,7 +23,12 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -74,6 +79,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             }
         }
     }
+    
 
     @Transactional
     public void savePartner(Partner partnerX) {
@@ -89,6 +95,52 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             if (partnerX.getName() != null) {
                 entityManager.persist(partnerX);
             }
+        }
+    }
+    @SuppressWarnings("unchecked")
+    @Transactional
+    public List<StaticPage> getAllStaticPages() {
+        Query query = entityManager.createQuery("select sp from StaticPage as sp");
+        return query.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Transactional
+    public List<MessageKey> getAllTranslationMessages() {
+        Query query = entityManager.createQuery("select trans from Translation as trans");
+        return query.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Transactional
+    public StaticPage fetchStaticPage (Language language, String pageName) {
+        Query query = entityManager.createQuery("select sp from StaticPage as sp where sp.language = :language and sp.pageType = :pageType");
+        query.setParameter("language", language);
+        query.setParameter("pageType", StaticPageType.get(pageName));
+        List results = query.getResultList();
+        if (results.size() == 0) {
+            query.setParameter("language", Language.EN);
+            results = query.getResultList();
+            if (results.size() == 0) {
+                return new StaticPage(StaticPageType.get(pageName), language);
+            }
+        }
+        return (StaticPage) results.get(0);
+    }
+
+    @Transactional
+    public void setStaticPage(StaticPageType pageType, Language language, String content) {
+        Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
+        query.setParameter("pageType", pageType);
+        query.setParameter("language", language);
+        try {
+            StaticPage page = (StaticPage)query.getSingleResult();
+            page.setContent(content);
+        }
+        catch (NoResultException e) {
+            StaticPage page = new StaticPage(pageType, language);
+            page.setContent(content);
+            entityManager.persist(page);
         }
     }
 }
