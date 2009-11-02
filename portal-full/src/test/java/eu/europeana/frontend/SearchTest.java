@@ -40,8 +40,7 @@ import java.io.IOException;
  * @author vitali
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/core-application-context.xml",
-        "/database-application-context.xml"})
+@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class SearchTest {
 
     private Server server;

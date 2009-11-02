@@ -22,7 +22,11 @@
 package eu.europeana.frontend;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import eu.europeana.PortalFullStarter;
 import eu.europeana.controller.util.TokenService;
 import eu.europeana.database.UserDao;
@@ -42,8 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Vitali Kiruta
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/core-application-context.xml",
-        "/database-application-context.xml"})
+@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class RegistrationTest {
 
     private static final String REMEMBER_ME_COOKIE_NAME = AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY;

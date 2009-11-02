@@ -22,7 +22,12 @@
 package eu.europeana.frontend;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import eu.europeana.PortalFullStarter;
 import eu.europeana.controller.util.TokenService;
 import eu.europeana.database.UserDao;
@@ -45,7 +50,7 @@ import java.util.Date;
  * @author vitali
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/database-application-context.xml", "/core-application-context.xml"})
+@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class ForgotPasswordTest {
 
     private static final String NEW_PASSWORD = "new" + FrontendTestUtil.PASSWORD;

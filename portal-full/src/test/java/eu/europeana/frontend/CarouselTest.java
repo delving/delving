@@ -56,8 +56,7 @@ import java.util.List;
  * @author Borys Omelayenko
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/core-application-context.xml",
-"/database-application-context.xml"})
+@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class CarouselTest {
 
 	private static final String CAROUSEL_EL_TYPE = "input";
@@ -329,7 +328,7 @@ public class CarouselTest {
 		HtmlPage fullViewPage = navigateSearchSelect(USER_1, queryString, showFullView);
 
 		// save query
-		((HtmlAnchor) fullViewPage.getElementById(saveElementId)).click();
+		fullViewPage.getElementById(saveElementId).click();
 
 		// check no pacta items are there
 		savedItemsPage = ((HtmlAnchor) fullViewPage.getElementById(countElementId)).click();

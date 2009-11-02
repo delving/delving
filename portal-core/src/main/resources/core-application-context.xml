@@ -38,11 +38,11 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
         >
 
+    <import resource="database-application-context.xml"/>
+
     <!-- Annotation based controller Support -->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>-->
-
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>-->
-
     <!-- Scan package for Controller Annotated Classes -->
     <!--<context:component-scan base-package="eu.europeana.controller"/>-->
 
@@ -51,11 +51,9 @@
         <property name="templateLoaderPath" value="${template.path}"/>
     </bean>
 
-
     <context:annotation-config/>
 
     <!-- Take care of environment specific settings -->
-
     <util:map id="config">
         <entry key="piwik.jsUrl"   value="${piwik.jsUrl}"/>
         <entry key="piwik.logUrl"  value="${piwik.logUrl}"/>
