@@ -78,9 +78,8 @@ public class CarouselTest {
 
 	@Autowired
 	private DashboardDao dashboardDao;
-	private WebClient webClient;
 
-	@Before
+    @Before
 	public void start() throws Exception {
 		PortalFullStarter starter = new PortalFullStarter();
 		server = starter.startServer(FrontendTestUtil.TEST_PORT);
@@ -124,7 +123,7 @@ public class CarouselTest {
 	}
 
 	public HtmlPage navigateSearchSelect(String email, String queryString, boolean goToFullView) throws IOException {
-		webClient = FrontendTestUtil.createWebClient();
+        WebClient webClient = FrontendTestUtil.createWebClient();
 		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
 		// login

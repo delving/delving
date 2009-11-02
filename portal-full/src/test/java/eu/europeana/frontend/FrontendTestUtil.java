@@ -34,10 +34,10 @@ import java.io.IOException;
  */
 public class FrontendTestUtil {
 
-	  public static final int TEST_PORT = 8081;
+    public static final int TEST_PORT = 8081;
     public static final String TEST_PORTAL_URL = "http://localhost:" + TEST_PORT + "/portal/";
 
-    
+
     public static final String EMAIL = "test@example.com";
     public static final String USERNAME = "test_user";
     public static final String PASSWORD = "test";
@@ -53,8 +53,9 @@ public class FrontendTestUtil {
 
         return webClient;
     }
-    /**
-     * @return Successful login page.
+
+    /*
+     * get a Successful login page.
      */
     public static HtmlPage login(WebClient webClient, String username, String password) throws IOException {
         HtmlPage page = webClient.getPage(TEST_PORTAL_URL + "login.html"); //go to login page
