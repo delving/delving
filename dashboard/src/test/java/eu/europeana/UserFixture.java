@@ -1,17 +1,10 @@
 package eu.europeana;
 
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import eu.europeana.database.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Date;
 
 /**
