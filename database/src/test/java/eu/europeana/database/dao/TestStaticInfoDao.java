@@ -19,8 +19,7 @@ import java.io.IOException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "/database-application-context.xml",
-        "/hypersonic-datasource.xml"
+        "/database-application-context.xml"
 })
 
 public class TestStaticInfoDao {

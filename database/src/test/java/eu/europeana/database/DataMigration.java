@@ -144,12 +144,11 @@ public class DataMigration {
 
     }
 
-    /**
+    /*
      * This main program is for real migration.  The class is also used when setting up for tests
      */
     public static void main(String[] args) throws Exception {
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
-                "/default-datasource.xml",
                 "/database-application-context.xml",
         });
         MessageDao messageDao = (MessageDao) context.getBean("messageDao");

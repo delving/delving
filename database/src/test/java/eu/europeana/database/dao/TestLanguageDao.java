@@ -20,8 +20,7 @@ import java.util.Locale;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "/database-application-context.xml",
-        "/hypersonic-datasource.xml"
+        "/database-application-context.xml"
 })
 
 

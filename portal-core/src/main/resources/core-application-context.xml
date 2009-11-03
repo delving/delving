@@ -68,15 +68,6 @@
         <entry key="message.network" value="${message.network}"/>
     </util:map>
 
-    <!-- data source -->
-
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="${db.driverClass}"/>
-        <property name="jdbcUrl"     value="${db.jdbcUrl}"/>
-        <property name="user"        value="${db.user}"/>
-        <property name="password"    value="${db.password}"/>
-    </bean>
-
     <!-- normal config -->
     <security:http auto-config="true" create-session="never">
 

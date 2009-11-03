@@ -38,6 +38,13 @@
         <property name="properties" ref="europeanaProperties"/>
     </bean>
 
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${db.driverClass}"/>
+        <property name="jdbcUrl"     value="${db.jdbcUrl}"/>
+        <property name="user"        value="${db.user}"/>
+        <property name="password"    value="${db.password}"/>
+    </bean>
+
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">

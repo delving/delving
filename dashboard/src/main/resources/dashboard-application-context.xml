@@ -35,13 +35,6 @@
 
     <context:annotation-config/>
 
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="${db.driverClass}"/>
-        <property name="jdbcUrl"     value="${db.jdbcUrl}"/>
-        <property name="user"        value="${db.user}"/>
-        <property name="password"    value="${db.password}"/>
-    </bean>
-
     <tx:annotation-driven proxy-target-class="true"/>
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>

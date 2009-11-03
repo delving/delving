@@ -48,8 +48,7 @@ public class LoadContent {
     public static void main(String[] args) throws Exception {
 
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
-                "/database-application-context.xml",
-                "/bootstrap-application-context.xml"
+                "/database-application-context.xml"
         });
 
         ESEImporter eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
