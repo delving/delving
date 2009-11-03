@@ -2,38 +2,15 @@ package eu.europeana.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.collections.CollectionsWidget;
 import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.UserX;
 import eu.europeana.dashboard.client.sandbox.SandboxWidget;
-import eu.europeana.dashboard.client.widgets.CacheWidget;
-import eu.europeana.dashboard.client.widgets.CarouselItemsWidget;
-import eu.europeana.dashboard.client.widgets.ContributorWidget;
-import eu.europeana.dashboard.client.widgets.GodWidget;
-import eu.europeana.dashboard.client.widgets.LogWidget;
-import eu.europeana.dashboard.client.widgets.PartnerWidget;
-import eu.europeana.dashboard.client.widgets.RoleBasedTabPanel;
-import eu.europeana.dashboard.client.widgets.StaticPageWidget;
-import eu.europeana.dashboard.client.widgets.TranslationWidget;
-import eu.europeana.dashboard.client.widgets.UsersWidget;
+import eu.europeana.dashboard.client.widgets.*;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -189,14 +166,14 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
         ft.setWidget(3, 0, message);
         format.setColSpan(3, 0, 2);
         Button login = new Button(messages.login());
-        login.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        login.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 authenticate();
             }
         });
-        password.addKeyboardListener(new KeyboardListenerAdapter() {
-            public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-                if (keyCode == KeyboardListener.KEY_ENTER) {
+        password.addKeyPressHandler(new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getCharCode() == KeyCodes.KEY_ENTER) {
                     authenticate();
                 }
             }
