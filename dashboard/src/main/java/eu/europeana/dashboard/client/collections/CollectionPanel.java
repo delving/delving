@@ -1,13 +1,8 @@
 package eu.europeana.dashboard.client.collections;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -58,14 +53,14 @@ public class CollectionPanel extends DashboardWidget {
     public Widget createWidget() {
         HTML close = new HTML(world.messages().close());
         close.setStyleName("collectionClose");
-        close.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        close.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 closeNotifier.close(holder.getCollection());
             }
         });
         Button recount = new Button(world.messages().recount());
-        recount.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        recount.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 world.service().updateCollectionCounters(holder.getCollection(), new Reply<EuropeanaCollectionX>() {
                     public void onSuccess(EuropeanaCollectionX result) {
                         setCollection(result);

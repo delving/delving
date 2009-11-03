@@ -1,6 +1,7 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -23,8 +24,8 @@ public class GodWidget extends DashboardWidget {
         panel.setTitle("god panel");
         HTML disableAll = new HTML(world.messages().disableAll());
         disableAll.setStyleName("actionLink");
-        disableAll.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        disableAll.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 world.service().disableAllCollections(new Reply() {
                     public void onSuccess(Object o) {
                         System.out.println("disabled all collections");
@@ -35,8 +36,8 @@ public class GodWidget extends DashboardWidget {
         panel.add(disableAll);
         HTML enableAll = new HTML(world.messages().enableAll());
         enableAll.setStyleName("actionLink");
-        enableAll.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        enableAll.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 world.service().enableAllCollections(new Reply() {
                     public void onSuccess(Object o) {
                         System.out.println("enabled all collections");

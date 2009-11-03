@@ -1,16 +1,10 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.TreeListener;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.LanguageX;
@@ -33,8 +27,8 @@ public class SearchTermWidget extends DashboardWidget {
     }
 
     protected Widget createWidget() {
-        tree.addTreeListener(new TreeListener() {
-            public void onTreeItemSelected(TreeItem item) {
+        tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
+            public void onSelection(SelectionEvent<TreeItem> item) {
             }
 
             public void onTreeItemStateChanged(final TreeItem item) {
@@ -95,8 +89,8 @@ public class SearchTermWidget extends DashboardWidget {
             this.add(new HTML("&nbsp;&nbsp;&nbsp;"));
             HTML remove = new HTML("x");
             remove.setStyleName("actionLink");
-            remove.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            remove.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                     world.service().removeSearchTerm(language.getCode(), term, new Reply<Boolean>() {
                         public void onSuccess(Boolean result) {
                             treeItem.remove();
@@ -126,8 +120,8 @@ public class SearchTermWidget extends DashboardWidget {
             this.languageTreeItem = item;
             option = new HTML(world.messages().more());
             prompt = new HTML(world.messages().addSearchTermFor(languageTreeItem.getText()) + "  ");
-            submitButton.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            submitButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                     final String queryString = queryStringBox.getText();
                     if (queryString.length() > 0) {
                         addSerchTerm(language, queryString);
@@ -139,8 +133,8 @@ public class SearchTermWidget extends DashboardWidget {
             textBoxPanel.add(queryStringBox);
             textBoxPanel.add(submitButton);
             option.setStyleName("actionLink");
-            option.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            option.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                     prepareForInput();
                 }
             });

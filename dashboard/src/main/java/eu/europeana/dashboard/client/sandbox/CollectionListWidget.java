@@ -1,23 +1,13 @@
 package eu.europeana.dashboard.client.sandbox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.StackPanel;
-import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.FilterChoice;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Hold a list of collections and checkboxes to make a selection from them

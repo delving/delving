@@ -6,11 +6,7 @@ import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.ImportFileX;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Hold a list of collections and deliver a suggestion oracle

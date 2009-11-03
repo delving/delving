@@ -1,13 +1,8 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardMessages;
 
 /**
@@ -27,10 +22,10 @@ public class VerifyDialog extends DialogBox {
         this.messages = messages;
         this.setAnimationEnabled(true);
         this.setWidget(createDialogWidget());
-        closeButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        closeButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 VerifyDialog.this.hide();
-                if (action != null && certainty.isChecked()) {
+                if (action != null && certainty.getValue()) {
                     action.run();
                 }
             }
@@ -53,7 +48,7 @@ public class VerifyDialog extends DialogBox {
 
     public void ask(Widget source, String caption, String question, Runnable action) {
         this.action = action;
-        this.certainty.setChecked(false);
+        this.certainty.setValue(false);
         this.setText(caption);
         contents.setText(question);
         int left = source.getAbsoluteLeft();

@@ -1,5 +1,7 @@
 package eu.europeana.dashboard.client.sandbox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 
@@ -26,10 +28,10 @@ public class VerifyDialog extends DialogBox {
         this.setAnimationEnabled(true);
         this.setText(caption);
         this.setWidget(createDialogWidget());
-        closeButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        closeButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 VerifyDialog.this.hide();
-                if (action != null && yesCheckBox.isChecked()) {
+                if (action != null && yesCheckBox.getValue()) {
                     action.run();
                 }
             }
@@ -51,7 +53,7 @@ public class VerifyDialog extends DialogBox {
 
     public void ask(Runnable action) {
         this.action = action;
-        this.yesCheckBox.setChecked(false);
+        this.yesCheckBox.setValue(false);
         int left = source.getWidget().getAbsoluteLeft();
         int top = source.getWidget().getAbsoluteTop();
         this.setPopupPosition(left, top+20);

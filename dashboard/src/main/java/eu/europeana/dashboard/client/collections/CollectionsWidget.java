@@ -21,32 +21,16 @@
 
 package eu.europeana.dashboard.client.collections;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestionEvent;
-import com.google.gwt.user.client.ui.SuggestionHandler;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
-import eu.europeana.dashboard.client.dto.CacheStateX;
-import eu.europeana.dashboard.client.dto.CollectionStateX;
-import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFileX;
-import eu.europeana.dashboard.client.dto.QueueEntryX;
+import eu.europeana.dashboard.client.dto.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A widget to handle collections
@@ -113,8 +97,8 @@ public class CollectionsWidget extends DashboardWidget {
             fileStateBox.addItem(state.toString());
         }
         Button select = new Button(world.messages().select());
-        select.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        select.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 int collectionIndex = collectionStateBox.getSelectedIndex();
                 int cacheIndex = cacheStateBox.getSelectedIndex();
                 int fileStateIndex = fileStateBox.getSelectedIndex();

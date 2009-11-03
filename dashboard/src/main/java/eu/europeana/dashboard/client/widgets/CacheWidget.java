@@ -1,12 +1,8 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 
@@ -49,8 +45,8 @@ public class CacheWidget extends DashboardWidget {
         orphanDecorator.setWidget(orphanPanels);
         panel.add(orphanDecorator);
         Button deleteAllOrphans = new Button(world.messages().cacheDeleteAllOrphans());
-        deleteAllOrphans.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        deleteAllOrphans.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 world.service().deleteAllOrphans(new Reply<Void>() {
                     public void onSuccess(Void result) {
                         orphanPanels.clear();
@@ -69,8 +65,8 @@ public class CacheWidget extends DashboardWidget {
             add(new HTML("<a href=\""+uri+"\" target=\"_orphanFrame\">"+uri+"</a>"));
             Button delete = new Button(world.messages().cacheDeleteThisOne());
             add(delete);
-            delete.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            delete.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event)  {
                     world.service().deleteObjectOrphan(uri, new Reply<Boolean>() {
                         public void onSuccess(Boolean result) {
                             OrphanPanel.this.removeFromParent();

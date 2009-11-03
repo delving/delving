@@ -1,26 +1,17 @@
 package eu.europeana.dashboard.client.widgets;
 
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
-
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import java.util.List;
 
 /**
@@ -62,13 +53,13 @@ public class StaticPageWidget extends DashboardWidget {
                 }
             }
         });
-        pageBox.addChangeListener(new ChangeListener() {
-            public void onChange(Widget sender) {
+        pageBox.addChangeHandler(new ChangeHandler(){
+            public void onChange(ChangeEvent sender) {
                 fetchPage();
             }
         });
-        languageBox.addChangeListener(new ChangeListener() {
-            public void onChange(Widget sender) {
+        languageBox.addChangeHandler(new ChangeHandler(){
+            public void onChange(ChangeEvent sender) {
                 fetchPage();
             }
         });
@@ -78,18 +69,28 @@ public class StaticPageWidget extends DashboardWidget {
         languageBox.setWidth("100%");
         choices.setWidget(0, 1, languageBox);
         choices.setWidth("100%");
-        textArea.addKeyboardListener(new KeyboardListener() {
-            public void onKeyDown(Widget sender, char keyCode, int modifiers) {}
-            public void onKeyUp(Widget sender, char keyCode, int modifiers) {}
-
-            public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-                changed = true;
+        textArea.addKeyUpHandler(new KeyUpHandler() {
+            public void onKeyUp(KeyUpEvent event) {
             }
-
         });
+
+        textArea.addKeyDownHandler(new KeyDownHandler(){
+            public void onKeyDown(KeyDownEvent event) {
+                
+            }
+        });
+        
+        textArea.addKeyPressHandler(new KeyPressHandler() {
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getCharCode() == KeyCodes.KEY_ENTER) {
+                      changed = true;
+                }
+            }
+       });
+
         timer.scheduleRepeating(1000);
-        submit.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        submit.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 if (page != null) {
                     world.service().saveStaticPage(page.getId(), textArea.getText(), new Reply<StaticPageX>() {
                         public void onSuccess(StaticPageX page) {
@@ -99,8 +100,8 @@ public class StaticPageWidget extends DashboardWidget {
                 }
             }
         });
-        revert.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        revert.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
                 setPage(page);
             }
         });

@@ -1,32 +1,17 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.TranslationX;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Management of translated strings
@@ -53,8 +38,8 @@ public class TranslationWidget extends DashboardWidget {
         if (world.user().getRole() == RoleX.ROLE_GOD) {
             final TextBox keyBox = new TextBox();
             Button addBox = new Button(world.messages().add());
-            addBox.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            addBox.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                     world.service().addMessageKey(keyBox.getText(), new Reply<Void>(){
                         public void onSuccess(Void result) {
                             keyBox.setText("");
@@ -64,8 +49,8 @@ public class TranslationWidget extends DashboardWidget {
                 }
             });
             Button removeBox = new Button(world.messages().delete());
-            removeBox.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            removeBox.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                     world.service().removeMessageKey(keyBox.getText(), new Reply<Void>(){
                         public void onSuccess(Void result) {
                             keyBox.setText("");
@@ -103,14 +88,14 @@ public class TranslationWidget extends DashboardWidget {
                     final LanguageX language = languageX;
                     CheckBox checkBox = new CheckBox(language.getCode());
                     if (world.user().isLanguageAllowed(language.getCode(), false)) {
-                        checkBox.setChecked(true);
+                        checkBox.setValue(true);
                         checkBox.setStyleName("languageLabel");
                         visibleLanguages.add(language.getCode());
                     }
-                    checkBox.addClickListener(new ClickListener() {
-                        public void onClick(Widget sender) {
-                            CheckBox box = (CheckBox)sender;
-                            if (box.isChecked()) {
+                    checkBox.addClickHandler(new ClickHandler() {
+                         public void onClick(ClickEvent event)  {
+                            CheckBox box = (CheckBox)event.getSource();
+                            if (box.getValue()) {
                                 visibleLanguages.add(language.getCode());
                             }
                             else {
@@ -126,8 +111,8 @@ public class TranslationWidget extends DashboardWidget {
                     }
                 }
                 submitLanguageChoice = new Button(world.messages().submit());
-                submitLanguageChoice.addClickListener(new ClickListener() {
-                    public void onClick(Widget sender) {
+                submitLanguageChoice.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event)  {
                         refreshTree();
                     }
                 });
@@ -187,15 +172,14 @@ public class TranslationWidget extends DashboardWidget {
             translationBox.setStyleName("translationUnchanged");
             translationBox.setWidth("100%");
             translationBox.setText(translation.getValue());
-            translationBox.addKeyboardListener(new KeyboardListenerAdapter() {
-                @Override
-                public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+            translationBox.addKeyUpHandler(new KeyUpHandler() {
+                public void onKeyUp(KeyUpEvent event) {
                     checkChanged();
                 }
             });
             submit = new Button(world.messages().translationSubmit());
-            submit.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            submit.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event)  {
                     world.service().setTranslation(keyTreeItem.getText(), translation.getLanguage().getCode(), translationBox.getText(), new Reply<TranslationX>() {
                         public void onSuccess(TranslationX result) {
                             translation = result;
@@ -206,8 +190,8 @@ public class TranslationWidget extends DashboardWidget {
             });
             submit.setEnabled(false);
             reset = new Button(world.messages().translationReset());
-            reset.addClickListener(new ClickListener() {
-                public void onClick(Widget sender) {
+            reset.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event)  {
                     translationBox.setText(translation.getValue());
                     checkChanged();
                 }

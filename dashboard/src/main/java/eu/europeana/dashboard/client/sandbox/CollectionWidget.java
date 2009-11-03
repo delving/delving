@@ -21,6 +21,10 @@
 
 package eu.europeana.dashboard.client.sandbox;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
@@ -137,8 +141,8 @@ public class CollectionWidget extends DashboardWidget {
         descriptionArea.setVisibleLines(3);
         descriptionArea.setWidth("100%");
         descriptionArea.setText(holder.getCollection().getDescription());
-        descriptionArea.addKeyboardListener(new KeyboardListenerAdapter() {
-            public void onKeyUp(Widget widget, char c, int i) {
+        descriptionArea.addKeyUpHandler(new KeyUpHandler() {
+            public void onKeyUp(KeyUpEvent event) {
                 submit.setEnabled(descriptionEdited());
             }
         });
@@ -146,8 +150,8 @@ public class CollectionWidget extends DashboardWidget {
         // submit button
         submit = new Button(world.messages().submit());
         submit.setEnabled(false);
-        submit.addClickListener(new ClickListener() {
-            public void onClick(Widget widget) {
+        submit.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 if (descriptionEdited()) {
                     holder.getCollection().setDescription(descriptionArea.getText().trim());
                 }

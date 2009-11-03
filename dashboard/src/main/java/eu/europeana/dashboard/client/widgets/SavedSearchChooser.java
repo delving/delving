@@ -1,15 +1,14 @@
 package eu.europeana.dashboard.client.widgets;
 
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.UserX;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -81,15 +80,15 @@ public class SavedSearchChooser extends DashboardWidget {
             }
         });
         panel.add(userChooser.getWidget());
-        listBox.addChangeListener(new ChangeListener() {
-            public void onChange(Widget sender) {
+        listBox.addChangeHandler(new ChangeHandler(){
+            public void onChange(ChangeEvent sender) {
                 int select = listBox.getSelectedIndex();
                 selectButton.setEnabled(select > 0);
             }
         });
         panel.add(listBox);
-        selectButton.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
+        selectButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event)  {
                 int index = listBox.getSelectedIndex()-1;
                 owner.selectSearch(searches.get(index));
                 listBox.removeItem(index);
