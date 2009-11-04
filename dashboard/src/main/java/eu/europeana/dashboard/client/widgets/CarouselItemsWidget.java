@@ -119,9 +119,13 @@ public class CarouselItemsWidget extends DashboardWidget {
             grid.setHTML(3, 1, item.getProvider());
             grid.setHTML(4, 1, item.getLanguage());
             grid.setHTML(5, 1, item.getType().toString());
-            grid.addTableListener(new TableListener() {
-                public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
-                    popup.hide();
+            grid.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    HTMLTable.Cell cell= ((Grid)event.getSource()).getCellForEvent(event);
+                    if (cell != null){
+                        // todo ???
+                    }
+                    popup.hide();         // inside the if block ??
                 }
             });
             VerticalPanel p = new VerticalPanel();

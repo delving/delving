@@ -23,6 +23,8 @@ package eu.europeana.dashboard.client.collections;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
@@ -207,9 +209,9 @@ public class CollectionsWidget extends DashboardWidget {
 
     private Widget createCollectionSuggestBox() {
         final SuggestBox box = new SuggestBox(collectionList.getSuggestOracle());
-        box.addEventHandler(new SuggestionHandler() {
-            public void onSuggestionSelected(SuggestionEvent event) {
-                CollectionList.Suggestion suggestion = (CollectionList.Suggestion) event.getSelectedSuggestion();
+        box.addSelectionHandler (new SelectionHandler<SuggestOracle.Suggestion>() {
+            public void onSelection (SelectionEvent<SuggestOracle.Suggestion> event) {
+                CollectionList.Suggestion suggestion = (CollectionList.Suggestion) event.getSelectedItem();
                 addCollectionPanel(suggestion.getCollection());
                 box.setText("");
             }
