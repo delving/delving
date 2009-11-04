@@ -63,10 +63,6 @@
         <module>bootstrap</module>
         <module>portal-core</module>
         <module>portal-lite</module>
-        <module>portal-full</module>
-        <!-- To add modules from the contrib section add prefixei with contrib/ -->
-        <!--<module>contrib/abm-sok</module>-->
-        <!--<module>contrib/portal-ait</module>-->
     </modules>
     <organization>
         <name>Europeana Foundation</name>
