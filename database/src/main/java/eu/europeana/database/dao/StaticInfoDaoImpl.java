@@ -22,12 +22,7 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.MessageKey;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -143,4 +138,116 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             entityManager.persist(page);
         }
     }
+
+    @Transactional
+    public User removeCarouselItem(User user, Long savedItemId) {
+        // remove carousel item and give back a user
+        SavedItem savedItem = fetchSavedItem(user, savedItemId);
+        if (savedItem == null) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
+        }
+        CarouselItem carouselItem = savedItem.getCarouselItem();
+        savedItem.setCarouselItem(null);
+        entityManager.remove(carouselItem);
+        entityManager.flush();
+        user = entityManager.find(User.class, user.getId());
+        return user;
+    }
+
+    private SavedItem fetchSavedItem(User user, Long savedItemId) {
+       // Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
+
+         // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
+
+        Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid and :id = id");
+        q.setParameter("userid", user.getId());
+        q.setParameter("id", savedItemId);
+        List results = q.getResultList();
+        if (results.size() != 1) {
+            return null;
+        }
+        return (SavedItem) results.get(0);
+    }
+
+    @Transactional
+    public User removeSearchTerm(User user, Long savedSearchId) {
+        // remove carousel item and give back a user
+        SavedSearch savedSearch = fetchSavedSearch(user, savedSearchId);
+        if (savedSearch == null) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedSearchId);
+        }
+        SearchTerm searchTerm = savedSearch.getSearchTerm();
+        savedSearch.setSearchTerm(null);
+        entityManager.remove(searchTerm);
+        entityManager.flush();
+        user = entityManager.find(User.class, user.getId());
+        return user;
+    }
+
+    private SavedSearch fetchSavedSearch(User user, Long savedSearchId) {
+        //Query q = entityManager.createQuery("select o from SavedSearch as o where userid = :userid and :id = id");
+
+        // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
+
+            
+        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :userid and :id = id");
+        q.setParameter("userid", user.getId());
+        q.setParameter("id", savedSearchId);
+        List results = q.getResultList();
+        if (results.size() != 1) {
+            return null;
+        }
+        return (SavedSearch) results.get(0);
+    }
+
+    @Transactional
+    public CarouselItem addCarouselItem(User user, Long savedItemId) {
+//        SavedItem savedItem = fetchSavedItem(user, savedItemId);
+        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
+        if (savedItem == null) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
+        }
+        CarouselItem carouselItem = savedItem.createCarouselItem();
+        savedItem.setCarouselItem(carouselItem);
+        return carouselItem;
+    }
+
+    @Transactional
+    public User addCarouselItem(User user, SavedItem savedItem) {
+        if (savedItem == null) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItem.getId());
+        }
+        CarouselItem carouselItem = savedItem.createCarouselItem();
+        savedItem.setCarouselItem(carouselItem);
+        entityManager.persist(carouselItem);
+        user = entityManager.merge(user);
+        return user;
+    }
+
+    @Transactional
+    public User addCarouselItem(User user, CarouselItem carouselItem) {
+        //carouselItem.setetDateSaved(new Date());
+        user = entityManager.merge(user);
+        entityManager.persist(carouselItem);
+        return user;
+    }
+
+    @Transactional
+    public User addEditorPick(User user, EditorPick editorPick) {
+        user = entityManager.merge(user);
+        entityManager.persist(editorPick);
+        return user;
+    }
+
+    @Transactional
+   public SearchTerm addSearchTerm(Long savedSearchId) {
+       SavedSearch savedSearch = entityManager.getReference(SavedSearch.class, savedSearchId);
+       if (savedSearch == null) {
+           throw new IllegalArgumentException("The user doesn't own the object. user:  object: " + savedSearchId);
+       }
+       SearchTerm searchTerm = savedSearch.createSearchTerm();
+       savedSearch.setSearchTerm(searchTerm);
+       return searchTerm;
+   }
+
 }

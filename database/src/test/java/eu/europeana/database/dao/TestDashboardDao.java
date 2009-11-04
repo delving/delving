@@ -2,6 +2,7 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.UserDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.EuropeanaId;
@@ -93,6 +94,7 @@ public class TestDashboardDao {
 
     @Autowired
     private UserDao userDao; // todo: eliminate, because it should not be necessary
+    private StaticInfoDao staticInfoDao; // todo: eliminate, because it should not be necessary
 
     @Before
     public void init() {
@@ -158,7 +160,7 @@ public class TestDashboardDao {
                     savedItem.getCarouselItem().getTitle());
             assertNotNull(savedItem.getCarouselItem().getEuropeanaId().isOrphan());
 //            Assert.assertEquals(savedItem.getUser(), savedItem.getCarouselItem().getUser());
-            assertNotNull(userDao.removeCarouselItem(user, savedItem.getId()));
+            assertNotNull(staticInfoDao.removeCarouselItem(user, savedItem.getId()));
             assertFalse("has no Carousel Item", savedItem.hasCarouselItem());
 //            assertFalse("EuropeanaId has no associated CarouselItem", savedItem.getEuropeanaId().hasCarouselItem());
         }
@@ -205,7 +207,7 @@ public class TestDashboardDao {
         for (SavedSearch savedSearch : searchList) {
             assertFalse("has no Search Term", savedSearch.hasSearchTerm());
             assertNotNull("id should not be null", savedSearch.getId());
-            assertNotNull(userDao.addSearchTerm(savedSearch.getId()));
+            assertNotNull(staticInfoDao.addSearchTerm(savedSearch.getId()));
             assertTrue("has one Search Term", savedSearch.hasSearchTerm());
         }
         user = userDao.refreshUser(user);
@@ -217,7 +219,7 @@ public class TestDashboardDao {
                     search1.getQueryString(),
                     savedSearch.getSearchTerm().getProposedSearchTerm());
 //            Assert.assertEquals(savedSearch.getUser(), savedSearch.getSearchTerm().getUser());
-            user = userDao.removeSearchTerm(user, savedSearch.getId());
+            user = staticInfoDao.removeSearchTerm(user, savedSearch.getId());
             assertFalse("has no Search Term", savedSearch.hasSearchTerm());
         }
     }

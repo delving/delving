@@ -21,12 +21,7 @@
 
 package eu.europeana.database;
 
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.MessageKey;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.*;
 
 import java.util.List;
 
@@ -89,5 +84,11 @@ public interface StaticInfoDao {
     // todo: add this (impl in SearchTermDaoImpl
 //    List<SearchTerm> getAllSearchTerms();
 
-
+    User removeCarouselItem(User user, Long savedItemId);
+    User removeSearchTerm(User user, Long savedSearchId);
+    User addCarouselItem(User user, SavedItem savedItem);
+    User addEditorPick(User user, EditorPick editorPick);
+    User addCarouselItem(User user, CarouselItem carouselItem);
+    CarouselItem addCarouselItem(User user, Long savedItem);
+    SearchTerm addSearchTerm(Long savedSearchId);
 }

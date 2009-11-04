@@ -52,14 +52,7 @@ public interface UserDao {
     User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
     User addSavedSearch(User user, SavedSearch savedSearch);
 
-    // todo: remove these (move implementations to StaticInfoDao)
-    User removeCarouselItem(User user, Long savedItemId);
-    User removeSearchTerm(User user, Long savedSearchId);
-    User addCarouselItem(User user, SavedItem savedItem);
-    User addEditorPick(User user, EditorPick editorPick);
-    User addCarouselItem(User user, CarouselItem carouselItem);
-    CarouselItem addCarouselItem(User user, Long savedItem);
-    SearchTerm addSearchTerm(Long savedSearchId);
+   
 
     // todo: add these (implementations are in DashboardDaoImpl)
 //    User fetchUser(String email, String password);

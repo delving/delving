@@ -109,17 +109,6 @@ public class UserDaoImpl implements UserDao {
     }
 
 
-     @Transactional
-    public SearchTerm addSearchTerm(Long savedSearchId) {
-        SavedSearch savedSearch = entityManager.getReference(SavedSearch.class, savedSearchId);
-        if (savedSearch == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user:  object: " + savedSearchId);
-        }
-        SearchTerm searchTerm = savedSearch.createSearchTerm();
-        savedSearch.setSearchTerm(searchTerm);
-        return searchTerm;
-    }
-
     @Transactional
     public User addSavedItem(User user, SavedItem savedItem, String europeanaUri) {
         EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
@@ -137,38 +126,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Transactional
-    public CarouselItem addCarouselItem(User user, Long savedItemId) {
-//        SavedItem savedItem = fetchSavedItem(user, savedItemId);
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
-        if (savedItem == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
-        }
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        savedItem.setCarouselItem(carouselItem);
-        return carouselItem;
-    }
-
-    @Transactional
-    public User addCarouselItem(User user, SavedItem savedItem) {
-        if (savedItem == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItem.getId());
-        }
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        savedItem.setCarouselItem(carouselItem);
-        entityManager.persist(carouselItem);
-        user = entityManager.merge(user);
-        return user;
-    }
-
-    @Transactional
-    public User addCarouselItem(User user, CarouselItem carouselItem) {
-        //carouselItem.setetDateSaved(new Date());
-        user = entityManager.merge(user);
-        entityManager.persist(carouselItem);
-        return user;
-    }
-
-    @Transactional
     public User addSocialTag(User user, SocialTag socialTag) {
         user = entityManager.merge(user);
         //        user = merge(user);
@@ -179,13 +136,6 @@ public class UserDaoImpl implements UserDao {
         socialTag.setUser(user);
         entityManager.persist(socialTag);
         user.getSocialTags().add(socialTag);
-        return user;
-    }
-
-    @Transactional
-    public User addEditorPick(User user, EditorPick editorPick) {
-        user = entityManager.merge(user);
-        entityManager.persist(editorPick);
         return user;
     }
 
@@ -229,21 +179,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
-    @Transactional
-    public User removeCarouselItem(User user, Long savedItemId) {
-        // remove carousel item and give back a user
-        SavedItem savedItem = fetchSavedItem(user, savedItemId);
-        if (savedItem == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
-        }
-        CarouselItem carouselItem = savedItem.getCarouselItem();
-        savedItem.setCarouselItem(null);
-        entityManager.remove(carouselItem);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        return user;
-    }
-
+  /*
     private SavedItem fetchSavedItem(User user, Long savedItemId) {
         Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
         q.setParameter("userid", user.getId());
@@ -265,22 +201,7 @@ public class UserDaoImpl implements UserDao {
         }
         return (SavedSearch) results.get(0);
     }
-
-    @Transactional
-    public User removeSearchTerm(User user, Long savedSearchId) {
-        // remove carousel item and give back a user
-        SavedSearch savedSearch = fetchSavedSearch(user, savedSearchId);
-        if (savedSearch == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedSearchId);
-        }
-        SearchTerm searchTerm = savedSearch.getSearchTerm();
-        savedSearch.setSearchTerm(null);
-        entityManager.remove(searchTerm);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        return user;
-    }
-
+         */
     @Transactional
     public List<User> fetchUsers(String pattern) {
         Query query = entityManager.createQuery(

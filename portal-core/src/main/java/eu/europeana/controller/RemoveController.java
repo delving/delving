@@ -1,6 +1,7 @@
 package eu.europeana.controller;
 
 import eu.europeana.controller.util.ControllerUtil;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.SearchTerm;
@@ -17,9 +18,13 @@ import javax.servlet.http.HttpServletRequest;
 public class RemoveController extends AbstractAjaxController {
 
     private UserDao userDao;
+    private StaticInfoDao staticInfoDao;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
 
     public boolean handleAjax(HttpServletRequest request) throws Exception {
@@ -38,10 +43,10 @@ public class RemoveController extends AbstractAjaxController {
 
         //do remove
         if (clazz == SearchTerm.class) {
-            user = userDao.removeSearchTerm(user, id);
+            user = staticInfoDao.removeSearchTerm(user, id);
         }
         else if (clazz == CarouselItem.class) {
-            user = userDao.removeCarouselItem(user, id);
+            user = staticInfoDao.removeCarouselItem(user, id);
         }
         else {
             user = userDao.remove(user, clazz, id);
