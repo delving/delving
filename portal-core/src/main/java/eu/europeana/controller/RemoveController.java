@@ -60,7 +60,7 @@ public class RemoveController extends AbstractAjaxController {
                 throw new IllegalArgumentException("Unhandled removable");
         }
 
-        ControllerUtil.setUser(user);
+            ControllerUtil.setUser(user);
         return true;
     }
 
