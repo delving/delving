@@ -154,8 +154,8 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public User removeSocialTag(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SocialTag  as o where userid = :userId and :id = id");
-        q.setParameter("userId", user.getId());
+        Query q = entityManager.createQuery("select o from SocialTag  as o where user = :user and :id = id");
+        q.setParameter("user", user);
         q.setParameter("id", id);
         List objects = q.getResultList();
         if (objects.size() != 1) {
@@ -173,8 +173,8 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public User removeSavedItems(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SavedItem  as o where userid = :userId and :id = id");
-        q.setParameter("userId", user.getId());
+        Query q = entityManager.createQuery("select o from SavedItem  as o where user = :user and :id = id");
+        q.setParameter("user", user.getId());
         q.setParameter("id", id);
         List objects = q.getResultList();
         if (objects.size() != 1) {
@@ -191,8 +191,8 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public User removeSavedSearch(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SavedSearch  as o where userid = :userId and :id = id");
-        q.setParameter("userId", user.getId());
+        Query q = entityManager.createQuery("select o from SavedSearch  as o where user = :user and :id = id");
+        q.setParameter("user", user.getId());
         q.setParameter("id", id);
         List objects = q.getResultList();
         if (objects.size() != 1) {
