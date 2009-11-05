@@ -22,7 +22,7 @@ import java.io.UnsupportedEncodingException;
 
 // todo: implement this is a reliable way
 
-public class DocIdWindowPagerTest {
+public class TestDocIdWindowPager {
     private QueryModel queryModel;
     private MockHttpServletRequest request;
     private static SolrQueryModelFactory factory;

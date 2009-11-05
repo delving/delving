@@ -1,32 +1,27 @@
 package eu.europeana.util;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.MailException;
-import org.springframework.mail.MailPreparationException;
-import freemarker.template.Template;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
-
+import freemarker.template.Template;
 import javax.mail.internet.MimeMessage;
-import java.io.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 
 public class EmailSenderTest {
     private static final String TEMPLATE_TXT = "TEST TEMPLATE _${user}_";
     private static final String TEMPLATE_HTML = "TEST TEMPLATE <b>${user}</b>";
     private static final String USER_NAME = "XXX";
 
-
-    /**
-     * @author Borys Omelayenko
-     */
 
     @Test
     public void testBasic() throws Exception {
@@ -45,8 +40,9 @@ public class EmailSenderTest {
                     Here we check the email message created by EmailSender
                      */
                     Assert.assertTrue(messageText.contains("_" + USER_NAME + "_"));
-                    Assert.assertTrue(messageText.contains("<b>" + USER_NAME + "</b>"));                                                            
-                } catch (Exception e) {
+                    Assert.assertTrue(messageText.contains("<b>" + USER_NAME + "</b>"));
+                }
+                catch (Exception e) {
                     throw new MailPreparationException(e);
                 }
             }
@@ -63,7 +59,7 @@ public class EmailSenderTest {
                 configuration.setObjectWrapper(new DefaultObjectWrapper());
                 return new Template(
                         "testTemplate",
-                        new StringReader(fileName.contains("html") ? TEMPLATE_HTML : TEMPLATE_TXT), 
+                        new StringReader(fileName.contains("html") ? TEMPLATE_HTML : TEMPLATE_TXT),
                         configuration);
             }
         };
@@ -71,7 +67,7 @@ public class EmailSenderTest {
         /*
         Test
          */
-        Map<String,Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("user", USER_NAME);
         sender.setMailSender(new TestMailSender());
         sender.setTemplate("tmpl");
