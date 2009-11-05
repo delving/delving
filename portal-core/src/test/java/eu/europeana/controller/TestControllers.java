@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Dec 6, 2008: 11:52:11 PM
  */
-public class AjaxControllerTest {
+public class TestControllers {
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;

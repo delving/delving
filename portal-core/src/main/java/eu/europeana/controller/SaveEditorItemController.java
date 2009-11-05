@@ -2,7 +2,7 @@ package eu.europeana.controller;
 
 import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.UserDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SearchTerm;
@@ -17,22 +17,16 @@ import javax.servlet.http.HttpServletRequest;
 
 public class SaveEditorItemController extends AbstractAjaxController {
 
-    private UserDao userDao;
-
-    public DashboardDao getDashboardDao() {
-        return dashboardDao;
-    }
+    private StaticInfoDao staticInfoDao;
+    private DashboardDao dashboardDao;
 
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
     }
 
-    private DashboardDao dashboardDao;
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
-
 
     public boolean handleAjax(HttpServletRequest request) throws Exception {
         User user = ControllerUtil.getUser();
@@ -51,7 +45,7 @@ public class SaveEditorItemController extends AbstractAjaxController {
         //do remove
         if (clazz == SearchTerm.class) {
             // todo catch illegal argument exception return false
-            SearchTerm searchTerm = userDao.addSearchTerm(id);
+            SearchTerm searchTerm = staticInfoDao.addSearchTerm(id);
             if (searchTerm == null) {
                 return false;
             }
@@ -63,7 +57,7 @@ public class SaveEditorItemController extends AbstractAjaxController {
                 return false;
             }
             // old solution
-//            user = userDao.addCarouselItem(user, id);
+//            user = staticInfoDao.addCarouselItem(user, id);
         }
         else {
             return false;
