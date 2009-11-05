@@ -3,14 +3,20 @@ package eu.europeana.controller;
 import static junit.framework.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Dec 6, 2008: 11:52:11 PM
  */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class TestControllers {
 
     MockHttpServletRequest request;
