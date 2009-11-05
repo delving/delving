@@ -1,7 +1,8 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DataMigration;
-import eu.europeana.database.MessageDao;
+//import eu.europeana.database.MessageDao;
+import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.integration.DaoMessageSource;
 import org.junit.Before;
@@ -27,16 +28,18 @@ import java.util.Locale;
 public class TestLanguageDao {
 
     @Autowired
-    private MessageDao messageDao; // todo: should be LanguageDao
+   // private MessageDao messageDao; // todo: should be LanguageDao
+    private LanguageDao languageDao; // todo: should be LanguageDao
 
     private DaoMessageSource daoMessageSource = new DaoMessageSource();
 
     @Before
     public void prepare() throws IOException {
         DataMigration migration = new DataMigration();
-        migration.setMessageDao(messageDao);
+        migration.setLanguageDao(languageDao);
         migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
-        daoMessageSource.setMessageDao(messageDao);
+        //daoMessageSource.setMessageDao(languageDao);
+        daoMessageSource.setLanguageDao(languageDao);
     }
 
     @Test

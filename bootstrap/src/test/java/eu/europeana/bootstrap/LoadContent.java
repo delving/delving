@@ -23,7 +23,8 @@ package eu.europeana.bootstrap;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.DataMigration;
-import eu.europeana.database.MessageDao;
+//import eu.europeana.database.MessageDao;
+import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
@@ -54,13 +55,16 @@ public class LoadContent {
         ESEImporter eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         DashboardDao dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         ImportRepository repository = (ImportRepository) context.getBean("normalizedImportRepository");
-        MessageDao messageDao = (MessageDao) context.getBean("messageDao");
+        //MessageDao messageDao = (MessageDao) context.getBean("messageDao");
+        LanguageDao languageDao = (LanguageDao) context.getBean("languageDao");
+
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
 
         // load static content etc.
         log.info("Start loading static content.");
         DataMigration migration = new DataMigration();
-        migration.setMessageDao(messageDao);
+       // migration.setMessageDao(messageDao);
+         migration.setLanguageDao(languageDao);
         migration.setPartnerDao(staticInfoDao);
         migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
         migration.readTableFromResource(DataMigration.Table.PARTNERS);

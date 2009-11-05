@@ -49,14 +49,19 @@ import java.util.List;
 public class DataMigration {
     private static final String DIRECTORY = "/tmp/";
     private static final Logger log = Logger.getLogger(DataMigration.class);
-    private MessageDao messageDao;
+    //private MessageDao messageDao;
+    private LanguageDao languageDao;
     private StaticInfoDao staticInfoDao;
 
     public DataMigration() {
     }
 
-    public void setMessageDao(MessageDao messageDao) {
+   /* public void setMessageDao(MessageDao messageDao) {
         this.messageDao = messageDao;
+    }
+    */
+    public void setLanguageDao(LanguageDao languageDao) {
+        this.languageDao = languageDao;
     }
 
     public void setPartnerDao(StaticInfoDao staticInfoDao) {
@@ -104,11 +109,11 @@ public class DataMigration {
                     break;
                 case TRANSLATION_KEYS:
                     Translation translation = (Translation) object;
-                    messageDao.setTranslation(translation.getMessageKey().getKey(), translation.getLanguage(), translation.getValue());
+                    languageDao.setTranslation(translation.getMessageKey().getKey(), translation.getLanguage(), translation.getValue());
                     break;
                 case STATIC_PAGE:
                     StaticPage page = (StaticPage) object;
-                    messageDao.setStaticPage(page.getPageType(), page.getLanguage(), page.getContent());
+                    staticInfoDao.setStaticPage(page.getPageType(), page.getLanguage(), page.getContent());
                     break;
             }
         }
@@ -151,10 +156,10 @@ public class DataMigration {
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/database-application-context.xml",
         });
-        MessageDao messageDao = (MessageDao) context.getBean("messageDao");
+       // MessageDao messageDao = (MessageDao) context.getBean("messageDao");
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
         DataMigration migration = new DataMigration();
-        migration.setMessageDao(messageDao);
+       // migration.setMessageDao(messageDao);
         migration.setPartnerDao(staticInfoDao);
         if (args.length == 1 && args[0].equalsIgnoreCase("import")) {
             for (Table table : Table.values()) {
@@ -165,8 +170,10 @@ public class DataMigration {
             }
         }
         else if (args.length == 1 && args[0].equalsIgnoreCase("export")) {
-            migration.dumpTable(STATIC_PAGE, messageDao.getAllStaticPages());
-            migration.dumpTable(TRANSLATION_KEYS, messageDao.getAllTranslationMessages());
+           // migration.dumpTable(STATIC_PAGE, messageDao.getAllStaticPages());
+           // migration.dumpTable(TRANSLATION_KEYS, messageDao.getAllTranslationMessages());
+             migration.dumpTable(STATIC_PAGE, staticInfoDao.getAllStaticPages());
+            migration.dumpTable(TRANSLATION_KEYS, staticInfoDao.getAllTranslationMessages());
             migration.dumpTable(CONTRIBUTORS, staticInfoDao.getAllContributorItems());
             migration.dumpTable(PARTNERS, staticInfoDao.getAllPartnerItems());
         }

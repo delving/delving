@@ -1,6 +1,7 @@
 package eu.europeana.database.integration;
 
-import eu.europeana.database.MessageDao;
+//import eu.europeana.database.MessageDao;
+import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
@@ -20,13 +21,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DaoMessageSource extends AbstractMessageSource {
     private long maximumAge = 60000L;
-    private MessageDao messageDao;
+    //private MessageDao messageDao;
+    private LanguageDao languageDao;
     private Map<String, Map<Language, CacheValue>> cache = new ConcurrentHashMap<String, Map<Language, CacheValue>>();
-
+    /*
     public void setMessageDao(MessageDao messageDao) {
         this.messageDao = messageDao;
     }
-
+           */
+     public void setLanguageDao(LanguageDao languageDao) {
+        this.languageDao = languageDao;
+    }
     public void setMaximumAge(long maximumAge) {
         this.maximumAge = maximumAge;
     }
@@ -66,7 +71,8 @@ public class DaoMessageSource extends AbstractMessageSource {
 
     private Map<Language, CacheValue> fetchTranslations(String key, Locale locale) {
         Map<Language, CacheValue> translations = new HashMap<Language, CacheValue>();
-        MessageKey messageKey = messageDao.fetchMessageKey(key);
+       // MessageKey messageKey = messageDao.fetchMessageKey(key);
+        MessageKey messageKey = languageDao.fetchMessageKey(key);
         for (Translation translation : messageKey.getTranslations()) {
             translations.put(translation.getLanguage(), new CacheValue(locale, translation.getValue()));
         }

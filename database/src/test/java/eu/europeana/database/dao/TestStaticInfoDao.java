@@ -28,12 +28,12 @@ public class TestStaticInfoDao {
     private StaticInfoDao staticInfoDao;
 
     @Autowired
-    private MessageDao messageDao;
+    //private MessageDao messageDao;
 
     @Before
     public void prepare() throws IOException {
         DataMigration migration = new DataMigration();
-        migration.setMessageDao(messageDao);
+        //migration.setMessageDao(messageDao);
         migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
     }
 

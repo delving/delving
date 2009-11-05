@@ -26,7 +26,7 @@ import eu.europeana.dashboard.client.DashboardService;
 import eu.europeana.dashboard.client.dto.*;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
-import eu.europeana.database.MessageDao;
+//import eu.europeana.database.MessageDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.SolrIndexer;
@@ -44,7 +44,7 @@ public class DashboardServiceImpl implements DashboardService {
     private ESEImporter normalizedImporter;
     private ESEImporter sandboxImporter;
     private DashboardDao dashboardDao;
-    private MessageDao messageDao;
+    //private MessageDao messageDao;
     private LanguageDao languageDao;
     private SolrIndexer indexer;
     private DigitalObjectCache digitalObjectCache;
@@ -64,11 +64,11 @@ public class DashboardServiceImpl implements DashboardService {
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
     }
-
+    /*
     public void setMessageDao(MessageDao messageDao) {
         this.messageDao = messageDao;
     }
-
+             */
     public void setLanguageDao(LanguageDao languageDao) {
         this.languageDao = languageDao;
     }
@@ -229,7 +229,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public List<String> fetchMessageKeys() {
-        return messageDao.fetchMessageKeyStrings();
+        //return messageDao.fetchMessageKeyStrings();
+         return languageDao.fetchMessageKeyStrings();
     }
 
     public List<LanguageX> fetchLanguages() {
@@ -242,7 +243,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public Map<String,List<TranslationX>> fetchTranslations(Set<String> languageCodes) {
-        Map<String, List<Translation>> preconvert = messageDao.fetchTranslations(languageCodes);
+       // Map<String, List<Translation>> preconvert = messageDao.fetchTranslations(languageCodes);
+        Map<String, List<Translation>> preconvert = languageDao.fetchTranslations(languageCodes);
         Map<String, List<TranslationX>> translations = new HashMap<String,List<TranslationX>>();
         for (Map.Entry<String,List<Translation>> entry : preconvert.entrySet()) {
             List<TranslationX> value = new ArrayList<TranslationX>();
@@ -256,7 +258,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     public TranslationX setTranslation(String key, String languageCode, String value) {
         audit("set translation "+key+"/"+languageCode+"="+value);
-        return DataTransfer.convert(messageDao.setTranslation(key, Language.findByCode(languageCode), value));
+        //return DataTransfer.convert(messageDao.setTranslation(key, Language.findByCode(languageCode), value));
+        return DataTransfer.convert(languageDao.setTranslation(key, Language.findByCode(languageCode), value));
     }
 
     public String fetchCacheUrl() {

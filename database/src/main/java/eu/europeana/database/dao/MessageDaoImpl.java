@@ -43,7 +43,7 @@ import java.util.TreeMap;
 
 @SuppressWarnings("unchecked")
 public class MessageDaoImpl implements MessageDao {
-
+  /*
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -144,5 +144,5 @@ public class MessageDaoImpl implements MessageDao {
             entityManager.persist(page);
         }
     }
-
+       */
 }

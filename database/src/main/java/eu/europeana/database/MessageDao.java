@@ -36,6 +36,7 @@ import java.util.Set;
 public interface MessageDao {
 
     // todo: remove these.. move implementations to LanguageDao
+    /*
     Translation setTranslation(String key, Language language, String value);
     List<String> fetchMessageKeyStrings();
     MessageKey fetchMessageKey(String key);
@@ -46,4 +47,5 @@ public interface MessageDao {
     void setStaticPage(StaticPageType pageType, Language language, String content);
     List<StaticPage> getAllStaticPages();
     List<MessageKey> getAllTranslationMessages();
+    */
 }
