@@ -39,22 +39,21 @@ public class RemoveController extends AbstractAjaxController {
         }
         Long id = Long.valueOf(idString);
 
-        Class clazz = Class.forName("eu.europeana.database.domain." + className); // todo: remove later
         switch (findRemovable(className)) {
             case CAROUSEL_ITEM:
                 user = staticInfoDao.removeCarouselItem(user, id);
                 break;
             case SAVED_ITEM:
-                user = userDao.remove(user, clazz, id);
+                user = userDao.removeSavedItems(user, id);
                 break;
             case SAVED_SEARCH:
-                user = userDao.remove(user, clazz, id);
+                user = userDao.removeSavedSearch(user, id);
                 break;
             case SEARCH_TERM:
                 user = staticInfoDao.removeSearchTerm(user, id);
                 break;
             case SOCIAL_TAG:
-                user = userDao.remove(user, clazz, id);
+                user = userDao.removeSocialTag(user, id);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");

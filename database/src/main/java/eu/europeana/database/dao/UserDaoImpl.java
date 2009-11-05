@@ -113,7 +113,7 @@ public class UserDaoImpl implements UserDao {
     public User addSavedItem(User user, SavedItem savedItem, String europeanaUri) {
         EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
         if (europeanaId == null) {
-            throw new IllegalArgumentException("Unable to find europeana record identified by " + europeanaId.getEuropeanaUri());
+            throw new IllegalArgumentException("Unable to find europeana record identified by ");// + europeanaId.getEuropeanaUri());
         }
         savedItem.setDateSaved(new Date());
         savedItem.setEuropeanaId(europeanaId);
@@ -152,10 +152,64 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Transactional
+    public User removeSocialTag(User user, Long id) {
+        Query q = entityManager.createQuery("select o from SocialTag  as o where userid = :userId and :id = id");
+        q.setParameter("userId", user.getId());
+        q.setParameter("id", id);
+        List objects = q.getResultList();
+        if (objects.size() != 1) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
+        }
+        Object object = objects.get(0);
+        SocialTag socialTag = (SocialTag) object;
+        socialTag.getEuropeanaId().setLastModified(new Date());
+        entityManager.remove(object);
+        entityManager.flush();
+        user = entityManager.find(User.class, user.getId());
+        user.getSavedSearches().size();
+        return user;
+    }
+
+    @Transactional
+    public User removeSavedItems(User user, Long id) {
+        Query q = entityManager.createQuery("select o from SavedItem  as o where userid = :userId and :id = id");
+        q.setParameter("userId", user.getId());
+        q.setParameter("id", id);
+        List objects = q.getResultList();
+        if (objects.size() != 1) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
+        }
+        Object object = objects.get(0);
+
+        entityManager.remove(object);
+        entityManager.flush();
+        user = entityManager.find(User.class, user.getId());
+        user.getSavedItems().size();
+        return user;
+    }
+
+    @Transactional
+    public User removeSavedSearch(User user, Long id) {
+        Query q = entityManager.createQuery("select o from SavedSearch  as o where userid = :userId and :id = id");
+        q.setParameter("userId", user.getId());
+        q.setParameter("id", id);
+        List objects = q.getResultList();
+        if (objects.size() != 1) {
+            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
+        }
+        Object object = objects.get(0);
+        entityManager.remove(object);
+        entityManager.flush();
+        user = entityManager.find(User.class, user.getId());
+        user.getSavedSearches().size();
+        return user;
+    }
+
     //    public Object findObject(User user, Class<?> clazz, Long id) {
     //        Query q = entityManager.createQuery("select o from ")
     //    }
-
+  /*
     @Transactional
     public User remove(User user, Class<?> clazz, Long id) {
         Query q = entityManager.createQuery("select o from " + clazz.getSimpleName() + " as o where userid = :userid and :id = id");
@@ -179,7 +233,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
-  /*
+
     private SavedItem fetchSavedItem(User user, Long savedItemId) {
         Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
         q.setParameter("userid", user.getId());

@@ -40,7 +40,10 @@ public interface UserDao {
     void updateUser(User user);
     User refreshUser(User user);
     boolean userNameExists(String userName);
-    User remove(User user, Class<?> clazz, Long id);
+    //User remove(User user, Class<?> clazz, Long id);
+    User removeSocialTag(User user, Long id);
+    User removeSavedItems(User user, Long id);
+    User removeSavedSearch(User user, Long id);
     List<User> fetchUsers(String pattern);
     User fetchUserWhoPickedCarouselItem(String europeanaUri);
     User fetchUserWhoPickedEditorPick(String query);
