@@ -21,13 +21,7 @@
 
 package eu.europeana.database;
 
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.EditorPick;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 import eu.europeana.database.integration.TagCount;
 
 import java.util.List;
@@ -55,20 +49,17 @@ public interface UserDao {
     User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
     User addSavedSearch(User user, SavedSearch savedSearch);
 
-   
-
-    // todo: add these (implementations are in DashboardDaoImpl)
-//    User fetchUser(String email, String password);
-//    void setUserRole(Long userId, Role role);
-//    void removeUser(Long userId);
-//    User fetchUser(Long userId);
-//    void setUserProjectId(Long userId, String projectId);
-//    void setUserProviderId(Long userId, String providerId);
-//    void setUserLanguages(Long userId, String languages);
-//    List<SavedItem> fetchSavedItems(Long userId);
-//    SavedItem fetchSavedItemById(Long id);
-//    List<SavedSearch> fetchSavedSearches(Long userId);
-//    SavedSearch fetchSavedSearchById(Long id);
+    User fetchUser(String email, String password);
+    void setUserRole(Long userId, Role role);
+    void removeUser(Long userId);
+    User fetchUser(Long userId);
+    void setUserProjectId(Long userId, String projectId);
+    void setUserProviderId(Long userId, String providerId);
+    void setUserLanguages(Long userId, String languages);
+    List<SavedItem> fetchSavedItems(Long userId);
+    SavedItem fetchSavedItemById(Long id);
+    List<SavedSearch> fetchSavedSearches(Long userId);
+    SavedSearch fetchSavedSearchById(Long id);
 
 
 }

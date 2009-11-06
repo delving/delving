@@ -22,8 +22,6 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.EditorPick;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedItem;
@@ -53,19 +51,22 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public User fetchUserByEmail(String email) {
+        User user;
         Query query = entityManager.createQuery("select u from User as u where u.email = :email");
         query.setParameter("email", email);
         try {
-            User user = (User) query.getSingleResult();
-            // make sure the collections are greedily loaded
-            user.getSavedItems().size();
-            user.getSavedSearches().size();
-            user.getSocialTags().size();
-            return user;
+            user = (User) query.getSingleResult();
+            if (user != null){
+                user.getSavedItems().size();
+                user.getSavedSearches().size();
+                user.getSocialTags().size();
+            }
         }
         catch (NoResultException e) {
-            return null;
+            throw new IllegalArgumentException("The user doesn't exists. email: " + email);
+
         }
+        return user;
     }
 
     @Transactional
@@ -106,6 +107,141 @@ public class UserDaoImpl implements UserDao {
         user.getSavedSearches().add(savedSearch);
         user = entityManager.merge(user);
         return user;
+    }
+
+    public User fetchUser(String email, String password) {
+         if (email == null || password == null)  {
+            throw new IllegalArgumentException("Parameter(s) has null value: email:" + email+ ", password:"+password);
+        }
+        User user;
+        Query query = entityManager.createQuery("select u from User as u where u.email = :email AND u.password = :password");
+        query.setParameter("email", email);
+        query.setParameter("password", password);
+        try {
+            user = (User) query.getSingleResult();
+            if (user != null){
+                user.getSavedItems().size();
+                user.getSavedSearches().size();
+                user.getSocialTags().size();
+            }
+        }
+        catch (NoResultException e) {
+            throw new IllegalArgumentException("The user doesn't exists. email: " + email + ", password: " + password);
+        }
+        return user;
+    }
+    @Transactional
+    public void setUserRole(Long userId, Role role) {
+        if (userId == null || role == null)  {
+            throw new IllegalArgumentException("Parameter(s) has null value: userId:" + userId+ ", role:"+role);
+        }
+        User user = entityManager.getReference(User.class, userId);
+        user.setRole(role);
+    }
+
+    @Transactional
+    public void removeUser(Long userId) {
+        if (userId == null)  {
+            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
+        }
+        User user = entityManager.getReference(User.class, userId);
+        for (SocialTag tag : user.getSocialTags()) {   // dont need to do this if "on delete cascade" is set on the external key
+            entityManager.remove(tag);
+        }
+        user.getSocialTags().clear();
+        entityManager.remove(user);
+    }
+
+    public User fetchUser(Long userId) {
+        if (userId == null)  {
+            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
+        }
+        User user;
+        Query query = entityManager.createQuery("select u from User as u where u.id = :userId");
+        query.setParameter("userId", userId);
+        try {
+            user = (User) query.getSingleResult();
+            if (user != null){
+                user.getSavedItems().size();
+                user.getSavedSearches().size();
+                user.getSocialTags().size();
+            }
+        }
+        catch (NoResultException e) {
+            throw new IllegalArgumentException("The user doesn't exists. email: " + userId);
+        }
+        return user;
+    }
+
+    @Transactional
+    public void setUserProjectId(Long userId, String projectId) {
+        if (userId == null || projectId == null)  {
+            throw new IllegalArgumentException("Parameter(s) has null value. userId:" + userId+ ", projectId:"+projectId);
+        }
+        User user = entityManager.getReference(User.class, userId);
+        user.setProjectId(projectId);
+    }
+
+    @Transactional
+    public void setUserProviderId(Long userId, String providerId) {
+        if (userId == null || providerId == null)  {
+            throw new IllegalArgumentException("Parameter(s) has null value. userId:" + userId+ ", providerId:"+providerId);
+        }
+        User user = entityManager.getReference(User.class, userId);
+        user.setProviderId(providerId);
+    }
+
+    @Transactional
+    public void setUserLanguages(Long userId, String languages) {
+       if (userId == null || languages == null)  {
+            throw new IllegalArgumentException("Parameter(s) has null value. userId:" + userId+ ", languages:"+languages);
+        }
+        User user = entityManager.getReference(User.class, userId);
+        user.setLanguages(languages);
+    }
+
+    public List<SavedItem> fetchSavedItems(Long userId) {
+        if (userId == null)  {
+            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
+        }
+        Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid");
+        q.setParameter("userid", userId);      
+        return q.getResultList();
+    }
+
+    public SavedItem fetchSavedItemById(Long id) {
+        if (id == null)  {
+            throw new IllegalArgumentException("Parameter has null value: id:" + id);
+        }
+        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id  = :id");
+        q.setParameter("id", id);
+        List results = q.getResultList();
+        if (results.size() != 1) {
+            return null;
+        }
+        return (SavedItem) results.get(0);
+    }
+
+    public List<SavedSearch> fetchSavedSearches(Long userId) {
+        if (userId == null)  {
+            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
+        }
+        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id  = :userid");
+        q.setParameter("userid", userId);
+        return q.getResultList();
+    }
+
+    public SavedSearch fetchSavedSearchById(Long id) {
+        if (id == null)  {
+            throw new IllegalArgumentException("Parameter has null value: userId:" +id);
+        }
+        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :id");
+        q.setParameter("id", id);
+        List results = q.getResultList();
+        if (results.size() != 1) {
+            return null;
+        }
+        return (SavedSearch) results.get(0);
     }
 
 
