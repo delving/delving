@@ -90,7 +90,22 @@ public class UserDaoImpl implements UserDao {
     public void updateUser(User user) {
         entityManager.merge(user);
     }
-
+         /*                   todo: this or the previous?
+    @Transactional
+    public User updateUser(User fresh) {
+        User user = entityManager.find(User.class, fresh.getId());
+        user.setUserName(fresh.getUserName());
+        user.setEmail(fresh.getEmail());
+        user.setFirstName(fresh.getFirstName());
+        user.setLastName(fresh.getLastName());
+        user.setLanguages(fresh.getLanguages());
+        user.setProjectId(fresh.getProjectId());
+        user.setProviderId(fresh.getProviderId());
+        user.setNewsletter(fresh.isNewsletter());
+        user.setRole(fresh.getRole());
+        user.setEnabled(user.isEnabled());
+        return user;
+    }           */
     @Transactional
     public User refreshUser(User user) {
         user = entityManager.find(User.class, user.getId());
@@ -108,7 +123,7 @@ public class UserDaoImpl implements UserDao {
         user = entityManager.merge(user);
         return user;
     }
-
+  /*
     public User fetchUser(String email, String password) {
          if (email == null || password == null)  {
             throw new IllegalArgumentException("Parameter(s) has null value: email:" + email+ ", password:"+password);
@@ -129,6 +144,26 @@ public class UserDaoImpl implements UserDao {
             throw new IllegalArgumentException("The user doesn't exists. email: " + email + ", password: " + password);
         }
         return user;
+    }   */
+
+    @Transactional
+    public User fetchUser(String email, String password) {
+        if (email == null || password == null)  {
+            throw new IllegalArgumentException("Parameter(s) has null value: email:" + email+ ", password:"+password);
+        }
+        Query query = entityManager.createQuery("select u from User as u where u.email like :email");
+        query.setParameter("email", email);
+        try {
+            User user = (User) query.getSingleResult();
+            if (user.getHashedPassword().equals(User.hashPassword(password))) {
+                return user;
+            }
+            logger.info("Password wrong for: " + email);
+        }
+        catch (NoResultException e) {
+            logger.info("Email not found: " + email);
+        }
+        return null;
     }
     @Transactional
     public void setUserRole(Long userId, Role role) {
@@ -138,7 +173,7 @@ public class UserDaoImpl implements UserDao {
         User user = entityManager.getReference(User.class, userId);
         user.setRole(role);
     }
-
+         /*           // todo: use this or the next method?
     @Transactional
     public void removeUser(Long userId) {
         if (userId == null)  {
@@ -150,8 +185,15 @@ public class UserDaoImpl implements UserDao {
         }
         user.getSocialTags().clear();
         entityManager.remove(user);
-    }
+    } */
 
+    @Transactional
+    public void removeUser(Long userId) {
+        User user = entityManager.find(User.class, userId);
+        if (user != null) {
+            entityManager.remove(user);
+        }
+    }
     public User fetchUser(Long userId) {
         if (userId == null)  {
             throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
@@ -172,6 +214,11 @@ public class UserDaoImpl implements UserDao {
         }
         return user;
     }
+    /*                       todo: use this or the previous method?
+       @Transactional
+    public User fetchUser(Long userId) {
+        return entityManager.find(User.class, userId);
+    }              */
 
     @Transactional
     public void setUserProjectId(Long userId, String projectId) {
@@ -199,7 +246,7 @@ public class UserDaoImpl implements UserDao {
         User user = entityManager.getReference(User.class, userId);
         user.setLanguages(languages);
     }
-
+          /*        todo: this or the following
     public List<SavedItem> fetchSavedItems(Long userId) {
         if (userId == null)  {
             throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
@@ -207,21 +254,26 @@ public class UserDaoImpl implements UserDao {
         Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid");
         q.setParameter("userid", userId);      
         return q.getResultList();
+    }           */
+        @Transactional
+    public List<SavedItem> fetchSavedItems(Long userId) {
+        User user = entityManager.find(User.class, userId);
+        user.getSavedItems().size();
+        return user.getSavedItems();
     }
 
+
+    @Transactional
     public SavedItem fetchSavedItemById(Long id) {
-        if (id == null)  {
+         if (id == null)  {
             throw new IllegalArgumentException("Parameter has null value: id:" + id);
         }
-        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id  = :id");
+        Query q = entityManager.createQuery("select st from SavedItem st where st.id = :id");
         q.setParameter("id", id);
-        List results = q.getResultList();
-        if (results.size() != 1) {
-            return null;
-        }
-        return (SavedItem) results.get(0);
+        List<SavedItem> savedItems = q.getResultList();
+        return savedItems.size() == 1 ? savedItems.get(0) : null;
     }
-
+           /*                       todo: this or the following
     public List<SavedSearch> fetchSavedSearches(Long userId) {
         if (userId == null)  {
             throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
@@ -229,8 +281,20 @@ public class UserDaoImpl implements UserDao {
         Query q = entityManager.createQuery("select o from SavedSearch as o where o.id  = :userid");
         q.setParameter("userid", userId);
         return q.getResultList();
-    }
-
+    }         */
+    @Transactional
+      public List<SavedSearch> fetchSavedSearches(Long userId) {
+          User user = entityManager.find(User.class, userId);
+          user.getSavedSearches().size();
+          return user.getSavedSearches();
+      }
+         /*                             todo: this or the previous?
+    public SavedSearch fetchSavedSearchById(Long id) {
+        Query q = entityManager.createQuery("select st from SavedSearch st where st.id = :id");
+        q.setParameter("id", id);
+        List<SavedSearch> savedSearches = q.getResultList();
+        return savedSearches.size() == 1 ? savedSearches.get(0) : null;
+    }           */
     public SavedSearch fetchSavedSearchById(Long id) {
         if (id == null)  {
             throw new IllegalArgumentException("Parameter has null value: userId:" +id);
@@ -500,4 +564,7 @@ public class UserDaoImpl implements UserDao {
         query.setParameter("uri", europeanaUri);
         return (EuropeanaId) query.getSingleResult();
     }
+
+
+
 }

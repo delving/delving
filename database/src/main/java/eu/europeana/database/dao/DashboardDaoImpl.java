@@ -73,7 +73,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @PersistenceContext
     protected EntityManager entityManager;
-
+           /*
     @Transactional
     public User fetchUser(String email, String password) {
         Query query = entityManager.createQuery("select u from User as u where u.email like :email");
@@ -90,7 +90,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return null;
     }
-
+           
     @Transactional
     public List<User> fetchUsers(String pattern) {
         Query query = entityManager.createQuery(
@@ -108,7 +108,7 @@ public class DashboardDaoImpl implements DashboardDao {
         query.setParameter("searchField", cleanPattern.toString());
         return (List<User>) query.getResultList();
     }
-
+            */
     @Transactional
     public void addMessagekey(String key) {
         MessageKey messageKey = new MessageKey(key);
@@ -159,8 +159,9 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     public List<DashboardLog> fetchLogEntries(java.util.Date from, int count) {
-        Query query = entityManager.createQuery("select log from DashboardLog log where log.when > :from order by log.when ");
-        // todo: sjoerd added this. check if correct
+       // Query query = entityManager.createQuery("select log from DashboardLog log where log.when > :from order by log.when ");
+        Query query = entityManager.createQuery("select log from DashboardLog log where log.time > :from order by log.time ");
+                // todo: sjoerd added this. check if correct
         query.setParameter("from", from);
         query.setMaxResults(count);
         return (List<DashboardLog>) query.getResultList();
@@ -288,7 +289,7 @@ public class DashboardDaoImpl implements DashboardDao {
             addToIndexQueue(collection);
         }
     }
-
+                /*
     @Transactional
     public User updateUser(User fresh) {
         User user = entityManager.find(User.class, fresh.getId());
@@ -304,7 +305,7 @@ public class DashboardDaoImpl implements DashboardDao {
         user.setEnabled(user.isEnabled());
         return user;
     }
-
+                */
     @Transactional()
     public EuropeanaId saveEuropeanaId(EuropeanaId detachedId, Set<String> objectUrls) {
         EuropeanaId persistentId = getEuropeanaId(detachedId);
@@ -590,14 +591,14 @@ public class DashboardDaoImpl implements DashboardDao {
         IndexingQueueEntry attached = entityManager.find(IndexingQueueEntry.class, indexingQueueEntry.getId());
         attached.getCollection().setCollectionState(CollectionState.INDEXING);
     }
-
+            /*
     @Transactional
     public SavedItem fetchSavedItemById(Long id) {
         Query q = entityManager.createQuery("select st from SavedItem st where st.id = :id");
         q.setParameter("id", id);
         List<SavedItem> savedItems = q.getResultList();
         return savedItems.size() == 1 ? savedItems.get(0) : null;
-    }
+    }        */
 
     @Transactional
     public void removeFromCarousel(SavedItem savedItem) {
@@ -727,7 +728,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return success;
     }
-
+             /*
     @Transactional
     public List<SavedItem> fetchSavedItems(Long userId) {
         User user = entityManager.find(User.class, userId);
@@ -740,7 +741,7 @@ public class DashboardDaoImpl implements DashboardDao {
         User user = entityManager.find(User.class, userId);
         user.getSavedSearches().size();
         return user.getSavedSearches();
-    }
+    }    
 
     @Transactional
     public SavedSearch fetchSavedSearchById(Long id) {
@@ -762,7 +763,7 @@ public class DashboardDaoImpl implements DashboardDao {
     public User fetchUser(Long userId) {
         return entityManager.find(User.class, userId);
     }
-
+          */
     @Transactional
     public EuropeanaId fetchEuropeanaId(String europeanaUri) {
         Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
@@ -774,19 +775,19 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return result.get(0);
     }
-
+        /*
     @Transactional
     public List<Partner> fetchPartners() {
         Query query = entityManager.createQuery("select p from Partner p order by p.sector");
         return (List<Partner>) query.getResultList();
     }
-
+                 */
     @Transactional
     public List<Contributor> fetchContributors() {
         Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
         return (List<Contributor>) query.getResultList();
     }
-
+          /*
     @Transactional
     public Partner savePartner(Partner partner) {
         return entityManager.merge(partner);
@@ -796,7 +797,7 @@ public class DashboardDaoImpl implements DashboardDao {
     public Contributor saveContributor(Contributor contributor) {
         return entityManager.merge(contributor);
     }
-
+               */
     @Transactional
     public boolean removePartner(Long partnerId) {
         Partner partner = entityManager.find(Partner.class, partnerId);

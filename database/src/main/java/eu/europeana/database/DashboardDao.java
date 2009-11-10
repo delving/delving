@@ -128,21 +128,21 @@ public interface DashboardDao {
     IndexingQueueEntry getIndexEntry(IndexingQueueEntry detachedEntry);
 
     // todo: move the implementations to UserDaoImpl
-    User fetchUser(String email, String password);
-    List<User> fetchUsers(String pattern);
-    void removeUser(Long userId);
-    User fetchUser(Long userId);
-    User updateUser(User user);
-    List<SavedItem> fetchSavedItems(Long userId);
-    SavedItem fetchSavedItemById(Long id);
-    List<SavedSearch> fetchSavedSearches(Long userId);
-    SavedSearch fetchSavedSearchById(Long id);
+   // User fetchUser(String email, String password);    moved to UserDao
+   // List<User> fetchUsers(String pattern);             moved to UserDao
+   // void removeUser(Long userId);                       moved to UserDao
+   // User fetchUser(Long userId);                       moved to UserDao
+   // User updateUser(User user);                           moved to UserDao
+   // List<SavedItem> fetchSavedItems(Long userId);         moved to UserDao
+   // SavedItem fetchSavedItemById(Long id);                    moved to UserDao
+   // List<SavedSearch> fetchSavedSearches(Long userId);          moved to UserDao
+   // SavedSearch fetchSavedSearchById(Long id);                   moved to UserDao
 
     // todo: eliminate these, move implementations to StaticInfoDaoImpl
-    List<Partner> fetchPartners();
-    List<Contributor> fetchContributors();
-    Partner savePartner(Partner partner);
-    Contributor saveContributor(Contributor contributor);
+//    List<Partner> fetchPartners();
+//    List<Contributor> fetchContributors();
+//    Partner savePartner(Partner partner);
+//    Contributor saveContributor(Contributor contributor);
     boolean removePartner(Long partnerId);
     boolean removeContributor(Long contributorId);
     StaticPage fetchStaticPage(StaticPageType pageType, Language language);

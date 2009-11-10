@@ -33,9 +33,10 @@ public interface StaticInfoDao {
 
     List<Partner> getAllPartnerItems();
     List<Contributor> getAllContributorItems();
-    void saveContributor(Contributor contributor);
-    void savePartner(Partner partner);
-
+    //void saveContributor(Contributor contributor);      todo: this or the following?
+    Contributor saveContributor(Contributor contributor);
+    //void savePartner(Partner partner);         todo: this or the following?
+    Partner savePartner(Partner partner);
     //refactoring methods formerly defined in MessageDao
     StaticPage fetchStaticPage (Language language, String pageName);
     void setStaticPage(StaticPageType pageType, Language language, String content);
@@ -43,7 +44,7 @@ public interface StaticInfoDao {
     List<MessageKey> getAllTranslationMessages();
     //end methods formerly defined in MessageDao
 
-    // todo: add these (implementations in DashboardDaoImpl)
+    // todo: add these (implementations in DashboardDaoImpl)       DONE!
 //    List<Partner> fetchPartners();
 //    List<Contributor> fetchContributors();
 //    Partner savePartner(Partner partner); // todo: this is a better impl than above
@@ -66,7 +67,7 @@ public interface StaticInfoDao {
 //    boolean removeSearchTerm(Language language, String term);
 
 
-    // todo: add these: (implementations in UserDaoImpl)
+    // todo: add these: (implementations in UserDaoImpl)          DONE !
 //    User removeCarouselItem(User user, Long savedItemId);
 //    User removeSearchTerm(User user, Long savedSearchId);
 //    User addCarouselItem(User user, SavedItem savedItem);
@@ -75,15 +76,15 @@ public interface StaticInfoDao {
 //    CarouselItem addCarouselItem(User user, Long savedItem);
 //    SearchTerm addSearchTerm(Long savedSearchId);
 
-    // todo: add these (implementations in MessageDao)
+    // todo: add these (implementations in MessageDao)                 DONE !
 //    StaticPage fetchStaticPage (Language language, String pageName);
 //    void setStaticPage(StaticPageType pageType, Language language, String content);
 //    List<StaticPage> getAllStaticPages();
 //    List<MessageKey> getAllTranslationMessages();
 
-    // todo: add this (impl in SearchTermDaoImpl
+    // todo: add this (impl in SearchTermDaoImpl            DONE!
 //    List<SearchTerm> getAllSearchTerms();
-
+                                               // new add
     User removeCarouselItem(User user, Long savedItemId);
     User removeSearchTerm(User user, Long savedSearchId);
     User addCarouselItem(User user, SavedItem savedItem);
@@ -91,4 +92,6 @@ public interface StaticInfoDao {
     User addCarouselItem(User user, CarouselItem carouselItem);
     CarouselItem addCarouselItem(User user, Long savedItem);
     SearchTerm addSearchTerm(Long savedSearchId);
+    List<Partner> fetchPartners();
+    List<Contributor> fetchContributors();
 }

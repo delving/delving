@@ -53,7 +53,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         Query q = entityManager.createQuery("select con from Contributor con order by con.country");
         return (List<Contributor>) q.getResultList();
     }
-
+             /* this or the following?
     @Transactional
     public void saveContributor(Contributor contributorX) {
         Query query = entityManager.createQuery("select co from Contributor as co where co.providerId = :providerId");
@@ -73,9 +73,13 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
                 entityManager.persist(contributorX);
             }
         }
-    }
-    
+    }     */
 
+   @Transactional
+    public Contributor saveContributor(Contributor contributor) {
+        return entityManager.merge(contributor);
+    }
+       /*
     @Transactional
     public void savePartner(Partner partnerX) {
         Query query = entityManager.createQuery("select po from Partner as po where po.name = :name");
@@ -91,7 +95,12 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
                 entityManager.persist(partnerX);
             }
         }
+    }          */
+    @Transactional
+    public Partner savePartner(Partner partner) {
+        return entityManager.merge(partner);
     }
+
     @SuppressWarnings("unchecked")
     @Transactional
     public List<StaticPage> getAllStaticPages() {
@@ -249,5 +258,18 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
        savedSearch.setSearchTerm(searchTerm);
        return searchTerm;
    }
+
+    @Transactional
+    public List<Partner> fetchPartners() {
+        Query query = entityManager.createQuery("select p from Partner p order by p.sector");
+        return (List<Partner>) query.getResultList();
+    }
+
+    @Transactional
+       public List<Contributor> fetchContributors() {
+           Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
+           return (List<Contributor>) query.getResultList();
+       }
+
 
 }
