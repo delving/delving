@@ -38,7 +38,7 @@ public class Translation implements Serializable {
     @XStreamOmitField
     private Long id;
 
-    @Column(length=3)
+    @Column(length = 3)
     @Enumerated(EnumType.STRING)
     @Index(name = "translationlanguageindex")
     @XStreamAlias("language")

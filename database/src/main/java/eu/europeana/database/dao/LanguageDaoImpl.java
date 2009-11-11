@@ -31,7 +31,7 @@ import java.util.TreeMap;
 public class LanguageDaoImpl implements LanguageDao {
 
     private Logger log = Logger.getLogger(getClass());
-    
+
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -52,8 +52,7 @@ public class LanguageDaoImpl implements LanguageDao {
                 if (found.isActive()) {
                     active.add(found.getLanguage());
                 }
-            }
-            else if (language.isActiveByDefault()) {
+            } else if (language.isActiveByDefault()) {
                 active.add(language);
             }
         }
@@ -67,14 +66,13 @@ public class LanguageDaoImpl implements LanguageDao {
         List<LanguageActivation> activations = query.getResultList();
         if (activations.isEmpty()) {
             entityManager.persist(new LanguageActivation(language, active));
-        }
-        else if (activations.size() == 1) {
+        } else if (activations.size() == 1) {
             activations.get(0).setActive(active);
-        }
-        else {
+        } else {
             throw new RuntimeException("More than one language activation!");
         }
     }
+
     @Transactional
     public Translation setTranslation(String key, Language language, String value) {
         Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
@@ -86,8 +84,7 @@ public class LanguageDaoImpl implements LanguageDao {
             messageKey = new MessageKey(key);
             translation = messageKey.setTranslation(language, value);
             entityManager.persist(messageKey);
-        }
-        else {
+        } else {
             messageKey = messageKeys.get(0);
             translation = messageKey.setTranslation(language, value);
         }
@@ -101,22 +98,22 @@ public class LanguageDaoImpl implements LanguageDao {
     }
 
     @Transactional
-	public MessageKey fetchMessageKey(String key) {
-	    Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
-	    query.setParameter("key", key);
-	    MessageKey messageKey = (MessageKey) query.getSingleResult();
-	    messageKey.getTranslations().size();
-	    return messageKey;
-	}
+    public MessageKey fetchMessageKey(String key) {
+        Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
+        query.setParameter("key", key);
+        MessageKey messageKey = (MessageKey) query.getSingleResult();
+        messageKey.getTranslations().size();
+        return messageKey;
+    }
 
-	@Transactional
+    @Transactional
     public Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes) {
         Map<String, List<Translation>> translations = new TreeMap<String, List<Translation>>();
         for (String languageCode : languageCodes) {
             Query query = entityManager.createQuery("select t from Translation t where t.language = :language");
             Language language = Language.findByCode(languageCode);
             query.setParameter("language", language);
-            List<Translation> tlist = (List<Translation>)query.getResultList();
+            List<Translation> tlist = (List<Translation>) query.getResultList();
             for (Translation trans : tlist) {
                 List<Translation> value = translations.get(trans.getMessageKey().getKey());
                 if (value == null) {
