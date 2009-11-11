@@ -7,8 +7,11 @@ import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -21,11 +24,14 @@ import java.util.TreeMap;
 /**
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  * @author cesareconcordia
+ * @author Nicola Aloia
  */
 
 @SuppressWarnings("unchecked")
 public class LanguageDaoImpl implements LanguageDao {
 
+    private Logger log = Logger.getLogger(getClass());
+    
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -122,4 +128,24 @@ public class LanguageDaoImpl implements LanguageDao {
         }
         return translations;
     }
+
+    @Transactional
+    public void addMessagekey(String key) {
+        MessageKey messageKey = new MessageKey(key);
+        entityManager.persist(messageKey);
+    }
+
+    @Transactional
+    public void removeMessageKey(String key) {
+        Query query = entityManager.createQuery("select k from MessageKey k where k.key = :key");
+        query.setParameter("key", key);
+        try {
+            MessageKey messageKey = (MessageKey) query.getSingleResult();
+            entityManager.remove(messageKey);
+        }
+        catch (NoResultException e) {
+            log.warn("Unable to remove message key " + key);
+        }
+    }
+
 }

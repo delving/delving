@@ -37,4 +37,18 @@ public interface LanguageDao {
     Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
   //end methods from MessageDao
 
+
+    /**
+     *
+     * @param key
+     */
+    void addMessagekey(String key);
+
+    /**
+     * 
+     * @param key
+     */
+    void removeMessageKey(String key);
+
+
 }

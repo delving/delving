@@ -1,8 +1,8 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.UserDao;
 import eu.europeana.database.StaticInfoDao;
+import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.EuropeanaId;
@@ -146,7 +146,7 @@ public class TestDashboardDao {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
 //            user = userDao.addCarouselItem(user, savedItem.getId());
-            CarouselItem carouselItem = dashboardDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
 //            Assert.assertTrue(carouselItem.getSavedItem() != null);
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());
         }
@@ -184,12 +184,12 @@ public class TestDashboardDao {
         for (SavedItem savedItem : savedItems) {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
-            assertNotNull(dashboardDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId()));
+            assertNotNull(staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId()));
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());
         }
         savedItems = user.getSavedItems();
         assertNotNull(savedItems);
-        assertEquals("list should be 1", 1, dashboardDao.fetchCarouselItems().size());
+        assertEquals("list should be 1", 1, staticInfoDao.fetchCarouselItems().size());
     }
 
     @Test

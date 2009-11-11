@@ -26,7 +26,9 @@ import eu.europeana.dashboard.client.DashboardService;
 import eu.europeana.dashboard.client.dto.*;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
-//import eu.europeana.database.MessageDao;
+import eu.europeana.database.StaticInfoDao;
+import eu.europeana.database.UserDao;
+import eu.europeana.database.MessageDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.SolrIndexer;
@@ -44,10 +46,12 @@ public class DashboardServiceImpl implements DashboardService {
     private ESEImporter normalizedImporter;
     private ESEImporter sandboxImporter;
     private DashboardDao dashboardDao;
-    //private MessageDao messageDao;
+    private MessageDao messageDao;
     private LanguageDao languageDao;
     private SolrIndexer indexer;
     private DigitalObjectCache digitalObjectCache;
+    private StaticInfoDao staticInfoDao;
+    private UserDao userDao;
 
     public void setCacheUrl(String cacheUrl) {
         this.cacheUrl = cacheUrl;
@@ -82,7 +86,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public UserX login(String email, String password) {
-        User user = dashboardDao.fetchUser(email, password);
+        User user = userDao.fetchUser(email, password);
         if (user != null && user.isEnabled()) {
             log.info("User "+user.getEmail()+" (id="+user.getId()+") logged in with cookie "+UserCookie.get());
             String cookie = UserCookie.get();
@@ -175,7 +179,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<UserX> fetchUsers(String pattern) {
         List<UserX> users = new ArrayList<UserX>();
-        List<User> userList = dashboardDao.fetchUsers(pattern);
+        List<User> userList = userDao.fetchUsers(pattern);
         for (User user : userList) {
             users.add(DataTransfer.convert(user));
         }
@@ -183,11 +187,11 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public UserX updateUser(UserX user) {
-        return DataTransfer.convert(dashboardDao.updateUser(DataTransfer.convert(user)));
+        return DataTransfer.convert(userDao.updateUser(DataTransfer.convert(user)));
     }
 
     public List<SavedItemX> fetchSavedItems(Long userId) {
-        List<SavedItem> savedItems = dashboardDao.fetchSavedItems(userId);
+        List<SavedItem> savedItems = userDao.fetchSavedItems(userId);
         List<SavedItemX> items = new ArrayList<SavedItemX>();
         for (SavedItem item : savedItems) {
             items.add(new SavedItemX(item.getTitle(), item.getEuropeanaId().getEuropeanaUri(), item.getId()));
@@ -198,7 +202,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public void removeUser(Long userId) {
         audit("remove user "+userId);
-        dashboardDao.removeUser(userId);
+        userDao.removeUser(userId);
     }
 
     public List<ImportFileX> fetchImportFiles(boolean normalized) {
@@ -268,7 +272,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<CarouselItemX> fetchCarouselItems() {
         List<CarouselItemX> items = new ArrayList<CarouselItemX>();
-        for (CarouselItem item : dashboardDao.fetchCarouselItems()) {
+        for (CarouselItem item : staticInfoDao.fetchCarouselItems()) {
             items.add(DataTransfer.convert(item));
         }
         return items;
@@ -277,7 +281,7 @@ public class DashboardServiceImpl implements DashboardService {
     public CarouselItemX createCarouselItem(SavedItemX savedItemX) {
         String europeanaUri = savedItemX.getUri();
         audit("create carousel item: "+ europeanaUri);
-        CarouselItem item = dashboardDao.createCarouselItem(europeanaUri, savedItemX.getId());
+        CarouselItem item = staticInfoDao.createCarouselItem(europeanaUri, savedItemX.getId());
         if (item == null) {
             return null;
         }
@@ -286,21 +290,21 @@ public class DashboardServiceImpl implements DashboardService {
 
     public boolean removeCarouselItem(CarouselItemX item) {
         audit("remove carousel item: "+item.getEuropeanaUri());
-        return dashboardDao.removeCarouselItem(item.getId());
+        return staticInfoDao.removeCarouselItem(item.getId());
     }
 
     public boolean addSearchTerm(String language, String term) {
         audit("add search term: "+language+"/"+term);
-        return dashboardDao.addSearchTerm(Language.findByCode(language), term);
+        return staticInfoDao.addSearchTerm(Language.findByCode(language), term);
     }
 
     public List<String> fetchSearchTerms(String language) {
-        return dashboardDao.fetchSearchTerms(Language.findByCode(language));
+        return staticInfoDao.fetchSearchTerms(Language.findByCode(language));
     }
 
     public boolean removeSearchTerm(String language, String term) {
         audit("remove search term: "+language+"/"+term);
-        return dashboardDao.removeSearchTerm(Language.findByCode(language), term);
+        return staticInfoDao.removeSearchTerm(Language.findByCode(language), term);
     }
 
     public List<String> getObjectOrphans() {
@@ -347,7 +351,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public List<SavedSearchX> fetchSavedSearches(Long id) {
-        List<SavedSearch> savedSearches = dashboardDao.fetchSavedSearches(id);
+        List<SavedSearch> savedSearches = userDao.fetchSavedSearches(id);
         List<SavedSearchX> result = new ArrayList<SavedSearchX>();
         for (SavedSearch search : savedSearches) {
             result.add(DataTransfer.convert(search));
@@ -365,7 +369,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<PartnerX> fetchPartners() {
         List<PartnerX> results = new ArrayList<PartnerX>();
-        for (Partner partner : dashboardDao.fetchPartners()) {
+        for (Partner partner : staticInfoDao.fetchPartners()) {
             results.add(DataTransfer.convert(partner));
         }
         return results;
@@ -381,7 +385,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<ContributorX> fetchContributors() {
         List<ContributorX> results = new ArrayList<ContributorX>();
-        for (Contributor contributor: dashboardDao.fetchContributors()) {
+        for (Contributor contributor: staticInfoDao.fetchContributors()) {
             results.add(DataTransfer.convert(contributor));
         }
         return results;
@@ -390,25 +394,25 @@ public class DashboardServiceImpl implements DashboardService {
     public PartnerX savePartner(PartnerX partnerX) {
         audit("save partner: "+partnerX.getName());
         Partner partner = DataTransfer.convert(partnerX);
-        partner = dashboardDao.savePartner(partner);
+        partner = staticInfoDao.savePartner(partner);
         return DataTransfer.convert(partner);
     }
 
     public ContributorX saveContributor(ContributorX contributorX) {
         audit("save contributor: "+ contributorX.getOriginalName());
         Contributor contributor = DataTransfer.convert(contributorX);
-        contributor = dashboardDao.saveContributor(contributor);
+        contributor = staticInfoDao.saveContributor(contributor);
         return DataTransfer.convert(contributor);
     }
 
     public boolean removePartner(Long partnerId) {
         audit("remove partner: "+partnerId);
-        return dashboardDao.removePartner(partnerId);
+        return staticInfoDao.removePartner(partnerId);
     }
 
     public boolean removeContributor(Long contributorId) {
         audit("remove contributor: "+contributorId);
-        return dashboardDao.removeContributor(contributorId);
+        return staticInfoDao.removeContributor(contributorId);
     }
 
     public List<String> fetchStaticPageTypes() {
@@ -420,24 +424,24 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public StaticPageX fetchStaticPage(String pageType, LanguageX language) {
-        StaticPage page = dashboardDao.fetchStaticPage(StaticPageType.valueOf(pageType), Language.findByCode(language.getCode()));
+        StaticPage page = staticInfoDao.fetchStaticPage(StaticPageType.valueOf(pageType), Language.findByCode(language.getCode()));
         return DataTransfer.convert(page);
     }
 
     public StaticPageX saveStaticPage(Long staticPageId, String content) {
-        StaticPage page = dashboardDao.saveStaticPage(staticPageId, content);
+        StaticPage page = staticInfoDao.saveStaticPage(staticPageId, content);
         audit("save static page: "+staticPageId);
         return DataTransfer.convert(page);
     }
 
     public void removeMessageKey(String key) {
         audit("remove message key: "+key);
-        dashboardDao.removeMessageKey(key);
+        languageDao.removeMessageKey(key);
     }
 
     public void addMessageKey(String key) {
         audit("add message key: "+key);
-        dashboardDao.addMessagekey(key);
+        languageDao.addMessagekey(key);
     }
 
     public List<DashboardLogX> fetchLogEntriesFrom(Long topId, int pageSize) {

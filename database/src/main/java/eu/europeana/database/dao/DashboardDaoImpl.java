@@ -73,6 +73,17 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @PersistenceContext
     protected EntityManager entityManager;
+    @Transactional
+    public EuropeanaId fetchEuropeanaId(String europeanaUri) {
+        Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
+        query.setParameter("europeanaUri", europeanaUri);
+        query.setMaxResults(1);
+        List<EuropeanaId> result = query.getResultList();
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.get(0);
+    }
            /*
     @Transactional
     public User fetchUser(String email, String password) {
@@ -108,7 +119,7 @@ public class DashboardDaoImpl implements DashboardDao {
         query.setParameter("searchField", cleanPattern.toString());
         return (List<User>) query.getResultList();
     }
-            */
+
     @Transactional
     public void addMessagekey(String key) {
         MessageKey messageKey = new MessageKey(key);
@@ -127,7 +138,7 @@ public class DashboardDaoImpl implements DashboardDao {
             log.warn("Unable to remove message key " + key);
         }
     }
-
+                 */
     @Transactional
     public List<DashboardLog> fetchLogEntriesFrom(Long topId, int pageSize) {
         Query query = entityManager.createQuery("select log from DashboardLog log where log.id >= :id order by log.id asc");
@@ -598,7 +609,7 @@ public class DashboardDaoImpl implements DashboardDao {
         q.setParameter("id", id);
         List<SavedItem> savedItems = q.getResultList();
         return savedItems.size() == 1 ? savedItems.get(0) : null;
-    }        */
+    }
 
     @Transactional
     public void removeFromCarousel(SavedItem savedItem) {
@@ -611,7 +622,7 @@ public class DashboardDaoImpl implements DashboardDao {
             entityManager.remove(carouselItem);
         }
     }
-
+                 
     @Transactional
     public boolean addCarouselItem(SavedItem savedItem) {
         CarouselItem carouselItem = savedItem.createCarouselItem();
@@ -620,7 +631,7 @@ public class DashboardDaoImpl implements DashboardDao {
         entityManager.persist(carouselItem);
         return true;
     }
-
+               
     @Transactional
     public void removeFromEditorPick(SavedSearch savedSearch) {
         EditorPick editorPick = savedSearch.getEditorPick();
@@ -632,7 +643,7 @@ public class DashboardDaoImpl implements DashboardDao {
             entityManager.remove(editorPick);
         }
     }
-
+              */
     @Transactional
     public List<? extends QueueEntry> fetchQueueEntries() {
         Query indexQuery = entityManager.createQuery("select entry from IndexingQueueEntry as entry");
@@ -691,7 +702,7 @@ public class DashboardDaoImpl implements DashboardDao {
         return numberUpdated;
         //        return resultList.size();
     }
-
+             /*
     @Transactional
     public boolean addSearchTerm(Language language, String term) {
         SearchTerm searchTerm = new SearchTerm();
@@ -701,14 +712,14 @@ public class DashboardDaoImpl implements DashboardDao {
         entityManager.persist(searchTerm);
         return true; // maybe check for existence first?
     }
-
+                 
     @Transactional
     public boolean addSearchTerm(SavedSearch savedSearch) {
         SearchTerm searchTerm = savedSearch.createSearchTerm();
         entityManager.persist(searchTerm);
         return true;
     }
-
+                
     @Transactional
     public List<String> fetchSearchTerms(Language language) {
         Query query = entityManager.createQuery("select term.proposedSearchTerm from SearchTerm as term where term.language = :language");
@@ -728,7 +739,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return success;
     }
-             /*
+
     @Transactional
     public List<SavedItem> fetchSavedItems(Long userId) {
         User user = entityManager.find(User.class, userId);
@@ -763,7 +774,7 @@ public class DashboardDaoImpl implements DashboardDao {
     public User fetchUser(Long userId) {
         return entityManager.find(User.class, userId);
     }
-          */
+
     @Transactional
     public EuropeanaId fetchEuropeanaId(String europeanaUri) {
         Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
@@ -775,7 +786,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return result.get(0);
     }
-        /*
+
     @Transactional
     public List<Partner> fetchPartners() {
         Query query = entityManager.createQuery("select p from Partner p order by p.sector");
@@ -797,7 +808,7 @@ public class DashboardDaoImpl implements DashboardDao {
     public Contributor saveContributor(Contributor contributor) {
         return entityManager.merge(contributor);
     }
-               */
+
     @Transactional
     public boolean removePartner(Long partnerId) {
         Partner partner = entityManager.find(Partner.class, partnerId);
@@ -807,7 +818,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return false;
     }
-
+             
     @Transactional
     public boolean removeContributor(Long contributorId) {
         Contributor contributor = entityManager.find(Contributor.class, contributorId);
@@ -817,13 +828,13 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return false;
     }
-
+            */
     @Transactional
     public void log(String who, String what) {
         DashboardLog log = new DashboardLog(who, new Date(), what);
         entityManager.persist(log);
     }
-
+       /*
     @Transactional
     public StaticPage fetchStaticPage(StaticPageType pageType, Language language) {
         Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
@@ -845,7 +856,7 @@ public class DashboardDaoImpl implements DashboardDao {
         page.setContent(content);
         return page;
     }
-
+             */
 //	@Transactional
 //	public boolean removeCarouselItem(Long id) {
 //		Query query = entityManager.createQuery("delete from CarouselItem as item where item.id = :id");
@@ -867,7 +878,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return success;
     }
-
+               /*
     @Transactional
     public CarouselItem createCarouselItem(String europeanaUri, Long savedItemId) {
         EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
@@ -894,7 +905,7 @@ public class DashboardDaoImpl implements DashboardDao {
         entityManager.flush();
         return true;
     }
-
+             
     @Transactional
     @SuppressWarnings("unchecked")
     public List<CarouselItem> fetchCarouselItems() {
@@ -910,9 +921,9 @@ public class DashboardDaoImpl implements DashboardDao {
         return results;
     }
 
-    /*
-      *  People Are Currently Thinking About, or editor picks
-      */
+    //
+    //  People Are Currently Thinking About, or editor picks
+    //
     @Transactional
     public List<EditorPick> fetchEditorPicksItems() {
         Query query = entityManager.createQuery("select item from EditorPick item");
@@ -931,5 +942,5 @@ public class DashboardDaoImpl implements DashboardDao {
         savedSearch2.setEditorPick(editorPick);
         return editorPick;
     }
-
+       */
 }

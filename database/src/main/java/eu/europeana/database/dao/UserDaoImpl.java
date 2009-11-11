@@ -26,7 +26,6 @@ import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
 import eu.europeana.database.integration.TagCount;
@@ -85,12 +84,12 @@ public class UserDaoImpl implements UserDao {
         user.getSocialTags().clear();
         entityManager.remove(user);
     }
-
+/*
     @Transactional
     public void updateUser(User user) {
         entityManager.merge(user);
-    }
-         /*                   todo: this or the previous?
+    }  */
+                         //  todo: this or the previous?
     @Transactional
     public User updateUser(User fresh) {
         User user = entityManager.find(User.class, fresh.getId());
@@ -105,7 +104,7 @@ public class UserDaoImpl implements UserDao {
         user.setRole(fresh.getRole());
         user.setEnabled(user.isEnabled());
         return user;
-    }           */
+    }
     @Transactional
     public User refreshUser(User user) {
         user = entityManager.find(User.class, user.getId());

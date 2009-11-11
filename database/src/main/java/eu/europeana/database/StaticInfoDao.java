@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * @author vitali
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @author Nicola Aloia
  */
 public interface StaticInfoDao {
 
@@ -67,31 +68,199 @@ public interface StaticInfoDao {
 //    boolean removeSearchTerm(Language language, String term);
 
 
-    // todo: add these: (implementations in UserDaoImpl)          DONE !
-//    User removeCarouselItem(User user, Long savedItemId);
-//    User removeSearchTerm(User user, Long savedSearchId);
-//    User addCarouselItem(User user, SavedItem savedItem);
-//    User addEditorPick(User user, EditorPick editorPick);
-//    User addCarouselItem(User user, CarouselItem carouselItem);
-//    CarouselItem addCarouselItem(User user, Long savedItem);
-//    SearchTerm addSearchTerm(Long savedSearchId);
-
-    // todo: add these (implementations in MessageDao)                 DONE !
-//    StaticPage fetchStaticPage (Language language, String pageName);
-//    void setStaticPage(StaticPageType pageType, Language language, String content);
-//    List<StaticPage> getAllStaticPages();
-//    List<MessageKey> getAllTranslationMessages();
-
-    // todo: add this (impl in SearchTermDaoImpl            DONE!
-//    List<SearchTerm> getAllSearchTerms();
-                                               // new add
+                                               // NEW ADD
+    /**
+     *
+     * @param user - an instance of the User class
+     * @param savedItemId  - Long - the identifier of the saved Item
+     * @return - an instance of the User class
+     */
     User removeCarouselItem(User user, Long savedItemId);
+
+    /**
+     *
+     * @param user  - an instance of the User class
+     * @param savedSearchId  - Long - the identifier of the saved Item
+     * @return - an instance of the User class
+     */
     User removeSearchTerm(User user, Long savedSearchId);
+
+    /**
+     * Remove the partner with the given Identifier.
+     * @param partnerId  - Long - the identifier of the partner
+     * @return  boolean - true if the partner has been correctly removed, false in the partner doesn't exists.
+     * @throws IllegalArgumentException
+     */
+    boolean removePartner(Long partnerId);
+
+    /**
+     * Remove the contributor with the given Identifier.
+     *
+     * @param contributorId - Long - the identifier of the contributor
+     * @return boolean - true if the contributor has been correctly removed, false in the contributor doesn't exists.
+     * @throws IllegalArgumentException
+     */
+    boolean removeContributor(Long contributorId);
+
+    /**
+     * Add an Item to the carousel
+     *
+     * @param user  - an instance of the User class
+     * @param savedItem  - Long - the identifier of the saved Item
+     * @return  - an instance of the User class
+     * @throws IllegalArgumentException
+     */
     User addCarouselItem(User user, SavedItem savedItem);
+
+    /**
+     *
+     * @param user
+     * @param editorPick
+     * @return
+     */
     User addEditorPick(User user, EditorPick editorPick);
+
+    /**
+     *
+     * @param user
+     * @param carouselItem
+     * @return
+     */
     User addCarouselItem(User user, CarouselItem carouselItem);
+
+    /**
+     * 
+     * @param user
+     * @param savedItem
+     * @return
+     */
     CarouselItem addCarouselItem(User user, Long savedItem);
+
+    /**
+     *
+     * @param savedSearchId
+     * @return
+     */
     SearchTerm addSearchTerm(Long savedSearchId);
+
+    /**
+     *
+     * @return
+     */
     List<Partner> fetchPartners();
+
+    /**
+     *
+     * @return
+     */
     List<Contributor> fetchContributors();
+
+    /**
+     *
+     * @param pageType
+     * @param language
+     * @return
+     */
+    StaticPage fetchStaticPage(StaticPageType pageType, Language language);
+
+    /**
+     *
+     * @param staticPageId
+     * @param content
+     * @return
+     */
+    StaticPage saveStaticPage(Long staticPageId, String content);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    Boolean removeCarouselItem(Long id);
+
+    /**
+     *
+     * @return
+     */
+    List<CarouselItem> fetchCarouselItems();
+
+    /**
+     *
+     * @param europeanaUri
+     * @param savedItemId
+     * @return
+     */
+    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
+
+    /**
+     * Get the object identifier of the given europeanaURI and return an instance of
+     * the EuropeanaId class or null if the given value in non in the database.
+     * @param europeanaUri
+     * @return  an instance of EuropeanaId class or null
+     */
+  //  EuropeanaId fetchEuropeanaId(String europeanaUri);
+
+    /**
+     *
+     * @param savedItem
+     */
+    void removeFromCarousel(SavedItem savedItem);
+
+    /**
+     * 
+     * @param savedItem
+     * @return
+     */
+    boolean addCarouselItem(SavedItem savedItem);
+
+    /**
+     *
+     * @return
+     */
+    List<EditorPick> fetchEditorPicksItems();
+
+    /**
+     * 
+     * @param savedSearch
+     * @return
+     * @throws Exception
+     */
+    EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
+
+    /**
+     * 
+     * @param savedSearch
+     */
+    void removeFromEditorPick(SavedSearch savedSearch);
+
+    /**
+     *
+     * @param language
+     * @param term
+     * @return
+     */
+    boolean addSearchTerm(Language language, String term);
+
+    /**
+     * 
+     * @param savedSearch
+     * @return
+     */
+    boolean addSearchTerm(SavedSearch savedSearch);
+
+    /**
+     *
+     * @param language
+     * @return
+     */
+    List<String> fetchSearchTerms(Language language);
+
+    /**
+     * 
+     * @param language
+     * @param term
+     * @return
+     */
+    boolean removeSearchTerm(Language language, String term);
+
 }

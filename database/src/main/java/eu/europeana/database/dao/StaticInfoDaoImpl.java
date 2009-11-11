@@ -28,14 +28,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import eu.europeana.database.DashboardDao;
+import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @author Nicola Aloia
  */
 public class StaticInfoDaoImpl implements StaticInfoDao {
+    private Logger log = Logger.getLogger(getClass());
+    private DashboardDao dashBoardDao;
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -133,6 +139,21 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
+    public StaticPage fetchStaticPage(StaticPageType pageType, Language language) {
+        Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
+        query.setParameter("pageType", pageType);
+        query.setParameter("language", language);
+        try {
+            return (StaticPage) query.getSingleResult();
+        }
+        catch (NoResultException e) {
+            StaticPage page = new StaticPage(pageType, language);
+            entityManager.persist(page);
+            return page;
+        }
+    }
+    
+    @Transactional
     public void setStaticPage(StaticPageType pageType, Language language, String content) {
         Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
         query.setParameter("pageType", pageType);
@@ -163,6 +184,22 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return user;
     }
 
+    @Transactional
+    public Boolean removeCarouselItem(Long carouselItemId) {
+        CarouselItem carouselItem = entityManager.getReference(CarouselItem.class, carouselItemId);
+        if (carouselItem == null) {
+            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
+        }
+        SavedItem savedItem = entityManager.getReference(SavedItem.class, carouselItem.getSavedItem().getId());
+        if (savedItem == null) {
+            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
+        }
+        savedItem.setCarouselItem(null);
+        entityManager.remove(carouselItem);
+        entityManager.flush();
+        return true;
+    }
+    
     private SavedItem fetchSavedItem(User user, Long savedItemId) {
        // Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
 
@@ -259,6 +296,43 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
        return searchTerm;
    }
 
+
+    @Transactional
+    public boolean addSearchTerm(Language language, String term) {
+        SearchTerm searchTerm = new SearchTerm();
+        searchTerm.setLanguage(language);
+        searchTerm.setProposedSearchTerm(term);
+        searchTerm.setDate(new Date());
+        entityManager.persist(searchTerm);
+        return true; // maybe check for existence first?
+    }
+
+    @Transactional
+    public boolean addSearchTerm(SavedSearch savedSearch) {
+        SearchTerm searchTerm = savedSearch.createSearchTerm();
+        entityManager.persist(searchTerm);
+        return true;
+    }
+
+    @Transactional
+    public boolean removeSearchTerm(Language language, String term) {
+        // todo remove back reference to saved item
+        Query query = entityManager.createQuery("delete from SearchTerm as term where term.language = :language and term.proposedSearchTerm = :term");
+        query.setParameter("term", term);
+        query.setParameter("language", language);
+        boolean success = query.executeUpdate() == 1;
+        if (!success) {
+            log.warn("Not there to remove from search terms: " + term);
+        }
+        return success;
+    }
+    @Transactional
+    public List<String> fetchSearchTerms(Language language) {
+        Query query = entityManager.createQuery("select term.proposedSearchTerm from SearchTerm as term where term.language = :language");
+        query.setParameter("language", language);
+        return (List<String>) query.getResultList();
+    }
+
     @Transactional
     public List<Partner> fetchPartners() {
         Query query = entityManager.createQuery("select p from Partner p order by p.sector");
@@ -271,5 +345,117 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
            return (List<Contributor>) query.getResultList();
        }
 
+    @Transactional
+    public boolean removePartner(Long partnerId) {
+        if (partnerId == null) {
+           throw new IllegalArgumentException("The input parameter 'partnerId' is null");
+       }
+        Partner partner = entityManager.find(Partner.class, partnerId);
+        if (partner != null) {
+            entityManager.remove(partner);
+            return true;
+        }
+        return false;
+    }
 
+    @Transactional
+    public boolean removeContributor(Long contributorId) {
+        if (contributorId == null) {
+           throw new IllegalArgumentException("The input parameter 'contributorId' is null");
+        }
+        Contributor contributor = entityManager.find(Contributor.class, contributorId);
+        if (contributor != null) {
+            entityManager.remove(contributor);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public StaticPage saveStaticPage(Long staticPageId, String content) {
+        StaticPage page = entityManager.find(StaticPage.class, staticPageId);
+        page.setContent(content);
+        return page;
+    }
+
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public List<CarouselItem> fetchCarouselItems() {
+        Query q = entityManager.createQuery("select ci from CarouselItem ci");
+        List<CarouselItem> results = (List<CarouselItem>) q.getResultList();
+        for (CarouselItem item : results) {
+            EuropeanaId id = item.getEuropeanaId();
+            if (id != null && id.isOrphan()) { // remove null check later
+                results.remove(item);
+                removeCarouselItem(item.getSavedItem().getId());
+            }
+        }
+        return results;
+    }
+
+    @Transactional
+    public CarouselItem createCarouselItem(String europeanaUri, Long savedItemId) {
+        EuropeanaId europeanaId = dashBoardDao.fetchEuropeanaId(europeanaUri);
+        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
+        CarouselItem carouselItem = savedItem.createCarouselItem();
+        carouselItem.setEuropeanaId(europeanaId);
+        carouselItem.setSavedItem(savedItem);
+        savedItem.setCarouselItem(carouselItem);
+        return carouselItem;
+    }
+
+ 
+
+    @Transactional
+    public void removeFromCarousel(SavedItem savedItem) {
+        CarouselItem carouselItem = savedItem.getCarouselItem();
+        if (carouselItem != null) {
+            savedItem = entityManager.getReference(SavedItem.class, savedItem.getId());
+            savedItem.setCarouselItem(null);
+            entityManager.persist(savedItem);
+            carouselItem = entityManager.getReference(CarouselItem.class, carouselItem.getId());
+            entityManager.remove(carouselItem);
+        }
+    }
+    @Transactional
+    public boolean addCarouselItem(SavedItem savedItem) {
+        CarouselItem carouselItem = savedItem.createCarouselItem();
+        //        carouselItem.setSavedItem(savedItem);
+        savedItem.setCarouselItem(carouselItem);
+        entityManager.persist(carouselItem);
+        return true;
+    }
+    /*
+       *  People Are Currently Thinking About, or editor picks
+       */
+     @Transactional
+     public List<EditorPick> fetchEditorPicksItems() {
+         Query query = entityManager.createQuery("select item from EditorPick item");
+         return (List<EditorPick>) query.getResultList();
+     }
+
+     @Transactional
+     public EditorPick createEditorPick(SavedSearch savedSearch) throws Exception {
+         EditorPick editorPick = new EditorPick();
+         editorPick.setDateSaved(savedSearch.getDateSaved());
+         editorPick.setQuery(savedSearch.getQuery());
+         editorPick.setUser(savedSearch.getUser());
+
+         SavedSearch savedSearch2 = entityManager.getReference(SavedSearch.class, savedSearch.getId());
+         editorPick.setSavedSearch(savedSearch2);
+         savedSearch2.setEditorPick(editorPick);
+         return editorPick;
+     }
+
+    @Transactional
+    public void removeFromEditorPick(SavedSearch savedSearch) {
+        EditorPick editorPick = savedSearch.getEditorPick();
+        if (editorPick != null) {
+            savedSearch = entityManager.getReference(SavedSearch.class, savedSearch.getId());
+            savedSearch.setEditorPick(null);
+            entityManager.persist(savedSearch);
+            editorPick = entityManager.getReference(EditorPick.class, editorPick.getId());
+            entityManager.remove(editorPick);
+        }
+    }
 }

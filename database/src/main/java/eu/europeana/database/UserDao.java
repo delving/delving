@@ -31,7 +31,7 @@ public interface UserDao {
     User fetchUserByEmail(String email);
     User addUser(User user);
     void removeUser(User user);
-    void updateUser(User user);
+    User updateUser(User user);
     User refreshUser(User user);
     boolean userNameExists(String userName);
     //User remove(User user, Class<?> clazz, Long id);
