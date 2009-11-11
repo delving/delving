@@ -1,6 +1,6 @@
 package eu.europeana.controller.util;
 
-import eu.europeana.database.SearchTermDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.SearchTerm;
 
@@ -13,12 +13,12 @@ import java.util.*;
  */
 
 public class ProposedSearchTermSampler {
-    private SearchTermDao searchTermDao;
+    private StaticInfoDao staticInfoDao;
     private int displayCount = 3;
     private Map<Language, List<SearchTerm>> cache = new HashMap<Language, List<SearchTerm>>();
 
-    public void setSearchTermDao(SearchTermDao searchTermDao) {
-        this.searchTermDao = searchTermDao;
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
 
     public void setDisplayCount(int displayCount) {
@@ -46,7 +46,7 @@ public class ProposedSearchTermSampler {
     }
 
     private Map<Language, List<SearchTerm>> getData() {
-        List<SearchTerm> allSearchTerms = searchTermDao.getAllSearchTerms();
+        List<SearchTerm> allSearchTerms = staticInfoDao.getAllSearchTerms();
         Map<Language, List<SearchTerm>> data = new HashMap<Language, List<SearchTerm>>();
         for (SearchTerm searchTerm : allSearchTerms) {
             List<SearchTerm> searchTerms = data.get(searchTerm.getLanguage());

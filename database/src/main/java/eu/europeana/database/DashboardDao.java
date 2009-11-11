@@ -138,7 +138,7 @@ public interface DashboardDao {
    // List<SavedSearch> fetchSavedSearches(Long userId);          moved to UserDao
    // SavedSearch fetchSavedSearchById(Long id);                   moved to UserDao
 
-    // todo: eliminate these, move implementations to StaticInfoDaoImpl    DONE!
+    //  moved implementations to StaticInfoDaoImpl    DONE!
 //    List<Partner> fetchPartners();
 //    List<Contributor> fetchContributors();
 //    Partner savePartner(Partner partner);

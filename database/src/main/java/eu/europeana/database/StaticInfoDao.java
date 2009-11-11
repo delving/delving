@@ -263,4 +263,11 @@ public interface StaticInfoDao {
      */
     boolean removeSearchTerm(Language language, String term);
 
+    /**
+     * Get the list of all searched terms
+     * 
+     * @return  LIST - a List of searched terms
+     */
+    List<SearchTerm> getAllSearchTerms();
+
 }

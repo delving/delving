@@ -65,8 +65,6 @@
 
     <bean name="userDao" class="eu.europeana.database.dao.UserDaoImpl"/>
 
-    <bean name="searchTermDao" class="eu.europeana.database.dao.SearchTermDaoImpl"/>
-
     <bean name="staticInfoDao" class="eu.europeana.database.dao.StaticInfoDaoImpl"/>
 
     <bean name="messageDao" class="eu.europeana.database.dao.MessageDaoImpl"/>

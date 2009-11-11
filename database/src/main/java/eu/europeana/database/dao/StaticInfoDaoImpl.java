@@ -458,4 +458,10 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             entityManager.remove(editorPick);
         }
     }
+    @Transactional
+    public List<SearchTerm> getAllSearchTerms() {
+        Query q = entityManager.createQuery("select st from SearchTerm st");
+        List searchTerms = q.getResultList();
+        return (List<SearchTerm>) searchTerms;
+    }
 }

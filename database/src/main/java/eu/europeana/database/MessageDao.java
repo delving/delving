@@ -42,7 +42,7 @@ public interface MessageDao {
     MessageKey fetchMessageKey(String key);
     Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
 
-    // todo: remove these.. move implementations to StaticInfoDaoImpl
+    //  moved implementations to StaticInfoDaoImpl
     StaticPage fetchStaticPage (Language language, String pageName);
     void setStaticPage(StaticPageType pageType, Language language, String content);
     List<StaticPage> getAllStaticPages();
