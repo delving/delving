@@ -79,7 +79,14 @@ public interface DashboardDao {
 
     EuropeanaId getEuropeanaId(EuropeanaId europeanaId);
 
-    EuropeanaId fetchEuropeanaId(String europeanaUri);      
+    /**
+     * Get the object identifier of the given europeanaURI and return an instance of
+     * the EuropeanaId class or null if the given value in non in the database.
+     *
+     * @param europeanaUri
+     * @return an instance of EuropeanaId class or null
+     */
+    EuropeanaId fetchEuropeanaId(String europeanaUri);
 
     void removeOrphanObject(String uri);
 
@@ -128,15 +135,15 @@ public interface DashboardDao {
     IndexingQueueEntry getIndexEntry(IndexingQueueEntry detachedEntry);
 
     // todo: move the implementations to UserDaoImpl               DONE!
-   // User fetchUser(String email, String password);    moved to UserDao
-   // List<User> fetchUsers(String pattern);             moved to UserDao
-   // void removeUser(Long userId);                       moved to UserDao
-   // User fetchUser(Long userId);                       moved to UserDao
-   // User updateUser(User user);                           moved to UserDao
-   // List<SavedItem> fetchSavedItems(Long userId);         moved to UserDao
-   // SavedItem fetchSavedItemById(Long id);                    moved to UserDao
-   // List<SavedSearch> fetchSavedSearches(Long userId);          moved to UserDao
-   // SavedSearch fetchSavedSearchById(Long id);                   moved to UserDao
+    // User fetchUser(String email, String password);    moved to UserDao
+    // List<User> fetchUsers(String pattern);             moved to UserDao
+    // void removeUser(Long userId);                       moved to UserDao
+    // User fetchUser(Long userId);                       moved to UserDao
+    // User updateUser(User user);                           moved to UserDao
+    // List<SavedItem> fetchSavedItems(Long userId);         moved to UserDao
+    // SavedItem fetchSavedItemById(Long id);                    moved to UserDao
+    // List<SavedSearch> fetchSavedSearches(Long userId);          moved to UserDao
+    // SavedSearch fetchSavedSearchById(Long id);                   moved to UserDao
 
     //  moved implementations to StaticInfoDaoImpl    DONE!
 //    List<Partner> fetchPartners();
@@ -167,7 +174,9 @@ public interface DashboardDao {
 
     // dashboard log
     void log(String who, String what);
+
     List<DashboardLog> fetchLogEntriesFrom(Long topId, int pageSize);
+
     List<DashboardLog> fetchLogEntriesTo(Long bottomId, int pageSize);
 
 }

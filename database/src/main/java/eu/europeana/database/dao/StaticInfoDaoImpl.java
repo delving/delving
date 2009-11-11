@@ -28,6 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import eu.europeana.database.DashboardDao;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,49 +60,50 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         Query q = entityManager.createQuery("select con from Contributor con order by con.country");
         return (List<Contributor>) q.getResultList();
     }
-             /* this or the following?
-    @Transactional
-    public void saveContributor(Contributor contributorX) {
-        Query query = entityManager.createQuery("select co from Contributor as co where co.providerId = :providerId");
-        query.setParameter("providerId", contributorX.getProviderId());
-        Contributor contributor = null;
-        try {
-            contributor = (Contributor) query.getSingleResult();
-            contributor.setProviderId(contributorX.getProviderId());
-            contributor.setOriginalName(contributorX.getOriginalName());
-            contributor.setEnglishName(contributorX.getEnglishName());
-            contributor.setAcronym(contributorX.getAcronym());
-            contributor.setCountry(contributorX.getCountry());
-            contributor.setNumberOfPartners(contributorX.getNumberOfPartners());
-            contributor.setUrl(contributorX.getUrl());
-        } catch (NoResultException e) {
-            if (contributorX.getProviderId() != null) {
-                entityManager.persist(contributorX);
-            }
-        }
-    }     */
+    /* this or the following?
+@Transactional
+public void saveContributor(Contributor contributorX) {
+   Query query = entityManager.createQuery("select co from Contributor as co where co.providerId = :providerId");
+   query.setParameter("providerId", contributorX.getProviderId());
+   Contributor contributor = null;
+   try {
+       contributor = (Contributor) query.getSingleResult();
+       contributor.setProviderId(contributorX.getProviderId());
+       contributor.setOriginalName(contributorX.getOriginalName());
+       contributor.setEnglishName(contributorX.getEnglishName());
+       contributor.setAcronym(contributorX.getAcronym());
+       contributor.setCountry(contributorX.getCountry());
+       contributor.setNumberOfPartners(contributorX.getNumberOfPartners());
+       contributor.setUrl(contributorX.getUrl());
+   } catch (NoResultException e) {
+       if (contributorX.getProviderId() != null) {
+           entityManager.persist(contributorX);
+       }
+   }
+}     */
 
-   @Transactional
+    @Transactional
     public Contributor saveContributor(Contributor contributor) {
         return entityManager.merge(contributor);
     }
-       /*
-    @Transactional
-    public void savePartner(Partner partnerX) {
-        Query query = entityManager.createQuery("select po from Partner as po where po.name = :name");
-        query.setParameter("name", partnerX.getName());
-        Partner partner = null;
-        try {
-            partner = (Partner) query.getSingleResult();
-            partner.setName(partnerX.getName());
-            partner.setUrl(partnerX.getUrl());
-            partnerX.setSector(partnerX.getSector());
-        } catch (Exception e) {
-            if (partnerX.getName() != null) {
-                entityManager.persist(partnerX);
-            }
-        }
-    }          */
+
+    /*
+@Transactional
+public void savePartner(Partner partnerX) {
+Query query = entityManager.createQuery("select po from Partner as po where po.name = :name");
+query.setParameter("name", partnerX.getName());
+Partner partner = null;
+try {
+  partner = (Partner) query.getSingleResult();
+  partner.setName(partnerX.getName());
+  partner.setUrl(partnerX.getUrl());
+  partnerX.setSector(partnerX.getSector());
+} catch (Exception e) {
+  if (partnerX.getName() != null) {
+      entityManager.persist(partnerX);
+  }
+}
+}          */
     @Transactional
     public Partner savePartner(Partner partner) {
         return entityManager.merge(partner);
@@ -123,7 +125,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
 
     @SuppressWarnings("unchecked")
     @Transactional
-    public StaticPage fetchStaticPage (Language language, String pageName) {
+    public StaticPage fetchStaticPage(Language language, String pageName) {
         Query query = entityManager.createQuery("select sp from StaticPage as sp where sp.language = :language and sp.pageType = :pageType");
         query.setParameter("language", language);
         query.setParameter("pageType", StaticPageType.get(pageName));
@@ -152,14 +154,14 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             return page;
         }
     }
-    
+
     @Transactional
     public void setStaticPage(StaticPageType pageType, Language language, String content) {
         Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
         query.setParameter("pageType", pageType);
         query.setParameter("language", language);
         try {
-            StaticPage page = (StaticPage)query.getSingleResult();
+            StaticPage page = (StaticPage) query.getSingleResult();
             page.setContent(content);
         }
         catch (NoResultException e) {
@@ -172,6 +174,9 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     @Transactional
     public User removeCarouselItem(User user, Long savedItemId) {
         // remove carousel item and give back a user
+        if (savedItemId == null || user == null) {
+            throw new IllegalArgumentException("Input parameter(s) null ");
+        }
         SavedItem savedItem = fetchSavedItem(user, savedItemId);
         if (savedItem == null) {
             throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
@@ -199,11 +204,11 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         entityManager.flush();
         return true;
     }
-    
-    private SavedItem fetchSavedItem(User user, Long savedItemId) {
-       // Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
 
-         // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
+    private SavedItem fetchSavedItem(User user, Long savedItemId) {
+        // Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
+
+        // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
 
         Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid and :id = id");
         q.setParameter("userid", user.getId());
@@ -218,6 +223,9 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     @Transactional
     public User removeSearchTerm(User user, Long savedSearchId) {
         // remove carousel item and give back a user
+        if (savedSearchId == null || user == null) {
+            throw new IllegalArgumentException("Input parameter(s) null");
+        }
         SavedSearch savedSearch = fetchSavedSearch(user, savedSearchId);
         if (savedSearch == null) {
             throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedSearchId);
@@ -235,7 +243,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
 
         // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
 
-            
+
         Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :userid and :id = id");
         q.setParameter("userid", user.getId());
         q.setParameter("id", savedSearchId);
@@ -286,15 +294,15 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-   public SearchTerm addSearchTerm(Long savedSearchId) {
-       SavedSearch savedSearch = entityManager.getReference(SavedSearch.class, savedSearchId);
-       if (savedSearch == null) {
-           throw new IllegalArgumentException("The user doesn't own the object. user:  object: " + savedSearchId);
-       }
-       SearchTerm searchTerm = savedSearch.createSearchTerm();
-       savedSearch.setSearchTerm(searchTerm);
-       return searchTerm;
-   }
+    public SearchTerm addSearchTerm(Long savedSearchId) {
+        SavedSearch savedSearch = entityManager.getReference(SavedSearch.class, savedSearchId);
+        if (savedSearch == null) {
+            throw new IllegalArgumentException("The user doesn't own the object. user:  object: " + savedSearchId);
+        }
+        SearchTerm searchTerm = savedSearch.createSearchTerm();
+        savedSearch.setSearchTerm(searchTerm);
+        return searchTerm;
+    }
 
 
     @Transactional
@@ -326,6 +334,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         }
         return success;
     }
+
     @Transactional
     public List<String> fetchSearchTerms(Language language) {
         Query query = entityManager.createQuery("select term.proposedSearchTerm from SearchTerm as term where term.language = :language");
@@ -340,16 +349,16 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-       public List<Contributor> fetchContributors() {
-           Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
-           return (List<Contributor>) query.getResultList();
-       }
+    public List<Contributor> fetchContributors() {
+        Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
+        return (List<Contributor>) query.getResultList();
+    }
 
     @Transactional
     public boolean removePartner(Long partnerId) {
         if (partnerId == null) {
-           throw new IllegalArgumentException("The input parameter 'partnerId' is null");
-       }
+            throw new IllegalArgumentException("The input parameter 'partnerId' is null");
+        }
         Partner partner = entityManager.find(Partner.class, partnerId);
         if (partner != null) {
             entityManager.remove(partner);
@@ -361,7 +370,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     @Transactional
     public boolean removeContributor(Long contributorId) {
         if (contributorId == null) {
-           throw new IllegalArgumentException("The input parameter 'contributorId' is null");
+            throw new IllegalArgumentException("The input parameter 'contributorId' is null");
         }
         Contributor contributor = entityManager.find(Contributor.class, contributorId);
         if (contributor != null) {
@@ -404,7 +413,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return carouselItem;
     }
 
- 
 
     @Transactional
     public void removeFromCarousel(SavedItem savedItem) {
@@ -417,6 +425,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             entityManager.remove(carouselItem);
         }
     }
+
     @Transactional
     public boolean addCarouselItem(SavedItem savedItem) {
         CarouselItem carouselItem = savedItem.createCarouselItem();
@@ -425,27 +434,28 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         entityManager.persist(carouselItem);
         return true;
     }
+
     /*
-       *  People Are Currently Thinking About, or editor picks
-       */
-     @Transactional
-     public List<EditorPick> fetchEditorPicksItems() {
-         Query query = entityManager.createQuery("select item from EditorPick item");
-         return (List<EditorPick>) query.getResultList();
-     }
+    *  People Are Currently Thinking About, or editor picks
+    */
+    @Transactional
+    public List<EditorPick> fetchEditorPicksItems() {
+        Query query = entityManager.createQuery("select item from EditorPick item");
+        return (List<EditorPick>) query.getResultList();
+    }
 
-     @Transactional
-     public EditorPick createEditorPick(SavedSearch savedSearch) throws Exception {
-         EditorPick editorPick = new EditorPick();
-         editorPick.setDateSaved(savedSearch.getDateSaved());
-         editorPick.setQuery(savedSearch.getQuery());
-         editorPick.setUser(savedSearch.getUser());
+    @Transactional
+    public EditorPick createEditorPick(SavedSearch savedSearch) throws Exception {
+        EditorPick editorPick = new EditorPick();
+        editorPick.setDateSaved(savedSearch.getDateSaved());
+        editorPick.setQuery(savedSearch.getQuery());
+        editorPick.setUser(savedSearch.getUser());
 
-         SavedSearch savedSearch2 = entityManager.getReference(SavedSearch.class, savedSearch.getId());
-         editorPick.setSavedSearch(savedSearch2);
-         savedSearch2.setEditorPick(editorPick);
-         return editorPick;
-     }
+        SavedSearch savedSearch2 = entityManager.getReference(SavedSearch.class, savedSearch.getId());
+        editorPick.setSavedSearch(savedSearch2);
+        savedSearch2.setEditorPick(editorPick);
+        return editorPick;
+    }
 
     @Transactional
     public void removeFromEditorPick(SavedSearch savedSearch) {
@@ -458,6 +468,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             entityManager.remove(editorPick);
         }
     }
+
     @Transactional
     public List<SearchTerm> getAllSearchTerms() {
         Query q = entityManager.createQuery("select st from SearchTerm st");

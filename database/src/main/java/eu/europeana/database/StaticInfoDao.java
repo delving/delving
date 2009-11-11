@@ -33,14 +33,21 @@ import java.util.List;
 public interface StaticInfoDao {
 
     List<Partner> getAllPartnerItems();
+
     List<Contributor> getAllContributorItems();
+
     //void saveContributor(Contributor contributor);      todo: this or the following?
     Contributor saveContributor(Contributor contributor);
+
     //void savePartner(Partner partner);         todo: this or the following?
     Partner savePartner(Partner partner);
-    StaticPage fetchStaticPage (Language language, String pageName);
+
+    StaticPage fetchStaticPage(Language language, String pageName);
+
     void setStaticPage(StaticPageType pageType, Language language, String content);
+
     List<StaticPage> getAllStaticPages();
+
     List<MessageKey> getAllTranslationMessages();
 
     // todo: add these (implementations in DashboardDaoImpl)       DONE!
@@ -66,27 +73,32 @@ public interface StaticInfoDao {
 //    boolean removeSearchTerm(Language language, String term);
 
 
-                                               // NEW ADD
+    // NEW ADD
     /**
+     * Remove the given Item from the Carousel
      *
-     * @param user - an instance of the User class
-     * @param savedItemId  - Long - the identifier of the saved Item
+     * @param user        - an instance of the User class
+     * @param savedItemId - Long - the identifier of the saved Item
      * @return - an instance of the User class
+     * @throws IllegalArgumentException for null input parameter(s) or the user doesn't own the object.
      */
     User removeCarouselItem(User user, Long savedItemId);
 
     /**
+     * Remove a saved Search and return a User
      *
-     * @param user  - an instance of the User class
-     * @param savedSearchId  - Long - the identifier of the saved Item
+     * @param user          - an instance of the User class
+     * @param savedSearchId - Long - the identifier of the saved Item
      * @return - an instance of the User class
+     * @throws IllegalArgumentException for null input parameter(s) or the user doesn't own the object.
      */
     User removeSearchTerm(User user, Long savedSearchId);
 
     /**
      * Remove the partner with the given Identifier.
-     * @param partnerId  - Long - the identifier of the partner
-     * @return  boolean - true if the partner has been correctly removed, false in the partner doesn't exists.
+     *
+     * @param partnerId - Long - the identifier of the partner
+     * @return boolean - true if the partner has been correctly removed, false in the partner doesn't exists.
      * @throws IllegalArgumentException
      */
     boolean removePartner(Long partnerId);
@@ -103,23 +115,21 @@ public interface StaticInfoDao {
     /**
      * Add an Item to the carousel
      *
-     * @param user  - an instance of the User class
-     * @param savedItem  - Long - the identifier of the saved Item
-     * @return  - an instance of the User class
+     * @param user      - an instance of the User class
+     * @param savedItem - Long - the identifier of the saved Item
+     * @return - an instance of the User class
      * @throws IllegalArgumentException
      */
     User addCarouselItem(User user, SavedItem savedItem);
 
     /**
-     *
-     * @param user
-     * @param editorPick
-     * @return
+     * @param user       - an instance of the User class
+     * @param editorPick - an instance of the EditorPick class
+     * @return - an instance of the User class
      */
     User addEditorPick(User user, EditorPick editorPick);
 
     /**
-     *
      * @param user
      * @param carouselItem
      * @return
@@ -127,7 +137,6 @@ public interface StaticInfoDao {
     User addCarouselItem(User user, CarouselItem carouselItem);
 
     /**
-     * 
      * @param user
      * @param savedItem
      * @return
@@ -135,26 +144,22 @@ public interface StaticInfoDao {
     CarouselItem addCarouselItem(User user, Long savedItem);
 
     /**
-     *
      * @param savedSearchId
      * @return
      */
     SearchTerm addSearchTerm(Long savedSearchId);
 
     /**
-     *
      * @return
      */
     List<Partner> fetchPartners();
 
     /**
-     *
      * @return
      */
     List<Contributor> fetchContributors();
 
     /**
-     *
      * @param pageType
      * @param language
      * @return
@@ -162,7 +167,6 @@ public interface StaticInfoDao {
     StaticPage fetchStaticPage(StaticPageType pageType, Language language);
 
     /**
-     *
      * @param staticPageId
      * @param content
      * @return
@@ -170,20 +174,17 @@ public interface StaticInfoDao {
     StaticPage saveStaticPage(Long staticPageId, String content);
 
     /**
-     *
      * @param id
      * @return
      */
     Boolean removeCarouselItem(Long id);
 
     /**
-     *
      * @return
      */
     List<CarouselItem> fetchCarouselItems();
 
     /**
-     *
      * @param europeanaUri
      * @param savedItemId
      * @return
@@ -191,34 +192,22 @@ public interface StaticInfoDao {
     CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
 
     /**
-     * Get the object identifier of the given europeanaURI and return an instance of
-     * the EuropeanaId class or null if the given value in non in the database.
-     * @param europeanaUri
-     * @return  an instance of EuropeanaId class or null
-     */
-  //  EuropeanaId fetchEuropeanaId(String europeanaUri);
-
-    /**
-     *
      * @param savedItem
      */
     void removeFromCarousel(SavedItem savedItem);
 
     /**
-     * 
      * @param savedItem
      * @return
      */
     boolean addCarouselItem(SavedItem savedItem);
 
     /**
-     *
      * @return
      */
     List<EditorPick> fetchEditorPicksItems();
 
     /**
-     * 
      * @param savedSearch
      * @return
      * @throws Exception
@@ -226,13 +215,11 @@ public interface StaticInfoDao {
     EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
 
     /**
-     * 
      * @param savedSearch
      */
     void removeFromEditorPick(SavedSearch savedSearch);
 
     /**
-     *
      * @param language
      * @param term
      * @return
@@ -240,21 +227,18 @@ public interface StaticInfoDao {
     boolean addSearchTerm(Language language, String term);
 
     /**
-     * 
      * @param savedSearch
      * @return
      */
     boolean addSearchTerm(SavedSearch savedSearch);
 
     /**
-     *
      * @param language
      * @return
      */
     List<String> fetchSearchTerms(Language language);
 
     /**
-     * 
      * @param language
      * @param term
      * @return
@@ -263,8 +247,8 @@ public interface StaticInfoDao {
 
     /**
      * Get the list of all searched terms
-     * 
-     * @return  LIST - a List of searched terms
+     *
+     * @return LIST - a List of searched terms
      */
     List<SearchTerm> getAllSearchTerms();
 
