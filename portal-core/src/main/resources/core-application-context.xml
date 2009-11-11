@@ -95,11 +95,15 @@
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="proposedSearchTermSampler" class="eu.europeana.controller.util.ProposedSearchTermSampler">
+    <!--bean id="proposedSearchTermSampler" class="eu.europeana.controller.util.ProposedSearchTermSampler">
         <property name="displayCount" value="3"/>
         <property name="searchTermDao" ref="searchTermDao"/>
-    </bean>
+    </bean-->
 
+     <bean id="proposedSearchTermSampler" class="eu.europeana.controller.util.ProposedSearchTermSampler">
+        <property name="displayCount" value="3"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
+    </bean>
     <bean id="carouselItemSampler" class="eu.europeana.controller.util.CarouselItemSampler">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="displayCount" value="40"/>
