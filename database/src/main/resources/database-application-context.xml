@@ -67,8 +67,6 @@
 
     <bean name="staticInfoDao" class="eu.europeana.database.dao.StaticInfoDaoImpl"/>
 
-    <bean name="messageDao" class="eu.europeana.database.dao.MessageDaoImpl"/>
-
     <bean name="dashboardDao" class="eu.europeana.database.dao.DashboardDaoImpl"/>
 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>

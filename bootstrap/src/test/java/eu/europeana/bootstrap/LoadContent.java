@@ -23,7 +23,6 @@ package eu.europeana.bootstrap;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.DataMigration;
-//import eu.europeana.database.MessageDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.EuropeanaCollection;
@@ -55,7 +54,6 @@ public class LoadContent {
         ESEImporter eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         DashboardDao dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         ImportRepository repository = (ImportRepository) context.getBean("normalizedImportRepository");
-        //MessageDao messageDao = (MessageDao) context.getBean("messageDao");
         LanguageDao languageDao = (LanguageDao) context.getBean("languageDao");
 
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");

@@ -49,17 +49,12 @@ import java.util.List;
 public class DataMigration {
     private static final String DIRECTORY = "/tmp/";
     private static final Logger log = Logger.getLogger(DataMigration.class);
-    //private MessageDao messageDao;
     private LanguageDao languageDao;
     private StaticInfoDao staticInfoDao;
 
     public DataMigration() {
     }
 
-   /* public void setMessageDao(MessageDao messageDao) {
-        this.messageDao = messageDao;
-    }
-    */
     public void setLanguageDao(LanguageDao languageDao) {
         this.languageDao = languageDao;
     }
@@ -156,10 +151,9 @@ public class DataMigration {
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/database-application-context.xml",
         });
-       // MessageDao messageDao = (MessageDao) context.getBean("messageDao");
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
         DataMigration migration = new DataMigration();
-       // migration.setMessageDao(messageDao);
+
         migration.setPartnerDao(staticInfoDao);
         if (args.length == 1 && args[0].equalsIgnoreCase("import")) {
             for (Table table : Table.values()) {

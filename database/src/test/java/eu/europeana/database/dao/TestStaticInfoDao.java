@@ -1,7 +1,6 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DataMigration;
-import eu.europeana.database.MessageDao;
 import eu.europeana.database.StaticInfoDao;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,9 +25,6 @@ public class TestStaticInfoDao {
 
     @Autowired
     private StaticInfoDao staticInfoDao;
-
-    @Autowired
-    //private MessageDao messageDao;
 
     @Before
     public void prepare() throws IOException {

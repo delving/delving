@@ -28,7 +28,6 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.MessageDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.SolrIndexer;
@@ -46,7 +45,6 @@ public class DashboardServiceImpl implements DashboardService {
     private ESEImporter normalizedImporter;
     private ESEImporter sandboxImporter;
     private DashboardDao dashboardDao;
-    private MessageDao messageDao;
     private LanguageDao languageDao;
     private SolrIndexer indexer;
     private DigitalObjectCache digitalObjectCache;
@@ -68,11 +66,7 @@ public class DashboardServiceImpl implements DashboardService {
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
     }
-    /*
-    public void setMessageDao(MessageDao messageDao) {
-        this.messageDao = messageDao;
-    }
-             */
+
     public void setLanguageDao(LanguageDao languageDao) {
         this.languageDao = languageDao;
     }

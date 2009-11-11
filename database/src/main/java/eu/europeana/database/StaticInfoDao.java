@@ -38,12 +38,10 @@ public interface StaticInfoDao {
     Contributor saveContributor(Contributor contributor);
     //void savePartner(Partner partner);         todo: this or the following?
     Partner savePartner(Partner partner);
-    //refactoring methods formerly defined in MessageDao
     StaticPage fetchStaticPage (Language language, String pageName);
     void setStaticPage(StaticPageType pageType, Language language, String content);
     List<StaticPage> getAllStaticPages();
     List<MessageKey> getAllTranslationMessages();
-    //end methods formerly defined in MessageDao
 
     // todo: add these (implementations in DashboardDaoImpl)       DONE!
 //    List<Partner> fetchPartners();

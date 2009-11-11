@@ -1,6 +1,5 @@
 package eu.europeana.database.integration;
 
-//import eu.europeana.database.MessageDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.MessageKey;
@@ -21,14 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DaoMessageSource extends AbstractMessageSource {
     private long maximumAge = 60000L;
-    //private MessageDao messageDao;
+
     private LanguageDao languageDao;
     private Map<String, Map<Language, CacheValue>> cache = new ConcurrentHashMap<String, Map<Language, CacheValue>>();
-    /*
-    public void setMessageDao(MessageDao messageDao) {
-        this.messageDao = messageDao;
-    }
-           */
+
      public void setLanguageDao(LanguageDao languageDao) {
         this.languageDao = languageDao;
     }

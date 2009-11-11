@@ -1,7 +1,6 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DataMigration;
-//import eu.europeana.database.MessageDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.integration.DaoMessageSource;
@@ -28,7 +27,6 @@ import java.util.Locale;
 public class TestLanguageDao {
 
     @Autowired
-   // private MessageDao messageDao; // todo: should be LanguageDao
     private LanguageDao languageDao; // todo: should be LanguageDao
 
     private DaoMessageSource daoMessageSource = new DaoMessageSource();

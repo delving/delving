@@ -25,18 +25,17 @@ public interface LanguageDao {
 //    void addMessagekey(String key);
 //    void removeMessageKey(String key);
 
-    // todo: add these (implementations in MessageDaoImpl)
+    //  added these 
 //    Translation setTranslation(String key, Language language, String value);
 //    List<String> fetchMessageKeyStrings();
 //    MessageKey fetchMessageKey(String key);
 //    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
-    //refactoring methods formerly defined in  MessageDao
+
     Translation setTranslation(String key, Language language, String value);
     List<String> fetchMessageKeyStrings();
     MessageKey fetchMessageKey(String key);
     Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
-  //end methods from MessageDao
-
+ 
 
     /**
      *
