@@ -116,7 +116,7 @@
                 </entry>
                 <entry key="database">
                     <bean class="eu.europeana.database.integration.DaoMessageSource">
-                        <property name="messageDao" ref="messageDao"/>
+                        <property name="languageDao" ref="languageDao"/>
                     </bean>
                 </entry>
             </util:map>
@@ -221,12 +221,12 @@
 
     <bean id="aboutUsController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="aboutus"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="accessibilityController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="accessibility"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean name="errorController" class="eu.europeana.controller.StaticPageController">
@@ -236,12 +236,12 @@
 
     <bean id="languagePolicyController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="languagepolicy"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="newContentController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="newcontent"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="partnersController" class="eu.europeana.controller.PartnerPageController">
@@ -251,7 +251,7 @@
 
     <bean id="privacyController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="privacy"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="sitemapController" class="eu.europeana.controller.StaticPageController">
@@ -261,12 +261,12 @@
 
     <bean id="termsOfServiceController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="termsofservice"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="usingEuropeanaController" class="eu.europeana.controller.StaticPageController">
         <property name="template" value="usingeuropeana"/>
-        <property name="messageDao" ref="messageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="contactController" class="eu.europeana.controller.ContactController">
