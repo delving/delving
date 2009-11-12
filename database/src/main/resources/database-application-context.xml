@@ -69,6 +69,8 @@
 
     <bean name="dashboardDao" class="eu.europeana.database.dao.DashboardDaoImpl"/>
 
+    <bean name="languageDao" class="eu.europeana.database.dao.LanguageDaoImpl"/>
+
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
