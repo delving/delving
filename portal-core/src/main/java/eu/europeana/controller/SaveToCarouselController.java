@@ -36,56 +36,57 @@ import eu.europeana.database.domain.SavedItem;
 
 @Deprecated
 public class SaveToCarouselController extends AbstractAjaxTriggerController {
-    private StaticInfoDao staticInfoDao;
-    private UserDao userDao;
+	private StaticInfoDao staticInfoDao;
+	private UserDao userDao;
 
-    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
-        this.staticInfoDao = staticInfoDao;
-    }
+	public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+		this.staticInfoDao = staticInfoDao;
+	}
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
 
-    private SavedItem savedItem;
-    private boolean isInCarousel;
+	private boolean isInCarousel(Long id) {
+		SavedItem savedItem = userDao.fetchSavedItemById(id);
+		return savedItem.getCarouselItem() != null;
+	}
 
 
-    @Override
-    public void prepareHandling(Long id, Class clazz) throws Exception {
-        // check if this item is in carousel
-        savedItem = userDao.fetchSavedItemById(id);
-        isInCarousel = (savedItem.getCarouselItem() != null);
-    }
+	@Override
+	public void prepareHandling(Long id, Class clazz) throws Exception {
+	}
 
-    @Override
-    public boolean handleCheck(Long id, Class clazz) throws Exception {
-        // user wants to put this item into carousel
-        if (!isInCarousel) {
-            // add a carousel item
-            try {
-                CarouselItem newCarouselItem = staticInfoDao.createCarouselItem(
-                        savedItem.getEuropeanaId().getEuropeanaUri(),
-                        savedItem.getId());
-                if (newCarouselItem == null) {
-                    throw new Exception("Filure: null carousel item created");
-                }
-            } catch (Exception e) {
-                throw new Exception("Failed to add carousel item with database id " + savedItem.getId(), e);
-            }
-        }
-        return true;
-    }
+	@Override
+	public boolean handleCheck(Long id, Class clazz) throws Exception {
+		// user wants to put this item into carousel
+		if (!isInCarousel(id)) {
+			// add a carousel item
+			SavedItem savedItem = userDao.fetchSavedItemById(id);
+			try {
+				CarouselItem newCarouselItem = staticInfoDao.createCarouselItem(
+						savedItem.getEuropeanaId().getEuropeanaUri(),
+						savedItem.getId());
+				if (newCarouselItem == null) {
+					throw new Exception("Filure: null carousel item created");
+				}
+			} catch (Exception e) {
+				throw new Exception("Failed to add carousel item with database id " + savedItem.getId(), e);
+			}
+		}
+		return true;
+	}
 
-    @Override
-    public boolean handleUnCheck(Long id, Class clazz) throws Exception {
-        // user wants to remove this item from carousel
-        if (isInCarousel) {
-            // remove  a carousel item
-            staticInfoDao.removeFromCarousel(savedItem);
-        }
-        return true;
-    }
+	@Override
+	public boolean handleUnCheck(Long id, Class clazz) throws Exception {
+		// user wants to remove this item from carousel
+		if (isInCarousel(id)) {
+			// remove  a carousel item
+			SavedItem savedItem = userDao.fetchSavedItemById(id);
+			staticInfoDao.removeFromCarousel(savedItem);
+		}
+		return true;
+	}
 
 
 }
