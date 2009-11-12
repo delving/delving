@@ -35,52 +35,53 @@ import eu.europeana.database.domain.SavedSearch;
  */
 
 public class SaveEditorPickController extends AbstractAjaxTriggerController {
-    private UserDao userDao;
-    private StaticInfoDao staticInfoDao;
+	private UserDao userDao;
+	private StaticInfoDao staticInfoDao;
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
 
-    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
-        this.staticInfoDao = staticInfoDao;
-    }
+	public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+		this.staticInfoDao = staticInfoDao;
+	}
 
-    SavedSearch savedSearch;
-    boolean isInPacta;
+	private boolean isInPacta(Long id) {
+		SavedSearch savedSearch = userDao.fetchSavedSearchById(id);
+		return savedSearch.getEditorPick() != null;
+	}
 
-    @Override
-    public void prepareHandling(Long id, Class clazz) throws Exception {
-        // check if this item is in pacta
-        savedSearch = userDao.fetchSavedSearchById(id);
-        isInPacta = (savedSearch.getEditorPick() != null);
-    }
+	@Override
+	public void prepareHandling(Long id, Class clazz) throws Exception {
+	}
 
-    @Override
-    public boolean handleCheck(Long id, Class clazz) throws Exception {
-        // user wants to put this item into pacta
-        if (!isInPacta) {
-            // add a carousel item
-            try {
-                EditorPick newEditorPick = staticInfoDao.createEditorPick(savedSearch);
-                if (newEditorPick == null) {
-                    throw new Exception("Filure: null editor pick created");
-                }
-            }
-            catch (Exception e) {
-                throw new Exception("Failed to add pacta item with query " + savedSearch.getQuery(), e);
-            }
-        }
-        return true;
-    }
+	@Override
+	public boolean handleCheck(Long id, Class clazz) throws Exception {
+		// user wants to put this item into pacta
+		if (!isInPacta(id)) {
+			// add a pacta item
+			SavedSearch savedSearch = userDao.fetchSavedSearchById(id);
+			try {
+				EditorPick newEditorPick = staticInfoDao.createEditorPick(savedSearch);
+				if (newEditorPick == null) {
+					throw new Exception("Filure: null editor pick created");
+				}
+			}
+			catch (Exception e) {
+				throw new Exception("Failed to add pacta item with query " + savedSearch.getQuery(), e);
+			}
+		}
+		return true;
+	}
 
-    @Override
-    public boolean handleUnCheck(Long id, Class clazz) throws Exception {
-        // user wants to remove this item from pacta
-        if (isInPacta) {
-            // remove  a carousel item
-            staticInfoDao.removeFromEditorPick(savedSearch);
-        }
-        return true;
-    }
+	@Override
+	public boolean handleUnCheck(Long id, Class clazz) throws Exception {
+		// user wants to remove this item from pacta
+		if (isInPacta(id)) {
+			// remove  a carousel item
+			SavedSearch savedSearch = userDao.fetchSavedSearchById(id);
+			staticInfoDao.removeFromEditorPick(savedSearch);
+		}
+		return true;
+	}
 }
