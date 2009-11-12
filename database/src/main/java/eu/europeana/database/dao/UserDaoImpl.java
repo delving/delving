@@ -23,7 +23,6 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.SocialTag;
@@ -164,15 +163,7 @@ public class UserDaoImpl implements UserDao {
         }
         return null;
     }
-    @Transactional
-    public void setUserRole(Long userId, Role role) {
-        if (userId == null || role == null)  {
-            throw new IllegalArgumentException("Parameter(s) has null value: userId:" + userId+ ", role:"+role);
-        }
-        User user = entityManager.getReference(User.class, userId);
-        user.setRole(role);
-    }
-         /*           // todo: use this or the next method?
+    /*           // todo: use this or the next method?
     @Transactional
     public void removeUser(Long userId) {
         if (userId == null)  {
@@ -193,59 +184,13 @@ public class UserDaoImpl implements UserDao {
             entityManager.remove(user);
         }
     }
-    public User fetchUser(Long userId) {
-        if (userId == null)  {
-            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
-        }
-        User user;
-        Query query = entityManager.createQuery("select u from User as u where u.id = :userId");
-        query.setParameter("userId", userId);
-        try {
-            user = (User) query.getSingleResult();
-            if (user != null){
-                user.getSavedItems().size();
-                user.getSavedSearches().size();
-                user.getSocialTags().size();
-            }
-        }
-        catch (NoResultException e) {
-            throw new IllegalArgumentException("The user doesn't exists. email: " + userId);
-        }
-        return user;
-    }
     /*                       todo: use this or the previous method?
        @Transactional
     public User fetchUser(Long userId) {
         return entityManager.find(User.class, userId);
     }              */
 
-    @Transactional
-    public void setUserProjectId(Long userId, String projectId) {
-        if (userId == null || projectId == null)  {
-            throw new IllegalArgumentException("Parameter(s) has null value. userId:" + userId+ ", projectId:"+projectId);
-        }
-        User user = entityManager.getReference(User.class, userId);
-        user.setProjectId(projectId);
-    }
-
-    @Transactional
-    public void setUserProviderId(Long userId, String providerId) {
-        if (userId == null || providerId == null)  {
-            throw new IllegalArgumentException("Parameter(s) has null value. userId:" + userId+ ", providerId:"+providerId);
-        }
-        User user = entityManager.getReference(User.class, userId);
-        user.setProviderId(providerId);
-    }
-
-    @Transactional
-    public void setUserLanguages(Long userId, String languages) {
-       if (userId == null || languages == null)  {
-            throw new IllegalArgumentException("Parameter(s) has null value. userId:" + userId+ ", languages:"+languages);
-        }
-        User user = entityManager.getReference(User.class, userId);
-        user.setLanguages(languages);
-    }
-          /*        todo: this or the following
+    /*        todo: this or the following
     public List<SavedItem> fetchSavedItems(Long userId) {
         if (userId == null)  {
             throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
@@ -509,32 +454,6 @@ public class UserDaoImpl implements UserDao {
             throw new RuntimeException("Illegal state exception: multiple users managed to pick the same query " + aQuery);
 
         return users.get(0);
-    }
-
-    @Transactional
-    public void setUserEnabled(Long userId, boolean enabled) {
-        User user = entityManager.getReference(User.class, userId);
-        user.setEnabled(enabled);
-    }
-
-    @Transactional
-    public void setUserToAdministrator(Long userId, boolean administrator) {
-        User user = entityManager.getReference(User.class, userId);
-        if (administrator) {
-            user.setRole(Role.ROLE_ADMINISTRATOR);
-        }
-        else {
-            user.setRole(Role.ROLE_USER);
-        }
-    }
-
-    @Transactional
-    public void markAsViewed(String europeanaUri) {
-        Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :uri");
-        query.setParameter("uri", europeanaUri);
-        EuropeanaId europeanaId = (EuropeanaId) query.getSingleResult();
-        europeanaId.setLastViewed(new Date());
-        europeanaId.setTimesViewed(europeanaId.getTimesViewed() + 1);
     }
 
     @Transactional
