@@ -104,8 +104,9 @@
         <property name="displayCount" value="3"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
+
     <bean id="carouselItemSampler" class="eu.europeana.controller.util.CarouselItemSampler">
-        <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
         <property name="displayCount" value="40"/>
     </bean>
 

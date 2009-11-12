@@ -1,6 +1,6 @@
 package eu.europeana.controller.util;
 
-import eu.europeana.database.DashboardDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.CarouselItem;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import java.util.List;
  */
 
 public class CarouselItemSampler {
-    private DashboardDao dashboardDao;
+    private StaticInfoDao staticInfoDao;
     private int displayCount = 3;
     private List<CarouselItem> cache = new ArrayList<CarouselItem>();
 
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
 
     public void setDisplayCount(int displayCount) {
@@ -55,6 +55,6 @@ public class CarouselItemSampler {
     }
 
     private List<CarouselItem> getData() {
-        return dashboardDao.fetchCarouselItems();
+        return staticInfoDao.fetchCarouselItems();
     }
 }
