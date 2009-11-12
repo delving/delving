@@ -21,7 +21,8 @@
 
 package eu.europeana.controller;
 
-import eu.europeana.database.DashboardDao;
+import eu.europeana.database.StaticInfoDao;
+import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.SavedItem;
 
@@ -35,20 +36,25 @@ import eu.europeana.database.domain.SavedItem;
 
 @Deprecated
 public class SaveToCarouselController extends AbstractAjaxTriggerController {
-    private DashboardDao dashboardDao;
+    private StaticInfoDao staticInfoDao;
+    private UserDao userDao;
 
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
     }
 
-    SavedItem savedItem;
-    boolean isInCarousel;
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    private SavedItem savedItem;
+    private boolean isInCarousel;
 
 
     @Override
     public void prepareHandling(Long id, Class clazz) throws Exception {
         // check if this item is in carousel
-        savedItem = dashboardDao.fetchSavedItemById(id);
+        savedItem = userDao.fetchSavedItemById(id);
         isInCarousel = (savedItem.getCarouselItem() != null);
     }
 
@@ -58,7 +64,7 @@ public class SaveToCarouselController extends AbstractAjaxTriggerController {
         if (!isInCarousel) {
             // add a carousel item
             try {
-                CarouselItem newCarouselItem = dashboardDao.createCarouselItem(
+                CarouselItem newCarouselItem = staticInfoDao.createCarouselItem(
                         savedItem.getEuropeanaId().getEuropeanaUri(),
                         savedItem.getId());
                 if (newCarouselItem == null) {
@@ -76,7 +82,7 @@ public class SaveToCarouselController extends AbstractAjaxTriggerController {
         // user wants to remove this item from carousel
         if (isInCarousel) {
             // remove  a carousel item
-            dashboardDao.removeFromCarousel(savedItem);
+            staticInfoDao.removeFromCarousel(savedItem);
         }
         return true;
     }

@@ -1,8 +1,8 @@
 package eu.europeana.controller;
 
 import eu.europeana.controller.util.ControllerUtil;
-import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
+import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SearchTerm;
@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 public class SaveEditorItemController extends AbstractAjaxController {
 
     private StaticInfoDao staticInfoDao;
-    private DashboardDao dashboardDao;
+    private UserDao userDao;
 
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
@@ -51,8 +51,8 @@ public class SaveEditorItemController extends AbstractAjaxController {
             }
         }
         else if (clazz == CarouselItem.class) {
-            SavedItem savedItem = dashboardDao.fetchSavedItemById(id);
-            CarouselItem carouselItem = dashboardDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
+            SavedItem savedItem = userDao.fetchSavedItemById(id);
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
             if (carouselItem == null) {
                 return false;
             }
