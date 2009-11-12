@@ -363,7 +363,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<PartnerX> fetchPartners() {
         List<PartnerX> results = new ArrayList<PartnerX>();
-        for (Partner partner : staticInfoDao.fetchPartners()) {
+        for (Partner partner : staticInfoDao.getAllPartnerItems()) {
             results.add(DataTransfer.convert(partner));
         }
         return results;

@@ -47,24 +47,28 @@ public interface StaticInfoDao {
 
     // ==== Partners
 
+    /**
+     *
+     * Return a list of Partners ordered by Sector.
+     * @return  a List of Partner objects.
+     */
     List<Partner> getAllPartnerItems();
-    List<Partner> fetchPartners();
     Partner savePartner(Partner partner);
     boolean removePartner(Long partnerId);
 
     // ==== Contributors
 
-    List<Contributor> getAllContributorItems();
-    List<Contributor> fetchContributors();
+    List<Contributor> getAllContributorItems();     // this is ordered by country: wich one? I will prefere this
+    List<Contributor> fetchContributors();         // this is ordered by providerId
     Contributor saveContributor(Contributor contributor);
     boolean removeContributor(Long contributorId);
 
     // ==== Static pages
 
-    StaticPage fetchStaticPage(Language language, String pageName);
+    StaticPage fetchStaticPage(Language language, String pageName);    // this  or the following both do the same thing   
+    StaticPage fetchStaticPage(StaticPageType pageType, Language language); // but the previous uses the pageName to get the page Type
     void setStaticPage(StaticPageType pageType, Language language, String content);
     List<StaticPage> getAllStaticPages();
-    StaticPage fetchStaticPage(StaticPageType pageType, Language language);
     StaticPage saveStaticPage(Long staticPageId, String content);
 
     // ==== Translations

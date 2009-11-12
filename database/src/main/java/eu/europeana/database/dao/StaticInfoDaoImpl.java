@@ -60,50 +60,12 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         Query q = entityManager.createQuery("select con from Contributor con order by con.country");
         return (List<Contributor>) q.getResultList();
     }
-    /* this or the following?
-@Transactional
-public void saveContributor(Contributor contributorX) {
-   Query query = entityManager.createQuery("select co from Contributor as co where co.providerId = :providerId");
-   query.setParameter("providerId", contributorX.getProviderId());
-   Contributor contributor = null;
-   try {
-       contributor = (Contributor) query.getSingleResult();
-       contributor.setProviderId(contributorX.getProviderId());
-       contributor.setOriginalName(contributorX.getOriginalName());
-       contributor.setEnglishName(contributorX.getEnglishName());
-       contributor.setAcronym(contributorX.getAcronym());
-       contributor.setCountry(contributorX.getCountry());
-       contributor.setNumberOfPartners(contributorX.getNumberOfPartners());
-       contributor.setUrl(contributorX.getUrl());
-   } catch (NoResultException e) {
-       if (contributorX.getProviderId() != null) {
-           entityManager.persist(contributorX);
-       }
-   }
-}     */
 
     @Transactional
     public Contributor saveContributor(Contributor contributor) {
         return entityManager.merge(contributor);
     }
 
-    /*
-@Transactional
-public void savePartner(Partner partnerX) {
-Query query = entityManager.createQuery("select po from Partner as po where po.name = :name");
-query.setParameter("name", partnerX.getName());
-Partner partner = null;
-try {
-  partner = (Partner) query.getSingleResult();
-  partner.setName(partnerX.getName());
-  partner.setUrl(partnerX.getUrl());
-  partnerX.setSector(partnerX.getSector());
-} catch (Exception e) {
-  if (partnerX.getName() != null) {
-      entityManager.persist(partnerX);
-  }
-}
-}          */
     @Transactional
     public Partner savePartner(Partner partner) {
         return entityManager.merge(partner);
@@ -340,12 +302,6 @@ try {
         Query query = entityManager.createQuery("select term.proposedSearchTerm from SearchTerm as term where term.language = :language");
         query.setParameter("language", language);
         return (List<String>) query.getResultList();
-    }
-
-    @Transactional
-    public List<Partner> fetchPartners() {
-        Query query = entityManager.createQuery("select p from Partner p order by p.sector");
-        return (List<Partner>) query.getResultList();
     }
 
     @Transactional
