@@ -29,7 +29,6 @@ public class TestStaticInfoDao {
     @Before
     public void prepare() throws IOException {
         DataMigration migration = new DataMigration();
-        //migration.setMessageDao(messageDao);
         migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
     }
 

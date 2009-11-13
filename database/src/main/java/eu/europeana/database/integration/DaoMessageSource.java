@@ -66,7 +66,6 @@ public class DaoMessageSource extends AbstractMessageSource {
 
     private Map<Language, CacheValue> fetchTranslations(String key, Locale locale) {
         Map<Language, CacheValue> translations = new HashMap<Language, CacheValue>();
-       // MessageKey messageKey = messageDao.fetchMessageKey(key);
         MessageKey messageKey = languageDao.fetchMessageKey(key);
         for (Translation translation : messageKey.getTranslations()) {
             translations.put(translation.getLanguage(), new CacheValue(locale, translation.getValue()));

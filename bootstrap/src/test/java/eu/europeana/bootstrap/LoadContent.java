@@ -61,8 +61,7 @@ public class LoadContent {
         // load static content etc.
         log.info("Start loading static content.");
         DataMigration migration = new DataMigration();
-       // migration.setMessageDao(messageDao);
-         migration.setLanguageDao(languageDao);
+        migration.setLanguageDao(languageDao);
         migration.setPartnerDao(staticInfoDao);
         migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
         migration.readTableFromResource(DataMigration.Table.PARTNERS);
@@ -84,7 +83,7 @@ public class LoadContent {
             europeanaCollection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
         }
         importFile = eseImporter.commenceImport(importFile, europeanaCollection.getId());
-        log.info("Importing commenced for "+importFile);
+        log.info("Importing commenced for " + importFile);
         while (europeanaCollection.getFileState() == ImportFileState.UPLOADED) {
             log.info("waiting to leave UPLOADED state");
             Thread.sleep(500);

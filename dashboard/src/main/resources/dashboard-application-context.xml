@@ -91,12 +91,13 @@
     </bean>
 
     <bean id="dashboardService" class="eu.europeana.dashboard.server.DashboardServiceImpl">
-        <property name="cacheUrl" value="${cacheUrl}"/>
         <property name="dashboardDao" ref="dashboardDao"/>
+        <property name="languageDao" ref="languageDao"/>
+        <property name="staticInfoDao" ref="staticInfoDao"/>
+        <property name="userDao" ref="userDao"/> 
+        <property name="cacheUrl" value="${cacheUrl}"/>
         <property name="normalizedImporter" ref="normalizedEseImporter"/>
         <property name="sandboxImporter" ref="sandboxEseImporter"/>
-        <property name="messageDao" ref="messageDao"/>
-        <property name="languageDao" ref="languageDao"/>
         <property name="indexDeleter" ref="solrIndexer"/>
         <property name="digitalObjectCache" ref="digitalObjectCache"/>
     </bean>

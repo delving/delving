@@ -88,7 +88,7 @@ public class DataMigration {
     }
 
     public int readTableFromResource(Table table) throws IOException {
-        InputStream is = getClass().getResourceAsStream("/tables/"+table.getFileName());
+        InputStream is = getClass().getResourceAsStream("/tables/" + table.getFileName());
         Reader reader = new InputStreamReader(is, "utf-8");
         return readTable(table, reader);
     }
@@ -164,9 +164,7 @@ public class DataMigration {
             }
         }
         else if (args.length == 1 && args[0].equalsIgnoreCase("export")) {
-           // migration.dumpTable(STATIC_PAGE, messageDao.getAllStaticPages());
-           // migration.dumpTable(TRANSLATION_KEYS, messageDao.getAllTranslationMessages());
-             migration.dumpTable(STATIC_PAGE, staticInfoDao.getAllStaticPages());
+            migration.dumpTable(STATIC_PAGE, staticInfoDao.getAllStaticPages());
             migration.dumpTable(TRANSLATION_KEYS, staticInfoDao.getAllTranslationMessages());
             migration.dumpTable(CONTRIBUTORS, staticInfoDao.getAllContributorItems());
             migration.dumpTable(PARTNERS, staticInfoDao.getAllPartnerItems());

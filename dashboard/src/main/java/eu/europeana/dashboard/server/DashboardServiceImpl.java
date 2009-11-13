@@ -23,17 +23,55 @@ package eu.europeana.dashboard.server;
 
 import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.ContributorX;
+import eu.europeana.dashboard.client.dto.CountryX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.EuropeanaIdX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.PartnerX;
+import eu.europeana.dashboard.client.dto.QueueEntryX;
+import eu.europeana.dashboard.client.dto.SavedItemX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.StaticPageX;
+import eu.europeana.dashboard.client.dto.TranslationX;
+import eu.europeana.dashboard.client.dto.UserX;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CacheState;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.CollectionState;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Country;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaObject;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.PartnerSector;
+import eu.europeana.database.domain.QueueEntry;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.Translation;
+import eu.europeana.database.domain.User;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.SolrIndexer;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -51,6 +89,22 @@ public class DashboardServiceImpl implements DashboardService {
     private StaticInfoDao staticInfoDao;
     private UserDao userDao;
 
+    public void setDashboardDao(DashboardDao dashboardDao) {
+        this.dashboardDao = dashboardDao;
+    }
+
+    public void setLanguageDao(LanguageDao languageDao) {
+        this.languageDao = languageDao;
+    }
+
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+        this.staticInfoDao = staticInfoDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
     public void setCacheUrl(String cacheUrl) {
         this.cacheUrl = cacheUrl;
     }
@@ -61,14 +115,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     public void setSandboxImporter(ESEImporter sandboxImporter) {
         this.sandboxImporter = sandboxImporter;
-    }
-
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
-    }
-
-    public void setLanguageDao(LanguageDao languageDao) {
-        this.languageDao = languageDao;
     }
 
     public void setIndexDeleter(SolrIndexer indexer) {
@@ -227,7 +273,6 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public List<String> fetchMessageKeys() {
-        //return messageDao.fetchMessageKeyStrings();
          return languageDao.fetchMessageKeyStrings();
     }
 
@@ -241,7 +286,6 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public Map<String,List<TranslationX>> fetchTranslations(Set<String> languageCodes) {
-       // Map<String, List<Translation>> preconvert = messageDao.fetchTranslations(languageCodes);
         Map<String, List<Translation>> preconvert = languageDao.fetchTranslations(languageCodes);
         Map<String, List<TranslationX>> translations = new HashMap<String,List<TranslationX>>();
         for (Map.Entry<String,List<Translation>> entry : preconvert.entrySet()) {
@@ -256,7 +300,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     public TranslationX setTranslation(String key, String languageCode, String value) {
         audit("set translation "+key+"/"+languageCode+"="+value);
-        //return DataTransfer.convert(messageDao.setTranslation(key, Language.findByCode(languageCode), value));
         return DataTransfer.convert(languageDao.setTranslation(key, Language.findByCode(languageCode), value));
     }
 
