@@ -77,15 +77,16 @@ public interface StaticInfoDao {
 
     // === Carousel Items
 
-    User removeCarouselItem(User user, Long savedItemId);
-    User addCarouselItem(User user, CarouselItem carouselItem);
-    CarouselItem addCarouselItem(User user, Long savedItem);
-    User addCarouselItem(User user, SavedItem savedItem);
-    Boolean removeCarouselItem(Long id);
-    List<CarouselItem> fetchCarouselItems();
-    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
+    User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
     void removeFromCarousel(SavedItem savedItem);
+    Boolean removeCarouselItem(Long id);
+    User addCarouselItem(User user, CarouselItem carouselItem);
     boolean addCarouselItem(SavedItem savedItem);
+    CarouselItem addCarouselItem(User user, Long savedItem);    // this is different from the following in the reurned value
+    User addCarouselItem(User user, SavedItem savedItem);
+    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
+    List<CarouselItem> fetchCarouselItems();
+
 
     // ==== Search Terms
 

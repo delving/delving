@@ -134,44 +134,6 @@ public interface DashboardDao {
 
     IndexingQueueEntry getIndexEntry(IndexingQueueEntry detachedEntry);
 
-    // todo: move the implementations to UserDaoImpl               DONE!
-    // User fetchUser(String email, String password);    moved to UserDao
-    // List<User> fetchUsers(String pattern);             moved to UserDao
-    // void removeUser(Long userId);                       moved to UserDao
-    // User fetchUser(Long userId);                       moved to UserDao
-    // User updateUser(User user);                           moved to UserDao
-    // List<SavedItem> fetchSavedItems(Long userId);         moved to UserDao
-    // SavedItem fetchSavedItemById(Long id);                    moved to UserDao
-    // List<SavedSearch> fetchSavedSearches(Long userId);          moved to UserDao
-    // SavedSearch fetchSavedSearchById(Long id);                   moved to UserDao
-
-    //  moved implementations to StaticInfoDaoImpl    DONE!
-//    List<Partner> fetchPartners();
-//    List<Contributor> fetchContributors();
-//    Partner savePartner(Partner partner);
-//    Contributor saveContributor(Contributor contributor);
-//    boolean removePartner(Long partnerId);
-//    boolean removeContributor(Long contributorId);
-//    StaticPage fetchStaticPage(StaticPageType pageType, Language language);
-//    StaticPage saveStaticPage(Long staticPageId, String content);
-//    Boolean removeCarouselItem(Long id);
-//    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
-//    void removeFromCarousel(SavedItem savedItem);
-//    boolean addCarouselItem(SavedItem savedItem);
-//    List<CarouselItem> fetchCarouselItems();
-//    List<EditorPick> fetchEditorPicksItems();
-//    void removeFromEditorPick(SavedSearch savedSearch);
-//    EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
-//    boolean addSearchTerm(Language language, String term);
-//    boolean addSearchTerm(SavedSearch savedSearch);
-//    List<String> fetchSearchTerms(Language language);
-//    boolean removeSearchTerm(Language language, String term);
-
-    // languages
-    // todo: eliminate these, move implementations to LanguageDaoImpl     DONE!
-//    void addMessagekey(String key);
-//    void removeMessageKey(String key);
-
     // dashboard log
     void log(String who, String what);
 
