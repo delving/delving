@@ -336,4 +336,8 @@ public interface DashboardMessages extends Messages {
     String newsletter();
 
     String rolePrompt();
+
+    String createUser();
+
+    String setPassword();
 }

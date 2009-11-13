@@ -83,27 +83,22 @@ public class UserDaoImpl implements UserDao {
         user.getSocialTags().clear();
         entityManager.remove(user);
     }
-/*
-    @Transactional
-    public void updateUser(User user) {
-        entityManager.merge(user);
-    }  */
-                         //  todo: this or the previous?
+
     @Transactional
     public User updateUser(User fresh) {
-        User user = entityManager.find(User.class, fresh.getId());
-        user.setUserName(fresh.getUserName());
-        user.setEmail(fresh.getEmail());
-        user.setFirstName(fresh.getFirstName());
-        user.setLastName(fresh.getLastName());
-        user.setLanguages(fresh.getLanguages());
-        user.setProjectId(fresh.getProjectId());
-        user.setProviderId(fresh.getProviderId());
-        user.setNewsletter(fresh.isNewsletter());
-        user.setRole(fresh.getRole());
-        user.setEnabled(user.isEnabled());
-        return user;
+        if (fresh.getId() != null) {
+            if (fresh.getHashedPassword().isEmpty()) {
+                User existing = entityManager.find(User.class, fresh.getId());
+                fresh.setHashedPassword(existing.getHashedPassword());
+            }
+            return entityManager.merge(fresh);
+        }
+        else {
+            entityManager.persist(fresh);
+            return fresh;
+        }
     }
+
     @Transactional
     public User refreshUser(User user) {
         user = entityManager.find(User.class, user.getId());

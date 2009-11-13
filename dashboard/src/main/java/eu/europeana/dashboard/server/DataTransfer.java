@@ -21,8 +21,35 @@
 
 package eu.europeana.dashboard.server;
 
-import eu.europeana.dashboard.client.dto.*;
-import eu.europeana.database.domain.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.ContributorX;
+import eu.europeana.dashboard.client.dto.CountryX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.EuropeanaIdX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.PartnerX;
+import eu.europeana.dashboard.client.dto.RoleX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.StaticPageX;
+import eu.europeana.dashboard.client.dto.TranslationX;
+import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Country;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.PartnerSector;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.Translation;
+import eu.europeana.database.domain.User;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.query.DocType;
 
@@ -161,19 +188,20 @@ public class DataTransfer {
         );
     }
 
-    public static User convert(UserX user) {
+    public static User convert(UserX userX) {
         return new User(
-                user.getId(),
-                user.getUserName(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getLanguages(),
-                user.getProjectId(),
-                user.getProviderId(),
-                user.isNewsletter(),
-                Role.valueOf(user.getRole().toString()),
-                user.isEnabled()
+                userX.getId(),
+                userX.getUserName(),
+                userX.getEmail(),
+                userX.getPassword(),
+                userX.getFirstName(),
+                userX.getLastName(),
+                userX.getLanguages(),
+                userX.getProjectId(),
+                userX.getProviderId(),
+                userX.isNewsletter(),
+                Role.valueOf(userX.getRole().toString()),
+                userX.isEnabled()
         );
     }
 

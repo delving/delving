@@ -99,10 +99,16 @@ public class User implements Serializable {
     @Transient
     private List<SocialTagList> socialTagLists;
 
-    public User(Long id, String userName, String email, String firstName, String lastName, String languages, String projectId, String providerId, boolean newsletter, Role role, boolean enabled) {
+    public User(Long id, String userName, String email, String password, String firstName, String lastName, String languages, String projectId, String providerId, boolean newsletter, Role role, boolean enabled) {
         this.id = id;
         this.userName = userName;
         this.email = email;
+        if (password.isEmpty()) {
+            this.setHashedPassword("");
+        }
+        else {
+            this.setPassword(password); // hashing it!
+        }
         this.firstName = firstName;
         this.lastName = lastName;
         this.languages = languages;
@@ -215,12 +221,16 @@ public class User implements Serializable {
         return "";
     }
 
+    public void setPassword(String password) {
+        this.password = hashPassword(password);
+    }
+
     public String getHashedPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = hashPassword(password);
+    public void setHashedPassword(String hashedPassword) {
+        this.password = hashedPassword;
     }
 
     public Date getRegistrationDate() {

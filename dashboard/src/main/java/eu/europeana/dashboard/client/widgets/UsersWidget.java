@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,6 +32,7 @@ public class UsersWidget extends DashboardWidget {
     private UserX user;
     private TextBox userNameBox = new TextBox();
     private TextBox emailBox = new TextBox();
+    private TextBox passwordBox = new PasswordTextBox();
     private TextBox firstNameBox = new TextBox();
     private TextBox lastNameBox = new TextBox();
     private TextBox languagesBox = new TextBox();
@@ -40,6 +42,7 @@ public class UsersWidget extends DashboardWidget {
     private CheckBox enabledBox = new CheckBox();
     private CheckBox deleteBox = new CheckBox();
     private Button submitButton = new Button(world.messages().updateThisUser());
+    private Button newUserButton = new Button(world.messages().createUser());
     private VerifyDialog verifyDialog;
 
     public UsersWidget(World world) {
@@ -56,10 +59,18 @@ public class UsersWidget extends DashboardWidget {
         fields.setWidget(vp);
         HorizontalPanel hp = new HorizontalPanel();
         hp.setSpacing(5);
-        hp.add(createUserChooser());
+        hp.add(createUserPanel());
         hp.add(fields);
         setUser(null);
         return hp;
+    }
+
+    private Widget createUserPanel() {
+        VerticalPanel vp = new VerticalPanel();
+        vp.setSpacing(20);
+        vp.add(createUserChooser());
+        vp.add(createNewUserButton());
+        return vp;
     }
 
     private Widget createUserChooser() {
@@ -70,6 +81,20 @@ public class UsersWidget extends DashboardWidget {
             }
         });
         return userChooser.getWidget();
+    }
+
+    private Widget createNewUserButton() {
+        newUserButton.setWidth("100%");
+        newUserButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                UserX user = new UserX();
+                user.setRole(RoleX.ROLE_USER);
+                user.setUserName("?");
+                user.setEmail("?");
+                setUser(user);
+            }
+        });
+        return newUserButton;
     }
 
     private Widget createRoleBox() {
@@ -112,7 +137,7 @@ public class UsersWidget extends DashboardWidget {
     }
 
     private Widget createFieldForm() {
-        Grid grid = new Grid(11, 2);
+        Grid grid = new Grid(12, 2);
         grid.setWidget(0, 0, new HTML(world.messages().userName()));
         grid.setWidget(0, 1, userNameBox);
         grid.setWidget(1, 0, new HTML(world.messages().emailAddress()));
@@ -133,8 +158,10 @@ public class UsersWidget extends DashboardWidget {
         grid.setWidget(8, 1, createRoleBox());
         grid.setWidget(9, 0, new HTML(world.messages().userEnabled()));
         grid.setWidget(9, 1, enabledBox);
-        grid.setWidget(10, 0, new HTML(world.messages().deleteThisUser()));
-        grid.setWidget(10, 1, deleteBox);
+        grid.setWidget(10, 0, new HTML(world.messages().setPassword()));
+        grid.setWidget(10, 1, passwordBox);
+        grid.setWidget(11, 0, new HTML(world.messages().deleteThisUser()));
+        grid.setWidget(11, 1, deleteBox);
         return grid;
     }
 
@@ -148,6 +175,7 @@ public class UsersWidget extends DashboardWidget {
         roleBox.setSelectedIndex(empty ? 0 : user.getRole().ordinal());
         userNameBox.setValue(empty ? "" : user.getUserName());
         emailBox.setValue(empty ? "" : user.getEmail());
+        passwordBox.setValue("");
         firstNameBox.setValue(empty ? "" : user.getFirstName());
         lastNameBox.setValue(empty ? "" : user.getLastName());
         languagesBox.setText(empty ? "" : user.getLanguages());
@@ -160,6 +188,7 @@ public class UsersWidget extends DashboardWidget {
         roleBox.setEnabled(!empty);
         userNameBox.setEnabled(!empty);
         emailBox.setEnabled(!empty);
+        passwordBox.setEnabled(!empty);
         firstNameBox.setEnabled(!empty);
         lastNameBox.setEnabled(!empty);
         languagesBox.setEnabled(!empty);
@@ -176,6 +205,7 @@ public class UsersWidget extends DashboardWidget {
         user.setRole(RoleX.values()[roleBox.getSelectedIndex()]);
         user.setUserName(userNameBox.getValue().trim());
         user.setEmail(emailBox.getValue().trim());
+        user.setPassword(passwordBox.getValue());
         user.setFirstName(firstNameBox.getValue().trim());
         user.setLastName(lastNameBox.getValue().trim());
         user.setLanguages(languagesBox.getValue().trim());
