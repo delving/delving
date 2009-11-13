@@ -2,7 +2,16 @@ package eu.europeana.dashboard.client.widgets;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.DecoratorPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.RoleX;
@@ -30,6 +39,7 @@ public class UsersWidget extends DashboardWidget {
     private CheckBox newsletterBox = new CheckBox();
     private CheckBox enabledBox = new CheckBox();
     private CheckBox deleteBox = new CheckBox();
+    private Button submitButton = new Button(world.messages().updateThisUser());
     private VerifyDialog verifyDialog;
 
     public UsersWidget(World world) {
@@ -74,7 +84,6 @@ public class UsersWidget extends DashboardWidget {
     }
 
     private Widget createSubmitButton() {
-        final Button submitButton = new Button(world.messages().updateThisUser());
         submitButton.setWidth("100%");
         submitButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -159,6 +168,7 @@ public class UsersWidget extends DashboardWidget {
         newsletterBox.setEnabled(!empty);
         enabledBox.setEnabled(!empty);
         deleteBox.setEnabled(!empty);
+        submitButton.setEnabled(!empty);
     }
 
     private void transferFieldsToUser() {
