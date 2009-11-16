@@ -28,24 +28,13 @@ import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.DashboardLog;
-import eu.europeana.database.domain.EditorPick;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.EuropeanaObject;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.MessageKey;
-import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.QueueEntry;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.database.domain.User;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.apache.log4j.Logger;
@@ -140,17 +129,17 @@ public class DashboardDaoImpl implements DashboardDao {
     }
                  */
     @Transactional
-    public List<DashboardLog> fetchLogEntriesFrom(Long topId, int pageSize) {
-        Query query = entityManager.createQuery("select log from DashboardLog log where log.id >= :id order by log.id asc");
-        query.setParameter("id", topId);
+    public List<DashboardLog> fetchLogEntriesFrom(Long bottomId, int pageSize) {
+        Query query = entityManager.createQuery("select log from DashboardLog log where log.id >= :bottomId order by log.id asc");
+        query.setParameter("bottomId", bottomId);
         query.setMaxResults(pageSize);
         return (List<DashboardLog>) query.getResultList();
     }
 
     @Transactional
-    public List<DashboardLog> fetchLogEntriesTo(Long bottomId, int pageSize) {
-        Query query = entityManager.createQuery("select log from DashboardLog log where log.id <= :id order by log.id desc");
-        query.setParameter("id", bottomId);
+    public List<DashboardLog> fetchLogEntriesTo(Long topId, int pageSize) {
+        Query query = entityManager.createQuery("select log from DashboardLog log where log.id <= :bottomId order by log.id desc");
+        query.setParameter("bottomId", topId);
         query.setMaxResults(pageSize);
         List<DashboardLog> entries = (List<DashboardLog>) query.getResultList();
         Collections.sort(entries, new Comparator<DashboardLog>() {
@@ -406,8 +395,8 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public List<EuropeanaObject> getEuropeanaObjectsToCache(int maxResults, CacheingQueueEntry collection) {
-        Long lastId = collection.getLastProcessedRecordId();
+    public List<EuropeanaObject> getEuropeanaObjectsToCache(int maxResults, CacheingQueueEntry queueEntry) {
+        Long lastId = queueEntry.getLastProcessedRecordId();
         Query query;
         if (lastId != null) {
             query = entityManager.createQuery("select id from EuropeanaObject as id where id.id > :lastId and id.europeanaId.collection = :collection order by id.id asc");
@@ -416,7 +405,7 @@ public class DashboardDaoImpl implements DashboardDao {
         else {
             query = entityManager.createQuery("select id from EuropeanaObject as id where id.europeanaId.collection = :collection order by id.id asc");
         }
-        query.setParameter("collection", collection.getCollection());
+        query.setParameter("collection", queueEntry.getCollection());
         query.setMaxResults(maxResults);
         return (List<EuropeanaObject>) query.getResultList();
     }
@@ -438,16 +427,17 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public void removeOrphanObject(String uri) {
+    public int removeOrphanObject(String objectUrl) {
         Query query = entityManager.createQuery(
                 "select obj from EuropeanaObject as obj " +
                         "where obj.europeanaId is null and obj.objectUrl = :objectUrl"
         );
-        query.setParameter("objectUrl", uri);
+        query.setParameter("objectUrl", objectUrl);
         List<EuropeanaObject> objects = (List<EuropeanaObject>) query.getResultList();
         for (EuropeanaObject object : objects) {
             entityManager.remove(object);
         }
+        return objects.size();
     }
 
     @Transactional
@@ -519,24 +509,6 @@ public class DashboardDaoImpl implements DashboardDao {
         }
     }
 
-    @Transactional
-    public IndexingQueueEntry getIndexQueueHead() {
-        Query query = entityManager.createQuery("select entry from IndexingQueueEntry as entry order by entry.created asc");
-        query.setMaxResults(1);
-        List<IndexingQueueEntry> result = (List<IndexingQueueEntry>) query.getResultList();
-        if (result.isEmpty()) {
-            return null;
-        }
-        else {
-            return result.get(0);
-        }
-    }
-
-    @Transactional
-    public IndexingQueueEntry getIndexEntry(IndexingQueueEntry detachedEntry) {
-        return entityManager.find(IndexingQueueEntry.class, detachedEntry.getId());
-    }
-
     // todo: this function has not been fully tested yet
     @Transactional
     public IndexingQueueEntry getEntryForIndexing() {
@@ -589,18 +561,19 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public void saveRecordsIndexed(int indexedRecords, IndexingQueueEntry queueEntry, EuropeanaId lastId) {
+    public void saveRecordsIndexed(int indexedRecords, IndexingQueueEntry queueEntry, EuropeanaId lastEuropeanaId) {
         IndexingQueueEntry attached = entityManager.find(IndexingQueueEntry.class, queueEntry.getId());
         Integer recordsIndexed = queueEntry.getRecordsProcessed() + indexedRecords;
         attached.setRecordsProcessed(recordsIndexed);
-        attached.setLastProcessedRecordId(lastId.getId());
+        attached.setLastProcessedRecordId(lastEuropeanaId.getId());
         log.info(MessageFormat.format("updated indexQueue for queueEntry: {0} ({1}/{2})", queueEntry.getCollection().getName(), recordsIndexed, queueEntry.getTotalRecords()));
     }
 
     @Transactional
-    public void startIndexing(IndexingQueueEntry indexingQueueEntry) {
+    public IndexingQueueEntry startIndexing(IndexingQueueEntry indexingQueueEntry) {
         IndexingQueueEntry attached = entityManager.find(IndexingQueueEntry.class, indexingQueueEntry.getId());
         attached.getCollection().setCollectionState(CollectionState.INDEXING);
+        return attached;
     }
             /*
     @Transactional

@@ -51,11 +51,10 @@ public class IndexJobRunner {
         }
         else {
             log.info("found collection to index: " + entry.getCollection().getName());
-            dashboardDao.startIndexing(entry);
-            IndexingQueueEntry queueEntry = dashboardDao.getIndexEntry(entry);
-            EuropeanaCollection collection = queueEntry.getCollection();
+            entry = dashboardDao.startIndexing(entry);
+            EuropeanaCollection collection = entry.getCollection();
             ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
-            eseImporter.commenceImport(importFile, queueEntry.getCollection().getId());
+            eseImporter.commenceImport(importFile, entry.getCollection().getId());
         }
     }
 }
