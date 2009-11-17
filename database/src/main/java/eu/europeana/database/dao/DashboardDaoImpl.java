@@ -34,9 +34,11 @@ import eu.europeana.database.domain.EuropeanaObject;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.IndexingQueueEntry;
 import eu.europeana.database.domain.QueueEntry;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +64,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @PersistenceContext
     protected EntityManager entityManager;
+
     @Transactional
     public EuropeanaId fetchEuropeanaId(String europeanaUri) {
         Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
@@ -73,61 +76,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return result.get(0);
     }
-           /*
-    @Transactional
-    public User fetchUser(String email, String password) {
-        Query query = entityManager.createQuery("select u from User as u where u.email like :email");
-        query.setParameter("email", email);
-        try {
-            User user = (User) query.getSingleResult();
-            if (user.getHashedPassword().equals(User.hashPassword(password))) {
-                return user;
-            }
-            log.info("Password wrong for: " + email);
-        }
-        catch (NoResultException e) {
-            log.info("Email not found: " + email);
-        }
-        return null;
-    }
-           
-    @Transactional
-    public List<User> fetchUsers(String pattern) {
-        Query query = entityManager.createQuery(
-                "select u from User as u " +
-                        "where u.userName like :searchField " +
-                        "or u.email like :searchField " +
-                        "or u.firstName like :searchField");
-        StringBuilder cleanPattern = new StringBuilder();
-        for (int walk = 0; walk < pattern.length(); walk++) {
-            if (pattern.charAt(walk) != '%') {
-                cleanPattern.append(pattern.charAt(walk));
-            }
-        }
-        cleanPattern.append("%");
-        query.setParameter("searchField", cleanPattern.toString());
-        return (List<User>) query.getResultList();
-    }
 
-    @Transactional
-    public void addMessagekey(String key) {
-        MessageKey messageKey = new MessageKey(key);
-        entityManager.persist(messageKey);
-    }
-
-    @Transactional
-    public void removeMessageKey(String key) {
-        Query query = entityManager.createQuery("select k from MessageKey k where k.key = :key");
-        query.setParameter("key", key);
-        try {
-            MessageKey messageKey = (MessageKey) query.getSingleResult();
-            entityManager.remove(messageKey);
-        }
-        catch (NoResultException e) {
-            log.warn("Unable to remove message key " + key);
-        }
-    }
-                 */
     @Transactional
     public List<DashboardLog> fetchLogEntriesFrom(Long bottomId, int pageSize) {
         Query query = entityManager.createQuery("select log from DashboardLog log where log.id >= :bottomId order by log.id asc");
@@ -146,11 +95,9 @@ public class DashboardDaoImpl implements DashboardDao {
             public int compare(DashboardLog a, DashboardLog b) {
                 if (a.getId() > b.getId()) {
                     return 1;
-                }
-                else if (a.getId() < b.getId()) {
+                } else if (a.getId() < b.getId()) {
                     return -1;
-                }
-                else {
+                } else {
                     return 0;
                 }
             }
@@ -159,9 +106,9 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     public List<DashboardLog> fetchLogEntries(java.util.Date from, int count) {
-       // Query query = entityManager.createQuery("select log from DashboardLog log where log.when > :from order by log.when ");
+        // Query query = entityManager.createQuery("select log from DashboardLog log where log.when > :from order by log.when ");
         Query query = entityManager.createQuery("select log from DashboardLog log where log.time > :from order by log.time ");
-                // todo: sjoerd added this. check if correct
+        // todo: sjoerd added this. check if correct
         query.setParameter("from", from);
         query.setMaxResults(count);
         return (List<DashboardLog>) query.getResultList();
@@ -197,8 +144,7 @@ public class DashboardDaoImpl implements DashboardDao {
             collection.setFileState(ImportFileState.UPLOADING);
             collection.setCollectionLastModified(new Date());
             entityManager.persist(collection);
-        }
-        else {
+        } else {
             collection = collections.get(0);
         }
         return collection;
@@ -289,23 +235,7 @@ public class DashboardDaoImpl implements DashboardDao {
             addToIndexQueue(collection);
         }
     }
-                /*
-    @Transactional
-    public User updateUser(User fresh) {
-        User user = entityManager.find(User.class, fresh.getId());
-        user.setUserName(fresh.getUserName());
-        user.setEmail(fresh.getEmail());
-        user.setFirstName(fresh.getFirstName());
-        user.setLastName(fresh.getLastName());
-        user.setLanguages(fresh.getLanguages());
-        user.setProjectId(fresh.getProjectId());
-        user.setProviderId(fresh.getProviderId());
-        user.setNewsletter(fresh.isNewsletter());
-        user.setRole(fresh.getRole());
-        user.setEnabled(user.isEnabled());
-        return user;
-    }
-                */
+
     @Transactional()
     public EuropeanaId saveEuropeanaId(EuropeanaId detachedId, Set<String> objectUrls) {
         EuropeanaId persistentId = getEuropeanaId(detachedId);
@@ -319,8 +249,7 @@ public class DashboardDaoImpl implements DashboardDao {
                 detachedId.getEuropeanaObjects().add(new EuropeanaObject(detachedId, objectUrl));
             }
             persistentId = detachedId;
-        }
-        else {
+        } else {
             log.debug("updating Id");
             persistentId.setLastModified(now);
             persistentId.getSocialTags().size();
@@ -359,8 +288,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<EuropeanaId> result = (List<EuropeanaId>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return result.get(0);
         }
     }
@@ -373,8 +301,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<CacheingQueueEntry> result = (List<CacheingQueueEntry>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             result.get(0).setUpdated(new Date());
             return result.get(0);
         }
@@ -401,8 +328,7 @@ public class DashboardDaoImpl implements DashboardDao {
         if (lastId != null) {
             query = entityManager.createQuery("select id from EuropeanaObject as id where id.id > :lastId and id.europeanaId.collection = :collection order by id.id asc");
             query.setParameter("lastId", lastId);
-        }
-        else {
+        } else {
             query = entityManager.createQuery("select id from EuropeanaObject as id where id.europeanaId.collection = :collection order by id.id asc");
         }
         query.setParameter("collection", queueEntry.getCollection());
@@ -466,8 +392,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<CacheingQueueEntry> resultList = (List<CacheingQueueEntry>) query.getResultList();
         if (resultList.isEmpty()) {
             log.info("collection not found on cacheQueue. ");
-        }
-        else {
+        } else {
             for (CacheingQueueEntry queueEntry : resultList) {
                 entityManager.remove(queueEntry);
             }
@@ -501,8 +426,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<IndexingQueueEntry> resultList = (List<IndexingQueueEntry>) query.getResultList();
         if (resultList.isEmpty()) {
             log.info("collection not found on indexQueue. ");
-        }
-        else {
+        } else {
             for (IndexingQueueEntry queueEntry : resultList) {
                 entityManager.remove(queueEntry);
             }
@@ -517,8 +441,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<IndexingQueueEntry> result = (List<IndexingQueueEntry>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             result.get(0).setUpdated(new Date());
             return result.get(0);
         }
@@ -545,8 +468,7 @@ public class DashboardDaoImpl implements DashboardDao {
         if (lastId != null) {
             query = entityManager.createQuery("select id from EuropeanaId as id where id.id > :lastId and id.collection = :collection and id.orphan = :orphan order by id.id asc");
             query.setParameter("lastId", lastId);
-        }
-        else {
+        } else {
             query = entityManager.createQuery("select id from EuropeanaId as id where id.collection = :collection and id.orphan = :orphan order by id.id asc");
         }
         query.setParameter("collection", collection.getCollection());
@@ -575,48 +497,7 @@ public class DashboardDaoImpl implements DashboardDao {
         attached.getCollection().setCollectionState(CollectionState.INDEXING);
         return attached;
     }
-            /*
-    @Transactional
-    public SavedItem fetchSavedItemById(Long id) {
-        Query q = entityManager.createQuery("select st from SavedItem st where st.id = :id");
-        q.setParameter("id", id);
-        List<SavedItem> savedItems = q.getResultList();
-        return savedItems.size() == 1 ? savedItems.get(0) : null;
-    }
 
-    @Transactional
-    public void removeFromCarousel(SavedItem savedItem) {
-        CarouselItem carouselItem = savedItem.getCarouselItem();
-        if (carouselItem != null) {
-            savedItem = entityManager.getReference(SavedItem.class, savedItem.getId());
-            savedItem.setCarouselItem(null);
-            entityManager.persist(savedItem);
-            carouselItem = entityManager.getReference(CarouselItem.class, carouselItem.getId());
-            entityManager.remove(carouselItem);
-        }
-    }
-                 
-    @Transactional
-    public boolean addCarouselItem(SavedItem savedItem) {
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        //        carouselItem.setSavedItem(savedItem);
-        savedItem.setCarouselItem(carouselItem);
-        entityManager.persist(carouselItem);
-        return true;
-    }
-               
-    @Transactional
-    public void removeFromEditorPick(SavedSearch savedSearch) {
-        EditorPick editorPick = savedSearch.getEditorPick();
-        if (editorPick != null) {
-            savedSearch = entityManager.getReference(SavedSearch.class, savedSearch.getId());
-            savedSearch.setEditorPick(null);
-            entityManager.persist(savedSearch);
-            editorPick = entityManager.getReference(EditorPick.class, editorPick.getId());
-            entityManager.remove(editorPick);
-        }
-    }
-              */
     @Transactional
     public List<? extends QueueEntry> fetchQueueEntries() {
         Query indexQuery = entityManager.createQuery("select entry from IndexingQueueEntry as entry");
@@ -675,171 +556,18 @@ public class DashboardDaoImpl implements DashboardDao {
         return numberUpdated;
         //        return resultList.size();
     }
-             /*
-    @Transactional
-    public boolean addSearchTerm(Language language, String term) {
-        SearchTerm searchTerm = new SearchTerm();
-        searchTerm.setLanguage(language);
-        searchTerm.setProposedSearchTerm(term);
-        searchTerm.setDate(new Date());
-        entityManager.persist(searchTerm);
-        return true; // maybe check for existence first?
-    }
-                 
-    @Transactional
-    public boolean addSearchTerm(SavedSearch savedSearch) {
-        SearchTerm searchTerm = savedSearch.createSearchTerm();
-        entityManager.persist(searchTerm);
-        return true;
-    }
-                
-    @Transactional
-    public List<String> fetchSearchTerms(Language language) {
-        Query query = entityManager.createQuery("select term.proposedSearchTerm from SearchTerm as term where term.language = :language");
-        query.setParameter("language", language);
-        return (List<String>) query.getResultList();
-    }
 
-    @Transactional
-    public boolean removeSearchTerm(Language language, String term) {
-        // todo remove back reference to saved item
-        Query query = entityManager.createQuery("delete from SearchTerm as term where term.language = :language and term.proposedSearchTerm = :term");
-        query.setParameter("term", term);
-        query.setParameter("language", language);
-        boolean success = query.executeUpdate() == 1;
-        if (!success) {
-            log.warn("Not there to remove from search terms: " + term);
-        }
-        return success;
-    }
-
-    @Transactional
-    public List<SavedItem> fetchSavedItems(Long userId) {
-        User user = entityManager.find(User.class, userId);
-        user.getSavedItems().size();
-        return user.getSavedItems();
-    }
-
-    @Transactional
-    public List<SavedSearch> fetchSavedSearches(Long userId) {
-        User user = entityManager.find(User.class, userId);
-        user.getSavedSearches().size();
-        return user.getSavedSearches();
-    }    
-
-    @Transactional
-    public SavedSearch fetchSavedSearchById(Long id) {
-        Query q = entityManager.createQuery("select st from SavedSearch st where st.id = :id");
-        q.setParameter("id", id);
-        List<SavedSearch> savedSearches = q.getResultList();
-        return savedSearches.size() == 1 ? savedSearches.get(0) : null;
-    }
-
-    @Transactional
-    public void removeUser(Long userId) {
-        User user = entityManager.find(User.class, userId);
-        if (user != null) {
-            entityManager.remove(user);
-        }
-    }
-
-    @Transactional
-    public User fetchUser(Long userId) {
-        return entityManager.find(User.class, userId);
-    }
-
-    @Transactional
-    public EuropeanaId fetchEuropeanaId(String europeanaUri) {
-        Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :europeanaUri");
-        query.setParameter("europeanaUri", europeanaUri);
-        query.setMaxResults(1);
-        List<EuropeanaId> result = query.getResultList();
-        if (result.isEmpty()) {
-            return null;
-        }
-        return result.get(0);
-    }
-
-    @Transactional
-    public List<Partner> fetchPartners() {
-        Query query = entityManager.createQuery("select p from Partner p order by p.sector");
-        return (List<Partner>) query.getResultList();
-    }
-                 */
     @Transactional
     public List<Contributor> fetchContributors() {
         Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
         return (List<Contributor>) query.getResultList();
     }
-          /*
-    @Transactional
-    public Partner savePartner(Partner partner) {
-        return entityManager.merge(partner);
-    }
 
-    @Transactional
-    public Contributor saveContributor(Contributor contributor) {
-        return entityManager.merge(contributor);
-    }
-
-    @Transactional
-    public boolean removePartner(Long partnerId) {
-        Partner partner = entityManager.find(Partner.class, partnerId);
-        if (partner != null) {
-            entityManager.remove(partner);
-            return true;
-        }
-        return false;
-    }
-             
-    @Transactional
-    public boolean removeContributor(Long contributorId) {
-        Contributor contributor = entityManager.find(Contributor.class, contributorId);
-        if (contributor != null) {
-            entityManager.remove(contributor);
-            return true;
-        }
-        return false;
-    }
-            */
     @Transactional
     public void log(String who, String what) {
         DashboardLog log = new DashboardLog(who, new Date(), what);
         entityManager.persist(log);
     }
-       /*
-    @Transactional
-    public StaticPage fetchStaticPage(StaticPageType pageType, Language language) {
-        Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
-        query.setParameter("pageType", pageType);
-        query.setParameter("language", language);
-        try {
-            return (StaticPage) query.getSingleResult();
-        }
-        catch (NoResultException e) {
-            StaticPage page = new StaticPage(pageType, language);
-            entityManager.persist(page);
-            return page;
-        }
-    }
-
-    @Transactional
-    public StaticPage saveStaticPage(Long staticPageId, String content) {
-        StaticPage page = entityManager.find(StaticPage.class, staticPageId);
-        page.setContent(content);
-        return page;
-    }
-             */
-//	@Transactional
-//	public boolean removeCarouselItem(Long id) {
-//		Query query = entityManager.createQuery("delete from CarouselItem as item where item.id = :id");
-//		query.setParameter("id", id);
-//		boolean success = query.executeUpdate() == 1;
-//		if (!success) {
-//			log.warn("Not there to remove from carousel items: " + id);
-//		}
-//		return success;
-//	}
 
     @Transactional
     public boolean removeCarouselItem(CarouselItem carouselItem) {
@@ -851,69 +579,5 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return success;
     }
-               /*
-    @Transactional
-    public CarouselItem createCarouselItem(String europeanaUri, Long savedItemId) {
-        EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        carouselItem.setEuropeanaId(europeanaId);
-        carouselItem.setSavedItem(savedItem);
-        savedItem.setCarouselItem(carouselItem);
-        return carouselItem;
-    }
 
-    @Transactional
-    public Boolean removeCarouselItem(Long carouselItemId) {
-        CarouselItem carouselItem = entityManager.getReference(CarouselItem.class, carouselItemId);
-        if (carouselItem == null) {
-            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
-        }
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, carouselItem.getSavedItem().getId());
-        if (savedItem == null) {
-            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
-        }
-        savedItem.setCarouselItem(null);
-        entityManager.remove(carouselItem);
-        entityManager.flush();
-        return true;
-    }
-             
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public List<CarouselItem> fetchCarouselItems() {
-        Query q = entityManager.createQuery("select ci from CarouselItem ci");
-        List<CarouselItem> results = (List<CarouselItem>) q.getResultList();
-        for (CarouselItem item : results) {
-            EuropeanaId id = item.getEuropeanaId();
-            if (id != null && id.isOrphan()) { // remove null check later
-                results.remove(item);
-                removeCarouselItem(item.getSavedItem().getId());
-            }
-        }
-        return results;
-    }
-
-    //
-    //  People Are Currently Thinking About, or editor picks
-    //
-    @Transactional
-    public List<EditorPick> fetchEditorPicksItems() {
-        Query query = entityManager.createQuery("select item from EditorPick item");
-        return (List<EditorPick>) query.getResultList();
-    }
-
-    @Transactional
-    public EditorPick createEditorPick(SavedSearch savedSearch) throws Exception {
-        EditorPick editorPick = new EditorPick();
-        editorPick.setDateSaved(savedSearch.getDateSaved());
-        editorPick.setQuery(savedSearch.getQuery());
-        editorPick.setUser(savedSearch.getUser());
-
-        SavedSearch savedSearch2 = entityManager.getReference(SavedSearch.class, savedSearch.getId());
-        editorPick.setSavedSearch(savedSearch2);
-        savedSearch2.setEditorPick(editorPick);
-        return editorPick;
-    }
-       */
 }
