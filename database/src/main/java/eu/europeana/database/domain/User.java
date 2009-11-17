@@ -103,7 +103,7 @@ public class User implements Serializable {
         this.id = id;
         this.userName = userName;
         this.email = email;
-        if (password.isEmpty()) {
+        if (password.length() == 0) {
             this.setHashedPassword("");
         }
         else {
