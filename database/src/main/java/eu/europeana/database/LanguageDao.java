@@ -34,15 +34,16 @@ public interface LanguageDao {
      * are stored in the database, with a boolean value (active/not active).
      *
      * @return an EnumSet of the active languages.
-     * @see   {@link Language}
+     * @see {@link Language}
      */
     EnumSet<Language> getActiveLanguages();
 
     /**
      * Active/Deactivate a Language, based on the given boolean parameter.
+     *
      * @param language an instance of the {@link Language} class.
-     * @param active a boolean value.
-     * @see   {@link Language}
+     * @param active   a boolean value.
+     * @see {@link Language}
      */
     void setLanguageActive(Language language, boolean active);
 
@@ -53,8 +54,8 @@ public interface LanguageDao {
      * @param language an instance of {@link Language} class
      * @param value    - String
      * @return an instance of the {@link Translation} class
-     * @see   {@link Language}
-     * @see   {@link Translation}
+     * @see {@link Language}
+     * @see {@link Translation}
      */
     Translation setTranslation(String key, Language language, String value);
 
@@ -70,7 +71,7 @@ public interface LanguageDao {
      *
      * @param key - String - the mnemonic value of the key message.
      * @return an instance of {@link MessageKey}
-     * @see   {@link MessageKey}
+     * @see {@link MessageKey}
      */
     MessageKey fetchMessageKey(String key);
 
@@ -80,7 +81,7 @@ public interface LanguageDao {
      *
      * @param languageCodes - a Set of ISO 3166 code languages.
      * @return a MAP containing String Language code with relative translation.
-     * @see    {@link Translation}
+     * @see {@link Translation}
      */
     Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
 
@@ -105,7 +106,7 @@ public interface LanguageDao {
      * to manage messages among different languages.
      *
      * @return a List containing all the {@link MessageKey} items
-     * @see    MessageKey
+     * @see MessageKey
      */
     List<MessageKey> getAllTranslationMessages();
 
