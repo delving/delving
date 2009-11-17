@@ -14,67 +14,99 @@ import java.util.Set;
  * is the ultimate authority on which languages are active.
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
- * @author Nicola Aloia
+ * @author Nicola Aloia   <nicola.aloia@isti.cnr.it>
  */
 
+/**
+ * This interface is used to manage messages in different languages.
+ * The messages are handled through the persistent class {@link Translation}, which contains the following fields:
+ * <ol>
+ * <li>id - the unique identifier of the message </li>
+ * <li>language - a three char code of the language, conform to ISO 3166  </li>
+ * <li>value - the String value of the message  </li>
+ * <li>messageLeyId - the identifier of a mnemonic code </li>      todo: Is Ok?
+ * </0l>
+ */
 public interface LanguageDao {
 
     /**
-     * Get all Active languages
+     * Get an enumeration of all the active languages. All the ISO 3166 code languages
+     * are stored in the database, with a boolean value (active/not active).
      *
-     * @return an EnumSet of Active languages
+     * @return an EnumSet of the active languages.
+     * @see   {@link Language}
      */
     EnumSet<Language> getActiveLanguages();
 
+    /**
+     * Active/Deactivate a Language, based on the given boolean parameter.
+     * @param language an instance of the {@link Language} class.
+     * @param active a boolean value.
+     * @see   {@link Language}
+     */
     void setLanguageActive(Language language, boolean active);
 
     /**
-     * Inizialize and return an instance of the Translation class
+     * Add an entry to the persistent class {@link Translation}.
      *
      * @param key      - String
-     * @param language an instance of Language class
+     * @param language an instance of {@link Language} class
      * @param value    - String
-     * @return an instance of the Translation class
+     * @return an instance of the {@link Translation} class
+     * @see   {@link Language}
+     * @see   {@link Translation}
      */
     Translation setTranslation(String key, Language language, String value);
 
     /**
-     * Get all Message Keys
+     * Get all the Message Keys                              todo: clarify the meaning of MessageKey
      *
      * @return a List of String containing all the Message keys
      */
     List<String> fetchMessageKeyStrings();
 
     /**
-     * Get the MessageKey for the given key
+     * Get the MessageKey for the given mnemonic value of the key message. todo: ???
      *
-     * @param key - String
-     * @return an instance of MessageKey
+     * @param key - String - the mnemonic value of the key message.
+     * @return an instance of {@link MessageKey}
+     * @see   {@link MessageKey}
      */
     MessageKey fetchMessageKey(String key);
 
     /**
-     * Translate the given Set of languageCodes
+     * Get a Map containing for each given language code the corresponding
+     * instance of the {@link Translation} class.
      *
-     * @param languageCodes - a Set of String codes
+     * @param languageCodes - a Set of ISO 3166 code languages.
      * @return a MAP containing String Language code with relative translation.
+     * @see    {@link Translation}
      */
     Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
 
 
     /**
-     * Add the given key
+     * Persist an instance of the  {@link MessageKey} class for the given mnemonic key value.
      *
-     * @param key - String
+     * @param key - String the mnemonic key value.
      */
     void addMessagekey(String key);
 
     /**
-     * Remove the given key
+     * Remove the instance of the  {@link MessageKey} class for the given mnemonic key value.
      *
-     * @param key - String
+     * @param key - String the mnemonic key value.
      */
     void removeMessageKey(String key);
 
+
+    /**
+     * Get all instances of the {@link MessageKey} class. The MessageKey class is a persistent class
+     * to manage messages among different languages.
+     *
+     * @return a List containing all the {@link MessageKey} items
+     * @see    MessageKey
+     */
+    List<MessageKey> getAllTranslationMessages();
 
 }

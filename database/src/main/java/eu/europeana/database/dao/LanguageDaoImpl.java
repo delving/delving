@@ -23,8 +23,8 @@ import java.util.TreeMap;
 
 /**
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
- * @author cesareconcordia
- * @author Nicola Aloia
+ * @author Cesare Concordia
+ * @author Nicola Aloia  <nicola.aloia@isti.cnr.it>
  */
 
 @SuppressWarnings("unchecked")
@@ -143,6 +143,13 @@ public class LanguageDaoImpl implements LanguageDao {
         catch (NoResultException e) {
             log.warn("Unable to remove message key " + key);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Transactional
+    public List<MessageKey> getAllTranslationMessages() {
+        Query query = entityManager.createQuery("select trans from Translation as trans");
+        return query.getResultList();
     }
 
 }

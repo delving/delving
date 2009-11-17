@@ -61,7 +61,6 @@ public class TestStaticInfoDao {
 //    StaticPage fetchStaticPage (Language language, String pageName);
 //    void setStaticPage(StaticPageType pageType, Language language, String content);
 //    List<StaticPage> getAllStaticPages();
-//    List<MessageKey> getAllTranslationMessages();
 //    List<SearchTerm> getAllSearchTerms();
 
     @Test

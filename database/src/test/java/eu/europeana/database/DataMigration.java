@@ -22,7 +22,9 @@
 package eu.europeana.database;
 
 import com.thoughtworks.xstream.XStream;
+
 import static eu.europeana.database.DataMigration.Table.*;
+
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.StaticPage;
@@ -45,6 +47,7 @@ import java.util.List;
  *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 public class DataMigration {
     private static final String DIRECTORY = "/tmp/";
@@ -152,6 +155,7 @@ public class DataMigration {
                 "/database-application-context.xml",
         });
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
+        LanguageDao languageDao = (LanguageDao) context.getBean("languageDao");
         DataMigration migration = new DataMigration();
 
         migration.setPartnerDao(staticInfoDao);
@@ -162,14 +166,12 @@ public class DataMigration {
                 Reader reader = new InputStreamReader(is, "utf-8");
                 migration.readTable(table, reader);
             }
-        }
-        else if (args.length == 1 && args[0].equalsIgnoreCase("export")) {
+        } else if (args.length == 1 && args[0].equalsIgnoreCase("export")) {
             migration.dumpTable(STATIC_PAGE, staticInfoDao.getAllStaticPages());
-            migration.dumpTable(TRANSLATION_KEYS, staticInfoDao.getAllTranslationMessages());
+            migration.dumpTable(TRANSLATION_KEYS, languageDao.getAllTranslationMessages());
             migration.dumpTable(CONTRIBUTORS, staticInfoDao.getAllContributorItems());
             migration.dumpTable(PARTNERS, staticInfoDao.getAllPartnerItems());
-        }
-        else {
+        } else {
             throw new Exception("Needs parameter:  import|export");
         }
     }

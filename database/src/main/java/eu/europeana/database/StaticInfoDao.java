@@ -71,11 +71,7 @@ public interface StaticInfoDao {
     List<StaticPage> getAllStaticPages();
     StaticPage saveStaticPage(Long staticPageId, String content);
 
-    // ==== Translations
-
-    List<MessageKey> getAllTranslationMessages();
-
-    // === Carousel Items
+   // === Carousel Items
 
     User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
     void removeFromCarousel(SavedItem savedItem);

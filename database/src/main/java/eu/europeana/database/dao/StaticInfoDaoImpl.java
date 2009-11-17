@@ -80,13 +80,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
 
     @SuppressWarnings("unchecked")
     @Transactional
-    public List<MessageKey> getAllTranslationMessages() {
-        Query query = entityManager.createQuery("select trans from Translation as trans");
-        return query.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Transactional
     public StaticPage fetchStaticPage(Language language, String pageName) {
         Query query = entityManager.createQuery("select sp from StaticPage as sp where sp.language = :language and sp.pageType = :pageType");
         query.setParameter("language", language);
