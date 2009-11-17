@@ -87,7 +87,7 @@ public class UserDaoImpl implements UserDao {
     @Transactional
     public User updateUser(User fresh) {
         if (fresh.getId() != null) {
-            if (fresh.getHashedPassword().length() == 0) {
+            if (fresh.getHashedPassword().isEmpty()) {
                 User existing = entityManager.find(User.class, fresh.getId());
                 fresh.setHashedPassword(existing.getHashedPassword());
             }
