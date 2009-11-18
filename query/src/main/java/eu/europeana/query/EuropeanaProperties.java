@@ -21,13 +21,14 @@
 
 package eu.europeana.query;
 
-import org.apache.log4j.Logger;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class fetches the europeana.properties files, however folks have decided to define
@@ -87,12 +88,15 @@ public class EuropeanaProperties extends Properties {
     private InputStream getInputFromFile(String filePath) {
         if (filePath != null) {
             try {
-                log.info("Going to load properties from '"+filePath+"'");
+                log.info("Going to load properties from '"+filePath+"', resolved to "+ new File(filePath).getCanonicalPath());
                 return new FileInputStream(filePath);
             }
             catch (FileNotFoundException e) {
                 throw new RuntimeException("No file found: "+filePath, e);
             }
+            catch (IOException e) {
+                throw new RuntimeException("IO exception on: "+filePath, e);
+			}
         }
         else {
             return null;
