@@ -63,14 +63,6 @@
         <defaultGoal>package</defaultGoal>
         <finalName>portal</finalName>
         <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <groups>regression</groups>
-                    <parallel>true</parallel>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 

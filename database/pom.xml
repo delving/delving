@@ -75,14 +75,6 @@
         </extensions>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <groups>regression</groups>
-                    <parallel>true</parallel>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>hibernate3-maven-plugin</artifactId>
                 <version>2.1</version>

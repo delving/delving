@@ -32,16 +32,6 @@
         <defaultGoal>package</defaultGoal>
         <finalName>cache</finalName>
         <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <groups>regression</groups>
-                    <parallel>true</parallel>
-                    <includes>
-                    </includes>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
