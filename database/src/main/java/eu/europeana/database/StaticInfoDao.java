@@ -53,17 +53,17 @@ public interface StaticInfoDao {
      * "Research institutions", ...).
      *
      * @return a List of Partner objects.
-     * @see  {@link Partner}
-     * @see  {@link eu.europeana.database.domain.PartnerSector}
+     * @see {@link Partner}
+     * @see {@link eu.europeana.database.domain.PartnerSector}
      */
     List<Partner> getAllPartnerItems();
 
     /**
      * Persists the given instance of the {@link Partner} class.
-     * 
+     *
      * @param partner an instance of the Partner class
-     * @return  Partner - the updated instance class
-     * @see  {@link Partner}
+     * @return Partner - the updated instance class
+     * @see {@link Partner}
      */
     Partner savePartner(Partner partner);
 
@@ -73,8 +73,8 @@ public interface StaticInfoDao {
      *
      * @param partnerId - Long - the unique identifier of the partner to be removed.
      * @return boolean - (successfully/unsuccessfully) removed
-     * @see  {@link Partner}
      * @throws IllegalArgumentException if the given identifier is null.
+     * @see {@link Partner}
      */
     boolean removePartner(Long partnerId);
 
@@ -83,36 +83,36 @@ public interface StaticInfoDao {
     /**
      * Return the list of all Europeana {@link Contributor}s ordered by country.
      *
-     * @return  List - the list of all Europeana contributors.
-     * @see  {@link Contributor}
+     * @return List - the list of all Europeana contributors.
+     * @see {@link Contributor}
      */
     List<Contributor> getAllContributors();     // renamed the previous: getAllContributorItems
 
-     /**
+    /**
      * Return the list of all Europeana {@link Contributor}s ordered by id.
      *
-     * @return  List - the list of all Europeana contributors.
-     * @see  {@link Contributor}
+     * @return List - the list of all Europeana contributors.
+     * @see {@link Contributor}
      */
     List<Contributor> getAllContributorsByIdentifier();    // renamed the previous: fetchContributors todo: do we need this?
 
-     /**
+    /**
      * Persists the given instance of the {@link Contributor} class.
      *
      * @param contributor an instance of the Contributor class
-     * @return  Contributor - the update instance class
-     * @see  {@link Contributor}
+     * @return Contributor - the update instance class
+     * @see {@link Contributor}
      */
     Contributor saveContributor(Contributor contributor);
 
-     /**
+    /**
      * Remove the {@link Contributor} class instance having the given identifier. Return true
      * if the contributor is successfully removed, false otherwise.
      *
      * @param contributorId - Long - the unique identifier of the contributor to be removed.
      * @return boolean - (successfully/unsuccessfully) removed
-     * @see  {@link Contributor}
      * @throws IllegalArgumentException if the given identifier is null.
+     * @see {@link Contributor}
      */
     boolean removeContributor(Long contributorId);
 
