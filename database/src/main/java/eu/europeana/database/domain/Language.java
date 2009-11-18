@@ -366,7 +366,7 @@ public enum Language {
     NAP("Neapolitan"),
     NAU("Nauru"),
     NAV("Navajo; Navaho"),
-    NB("Norwegian Bokm�l; Bokm�l", "nob"),
+    NB("Norwegian Bokmal; Bokmal", "nob"),
     NBL("Ndebele, South; South Ndebele"),
     ND("North Ndebele"),
     NDE("Ndebele, North; North Ndebele"),
