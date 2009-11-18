@@ -26,7 +26,7 @@
     <artifactId>resolver</artifactId>
     <packaging>war</packaging>
     <name>Servlet for resolving cultural treasures</name>
-    <version>1.0</version>
+    <version>${europeana.resolver.version}</version>
     <description>Servlet</description>
     <inceptionYear>2008</inceptionYear>
    
@@ -63,13 +63,6 @@
                     </includes>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -88,7 +81,7 @@
             <!--this is just for the EuropeanaProperties.java-->
             <groupId>eu.europeana</groupId>
             <artifactId>query</artifactId>
-            <version>1.7</version>
+            <version>${europeana.query.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

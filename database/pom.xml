@@ -26,7 +26,7 @@
     <artifactId>database</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Database</name>
-    <version>1.0.1</version>
+    <version>${europeana.database.version}</version>
     <description>Database for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -124,12 +124,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>query</artifactId>
-            <version>1.7</version>
+            <version>${europeana.query.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>cache</artifactId>
-            <version>1.0.1</version>
+            <version>${europeana.cache.version}</version>
         </dependency>
         <dependency>
             <groupId>postgresql</groupId>
@@ -250,6 +250,5 @@
         </dependency>
     </dependencies>
     <properties>
-        <spring.version>2.5.6</spring.version>
     </properties>
 </project>

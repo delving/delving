@@ -26,7 +26,7 @@
     <artifactId>cache</artifactId>
     <packaging>jar</packaging>
     <name>The Digital Object Cache</name>
-    <version>1.0.1</version>
+    <version>${europeana.cache.version}</version>
     <description>Cache shared by multiple projects</description>
     <inceptionYear>2008</inceptionYear>
  
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>query</artifactId>
-            <version>1.7</version>
+            <version>${europeana.query.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -93,5 +93,5 @@
             <version>4.5</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+     </dependencies>
 </project>

@@ -5,7 +5,7 @@
     <artifactId>normalizer</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format</name>
-    <version>2.8</version>
+    <version>${europeana.normalizer.version}</version>
     <inceptionYear>2008</inceptionYear>
   
   <parent>
@@ -48,13 +48,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptorRefs>
@@ -82,7 +75,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>query</artifactId>
-            <version>1.7</version>
+            <version>${europeana.query.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

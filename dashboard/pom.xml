@@ -140,12 +140,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>database</artifactId>
-            <version>1.0.1</version>
+            <version>${europeana.database.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>cache</artifactId>
-            <version>1.0.1</version>
+            <version>${europeana.cache.version}</version>
         </dependency>
         <dependency>
             <groupId>quartz</groupId>
@@ -284,7 +284,6 @@
         </dependency>
     </dependencies>
     <properties>
-        <spring.version>2.5.5</spring.version>
         <gwtVersion>1.7.1</gwtVersion>
         <google.webtoolkit.home>${env.GWT_HOME}</google.webtoolkit.home>
         <jetty.version>6.1.7</jetty.version>

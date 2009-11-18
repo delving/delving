@@ -26,7 +26,7 @@
     <artifactId>bootstrap</artifactId>
     <packaging>jar</packaging>
     <name>Bootstrap Module</name>
-    <version>0.5</version>
+    <version>${europeana.bootstrap.version}</version>
     <description>Bootstrap Module to initialize the EuropeanaLabs database and Solr/Lucene Index</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -74,19 +74,21 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>cache-servlet</artifactId>
-            <version>1.0</version>
+            <version>${europeana.cache.version}</version>
+            <type>war</type>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>resolver</artifactId>
-            <version>1.0</version>
+            <version>${europeana.resolver.version}</version>
+            <type>war</type>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>database</artifactId>
-            <version>1.0.1</version>
+            <version>${europeana.database.version}</version>
         </dependency>
 
         <!--other basic dependencies-->

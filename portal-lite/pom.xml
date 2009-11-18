@@ -26,7 +26,7 @@
     <artifactId>portal-lite</artifactId>
     <packaging>war</packaging>
     <name>Europeana Portal Web Application (Lite)</name>
-    <version>0.5</version>
+    <version>${europeana.portal.version}</version>
     <description>The lite version of the Europeana Portal contains all the core pages
 	    (index, brief-doc, full-doc, myEuropeana) and functionality of the production
 	    Europeana portal. This version is made open source to stimulate development
@@ -71,13 +71,6 @@
                     <parallel>true</parallel>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -85,7 +78,7 @@
          <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>portal-core</artifactId>
-            <version>0.6</version>
+            <version>${europeana.portal.version}</version>
         </dependency>
          <dependency>
             <groupId>org.mortbay.jetty</groupId>

@@ -5,7 +5,7 @@
     <artifactId>cache-servlet</artifactId>
     <packaging>war</packaging>
     <name>Servlet for accessing the cache</name>
-    <version>1.0</version>
+    <version>${europeana.cache.version}</version>
     <description>Servlet</description>
     <inceptionYear>2008</inceptionYear>
  
@@ -48,12 +48,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>cache</artifactId>
-            <version>1.0.1</version>
+            <version>${europeana.cache.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>query</artifactId>
-            <version>1.7</version>
+            <version>${europeana.query.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

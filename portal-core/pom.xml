@@ -26,7 +26,7 @@
     <artifactId>portal-core</artifactId>
     <packaging>jar</packaging>
     <name>Core components of the Europeana Portal</name>
-    <version>0.6</version>
+    <version>${europeana.portal.version}</version>
     <description>The core portal components can be loaded in the portal-lite (open source version) and portal-full
         (production version) web-modules
     </description>
@@ -69,13 +69,6 @@
                     <parallel>true</parallel>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -83,7 +76,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>database</artifactId>
-            <version>1.0.1</version>
+            <version>${europeana.database.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -196,7 +189,6 @@
         </dependency>
     </dependencies>
     <properties>
-        <spring.version>2.5.6</spring.version>
         <jetty.version>6.1.7</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
