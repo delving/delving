@@ -19,12 +19,14 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.database;
+package eu.europeana.database.migration;
 
 import com.thoughtworks.xstream.XStream;
 
-import static eu.europeana.database.DataMigration.Table.*;
+import static eu.europeana.database.migration.DataMigration.Table.*;
 
+import eu.europeana.database.LanguageDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.StaticPage;

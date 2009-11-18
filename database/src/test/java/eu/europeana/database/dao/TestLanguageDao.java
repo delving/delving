@@ -1,9 +1,10 @@
 package eu.europeana.database.dao;
 
-import eu.europeana.database.DataMigration;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.integration.DaoMessageSource;
+import eu.europeana.database.migration.DataMigration;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

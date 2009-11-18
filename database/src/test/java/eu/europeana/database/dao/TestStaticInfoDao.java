@@ -1,7 +1,8 @@
 package eu.europeana.database.dao;
 
-import eu.europeana.database.DataMigration;
 import eu.europeana.database.StaticInfoDao;
+import eu.europeana.database.migration.DataMigration;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
