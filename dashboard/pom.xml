@@ -180,6 +180,15 @@
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <type>zip</type>
+            <classifier>${platform}-libs</classifier>
+<!-- 
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwtVersion}</version>
             <scope>provided</scope>
@@ -188,16 +197,9 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
             <version>${gwtVersion}</version>
-            <type>zip</type>
-            <classifier>${platform}-libs</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwtVersion}</version>
             <classifier>${platform}</classifier>
             <scope>provided</scope>
+-->
         </dependency>
 
         <!--the following is temporary: springmvc on the server-->
