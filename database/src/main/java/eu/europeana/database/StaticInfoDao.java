@@ -40,7 +40,7 @@ import java.util.List;
  * Handles all access to the information that doesn't really change very much over time.
  *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @author Nicola Aloia
+ * @author Nicola Aloia   <nicola.aloia@isti.cnr.it>
  */
 
 public interface StaticInfoDao {
@@ -48,56 +48,130 @@ public interface StaticInfoDao {
     // ==== Partners
 
     /**
+     * Return the list of all {@link Partner}s ordered by sector.  The Partner class contains the name
+     * and URL of the project partner, together with the sector of activity (e.g. "Project Contributors",
+     * "Research institutions", ...).
      *
-     * Return a list of Partners ordered by Sector.
-     * @return  a List of Partner objects.
+     * @return a List of Partner objects.
+     * @see  {@link Partner}
+     * @see  {@link eu.europeana.database.domain.PartnerSector}
      */
     List<Partner> getAllPartnerItems();
+
+    /**
+     * Persists the given instance of the {@link Partner} class.
+     * 
+     * @param partner an instance of the Partner class
+     * @return  Partner - the updated instance class
+     * @see  {@link Partner}
+     */
     Partner savePartner(Partner partner);
+
+    /**
+     * Remove the {@link Partner} class instance having the given identifier. Return true
+     * if the partner is successfully removed, false otherwise.
+     *
+     * @param partnerId - Long - the unique identifier of the partner to be removed.
+     * @return boolean - (successfully/unsuccessfully) removed
+     * @see  {@link Partner}
+     * @throws IllegalArgumentException if the given identifier is null.
+     */
     boolean removePartner(Long partnerId);
 
     // ==== Contributors
 
-    List<Contributor> getAllContributorItems();     // this is ordered by country: wich one? I will prefere this
-    List<Contributor> fetchContributors();         // this is ordered by providerId
+    /**
+     * Return the list of all Europeana {@link Contributor}s ordered by country.
+     *
+     * @return  List - the list of all Europeana contributors.
+     * @see  {@link Contributor}
+     */
+    List<Contributor> getAllContributors();     // renamed the previous: getAllContributorItems
+
+     /**
+     * Return the list of all Europeana {@link Contributor}s ordered by id.
+     *
+     * @return  List - the list of all Europeana contributors.
+     * @see  {@link Contributor}
+     */
+    List<Contributor> getAllContributorsByIdentifier();    // renamed the previous: fetchContributors todo: do we need this?
+
+     /**
+     * Persists the given instance of the {@link Contributor} class.
+     *
+     * @param contributor an instance of the Contributor class
+     * @return  Contributor - the update instance class
+     * @see  {@link Contributor}
+     */
     Contributor saveContributor(Contributor contributor);
+
+     /**
+     * Remove the {@link Contributor} class instance having the given identifier. Return true
+     * if the contributor is successfully removed, false otherwise.
+     *
+     * @param contributorId - Long - the unique identifier of the contributor to be removed.
+     * @return boolean - (successfully/unsuccessfully) removed
+     * @see  {@link Contributor}
+     * @throws IllegalArgumentException if the given identifier is null.
+     */
     boolean removeContributor(Long contributorId);
 
     // ==== Static pages
 
     StaticPage fetchStaticPage(Language language, String pageName);    // this  or the following both do the same thing   
+
     StaticPage fetchStaticPage(StaticPageType pageType, Language language); // but the previous uses the pageName to get the page Type
+
     void setStaticPage(StaticPageType pageType, Language language, String content);
+
     List<StaticPage> getAllStaticPages();
+
     StaticPage saveStaticPage(Long staticPageId, String content);
 
-   // === Carousel Items
+    // === Carousel Items
 
     User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
+
     void removeFromCarousel(SavedItem savedItem);
+
     Boolean removeCarouselItem(Long id);
+
     User addCarouselItem(User user, CarouselItem carouselItem);
+
     boolean addCarouselItem(SavedItem savedItem);
+
     CarouselItem addCarouselItem(User user, Long savedItem);    // this is different from the following in the reurned value
+
     User addCarouselItem(User user, SavedItem savedItem);
+
     CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
+
     List<CarouselItem> fetchCarouselItems();
 
 
     // ==== Search Terms
 
     boolean addSearchTerm(Language language, String term);
+
     boolean addSearchTerm(SavedSearch savedSearch);
+
     SearchTerm addSearchTerm(Long savedSearchId);
+
     List<String> fetchSearchTerms(Language language);
+
     boolean removeSearchTerm(Language language, String term);
+
     List<SearchTerm> getAllSearchTerms();
+
     User removeSearchTerm(User user, Long savedSearchId);
 
     // ==== Editor picks
 
     User addEditorPick(User user, EditorPick editorPick);
+
     List<EditorPick> fetchEditorPicksItems();
+
     EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
+
     void removeFromEditorPick(SavedSearch savedSearch);
 }

@@ -56,7 +56,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
 
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<Contributor> getAllContributorItems() {
+    public List<Contributor> getAllContributors() {
         Query q = entityManager.createQuery("select con from Contributor con order by con.country");
         return (List<Contributor>) q.getResultList();
     }
@@ -298,7 +298,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public List<Contributor> fetchContributors() {
+    public List<Contributor> getAllContributorsByIdentifier() {
         Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
         return (List<Contributor>) query.getResultList();
     }

@@ -422,7 +422,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<ContributorX> fetchContributors() {
         List<ContributorX> results = new ArrayList<ContributorX>();
-        for (Contributor contributor: staticInfoDao.fetchContributors()) {
+        for (Contributor contributor: staticInfoDao.getAllContributorsByIdentifier()) {
             results.add(DataTransfer.convert(contributor));
         }
         return results;

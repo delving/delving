@@ -171,7 +171,7 @@ public class DataMigration {
         } else if (args.length == 1 && args[0].equalsIgnoreCase("export")) {
             migration.dumpTable(STATIC_PAGE, staticInfoDao.getAllStaticPages());
             migration.dumpTable(TRANSLATION_KEYS, languageDao.getAllTranslationMessages());
-            migration.dumpTable(CONTRIBUTORS, staticInfoDao.getAllContributorItems());
+            migration.dumpTable(CONTRIBUTORS, staticInfoDao.getAllContributors());
             migration.dumpTable(PARTNERS, staticInfoDao.getAllPartnerItems());
         } else {
             throw new Exception("Needs parameter:  import|export");

@@ -57,7 +57,7 @@ public class PartnerListSampler {
     }
 
     private List<Contributor> getContributorData() {
-        return staticInfoDao.getAllContributorItems();
+        return staticInfoDao.getAllContributors();
     }
 
     private List<Partner> getPartnerData() {

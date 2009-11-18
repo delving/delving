@@ -35,9 +35,9 @@ public class TestStaticInfoDao {
 
 // todo: these methods must be tested
 //    List<Partner> getAllPartnerItems();
-//    List<Contributor> getAllContributorItems();
+//    List<Contributor> getAllContributors();
 //    List<Partner> fetchPartners();
-//    List<Contributor> fetchContributors();
+//    List<Contributor> getAllContributorsByIdentifier();
 //    Partner savePartner(Partner partner);
 //    Contributor saveContributor(Contributor contributor);
 //    boolean removePartner(Long partnerId);
