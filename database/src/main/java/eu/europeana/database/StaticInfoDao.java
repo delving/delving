@@ -118,15 +118,69 @@ public interface StaticInfoDao {
 
     // ==== Static pages
 
-    StaticPage fetchStaticPage(Language language, String pageName);    // this  or the following both do the same thing   
+    /**
+     * Returns the Europeana portal static page with the given name for the given language. The returned instance
+     * of the {@link StaticPage} class contains: the page identifier,
+     * the language ISO 3166 code, the page type (e.g. ABOUT_US, PRIVACY, ..)
+     * and a String for the content of the page (HTML formatted).
+     *
+     * @param language - an instance of the {@link Language} class containing the ISO 3166 code
+     * @param pageName String - the name of the static page as defined in {@link StaticPageType}
+     * @return StaticPage - the instance of the StaticPage class
+     * @see {@link StaticPage}
+     * @see {@link Language}
+     * @see {@link StaticPageType}
+     */
+    StaticPage fetchStaticPage(Language language, String pageName);    // todo: do we need this and the following?
 
-    StaticPage fetchStaticPage(StaticPageType pageType, Language language); // but the previous uses the pageName to get the page Type
+    /**
+     * Returns the Europeana portal static page with the given type for the given language. The returned instance
+     * of the {@link StaticPage} class contains: the page identifier,
+     * the language ISO 3166 code, the page type (e.g. ABOUT_US, PRIVACY, ..)
+     * and a String for the content of the page (HTML formatted).
+     *
+     * @param language - an instance of the {@link Language} class containing the ISO 3166 code
+     * @param pageType StaticPageType - the type of the static page as defined in {@link StaticPageType}
+     * @return StaticPage - the instance of the StaticPage class
+     * @see {@link StaticPage}
+     * @see {@link Language}
+     * @see {@link StaticPageType}
+     */
+    StaticPage fetchStaticPage(StaticPageType pageType, Language language); // todo: I suggest to rename getStaticPage
 
+    /**
+     * Persists a new static page with the given parameters (if not exists in the DB) or update the existing
+     * page with the give content.
+     *
+     * @param pageType StaticPageType - the type of the static page as defined in {@link StaticPageType}
+     * @param language - an instance of the {@link Language} class containing the ISO 3166 code
+     * @param content  - String - the page content (HTML formatted).
+     * @see {@link StaticPage}
+     * @see {@link Language}
+     * @see {@link StaticPageType}
+     */
     void setStaticPage(StaticPageType pageType, Language language, String content);
 
+    /**
+     * Update the static page with the given content for the given page identifier.
+     *
+     * @param staticPageId Long - the identifier of the StaticPage instance.
+     * @param content      - String - the page content (HTML formatted).
+     * @see {@link StaticPage}
+     */
+    StaticPage saveStaticPage(Long staticPageId, String content);  // todo: I suggest the same name for this and the previous (setStaticPage or updateStaticPage)
+
+    /**
+     * Returns the {@link List} of all the Europeana portal {@link StaticPage}s. Each instance
+     * of the {@link StaticPage} contains: the page identifier,
+     * the language ISO 3166 code, the page type (e.g. ABOUT_US, PRIVACY, ..)
+     * and a String for the content of the page (HTML formatted).
+     *
+     * @return List - the List of all StaticPage instances.
+     * @see {@link StaticPage}
+     */
     List<StaticPage> getAllStaticPages();
 
-    StaticPage saveStaticPage(Long staticPageId, String content);
 
     // === Carousel Items
 
