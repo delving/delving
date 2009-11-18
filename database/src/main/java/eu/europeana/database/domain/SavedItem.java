@@ -127,4 +127,5 @@ public class SavedItem implements Serializable {
         item.setThumbnail(getEuropeanaObject());
         return item;
     }
+    
 }
