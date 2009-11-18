@@ -85,6 +85,12 @@
                 <configuration>
                     <groups>regression</groups>
                     <parallel>true</parallel>
+                    <systemProperties>
+                        <property>
+                            <name>europeana.properties</name>
+                            <value>../query/src/test/resources/europeana.properties</value>
+                        </property>
+                    </systemProperties>      
                 </configuration>
            </plugin>
          </plugins>
