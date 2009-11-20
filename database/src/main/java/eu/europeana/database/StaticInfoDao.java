@@ -309,7 +309,7 @@ public interface StaticInfoDao {
      * Remove the {@link SearchTerm} instance referenced by the SavedSearch with the given identifier
      * and the given {@link User}. It return an instance of the {@link User} class.
      *
-     * @param user        - User - the instance of the User class to which the item belongs
+     * @param user          - User - the instance of the User class to which the item belongs
      * @param savedSearchId - Long - the identifier of SavedSearch instance
      * @return User - the instance of the User class       todo: NA: why it returns User? I suggest to return void !
      * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
@@ -319,13 +319,29 @@ public interface StaticInfoDao {
      */
     User removeSearchTerm(User user, Long savedSearchId);
 
-    // ==== Editor picks
+    // ==== Editor picks    todo: What is an editorPick ???
 
-    User addEditorPick(User user, EditorPick editorPick);
-
+    /**
+     * Get all EditorPick instances.
+     *
+     * @return List -  of the retrieved EditorPick
+     * @see {@link List}
+     */
     List<EditorPick> fetchEditorPicksItems();
 
+    /**
+     * Create an EditorPick by using the given savedSearch
+     *
+     * @param savedSearch - the instance of  SavedSearch used to create an EditorPick
+     * @return EditorPick - the created instance of EditorPick
+     * @throws Exception
+     */
     EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
 
+    /**
+     * Remove the EditorPick instance related to the given @see {@link SavedSearch}
+     *
+     * @param savedSearch
+     */
     void removeFromEditorPick(SavedSearch savedSearch);
 }

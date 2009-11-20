@@ -210,13 +210,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public User addEditorPick(User user, EditorPick editorPick) {
-        user = entityManager.merge(user);
-        entityManager.persist(editorPick);
-        return user;
-    }
-
-    @Transactional
     public SearchTerm addSearchTerm(Long savedSearchId) {
         SavedSearch savedSearch = entityManager.getReference(SavedSearch.class, savedSearchId);
         if (savedSearch == null) {
