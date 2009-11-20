@@ -91,21 +91,16 @@ public class UserDaoImpl implements UserDao {
                 User existing = entityManager.find(User.class, fresh.getId());
                 fresh.setHashedPassword(existing.getHashedPassword());
             }
-            return entityManager.merge(fresh);
+            User user = entityManager.merge(fresh);
+            user.getSavedItems().size();
+            user.getSavedSearches().size();
+            user.getSocialTags().size();
+            return user;
         }
         else {
             entityManager.persist(fresh);
             return fresh;
         }
-    }
-
-    @Transactional
-    public User refreshUser(User user) {
-        user = entityManager.find(User.class, user.getId());
-        user.getSavedItems().size();
-        user.getSavedSearches().size();
-        user.getSocialTags().size();
-        return user;
     }
 
     @Transactional
@@ -116,31 +111,15 @@ public class UserDaoImpl implements UserDao {
         user = entityManager.merge(user);
         return user;
     }
-  /*
-    public User fetchUser(String email, String password) {
-         if (email == null || password == null)  {
-            throw new IllegalArgumentException("Parameter(s) has null value: email:" + email+ ", password:"+password);
-        }
-        User user;
-        Query query = entityManager.createQuery("select u from User as u where u.email = :email AND u.password = :password");
-        query.setParameter("email", email);
-        query.setParameter("password", password);
-        try {
-            user = (User) query.getSingleResult();
-            if (user != null){
-                user.getSavedItems().size();
-                user.getSavedSearches().size();
-                user.getSocialTags().size();
-            }
-        }
-        catch (NoResultException e) {
-            throw new IllegalArgumentException("The user doesn't exists. email: " + email + ", password: " + password);
-        }
-        return user;
-    }   */
 
     @Transactional
-    public User fetchUser(String email, String password) {
+    public List<SavedSearch> fetchSavedSearches(User user) {
+        user = entityManager.find(User.class, user.getId());
+        return user.getSavedSearches();
+    }
+
+    @Transactional
+    public User authenticateUser(String email, String password) {
         if (email == null || password == null)  {
             throw new IllegalArgumentException("Parameter(s) has null value: email:" + email+ ", password:"+password);
         }
@@ -158,42 +137,7 @@ public class UserDaoImpl implements UserDao {
         }
         return null;
     }
-    /*           // todo: use this or the next method?
-    @Transactional
-    public void removeUser(Long userId) {
-        if (userId == null)  {
-            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
-        }
-        User user = entityManager.getReference(User.class, userId);
-        for (SocialTag tag : user.getSocialTags()) {   // dont need to do this if "on delete cascade" is set on the external key
-            entityManager.remove(tag);
-        }
-        user.getSocialTags().clear();
-        entityManager.remove(user);
-    } */
 
-    @Transactional
-    public void removeUser(Long userId) {
-        User user = entityManager.find(User.class, userId);
-        if (user != null) {
-            entityManager.remove(user);
-        }
-    }
-    /*                       todo: use this or the previous method?
-       @Transactional
-    public User fetchUser(Long userId) {
-        return entityManager.find(User.class, userId);
-    }              */
-
-    /*        todo: this or the following
-    public List<SavedItem> fetchSavedItems(Long userId) {
-        if (userId == null)  {
-            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
-        }
-        Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid");
-        q.setParameter("userid", userId);      
-        return q.getResultList();
-    }           */
         @Transactional
     public List<SavedItem> fetchSavedItems(Long userId) {
         User user = entityManager.find(User.class, userId);
@@ -212,34 +156,21 @@ public class UserDaoImpl implements UserDao {
         List<SavedItem> savedItems = q.getResultList();
         return savedItems.size() == 1 ? savedItems.get(0) : null;
     }
-           /*                       todo: this or the following
-    public List<SavedSearch> fetchSavedSearches(Long userId) {
-        if (userId == null)  {
-            throw new IllegalArgumentException("Parameter has null value: userId:" + userId);
-        }
-        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id  = :userid");
-        q.setParameter("userid", userId);
-        return q.getResultList();
-    }         */
+
     @Transactional
       public List<SavedSearch> fetchSavedSearches(Long userId) {
           User user = entityManager.find(User.class, userId);
           user.getSavedSearches().size();
           return user.getSavedSearches();
       }
-         /*                             todo: this or the previous?
-    public SavedSearch fetchSavedSearchById(Long id) {
-        Query q = entityManager.createQuery("select st from SavedSearch st where st.id = :id");
-        q.setParameter("id", id);
-        List<SavedSearch> savedSearches = q.getResultList();
-        return savedSearches.size() == 1 ? savedSearches.get(0) : null;
-    }           */
-    public SavedSearch fetchSavedSearchById(Long id) {
-        if (id == null)  {
-            throw new IllegalArgumentException("Parameter has null value: userId:" +id);
+
+    @Transactional
+    public SavedSearch fetchSavedSearchById(Long savedSearchId) {
+        if (savedSearchId == null)  {
+            throw new IllegalArgumentException("Parameter has null value: userId:" + savedSearchId);
         }
         Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :id");
-        q.setParameter("id", id);
+        q.setParameter("id", savedSearchId);
         List results = q.getResultList();
         if (results.size() != 1) {
             return null;
@@ -311,7 +242,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Transactional
-    public User removeSavedItems(User user, Long id) {
+    public User removeSavedItem(User user, Long id) {
         Query q = entityManager.createQuery("select o from SavedItem  as o where user = :user and :id = id");
         q.setParameter("user", user.getId());
         q.setParameter("id", id);
@@ -345,56 +276,6 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
-    //    public Object findObject(User user, Class<?> clazz, Long id) {
-    //        Query q = entityManager.createQuery("select o from ")
-    //    }
-  /*
-    @Transactional
-    public User remove(User user, Class<?> clazz, Long id) {
-        Query q = entityManager.createQuery("select o from " + clazz.getSimpleName() + " as o where userid = :userid and :id = id");
-        q.setParameter("userid", user.getId());
-        q.setParameter("id", id);
-        List objects = q.getResultList();
-        if (objects.size() != 1) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
-        }
-        Object object = objects.get(0);
-        if (clazz == SocialTag.class) {
-            SocialTag socialTag = (SocialTag) object;
-            socialTag.getEuropeanaId().setLastModified(new Date());
-        }
-        entityManager.remove(object);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        user.getSavedItems().size();
-        user.getSavedSearches().size();
-        user.getSocialTags().size();
-        return user;
-    }
-
-
-    private SavedItem fetchSavedItem(User user, Long savedItemId) {
-        Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
-        q.setParameter("userid", user.getId());
-        q.setParameter("id", savedItemId);
-        List results = q.getResultList();
-        if (results.size() != 1) {
-            return null;
-        }
-        return (SavedItem) results.get(0);
-    }
-
-    private SavedSearch fetchSavedSearch(User user, Long savedSearchId) {
-        Query q = entityManager.createQuery("select o from SavedSearch as o where userid = :userid and :id = id");
-        q.setParameter("userid", user.getId());
-        q.setParameter("id", savedSearchId);
-        List results = q.getResultList();
-        if (results.size() != 1) {
-            return null;
-        }
-        return (SavedSearch) results.get(0);
-    }
-         */
     @Transactional
     public List<User> fetchUsers(String pattern) {
         Query query = entityManager.createQuery(
@@ -413,43 +294,6 @@ public class UserDaoImpl implements UserDao {
         return (List<User>) query.getResultList();
     }
 
-    @Transactional
-    public User fetchUserWhoPickedCarouselItem(String europeanaUri) {
-        Query query = entityManager.createQuery(
-                "select users from User users, CarouselItem ci, IN(users.savedItems) si, IN(si.europeanaId) ei " +
-                        "where ei.europeanaUri = ci.europeanaUri " +
-                        "and si.carouselItem = ci " +
-                        "and ei.europeanaUri = :europeanaUri");
-        query.setParameter("europeanaUri", europeanaUri);
-        List<User> users = query.getResultList();
-
-        if (users.isEmpty())
-            return null;
-
-        // multiple users have picked it up
-        if (users.size() > 1)
-            throw new RuntimeException("Illegal state exception: multiple users managed to pick the same carousel item for europeana uri " + europeanaUri);
-
-        return users.get(0);
-    }
-
-
-    public User fetchUserWhoPickedEditorPick(String aQuery) {
-        Query query = entityManager.createQuery(
-                "select users from User users, IN(users.savedSearches) si, IN(si.editorPick) epick " +
-                        "where epick.query = :query ");
-        query.setParameter("query", aQuery);
-        List<User> users = query.getResultList();
-
-        if (users.isEmpty())
-            return null;
-
-        // multiple users have picked it up
-        if (users.size() > 1)
-            throw new RuntimeException("Illegal state exception: multiple users managed to pick the same query " + aQuery);
-
-        return users.get(0);
-    }
 
     @Transactional
     public List<TagCount> getSocialTagCounts(String pattern) {
@@ -477,7 +321,6 @@ public class UserDaoImpl implements UserDao {
         query.setParameter("uri", europeanaUri);
         return (EuropeanaId) query.getSingleResult();
     }
-
 
 
 }

@@ -139,7 +139,7 @@ public class TestDashboardDao {
         assertFalse("Orphan should be false", europeanaId.isOrphan());
         User user = userDao.addUser(user2);
         user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_1);
-        user = userDao.refreshUser(user);
+        user = userDao.updateUser(user);
         List<SavedItem> savedItems = user.getSavedItems();
         assertNotNull(savedItems);
         for (SavedItem savedItem : savedItems) {
@@ -177,7 +177,6 @@ public class TestDashboardDao {
         User user = userDao.addUser(user2);
         user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_1);
         user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_2);
-        user = userDao.refreshUser(user);
         List<SavedItem> savedItems = user.getSavedItems();
         assertNotNull(savedItems);
         assertEquals("list should have length 2", 2, savedItems.size());
@@ -201,7 +200,6 @@ public class TestDashboardDao {
         search1.setQueryString("max");
         search1.setQuery("query=max&fq=TYPE:IMAGE");
         user = userDao.addSavedSearch(user, search1);
-        user = userDao.refreshUser(user);
         List<SavedSearch> searchList = user.getSavedSearches();
         assertNotNull(searchList);
         for (SavedSearch savedSearch : searchList) {
@@ -210,7 +208,7 @@ public class TestDashboardDao {
             assertNotNull(staticInfoDao.addSearchTerm(savedSearch.getId()));
             assertTrue("has one Search Term", savedSearch.hasSearchTerm());
         }
-        user = userDao.refreshUser(user);
+        user = userDao.updateUser(user);
         searchList = user.getSavedSearches();
         assertNotNull(searchList);
         for (SavedSearch savedSearch : searchList) {

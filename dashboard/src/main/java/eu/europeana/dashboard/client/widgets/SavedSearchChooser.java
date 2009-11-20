@@ -1,14 +1,17 @@
 package eu.europeana.dashboard.client.widgets;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.UserX;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -72,7 +75,7 @@ public class SavedSearchChooser extends DashboardWidget {
         UserChooser userChooser = new UserChooser(world);
         userChooser.setListener(new UserChooser.Listener() {
             public void userSelected(UserX user) {
-                world.service().fetchSavedSearches(user.getId(), new Reply<List<SavedSearchX>>() {
+                world.service().fetchSavedSearches(user, new Reply<List<SavedSearchX>>() {
                     public void onSuccess(List<SavedSearchX> result) {
                         setSearches(result);
                     }

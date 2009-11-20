@@ -115,7 +115,7 @@ public class UsersWidget extends DashboardWidget {
                 if (deleteBox.getValue()) {
                     verifyDialog.ask(submitButton, world.messages().deleteCaption(), world.messages().deleteThisUserQuestion(), new Runnable() {
                         public void run() {
-                            world.service().removeUser(userChooser.getSelectedUser().getId(), new Reply<Void>() {
+                            world.service().removeUser(userChooser.getSelectedUser(), new Reply<Void>() {
                                 public void onSuccess(Void result) {
                                     setUser(null);
                                 }

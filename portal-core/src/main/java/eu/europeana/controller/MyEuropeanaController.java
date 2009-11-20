@@ -2,11 +2,17 @@ package eu.europeana.controller;
 
 import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SocialTag;
+import eu.europeana.database.domain.User;
 import eu.europeana.query.DocType;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +33,7 @@ public class MyEuropeanaController extends AbstractPortalController {
 		model.setView("myeuropeana");
 		User user = ControllerUtil.getUser();
 		if (user != null) {
-			ControllerUtil.setUser(userDao.refreshUser(user));
+			ControllerUtil.setUser(userDao.updateUser(user));
 		}
 		// making the presentation facade for carousel & pacta
 //		model.put(USER_PRESENTATION_FACADE,
@@ -36,51 +42,7 @@ public class MyEuropeanaController extends AbstractPortalController {
 //						makeSavedSearchPresentationFacades(user)));
 	}
 
-	private boolean isLocked(User user, User holdingUser) {
-		if (user.getRole() != Role.ROLE_EDITOR)
-			return true;
-		if (holdingUser == null)
-			return false;
-		return ! user.getId().equals(holdingUser.getId());
-	}
-
-	private boolean isInCarousel(User holdingUser) {
-		return holdingUser != null;
-	}
-
-	private List<SavedItemPresentationFacade> makeSavedItemsPresentationFacades(User user) {
-		List<SavedItemPresentationFacade> savedItems = new ArrayList<SavedItemPresentationFacade>();
-
-		for (SavedItem savedItem : user.getSavedItems()) {
-			User holdingUser = userDao.fetchUserWhoPickedCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri());
-
-			savedItems.add(
-					new SavedItemPresentationFacade(
-							isInCarousel(holdingUser),
-							isLocked(user, holdingUser),
-							savedItem));
-		}
-
-		return savedItems;
-	}
-
-	private List<SavedSearchPresentationFacade> makeSavedSearchPresentationFacades(User user) {
-		List<SavedSearchPresentationFacade> savedSearches = new ArrayList<SavedSearchPresentationFacade>();
-
-		for (SavedSearch savedSearch : user.getSavedSearches()) {
-			User holdingUser = userDao.fetchUserWhoPickedEditorPick(savedSearch.getQuery());
-
-			savedSearches.add(
-					new SavedSearchPresentationFacade(
-							isInCarousel(holdingUser),
-							isLocked(user, holdingUser),
-							savedSearch));
-		}
-
-		return savedSearches;
-	}
-
-	public static class PresentationFacade {
+    public static class PresentationFacade {
 
 		private boolean isInCarousel;
 		private boolean isLocked;
@@ -156,11 +118,8 @@ public class MyEuropeanaController extends AbstractPortalController {
 			this.savedSearch = savedSearch;
 		}
 
-		/*
-		 * delegates
-		 */
 		public boolean equals(Object obj) {
-			return savedSearch.equals(obj);
+            return obj instanceof SavedSearchPresentationFacade && savedSearch.equals(obj);
 		}
 
 		public Date getDateSaved() {

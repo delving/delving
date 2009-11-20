@@ -1,7 +1,20 @@
 package eu.europeana.dashboard.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.ContributorX;
+import eu.europeana.dashboard.client.dto.CountryX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.PartnerX;
+import eu.europeana.dashboard.client.dto.QueueEntryX;
+import eu.europeana.dashboard.client.dto.SavedItemX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.StaticPageX;
+import eu.europeana.dashboard.client.dto.TranslationX;
+import eu.europeana.dashboard.client.dto.UserX;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +30,7 @@ public interface DashboardServiceAsync {
 
     void fetchSavedItems(Long userId, AsyncCallback<List<SavedItemX>> async);
 
-    void removeUser(Long userId, AsyncCallback<Void> async);
+    void removeUser(UserX user, AsyncCallback<Void> async);
 
     void fetchCollections(AsyncCallback<List<EuropeanaCollectionX>> async);
 
@@ -69,7 +82,7 @@ public interface DashboardServiceAsync {
 
     void deleteAllOrphans(AsyncCallback<Void> async);
 
-    void fetchSavedSearches(Long id, AsyncCallback<List<SavedSearchX>> async);
+    void fetchSavedSearches(UserX userX, AsyncCallback<List<SavedSearchX>> async);
 
     void fetchPartnerSectors(AsyncCallback<List<String>> async);
 

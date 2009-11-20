@@ -44,7 +44,7 @@ public class RemoveController extends AbstractAjaxController {
                 user = staticInfoDao.removeCarouselItem(user, id);
                 break;
             case SAVED_ITEM:
-                user = userDao.removeSavedItems(user, id);
+                user = userDao.removeSavedItem(user, id);
                 break;
             case SAVED_SEARCH:
                 user = userDao.removeSavedSearch(user, id);

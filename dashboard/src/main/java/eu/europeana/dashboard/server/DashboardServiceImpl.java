@@ -126,7 +126,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public UserX login(String email, String password) {
-        User user = userDao.fetchUser(email, password);
+        User user = userDao.authenticateUser(email, password);
         if (user != null && user.isEnabled()) {
             log.info("User "+user.getEmail()+" (id="+user.getId()+") logged in with cookie "+UserCookie.get());
             String cookie = UserCookie.get();
@@ -240,9 +240,9 @@ public class DashboardServiceImpl implements DashboardService {
         return items;
     }
 
-    public void removeUser(Long userId) {
-        audit("remove user "+userId);
-        userDao.removeUser(userId);
+    public void removeUser(UserX user) {
+        audit("remove user "+user.getUserName());
+        userDao.removeUser(DataTransfer.convert(user));
     }
 
     public List<ImportFileX> fetchImportFiles(boolean normalized) {
@@ -387,8 +387,8 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardDao.enableAllCollections();
     }
 
-    public List<SavedSearchX> fetchSavedSearches(Long id) {
-        List<SavedSearch> savedSearches = userDao.fetchSavedSearches(id);
+    public List<SavedSearchX> fetchSavedSearches(UserX user) {
+        List<SavedSearch> savedSearches = userDao.fetchSavedSearches(DataTransfer.convert(user));
         List<SavedSearchX> result = new ArrayList<SavedSearchX>();
         for (SavedSearch search : savedSearches) {
             result.add(DataTransfer.convert(search));
