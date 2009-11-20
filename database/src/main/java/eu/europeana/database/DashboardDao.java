@@ -74,7 +74,7 @@ public interface DashboardDao {
      *
      * <p>
      *
-     * todo: since the creation of the sanbox dashboard, there is a potential for multiple
+     * todo: since the creation of the sandbox dashboard, there is a potential for multiple
      * todo: collections having the same file name, which is problematic for this method
      *
      * @param fileName which file
@@ -181,12 +181,8 @@ public interface DashboardDao {
     int removeOrphanObject(String objectUrl);
 
     /**
-     * Find the orphan objects associated with the given collection, by checking for objects which have not
+     * Find and mark the orphan objects associated with the given collection, by checking for objects which have not
      * been modified since the collection was re-imported, indicating that they were no longer present.
-     *
-     * The entries found are marked as orphan.
-     *
-     * todo: the name of this method should indicate that the orphans are being marked
      *
      * todo: apparently this method's implementation is in transition, unit tests required
      *
@@ -194,7 +190,7 @@ public interface DashboardDao {
      * @return the number of IDs with
      */
 
-    int findOrphans(EuropeanaCollection collection);
+    int markOrphans(EuropeanaCollection collection);
 
     /**
      * Fetch all the entries out of the current queue, since each one of them contains information

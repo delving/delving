@@ -34,11 +34,9 @@ import eu.europeana.database.domain.EuropeanaObject;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.IndexingQueueEntry;
 import eu.europeana.database.domain.QueueEntry;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -513,7 +511,7 @@ public class DashboardDaoImpl implements DashboardDao {
     @Transactional
     public EuropeanaCollection updateCollectionCounters(Long collectionId) {
         EuropeanaCollection collection = entityManager.find(EuropeanaCollection.class, collectionId);
-        findOrphans(collection);
+        markOrphans(collection);
         Query recordCountQuery = entityManager.createQuery("select count(id) from EuropeanaId as id where id.collection = :collection and orphan = false");
         Query cacheCountQuery = entityManager.createQuery("select count(eo) from EuropeanaObject as eo where eo.europeanaId.collection = :collection");
         Query orphanCountQuery = entityManager.createQuery("select count(id) from EuropeanaId as id where id.collection = :collection and orphan = true");
@@ -533,7 +531,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public int findOrphans(EuropeanaCollection collection) {
+    public int markOrphans(EuropeanaCollection collection) {
         // find all orphans by query
         //        Query orphanCountQuery = entityManager.createQuery("select id from EuropeanaId as id where collection = :collection and collection.collectionLastModified > id.lastModified");
         //        orphanCountQuery.setParameter("collection", collection);

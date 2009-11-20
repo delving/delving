@@ -241,7 +241,7 @@ public class TestDashboardDao {
         Assert.assertEquals("total number records", 10, updatedCollection.getTotalRecords().intValue());
         Assert.assertEquals("total number of orphans", 10, updatedCollection.getTotalOrphans().intValue());
 
-        int orphans = dashboardDao.findOrphans(testCol);
+        int orphans = dashboardDao.markOrphans(testCol);
         Assert.assertEquals("total number of orphans", 10, orphans);
 
         boolean addedToQueue = dashboardDao.addToIndexQueue(testCol);

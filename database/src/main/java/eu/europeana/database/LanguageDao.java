@@ -10,23 +10,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The language enum contains activeByDefault as boolean, but the database
- * is the ultimate authority on which languages are active.
+ * The Language class works like an enumeration to record all of the languages supported by
+ * the platform, but since we need to be able to enable and disable languages on the fly
+ * there is an entity called LanguageActivation which stores exceptions to the default activation
+ * status stored for each language in its "activeByDefault" boolean.
+ *
+ * Further, the langauge dao is responsible for maintaining the i18n key-value mappings normally
+ * stored in property files with one for each locale.  Here all of this storage is happening
+ * in the database so that people can adjust it using the Dashboard and the result does not
+ * require a redeploy.
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  * @author Nicola Aloia   <nicola.aloia@isti.cnr.it>
  */
 
-/**
- * This interface is used to manage messages in different languages.
- * The messages are handled through the persistent class {@link Translation}, which contains the following fields:
- * <ol>
- * <li>id - the unique identifier of the message </li>
- * <li>language - a three char code of the language, conform to ISO 3166  </li>
- * <li>value - the String value of the message  </li>
- * <li>messageLeyId - the identifier of a mnemonic code </li>      todo: Is Ok?
- * </0l>
- */
 public interface LanguageDao {
 
     /**
@@ -36,43 +33,47 @@ public interface LanguageDao {
      * @return an EnumSet of the active languages.
      * @see {@link Language}
      */
+
     EnumSet<Language> getActiveLanguages();
 
     /**
-     * Active/Deactivate a Language, based on the given boolean parameter.
+     * Active/Deactivate a Language, based on the given boolean parameter.  This means
+     * store in the databse an exception to the default activation
      *
      * @param language an instance of the {@link Language} class.
      * @param active   a boolean value.
      * @see {@link Language}
      */
+
     void setLanguageActive(Language language, boolean active);
 
     /**
      * Add an entry to the persistent class {@link Translation}.
      *
-     * @param key      - String
+     * @param key originating mostly in the page templates, identifies the language-dependent string
      * @param language an instance of {@link Language} class
-     * @param value    - String
-     * @return an instance of the {@link Translation} class
-     * @see {@link Language}
-     * @see {@link Translation}
+     * @param value what the key should translate to in the user interface
+     * @return an instance of the {@link Translation} class, containing what was set
      */
+
     Translation setTranslation(String key, Language language, String value);
 
     /**
-     * Get all the Message Keys                              todo: clarify the meaning of MessageKey
+     * Fetch a list of all the possible keys for which there are translations
      *
      * @return a List of String containing all the Message keys
      */
+    
     List<String> fetchMessageKeyStrings();
 
     /**
-     * Get the MessageKey for the given mnemonic value of the key message. todo: ???
+     * Get the MessageKey for the given mnemonic value of the key message. It will contain all its translations.
      *
      * @param key - String - the mnemonic value of the key message.
      * @return an instance of {@link MessageKey}
      * @see {@link MessageKey}
      */
+
     MessageKey fetchMessageKey(String key);
 
     /**
@@ -83,14 +84,18 @@ public interface LanguageDao {
      * @return a MAP containing String Language code with relative translation.
      * @see {@link Translation}
      */
+
     Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
 
 
     /**
-     * Persist an instance of the  {@link MessageKey} class for the given mnemonic key value.
+     * Persist an instance of the  {@link MessageKey} class for the given mnemonic key value.  It will start
+     * without any translations, since they will be added later.  It waS not necessary to return anything
+     * becasue a general fetch of everything follows a call to this.
      *
      * @param key - String the mnemonic key value.
      */
+
     void addMessagekey(String key);
 
     /**
@@ -98,16 +103,17 @@ public interface LanguageDao {
      *
      * @param key - String the mnemonic key value.
      */
-    void removeMessageKey(String key);
 
+    void removeMessageKey(String key);
 
     /**
      * Get all instances of the {@link MessageKey} class. The MessageKey class is a persistent class
-     * to manage messages among different languages.
+     * to manage messages among different languages.  Note: used in DataMigration only.
      *
      * @return a List containing all the {@link MessageKey} items
      * @see MessageKey
      */
+
     List<MessageKey> getAllTranslationMessages();
 
 }
