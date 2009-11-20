@@ -21,15 +21,24 @@
 
 package eu.europeana.database.dao;
 
+import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.*;
-
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.EditorPick;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SearchTerm;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import eu.europeana.database.DashboardDao;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,25 +87,8 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     @Transactional
-    public StaticPage fetchStaticPage(Language language, String pageName) {
-        Query query = entityManager.createQuery("select sp from StaticPage as sp where sp.language = :language and sp.pageType = :pageType");
-        query.setParameter("language", language);
-        query.setParameter("pageType", StaticPageType.get(pageName));
-        List results = query.getResultList();
-        if (results.size() == 0) {
-            query.setParameter("language", Language.EN);
-            results = query.getResultList();
-            if (results.size() == 0) {
-                return new StaticPage(StaticPageType.get(pageName), language);
-            }
-        }
-        return (StaticPage) results.get(0);
-    }
-
-    @Transactional
-    public StaticPage fetchStaticPage(StaticPageType pageType, Language language) {
+    public StaticPage getStaticPage(StaticPageType pageType, Language language) {
         Query query = entityManager.createQuery("select sp from StaticPage sp where sp.pageType = :pageType and sp.language = :language");
         query.setParameter("pageType", pageType);
         query.setParameter("language", language);
@@ -291,7 +283,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public StaticPage saveStaticPage(Long staticPageId, String content) {
+    public StaticPage updateStaticPage(Long staticPageId, String content) {
         StaticPage page = entityManager.find(StaticPage.class, staticPageId);
         page.setContent(content);
         return page;

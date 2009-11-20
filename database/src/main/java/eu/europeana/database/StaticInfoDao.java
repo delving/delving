@@ -25,7 +25,6 @@ import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.EditorPick;
 import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
@@ -45,8 +44,6 @@ import java.util.List;
 
 public interface StaticInfoDao {
 
-    // ==== Partners
-
     /**
      * Return the list of all {@link Partner}s ordered by sector.  The Partner class contains the name
      * and URL of the project partner, together with the sector of activity (e.g. "Project Contributors",
@@ -56,6 +53,7 @@ public interface StaticInfoDao {
      * @see {@link Partner}
      * @see {@link eu.europeana.database.domain.PartnerSector}
      */
+
     List<Partner> getAllPartnerItems();
 
     /**
@@ -65,6 +63,7 @@ public interface StaticInfoDao {
      * @return Partner - the updated instance class
      * @see {@link Partner}
      */
+
     Partner savePartner(Partner partner);
 
     /**
@@ -76,9 +75,8 @@ public interface StaticInfoDao {
      * @throws IllegalArgumentException if the given identifier is null.
      * @see {@link Partner}
      */
-    boolean removePartner(Long partnerId);
 
-    // ==== Contributors
+    boolean removePartner(Long partnerId);
 
     /**
      * Return the list of all Europeana {@link Contributor}s ordered by country.
@@ -86,15 +84,19 @@ public interface StaticInfoDao {
      * @return List - the list of all Europeana contributors.
      * @see {@link Contributor}
      */
-    List<Contributor> getAllContributors();     // renamed the previous: getAllContributorItems
+
+    List<Contributor> getAllContributors();
 
     /**
      * Return the list of all Europeana {@link Contributor}s ordered by id.
      *
+     * // todo: is this method still necessary, given the above method?
+     *
      * @return List - the list of all Europeana contributors.
      * @see {@link Contributor}
      */
-    List<Contributor> getAllContributorsByIdentifier();    // renamed the previous: fetchContributors todo: NA: do we need this?
+
+    List<Contributor> getAllContributorsByIdentifier();
 
     /**
      * Persists the given instance of the {@link Contributor} class.
@@ -114,24 +116,8 @@ public interface StaticInfoDao {
      * @throws IllegalArgumentException if the given identifier is null.
      * @see {@link Contributor}
      */
+
     boolean removeContributor(Long contributorId);
-
-    // ==== Static pages
-
-    /**
-     * Returns the Europeana portal static page with the given name for the given language. The returned instance
-     * of the {@link StaticPage} class contains: the page identifier,
-     * the language ISO 3166 code, the page type (e.g. ABOUT_US, PRIVACY, ..)
-     * and a String for the content of the page (HTML formatted).
-     *
-     * @param language - an instance of the {@link Language} class containing the ISO 3166 code
-     * @param pageName String - the name of the static page as defined in {@link StaticPageType}
-     * @return StaticPage - the instance of the StaticPage class
-     * @see {@link StaticPage}
-     * @see {@link Language}
-     * @see {@link StaticPageType}
-     */
-    StaticPage fetchStaticPage(Language language, String pageName);    // todo: NA: do we need this and the following?
 
     /**
      * Returns the Europeana portal static page with the given type for the given language. The returned instance
@@ -146,7 +132,8 @@ public interface StaticInfoDao {
      * @see {@link Language}
      * @see {@link StaticPageType}
      */
-    StaticPage fetchStaticPage(StaticPageType pageType, Language language); // todo: NA: I suggest to rename getStaticPage
+    
+    StaticPage getStaticPage(StaticPageType pageType, Language language);
 
     /**
      * Persists a new static page with the given parameters (if not exists in the DB) or update the existing
@@ -159,6 +146,7 @@ public interface StaticInfoDao {
      * @see {@link Language}
      * @see {@link StaticPageType}
      */
+
     void setStaticPage(StaticPageType pageType, Language language, String content);
 
     /**
@@ -167,8 +155,10 @@ public interface StaticInfoDao {
      * @param staticPageId Long - the identifier of the StaticPage instance.
      * @param content      - String - the page content (HTML formatted).
      * @see {@link StaticPage}
+     * @return the new version of the page
      */
-    StaticPage saveStaticPage(Long staticPageId, String content);  // todo: I suggest the same name for this and the previous (setStaticPage or updateStaticPage)
+
+    StaticPage updateStaticPage(Long staticPageId, String content);
 
     /**
      * Returns the {@link List} of all the Europeana portal {@link StaticPage}s. Each instance
@@ -179,6 +169,7 @@ public interface StaticInfoDao {
      * @return List - the List of all StaticPage instances.
      * @see {@link StaticPage}
      */
+
     List<StaticPage> getAllStaticPages();
 
 
@@ -200,6 +191,7 @@ public interface StaticInfoDao {
      * @see {@link CarouselItem}
      * @see {@link SavedItem}
      */
+    
     User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
 
     /**

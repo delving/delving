@@ -461,12 +461,12 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public StaticPageX fetchStaticPage(String pageType, LanguageX language) {
-        StaticPage page = staticInfoDao.fetchStaticPage(StaticPageType.valueOf(pageType), Language.findByCode(language.getCode()));
+        StaticPage page = staticInfoDao.getStaticPage(StaticPageType.valueOf(pageType), Language.findByCode(language.getCode()));
         return DataTransfer.convert(page);
     }
 
     public StaticPageX saveStaticPage(Long staticPageId, String content) {
-        StaticPage page = staticInfoDao.saveStaticPage(staticPageId, content);
+        StaticPage page = staticInfoDao.updateStaticPage(staticPageId, content);
         audit("save static page: "+staticPageId);
         return DataTransfer.convert(page);
     }

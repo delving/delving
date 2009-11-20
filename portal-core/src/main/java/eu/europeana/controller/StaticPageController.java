@@ -4,7 +4,7 @@ import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.StaticPage;
-
+import eu.europeana.database.domain.StaticPageType;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -17,22 +17,22 @@ import javax.servlet.http.HttpServletRequest;
 
 public class StaticPageController extends AbstractPortalController {
 
-    private String template;
+    private StaticPageType pageType;
     private StaticInfoDao staticInfoDao;
     private boolean notLoadableFromDb;
 
     public void setTemplate(String template) {
-        this.template = template;
+        this.pageType = StaticPageType.get(template);
     }
 
     public void handle(HttpServletRequest request, Model model) throws Exception {
         if (!notLoadableFromDb) {
             Language language = ControllerUtil.getLocale(request);
-            StaticPage staticPage = staticInfoDao.fetchStaticPage(language, template);
+            StaticPage staticPage = staticInfoDao.getStaticPage(pageType, language);
             model.put("staticPage", staticPage);
         }
         model.setContentType("text/html; charset=utf-8");
-        model.setView(template);
+        model.setView(pageType.getViewName());
     }
 
      public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
