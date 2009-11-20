@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @author Nicola Aloia
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 public class StaticInfoDaoImpl implements StaticInfoDao {
     private Logger log = Logger.getLogger(getClass());
@@ -210,38 +210,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public CarouselItem addCarouselItem(User user, Long savedItemId) {
-//        SavedItem savedItem = fetchSavedItem(user, savedItemId);
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
-        if (savedItem == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
-        }
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        savedItem.setCarouselItem(carouselItem);
-        return carouselItem;
-    }
-
-    @Transactional
-    public User addCarouselItem(User user, SavedItem savedItem) {
-        if (savedItem == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItem.getId());
-        }
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        savedItem.setCarouselItem(carouselItem);
-        entityManager.persist(carouselItem);
-        user = entityManager.merge(user);
-        return user;
-    }
-
-    @Transactional
-    public User addCarouselItem(User user, CarouselItem carouselItem) {
-        //carouselItem.setetDateSaved(new Date());
-        user = entityManager.merge(user);
-        entityManager.persist(carouselItem);
-        return user;
-    }
-
-    @Transactional
     public User addEditorPick(User user, EditorPick editorPick) {
         user = entityManager.merge(user);
         entityManager.persist(editorPick);
@@ -375,14 +343,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         }
     }
 
-    @Transactional
-    public boolean addCarouselItem(SavedItem savedItem) {
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        //        carouselItem.setSavedItem(savedItem);
-        savedItem.setCarouselItem(carouselItem);
-        entityManager.persist(carouselItem);
-        return true;
-    }
 
     /*
     *  People Are Currently Thinking About, or editor picks

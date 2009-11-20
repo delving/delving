@@ -94,7 +94,7 @@ public interface StaticInfoDao {
      * @return List - the list of all Europeana contributors.
      * @see {@link Contributor}
      */
-    List<Contributor> getAllContributorsByIdentifier();    // renamed the previous: fetchContributors todo: do we need this?
+    List<Contributor> getAllContributorsByIdentifier();    // renamed the previous: fetchContributors todo: NA: do we need this?
 
     /**
      * Persists the given instance of the {@link Contributor} class.
@@ -131,7 +131,7 @@ public interface StaticInfoDao {
      * @see {@link Language}
      * @see {@link StaticPageType}
      */
-    StaticPage fetchStaticPage(Language language, String pageName);    // todo: do we need this and the following?
+    StaticPage fetchStaticPage(Language language, String pageName);    // todo: NA: do we need this and the following?
 
     /**
      * Returns the Europeana portal static page with the given type for the given language. The returned instance
@@ -146,7 +146,7 @@ public interface StaticInfoDao {
      * @see {@link Language}
      * @see {@link StaticPageType}
      */
-    StaticPage fetchStaticPage(StaticPageType pageType, Language language); // todo: I suggest to rename getStaticPage
+    StaticPage fetchStaticPage(StaticPageType pageType, Language language); // todo: NA: I suggest to rename getStaticPage
 
     /**
      * Persists a new static page with the given parameters (if not exists in the DB) or update the existing
@@ -183,40 +183,140 @@ public interface StaticInfoDao {
 
 
     // === Carousel Items
+    // todo: NA: it's not clear to me meaning of the Carousel. Maybe the database design should be revised.
+    // todo: NA: I guess saveItem and savedSearch related to MyEuropeana
+    // todo: NA: what is the relation between CarouselItem and savedItem? (e.g. What is the difference between the field "title" of the two classes?)
 
+
+    /**
+     * Remove the {@link SavedItem} instance with the given identifier from the Carousel of the given {@link User}.
+     * It return an instance of the {@link User} class.
+     *
+     * @param user        - User - the instance of the User class to which the item belongs
+     * @param savedItemId - Long - the identifier of the item to remove
+     * @return User - the instance of the User class       todo: NA: why it returns User? I suggest to return void !
+     * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
+     * @see {@link User}
+     * @see {@link CarouselItem}
+     * @see {@link SavedItem}
+     */
     User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
 
+    /**
+     * Remove the given {@link SavedItem} from the Carousel.
+     *
+     * @param savedItem - SavedItem - the instance of the SavedItem to remove from Carousel
+     * @see {@link CarouselItem}
+     * @see {@link SavedItem}
+     */
     void removeFromCarousel(SavedItem savedItem);
 
+
+    /**
+     * Remove the {@link CarouselItem} instance with the given identifier from the Carousel.
+     *
+     * @param id - Long - the identifier of the item to remove
+     * @return Boolean - always true       todo: NA: why it returns a Boolean? !
+     * @throws IllegalArgumentException if the input parameter is null or carousel item isn't in the SaveItem class too.
+     * @see {@link CarouselItem}
+     */
     Boolean removeCarouselItem(Long id);
 
-    User addCarouselItem(User user, CarouselItem carouselItem);
 
-    boolean addCarouselItem(SavedItem savedItem);
-
-    CarouselItem addCarouselItem(User user, Long savedItem);    // this is different from the following in the reurned value
-
-    User addCarouselItem(User user, SavedItem savedItem);
-
+    /**
+     * Create a new {@link CarouselItem}, with a reference to the Europeana object, with the given identifier,
+     * for the {@link SavedItem}, with the given identifier.
+     *
+     * @param europeanaUri - String - the URI of the object in the Carousel.
+     * @param savedItemId  - Long - the identifier of the item to be added
+     * @return CarouselItem - the new instance of the CarouselItem class
+     * @see {@link CarouselItem}
+     * @see {@link SavedItem}
+     * @see {@link eu.europeana.database.domain.EuropeanaId}
+     */
     CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
 
+    /**
+     * Get all the instances on the {@link CarouselItem} class.
+     *
+     * @return List - all the CarouselItems
+     * @see {@link CarouselItem}
+     * @see {@link List}
+     */
     List<CarouselItem> fetchCarouselItems();
 
 
     // ==== Search Terms
 
+    /**
+     * Persists a new instance of {@link SearchTerm} with the given term for the given language.
+     *
+     * @param language - the instance of the Language  (conform to ISO 3166)
+     * @param term     - String the term to be added
+     * @return boolean - true todo: always true?
+     * @see {@link Language}
+     */
     boolean addSearchTerm(Language language, String term);
 
+    /**
+     * Persists a new instance of {@link SearchTerm} using the given savedSearch.
+     *
+     * @param savedSearch - the instance of SavedSearch used to initialize the new SearchTerm instance.
+     * @return boolean - true todo: always true?
+     * @see {@link SavedSearch}
+     */
     boolean addSearchTerm(SavedSearch savedSearch);
 
+    /**
+     * Persists a new instance of {@link SearchTerm} using the SavedSearch instance with the given identifier.
+     *
+     * @param savedSearchId - Long - the identifier of the instance of SavedSearch used to initialize the new SearchTerm instance.
+     * @return SearchTerm - the created instance of SearchTerm.
+     * @see {@link SavedSearch}
+     */
     SearchTerm addSearchTerm(Long savedSearchId);
 
+    /**
+     * Get all terms for the given language.
+     *
+     * @param language - the instance of the Language  (conform to ISO 3166)
+     * @return LIST of String
+     * @see {@link List}
+     * @see {@link Language}
+     */
     List<String> fetchSearchTerms(Language language);
 
+    /**
+     * Remove the SearchTerm instance of the given term for the given language.
+     *
+     * @param language - the instance of the Language  (conform to ISO 3166)
+     * @param term     - String the term to be removed
+     * @return boolean - success/unsuccess
+     */
     boolean removeSearchTerm(Language language, String term);
 
+    /**
+     * Get the whole content of the SearchTerm class.
+     *
+     * @return List -  of the retrieved SearchTerm
+     * @see {@link List}
+     * @see {@link SearchTerm}
+     */
     List<SearchTerm> getAllSearchTerms();
 
+
+    /**
+     * Remove the {@link SearchTerm} instance referenced by the SavedSearch with the given identifier
+     * and the given {@link User}. It return an instance of the {@link User} class.
+     *
+     * @param user        - User - the instance of the User class to which the item belongs
+     * @param savedSearchId - Long - the identifier of SavedSearch instance
+     * @return User - the instance of the User class       todo: NA: why it returns User? I suggest to return void !
+     * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
+     * @see {@link User}
+     * @see {@link SavedSearch}
+     * @see {@link SearchTerm}
+     */
     User removeSearchTerm(User user, Long savedSearchId);
 
     // ==== Editor picks
