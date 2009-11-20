@@ -145,7 +145,6 @@ public class TestDashboardDao {
         for (SavedItem savedItem : savedItems) {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
-//            user = userDao.addCarouselItem(user, savedItem.getId());
             CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
 //            Assert.assertTrue(carouselItem.getSavedItem() != null);
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());

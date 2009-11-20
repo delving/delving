@@ -6,14 +6,20 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
+
 /**
+ * This Class is used to activate and deactivate languages on the fly, based on a DB entity.
+ * The {@link Language} class contains a method
+ * isActiveByDefault() which determines the default status of each language.
+ *
  * @author vitali
+ * @author Nicola Aloia   <nicola.aloia@isti.cnr.it>
  */
 @Entity
 public class LanguageActivation {
 
     @Id
-    @Column(length=3)
+    @Column(length = 3)
     @Enumerated(EnumType.STRING)
     Language language;
 

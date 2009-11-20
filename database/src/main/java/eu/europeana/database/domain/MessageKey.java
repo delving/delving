@@ -30,6 +30,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The MessageKey class is an entity which translates the "key" into different languages
+ * using the collection of Translation objects that it contains.  The "key" strings are to be found in the
+ * Freemarker page templates.
+ */
 @Entity
 @XStreamAlias("MessageKey")
 public class MessageKey implements Serializable {
@@ -85,8 +90,7 @@ public class MessageKey implements Serializable {
         if (translation != null) {
             translation.setValue(value);
             return translation;
-        }
-        else {
+        } else {
             translation = new Translation(this, language, value);
             getTranslations().add(translation);
             return translation;
