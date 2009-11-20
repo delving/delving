@@ -156,7 +156,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>${spring.version}</version>
+            <version>${spring.security.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-support</artifactId>
@@ -211,7 +211,7 @@
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-asl</artifactId>
-            <version>${wstx.asl}</version>
+            <version>${wstx.asl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
