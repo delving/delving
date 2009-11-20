@@ -58,7 +58,5 @@
     </organization>
     <build>
         <defaultGoal>install</defaultGoal>
-        <plugins>
-        </plugins>
     </build>
 </project>
