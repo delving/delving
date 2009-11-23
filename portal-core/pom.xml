@@ -73,18 +73,15 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>${spring.security.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-support</artifactId>
@@ -99,7 +96,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.security.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-web</artifactId>
@@ -110,63 +106,51 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
-            <version>${commons.httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>${freemarker.version}</version>
         </dependency>
         <dependency>
             <groupId>org.dspace.oclc</groupId>
             <artifactId>oclc-srw</artifactId>
-            <version>${oclc.srw.version}</version>
         </dependency>
         <dependency>
             <groupId>org.dspace</groupId>
             <artifactId>cql-java</artifactId>
-            <version>${cql.java.version}</version>
         </dependency>
          <dependency>
             <groupId>quartz</groupId>
             <artifactId>quartz</artifactId>
-            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>${mail.version}</version>
         </dependency>
          <dependency>
             <groupId>net.jawr</groupId>
             <artifactId>jawr</artifactId>
-            <version>${jawr.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osuosl.srw</groupId>
             <artifactId>srw_lucene</artifactId>
             <!--suppress MavenModelInspection -->
-            <version>${srw.lucene.version}</version>
         </dependency>
     </dependencies>
 </project>

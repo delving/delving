@@ -70,27 +70,22 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
-            <version>${commons.httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-lgpl</artifactId>
-            <version>${woodstox.version}</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>${xstream.version}</version>
         </dependency>
         <dependency>
             <groupId>org.htmlparser</groupId>
             <artifactId>htmlparser</artifactId>
-            <version>${htmlparser.version}</version>
         </dependency>
     </dependencies>
 </project>
