@@ -109,6 +109,19 @@
                     </srcFiles>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <!--
+                    <detectLinks>true</detectLinks>
+                    http://jira.codehaus.org/browse/MJAVADOC-273
+                    -->
+                    <excludePackageNames>*.migration.*, *.json.*, *.integration.*, *.dao.*</excludePackageNames>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
