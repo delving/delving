@@ -3,6 +3,7 @@ package eu.europeana.database.dao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.MessageKey;
+import eu.europeana.database.domain.Translation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.util.EnumSet;
+import java.util.*;
 
 /**
  * @author "Gerald de Jong" <geralddejong@gmail.com>
@@ -72,11 +73,51 @@ public class TestLanguageDao {
         Assert.isNull(messageKey);
     }
 
-// todo: thise methods must be tested here
-//    EnumSet<Language> getActiveLanguages();
-//    void setLanguageActive(Language language, boolean active);
-//    Translation setTranslation(String key, Language language, String value);
-//    List<String> fetchMessageKeyStrings();
-//    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
+    @Test
+    public void fetchMessageKeyStrings() throws Exception {
+        String keys[] = {"__Nicola1", "__Nicola2", "__Nicola3"};
+
+        for (String key : keys) {
+            languageDao.addMessagekey(key);
+        }
+        List<String> messageKeys = languageDao.fetchMessageKeyStrings();
+        Assert.notNull(messageKeys);
+        Assert.isTrue(messageKeys.size() >= keys.length);
+        for (String key : keys) {
+            Assert.isTrue(messageKeys.contains(key));
+        }
+
+        for (String key : keys) {
+            languageDao.removeMessageKey(key);
+        }
+
+        messageKeys = languageDao.fetchMessageKeyStrings();
+        Assert.notNull(messageKeys);
+        for (String key : keys) {
+            Assert.isTrue(!messageKeys.contains(key));
+        }
+    }
+
+
+    @Test
+    public void setAndFetchTranslation() throws Exception {
+        Set<String> languageCodes = new HashSet<String>();
+        languageCodes.add(Language.FR.getCode());
+        String key = "Nicola";
+        String value = "Nicolas";
+        languageDao.setTranslation(key, Language.FR, value);
+        Map<String, List<Translation>> translations = languageDao.fetchTranslations(languageCodes);
+        Assert.notNull(translations);
+        Assert.isTrue(translations.containsKey(key));
+        List<Translation> translationsList = translations.get(key);
+        for (Translation translation : translationsList) {
+            if (translation.getMessageKey().getKey().equals(key) && translation.getLanguage().equals(Language.FR)) {
+                Assert.isTrue(translation.getValue().equals(value));
+                break;
+            }
+
+        }
+    }
+
 
 }
