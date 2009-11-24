@@ -2,8 +2,10 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
 import eu.europeana.database.dao.fixture.UserFixture;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.User;
-import junit.framework.Assert;
+import static junit.framework.Assert.*;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +13,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Test the UserDao methods
@@ -26,6 +31,7 @@ import java.io.IOException;
         "/test-application-context.xml"
 })
 
+@Transactional
 public class TestUserDao {
     private Logger log = Logger.getLogger(TestUserDao.class);
 
@@ -35,20 +41,42 @@ public class TestUserDao {
     @Autowired
     private UserFixture userFixture;
 
+    private List<User> users;
+
     @Before
     public void prepare() throws IOException {
-        User user = userFixture.createUser("Gumby");
-        log.info("User: "+user.getEmail());
-        user = userFixture.addSavedSearch(user, "save this!");
-        log.info("User.savesSearch.size: "+user.getSavedSearches().size());
+        users = userFixture.createUsers("Gumby", 100);
+        log.info("User 10: "+users.get(10).getEmail());
     }
 
     @Test
-    public void testFixture() {
-        User user = userDao.fetchUserByEmail("Gumby@email.com");
-        Assert.assertNotNull(user);
-        log.info("Found "+user.getFirstName());
-        Assert.assertEquals(1, user.getSavedSearches().size());
+    public void authenticate() {
+        User authenticated = userDao.authenticateUser("Gumby89@email.com", "password-Gumby89");
+        assertNotNull(authenticated);
+        User refused = userDao.authenticateUser("Gumby89@email.com", "password-Gumby88");
+        assertNull(refused);
+        // give it that password
+        authenticated.setPassword("password-Gumby88");
+        userDao.updateUser(authenticated);
+        // now the tables are turned!
+        authenticated = userDao.authenticateUser("Gumby89@email.com", "password-Gumby88");
+        assertNotNull(authenticated);
+        refused = userDao.authenticateUser("Gumby89@email.com", "password-Gumby89");
+        assertNull(refused);
+    }
+
+    @Test
+    public void testSavedSearch() {
+        SavedSearch savedSearch = new SavedSearch();
+        savedSearch.setDateSaved(new Date());
+        savedSearch.setLanguage(Language.AFA);
+        savedSearch.setQuery("query");
+        savedSearch.setQueryString("querystring");
+        User user25 = userDao.addSavedSearch(users.get(25), savedSearch);
+        log.info("User.savesSearch.size: "+user25.getSavedSearches().size());
+        assertNotNull(user25);
+        log.info("Found "+user25.getFirstName());
+        assertEquals(1, user25.getSavedSearches().size());
     }
 
 // todo: thise methods must be tested

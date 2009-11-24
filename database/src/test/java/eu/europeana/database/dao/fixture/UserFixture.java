@@ -8,7 +8,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Tools to put some data into the database for testing
@@ -22,10 +24,23 @@ public class UserFixture {
     protected EntityManager entityManager;
 
     @Transactional
-    public User createUser(String who) {
-        User user = new User(null, "user-"+who, who+"@email.com", "password-"+who, "First Name "+who, "Last Name "+who, "", "", "", false, Role.ROLE_USER, true);
-        entityManager.persist(user);
-        return user;
+    public List<User> createUsers(String who, int count) {
+        List<User> users = new ArrayList<User>();
+        while (count-- > 0) {
+            User user = new User(
+                    null,
+                    "user-"+who+count,
+                    who+count+"@email.com",
+                    "password-"+who+count,
+                    "First Name "+who+count,
+                    "Last Name "+who+count,
+                    "", "", "", false,
+                    Role.ROLE_USER, true
+            );
+            entityManager.persist(user);
+            users.add(user);
+        }
+        return users;
     }
 
     @Transactional
