@@ -172,20 +172,13 @@ public interface StaticInfoDao {
 
     List<StaticPage> getAllStaticPages();
 
-
-    // === Carousel Items
-    // todo: NA: it's not clear to me meaning of the Carousel. Maybe the database design should be revised.
-    // todo: NA: I guess saveItem and savedSearch related to MyEuropeana
-    // todo: NA: what is the relation between CarouselItem and savedItem? (e.g. What is the difference between the field "title" of the two classes?)
-
-
     /**
      * Remove the {@link SavedItem} instance with the given identifier from the Carousel of the given {@link User}.
      * It return an instance of the {@link User} class.
      *
      * @param user        - User - the instance of the User class to which the item belongs
      * @param savedItemId - Long - the identifier of the item to remove
-     * @return User - the instance of the User class       todo: NA: why it returns User? I suggest to return void !
+     * @return User - the instance of the User class
      * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
      * @see {@link User}
      * @see {@link CarouselItem}
@@ -303,7 +296,7 @@ public interface StaticInfoDao {
      *
      * @param user          - User - the instance of the User class to which the item belongs
      * @param savedSearchId - Long - the identifier of SavedSearch instance
-     * @return User - the instance of the User class       todo: NA: why it returns User? I suggest to return void !
+     * @return User - the instance of the User class
      * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
      * @see {@link User}
      * @see {@link SavedSearch}
