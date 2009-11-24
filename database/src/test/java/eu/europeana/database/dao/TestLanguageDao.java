@@ -2,6 +2,7 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.MessageKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,14 +61,22 @@ public class TestLanguageDao {
         Assert.isTrue(!activeLanguages.contains(wasActive));
     }
 
+    @Test
+    public void messageKeyAddFetchRemove() throws Exception {
+        String key = "__Nicola";
+        languageDao.addMessagekey(key);
+        MessageKey messageKey = languageDao.fetchMessageKey(key);
+        Assert.notNull(messageKey);
+        languageDao.removeMessageKey(key);
+        messageKey = languageDao.fetchMessageKey(key);
+        Assert.isNull(messageKey);
+    }
+
 // todo: thise methods must be tested here
 //    EnumSet<Language> getActiveLanguages();
 //    void setLanguageActive(Language language, boolean active);
-//    void addMessagekey(String key);
-//    void removeMessageKey(String key);
 //    Translation setTranslation(String key, Language language, String value);
 //    List<String> fetchMessageKeyStrings();
-//    MessageKey fetchMessageKey(String key);
 //    Map<String, List<Translation>> fetchTranslations(Set<String> languageCodes);
 
 }
