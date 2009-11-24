@@ -26,14 +26,14 @@ public class UserFixture {
     @Transactional
     public List<User> createUsers(String who, int count) {
         List<User> users = new ArrayList<User>();
-        while (count-- > 0) {
+        for (int walk=0; walk<count; walk++) {
             User user = new User(
                     null,
-                    "user-"+who+count,
-                    who+count+"@email.com",
-                    "password-"+who+count,
-                    "First Name "+who+count,
-                    "Last Name "+who+count,
+                    "user-"+who+walk,
+                    who+walk+"@email.com",
+                    "password-"+who+walk,
+                    "First Name "+who+walk,
+                    "Last Name "+who+walk,
                     "", "", "", false,
                     Role.ROLE_USER, true
             );
