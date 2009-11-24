@@ -2,21 +2,19 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
-import eu.europeana.database.integration.DaoMessageSource;
-import eu.europeana.database.migration.DataMigration;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.util.EnumSet;
 
 /**
- * @author todo insert: "name" <email>
+ * @author "Gerald de Jong" <geralddejong@gmail.com>
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -28,25 +26,38 @@ import java.util.Locale;
 public class TestLanguageDao {
 
     @Autowired
-    private LanguageDao languageDao; // todo: should be LanguageDao
-
-    private DaoMessageSource daoMessageSource = new DaoMessageSource();
+    private LanguageDao languageDao;
 
     @Before
     public void prepare() throws IOException {
-        DataMigration migration = new DataMigration();
-        migration.setLanguageDao(languageDao);
-        migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
-        //daoMessageSource.setMessageDao(languageDao);
-        daoMessageSource.setLanguageDao(languageDao);
     }
 
     @Test
-    public void zoek() throws Exception {
-        //todo: finish this test
-        Locale nl = new Locale(Language.NL.getCode());
-        String zoek = daoMessageSource.getMessage("Search_t", null, nl);
-        junit.framework.Assert.assertEquals("Zoek", zoek);
+    public void activateLanguage() throws Exception {
+        Language wasInactive = null;
+        for (Language language : Language.values()) {
+            if (!language.isActiveByDefault()) {
+                wasInactive = language;
+                break;
+            }
+        }
+        languageDao.setLanguageActive(wasInactive, true);
+        EnumSet<Language> activeLanguages = languageDao.getActiveLanguages();
+        Assert.isTrue(activeLanguages.contains(wasInactive));
+    }
+
+    @Test
+    public void deactivateLanguage() throws Exception {
+        Language wasActive = null;
+        for (Language language : Language.values()) {
+            if (language.isActiveByDefault()) {
+                wasActive = language;
+                break;
+            }
+        }
+        languageDao.setLanguageActive(wasActive, false);
+        EnumSet<Language> activeLanguages = languageDao.getActiveLanguages();
+        Assert.isTrue(!activeLanguages.contains(wasActive));
     }
 
 // todo: thise methods must be tested here
