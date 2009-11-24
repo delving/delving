@@ -1,7 +1,10 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import org.junit.Assert;
+import eu.europeana.database.dao.fixture.UserFixture;
+import eu.europeana.database.domain.User;
+import junit.framework.Assert;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,28 +15,40 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 
 /**
+ * Test the UserDao methods
  *
- * @author todo insert "name" <emeail>
- * @since Mar 18, 2009: 3:29:31 PM
+ * @author "Gerald de Jong" <geralddejong@gmail.com>
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "/database-application-context.xml"
+        "/database-application-context.xml",
+        "/test-application-context.xml"
 })
 
 public class TestUserDao {
+    private Logger log = Logger.getLogger(TestUserDao.class);
 
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private UserFixture userFixture;
+
     @Before
     public void prepare() throws IOException {
+        User user = userFixture.createUser("Gumby");
+        log.info("User: "+user.getEmail());
+        user = userFixture.addSavedSearch(user, "save this!");
+        log.info("User.savesSearch.size: "+user.getSavedSearches().size());
     }
 
     @Test
-    public void test1() {
-        Assert.fail();
+    public void testFixture() {
+        User user = userDao.fetchUserByEmail("Gumby@email.com");
+        Assert.assertNotNull(user);
+        log.info("Found "+user.getFirstName());
+        Assert.assertEquals(1, user.getSavedSearches().size());
     }
 
 // todo: thise methods must be tested
