@@ -7,6 +7,7 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
+import eu.europeana.database.integration.TagCount;
 import eu.europeana.query.DocType;
 import static junit.framework.Assert.*;
 import org.apache.log4j.Logger;
@@ -94,10 +95,11 @@ public class TestUserDao {
         socialTag.setEuropeanaObject("http://europeana.obect.pretend/");
         User user49 = userDao.addSocialTag(users.get(49), socialTag);
         assertEquals(1, user49.getSocialTags().size());
-        //todo:
-//        EuropeanaId id7 = databaseFixture.fetch(EuropeanaId.class, 7L);
-//        assertEquals(1, id7.getSocialTags().size());
-//        assertEquals(1, userDao.getSocialTagCounts("Number").size());
+        EuropeanaId id7 = databaseFixture.fetch(EuropeanaId.class, europeanaIds.get(7).getId());
+        assertEquals(1, id7.getSocialTags().size());
+        log.info("tag="+id7.getSocialTags().get(0).getTag());
+        List<TagCount> tagCounts = userDao.getSocialTagCounts("Number");
+        assertEquals(1, tagCounts.size());
     }
 
 // todo: these methods must still be tested

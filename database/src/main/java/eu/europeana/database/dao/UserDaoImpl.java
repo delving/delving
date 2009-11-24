@@ -188,8 +188,6 @@ public class UserDaoImpl implements UserDao {
         savedItem.setDateSaved(new Date());
         savedItem.setEuropeanaId(europeanaId);
         savedItem.setUser(user);
-//        entityManager.persist(savedItem);
-        //        user = merge(user);
         user.getSavedItems().add(savedItem);
         user = entityManager.merge(user);
         return user;
@@ -198,11 +196,11 @@ public class UserDaoImpl implements UserDao {
     @Transactional
     public User addSocialTag(User user, SocialTag socialTag) {
         user = entityManager.merge(user);
-        //        user = merge(user);
         Date now = new Date();
         socialTag.setDateSaved(now);
         EuropeanaId europeanaId = fetchEuropeanaId(socialTag.getEuropeanaUri());
         socialTag.setEuropeanaId(europeanaId);
+        europeanaId.getSocialTags().add(socialTag);
         socialTag.setUser(user);
         entityManager.persist(socialTag);
         user.getSocialTags().add(socialTag);
@@ -305,11 +303,12 @@ public class UserDaoImpl implements UserDao {
         StringBuilder cleanPattern = new StringBuilder();
         for (int walk = 0; walk < pattern.length(); walk++) {
             if (pattern.charAt(walk) != '%') {
-                cleanPattern.append(pattern.charAt(walk));
+                cleanPattern.append(Character.toLowerCase(pattern.charAt(walk)));
             }
         }
         cleanPattern.append("%");
-        query.setParameter("pattern", cleanPattern.toString());
+        pattern = cleanPattern.toString();
+        query.setParameter("pattern", pattern);
         query.setMaxResults(100);
         List<TagCount> tagCountList = (List<TagCount>) query.getResultList();
         Collections.sort(tagCountList);
