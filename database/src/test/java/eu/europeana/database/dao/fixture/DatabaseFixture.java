@@ -1,8 +1,8 @@
 package eu.europeana.database.dao.fixture;
 
-import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.User;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,7 +18,7 @@ import java.util.List;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class UserFixture {
+public class DatabaseFixture {
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -44,16 +44,24 @@ public class UserFixture {
     }
 
     @Transactional
-    public User addSavedSearch(User user, String query) {
-        user = entityManager.merge(user);
-        SavedSearch savedSearch = new SavedSearch();
-        savedSearch.setDateSaved(new Date());
-        savedSearch.setLanguage(Language.AFA);
-        savedSearch.setQuery(query);
-        savedSearch.setQueryString(query+" string");
-        savedSearch.setUser(user);
-        user.getSavedSearches().add(savedSearch);
-        return user;
+    public List<EuropeanaId> createEuropeanaIds(String collectionName, int count) {
+        EuropeanaCollection collection = new EuropeanaCollection();
+        collection.setName(collectionName);
+        collection.setDescription("Created for testing");
+        entityManager.persist(collection);
+        List<EuropeanaId> ids = new ArrayList<EuropeanaId>();
+        for (int walk=0; walk<count; walk++) {
+            EuropeanaId id = new EuropeanaId(collection);
+            id.setCreated(new Date());
+            id.setEuropeanaUri("http://europeana.uri.pretend/item"+walk);
+            entityManager.persist(id);
+            ids.add(id);
+        }
+        return ids;
     }
 
+    @Transactional
+    public <Entity> Entity fetch(Class<Entity> entityClass, Long id) {
+        return entityManager.find(entityClass, id);
+    }
 }

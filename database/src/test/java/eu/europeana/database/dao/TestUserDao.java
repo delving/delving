@@ -1,10 +1,13 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.dao.fixture.UserFixture;
+import eu.europeana.database.dao.fixture.DatabaseFixture;
+import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
+import eu.europeana.query.DocType;
 import static junit.framework.Assert.*;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -39,14 +42,16 @@ public class TestUserDao {
     private UserDao userDao;
 
     @Autowired
-    private UserFixture userFixture;
+    private DatabaseFixture databaseFixture;
 
     private List<User> users;
+    private List<EuropeanaId> europeanaIds;
 
     @Before
     public void prepare() throws IOException {
-        users = userFixture.createUsers("Gumby", 100);
+        users = databaseFixture.createUsers("Gumby", 100);
         log.info("User 10: "+users.get(10).getEmail());
+        europeanaIds = databaseFixture.createEuropeanaIds("Test Collection", 10);
     }
 
     @Test
@@ -79,7 +84,23 @@ public class TestUserDao {
         assertEquals(1, user25.getSavedSearches().size());
     }
 
-// todo: thise methods must be tested
+    @Test
+    public void testTags() {
+        SocialTag socialTag = new SocialTag();
+        socialTag.setDateSaved(new Date());
+        socialTag.setDocType(DocType.SOUND);
+        socialTag.setEuropeanaId(europeanaIds.get(7));
+        socialTag.setTag("Number Seven");
+        socialTag.setEuropeanaObject("http://europeana.obect.pretend/");
+        User user49 = userDao.addSocialTag(users.get(49), socialTag);
+        assertEquals(1, user49.getSocialTags().size());
+        //todo:
+//        EuropeanaId id7 = databaseFixture.fetch(EuropeanaId.class, 7L);
+//        assertEquals(1, id7.getSocialTags().size());
+//        assertEquals(1, userDao.getSocialTagCounts("Number").size());
+    }
+
+// todo: these methods must still be tested
 //    User fetchUserByEmail(String email);
 //    User addUser(User user);
 //    void removeUser(User user);
@@ -96,8 +117,6 @@ public class TestUserDao {
 //    User addSocialTag(User user, SocialTag socialTag);
 //    List<TagCount> getSocialTagCounts(String query);
 //    User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
-//    User addSavedSearch(User user, SavedSearch savedSearch);
-//    User fetchUser(String email, String password);
 //    void setUserRole(Long userId, Role role);
 //    void removeUser(Long userId);
 //    User fetchUser(Long userId);
