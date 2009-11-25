@@ -19,6 +19,7 @@ import java.util.*;
 
 /**
  * @author "Gerald de Jong" <geralddejong@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
