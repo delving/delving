@@ -101,8 +101,16 @@ public class LanguageDaoImpl implements LanguageDao {
     public MessageKey fetchMessageKey(String key) {
         Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
         query.setParameter("key", key);
-        MessageKey messageKey = (MessageKey) query.getSingleResult();
-        messageKey.getTranslations().size();
+        MessageKey messageKey = null;
+        try {
+            messageKey = (MessageKey) query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        if (messageKey != null) {
+            messageKey.getTranslations().size();
+        }
         return messageKey;
     }
 
