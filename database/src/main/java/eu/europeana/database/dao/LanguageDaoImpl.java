@@ -104,8 +104,8 @@ public class LanguageDaoImpl implements LanguageDao {
         MessageKey messageKey = null;
         try {
             messageKey = (MessageKey) query.getSingleResult();
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (NoResultException e) {
+            log.warn("Unable to fetch message key " + key);
         }
 
         if (messageKey != null) {
