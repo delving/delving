@@ -27,6 +27,9 @@ import java.util.*;
 
 public class TestLanguageDao {
 
+    private String keys[] = {"Nicola", "Cesare", "Carlo"};
+    private String translateFrKeys[] = {"Nicolas", "Cesar", "Charle"};
+
     @Autowired
     private LanguageDao languageDao;
 
@@ -64,18 +67,18 @@ public class TestLanguageDao {
 
     @Test
     public void messageKeyAddFetchRemove() throws Exception {
-        String key = "__Nicola";
-        languageDao.addMessagekey(key);
-        MessageKey messageKey = languageDao.fetchMessageKey(key);
+
+        languageDao.addMessagekey(keys[0]);
+        MessageKey messageKey = languageDao.fetchMessageKey(keys[0]);
         Assert.notNull(messageKey);
-        languageDao.removeMessageKey(key);
-        messageKey = languageDao.fetchMessageKey(key);
+        languageDao.removeMessageKey(keys[0]);
+        messageKey = languageDao.fetchMessageKey(keys[0]);
         Assert.isNull(messageKey);
     }
 
     @Test
     public void fetchMessageKeyStrings() throws Exception {
-        String keys[] = {"__Nicola1", "__Nicola2", "__Nicola3"};
+
 
         for (String key : keys) {
             languageDao.addMessagekey(key);
@@ -103,16 +106,15 @@ public class TestLanguageDao {
     public void setAndFetchTranslation() throws Exception {
         Set<String> languageCodes = new HashSet<String>();
         languageCodes.add(Language.FR.getCode());
-        String key = "Nicola";
-        String value = "Nicolas";
-        languageDao.setTranslation(key, Language.FR, value);
+
+        languageDao.setTranslation(keys[0], Language.FR, translateFrKeys[0]);
         Map<String, List<Translation>> translations = languageDao.fetchTranslations(languageCodes);
         Assert.notNull(translations);
-        Assert.isTrue(translations.containsKey(key));
-        List<Translation> translationsList = translations.get(key);
+        Assert.isTrue(translations.containsKey(keys[0]));
+        List<Translation> translationsList = translations.get(keys[0]);
         for (Translation translation : translationsList) {
-            if (translation.getMessageKey().getKey().equals(key) && translation.getLanguage().equals(Language.FR)) {
-                Assert.isTrue(translation.getValue().equals(value));
+            if (translation.getMessageKey().getKey().equals(keys[0]) && translation.getLanguage().equals(Language.FR)) {
+                Assert.isTrue(translation.getValue().equals(translateFrKeys[0]));
                 break;
             }
 
