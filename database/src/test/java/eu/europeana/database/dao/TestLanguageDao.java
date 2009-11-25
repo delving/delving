@@ -30,7 +30,7 @@ import java.util.*;
 public class TestLanguageDao {
 
     private String keys[] = {"Nicola", "Cesare", "Carlo"};
-    private String translateFrKeys[] = {"Nicolas", "Cesar", "Charle"};
+    private String translateFrKeys[] = {"Nicolas", "César", "Charles"};
 
     @Autowired
     private LanguageDao languageDao;
