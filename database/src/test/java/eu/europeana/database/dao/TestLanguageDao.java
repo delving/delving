@@ -10,10 +10,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
+import static org.junit.Assert.*;
+
 
 import java.io.IOException;
 import java.util.*;
+
 
 /**
  * @author "Gerald de Jong" <geralddejong@gmail.com>
@@ -48,7 +50,7 @@ public class TestLanguageDao {
         }
         languageDao.setLanguageActive(wasInactive, true);
         EnumSet<Language> activeLanguages = languageDao.getActiveLanguages();
-        Assert.isTrue(activeLanguages.contains(wasInactive));
+        assertTrue(activeLanguages.contains(wasInactive));
     }
 
     @Test
@@ -62,7 +64,7 @@ public class TestLanguageDao {
         }
         languageDao.setLanguageActive(wasActive, false);
         EnumSet<Language> activeLanguages = languageDao.getActiveLanguages();
-        Assert.isTrue(!activeLanguages.contains(wasActive));
+        assertTrue(!activeLanguages.contains(wasActive));
     }
 
     @Test
@@ -70,10 +72,10 @@ public class TestLanguageDao {
 
         languageDao.addMessagekey(keys[0]);
         MessageKey messageKey = languageDao.fetchMessageKey(keys[0]);
-        Assert.notNull(messageKey);
+        assertNotNull(messageKey);
         languageDao.removeMessageKey(keys[0]);
         messageKey = languageDao.fetchMessageKey(keys[0]);
-        Assert.isNull(messageKey);
+        assertNull(messageKey);
     }
 
     @Test
@@ -84,10 +86,10 @@ public class TestLanguageDao {
             languageDao.addMessagekey(key);
         }
         List<String> messageKeys = languageDao.fetchMessageKeyStrings();
-        Assert.notNull(messageKeys);
-        Assert.isTrue(messageKeys.size() >= keys.length);
+        assertNotNull(messageKeys);
+        assertTrue(messageKeys.size() >= keys.length);
         for (String key : keys) {
-            Assert.isTrue(messageKeys.contains(key));
+            assertTrue(messageKeys.contains(key));
         }
 
         for (String key : keys) {
@@ -95,9 +97,9 @@ public class TestLanguageDao {
         }
 
         messageKeys = languageDao.fetchMessageKeyStrings();
-        Assert.notNull(messageKeys);
+        assertNotNull(messageKeys);
         for (String key : keys) {
-            Assert.isTrue(!messageKeys.contains(key));
+            assertTrue(!messageKeys.contains(key));
         }
     }
 
@@ -109,12 +111,12 @@ public class TestLanguageDao {
 
         languageDao.setTranslation(keys[0], Language.FR, translateFrKeys[0]);
         Map<String, List<Translation>> translations = languageDao.fetchTranslations(languageCodes);
-        Assert.notNull(translations);
-        Assert.isTrue(translations.containsKey(keys[0]));
+        assertNotNull(translations);
+        assertTrue(translations.containsKey(keys[0]));
         List<Translation> translationsList = translations.get(keys[0]);
         for (Translation translation : translationsList) {
             if (translation.getMessageKey().getKey().equals(keys[0]) && translation.getLanguage().equals(Language.FR)) {
-                Assert.isTrue(translation.getValue().equals(translateFrKeys[0]));
+                assertTrue(translation.getValue().equals(translateFrKeys[0]));
                 break;
             }
 
