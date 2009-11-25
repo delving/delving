@@ -4,6 +4,7 @@ import eu.europeana.database.UserDao;
 import eu.europeana.database.dao.fixture.DatabaseFixture;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
@@ -102,29 +103,47 @@ public class TestUserDao {
         assertEquals(1, tagCounts.size());
     }
 
+    @Test
+    public void userChanges() {
+        User user51 = users.get(51);
+        user51.setLanguages("languages");
+        user51 = userDao.updateUser(user51);
+        assertEquals("languages", user51.getLanguages());
+        user51.setRole(Role.ROLE_ADMINISTRATOR);
+        user51 = userDao.updateUser(user51);
+        assertEquals(Role.ROLE_ADMINISTRATOR, user51.getRole());
+    }
+
+    @Test
+    public void removeUser() {
+        userDao.removeUser(users.get(37));
+        List<User> remaining = userDao.fetchUsers("Gumby");
+        assertEquals(99, remaining.size());
+        remaining = userDao.fetchUsers("Gumby3");
+        assertEquals(10, remaining.size()); // Gumby3 and Gumby3?
+        assertFalse(userDao.userNameExists("user-Gumby37"));
+        assertTrue(userDao.userNameExists("user-Gumby38"));
+    }
+
+    @Test
+    public void fetchByEmail() {
+        assertNotNull(userDao.fetchUserByEmail("Gumby29@email.com"));
+        // todo: these two calls fail with an exception
+        // todo: while LoginContoller.emailExists() assumes null will be returned
+        // todo: and ChangePasswordControler assumes it will throw an exception
+        // todo: this must be resolved.
+        assertNull(userDao.fetchUserByEmail("gumby29@email.com"));
+        assertNull(userDao.fetchUserByEmail("pokey29@email.com"));
+    }
+
+
 // todo: these methods must still be tested
-//    User fetchUserByEmail(String email);
-//    User addUser(User user);
-//    void removeUser(User user);
-//    void updateUser(User user);
-//    User refreshUser(User user);
-//    boolean userNameExists(String userName);
 //    User remove(User user, Class<?> clazz, Long id);
 //    List<User> fetchUsers(String pattern);
 //    User fetchUserWhoPickedCarouselItem(String europeanaUri);
 //    User fetchUserWhoPickedEditorPick(String query);
-//    void setUserEnabled(Long userId, boolean enabled);
-//    void setUserToAdministrator(Long userId, boolean administrator);
 //    void markAsViewed(String europeanaUri);
-//    User addSocialTag(User user, SocialTag socialTag);
-//    List<TagCount> getSocialTagCounts(String query);
 //    User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
-//    void setUserRole(Long userId, Role role);
-//    void removeUser(Long userId);
-//    User fetchUser(Long userId);
-//    void setUserProjectId(Long userId, String projectId);
-//    void setUserProviderId(Long userId, String providerId);
-//    void setUserLanguages(Long userId, String languages);
 //    List<SavedItem> fetchSavedItems(Long userId);
 //    SavedItem fetchSavedItemById(Long id);
 //    List<SavedSearch> fetchSavedSearches(Long userId);

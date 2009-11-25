@@ -62,7 +62,6 @@ public class UserDaoImpl implements UserDao {
         }
         catch (NoResultException e) {
             throw new IllegalArgumentException("The user doesn't exists. email: " + email);
-
         }
         return user;
     }
