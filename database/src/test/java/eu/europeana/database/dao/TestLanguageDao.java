@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
+import org.apache.log4j.Logger;
 
 
+import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.util.*;
 
@@ -31,7 +33,8 @@ import java.util.*;
 public class TestLanguageDao {
 
     private String keys[] = {"Nicola", "Cesare", "Carlo"};
-    private String translateFrKeys[] = {"Nicolas", "César", "Charles"};
+    private String translateFrKeys[] = {"Nicolas", "Cesar", "Charles"};
+    private Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private LanguageDao languageDao;
@@ -74,9 +77,16 @@ public class TestLanguageDao {
         languageDao.addMessagekey(keys[0]);
         MessageKey messageKey = languageDao.fetchMessageKey(keys[0]);
         assertNotNull(messageKey);
+        assertEquals(messageKey.getKey(), keys[0]);
         languageDao.removeMessageKey(keys[0]);
-        messageKey = languageDao.fetchMessageKey(keys[0]);
-        assertNull(messageKey);
+        try {
+            languageDao.fetchMessageKey(keys[0]);
+            fail();
+        }
+        catch (NoResultException e) {
+            log.info("Exception thrown as expected: " + e);
+        }
+
     }
 
     @Test
@@ -100,7 +110,7 @@ public class TestLanguageDao {
         messageKeys = languageDao.fetchMessageKeyStrings();
         assertNotNull(messageKeys);
         for (String key : keys) {
-            assertTrue(!messageKeys.contains(key));
+            assertFalse(messageKeys.contains(key));
         }
     }
 
