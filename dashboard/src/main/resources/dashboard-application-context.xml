@@ -39,8 +39,6 @@
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <bean id="languageDao" class="eu.europeana.database.dao.LanguageDaoImpl"/>
-
     <bean id="sandboxImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="${dashboard.sandbox.import.repository}"/>
     </bean>

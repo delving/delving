@@ -66,6 +66,7 @@ public class SolrIndexerImpl implements SolrIndexer {
     private QueryModelFactory queryModelFactory;
     private String targetUrl;
     protected int chunkSize = 100;
+    boolean httpError;
 
     public void setQueryModelFactory(QueryModelFactory queryModelFactory) {
         this.queryModelFactory = queryModelFactory;
@@ -123,8 +124,13 @@ public class SolrIndexerImpl implements SolrIndexer {
         }
         catch (IOException e) {
             log.error("Unable to post delete to SOLR", e);
+            httpError = true;
         }
         return false;
+    }
+
+    public boolean isHttpError() {
+        return httpError;
     }
 
     private String createDeleteRecordsXML(String collectionName) {
@@ -157,6 +163,7 @@ public class SolrIndexerImpl implements SolrIndexer {
             postMethod.releaseConnection();
         }
         if (responseCode != HttpStatus.SC_OK) {
+            httpError = true;
             throw new IOException("HTTP Problem " + responseCode + ": " + HttpStatus.getStatusText(responseCode));
         }
     }

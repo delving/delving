@@ -35,4 +35,7 @@
 
     <bean class="eu.europeana.database.dao.fixture.DatabaseFixture"/>
 
+    <bean class="eu.europeana.database.dao.fixture.IngestionFixture"/>
+
+
 </beans>

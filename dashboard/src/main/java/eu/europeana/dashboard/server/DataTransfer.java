@@ -35,7 +35,9 @@ import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.StaticPageX;
 import eu.europeana.dashboard.client.dto.TranslationX;
 import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Country;
 import eu.europeana.database.domain.DashboardLog;
@@ -80,6 +82,19 @@ public class DataTransfer {
                 collection.getTotalOrphans(),
                 collection.getImportError()
         );
+    }
+
+    public static EuropeanaCollection convert(EuropeanaCollectionX collectionX) {
+        EuropeanaCollection collection = new EuropeanaCollection(collectionX.getId());
+        collection.setName(collectionX.getName());
+        collection.setDescription(collectionX.getDescription());
+        collection.setFileName(collectionX.getFileName());
+        collection.setCollectionLastModified(collectionX.getCollectionLastModified());
+        collection.setFileUserName(collectionX.getFileUserName());
+        collection.setFileState(ImportFileState.valueOf(collectionX.getFileState().toString()));
+        collection.setCacheState(CacheState.valueOf(collectionX.getCacheState().toString()));
+        collection.setCollectionState(CollectionState.valueOf(collectionX.getCollectionState().toString()));
+        return collection;
     }
 
     public static CarouselItemX convert(CarouselItem item) {

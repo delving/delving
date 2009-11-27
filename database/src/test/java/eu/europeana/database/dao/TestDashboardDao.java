@@ -40,47 +40,6 @@ import java.util.TreeSet;
         "/database-application-context.xml"
 })
 
-// todo: these methods must be tested.
-// todo: probably a good idea to make a few individual tests and then simulate an import/indexing run
-//    // collections
-//    List<EuropeanaCollection> fetchCollections();
-//    List<EuropeanaCollection> fetchCollections(String prefix);
-//    EuropeanaCollection fetchCollectionByName(String name, boolean create);
-//    EuropeanaCollection fetchCollectionByFileName(String fileName);
-//    EuropeanaCollection fetchCollection(Long id);
-//    EuropeanaCollection updateCollection(EuropeanaCollection collection);
-//    List<EuropeanaCollection> disableAllCollections();
-//    void enableAllCollections();
-//    // import
-//    EuropeanaCollection prepareForImport(Long collectionId);
-//    EuropeanaCollection setImportError(Long collectionId, String importError);
-//    EuropeanaId saveEuropeanaId(EuropeanaId europeanaId, Set<String> objectUrls);
-//    EuropeanaId getEuropeanaId(EuropeanaId europeanaId);
-//    EuropeanaId fetchEuropeanaId(String europeanaUri);
-//    void removeOrphanObject(String uri);
-//    int findOrphans(EuropeanaCollection collection);
-//    List<? extends QueueEntry> fetchQueueEntries();
-//    // cacheing
-//    List<EuropeanaObject> getEuropeanaObjectsToCache(int maxResults, CacheingQueueEntry queueEntry);
-//    List<EuropeanaObject> getEuropeanaObjectOrphans(int maxResults);
-//    boolean addToCacheQueue(EuropeanaCollection collection);
-//    void removeFromCacheQueue(EuropeanaCollection collection);
-//    CacheingQueueEntry getEntryForCacheing();
-//    CacheingQueueEntry saveObjectsCached(int cachedRecords, CacheingQueueEntry queueEntry, EuropeanaObject lastId);
-//    void setObjectCachedError(EuropeanaObject object);
-//    void finishCaching(CacheingQueueEntry entry);
-//    // index
-//    boolean addToIndexQueue(EuropeanaCollection collection);
-//    void removeFromIndexQueue(EuropeanaCollection collection);
-//    IndexingQueueEntry getIndexQueueHead();
-//    List<EuropeanaId> getEuropeanaIdsForIndexing(int chunkSize, IndexingQueueEntry indexingQueueEntry);
-//    void finishIndexing(IndexingQueueEntry indexingQueueEntry);
-//    void saveRecordsIndexed(int count, IndexingQueueEntry indexingQueueEntry, EuropeanaId europeanaId);
-//    void startIndexing(IndexingQueueEntry indexingQueueEntry);
-//    EuropeanaCollection updateCollectionCounters(Long collectionId);
-//    IndexingQueueEntry getEntryForIndexing();
-//    IndexingQueueEntry getIndexEntry(IndexingQueueEntry detachedEntry);
-
 public class TestDashboardDao {
     private Logger log = Logger.getLogger(getClass());
     // europeanaUri from 92001_Ag_EU_TELtreasures.xml
@@ -94,6 +53,7 @@ public class TestDashboardDao {
 
     @Autowired
     private UserDao userDao; // todo: eliminate, because it should not be necessary
+    @Autowired
     private StaticInfoDao staticInfoDao; // todo: eliminate, because it should not be necessary
 
     @Before
@@ -105,7 +65,7 @@ public class TestDashboardDao {
 
     @Test
     public void testCreateNewCarouselItem() throws IOException, SAXException, ParserConfigurationException {
-        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_1);
+//        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_1);
         // todo rewrite this to test create carouselItem from saved item
         CarouselItem item = new SavedItem().createCarouselItem();
         assertNotNull(item);
@@ -145,7 +105,7 @@ public class TestDashboardDao {
         for (SavedItem savedItem : savedItems) {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
-            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
+//            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
 //            Assert.assertTrue(carouselItem.getSavedItem() != null);
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());
         }

@@ -269,18 +269,6 @@ public interface DashboardDao {
     void removeFromCacheQueue(EuropeanaCollection collection);
 
     /**
-     * When getEuropeanaObjectsToCache returns nothing, indicate to the database that the cacheing is
-     * finished by updating the status of the collection associated with the queue entry, as well as
-     * removing from the cache queue.
-     *
-     * todo: investigate why this method and removeFromCacheQueue both exist  
-     *
-     * @param entry which queue entry is finished?
-     */
-
-    void finishCaching(CacheingQueueEntry entry);
-
-    /**
      * Indicate that the given collection is to be indexed
      *
      * @param collection the collection to be indexed
@@ -316,17 +304,6 @@ public interface DashboardDao {
      */
 
     void removeFromIndexQueue(EuropeanaCollection collection);
-
-    /**
-     * When getEuropeanaIdsForIndexing returns an empty list, indicate with this method that the
-     * indexing is finished.  Removes the queue entry and sets the collection to enabled.
-     *
-     * todo: investigate why this method and removeFromIndexQueue both exist
-     *
-     * @param indexingQueueEntry which work entry?
-     */
-
-    void finishIndexing(IndexingQueueEntry indexingQueueEntry);
 
     /**
      * Check if there is indexing work to do

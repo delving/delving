@@ -62,6 +62,14 @@ public interface SolrIndexer {
     boolean deleteCollectionByName(String collectionName);
 
     /**
+     * Check if there has been an HTTP error
+     *
+     * @return true if there was one
+     */
+    
+    boolean isHttpError();
+
+    /**
      * For indexing record lists, combine the id with the record's fields
      */
     

@@ -24,6 +24,7 @@ package eu.europeana.dashboard.server;
 import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.dashboard.client.DashboardService;
 import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.ContributorX;
 import eu.europeana.dashboard.client.dto.CountryX;
 import eu.europeana.dashboard.client.dto.DashboardLogX;
@@ -42,15 +43,12 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Country;
 import eu.europeana.database.domain.DashboardLog;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.EuropeanaObject;
-import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.Partner;
 import eu.europeana.database.domain.PartnerSector;
@@ -75,10 +73,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
-    private static final long SESSION_TIMEOUT = 1000L*60*30;
+    private static final long SESSION_TIMEOUT = 1000L * 60 * 30;
     private static long lastAgeCheck;
     private Logger log = Logger.getLogger(getClass());
-    private Map<String, Session> sessions = new ConcurrentHashMap<String,Session>();
+    private Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
     private String cacheUrl;
     private ESEImporter normalizedImporter;
     private ESEImporter sandboxImporter;
@@ -128,7 +126,7 @@ public class DashboardServiceImpl implements DashboardService {
     public UserX login(String email, String password) {
         User user = userDao.authenticateUser(email, password);
         if (user != null && user.isEnabled()) {
-            log.info("User "+user.getEmail()+" (id="+user.getId()+") logged in with cookie "+UserCookie.get());
+            log.info("User " + user.getEmail() + " (id=" + user.getId() + ") logged in with cookie " + UserCookie.get());
             String cookie = UserCookie.get();
             if (cookie == null) {
                 log.error("No Cookie!!");
@@ -172,28 +170,17 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public EuropeanaCollectionX updateCollection(EuropeanaCollectionX collectionX) {
-        EuropeanaCollection collection;
-        if (collectionX.getId() != null) {
-            collection = dashboardDao.fetchCollection(collectionX.getId());
-            handleCacheStateTransition(collectionX, collection);
-            handleCollectionStateTransition(collectionX, collection);
-        }
-        else {
-            collection = new EuropeanaCollection();
-        }
-        collection.setName(collectionX.getName());
-        collection.setDescription(collectionX.getDescription());
-        collection.setFileName(collectionX.getFileName());
-        collection.setCollectionLastModified(collectionX.getCollectionLastModified());
         String cookie = UserCookie.get();
         if (cookie == null) throw new RuntimeException("Expected cookie!");
         Session session = sessions.get(cookie);
-        collection.setFileUserName(session.getUser().getUserName());
-        collection.setFileState(ImportFileState.valueOf(collectionX.getFileState().toString()));
-        collection.setCacheState(CacheState.valueOf(collectionX.getCacheState().toString()));
-        collection.setCollectionState(CollectionState.valueOf(collectionX.getCollectionState().toString()));
-        collection = dashboardDao.updateCollection(collection);
-        audit("update collection: "+collection.getName());
+        collectionX.setFileUserName(session.getUser().getUserName()); // record whodunnit
+        if (collectionX.getCollectionState() == CollectionStateX.DISABLED) {
+            if (!indexer.deleteCollectionByName(collectionX.getName())) {
+                log.warn("Unable to delete from the index!");
+            }
+        }
+        EuropeanaCollection collection = dashboardDao.updateCollection(DataTransfer.convert(collectionX));
+        audit("update collection: " + collection.getName());
         return DataTransfer.convert(collection);
     }
 
@@ -213,7 +200,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public EuropeanaCollectionX updateCollectionCounters(EuropeanaCollectionX collection) {
-        audit("update collection counters: "+collection);
+        audit("update collection counters: " + collection);
         return DataTransfer.convert(dashboardDao.updateCollectionCounters(collection.getId()));
     }
 
@@ -241,7 +228,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public void removeUser(UserX user) {
-        audit("remove user "+user.getUserName());
+        audit("remove user " + user.getUserName());
         userDao.removeUser(DataTransfer.convert(user));
     }
 
@@ -250,17 +237,17 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public ImportFileX commenceValidate(ImportFileX importFile, Long collectionId) {
-        audit("commence validate "+importFile.getFileName());
+        audit("commence validate " + importFile.getFileName());
         return DataTransfer.convert(importer(false).commenceValidate(DataTransfer.convert(importFile), collectionId));
     }
 
     public ImportFileX commenceImport(ImportFileX importFile, Long collectionId, boolean normalized) {
-        audit("commence import "+importFile.getFileName());
+        audit("commence import " + importFile.getFileName());
         return DataTransfer.convert(importer(normalized).commenceImport(DataTransfer.convert(importFile), collectionId));
     }
 
     public ImportFileX abortImport(ImportFileX importFile, boolean normalized) {
-        audit("abort import of "+importFile.getFileName());
+        audit("abort import of " + importFile.getFileName());
         return DataTransfer.convert(importer(normalized).abortImport(DataTransfer.convert(importFile)));
     }
 
@@ -273,7 +260,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public List<String> fetchMessageKeys() {
-         return languageDao.fetchMessageKeyStrings();
+        return languageDao.fetchMessageKeyStrings();
     }
 
     public List<LanguageX> fetchLanguages() {
@@ -285,10 +272,10 @@ public class DashboardServiceImpl implements DashboardService {
         return languages;
     }
 
-    public Map<String,List<TranslationX>> fetchTranslations(Set<String> languageCodes) {
+    public Map<String, List<TranslationX>> fetchTranslations(Set<String> languageCodes) {
         Map<String, List<Translation>> preconvert = languageDao.fetchTranslations(languageCodes);
-        Map<String, List<TranslationX>> translations = new HashMap<String,List<TranslationX>>();
-        for (Map.Entry<String,List<Translation>> entry : preconvert.entrySet()) {
+        Map<String, List<TranslationX>> translations = new HashMap<String, List<TranslationX>>();
+        for (Map.Entry<String, List<Translation>> entry : preconvert.entrySet()) {
             List<TranslationX> value = new ArrayList<TranslationX>();
             translations.put(entry.getKey(), value);
             for (Translation translation : entry.getValue()) {
@@ -299,7 +286,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public TranslationX setTranslation(String key, String languageCode, String value) {
-        audit("set translation "+key+"/"+languageCode+"="+value);
+        audit("set translation " + key + "/" + languageCode + "=" + value);
         return DataTransfer.convert(languageDao.setTranslation(key, Language.findByCode(languageCode), value));
     }
 
@@ -317,7 +304,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     public CarouselItemX createCarouselItem(SavedItemX savedItemX) {
         String europeanaUri = savedItemX.getUri();
-        audit("create carousel item: "+ europeanaUri);
+        audit("create carousel item: " + europeanaUri);
         CarouselItem item = staticInfoDao.createCarouselItem(europeanaUri, savedItemX.getId());
         if (item == null) {
             return null;
@@ -326,12 +313,12 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public boolean removeCarouselItem(CarouselItemX item) {
-        audit("remove carousel item: "+item.getEuropeanaUri());
+        audit("remove carousel item: " + item.getEuropeanaUri());
         return staticInfoDao.removeCarouselItem(item.getId());
     }
 
     public boolean addSearchTerm(String language, String term) {
-        audit("add search term: "+language+"/"+term);
+        audit("add search term: " + language + "/" + term);
         return staticInfoDao.addSearchTerm(Language.findByCode(language), term);
     }
 
@@ -340,7 +327,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public boolean removeSearchTerm(String language, String term) {
-        audit("remove search term: "+language+"/"+term);
+        audit("remove search term: " + language + "/" + term);
         return staticInfoDao.removeSearchTerm(Language.findByCode(language), term);
     }
 
@@ -354,7 +341,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public boolean deleteObjectOrphan(String uri) {
-        audit("delete object orphan: "+uri);
+        audit("delete object orphan: " + uri);
         dashboardDao.removeOrphanObject(uri);
         return digitalObjectCache.remove(uri);
     }
@@ -375,14 +362,14 @@ public class DashboardServiceImpl implements DashboardService {
         return DataTransfer.convert(dashboardDao.fetchEuropeanaId(uri));
     }
 
-    public void disableAllCollections () {
+    public void disableAllCollections() {
         List<EuropeanaCollection> collections = dashboardDao.disableAllCollections();
         for (EuropeanaCollection collection : collections) {
             indexer.deleteCollectionByName(collection.getName());
         }
     }
 
-    public void enableAllCollections () {
+    public void enableAllCollections() {
         disableAllCollections();
         dashboardDao.enableAllCollections();
     }
@@ -422,33 +409,33 @@ public class DashboardServiceImpl implements DashboardService {
 
     public List<ContributorX> fetchContributors() {
         List<ContributorX> results = new ArrayList<ContributorX>();
-        for (Contributor contributor: staticInfoDao.getAllContributorsByIdentifier()) {
+        for (Contributor contributor : staticInfoDao.getAllContributorsByIdentifier()) {
             results.add(DataTransfer.convert(contributor));
         }
         return results;
     }
 
     public PartnerX savePartner(PartnerX partnerX) {
-        audit("save partner: "+partnerX.getName());
+        audit("save partner: " + partnerX.getName());
         Partner partner = DataTransfer.convert(partnerX);
         partner = staticInfoDao.savePartner(partner);
         return DataTransfer.convert(partner);
     }
 
     public ContributorX saveContributor(ContributorX contributorX) {
-        audit("save contributor: "+ contributorX.getOriginalName());
+        audit("save contributor: " + contributorX.getOriginalName());
         Contributor contributor = DataTransfer.convert(contributorX);
         contributor = staticInfoDao.saveContributor(contributor);
         return DataTransfer.convert(contributor);
     }
 
     public boolean removePartner(Long partnerId) {
-        audit("remove partner: "+partnerId);
+        audit("remove partner: " + partnerId);
         return staticInfoDao.removePartner(partnerId);
     }
 
     public boolean removeContributor(Long contributorId) {
-        audit("remove contributor: "+contributorId);
+        audit("remove contributor: " + contributorId);
         return staticInfoDao.removeContributor(contributorId);
     }
 
@@ -467,17 +454,17 @@ public class DashboardServiceImpl implements DashboardService {
 
     public StaticPageX saveStaticPage(Long staticPageId, String content) {
         StaticPage page = staticInfoDao.updateStaticPage(staticPageId, content);
-        audit("save static page: "+staticPageId);
+        audit("save static page: " + staticPageId);
         return DataTransfer.convert(page);
     }
 
     public void removeMessageKey(String key) {
-        audit("remove message key: "+key);
+        audit("remove message key: " + key);
         languageDao.removeMessageKey(key);
     }
 
     public void addMessageKey(String key) {
-        audit("add message key: "+key);
+        audit("add message key: " + key);
         languageDao.addMessagekey(key);
     }
 
@@ -497,110 +484,14 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
-    private void handleCacheStateTransition(EuropeanaCollectionX next, EuropeanaCollection current) {
-        switch (current.getCacheState()) {
-            case EMPTY:
-                return;
-            case UNCACHED:
-                switch (next.getCacheState()) {
-                    case EMPTY:
-                    case UNCACHED:
-                        return;
-                    case QUEUED:
-                        dashboardDao.addToCacheQueue(current);
-                        return;
-                }
-                break;
-            case QUEUED:
-                switch (next.getCacheState()) {
-                    case EMPTY:
-                    case UNCACHED:
-                        dashboardDao.removeFromCacheQueue(current);
-                        return;
-                    case QUEUED:
-                        return;
-                }
-                break;
-            case CACHEING:
-                switch (next.getCacheState()) {
-                    case EMPTY:
-                    case UNCACHED:
-                        dashboardDao.removeFromCacheQueue(current);
-                        return;
-                    case CACHEING:
-                        return;
-                }
-                break;
-            case CACHED:
-                switch (next.getCacheState()) {
-                    case QUEUED:
-                        dashboardDao.addToCacheQueue(current);
-                        return;
-                }
-                return;
-        }
-        throw new RuntimeException("Illegal transition: "+current.getCacheState()+" to "+next.getCacheState());
-    }
-
-    private void handleCollectionStateTransition(EuropeanaCollectionX next, EuropeanaCollection current) {
-        switch (current.getCollectionState()) {
-            case EMPTY:
-                return;
-            case DISABLED:
-                switch (next.getCollectionState()) {
-                    case EMPTY:
-                    case DISABLED:
-                        return;
-                    case QUEUED:
-                        dashboardDao.addToIndexQueue(current);
-                        return;
-                }
-                break;
-            case QUEUED:
-                switch (next.getCollectionState()) {
-                    case EMPTY:
-                    case DISABLED:
-                        dashboardDao.removeFromIndexQueue(current);
-                        return;
-                    case QUEUED:
-                        return;
-                }
-                break;
-            case INDEXING:
-                switch (next.getCollectionState()) {
-                    case EMPTY:
-                    case DISABLED:
-                        dashboardDao.removeFromIndexQueue(current);
-                        return;
-                    case INDEXING:
-                        return;
-                }
-                break;
-            case ENABLED:
-                switch (next.getCollectionState()) {
-                    case EMPTY:
-                    case DISABLED:
-                        dashboardDao.removeFromIndexQueue(current);
-                        if (!indexer.deleteCollectionByName(current.getName())) {
-                            log.warn("Unable to delete from the index!");
-                        }
-                        return;
-                    case ENABLED:
-                        return;
-                }
-                break;
-        }
-        throw new RuntimeException("Illegal transition: "+current.getCollectionState()+" to "+next.getCollectionState());
-    }
-
     private void audit(String what) {
         String cookie = UserCookie.get();
         if (cookie == null) throw new RuntimeException("Expected cookie!");
         Session session = sessions.get(cookie);
         if (session == null) throw new RuntimeException("Expected to find user");
         dashboardDao.log(session.getUser().getEmail(), what);
-        if (System.currentTimeMillis() - lastAgeCheck > SESSION_TIMEOUT/10) {
-            Iterator<Map.Entry<String,Session>> walk = sessions.entrySet().iterator();
+        if (System.currentTimeMillis() - lastAgeCheck > SESSION_TIMEOUT / 10) {
+            Iterator<Map.Entry<String, Session>> walk = sessions.entrySet().iterator();
             while (walk.hasNext()) {
                 if (walk.next().getValue().isTooOld()) {
                     walk.remove();

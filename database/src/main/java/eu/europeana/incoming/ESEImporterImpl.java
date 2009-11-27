@@ -133,7 +133,8 @@ public class ESEImporterImpl implements ESEImporter {
                     return processor.getFile();
                 }
             }
-            ImportProcessor importProcessor = new ImportProcessor(importingFile, collectionId);
+            ;
+            ImportProcessor importProcessor = new ImportProcessor(importingFile, dashboardDao.prepareForImport(collectionId));
             processors.add(importProcessor);
             importProcessor.start();
             return importingFile;
@@ -161,13 +162,12 @@ public class ESEImporterImpl implements ESEImporter {
     private class ImportProcessor implements Runnable, Processor {
         private Thread thread;
         private ImportFile importFile;
-        private Long collectionId;
         private EuropeanaCollection collection;
         private List<SolrIndexer.Record> recordList = new ArrayList<SolrIndexer.Record>();
 
-        private ImportProcessor(ImportFile importFile, Long collectionId) {
+        private ImportProcessor(ImportFile importFile, EuropeanaCollection collection) {
             this.importFile = importFile;
-            this.collectionId = collectionId;
+            this.collection = collection;
         }
 
         public void start() {
@@ -198,12 +198,7 @@ public class ESEImporterImpl implements ESEImporter {
         public void run() {
             log.info("Importing " + importFile);
             try {
-                collection = dashboardDao.fetchCollection(collectionId);
-                if (collection == null) {
-                    throw new ImportException("No collection found for id " + collectionId);
-                }
                 InputStream inputStream = createInputStream(importFile);
-                collection = dashboardDao.prepareForImport(collection.getId());
                 importXml(inputStream);
                 if (thread != null) {
                     log.info("Finished importing " + importFile);

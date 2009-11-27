@@ -81,7 +81,8 @@ public class CacheBuilder implements Runnable {
                 List<EuropeanaObject> newObjects = dashboardDao.getEuropeanaObjectsToCache(chunkSize, entry);
                 if (newObjects.isEmpty()) {
                     log.debug("No new objects found for "+entry.getCollection());
-                    dashboardDao.finishCaching(entry);
+                    entry.getCollection().setCacheState(CacheState.CACHED );
+                    dashboardDao.updateCollection(entry.getCollection());
                     return;
                 }
                 log.info("Found " + newObjects.size() + "/" + chunkSize + " objects to cache from " + entry.getCollection());
@@ -107,7 +108,6 @@ public class CacheBuilder implements Runnable {
                 catch (Exception e) {
                     log.error("Unable to submit imported records for caching! "+entry, e);
                     entry.getCollection().setCacheState(CacheState.UNCACHED);
-                    dashboardDao.removeFromCacheQueue(entry.getCollection());
                     dashboardDao.updateCollection(entry.getCollection());
                     return;
                 }

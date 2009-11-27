@@ -22,7 +22,6 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CacheingQueueEntry;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.CollectionState;
@@ -93,9 +92,11 @@ public class DashboardDaoImpl implements DashboardDao {
             public int compare(DashboardLog a, DashboardLog b) {
                 if (a.getId() > b.getId()) {
                     return 1;
-                } else if (a.getId() < b.getId()) {
+                }
+                else if (a.getId() < b.getId()) {
                     return -1;
-                } else {
+                }
+                else {
                     return 0;
                 }
             }
@@ -142,7 +143,8 @@ public class DashboardDaoImpl implements DashboardDao {
             collection.setFileState(ImportFileState.UPLOADING);
             collection.setCollectionLastModified(new Date());
             entityManager.persist(collection);
-        } else {
+        }
+        else {
             collection = collections.get(0);
         }
         return collection;
@@ -166,7 +168,37 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Transactional
     public EuropeanaCollection updateCollection(EuropeanaCollection collection) {
-        return entityManager.merge(collection);
+        if (collection.getId() != null) {
+            EuropeanaCollection existing = entityManager.find(EuropeanaCollection.class, collection.getId());
+            if (collection.getCacheState() != existing.getCacheState()) {
+                switch (collection.getCacheState()) {
+                    case EMPTY:
+                    case CACHED:
+                    case UNCACHED:
+                        removeFromCacheQueue(collection);
+                        break;
+                    case QUEUED:
+                        addToCacheQueue(collection);
+                        break;
+                }
+            }
+            if (collection.getCollectionState() != existing.getCollectionState()) {
+                switch (collection.getCollectionState()) {
+                    case QUEUED:
+                        addToIndexQueue(collection);
+                        break;
+                    case EMPTY:
+                    case DISABLED:
+                        removeFromIndexQueue(collection);
+                        break;
+                }
+            }
+            return entityManager.merge(collection);
+        }
+        else {
+            entityManager.persist(collection);
+            return collection;
+        }
     }
 
     @Transactional
@@ -174,6 +206,7 @@ public class DashboardDaoImpl implements DashboardDao {
         EuropeanaCollection collection = entityManager.find(EuropeanaCollection.class, collectionId);
         collection.setImportError(null);
         collection.setCollectionLastModified(new Date()); // so that the orphan mechanism works
+        collection.setFileState(ImportFileState.IMPORTING);
         return collection;
     }
 
@@ -247,7 +280,8 @@ public class DashboardDaoImpl implements DashboardDao {
                 detachedId.getEuropeanaObjects().add(new EuropeanaObject(detachedId, objectUrl));
             }
             persistentId = detachedId;
-        } else {
+        }
+        else {
             log.debug("updating Id");
             persistentId.setLastModified(now);
             persistentId.getSocialTags().size();
@@ -286,7 +320,8 @@ public class DashboardDaoImpl implements DashboardDao {
         List<EuropeanaId> result = (List<EuropeanaId>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        } else {
+        }
+        else {
             return result.get(0);
         }
     }
@@ -299,7 +334,8 @@ public class DashboardDaoImpl implements DashboardDao {
         List<CacheingQueueEntry> result = (List<CacheingQueueEntry>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        } else {
+        }
+        else {
             result.get(0).setUpdated(new Date());
             return result.get(0);
         }
@@ -326,7 +362,8 @@ public class DashboardDaoImpl implements DashboardDao {
         if (lastId != null) {
             query = entityManager.createQuery("select id from EuropeanaObject as id where id.id > :lastId and id.europeanaId.collection = :collection order by id.id asc");
             query.setParameter("lastId", lastId);
-        } else {
+        }
+        else {
             query = entityManager.createQuery("select id from EuropeanaObject as id where id.europeanaId.collection = :collection order by id.id asc");
         }
         query.setParameter("collection", queueEntry.getCollection());
@@ -390,7 +427,8 @@ public class DashboardDaoImpl implements DashboardDao {
         List<CacheingQueueEntry> resultList = (List<CacheingQueueEntry>) query.getResultList();
         if (resultList.isEmpty()) {
             log.info("collection not found on cacheQueue. ");
-        } else {
+        }
+        else {
             for (CacheingQueueEntry queueEntry : resultList) {
                 entityManager.remove(queueEntry);
             }
@@ -424,7 +462,8 @@ public class DashboardDaoImpl implements DashboardDao {
         List<IndexingQueueEntry> resultList = (List<IndexingQueueEntry>) query.getResultList();
         if (resultList.isEmpty()) {
             log.info("collection not found on indexQueue. ");
-        } else {
+        }
+        else {
             for (IndexingQueueEntry queueEntry : resultList) {
                 entityManager.remove(queueEntry);
             }
@@ -439,24 +478,11 @@ public class DashboardDaoImpl implements DashboardDao {
         List<IndexingQueueEntry> result = (List<IndexingQueueEntry>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        } else {
+        }
+        else {
             result.get(0).setUpdated(new Date());
             return result.get(0);
         }
-    }
-
-    @Transactional
-    public void finishCaching(CacheingQueueEntry entry) {
-        entry.getCollection().setCacheState(CacheState.CACHED);
-        removeFromCacheQueue(entry.getCollection());
-        updateCollection(entry.getCollection());
-    }
-
-    @Transactional
-    public void finishIndexing(IndexingQueueEntry indexingQueueEntry) {
-        IndexingQueueEntry entry = entityManager.find(IndexingQueueEntry.class, indexingQueueEntry.getId());
-        entry.getCollection().setCollectionState(CollectionState.ENABLED);
-        entityManager.remove(entry);
     }
 
     @Transactional
@@ -466,7 +492,8 @@ public class DashboardDaoImpl implements DashboardDao {
         if (lastId != null) {
             query = entityManager.createQuery("select id from EuropeanaId as id where id.id > :lastId and id.collection = :collection and id.orphan = :orphan order by id.id asc");
             query.setParameter("lastId", lastId);
-        } else {
+        }
+        else {
             query = entityManager.createQuery("select id from EuropeanaId as id where id.collection = :collection and id.orphan = :orphan order by id.id asc");
         }
         query.setParameter("collection", collection.getCollection());
@@ -577,5 +604,4 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         return success;
     }
-
 }
