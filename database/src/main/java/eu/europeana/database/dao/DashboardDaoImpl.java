@@ -402,7 +402,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public boolean addToCacheQueue(EuropeanaCollection collection) {
+    public boolean addToCacheQueue(EuropeanaCollection collection) {  // todo: only used by this dao itself, so could be private or inlined
         Query query = entityManager.createQuery("select count(eo) from EuropeanaObject eo where eo.europeanaId.collection = :collection");
         query.setParameter("collection", collection);
         List resultList = query.getResultList();
@@ -420,7 +420,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public void removeFromCacheQueue(EuropeanaCollection collection) {
+    public void removeFromCacheQueue(EuropeanaCollection collection) { // todo: only used by this dao itself, so could be private or inlined
         // remove collection to cache Queue
         Query query = entityManager.createQuery("select entry from CacheingQueueEntry as entry where entry.collection = :collection");
         query.setParameter("collection", collection);
@@ -436,7 +436,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public boolean addToIndexQueue(EuropeanaCollection collection) {
+    public boolean addToIndexQueue(EuropeanaCollection collection) { // todo: only used by this dao itself, so could be private or inlined
         Query query = entityManager.createQuery("select count(id) from EuropeanaId id where id.collection = :collection and id.orphan = false");
         query.setParameter("collection", collection);
         List resultList = query.getResultList();
@@ -455,7 +455,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public void removeFromIndexQueue(EuropeanaCollection collection) {
+    public void removeFromIndexQueue(EuropeanaCollection collection) {  // todo: only used by this dao itself, so could be private or inlined
         // remove collection to index Queue
         Query query = entityManager.createQuery("select entry from IndexingQueueEntry as entry where entry.collection = :collection");
         query.setParameter("collection", collection);
