@@ -98,7 +98,7 @@ public class TestLanguageDao {
         }
         List<String> messageKeys = languageDao.fetchMessageKeyStrings();
         assertNotNull(messageKeys);
-        assertTrue(messageKeys.size() >= keys.length);
+        assertEquals(messageKeys.size(), keys.length);
         for (String key : keys) {
             assertTrue(messageKeys.contains(key));
         }
