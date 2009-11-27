@@ -5,12 +5,10 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.LanguageActivation;
 import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,11 +99,8 @@ public class LanguageDaoImpl implements LanguageDao {
     public MessageKey fetchMessageKey(String key) {
         Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
         query.setParameter("key", key);
-        MessageKey messageKey;
-        messageKey = (MessageKey) query.getSingleResult();
-        if (messageKey != null) {
-            messageKey.getTranslations().size();
-        }
+        MessageKey messageKey = (MessageKey) query.getSingleResult();
+        messageKey.getTranslations().size();
         return messageKey;
     }
 
