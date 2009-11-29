@@ -89,7 +89,7 @@ public interface StaticInfoDao {
 
     /**
      * Return the list of all Europeana {@link Contributor}s ordered by id.
-     *
+     * <p/>
      * // todo: is this method still necessary, given the above method?
      *
      * @return List - the list of all Europeana contributors.
@@ -106,6 +106,24 @@ public interface StaticInfoDao {
      * @see {@link Contributor}
      */
     Contributor saveContributor(Contributor contributor);
+
+    /**
+     * Get the {@link Contributor} with the given identifier.
+     *
+     * @param contributorId the Contributor identifier
+     * @return Contributor - the instance of the Contributor with the given id
+     * @see {@link Contributor}
+     */
+    Contributor getContributor(Long contributorId);
+
+    /**
+     * Get the {@link Partner} with the given identifier.
+     *
+     * @param partnerId the Partner identifier
+     * @return Partner - the instance of the Contributor with the given id
+     * @see {@link Partner}
+     */
+    Partner getPartner(Long partnerId);
 
     /**
      * Remove the {@link Contributor} class instance having the given identifier. Return true
@@ -132,7 +150,7 @@ public interface StaticInfoDao {
      * @see {@link Language}
      * @see {@link StaticPageType}
      */
-    
+
     StaticPage getStaticPage(StaticPageType pageType, Language language);
 
     /**
@@ -154,8 +172,8 @@ public interface StaticInfoDao {
      *
      * @param staticPageId Long - the identifier of the StaticPage instance.
      * @param content      - String - the page content (HTML formatted).
-     * @see {@link StaticPage}
      * @return the new version of the page
+     * @see {@link StaticPage}
      */
 
     StaticPage updateStaticPage(Long staticPageId, String content);
@@ -184,7 +202,7 @@ public interface StaticInfoDao {
      * @see {@link CarouselItem}
      * @see {@link SavedItem}
      */
-    
+
     User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
 
     /**

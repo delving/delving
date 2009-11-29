@@ -35,10 +35,12 @@ import eu.europeana.database.domain.SearchTerm;
 import eu.europeana.database.domain.StaticPage;
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.database.domain.User;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +53,17 @@ import java.util.List;
  */
 public class StaticInfoDaoImpl implements StaticInfoDao {
     private Logger log = Logger.getLogger(getClass());
+
+    @Transactional
+    public Partner getPartner(Long partnerId) {
+        return entityManager.find(Partner.class, partnerId);
+    }
+
+    @Transactional
+    public Contributor getContributor(Long contributorId) {
+        return entityManager.find(Contributor.class, contributorId);
+    }
+
     private DashboardDao dashBoardDao;
 
     @PersistenceContext
