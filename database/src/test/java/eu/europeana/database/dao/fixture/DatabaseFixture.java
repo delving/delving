@@ -98,4 +98,15 @@ public class DatabaseFixture {
         return contributors;
     }
 
+
+    @Transactional
+    public Partner getPartner(Long partnerId) {
+        return entityManager.find(Partner.class, partnerId);
+    }
+
+    @Transactional
+    public Contributor getContributor(Long contributorId) {
+        return entityManager.find(Contributor.class, contributorId);
+    }
+
 }

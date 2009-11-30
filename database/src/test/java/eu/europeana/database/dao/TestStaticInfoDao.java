@@ -133,7 +133,7 @@ public void getAllContributorsByIdentifier() {
         assertNotNull(modifiedContributor);
         assertEquals(contributor.getId(), modifiedContributor.getId());
         assertEquals(contributor.getOriginalName(), modifiedContributor.getOriginalName());
-        assertEquals(name, staticInfoDao.getContributor(modifiedContributor.getId()).getOriginalName());
+        assertEquals(name, databaseFixture.getContributor(modifiedContributor.getId()).getOriginalName());
     }
     /*
   @Test
@@ -145,7 +145,7 @@ public void getAllContributorsByIdentifier() {
       assertNotNull(modifiedPartner);
       assertEquals(partner.getId(), modifiedPartner.getId());
       assertEquals(partner.getName(), modifiedPartner.getName());
-      assertEquals(name, staticInfoDao.getPartner(modifiedPartner.getId()).getName());
+      assertEquals(name, databaseFixture.getPartner(modifiedPartner.getId()).getName());
   }
       /*
   @Test

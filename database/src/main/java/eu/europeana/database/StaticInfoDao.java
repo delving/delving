@@ -108,24 +108,6 @@ public interface StaticInfoDao {
     Contributor saveContributor(Contributor contributor);
 
     /**
-     * Get the {@link Contributor} with the given identifier.
-     *
-     * @param contributorId the Contributor identifier
-     * @return Contributor - the instance of the Contributor with the given id
-     * @see {@link Contributor}
-     */
-    Contributor getContributor(Long contributorId);
-
-    /**
-     * Get the {@link Partner} with the given identifier.
-     *
-     * @param partnerId the Partner identifier
-     * @return Partner - the instance of the Contributor with the given id
-     * @see {@link Partner}
-     */
-    Partner getPartner(Long partnerId);
-
-    /**
      * Remove the {@link Contributor} class instance having the given identifier. Return true
      * if the contributor is successfully removed, false otherwise.
      *
