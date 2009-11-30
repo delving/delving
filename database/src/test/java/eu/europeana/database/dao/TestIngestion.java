@@ -28,8 +28,9 @@ import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.database.domain.QueueEntry;
 import eu.europeana.incoming.ImportFile;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.ResultModel;
+import static junit.framework.Assert.*;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
@@ -111,7 +112,18 @@ public class TestIngestion {
             collection = dashboardDao.fetchCollection(collection.getId());
         }
         while (collection.getFileState() == ImportFileState.IMPORTING);
+        assertEquals(ImportFileState.IMPORTED, collection.getFileState());
         // todo: test to see if stuff is in the index!
+    }
+
+    @Test
+    public void fetchFullDoc() throws EuropeanaQueryException {
+        String uri = "http://www.europeana.eu/resolve/record/92001/818B4CE5712E5FD54E8AF6D219FE14B21CCE7586";
+        ResultModel result = ingestionFixture.queryFullDoc(uri);
+        assertNotNull(result);
+        assertNotNull(result.getFullDoc());
+        assertEquals(uri, result.getFullDoc().getId());
+        log.info("Fetched:\n"+result);
     }
 
     @Test

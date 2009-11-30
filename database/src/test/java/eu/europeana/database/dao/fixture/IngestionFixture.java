@@ -28,7 +28,11 @@ import eu.europeana.incoming.ImportRepositoryImpl;
 import eu.europeana.incoming.SolrIndexer;
 import eu.europeana.incoming.SolrIndexerImpl;
 import eu.europeana.json.solr.SolrQueryModelFactory;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.QueryModel;
 import eu.europeana.query.QueryModelFactory;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
 import org.apache.commons.httpclient.HttpClient;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -69,27 +73,6 @@ public class IngestionFixture {
         return importRepository;
     }
 
-    public QueryModelFactory getQueryModelFactory() {
-        if (queryModelFactory == null) {
-            queryModelFactory = new SolrQueryModelFactory();
-            queryModelFactory.setBaseUrl(SOLR_SELECT_URL);
-            queryModelFactory.setHttpClient(httpClient);
-        }
-        return queryModelFactory;
-    }
-
-    public SolrIndexer getSolrIndexer() {
-        if (solrIndexer == null) {
-            solrIndexer = new SolrIndexerImpl();
-            solrIndexer.setDashboardDao(dashboardDao);
-            solrIndexer.setHttpClient(httpClient);
-            solrIndexer.setTargetUrl(SOLR_UPDATE_URL);
-            solrIndexer.setQueryModelFactory(getQueryModelFactory());
-            solrIndexer.setChunkSize(10);
-        }
-        return solrIndexer;
-    }
-
     public ESEImporter getESEImporter() throws IOException {
         if (eseImporter == null) {
             eseImporter = new ESEImporterImpl();
@@ -99,6 +82,13 @@ public class IngestionFixture {
             eseImporter.setNormalized(true);
         }
         return eseImporter;
+    }
+
+    public ResultModel queryFullDoc(String uri) throws EuropeanaQueryException {
+        QueryModel queryModel = getQueryModelFactory().createQueryModel(QueryModelFactory.SearchType.SIMPLE);
+        queryModel.setQueryString("europeana_uri:\""+uri+"\"");
+        queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
+        return queryModel.fetchResult();
     }
 
     public void deleteImportRepository() {
@@ -120,6 +110,29 @@ public class IngestionFixture {
 
     public void stopSolr() throws Exception {
         server.stop();
+    }
+
+    // --- private parts
+
+    private QueryModelFactory getQueryModelFactory() {
+        if (queryModelFactory == null) {
+            queryModelFactory = new SolrQueryModelFactory();
+            queryModelFactory.setBaseUrl(SOLR_SELECT_URL);
+            queryModelFactory.setHttpClient(httpClient);
+        }
+        return queryModelFactory;
+    }
+
+    private SolrIndexer getSolrIndexer() {
+        if (solrIndexer == null) {
+            solrIndexer = new SolrIndexerImpl();
+            solrIndexer.setDashboardDao(dashboardDao);
+            solrIndexer.setHttpClient(httpClient);
+            solrIndexer.setTargetUrl(SOLR_UPDATE_URL);
+            solrIndexer.setQueryModelFactory(getQueryModelFactory());
+            solrIndexer.setChunkSize(10);
+        }
+        return solrIndexer;
     }
 
     private void delete(File file) {

@@ -63,17 +63,18 @@ public class JsonResultModel implements ResultModel {
 
     private static final String BAD_REQUEST_RESULT =
             "{\n" +
-            "  \"responseHeader\":{\n" +
-            "    \"status\":400,\n" + // No idea if this is a valide status. It's meant to remind of 400 HTTP status code
-            "    \"QTime\":0,\n" +
-            "    \"params\":{\n" +
-            "      \"wt\":\"json\"}},\n" +
-            "  \"response\":{\"numFound\":0,\"start\":0,\"docs\":[]\n" +
-            " }}";
+                    "  \"responseHeader\":{\n" +
+                    "    \"status\":400,\n" + // No idea if this is a valide status. It's meant to remind of 400 HTTP status code
+                    "    \"QTime\":0,\n" +
+                    "    \"params\":{\n" +
+                    "      \"wt\":\"json\"}},\n" +
+                    "  \"response\":{\"numFound\":0,\"start\":0,\"docs\":[]\n" +
+                    " }}";
 
     public JsonResultModel(String jsonString, ResponseType responseType) throws JSONException {
         this(jsonString, responseType, false, null);
     }
+
     public JsonResultModel(String jsonString, ResponseType responseType, boolean badRequest, String errorMessage) throws JSONException {
         if (jsonString == null) {
             jsonString = BAD_REQUEST_RESULT;
@@ -282,7 +283,7 @@ public class JsonResultModel implements ResultModel {
             thumbnail = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_OBJECT);
             europeanaType = DocType.get(getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_TYPE, FacetType.TYPE));
             europeanaYear = getStringArray(jsonObject, JsonUtil.Default.DATE_DEFAULT, false, RecordField.EUROPEANA_YEAR, FacetType.YEAR);
-            europeanaLanguage =  getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_LANGUAGE, FacetType.LANGUAGE);
+            europeanaLanguage = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_LANGUAGE, FacetType.LANGUAGE);
             europeanaIsShownBy = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_IS_SHOWN_BY);
             europeanaIsShownAt = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_IS_SHOWN_AT);
             europeanaHasObject = getBoolean(jsonObject, JsonUtil.Default.FALSE, RecordField.EUROPEANA_HAS_OBJECT);
@@ -332,16 +333,16 @@ public class JsonResultModel implements ResultModel {
             dcType = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DC_TYPE);
         }
 
-        private String [] getStringArray(JSONObject jsonObject, JsonUtil.Default defaultValue, boolean insertHref, RecordField field) throws JSONException {
-            String [] array = JsonUtil.getStringArray(jsonObject, defaultValue, insertHref, field.toFieldNameString());
+        private String[] getStringArray(JSONObject jsonObject, JsonUtil.Default defaultValue, boolean insertHref, RecordField field) throws JSONException {
+            String[] array = JsonUtil.getStringArray(jsonObject, defaultValue, insertHref, field.toFieldNameString());
             for (String value : array) {
                 eseRecord.put(field, value);
             }
             return array;
         }
 
-        private String [] getStringArray(JSONObject jsonObject, JsonUtil.Default defaultValue, boolean insertHref, RecordField field, FacetType facetType) throws JSONException {
-            String [] array = JsonUtil.getStringArray(jsonObject, defaultValue, insertHref, facetType.toString());
+        private String[] getStringArray(JSONObject jsonObject, JsonUtil.Default defaultValue, boolean insertHref, RecordField field, FacetType facetType) throws JSONException {
+            String[] array = JsonUtil.getStringArray(jsonObject, defaultValue, insertHref, facetType.toString());
             for (String value : array) {
                 eseRecord.put(field, value);
             }
@@ -742,13 +743,30 @@ public class JsonResultModel implements ResultModel {
             writer.write(prompt);
             writer.write(": ");
             if (object == null) {
-                writer.write("null");
-                writer.write('\n');
+                writer.write("null\n");
+            }
+            else if (object instanceof String[]) {
+                String[] elements = (String[]) object;
+                if (elements.length == 0 || elements[0].trim().isEmpty()) {
+                    writer.write("empty\n");
+                }
+                else {
+                    writer.write('\n');
+                    for (String element : elements) {
+                        print("element", element, indent + 1);
+                    }
+                }
             }
             else if (object instanceof List) {
-                writer.write('\n');
-                for (Object element : ((List) object)) {
-                    print("element", element, indent + 1);
+                List list = (List) object;
+                if (list.isEmpty()) {
+                    writer.write("empty\n");
+                }
+                else {
+                    writer.write('\n');
+                    for (Object element : list) {
+                        print("element", element, indent + 1);
+                    }
                 }
             }
             else {
