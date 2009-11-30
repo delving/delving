@@ -1,9 +1,9 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.StaticInfoDao;
+import eu.europeana.database.LanguageDao;
 import eu.europeana.database.dao.fixture.DatabaseFixture;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.util.List;
+import java.util.EnumSet;
 
 
 /**
@@ -33,6 +34,10 @@ public class TestStaticInfoDao {
     private Logger log = Logger.getLogger(TestStaticInfoDao.class);
     @Autowired
     private StaticInfoDao staticInfoDao;
+
+    @Autowired
+    private LanguageDao languageDao;
+
 
     @Autowired
     private DatabaseFixture databaseFixture;
@@ -123,7 +128,7 @@ public void getAllContributorsByIdentifier() {
        }
    }
 }
-          */
+
     @Test
     public void saveContributor() {
         String name = "MofidiedName";
@@ -135,7 +140,7 @@ public void getAllContributorsByIdentifier() {
         assertEquals(contributor.getOriginalName(), modifiedContributor.getOriginalName());
         assertEquals(name, databaseFixture.getContributor(modifiedContributor.getId()).getOriginalName());
     }
-    /*
+
   @Test
   public void savePartner() {
       String name  =  "MofidiedName";
@@ -147,15 +152,15 @@ public void getAllContributorsByIdentifier() {
       assertEquals(partner.getName(), modifiedPartner.getName());
       assertEquals(name, databaseFixture.getPartner(modifiedPartner.getId()).getName());
   }
-      /*
+
   @Test
   public void removePartner() {
       Long partnerId = partners.get(10).getId();
       assertTrue(staticInfoDao.removePartner(partnerId));
       assertNull(staticInfoDao.getPartner(partnerId));
   }
-    */
-    /*
+
+
 @Test
 public void removeContributor() {
 Long contributorId = contributors.get(10).getId();
@@ -163,9 +168,24 @@ assertTrue(staticInfoDao.removeContributor(contributorId));
 assertNull(staticInfoDao.getContributor(contributorId));
 }            */
 
+    @Test
+    public void getStaticPage() {
+
+        StaticPage staticPage;
+        for (StaticPageType pageType : StaticPageType.values()) {
+            for (Language language : languageDao.getActiveLanguages()) {
+                staticPage = staticInfoDao.getStaticPage(pageType, language);
+                assertNotNull(staticPage);
+                assertEquals(staticPage.getPageType(), pageType);
+                assertEquals(staticPage.getLanguage(), language);
+                log.info("Testing PageType: " + pageType + "language: " + language);
+            }
+        }
+
+    }
     // todo: tests works fine if executed one at a time, fail if you run 2 or more tests.
 // todo: these methods must be tested
-//    StaticPage fetchStaticPage(StaticPageType pageType, Language language);
+
 //    StaticPage saveStaticPage(Long staticPageId, String content);
 //    Boolean removeCarouselItem(Long id);
 //    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
