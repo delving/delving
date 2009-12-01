@@ -87,7 +87,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     @Transactional
     public List<StaticPage> getAllStaticPages() {
         Query query = entityManager.createQuery("select sp from StaticPage as sp");
-        return query.getResultList();
+        return (List<StaticPage>) query.getResultList();
     }
 
     @Transactional

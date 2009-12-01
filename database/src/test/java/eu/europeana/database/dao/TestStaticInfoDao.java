@@ -166,7 +166,7 @@ public void removeContributor() {
 Long contributorId = contributors.get(10).getId();
 assertTrue(staticInfoDao.removeContributor(contributorId));
 assertNull(staticInfoDao.getContributor(contributorId));
-}            */
+}
 
     @Test
     public void getStaticPage() {
@@ -183,10 +183,45 @@ assertNull(staticInfoDao.getContributor(contributorId));
         }
 
     }
+
+    @Test
+    public void updateStaticPage() {
+
+        StaticPage staticPage;
+        String newContent = "This is the new page content";
+        staticPage = staticInfoDao.getStaticPage(StaticPageType.ABOUT_US, Language.EN);
+        assertNotNull(staticPage);
+        staticPage = staticInfoDao.updateStaticPage(staticPage.getId(), newContent);
+        assertNotNull(staticPage);
+        staticPage = staticInfoDao.getStaticPage(StaticPageType.ABOUT_US, Language.EN);
+        assertEquals(staticPage.getContent(), newContent);
+
+    }
+        */
+    @Test
+    public void setAndGetAllStaticPage() {
+
+
+        int pageCount = 0;
+        String newContent = "content for ";
+        for (StaticPageType pageType : StaticPageType.values()) {
+            for (Language language : languageDao.getActiveLanguages()) {
+                staticInfoDao.setStaticPage(pageType, language, newContent + language.getName());
+                pageCount++;
+            }
+        }
+
+        List<StaticPage> staticPages = staticInfoDao.getAllStaticPages();
+        assertEquals(pageCount, staticPages.size());
+        for (StaticPage staticPage : staticPages) {
+            assertEquals(staticPage.getContent().substring(0, newContent.length()), newContent);
+            log.info("Static Page: " + staticPage.getPageType() + " " + staticPage.getContent());
+        }
+    }
+
     // todo: tests works fine if executed one at a time, fail if you run 2 or more tests.
 // todo: these methods must be tested
 
-//    StaticPage saveStaticPage(Long staticPageId, String content);
 //    Boolean removeCarouselItem(Long id);
 //    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
 //    void removeFromCarousel(SavedItem savedItem);
@@ -199,8 +234,6 @@ assertNull(staticInfoDao.getContributor(contributorId));
 //    User addEditorPick(User user, EditorPick editorPick);
 //    SearchTerm addSearchTerm(Long savedSearchId);
 //    StaticPage fetchStaticPage (Language language, String pageName);
-//    void setStaticPage(StaticPageType pageType, Language language, String content);
-//    List<StaticPage> getAllStaticPages();
 //    List<SearchTerm> getAllSearchTerms();
 
 
