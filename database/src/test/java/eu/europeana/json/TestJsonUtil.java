@@ -7,8 +7,8 @@ import java.text.MessageFormat;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Apr 15, 2009: 10:53:27 PM
  */
+
 public class TestJsonUtil {
     private String stringWithoutUrl = "bla bla";
     private String emptyString = " ";

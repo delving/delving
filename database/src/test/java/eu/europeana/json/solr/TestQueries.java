@@ -5,9 +5,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test the query expression thing
+ * Test some query formats to see how they are interpreted
  *
- * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
 public class TestQueries {

@@ -1,11 +1,15 @@
-package eu.europeana;
+package eu.europeana.controller.util;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
 

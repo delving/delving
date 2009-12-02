@@ -1,6 +1,5 @@
 package eu.europeana.controller.util;
 
-import eu.europeana.FreemarkerUtil;
 import eu.europeana.database.domain.CarouselItem;
 import eu.europeana.database.domain.Token;
 import eu.europeana.query.Facet;
