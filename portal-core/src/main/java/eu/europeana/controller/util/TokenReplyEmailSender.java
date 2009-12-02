@@ -2,7 +2,6 @@ package eu.europeana.controller.util;
 
 import eu.europeana.database.domain.Token;
 import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.util.EmailSender;
 import freemarker.template.TemplateException;
 
 import java.io.IOException;

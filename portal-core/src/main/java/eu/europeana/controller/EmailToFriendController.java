@@ -1,10 +1,10 @@
 package eu.europeana.controller;
 
 import eu.europeana.controller.util.ControllerUtil;
+import eu.europeana.controller.util.EmailSender;
 import eu.europeana.database.domain.User;
-import eu.europeana.util.EmailSender;
-
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.Map;
 import java.util.TreeMap;
 

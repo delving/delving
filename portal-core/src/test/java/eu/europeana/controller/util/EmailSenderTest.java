@@ -1,4 +1,4 @@
-package eu.europeana.util;
+package eu.europeana.controller.util;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;

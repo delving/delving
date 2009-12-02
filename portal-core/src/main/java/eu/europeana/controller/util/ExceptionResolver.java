@@ -23,13 +23,12 @@ package eu.europeana.controller.util;
 
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
-import eu.europeana.util.EmailSender;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;

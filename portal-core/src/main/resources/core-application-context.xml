@@ -125,32 +125,32 @@
     <bean name="tokenService" class="eu.europeana.controller.util.TokenService"/>
 
     <!-- Email Senders -->
-    <bean id="emailSenderForExceptions" class="eu.europeana.util.EmailSender">
+    <bean id="emailSenderForExceptions" class="eu.europeana.controller.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/exception"/>
     </bean>
 
-    <bean id="emailSenderForRegisterNotify" class="eu.europeana.util.EmailSender">
+    <bean id="emailSenderForRegisterNotify" class="eu.europeana.controller.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/register-notify"/>
     </bean>
 
-    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.util.EmailSender">
+    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.controller.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/password-change-notify"/>
     </bean>
 
-    <bean id="emailSenderForSendToFriend" class="eu.europeana.util.EmailSender">
+    <bean id="emailSenderForSendToFriend" class="eu.europeana.controller.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/to-friend"/>
     </bean>
 
-    <bean id="emailSenderForUserFeedback" class="eu.europeana.util.EmailSender">
+    <bean id="emailSenderForUserFeedback" class="eu.europeana.controller.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/feedback"/>
     </bean>
 
-    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.util.EmailSender">
+    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.controller.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/feedback-confirmation"/>
     </bean>
@@ -206,13 +206,13 @@
         <property name="emailSenders">
             <map>
                 <entry key="register">
-                    <bean class="eu.europeana.util.EmailSender">
+                    <bean class="eu.europeana.controller.util.EmailSender">
                         <property name="mailSender" ref="mailSender"/>
                         <property name="template" value="/email/confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
-                    <bean class="eu.europeana.util.EmailSender">
+                    <bean class="eu.europeana.controller.util.EmailSender">
                         <property name="mailSender" ref="mailSender"/>
                         <property name="template" value="/email/forgot-password"/>
                     </bean>

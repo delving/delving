@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.util;
+package eu.europeana.controller.util;
 
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;

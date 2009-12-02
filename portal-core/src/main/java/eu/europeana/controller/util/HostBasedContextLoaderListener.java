@@ -1,11 +1,11 @@
-package eu.europeana.util;
+package eu.europeana.controller.util;
 
+import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 
-import javax.servlet.ServletContext;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
