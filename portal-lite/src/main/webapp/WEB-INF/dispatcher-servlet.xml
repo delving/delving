@@ -32,9 +32,9 @@
         <property name="defaultLocale" value="en"/>
     </bean>
 
-    <bean id="formatInterceptor" class="eu.europeana.controller.util.FormatInterceptor"/>
+    <bean id="formatInterceptor" class="eu.europeana.web.util.FormatInterceptor"/>
 
-    <bean id="configInterceptor" class="eu.europeana.controller.util.ConfigInterceptor">
+    <bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor">
         <property name="config" ref="config"/>
     </bean>
 
@@ -104,7 +104,7 @@
         </property>
     </bean>
 
-    <bean id="messageSource" class="eu.europeana.controller.util.SwitchableMessageSource">
+    <bean id="messageSource" class="eu.europeana.web.util.SwitchableMessageSource">
         <property name="sources">
             <util:map>
                 <entry key="bundle">

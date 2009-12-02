@@ -1,10 +1,16 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
-import eu.europeana.controller.util.ResultPagination;
-import eu.europeana.query.*;
-
+import eu.europeana.query.BriefDoc;
+import eu.europeana.query.BriefDocWindow;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.QueryModel;
+import eu.europeana.query.QueryModelFactory;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
+import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.ResultPagination;
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.List;
 
 /**

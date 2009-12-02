@@ -1,8 +1,8 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.PartnerListSampler;
-
+import eu.europeana.web.util.PartnerListSampler;
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.Map;
 
 /**

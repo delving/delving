@@ -1,10 +1,9 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.CarouselItemSampler;
-import eu.europeana.controller.util.ControllerUtil;
-import eu.europeana.controller.util.ProposedSearchTermSampler;
 import eu.europeana.database.domain.Language;
-
+import eu.europeana.web.util.CarouselItemSampler;
+import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.ProposedSearchTermSampler;
 import javax.servlet.http.HttpServletRequest;
 
 /**

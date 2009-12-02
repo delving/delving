@@ -1,11 +1,10 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
-import eu.europeana.controller.util.TokenReplyEmailSender;
 import eu.europeana.database.UserDao;
-import org.apache.log4j.Logger;
-
+import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.TokenReplyEmailSender;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
 
 /**
  * Where people give us their password

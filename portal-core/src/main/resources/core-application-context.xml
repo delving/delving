@@ -91,26 +91,26 @@
         <property name="password" value="${smtp.password}"/>
     </bean>
 
-    <bean id="daoUserDetailsService" class="eu.europeana.controller.util.UserDaoDetailsService">
+    <bean id="daoUserDetailsService" class="eu.europeana.web.util.UserDaoDetailsService">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <!--bean id="proposedSearchTermSampler" class="eu.europeana.controller.util.ProposedSearchTermSampler">
+    <!--bean id="proposedSearchTermSampler" class="eu.europeana.web.util.ProposedSearchTermSampler">
         <property name="displayCount" value="3"/>
         <property name="searchTermDao" ref="searchTermDao"/>
     </bean-->
 
-     <bean id="proposedSearchTermSampler" class="eu.europeana.controller.util.ProposedSearchTermSampler">
+     <bean id="proposedSearchTermSampler" class="eu.europeana.web.util.ProposedSearchTermSampler">
         <property name="displayCount" value="3"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="carouselItemSampler" class="eu.europeana.controller.util.CarouselItemSampler">
+    <bean id="carouselItemSampler" class="eu.europeana.web.util.CarouselItemSampler">
         <property name="staticInfoDao" ref="staticInfoDao"/>
         <property name="displayCount" value="40"/>
     </bean>
 
-    <bean id="partnerListSampler" class="eu.europeana.controller.util.PartnerListSampler">
+    <bean id="partnerListSampler" class="eu.europeana.web.util.PartnerListSampler">
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
@@ -120,37 +120,37 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean name="tokenRepositoryService" class="eu.europeana.controller.util.TokenRepositoryService"/>
+    <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
 
-    <bean name="tokenService" class="eu.europeana.controller.util.TokenService"/>
+    <bean name="tokenService" class="eu.europeana.web.util.TokenService"/>
 
     <!-- Email Senders -->
-    <bean id="emailSenderForExceptions" class="eu.europeana.controller.util.EmailSender">
+    <bean id="emailSenderForExceptions" class="eu.europeana.web.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/exception"/>
     </bean>
 
-    <bean id="emailSenderForRegisterNotify" class="eu.europeana.controller.util.EmailSender">
+    <bean id="emailSenderForRegisterNotify" class="eu.europeana.web.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/register-notify"/>
     </bean>
 
-    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.controller.util.EmailSender">
+    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.web.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/password-change-notify"/>
     </bean>
 
-    <bean id="emailSenderForSendToFriend" class="eu.europeana.controller.util.EmailSender">
+    <bean id="emailSenderForSendToFriend" class="eu.europeana.web.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/to-friend"/>
     </bean>
 
-    <bean id="emailSenderForUserFeedback" class="eu.europeana.controller.util.EmailSender">
+    <bean id="emailSenderForUserFeedback" class="eu.europeana.web.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/feedback"/>
     </bean>
 
-    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.controller.util.EmailSender">
+    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.web.util.EmailSender">
         <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/feedback-confirmation"/>
     </bean>
@@ -202,17 +202,17 @@
     <!--</bean>-->
 
     <!-- TODO is it still used? -->
-    <bean id="registrationEmailSender" class="eu.europeana.controller.util.TokenReplyEmailSender">
+    <bean id="registrationEmailSender" class="eu.europeana.web.util.TokenReplyEmailSender">
         <property name="emailSenders">
             <map>
                 <entry key="register">
-                    <bean class="eu.europeana.controller.util.EmailSender">
+                    <bean class="eu.europeana.web.util.EmailSender">
                         <property name="mailSender" ref="mailSender"/>
                         <property name="template" value="/email/confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
-                    <bean class="eu.europeana.controller.util.EmailSender">
+                    <bean class="eu.europeana.web.util.EmailSender">
                         <property name="mailSender" ref="mailSender"/>
                         <property name="template" value="/email/forgot-password"/>
                     </bean>
@@ -227,7 +227,7 @@
         <constructor-arg value="${message.source}"/>
     </bean>
 
-    <bean id="exceptionResolver" class="eu.europeana.controller.util.ExceptionResolver">
+    <bean id="exceptionResolver" class="eu.europeana.web.util.ExceptionResolver">
         <property name="emailSender" ref="emailSenderForExceptions"/>
         <property name="emailFrom" value="${system.from}"/>
         <property name="targetEmailAddress" value="${exception.to}"/>

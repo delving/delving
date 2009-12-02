@@ -1,6 +1,5 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.CarouselItem;
@@ -9,6 +8,7 @@ import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.SearchTerm;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
+import eu.europeana.web.util.ControllerUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**

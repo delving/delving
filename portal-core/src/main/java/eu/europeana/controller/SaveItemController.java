@@ -21,12 +21,11 @@
 
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.User;
 import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.User;
 import eu.europeana.query.DocType;
-
+import eu.europeana.web.util.ControllerUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**

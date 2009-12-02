@@ -21,13 +21,19 @@
 
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.DocIdWindowPager;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.dao.DashboardDaoImpl;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.query.*;
-
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.QueryModel;
+import eu.europeana.query.QueryModelFactory;
+import eu.europeana.query.QueryProblem;
+import eu.europeana.query.RecordField;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
+import eu.europeana.web.util.DocIdWindowPager;
 import javax.servlet.http.HttpServletRequest;
 
 /**

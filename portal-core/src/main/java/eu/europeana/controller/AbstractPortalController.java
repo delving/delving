@@ -1,12 +1,12 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.domain.User;
+import eu.europeana.web.util.ControllerUtil;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.TreeMap;
 

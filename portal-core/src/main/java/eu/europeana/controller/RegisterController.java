@@ -1,13 +1,13 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.EmailSender;
-import eu.europeana.controller.util.TokenService;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.Token;
 import eu.europeana.database.domain.User;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
+import eu.europeana.web.util.EmailSender;
+import eu.europeana.web.util.TokenService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;

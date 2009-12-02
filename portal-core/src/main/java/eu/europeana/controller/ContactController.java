@@ -1,8 +1,8 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
-import eu.europeana.controller.util.EmailSender;
 import eu.europeana.database.domain.User;
+import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.EmailSender;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

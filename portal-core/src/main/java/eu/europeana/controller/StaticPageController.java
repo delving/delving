@@ -1,10 +1,10 @@
 package eu.europeana.controller;
 
-import eu.europeana.controller.util.ControllerUtil;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.StaticPage;
 import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.web.util.ControllerUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**
