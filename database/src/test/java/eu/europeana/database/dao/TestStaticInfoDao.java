@@ -14,10 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.apache.log4j.Logger;
 import static org.junit.Assert.*;
 
-import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.util.List;
-import java.util.EnumSet;
 
 
 /**
@@ -42,92 +40,92 @@ public class TestStaticInfoDao {
     @Autowired
     private DatabaseFixture databaseFixture;
 
-    private List<Partner> partners;
-    private List<Contributor> contributors;
+    private static List<Partner> partners;
+    private static List<Contributor> contributors;
     private int instanceCount = 11;
 
     @Before
-    public void prepare() throws IOException {
-        // DataMigration migration = new DataMigration();
-        // migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
-        partners = databaseFixture.createPartners("Nicola", instanceCount);
-        log.info("Partner 10: " + partners.get(10).getName());
-        contributors = databaseFixture.createContributors("Nicola", instanceCount);
-        log.info("Contributor 10: " + contributors.get(10).getOriginalName());
+    public void init() throws IOException {
+        if (partners == null) {
+            partners = databaseFixture.createPartners("Nicola", instanceCount);
+            log.info("Partner 10: " + partners.get(10).getName());
+        }
+        if (contributors == null) {
+            contributors = databaseFixture.createContributors("Nicola", instanceCount);
+            log.info("Contributor 10: " + contributors.get(10).getOriginalName());
+        }
 
     }
 
-    /*
 
-@Test
-public void getAllPartnerItems() throws Exception {
+    @Test
+    public void getAllPartnerItems() throws Exception {
 
-   String name;
-   boolean found;
-   List<Partner> allPartners = staticInfoDao.getAllPartnerItems();
-   assertNotNull(allPartners);
-   assertTrue(partners.size() >= instanceCount);
-   for (Partner partner : partners) {
-       name = partner.getName();
-       found = false;
-       for (Partner dbPartner : allPartners) {
-           if (dbPartner.getName().equals(name)) {
-               found = true;
-               break;
-           }
-       }
-       if (!found) {
-           fail();
-       }
-   }
-
+        String name;
+        boolean found;
+        List<Partner> allPartners = staticInfoDao.getAllPartnerItems();
+        assertNotNull(allPartners);
+        assertTrue(partners.size() >= instanceCount);
+        for (Partner partner : partners) {
+            name = partner.getName();
+            found = false;
+            for (Partner dbPartner : allPartners) {
+                if (dbPartner.getName().equals(name)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                fail();
+            }
+        }
 
 
-}
+    }
 
-@Test
-public void getAllContributors() {
-   String name;
-   boolean found;
-   List<Contributor> allContributors = staticInfoDao.getAllContributors();
-   assertNotNull(allContributors);
-   assertTrue(contributors.size() >= instanceCount);
-   for (Contributor contributor : contributors) {
-       name = contributor.getOriginalName();
-       found = false;
-       for (Contributor dbContributor : allContributors) {
-           if (dbContributor.getOriginalName().equals(name)) {
-               found = true;
-               break;
-           }
-       }
-       if (!found) {
-           fail();
-       }
-   }
-}
+    @Test
+    public void getAllContributors() {
+        String name;
+        boolean found;
+        List<Contributor> allContributors = staticInfoDao.getAllContributors();
+        assertNotNull(allContributors);
+        assertTrue(contributors.size() >= instanceCount);
+        for (Contributor contributor : contributors) {
+            name = contributor.getOriginalName();
+            found = false;
+            for (Contributor dbContributor : allContributors) {
+                if (dbContributor.getOriginalName().equals(name)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                fail();
+            }
+        }
+    }
 
-@Test
-public void getAllContributorsByIdentifier() {
-   String name;
-   boolean found;
-   List<Contributor> allContributors = staticInfoDao.getAllContributorsByIdentifier();
-   assertNotNull(allContributors);
-   assertTrue(contributors.size() >= instanceCount);
-   for (Contributor contributor : contributors) {
-       name = contributor.getOriginalName();
-       found = false;
-       for (Contributor dbContributor : allContributors) {
-           if (dbContributor.getOriginalName().equals(name)) {
-               found = true;
-               break;
-           }
-       }
-       if (!found) {
-           fail();
-       }
-   }
-}
+    @Test
+    public void getAllContributorsByIdentifier() {
+        String name;
+        boolean found;
+        List<Contributor> allContributors = staticInfoDao.getAllContributorsByIdentifier();
+        assertNotNull(allContributors);
+        assertTrue(contributors.size() >= instanceCount);
+        for (Contributor contributor : contributors) {
+            name = contributor.getOriginalName();
+            found = false;
+            for (Contributor dbContributor : allContributors) {
+                if (dbContributor.getOriginalName().equals(name)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                fail();
+            }
+        }
+    }
 
     @Test
     public void saveContributor() {
@@ -141,32 +139,32 @@ public void getAllContributorsByIdentifier() {
         assertEquals(name, databaseFixture.getContributor(modifiedContributor.getId()).getOriginalName());
     }
 
-  @Test
-  public void savePartner() {
-      String name  =  "MofidiedName";
-      Partner partner = partners.get(10);
-      partner.setName(name);
-      Partner modifiedPartner = staticInfoDao.savePartner(partner);
-      assertNotNull(modifiedPartner);
-      assertEquals(partner.getId(), modifiedPartner.getId());
-      assertEquals(partner.getName(), modifiedPartner.getName());
-      assertEquals(name, databaseFixture.getPartner(modifiedPartner.getId()).getName());
-  }
+    @Test
+    public void savePartner() {
+        String name = "MofidiedName";
+        Partner partner = partners.get(10);
+        partner.setName(name);
+        Partner modifiedPartner = staticInfoDao.savePartner(partner);
+        assertNotNull(modifiedPartner);
+        assertEquals(partner.getId(), modifiedPartner.getId());
+        assertEquals(partner.getName(), modifiedPartner.getName());
+        assertEquals(name, databaseFixture.getPartner(modifiedPartner.getId()).getName());
+    }
 
-  @Test
-  public void removePartner() {
-      Long partnerId = partners.get(10).getId();
-      assertTrue(staticInfoDao.removePartner(partnerId));
-      assertNull(staticInfoDao.getPartner(partnerId));
-  }
+    @Test
+    public void removePartner() {
+        Long partnerId = partners.get(10).getId();
+        assertTrue(staticInfoDao.removePartner(partnerId));
+        assertNull(databaseFixture.getPartner(partnerId));
+    }
 
 
-@Test
-public void removeContributor() {
-Long contributorId = contributors.get(10).getId();
-assertTrue(staticInfoDao.removeContributor(contributorId));
-assertNull(staticInfoDao.getContributor(contributorId));
-}
+    @Test
+    public void removeContributor() {
+        Long contributorId = contributors.get(10).getId();
+        assertTrue(staticInfoDao.removeContributor(contributorId));
+        assertNull(databaseFixture.getContributor(contributorId));
+    }
 
     @Test
     public void getStaticPage() {
@@ -197,7 +195,7 @@ assertNull(staticInfoDao.getContributor(contributorId));
         assertEquals(staticPage.getContent(), newContent);
 
     }
-        */
+
     @Test
     public void setAndGetAllStaticPage() {
 
@@ -219,7 +217,6 @@ assertNull(staticInfoDao.getContributor(contributorId));
         }
     }
 
-    // todo: tests works fine if executed one at a time, fail if you run 2 or more tests.
 // todo: these methods must be tested
 
 //    Boolean removeCarouselItem(Long id);
