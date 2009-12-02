@@ -125,50 +125,50 @@
     </bean>
 
     <!-- Controllers -->
-    <bean id="switchToSecureController" class="eu.europeana.controller.SwitchToSecureController"/>
+    <bean id="switchToSecureController" class="eu.europeana.web.controller.SwitchToSecureController"/>
 
-    <bean id="redirectionController" class="eu.europeana.controller.RedirectionController"/>
+    <bean id="redirectionController" class="eu.europeana.web.controller.RedirectionController"/>
 
-    <bean id="loginController" class="eu.europeana.controller.LoginController">
+    <bean id="loginController" class="eu.europeana.web.controller.LoginController">
         <property name="registrationEmailSender" ref="registrationEmailSender"/>
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="logoutController" class="eu.europeana.controller.LogoutController"/>
+    <bean id="logoutController" class="eu.europeana.web.controller.LogoutController"/>
 
-    <bean id="indexController" class="eu.europeana.controller.IndexController">
+    <bean id="indexController" class="eu.europeana.web.controller.IndexController">
         <property name="proposedSearchTermSampler" ref="proposedSearchTermSampler"/>
         <property name="carouselItemSampler" ref="carouselItemSampler"/>
     </bean>
 
-    <bean id="briefDocController" class="eu.europeana.controller.BriefDocController">
+    <bean id="briefDocController" class="eu.europeana.web.controller.BriefDocController">
         <property name="queryModelFactory" ref="queryModelFactory"/>
     </bean>
 
-    <bean id="fullDocController" class="eu.europeana.controller.FullDocController">
+    <bean id="fullDocController" class="eu.europeana.web.controller.FullDocController">
         <property name="userDao" ref="userDao"/>
         <property name="queryModelFactory" ref="queryModelFactory"/>
     </bean>
 
-    <bean id="bobController" class="eu.europeana.controller.BobController">
+    <bean id="bobController" class="eu.europeana.web.controller.BobController">
         <property name="queryModelFactory" ref="queryModelFactory"/>
     </bean>
 
-    <bean id="yearGridController" class="eu.europeana.controller.YearGridController">
+    <bean id="yearGridController" class="eu.europeana.web.controller.YearGridController">
         <property name="queryModelFactory" ref="queryModelFactory"/>
     </bean>
 
-    <bean id="tagGridController" class="eu.europeana.controller.TagGridController">
+    <bean id="tagGridController" class="eu.europeana.web.controller.TagGridController">
         <property name="queryModelFactory" ref="queryModelFactory"/>
     </bean>
 
-    <bean id="thoughtLabController" class="eu.europeana.controller.ThougtLabController"/>
+    <bean id="thoughtLabController" class="eu.europeana.web.controller.ThougtLabController"/>
 
-    <bean id="myEuropeanaController" class="eu.europeana.controller.MyEuropeanaController">
+    <bean id="myEuropeanaController" class="eu.europeana.web.controller.MyEuropeanaController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="registerController" class="eu.europeana.controller.RegisterController">
+    <bean id="registerController" class="eu.europeana.web.controller.RegisterController">
         <property name="tokenService" ref="tokenService"/>
         <property name="notifyEmailSender" ref="emailSenderForRegisterNotify"/>
         <property name="userDao" ref="userDao"/>
@@ -177,7 +177,7 @@
         <!--<property name="sessionForm" value="true"/>-->
     </bean>
 
-    <bean id="changePasswordController" class="eu.europeana.controller.ChangePasswordController">
+    <bean id="changePasswordController" class="eu.europeana.web.controller.ChangePasswordController">
         <property name="tokenService" ref="tokenService"/>
         <property name="notifyEmailSender" ref="emailSenderForPasswordChangeNotify"/>
         <property name="userDao" ref="userDao"/>
@@ -187,102 +187,102 @@
         <!--<property name="sessionForm" value="true"/>-->
     </bean>
 
-    <bean id="saveSearchController" class="eu.europeana.controller.SaveSearchController">
+    <bean id="saveSearchController" class="eu.europeana.web.controller.SaveSearchController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="saveItemController" class="eu.europeana.controller.SaveItemController">
+    <bean id="saveItemController" class="eu.europeana.web.controller.SaveItemController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="saveSocialTagController" class="eu.europeana.controller.SaveSocialTagController">
+    <bean id="saveSocialTagController" class="eu.europeana.web.controller.SaveSocialTagController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="removeController" class="eu.europeana.controller.RemoveController">
+    <bean id="removeController" class="eu.europeana.web.controller.RemoveController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="emailToFriendController" class="eu.europeana.controller.EmailToFriendController">
+    <bean id="emailToFriendController" class="eu.europeana.web.controller.EmailToFriendController">
         <property name="friendEmailSender" ref="emailSenderForSendToFriend"/>
         <property name="subject" value="A link from Europeana"/>
     </bean>
 
     <!-- AjaxControllers -->
-    <bean id="tagAutocompleteController" class="eu.europeana.controller.TagAutoCompleteController">
+    <bean id="tagAutocompleteController" class="eu.europeana.web.controller.TagAutoCompleteController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
     <!-- Static pages -->
-    <bean id="advancedSearchController" class="eu.europeana.controller.StaticPageController">
+    <bean id="advancedSearchController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="advancedsearch"/>
         <property name="notLoadableFromDb" value="true"/>
     </bean>
 
-    <bean id="aboutUsController" class="eu.europeana.controller.StaticPageController">
+    <bean id="aboutUsController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="aboutus"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="accessibilityController" class="eu.europeana.controller.StaticPageController">
+    <bean id="accessibilityController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="accessibility"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean name="errorController" class="eu.europeana.controller.StaticPageController">
+    <bean name="errorController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="error"/>
         <property name="notLoadableFromDb" value="true"/>
     </bean>
 
-    <bean id="languagePolicyController" class="eu.europeana.controller.StaticPageController">
+    <bean id="languagePolicyController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="languagepolicy"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="newContentController" class="eu.europeana.controller.StaticPageController">
+    <bean id="newContentController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="newcontent"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="partnersController" class="eu.europeana.controller.PartnerPageController">
+    <bean id="partnersController" class="eu.europeana.web.controller.PartnerPageController">
         <property name="partnerListSampler" ref="partnerListSampler"/>
         <property name="config" ref="config"/>
     </bean>
 
-    <bean id="privacyController" class="eu.europeana.controller.StaticPageController">
+    <bean id="privacyController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="privacy"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="sitemapController" class="eu.europeana.controller.StaticPageController">
+    <bean id="sitemapController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="sitemap"/>
         <property name="notLoadableFromDb" value="true"/>
     </bean>
 
-    <bean id="termsOfServiceController" class="eu.europeana.controller.StaticPageController">
+    <bean id="termsOfServiceController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="termsofservice"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="usingEuropeanaController" class="eu.europeana.controller.StaticPageController">
+    <bean id="usingEuropeanaController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="usingeuropeana"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
-    <bean id="contactController" class="eu.europeana.controller.ContactController">
+    <bean id="contactController" class="eu.europeana.web.controller.ContactController">
         <property name="emailSender" ref="emailSenderForUserFeedback"/>
         <property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>
         <property name="successView" value="contact"/>
         <property name="formView" value="contact"/>
     </bean>
 
-    <bean id="communitiesController" class="eu.europeana.controller.CommunitiesController"/>
+    <bean id="communitiesController" class="eu.europeana.web.controller.CommunitiesController"/>
 
     <bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName" value="redirect:/login.html"/>
     </bean>
 
-    <bean id="thinkVideoController" class="eu.europeana.controller.StaticPageController">
+    <bean id="thinkVideoController" class="eu.europeana.web.controller.StaticPageController">
         <property name="template" value="thinkvideo"/>
         <property name="notLoadableFromDb" value="true"/>
     </bean>

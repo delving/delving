@@ -44,7 +44,7 @@
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>-->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>-->
     <!-- Scan package for Controller Annotated Classes -->
-    <!--<context:component-scan base-package="eu.europeana.controller"/>-->
+    <!--<context:component-scan base-package="eu.europeana.web.controller"/>-->
 
     <!-- Freemarker Template config -->
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">

@@ -13,5 +13,5 @@ ${stackTrace}
 ==========
 
 - Europeana Exception Resolver
-eu.europeana.controller.util.ExceptionResolver
+eu.europeana.web.util.ExceptionResolver
 

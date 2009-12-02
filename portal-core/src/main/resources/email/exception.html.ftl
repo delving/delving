@@ -17,7 +17,7 @@ ${stackTrace}<br />
 ==========</p>
 
 <p>- Europeana Exception Resolver<br />
-eu.europeana.controller.util.ExceptionResolver</p>
+eu.europeana.web.util.ExceptionResolver</p>
 
 </body>
 
