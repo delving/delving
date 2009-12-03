@@ -82,6 +82,7 @@ public class IngestionFixture {
             eseImporter.setImportRepository(getImportRepository());
             eseImporter.setSolrIndexer(getSolrIndexer());
             eseImporter.setNormalized(true);
+            eseImporter.setCommitImmediately(true);
         }
         return eseImporter;
     }

@@ -62,6 +62,13 @@ public interface SolrIndexer {
     boolean deleteCollectionByName(String collectionName);
 
     /**
+     * Send a commit command to complete the operations recently given
+     * @return true if it worked
+     */
+    
+    boolean commit();
+
+    /**
      * Check if there has been an HTTP error
      *
      * @return true if there was one

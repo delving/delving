@@ -117,13 +117,26 @@ public class SolrIndexerImpl implements SolrIndexer {
     public boolean deleteCollectionByName(String collectionName) {
         String xml = createDeleteRecordsXML(collectionName);
         try {
-            postUpdate(xml);
-            postUpdate("<?xml version=\"1.0\" encoding=\"UTF-8\"?><commit/>");
             log.info(String.format("Delete collection %s from Solr Index", collectionName));
+            postUpdate(xml);
+            commit();
             return true;
         }
         catch (IOException e) {
             log.error("Unable to post delete to SOLR", e);
+            httpError = true;
+        }
+        return false;
+    }
+
+    public boolean commit() {
+        try {
+            log.info("solr commit sent");
+            postUpdate("<?xml version=\"1.0\" encoding=\"UTF-8\"?><commit/>");
+            return true;
+        }
+        catch (IOException e) {
+            log.error("Unable to post commit to SOLR", e);
             httpError = true;
         }
         return false;
@@ -146,7 +159,7 @@ public class SolrIndexerImpl implements SolrIndexer {
         return out.toString();
     }
 
-    protected void postUpdate(String xml) throws IOException {
+    private void postUpdate(String xml) throws IOException {
         int responseCode = 0;
         PostMethod postMethod = new PostMethod(targetUrl);
         postMethod.setRequestEntity(new StringRequestEntity(xml, "text/xml", "UTF-8"));
@@ -168,7 +181,7 @@ public class SolrIndexerImpl implements SolrIndexer {
         }
     }
 
-    protected String createAddRecordsXML(List<Record> recordList) throws IOException, XMLStreamException {
+    private String createAddRecordsXML(List<Record> recordList) throws IOException, XMLStreamException {
         StringWriter stringWriter = new StringWriter();
         XMLStreamWriter out = outFactory.createXMLStreamWriter(stringWriter);
         out.writeStartDocument("UTF-8", "1.0");
@@ -209,7 +222,7 @@ public class SolrIndexerImpl implements SolrIndexer {
         out.writeEndElement();
     }
 
-    protected ESERecord fetchRecordFromSolr(String uri) throws EuropeanaQueryException {
+    private ESERecord fetchRecordFromSolr(String uri) throws EuropeanaQueryException {
         log.info("fetching record for "+uri);
         QueryModel queryModel = queryModelFactory.createQueryModel(QueryModelFactory.SearchType.SIMPLE);
         queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);

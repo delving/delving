@@ -74,6 +74,7 @@ public class ESEImporterImpl implements ESEImporter {
     private ImportRepository importRepository;
     private DashboardDao dashboardDao;
     private boolean normalized;
+    private boolean commitImmediately;
     private int chunkSize = 1000;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
@@ -103,6 +104,10 @@ public class ESEImporterImpl implements ESEImporter {
 
     public void setNormalized(boolean normalized) {
         this.normalized = normalized;
+    }
+
+    public void setCommitImmediately(boolean commitImmediately) {
+        this.commitImmediately = commitImmediately;
     }
 
     public ImportRepository getImportRepository() {
@@ -359,6 +364,11 @@ public class ESEImporterImpl implements ESEImporter {
         private boolean indexRecordList() {
             if (solrIndexer.indexRecordList(new ArrayList<SolrIndexer.Record>(recordList))) {
                 recordList.clear();
+                if (commitImmediately) {
+                    if (!solrIndexer.commit()) {
+                        log.warn("cannot commit explicitly");
+                    }
+                }
                 return true;
             }
             else {

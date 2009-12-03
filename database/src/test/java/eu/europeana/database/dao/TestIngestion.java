@@ -112,10 +112,6 @@ public class TestIngestion {
         }
         while (collection.getFileState() == ImportFileState.IMPORTING);
         assertEquals(ImportFileState.IMPORTED, collection.getFileState());
-        for (int walk=0; walk<40; walk++) {
-            log.info("waiting "+walk);
-            Thread.sleep(1000);
-        }
     }
 
     @Test

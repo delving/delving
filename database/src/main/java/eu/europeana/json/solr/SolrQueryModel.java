@@ -141,7 +141,7 @@ public class SolrQueryModel implements QueryModel {
             }
             catch (IOException e) {
                 log.error("Unable to fetch result", e);
-                if (firstException == null) {
+                if (firstException == null) { // todo: this is always null. maybe the exception here shuld not be thrown until after retries
                     firstException = e;
                 }
                 throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), firstException);
