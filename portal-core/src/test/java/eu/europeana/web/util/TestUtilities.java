@@ -1,20 +1,13 @@
 package eu.europeana.web.util;
 
 import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.Token;
 import eu.europeana.query.Facet;
 import eu.europeana.query.FacetCount;
 import eu.europeana.query.FacetType;
 import static junit.framework.Assert.*;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.ui.rememberme.PersistentRememberMeToken;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,16 +20,7 @@ import java.util.TreeMap;
  * @author Sjoerd Siebinga  <sjoerd.siebinga@gmail.com>
  */
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class TestUtilities {
-//    private static final Logger log = Logger.getLogger(TestUtilities.class);
-
-    @Autowired
-    private TokenRepositoryService tokenRepositoryService;
-
-    @Autowired
-    private TokenService tokenService;
 
     @Test
     public void testPickShuffledRandomItems() {
@@ -63,29 +47,6 @@ public class TestUtilities {
             dummylist.add(item);
         }
         return dummylist;
-    }
-
-    @Test
-    public void testToken() {
-        Date now = new Date();
-        PersistentRememberMeToken t = new PersistentRememberMeToken(
-                "user1", "series1", "token1", now
-        );
-        tokenRepositoryService.createNewToken(t);
-        PersistentRememberMeToken t2 = tokenRepositoryService.getTokenForSeries("series1");
-        assertEquals(t.getSeries(), t2.getSeries());
-        assertEquals(t.getTokenValue(), t2.getTokenValue());
-        assertEquals(t.getUsername(), t2.getUsername());
-    }
-
-    @Test
-    public void createToken() {
-        tokenService.createNewToken("test@example.com");
-        Token token = tokenService.getTokenByEmail("test@example.com");
-        assertNotNull(token);
-        tokenService.removeToken(token);
-        long tokenCount = tokenService.countTokens();
-        assertEquals(0, tokenCount);
     }
 
     @Test
