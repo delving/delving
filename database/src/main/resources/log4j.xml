@@ -16,6 +16,9 @@
     <logger name="org.apache.commons.httpclient">
         <level value="ERROR"/>
     </logger>
+    <logger name="eu.europeana.json.solr">
+        <level value="DEBUG"/>
+    </logger>
     <root>
         <priority value="INFO"/>
         <appender-ref ref="console"/>

@@ -29,11 +29,13 @@ import eu.europeana.incoming.SolrIndexer;
 import eu.europeana.incoming.SolrIndexerImpl;
 import eu.europeana.json.solr.SolrQueryModelFactory;
 import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.QueryExpression;
 import eu.europeana.query.QueryModel;
 import eu.europeana.query.QueryModelFactory;
 import eu.europeana.query.ResponseType;
 import eu.europeana.query.ResultModel;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,7 @@ import java.io.IOException;
 public class IngestionFixture {
     private static final String SOLR_SELECT_URL = "http://localhost:8983/solr/select";
     private static final String SOLR_UPDATE_URL = "http://localhost:8983/solr/update";
-
+    private Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private DashboardDao dashboardDao;
@@ -86,7 +88,8 @@ public class IngestionFixture {
 
     public ResultModel queryFullDoc(String uri) throws EuropeanaQueryException {
         QueryModel queryModel = getQueryModelFactory().createQueryModel(QueryModelFactory.SearchType.SIMPLE);
-        queryModel.setQueryString("europeana_uri:\""+uri+"\"");
+        QueryExpression expression = queryModel.setQueryString("europeana_uri:\""+uri+"\"");
+        log.info("Backend Query: "+ expression.getBackendQueryString());
         queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
         return queryModel.fetchResult();
     }
@@ -97,6 +100,7 @@ public class IngestionFixture {
     }
 
     public void startSolr() throws Exception {
+        delete(findSolrData());
         System.setProperty("solr.solr.home", findRoot().getAbsolutePath()+"/src/test/solr/home");
         System.setProperty("solr.data.dir", findTarget().getAbsolutePath()+"/solrdata");
         server = new Server(8983);
@@ -144,6 +148,10 @@ public class IngestionFixture {
         file.delete();
     }
 
+    private File findSolrData() {
+        return new File(findTarget(),"solrdata");
+    }
+
     private File findRepository() {
         return new File(findTarget(),"repository");
     }
@@ -151,7 +159,6 @@ public class IngestionFixture {
     private File findTarget() {
         return new File(findRoot(), "target");
     }
-
 
     private File findRoot() {
         File target = new File("src");
