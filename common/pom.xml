@@ -23,10 +23,10 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europeana</groupId>
-    <artifactId>query</artifactId>
+    <artifactId>common</artifactId>
     <packaging>jar</packaging>
     <name>The Query and Response Model</name>
-    <version>${europeana.query.version}</version>
+    <version>${europeana.common.version}</version>
     <description>Query/Response Shared by multiple projects</description>
     <inceptionYear>2008</inceptionYear>
 

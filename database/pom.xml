@@ -128,8 +128,8 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>query</artifactId>
-            <version>${europeana.query.version}</version>
+            <artifactId>common</artifactId>
+            <version>${europeana.common.version}</version>
         </dependency>
         <dependency>
             <groupId>postgresql</groupId>

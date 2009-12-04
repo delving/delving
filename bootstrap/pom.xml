@@ -72,13 +72,6 @@
         </dependency>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>resolver</artifactId>
-            <version>${europeana.resolver.version}</version>
-            <type>war</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>eu.europeana</groupId>
             <artifactId>database</artifactId>
             <version>${europeana.database.version}</version>
         </dependency>

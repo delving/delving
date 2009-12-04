@@ -53,7 +53,6 @@ public class EuropeanaBackendStarter {
             port = Integer.parseInt(args[0]);
         }
         Server server = new Server(port);
-        server.addHandler(new WebAppContext(root + "resolver/src/main/webapp", "/resolve"));
         server.addHandler(new WebAppContext(root + "cache-servlet/src/main/webapp", "/cache"));
         server.addHandler(new WebAppContext(root + "bootstrap/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
         server.start();
@@ -67,8 +66,7 @@ public class EuropeanaBackendStarter {
         });
         return checkFor("portal-lite", subdirs)
                 && checkFor("cache-servlet", subdirs)
-                && checkFor("bootstrap", subdirs)
-                && checkFor("resolver", subdirs);
+                && checkFor("bootstrap", subdirs);
     }
 
     private static boolean checkFor(String name, File[] subdirs) {

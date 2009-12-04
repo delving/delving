@@ -78,7 +78,7 @@
     </pluginRepositories>
 
     <modules>
-        <module>query</module>
+        <module>common</module>
         <module>database</module>
         <module>normalizer</module>
         <module>dashboard</module>
@@ -360,11 +360,10 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.query.version>1.0.1</europeana.query.version>
+        <europeana.common.version>1.0.1</europeana.common.version>
         <europeana.cache.version>1.0.1</europeana.cache.version>
         <europeana.database.version>1.0.1</europeana.database.version>
         <europeana.bootstrap.version>0.5</europeana.bootstrap.version>
-        <europeana.resolver.version>1.0</europeana.resolver.version>
         <europeana.normalizer.version>2.8</europeana.normalizer.version>
         <europeana.portal.version>0.6</europeana.portal.version>
 

@@ -21,14 +21,10 @@
 
 package eu.europeana.query;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.util.Properties;
 
 /**
  * This class fetches the europeana.properties files, however folks have decided to define
@@ -74,7 +70,7 @@ public class EuropeanaProperties extends Properties {
         }
         boolean complete = true;
         for (String expect : EXPECT) {
-            String value = getProperty(expect); 
+            String value = getProperty(expect);
             if (value == null) {
                 log.warn("Missing property '"+expect+"'");
                 complete = false;

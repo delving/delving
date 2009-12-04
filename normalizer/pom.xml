@@ -7,7 +7,7 @@
     <name>Normalizing XML to Europeana input format</name>
     <version>${europeana.normalizer.version}</version>
     <inceptionYear>2008</inceptionYear>
-  
+
   <parent>
     <groupId>eu.europeana</groupId>
     <artifactId>europeana</artifactId>
@@ -64,8 +64,8 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>query</artifactId>
-            <version>${europeana.query.version}</version>
+            <artifactId>common</artifactId>
+            <version>${europeana.common.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
