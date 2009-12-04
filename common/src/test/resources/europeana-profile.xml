@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<europeana-profile>
+
+
+    <!--
+        possible attributes for metadata field
+        namespace   (string)
+        name        (string)
+        required    (boolean, optional) "field cannot be missing", default: false
+        facet       (boolean, optional) default: false
+        facet-name  (string, optional) "if missing name is used as facet identifier"
+        facet-abbrv (string, optional) "used for solr query for multi select facets."
+        briefdoc    (boolean)
+        fulldoc     (boolean)
+        hidden      (boolean) "Means that field is not displayed anywhere. Overrides briefdoc fulldoc facet."
+        solr-field-type   (string) "must be one of the field types define in the schema.xml for solr", default: text
+
+    -->
+
+
+    <fields>
+         <field namespace="europeana" name="uri" required="true" solr-field-type="text"
+                 briefdoc="true" fulldoc="true" facet="false"/>
+         <field namespace="europeana" name="type" solr-field-type="text"
+                briefdoc="true" fulldoc="true" facet="true"/>
+         <field namespace="europeana" name="year"
+                briefdoc="false" fulldoc="false" facet="true" facet-abbrv="yr"/>
+    </fields>
+
+
+    <config>
+        <solr-schema generate="true" output-path="/tmp"/>
+        <freemarker-templates generate="true" output-path="/tmp"/>
+    </config>
+
+</europeana-profile>
