@@ -12,6 +12,10 @@ public enum StaticPageType {
     PRIVACY("privacy"),
     TERMS_OF_SERVICE("termsofservice"),
     USING_EUROPEANA("usingeuropeana"),
+    THINK_VIDEO("thinkvideo"),
+    ERROR("error"),
+    SITEMAP("sitemap"),
+    ADVANCED_SEARCH("advancedsearch"),
     NEWS("news");
 
     private String viewName;
