@@ -29,12 +29,12 @@
     <version>${europeana.query.version}</version>
     <description>Query/Response Shared by multiple projects</description>
     <inceptionYear>2008</inceptionYear>
- 
-  <parent>
-    <groupId>eu.europeana</groupId>
-    <artifactId>europeana</artifactId>
-    <version>1</version>
-  </parent>
+
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
 
     <developers>
         <developer>
@@ -59,4 +59,10 @@
     <build>
         <defaultGoal>install</defaultGoal>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+    </dependencies>
 </project>

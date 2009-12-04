@@ -143,11 +143,6 @@
             <version>${europeana.database.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>cache</artifactId>
-            <version>${europeana.cache.version}</version>
-        </dependency>
-        <dependency>
             <groupId>quartz</groupId>
             <artifactId>quartz</artifactId>
         </dependency>

@@ -37,11 +37,6 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>cache</artifactId>
-            <version>${europeana.cache.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europeana</groupId>
             <artifactId>query</artifactId>
             <version>${europeana.query.version}</version>
         </dependency>
