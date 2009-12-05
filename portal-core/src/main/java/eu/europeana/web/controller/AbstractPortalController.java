@@ -2,11 +2,11 @@ package eu.europeana.web.controller;
 
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.ControllerUtil;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,16 +28,8 @@ public abstract class AbstractPortalController extends AbstractController {
         handle(request,model);
 
         User user = ControllerUtil.getUser();
-//        MyEuropeanaController.UserPresentationFacade facade = (MyEuropeanaController.UserPresentationFacade) model.get(MyEuropeanaController.USER_PRESENTATION_FACADE);
 
         model.put("user", user);
-//        if (facade == null) {
-//            model.put("user", user);
-//        } else {
-//            // populate facade
-//            facade.setUser(user);
-//            model.put("user", facade);
-//        }
 
         if (model.contentType != null) {
             response.setContentType(model.contentType);

@@ -23,12 +23,12 @@ package eu.europeana.web.util;
 
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
@@ -57,7 +57,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
         QueryProblem queryProblem = QueryProblem.NONE;
-        // todo: decide if we are going to give an error code on the exeption resolver
+        // todo: decide if we are going to give an error code on the exception resolver
         // response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         if (exception instanceof EuropeanaQueryException) {
             queryProblem = ((EuropeanaQueryException) exception).getFetchProblem();
@@ -68,7 +68,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             try {
                 Map<String, Object> model = new TreeMap<String, Object>();
                 model.put("hostName", request.getServerName());
-                model.put("request", request.getRequestURI() + "?" + request.getQueryString());
+                model.put("request", formatQuerySting(request));
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", config.get("cacheUrl"));
                 String subject = queryProblem.getFragment();
@@ -88,6 +88,14 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);
         return mav;
+    }
+
+    private String formatQuerySting(HttpServletRequest request) {
+        String queryString = request.getRequestURI();
+        if (request.getQueryString() != null) {
+            queryString += "?" + request.getQueryString();
+        }
+        return queryString;
     }
 
     private String getStackTrace(Exception exception) {
