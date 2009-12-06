@@ -21,19 +21,9 @@
 
 package eu.europeana.database.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import org.hibernate.annotations.Index;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,10 +73,6 @@ public class EuropeanaId implements Serializable {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "europeanaid")
     private List<SocialTag> socialTags;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "europeanaid")
-    private List<EditorPick> editorPicks;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
     @JoinColumn(name = "europeanaid")
@@ -176,17 +162,6 @@ public class EuropeanaId implements Serializable {
 
     public void setSocialTags(List<SocialTag> socialTags) {
         this.socialTags = socialTags;
-    }
-
-    public List<EditorPick> getEditorPicks() {
-        if (editorPicks == null) {
-            editorPicks = new ArrayList<EditorPick>();
-        }
-        return editorPicks;
-    }
-
-    public void setEditorPicks(List<EditorPick> editorPicks) {
-        this.editorPicks = editorPicks;
     }
 
     public List<EuropeanaObject> getEuropeanaObjects() {

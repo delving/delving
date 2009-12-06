@@ -22,31 +22,15 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.CacheingQueueEntry;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.DashboardLog;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.EuropeanaObject;
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.database.domain.QueueEntry;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import eu.europeana.database.domain.*;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class is an implementation of the DashboardDao using an injected JPA Entity Manager.
@@ -286,7 +270,6 @@ public class DashboardDaoImpl implements DashboardDao {
             persistentId.setLastModified(now);
             persistentId.getSocialTags().size();
             persistentId.setOrphan(false);
-            persistentId.getEditorPicks().size();
             if (objectUrls.size() > 0) { // fix to speed up reimporting of collections without objects
                 log.debug("checking for objectUrls");
                 for (String objectUrl : objectUrls) { // if one is not there, add it
@@ -502,7 +485,6 @@ public class DashboardDaoImpl implements DashboardDao {
         List<EuropeanaId> result = (List<EuropeanaId>) query.getResultList();
         for (EuropeanaId id : result) {
             id.getSocialTags().size();
-            id.getEditorPicks().size();
         }
         return result;
     }
@@ -559,18 +541,6 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Transactional
     public int markOrphans(EuropeanaCollection collection) {
-        // find all orphans by query
-        //        Query orphanCountQuery = entityManager.createQuery("select id from EuropeanaId as id where collection = :collection and collection.collectionLastModified > id.lastModified");
-        //        orphanCountQuery.setParameter("collection", collection);
-        //        orphanCountQuery.setMaxResults(1);
-        //        // update them all to boolean orphan true
-        //        List resultList = orphanCountQuery.getResultList();
-        //        log.info(String.format("Found %d orphans in collection %s", resultList.size(), collection.getName()));
-        ////        for (Object id : resultList) {
-        //            EuropeanaId newId = (EuropeanaId) id;
-        //            newId.setOrphan(true);
-        //        }
-        // todo: see if update query is more effecient.
         int numberUpdated = 0;
         Query orphanQountUpdate = entityManager.createQuery("update EuropeanaId id set orphan = :orphan where collection = :collection and lastModified < :lastmodified");
         orphanQountUpdate.setParameter("collection", collection);
@@ -579,7 +549,6 @@ public class DashboardDaoImpl implements DashboardDao {
         numberUpdated = orphanQountUpdate.executeUpdate();
         log.info(String.format("Found %d orphans in collection %s", numberUpdated, collection.getName()));
         return numberUpdated;
-        //        return resultList.size();
     }
 
     @Transactional

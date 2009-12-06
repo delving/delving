@@ -32,10 +32,6 @@ public class SavedSearch implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSaved;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = true)
-    @JoinColumn(name = "editorpickid")
-    private EditorPick editorPick;
-
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "searchtermid")
     private SearchTerm searchTerm;
@@ -79,14 +75,6 @@ public class SavedSearch implements Serializable {
 
     public void setDateSaved(Date dateSaved) {
         this.dateSaved = dateSaved;
-    }
-
-    public EditorPick getEditorPick() {
-        return editorPick;
-    }
-
-    public void setEditorPick(EditorPick editorPick) {
-        this.editorPick = editorPick;
     }
 
     public SearchTerm getSearchTerm() {

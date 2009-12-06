@@ -31,7 +31,7 @@
         (production version) web-modules
     </description>
     <inceptionYear>2009</inceptionYear>
- 
+
   <parent>
     <groupId>eu.europeana</groupId>
     <artifactId>europeana</artifactId>
@@ -151,6 +151,11 @@
             <groupId>org.osuosl.srw</groupId>
             <artifactId>srw_lucene</artifactId>
             <!--suppress MavenModelInspection -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>3.0.0.M3</version>
         </dependency>
     </dependencies>
 </project>

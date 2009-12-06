@@ -23,27 +23,14 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.EditorPick;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.List;
 
@@ -328,41 +315,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             entityManager.persist(savedItem);
             carouselItem = entityManager.getReference(CarouselItem.class, carouselItem.getId());
             entityManager.remove(carouselItem);
-        }
-    }
-
-
-    /*
-    *  People Are Currently Thinking About, or editor picks
-    */
-    @Transactional
-    public List<EditorPick> fetchEditorPicksItems() {
-        Query query = entityManager.createQuery("select item from EditorPick item");
-        return (List<EditorPick>) query.getResultList();
-    }
-
-    @Transactional
-    public EditorPick createEditorPick(SavedSearch savedSearch) throws Exception {
-        EditorPick editorPick = new EditorPick();
-        editorPick.setDateSaved(savedSearch.getDateSaved());
-        editorPick.setQuery(savedSearch.getQuery());
-        editorPick.setUser(savedSearch.getUser());
-
-        SavedSearch savedSearch2 = entityManager.getReference(SavedSearch.class, savedSearch.getId());
-        editorPick.setSavedSearch(savedSearch2);
-        savedSearch2.setEditorPick(editorPick);
-        return editorPick;
-    }
-
-    @Transactional
-    public void removeFromEditorPick(SavedSearch savedSearch) {
-        EditorPick editorPick = savedSearch.getEditorPick();
-        if (editorPick != null) {
-            savedSearch = entityManager.getReference(SavedSearch.class, savedSearch.getId());
-            savedSearch.setEditorPick(null);
-            entityManager.persist(savedSearch);
-            editorPick = entityManager.getReference(EditorPick.class, editorPick.getId());
-            entityManager.remove(editorPick);
         }
     }
 

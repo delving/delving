@@ -24,28 +24,18 @@ package eu.europeana.incoming;
 import com.ctc.wstx.stax.WstxOutputFactory;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.EditorPick;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.SocialTag;
-import eu.europeana.query.ESERecord;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.FullDoc;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.QueryProblem;
-import eu.europeana.query.RecordField;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import eu.europeana.query.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -195,9 +185,6 @@ public class SolrIndexerImpl implements SolrIndexer {
             }
             for (SocialTag socialTag : record.getEuropeanaId().getSocialTags()) {
                 appendField(out, RecordField.EUROPEANA_USER_TAG, socialTag.getTag());
-            }
-            for (EditorPick editorPick : record.getEuropeanaId().getEditorPicks()) {
-                appendField(out, RecordField.EUROPEANA_EDITORS_PICK, editorPick.getQuery());
             }
             out.writeEndElement();
         }

@@ -7,7 +7,6 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <class>eu.europeana.database.domain.User</class>
         <class>eu.europeana.database.domain.SocialTag</class>
-        <class>eu.europeana.database.domain.EditorPick</class>
         <class>eu.europeana.database.domain.SavedSearch</class>
         <class>eu.europeana.database.domain.SavedItem</class>
         <class>eu.europeana.database.domain.EuropeanaId</class>

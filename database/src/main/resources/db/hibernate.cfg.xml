@@ -33,7 +33,6 @@
         <property name="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
         <mapping class="eu.europeana.database.domain.User"/>
         <mapping class="eu.europeana.database.domain.SocialTag"/>
-        <mapping class="eu.europeana.database.domain.EditorPick"/>
         <mapping class="eu.europeana.database.domain.SavedSearch"/>
         <mapping class="eu.europeana.database.domain.SavedItem"/>
         <mapping class="eu.europeana.database.domain.EuropeanaId"/>

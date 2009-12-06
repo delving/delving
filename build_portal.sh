@@ -5,8 +5,7 @@ PACKAGE="mvn clean package -Dmaven.test.skip=true"
 BUILD_ALL=true
 
 # Installation of jar is m2 repository
-cd query; $INSTALL
-cd ../cache; $INSTALL
+cd common; $INSTALL
 cd ../database; $INSTALL
 cd ../portal-core; $INSTALL
 
@@ -17,6 +16,5 @@ if [[ BUILD_ALL ]]; then
 	#statements
 	echo "building extra modules"
 	cd ../cache-servlet; $PACKAGE
-	cd ../resolver; $PACKAGE
 	cd ../dashboard; $PACKAGE
 fi

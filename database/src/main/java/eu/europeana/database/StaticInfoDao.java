@@ -21,17 +21,7 @@
 
 package eu.europeana.database;
 
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.EditorPick;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 
 import java.util.List;
 
@@ -303,30 +293,4 @@ public interface StaticInfoDao {
      * @see {@link SearchTerm}
      */
     User removeSearchTerm(User user, Long savedSearchId);
-
-    // ==== Editor picks    todo: What is an editorPick ???
-
-    /**
-     * Get all EditorPick instances.
-     *
-     * @return List -  of the retrieved EditorPick
-     * @see {@link List}
-     */
-    List<EditorPick> fetchEditorPicksItems();
-
-    /**
-     * Create an EditorPick by using the given savedSearch
-     *
-     * @param savedSearch - the instance of  SavedSearch used to create an EditorPick
-     * @return EditorPick - the created instance of EditorPick
-     * @throws Exception
-     */
-    EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
-
-    /**
-     * Remove the EditorPick instance related to the given @see {@link SavedSearch}
-     *
-     * @param savedSearch
-     */
-    void removeFromEditorPick(SavedSearch savedSearch);
 }

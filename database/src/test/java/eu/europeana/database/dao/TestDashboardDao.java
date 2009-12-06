@@ -3,29 +3,22 @@ package eu.europeana.database.dao;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.EuropeanaObject;
-import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.User;
-import javax.xml.parsers.ParserConfigurationException;
+import eu.europeana.database.domain.*;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static org.junit.Assert.*;
 
 /**
  * @author todo insert: "name" <email>
@@ -106,8 +99,8 @@ public class TestDashboardDao {
         for (SavedItem savedItem : savedItems) {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
-//            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
-//            Assert.assertTrue(carouselItem.getSavedItem() != null);
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId().getEuropeanaUri(), savedItem.getId());
+            Assert.assertTrue(carouselItem.getSavedItem() != null);
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());
         }
         savedItems = user.getSavedItems();
