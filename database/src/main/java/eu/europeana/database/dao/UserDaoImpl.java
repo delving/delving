@@ -22,19 +22,15 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 import eu.europeana.database.integration.TagCount;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +50,7 @@ public class UserDaoImpl implements UserDao {
         query.setParameter("email", email);
         try {
             user = (User) query.getSingleResult();
-            if (user != null){
+            if (user != null) {
                 user.getSavedItems().size();
                 user.getSavedSearches().size();
                 user.getSocialTags().size();
@@ -95,8 +91,7 @@ public class UserDaoImpl implements UserDao {
             user.getSavedSearches().size();
             user.getSocialTags().size();
             return user;
-        }
-        else {
+        } else {
             entityManager.persist(fresh);
             return fresh;
         }
@@ -119,8 +114,8 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public User authenticateUser(String email, String password) {
-        if (email == null || password == null)  {
-            throw new IllegalArgumentException("Parameter(s) has null value: email:" + email+ ", password:"+password);
+        if (email == null || password == null) {
+            throw new IllegalArgumentException("Parameter(s) has null value: email:" + email + ", password:" + password);
         }
         Query query = entityManager.createQuery("select u from User as u where u.email like :email");
         query.setParameter("email", email);
@@ -137,7 +132,7 @@ public class UserDaoImpl implements UserDao {
         return null;
     }
 
-        @Transactional
+    @Transactional
     public List<SavedItem> fetchSavedItems(Long userId) {
         User user = entityManager.find(User.class, userId);
         user.getSavedItems().size();
@@ -147,7 +142,7 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public SavedItem fetchSavedItemById(Long id) {
-         if (id == null)  {
+        if (id == null) {
             throw new IllegalArgumentException("Parameter has null value: id:" + id);
         }
         Query q = entityManager.createQuery("select st from SavedItem st where st.id = :id");
@@ -157,15 +152,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Transactional
-      public List<SavedSearch> fetchSavedSearches(Long userId) {
-          User user = entityManager.find(User.class, userId);
-          user.getSavedSearches().size();
-          return user.getSavedSearches();
-      }
+    public List<SavedSearch> fetchSavedSearches(Long userId) {
+        User user = entityManager.find(User.class, userId);
+        user.getSavedSearches().size();
+        return user.getSavedSearches();
+    }
 
     @Transactional
     public SavedSearch fetchSavedSearchById(Long savedSearchId) {
-        if (savedSearchId == null)  {
+        if (savedSearchId == null) {
             throw new IllegalArgumentException("Parameter has null value: userId:" + savedSearchId);
         }
         Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :id");
@@ -234,14 +229,16 @@ public class UserDaoImpl implements UserDao {
         entityManager.remove(object);
         entityManager.flush();
         user = entityManager.find(User.class, user.getId());
+        user.getSavedItems().size();
         user.getSavedSearches().size();
+        user.getSocialTags().size();
         return user;
     }
 
     @Transactional
     public User removeSavedItem(User user, Long id) {
         Query q = entityManager.createQuery("select o from SavedItem  as o where user = :user and :id = id");
-        q.setParameter("user", user.getId());
+        q.setParameter("user", user);
         q.setParameter("id", id);
         List objects = q.getResultList();
         if (objects.size() != 1) {
@@ -253,13 +250,15 @@ public class UserDaoImpl implements UserDao {
         entityManager.flush();
         user = entityManager.find(User.class, user.getId());
         user.getSavedItems().size();
+        user.getSavedSearches().size();
+        user.getSocialTags().size();
         return user;
     }
 
     @Transactional
     public User removeSavedSearch(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SavedSearch  as o where user = :user and :id = id");
-        q.setParameter("user", user.getId());
+        Query q = entityManager.createQuery("select o from SavedSearch  as o where user = :user and id = :id");
+        q.setParameter("user", user);
         q.setParameter("id", id);
         List objects = q.getResultList();
         if (objects.size() != 1) {
@@ -269,7 +268,9 @@ public class UserDaoImpl implements UserDao {
         entityManager.remove(object);
         entityManager.flush();
         user = entityManager.find(User.class, user.getId());
+        user.getSavedItems().size();
         user.getSavedSearches().size();
+        user.getSocialTags().size();
         return user;
     }
 
@@ -319,6 +320,4 @@ public class UserDaoImpl implements UserDao {
         query.setParameter("uri", europeanaUri);
         return (EuropeanaId) query.getSingleResult();
     }
-
-
 }
