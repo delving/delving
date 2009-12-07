@@ -22,15 +22,19 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SocialTag;
+import eu.europeana.database.domain.User;
 import eu.europeana.database.integration.TagCount;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -45,21 +49,20 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public User fetchUserByEmail(String email) {
-        User user;
         Query query = entityManager.createQuery("select u from User as u where u.email = :email");
         query.setParameter("email", email);
         try {
-            user = (User) query.getSingleResult();
+            User user = (User) query.getSingleResult();
             if (user != null) {
                 user.getSavedItems().size();
                 user.getSavedSearches().size();
                 user.getSocialTags().size();
             }
+            return user;
         }
         catch (NoResultException e) {
-            throw new IllegalArgumentException("The user doesn't exists. email: " + email);
+            return null;
         }
-        return user;
     }
 
     @Transactional

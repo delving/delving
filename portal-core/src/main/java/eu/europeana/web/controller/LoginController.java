@@ -94,6 +94,6 @@ public class LoginController extends AbstractPortalController {
     }
 
     private boolean emailExists(String email) {
-        return (userDao.fetchUserByEmail(email) != null);
+        return userDao.fetchUserByEmail(email) != null;
     }
 }

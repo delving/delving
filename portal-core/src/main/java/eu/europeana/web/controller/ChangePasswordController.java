@@ -35,9 +35,11 @@ public class ChangePasswordController extends SimpleFormController {
     public void setTokenService(TokenService tokenService) {
         this.tokenService = tokenService;
     }
+
     public void setNotifyEmailSender(EmailSender emailSender) {
         this.notifyEmailSender = emailSender;
     }
+
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
@@ -55,11 +57,11 @@ public class ChangePasswordController extends SimpleFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         ChangePasswordForm form = new ChangePasswordForm();
-        if (! isFormSubmission(request)) {
+        if (!isFormSubmission(request)) {
             String token = request.getParameter("token");
             Token rToken = tokenService.getToken(token);
-            form.setToken( rToken.getToken() );
-            form.setEmail( rToken.getEmail() );
+            form.setToken(rToken.getToken());
+            form.setEmail(rToken.getEmail());
         }
         return form;
     }
@@ -67,19 +69,22 @@ public class ChangePasswordController extends SimpleFormController {
     @Override
     protected void doSubmitAction(Object o) throws Exception {
         ChangePasswordForm form = (ChangePasswordForm) o;
-        Token token = tokenService.getToken( form.getToken() ); //token is validated in handleRequestInternal
-        User user = userDao.fetchUserByEmail( token.getEmail() ); //don't use email from the form. use token.
-        user.setPassword        ( form.getPassword() );
+        Token token = tokenService.getToken(form.getToken()); //token is validated in handleRequestInternal
+        User user = userDao.fetchUserByEmail(token.getEmail()); //don't use email from the form. use token.
+        if (user == null) {
+            throw new RuntimeException("Expected to find user for "+token.getEmail());
+        }
+        user.setPassword(form.getPassword());
 
         tokenService.removeToken(token); //remove token. it can not be used any more.
 
-        userDao.updateUser( user ); //now update the user
+        userDao.updateUser(user); //now update the user
 
         //send email notification
         WebApplicationContext ctx = getWebApplicationContext();
         Map config = (Map) ctx.getBean("config");
 
-        Map<String,Object> model = new TreeMap<String,Object>();
+        Map<String, Object> model = new TreeMap<String, Object>();
         model.put("user", user);
         try {
             notifyEmailSender.sendEmail(
@@ -102,24 +107,31 @@ public class ChangePasswordController extends SimpleFormController {
         public String getToken() {
             return token;
         }
+
         public void setToken(String token) {
             this.token = token;
         }
+
         public String getEmail() {
             return email;
         }
+
         public void setEmail(String email) {
             this.email = email;
         }
+
         public String getPassword() {
             return password;
         }
+
         public void setPassword(String password) {
             this.password = password;
         }
+
         public String getPassword2() {
             return password2;
         }
+
         public void setPassword2(String password2) {
             this.password2 = password2;
         }
@@ -132,7 +144,7 @@ public class ChangePasswordController extends SimpleFormController {
         }
 
         public void validate(Object o, Errors errors) {
-            ChangePasswordForm form = (ChangePasswordForm)o;
+            ChangePasswordForm form = (ChangePasswordForm) o;
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password2", "password2.required", "Repeat Password is required");
 
