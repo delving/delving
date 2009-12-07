@@ -50,7 +50,8 @@ public class LanguageDaoImpl implements LanguageDao {
                 if (found.isActive()) {
                     active.add(found.getLanguage());
                 }
-            } else if (language.isActiveByDefault()) {
+            }
+            else if (language.isActiveByDefault()) {
                 active.add(language);
             }
         }
@@ -64,9 +65,11 @@ public class LanguageDaoImpl implements LanguageDao {
         List<LanguageActivation> activations = query.getResultList();
         if (activations.isEmpty()) {
             entityManager.persist(new LanguageActivation(language, active));
-        } else if (activations.size() == 1) {
+        }
+        else if (activations.size() == 1) {
             activations.get(0).setActive(active);
-        } else {
+        }
+        else {
             throw new RuntimeException("More than one language activation!");
         }
     }
@@ -82,7 +85,8 @@ public class LanguageDaoImpl implements LanguageDao {
             messageKey = new MessageKey(key);
             translation = messageKey.setTranslation(language, value);
             entityManager.persist(messageKey);
-        } else {
+        }
+        else {
             messageKey = messageKeys.get(0);
             translation = messageKey.setTranslation(language, value);
         }
@@ -99,9 +103,14 @@ public class LanguageDaoImpl implements LanguageDao {
     public MessageKey fetchMessageKey(String key) {
         Query query = entityManager.createQuery("select mk from MessageKey mk where mk.key = :key");
         query.setParameter("key", key);
-        MessageKey messageKey = (MessageKey) query.getSingleResult();
-        messageKey.getTranslations().size();
-        return messageKey;
+        try {
+            MessageKey messageKey = (MessageKey) query.getSingleResult();
+            messageKey.getTranslations().size();
+            return messageKey;
+        }
+        catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Transactional

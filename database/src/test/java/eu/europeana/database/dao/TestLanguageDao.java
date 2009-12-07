@@ -4,19 +4,22 @@ import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
+import javax.persistence.NoResultException;
+import org.apache.log4j.Logger;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
-import org.apache.log4j.Logger;
 
-
-import javax.persistence.NoResultException;
 import java.io.IOException;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -73,7 +76,6 @@ public class TestLanguageDao {
 
     @Test
     public void messageKeyAddFetchRemove() throws Exception {
-
         languageDao.addMessagekey(keys[0]);
         MessageKey messageKey = languageDao.fetchMessageKey(keys[0]);
         assertNotNull(messageKey);
@@ -91,8 +93,6 @@ public class TestLanguageDao {
 
     @Test
     public void fetchMessageKeyStrings() throws Exception {
-
-
         for (String key : keys) {
             languageDao.addMessagekey(key);
         }
@@ -134,5 +134,9 @@ public class TestLanguageDao {
         }
     }
 
-
+    @Test
+    public void nonexistentKey() throws Exception {
+        MessageKey messageKey = languageDao.fetchMessageKey("some.nonexistent.key");
+        assertNull(messageKey);
+    }
 }

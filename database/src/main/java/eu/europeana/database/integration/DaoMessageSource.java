@@ -24,28 +24,46 @@ public class DaoMessageSource extends AbstractMessageSource {
     private LanguageDao languageDao;
     private Map<String, Map<Language, CacheValue>> cache = new ConcurrentHashMap<String, Map<Language, CacheValue>>();
 
-     public void setLanguageDao(LanguageDao languageDao) {
+    public void setLanguageDao(LanguageDao languageDao) {
         this.languageDao = languageDao;
     }
+
     public void setMaximumAge(long maximumAge) {
         this.maximumAge = maximumAge;
     }
 
     @Override
     protected MessageFormat resolveCode(String key, Locale locale) {
-        return getFromCache(key, locale).getMessageFormat();
+        CacheValue cacheValue = getFromCache(key, locale);
+        if (cacheValue != null) {
+            return cacheValue.getMessageFormat();
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
     protected String resolveCodeWithoutArguments(String key, Locale locale) {
-        return getFromCache(key, locale).getString();
+        CacheValue cacheValue = getFromCache(key, locale);
+        if (cacheValue != null) {
+            return cacheValue.getString();
+        }
+        else {
+            return null;
+        }
     }
 
     private CacheValue getFromCache(String key, Locale locale) {
         Map<Language, CacheValue> keyTranslations = cache.get(key);
         if (keyTranslations == null) {
             keyTranslations = fetchTranslations(key, locale);
-            cache.put(key, keyTranslations);
+            if (keyTranslations != null) {
+                cache.put(key, keyTranslations);
+            }
+            else {
+                return null;
+            }
         }
         Language language = getLanguage(locale);
         CacheValue cacheValue = keyTranslations.get(language);
@@ -67,10 +85,15 @@ public class DaoMessageSource extends AbstractMessageSource {
     private Map<Language, CacheValue> fetchTranslations(String key, Locale locale) {
         Map<Language, CacheValue> translations = new HashMap<Language, CacheValue>();
         MessageKey messageKey = languageDao.fetchMessageKey(key);
-        for (Translation translation : messageKey.getTranslations()) {
-            translations.put(translation.getLanguage(), new CacheValue(locale, translation.getValue()));
+        if (messageKey != null) {
+            for (Translation translation : messageKey.getTranslations()) {
+                translations.put(translation.getLanguage(), new CacheValue(locale, translation.getValue()));
+            }
+            return translations;
         }
-        return translations;
+        else {
+            return null;
+        }
     }
 
     private class CacheValue {
