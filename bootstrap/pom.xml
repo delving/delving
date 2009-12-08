@@ -30,11 +30,11 @@
     <description>Bootstrap Module to initialize the EuropeanaLabs database and Solr/Lucene Index</description>
     <inceptionYear>2008</inceptionYear>
 
-  <parent>
-    <groupId>eu.europeana</groupId>
-    <artifactId>europeana</artifactId>
-    <version>1</version>
-  </parent>
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
 
     <developers>
         <developer>
@@ -61,12 +61,12 @@
         <plugins>
         </plugins>
     </build>
-     <dependencies>
+    <dependencies>
         <!--our own dependencies-->
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>cache-servlet</artifactId>
-            <version>${europeana.cache.version}</version>
+            <artifactId>api</artifactId>
+            <version>${europeana.api .version}</version>
             <type>war</type>
             <scope>runtime</scope>
         </dependency>

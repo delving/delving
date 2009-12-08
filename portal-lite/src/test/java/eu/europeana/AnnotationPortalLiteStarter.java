@@ -40,8 +40,7 @@ public class AnnotationPortalLiteStarter {
     	int frontendPort = 8080;
 
     	Server serverBackEnd = new Server(backendPort);
-    	serverBackEnd.addHandler(new WebAppContext("resolver/src/main/webapp", "/resolve"));
-    	serverBackEnd.addHandler(new WebAppContext("cache-servlet/src/main/webapp", "/cache"));
+    	serverBackEnd.addHandler(new WebAppContext("api/src/main/webapp", "/api"));
     	serverBackEnd.addHandler(new WebAppContext("bootstrap/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
     	serverBackEnd.start();
     	

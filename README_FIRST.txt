@@ -116,7 +116,7 @@ To launch the complete Europeana environment portal-lite, resolver, cache, solr 
 ./bootstrap/src/main/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
 Server at http://localhost:8983/{resolve|cache|solr}/
 
-Each module with an web-app (resolve, cache-servlet, portal-lite) has a jetty starter class in the test directories. Use it
+Each module with a web-app (api, portal-lite) has a jetty starter class in the test directories. Use it
 to run the module during development. This allows for quick development cycles. Also all template, javascript and css files
 are live updated. You can find these instances of JettyStarter at http://localhost:8080/{portal|resolve|cache}/. For these
 classes to have images and search capabilities you need to have an instance of EuropeanaStarter running as well.

@@ -2,18 +2,18 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europeana</groupId>
-    <artifactId>cache-servlet</artifactId>
+    <artifactId>api</artifactId>
     <packaging>war</packaging>
-    <name>Servlet for accessing the cache</name>
-    <version>${europeana.cache.version}</version>
+    <name>Provide APIs for Cache, Resolving, etc</name>
+    <version>${europeana.api.version}</version>
     <description>Servlet</description>
     <inceptionYear>2008</inceptionYear>
 
-  <parent>
-    <groupId>eu.europeana</groupId>
-    <artifactId>europeana</artifactId>
-    <version>1</version>
-  </parent>
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
 
     <developers>
         <developer>
@@ -30,7 +30,7 @@
     </organization>
     <build>
         <defaultGoal>package</defaultGoal>
-        <finalName>cache</finalName>
+        <finalName>api</finalName>
         <plugins>
         </plugins>
     </build>

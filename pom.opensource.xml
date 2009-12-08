@@ -31,11 +31,9 @@
     <version>1</version>
     <packaging>pom</packaging>
     <modules>
-        <module>query</module>
+        <module>common</module>
         <module>database</module>
-        <module>resolver</module>
-        <module>cache</module>
-        <module>cache-servlet</module>
+        <module>api</module>
         <module>portal-core</module>
         <module>portal-lite</module>
         <module>bootstrap</module>

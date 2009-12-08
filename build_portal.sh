@@ -15,6 +15,6 @@ cd ../portal-lite; $PACKAGE
 if [[ BUILD_ALL ]]; then
 	#statements
 	echo "building extra modules"
-	cd ../cache-servlet; $PACKAGE
+	cd ../api; $PACKAGE
 	cd ../dashboard; $PACKAGE
 fi

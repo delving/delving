@@ -35,16 +35,11 @@
       <!-- copy selected modules -->
       <copy todir="${ostmp}">
           <fileset dir="." includes="bootstrap/**" excludes="${excludePattern}" />
-          <fileset dir="." includes="cache/**" excludes="${excludePattern}" />
-          <fileset dir="." includes="cache-servlet/**" excludes="${excludePattern}" />
-          <!--<fileset dir="." includes="dashboard/**" excludes="${excludePattern}" />-->
+          <fileset dir="." includes="common/**" excludes="${excludePattern}" />
           <fileset dir="." includes="database/**" excludes="${excludePattern}" />
-          <!--<fileset dir="." includes="normalizer/**" excludes="${excludePattern}" />-->
           <fileset dir="." includes="portal-core/**" excludes="${excludePattern}" />
-          <!--<fileset dir="." includes="portal-full/**" excludes="${excludePattern}" />-->
           <fileset dir="." includes="portal-lite/**" excludes="${excludePattern}" />
-          <fileset dir="." includes="query/**" excludes="${excludePattern}" />
-          <fileset dir="." includes="resolver/**" excludes="${excludePattern}" />
+          <fileset dir="." includes="api/**" excludes="${excludePattern}" />
           <fileset file="pom.opensource.xml"/>
           <fileset file="*.txt"/>
           <fileset file="europeana.properties.template" />

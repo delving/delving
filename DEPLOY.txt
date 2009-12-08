@@ -24,24 +24,20 @@ Build Components
 # cd query
 # mvn clean install
 
-//build cache component and install in your local maven2 repository
-# cd ../cache
+//build common component and install in your local maven2 repository
+# cd ../common
 # mvn clean install -Dmaven.test.skip=true
 
 //build database component and install in your local maven2 repository
 # cd ../database
 # mvn clean install -Dmaven.test.skip=true
 
-//builds cache-servlet component. The war file can be found in the target dir.
-# cd ../cache-servlet
+//builds api component. The war file can be found in the target dir.
+# cd ../api
 # mvn clean package -Dmaven.test.skip=true
 
-//builds resolver component. The war file can be found in the target dir.
-# cd ../resolver
-# mvn clean package
-
-//builds portal component. The war file can be found in the target dir.
-# cd ../portal
+//builds portal-lite component. The war file can be found in the target dir.
+# cd ../portal-lite
 # mvn clean package -Dmaven.test.skip=true
 
 //builds dashboard component. The war file can be found in the target dir.
