@@ -23,14 +23,19 @@ package eu.europeana.cache;
 
 import eu.europeana.query.DocType;
 import eu.europeana.query.EuropeanaProperties;
-import org.apache.log4j.Logger;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 /**
  * This servlet delivers the cached versions of the uri.
