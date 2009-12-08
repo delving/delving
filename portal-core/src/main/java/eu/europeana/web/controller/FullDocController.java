@@ -21,7 +21,6 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.database.UserDao;
 import eu.europeana.database.dao.DashboardDaoImpl;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
@@ -44,15 +43,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 public class FullDocController extends AbstractPortalController {
-    private static final String URI_COUNTED = "uriCounted";
     private QueryModelFactory queryModelFactory;
-
-    private UserDao userDao;
-    private boolean countViewed;
     private DashboardDaoImpl dashboardDao;
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setDashboardDao(DashboardDaoImpl dashboardDao) {
+        this.dashboardDao = dashboardDao;
     }
 
     public void setQueryModelFactory(QueryModelFactory queryModelFactory) {
@@ -96,10 +91,6 @@ public class FullDocController extends AbstractPortalController {
         if (format != null && format.equalsIgnoreCase("labels")) {
             model.put("format", format);
         }
-    }
-
-    public void setDashboardDao(DashboardDaoImpl dashboardDao) {
-        this.dashboardDao = dashboardDao;
     }
 
     private class UriExpression implements QueryExpression {

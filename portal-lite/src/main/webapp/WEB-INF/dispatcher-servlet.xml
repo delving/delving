@@ -146,8 +146,8 @@
     </bean>
 
     <bean id="fullDocController" class="eu.europeana.web.controller.FullDocController">
-        <property name="userDao" ref="userDao"/>
         <property name="queryModelFactory" ref="queryModelFactory"/>
+        <property name="dashboardDao" ref="dashboardDao"/>
     </bean>
 
     <bean id="bobController" class="eu.europeana.web.controller.BobController">
