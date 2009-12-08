@@ -136,18 +136,4 @@ public class TestUserDao {
         assertNull(userDao.fetchUserByEmail("gumby29@email.com"));
         assertNull(userDao.fetchUserByEmail("pokey29@email.com"));
     }
-
-
-// todo: these methods must still be tested
-//    User remove(User user, Class<?> clazz, Long id);
-//    List<User> fetchUsers(String pattern);
-//    User fetchUserWhoPickedCarouselItem(String europeanaUri);
-//    User fetchUserWhoPickedEditorPick(String query);
-//    void markAsViewed(String europeanaUri);
-//    User addSavedItem(User user, SavedItem savedItem, String europeanaUri);
-//    List<SavedItem> fetchSavedItems(Long userId);
-//    SavedItem fetchSavedItemById(Long id);
-//    List<SavedSearch> fetchSavedSearches(Long userId);
-//    SavedSearch fetchSavedSearchById(Long id);
-
 }
