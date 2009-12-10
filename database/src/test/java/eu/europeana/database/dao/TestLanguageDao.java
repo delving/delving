@@ -4,7 +4,6 @@ import eu.europeana.database.LanguageDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
-import javax.persistence.NoResultException;
 import org.apache.log4j.Logger;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -81,14 +80,7 @@ public class TestLanguageDao {
         assertNotNull(messageKey);
         assertEquals(messageKey.getKey(), keys[0]);
         languageDao.removeMessageKey(keys[0]);
-        try {
-            languageDao.fetchMessageKey(keys[0]);
-            fail();
-        }
-        catch (NoResultException e) {
-            log.info("Exception thrown as expected: " + e);
-        }
-
+        assertNull(languageDao.fetchMessageKey(keys[0]));
     }
 
     @Test
