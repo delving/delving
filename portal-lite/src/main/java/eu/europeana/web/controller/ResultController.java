@@ -5,20 +5,8 @@ import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.User;
 import eu.europeana.json.JsonResultModel;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.QueryProblem;
-import eu.europeana.query.RecordField;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
-import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.DocIdWindowPager;
-import eu.europeana.web.util.NextQueryFacet;
-import eu.europeana.web.util.QueryConstraints;
-import eu.europeana.web.util.ResultPagination;
-import javax.servlet.http.HttpServletRequest;
+import eu.europeana.query.*;
+import eu.europeana.web.util.*;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -193,8 +182,8 @@ public class ResultController {
             return RecordField.EUROPEANA_URI.toFieldNameString() + ":\"" + uri + "\"";
         }
 
-        public Type getType() {
-            return Type.MORE_LIKE_THIS_QUERY;
+        public QueryType getType() {
+            return QueryType.MORE_LIKE_THIS_QUERY;
         }
 
         public boolean isMoreLikeThis() {

@@ -1,13 +1,7 @@
 package eu.europeana.json.sql;
 
 import eu.europeana.json.JsonResultModel;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.FacetType;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.RecordFieldChoice;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
+import eu.europeana.query.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
@@ -32,7 +26,7 @@ public class SqlQueryModel implements QueryModel {
     private ResponseType responseType;
     private QueryModel.Constraints constraints;
     private String queryString = "*:*";
-    private QueryExpression.Type queryType = QueryExpression.Type.ADVANCED_QUERY;
+    private QueryExpression.QueryType queryType = QueryExpression.QueryType.ADVANCED_QUERY;
     private boolean facets;
     private int startRow;
     private int rows = 0;
@@ -100,6 +94,26 @@ public class SqlQueryModel implements QueryModel {
         return rows;
     }
 
+    public ResponseType getResponseType() {
+        return responseType;
+    }
+
+    public Constraints getConstraints() {
+        return constraints;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public QueryExpression.QueryType getQueryType() {
+        return queryType;
+    }
+
+    public RecordFieldChoice getRecordFieldChoice() {
+        return recordFieldChoice;
+    }
+
     public ResultModel fetchResult() throws EuropeanaQueryException {
         Exception firstException = null;
         int attempt = 0;
@@ -160,7 +174,7 @@ public class SqlQueryModel implements QueryModel {
 //        if (moreLikeThis) {
 //            list.put("mlt", "true");
 //        }
-//        if (queryType == QueryExpression.Type.MORE_LIKE_THIS_QUERY || moreLikeThis) {
+//        if (queryType == QueryExpression.QueryType.MORE_LIKE_THIS_QUERY || moreLikeThis) {
 //            list.put("mlt.mindf","1");
 //            list.put("mlt.mintf","1");
 //            list.put("mlt.match.include","true");

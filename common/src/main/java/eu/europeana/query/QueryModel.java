@@ -38,6 +38,13 @@ public interface QueryModel {
     int getStartRow();
     void setRows(int rows);
     int getRows();
+
+    ResponseType getResponseType();
+    Constraints getConstraints();
+    String getQueryString();
+    QueryExpression.QueryType getQueryType();
+    RecordFieldChoice getRecordFieldChoice();
+    
     ResultModel fetchResult() throws EuropeanaQueryException;
 
     public interface Constraints {

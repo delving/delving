@@ -35,6 +35,10 @@ public class SavedItem implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSaved;
 
+    @Column(length = 3)
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "carouselitemid")
     private CarouselItem carouselItem;
@@ -115,6 +119,14 @@ public class SavedItem implements Serializable {
         this.user = user;
     }
 
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
     public CarouselItem createCarouselItem() {
         CarouselItem item = new CarouselItem();
         item.setEuropeanaUri(getEuropeanaId().getEuropeanaUri());
@@ -127,5 +139,5 @@ public class SavedItem implements Serializable {
         item.setThumbnail(getEuropeanaObject());
         return item;
     }
-    
+
 }

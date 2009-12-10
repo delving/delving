@@ -7,17 +7,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.ConstantScoreRangeQuery;
-import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.search.MultiPhraseQuery;
-import org.apache.lucene.search.MultiTermQuery;
-import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.spans.SpanQuery;
 
 import java.util.regex.Pattern;
@@ -34,7 +24,7 @@ public class SolrQueryExpression implements QueryExpression {
     private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
     private String originalQuery;
     private Query query;
-    private Type type = Type.SIMPLE_QUERY;
+    private QueryType queryType = QueryType.SIMPLE_QUERY;
     private boolean moreLikeThis = false;
 
     public SolrQueryExpression(String queryString) throws EuropeanaQueryException {
@@ -86,8 +76,8 @@ public class SolrQueryExpression implements QueryExpression {
 //        throw new RuntimeException();
     }
 
-    public Type getType() {
-        return type;
+    public QueryType getType() {
+        return queryType;
     }
 
     public void setMoreLikeThis(boolean moreLikeThis) {
@@ -136,7 +126,7 @@ public class SolrQueryExpression implements QueryExpression {
     }
 
     private void analyzeConstantScoreRangeQuery(ConstantScoreRangeQuery query) throws EuropeanaQueryException {
-        type = Type.ADVANCED_QUERY;
+        queryType = QueryType.ADVANCED_QUERY;
 //        throw new EuropeanaQueryException("There is no analysis for " + query.getClass().getName());
     }
 
@@ -153,7 +143,7 @@ public class SolrQueryExpression implements QueryExpression {
     }
 
     private void analyzeMatchAllDocsQuery(MatchAllDocsQuery query) throws EuropeanaQueryException {
-        type = Type.ADVANCED_QUERY;
+        queryType = QueryType.ADVANCED_QUERY;
         this.query = new TermQuery(new Term("*", "*"));
 //        throw new EuropeanaQueryException("There is no analysis for " + query.getClass().getName());
     }
@@ -162,18 +152,18 @@ public class SolrQueryExpression implements QueryExpression {
         String field = term.field();
         if (!"text".equals(field)) {
             boolean europeanaField = RecordField.EUROPEANA_URI.toFieldNameString().equals(field);
-            switch (type) {
+            switch (queryType) {
                 case SIMPLE_QUERY:
                     if (europeanaField) {
-                        type = Type.MORE_LIKE_THIS_QUERY;
+                        queryType = QueryType.MORE_LIKE_THIS_QUERY;
                     }
                     else {
-                        type = Type.ADVANCED_QUERY;
+                        queryType = QueryType.ADVANCED_QUERY;
                     }
                     break;
                 case ADVANCED_QUERY:
                     if (europeanaField) {
-                        type = Type.MORE_LIKE_THIS_QUERY;
+                        queryType = QueryType.MORE_LIKE_THIS_QUERY;
                     }
                     break;
                 case MORE_LIKE_THIS_QUERY:
@@ -206,7 +196,7 @@ public class SolrQueryExpression implements QueryExpression {
         for (BooleanClause clause : clauses) {
 //            System.out.println(clause.getOccur());
             if (BooleanClause.Occur.SHOULD.equals(clause.getOccur()) || BooleanClause.Occur.MUST_NOT.equals(clause.getOccur())) {
-                type = Type.ADVANCED_QUERY;
+                queryType = QueryType.ADVANCED_QUERY;
             }
             Query subquery = clause.getQuery();
             analyze(subquery);

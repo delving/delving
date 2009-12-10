@@ -26,6 +26,7 @@ import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.User;
 import eu.europeana.query.DocType;
 import eu.europeana.web.util.ControllerUtil;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -48,6 +49,7 @@ public class SaveItemController extends AbstractAjaxController {
         savedItem.setTitle(getStringParameter("title", request));
         savedItem.setAuthor(getStringParameter("author", request));
         savedItem.setDocType(DocType.valueOf(getStringParameter("docType", request)));
+        savedItem.setLanguage(ControllerUtil.getLocale(request));
         savedItem.setEuropeanaObject(getStringParameter("europeanaObject", request));
         user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", request));
         ControllerUtil.setUser(user);

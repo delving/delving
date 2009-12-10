@@ -1,19 +1,9 @@
 package eu.europeana.database.domain;
 
 import eu.europeana.query.DocType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import org.hibernate.annotations.Index;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -46,6 +36,11 @@ public class SocialTag implements Serializable {
     @JoinColumn(name = "europeanaid", nullable = false)
     @Index(name = "socialtag_europeanaid_index")
     private EuropeanaId europeanaId;
+
+    @Column(length = 3)
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
 
     @Column(length = 10)
     @Enumerated(EnumType.STRING)
@@ -123,4 +118,13 @@ public class SocialTag implements Serializable {
     public void setDocType(DocType docType) {
         this.docType = docType;
     }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
 }

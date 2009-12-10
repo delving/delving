@@ -21,8 +21,8 @@ public class SqlQueryExpression implements QueryExpression {
             return query;
         }
 
-        public Type getType() {
-            return Type.ADVANCED_QUERY;
+        public QueryType getType() {
+            return QueryType.ADVANCED_QUERY;
         }
 
         public boolean isMoreLikeThis() {

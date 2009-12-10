@@ -246,8 +246,8 @@ public class SolrIndexerImpl implements SolrIndexer {
             return RecordField.EUROPEANA_URI.toFieldNameString()+":\""+uri+"\"";
         }
 
-        public Type getType() {
-            return Type.MORE_LIKE_THIS_QUERY;
+        public QueryType getType() {
+            return QueryType.MORE_LIKE_THIS_QUERY;
         }
 
         public boolean isMoreLikeThis() {

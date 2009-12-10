@@ -5,6 +5,7 @@ import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
 import eu.europeana.query.DocType;
 import eu.europeana.web.util.ControllerUtil;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -28,6 +29,7 @@ public class SaveSocialTagController extends AbstractAjaxController {
         socialTag.setEuropeanaObject(getStringParameter("europeanaObject", request));
         socialTag.setTitle(getStringParameter("title", request));
         User user = ControllerUtil.getUser();
+        socialTag.setLanguage(ControllerUtil.getLocale(request));
         user = userDao.addSocialTag(user, socialTag);
         ControllerUtil.setUser(user);
         return true;

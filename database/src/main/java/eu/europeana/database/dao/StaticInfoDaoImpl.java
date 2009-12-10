@@ -23,24 +23,14 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -307,8 +297,8 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public CarouselItem createCarouselItem(String europeanaUri, Long savedItemId) {
-        EuropeanaId europeanaId = dashBoardDao.fetchEuropeanaId(europeanaUri);
+    public CarouselItem createCarouselItem(EuropeanaId europeanaId, Long savedItemId) {
+//        EuropeanaId europeanaId = dashBoardDao.fetchEuropeanaId(europeanaId);
         SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
         CarouselItem carouselItem = savedItem.createCarouselItem();
         carouselItem.setEuropeanaId(europeanaId);

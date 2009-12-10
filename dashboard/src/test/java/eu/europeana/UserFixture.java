@@ -57,6 +57,7 @@ public class UserFixture {
         savedItem.setTitle("Historical Book");
         savedItem.setAuthor("I. Wroteit");
         savedItem.setDateSaved(new Date());
+        savedItem.setLanguage(Language.NL);
         savedItem.setEuropeanaObject("http://europeana/object");
         savedItem.setEuropeanaId(europeanaId);
         return savedItem;
@@ -65,6 +66,7 @@ public class UserFixture {
     private SavedSearch createSavedSearch() {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setDateSaved(new Date());
+        savedSearch.setLanguage(Language.NL);
         savedSearch.setQuery("kultur");
         return savedSearch;
     }
@@ -73,6 +75,7 @@ public class UserFixture {
         SocialTag socialTag = new SocialTag();
         socialTag.setDateSaved(new Date());
         socialTag.setTag("tag");
+        socialTag.setLanguage(Language.NL);
         socialTag.setUser(user);
         socialTag.setEuropeanaId(europeanaId);
         return socialTag;

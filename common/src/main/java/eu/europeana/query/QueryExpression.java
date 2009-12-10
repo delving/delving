@@ -29,17 +29,17 @@ package eu.europeana.query;
 public interface QueryExpression {
     String getQueryString();
     String getBackendQueryString();
-    Type getType();
+    QueryType getType();
     boolean isMoreLikeThis();
 
-    public enum Type {
+    public enum QueryType {
         SIMPLE_QUERY("europeana"),
         ADVANCED_QUERY("standard"),
         MORE_LIKE_THIS_QUERY("moreLikeThis");
 
         private String appearance;
 
-        Type(String appearance) {
+        QueryType(String appearance) {
             this.appearance = appearance;
         }
 

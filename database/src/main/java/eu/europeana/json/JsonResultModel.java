@@ -21,19 +21,7 @@
 
 package eu.europeana.json;
 
-import eu.europeana.query.BriefDoc;
-import eu.europeana.query.BriefDocWindow;
-import eu.europeana.query.DocIdWindow;
-import eu.europeana.query.DocType;
-import eu.europeana.query.ESERecord;
-import eu.europeana.query.Facet;
-import eu.europeana.query.FacetCount;
-import eu.europeana.query.FacetType;
-import eu.europeana.query.FullDoc;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.RecordField;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
+import eu.europeana.query.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -129,8 +117,8 @@ public class JsonResultModel implements ResultModel {
                     docs.add(briefDocImpl);
                     briefDocWindow.getDocs().add(briefDocImpl);
                 }
-                if (jsonObject.has(QueryExpression.Type.MORE_LIKE_THIS_QUERY.toString())) {
-                    JSONObject moreLikeThis = (JSONObject) jsonObject.get(QueryExpression.Type.MORE_LIKE_THIS_QUERY.toString());
+                if (jsonObject.has(QueryExpression.QueryType.MORE_LIKE_THIS_QUERY.toString())) {
+                    JSONObject moreLikeThis = (JSONObject) jsonObject.get(QueryExpression.QueryType.MORE_LIKE_THIS_QUERY.toString());
                     for (BriefDocImpl doc : docs) {
                         if (moreLikeThis.has(doc.id)) {
                             response = moreLikeThis.getJSONObject(doc.id);

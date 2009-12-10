@@ -1,12 +1,10 @@
 package eu.europeana.database.dao.fixture;
 
 import eu.europeana.database.domain.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -108,5 +106,4 @@ public class DatabaseFixture {
     public Contributor getContributor(Long contributorId) {
         return entityManager.find(Contributor.class, contributorId);
     }
-
 }

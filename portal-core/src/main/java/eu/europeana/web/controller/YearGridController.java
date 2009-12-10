@@ -1,14 +1,9 @@
 package eu.europeana.web.controller;
 
-import eu.europeana.query.Facet;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
+import eu.europeana.query.*;
 import eu.europeana.web.util.ControllerUtil;
-import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -69,8 +64,8 @@ public class YearGridController extends AbstractPortalController {
             return query;
         }
 
-        public Type getType() {
-            return Type.ADVANCED_QUERY;
+        public QueryType getType() {
+            return QueryType.ADVANCED_QUERY;
         }
 
         public boolean isMoreLikeThis() {
