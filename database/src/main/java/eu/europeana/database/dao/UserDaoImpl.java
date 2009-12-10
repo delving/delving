@@ -53,11 +53,9 @@ public class UserDaoImpl implements UserDao {
         query.setParameter("email", email);
         try {
             User user = (User) query.getSingleResult();
-            if (user != null) {
-                user.getSavedItems().size();
-                user.getSavedSearches().size();
-                user.getSocialTags().size();
-            }
+            user.getSavedItems().size();
+            user.getSavedSearches().size();
+            user.getSocialTags().size();
             return user;
         }
         catch (NoResultException e) {
