@@ -23,15 +23,26 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.*;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SearchTerm;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -284,11 +295,12 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     public List<CarouselItem> fetchCarouselItems() {
         Query q = entityManager.createQuery("select ci from CarouselItem ci");
         List<CarouselItem> results = (List<CarouselItem>) q.getResultList();
-        for (CarouselItem item : results) {
+        Iterator<CarouselItem> walk = results.iterator();
+        while (walk.hasNext()) {
+            CarouselItem item = walk.next();
             EuropeanaId id = item.getEuropeanaId();
             if (id != null && id.isOrphan()) { // remove null check later
-                results.remove(item);
-                removeCarouselItem(item.getSavedItem().getId());
+                walk.remove();
             }
         }
         return results;
