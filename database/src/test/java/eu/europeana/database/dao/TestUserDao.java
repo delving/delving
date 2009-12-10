@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,7 +35,6 @@ import java.util.List;
         "/test-application-context.xml"
 })
 
-@Transactional
 public class TestUserDao {
     private Logger log = Logger.getLogger(TestUserDao.class);
 
@@ -46,14 +44,16 @@ public class TestUserDao {
     @Autowired
     private DatabaseFixture databaseFixture;
 
-    private List<User> users;
-    private List<EuropeanaId> europeanaIds;
+    private static List<User> users;
+    private static List<EuropeanaId> europeanaIds;
 
     @Before
     public void prepare() throws IOException {
-        users = databaseFixture.createUsers("Gumby", 100);
-        log.info("User 10: "+users.get(10).getEmail());
-        europeanaIds = databaseFixture.createEuropeanaIds("Test Collection", 10);
+        if (users == null) {
+            users = databaseFixture.createUsers("Gumby", 100);
+            log.info("User 10: " + users.get(10).getEmail());
+            europeanaIds = databaseFixture.createEuropeanaIds("Test Collection", 10);
+        }
     }
 
     @Test
@@ -80,15 +80,15 @@ public class TestUserDao {
         savedSearch.setQuery("query");
         savedSearch.setQueryString("querystring");
         User user25 = userDao.addSavedSearch(users.get(25), savedSearch);
-        log.info("User.savesSearch.size: "+user25.getSavedSearches().size());
+        log.info("User.savesSearch.size: " + user25.getSavedSearches().size());
         assertNotNull(user25);
-        log.info("Found "+user25.getFirstName());
+        log.info("Found " + user25.getFirstName());
         assertEquals(1, user25.getSavedSearches().size());
         // test remove retrievedSavedSearch
         final SavedSearch retrievedSavedSearch = user25.getSavedSearches().get(0);
         user25 = userDao.removeSavedSearch(users.get(25), retrievedSavedSearch.getId());
         assertEquals(0, user25.getSavedSearches().size());
-        log.info("User.savesSearch.size: "+user25.getSavedSearches().size());
+        log.info("User.savesSearch.size: " + user25.getSavedSearches().size());
     }
 
     @Test
@@ -101,9 +101,9 @@ public class TestUserDao {
         socialTag.setEuropeanaObject("http://europeana.obect.pretend/");
         User user49 = userDao.addSocialTag(users.get(49), socialTag);
         assertEquals(1, user49.getSocialTags().size());
-        EuropeanaId id7 = databaseFixture.fetch(EuropeanaId.class, europeanaIds.get(7).getId());
+        EuropeanaId id7 = databaseFixture.fetchEuropeanaId(europeanaIds.get(7).getId());
         assertEquals(1, id7.getSocialTags().size());
-        log.info("tag="+id7.getSocialTags().get(0).getTag());
+        log.info("tag=" + id7.getSocialTags().get(0).getTag());
         List<TagCount> tagCounts = userDao.getSocialTagCounts("Number");
         assertEquals(1, tagCounts.size());
     }

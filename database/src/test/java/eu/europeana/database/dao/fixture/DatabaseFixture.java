@@ -1,10 +1,17 @@
 package eu.europeana.database.dao.fixture;
 
-import eu.europeana.database.domain.*;
-import org.springframework.transaction.annotation.Transactional;
-
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.Country;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.PartnerSector;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.User;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +68,13 @@ public class DatabaseFixture {
     @Transactional
     public <Entity> Entity fetch(Class<Entity> entityClass, Long id) {
         return entityManager.find(entityClass, id);
+    }
+
+    @Transactional
+    public EuropeanaId fetchEuropeanaId(Long id) {
+        EuropeanaId europeanaId = entityManager.find(EuropeanaId.class, id);
+        europeanaId.getSocialTags().size();
+        return europeanaId;
     }
 
     @Transactional
