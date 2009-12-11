@@ -166,9 +166,7 @@ public class DatabaseFixture {
 
     @Transactional
     public CarouselItem getCarouselItem(Long id) {
-        Query query = entityManager.createQuery("select ci from CarouselItem ci where ci.id = :id");
-        query.setParameter("id", id);
-        return (CarouselItem) query.getSingleResult();
+        return entityManager.find(CarouselItem.class, id);
     }
 
 

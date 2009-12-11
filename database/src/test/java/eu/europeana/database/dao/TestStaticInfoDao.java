@@ -261,10 +261,13 @@ public class TestStaticInfoDao {
     public void removeCarouselItem() {
 
         boolean removed;
+        Long id;
         log.info("Testing removeCarouselItem: ");
         for (int walk = 0; walk < instanceCount; walk++) {
-            removed = staticInfoDao.removeCarouselItem(carouselItems.get(walk).getId());
+            id = carouselItems.get(walk).getId();
+            removed = staticInfoDao.removeCarouselItem(id);
             assertTrue(removed);
+            assertNull(databaseFixture.getCarouselItem(id));
         }
     }
 
