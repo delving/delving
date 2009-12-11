@@ -1,5 +1,6 @@
 package eu.europeana.web.util;
 
+import eu.europeana.query.RequestLogger;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -16,7 +17,7 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
     public static final String DEFAULT_PARAM_NAME = "locale";
 
     private String paramName = DEFAULT_PARAM_NAME;
-
+    private RequestLogger requestLogger;
 
     public void setParamName(String paramName) {
         this.paramName = paramName;
@@ -26,12 +27,13 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
         return this.paramName;
     }
 
+    public void setRequestLogger(RequestLogger requestLogger) {
+        this.requestLogger = requestLogger;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws ServletException {
-
-        System.out.println("Detected Language Change!"); // todo: replace with inject RequestLogger
         String newLocale = request.getParameter(this.paramName);
         if (newLocale != null) {
             LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
@@ -41,6 +43,7 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
             LocaleEditor localeEditor = new LocaleEditor();
             localeEditor.setAsText(newLocale);
             localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
+            requestLogger.log(request, RequestLogger.UserActions.LANGUAGE_CHANGE);
         }
         // Proceed in any case.
         return true;
