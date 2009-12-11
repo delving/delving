@@ -47,9 +47,9 @@
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="${db.driverClass}"/>
-        <property name="jdbcUrl"     value="${db.jdbcUrl}"/>
-        <property name="user"        value="${db.user}"/>
-        <property name="password"    value="${db.password}"/>
+        <property name="jdbcUrl" value="${db.jdbcUrl}"/>
+        <property name="user" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
     </bean>
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
@@ -104,14 +104,14 @@
         <property name="solrIndexer" ref="solrIndexer"/>
         <property name="normalized" value="true"/>
     </bean>
-    
+
     <bean id="queryModelFactory" class="eu.europeana.json.JsonQueryModelFactory">
-        <property name="simpleQueryModelFactory"    ref="solrQueryModelFactory"/>
-        <property name="advancedQueryModelFactory"  ref="solrQueryModelFactory"/>
+        <property name="simpleQueryModelFactory" ref="solrQueryModelFactory"/>
+        <property name="advancedQueryModelFactory" ref="solrQueryModelFactory"/>
     </bean>
     <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
-        <property name="baseUrl"      value ="${solr.selectUrl}"/>
-        <property name="httpClient"   ref   ="httpClient"/>
+        <property name="baseUrl" value="${solr.selectUrl}"/>
+        <property name="httpClient" ref="httpClient"/>
     </bean>
 
     <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">
@@ -133,7 +133,7 @@
         <property name="root" value="${cache.cacheRoot}"/>
     </bean>
 
-        <!-- Annotation based controller Support -->
+    <!-- Annotation based controller Support -->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>-->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>-->
     <!-- Scan package for Controller Annotated Classes -->
@@ -143,6 +143,9 @@
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPath" value="${template.path}"/>
     </bean>
+
+    <bean id="requestLogger" class="eu.europeana.web.util.RequestLoggerImpl"/>
+
 
     <context:annotation-config/>
 
@@ -181,19 +184,11 @@
 
     <!-- beans DO NOT COMMIT THIS THING! -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="smtp.gmail.com"/>
-        <property name="username" value="darwinathome@gmail.com"/>
-        <property name="password" value="buckyfuller"/>
-        <property name="port" value="465"/>
-        <property name="protocol" value="smtps"/>
-        <property name="javaMailProperties">
-            <props>
-                <prop key="mail.smtps.auth">true</prop>
-                <prop key="mail.smtps.starttls.enable">true</prop>
-                <prop key="mail.smtps.debug">true</prop>
-            </props>
-        </property>
+        <property name="host" value="${smtp.host}"/>
+        <property name="username" value="${smtp.username}"/>
+        <property name="password" value="${smtp.password}"/>
     </bean>
+
 
     <bean id="daoUserDetailsService" class="eu.europeana.web.util.UserDaoDetailsService">
         <property name="userDao" ref="userDao"/>
@@ -219,7 +214,7 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-	<bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
+    <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
     <bean name="tokenDao" class="eu.europeana.database.dao.TokenDaoImpl"/>
 
     <bean name="tokenService" class="eu.europeana.web.util.TokenService"/>
