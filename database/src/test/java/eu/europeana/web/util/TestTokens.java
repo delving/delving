@@ -3,17 +3,17 @@ package eu.europeana.web.util;
 
 import eu.europeana.database.dao.TokenDaoImpl;
 import eu.europeana.database.domain.Token;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.ui.rememberme.PersistentRememberMeToken;
-import org.springframework.security.ui.rememberme.PersistentTokenRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Test the token repository
@@ -24,7 +24,7 @@ import java.util.Date;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/core-application-context.xml"})
+@ContextConfiguration(locations = {"/database-application-context.xml"})
 public class TestTokens {
 //    private static final Logger log = Logger.getLogger(TestUtilities.class);
 
