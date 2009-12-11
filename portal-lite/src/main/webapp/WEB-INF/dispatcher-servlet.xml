@@ -20,7 +20,7 @@
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
     <!-- Interceptors and Resolvers -->
-    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+    <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
     </bean>
 

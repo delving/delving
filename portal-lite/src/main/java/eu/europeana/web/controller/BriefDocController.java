@@ -2,6 +2,7 @@ package eu.europeana.web.controller;
 
 import eu.europeana.json.JsonResultModel;
 import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.FormatType;
 import eu.europeana.query.QueryModel;
 import eu.europeana.query.QueryModelFactory;
 import eu.europeana.query.QueryProblem;
@@ -9,7 +10,6 @@ import eu.europeana.query.ResponseType;
 import eu.europeana.query.ResultModel;
 import eu.europeana.web.util.CQL2Lucene;
 import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.FormatType;
 import eu.europeana.web.util.NextQueryFacet;
 import eu.europeana.web.util.QueryConstraints;
 import eu.europeana.web.util.ResultPagination;

@@ -7,12 +7,6 @@
             <param name="ConversionPattern" value="%d{ABSOLUTE} %t %-5p %C{1} - %m%n"/>
         </layout>
     </appender>
-    <!--<appender name="file" class="org.apache.log4j.FileAppender">-->
-        <!--<param name="File" value="XMLToSolrConverter.log"/>-->
-        <!--<layout class="org.apache.log4j.PatternLayout">-->
-            <!--<param name="ConversionPattern" value="%d %5p %c:%L - %m%n"/>-->
-        <!--</layout>-->
-    <!--</appender>-->
     <logger name="org.apache.commons.httpclient">
         <level value="ERROR"/>
     </logger>

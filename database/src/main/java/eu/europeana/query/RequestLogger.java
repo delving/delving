@@ -1,4 +1,4 @@
-package eu.europeana.web.util;
+package eu.europeana.query;
 
 import javax.servlet.http.HttpServletRequest;
 

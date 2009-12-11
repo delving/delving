@@ -1,4 +1,4 @@
-package eu.europeana.web.util;
+package eu.europeana.query;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>

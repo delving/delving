@@ -22,12 +22,12 @@
 package eu.europeana.cache;
 
 import eu.europeana.query.EuropeanaProperties;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
@@ -38,6 +38,7 @@ import java.net.URLEncoder;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class ResolverServlet extends HttpServlet {
 
     private String displayPageUrl;

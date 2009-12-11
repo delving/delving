@@ -23,29 +23,30 @@
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
 
-    <display-name>Europeana Cache</display-name>
-	<servlet>
-		<servlet-name>cache</servlet-name>
-		<servlet-class>eu.europeana.cache.CacheServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-    </servlet>
+    <!-- todo remove commented code when old servlets are removed -->
+    <!--<display-name>Europeana Cache</display-name>-->
+	<!--<servlet>-->
+		<!--<servlet-name>cache</servlet-name>-->
+		<!--<servlet-class>eu.europeana.cache.CacheServlet</servlet-class>-->
+		<!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
 
-	<servlet-mapping>
-		<servlet-name>cache</servlet-name>
-		<url-pattern>/image/*</url-pattern>
-	</servlet-mapping>
+	<!--<servlet-mapping>-->
+		<!--<servlet-name>cache</servlet-name>-->
+		<!--<url-pattern>/image/*</url-pattern>-->
+	<!--</servlet-mapping>-->
 
 
-    <servlet>
-        <servlet-name>resolver</servlet-name>
-        <servlet-class>eu.europeana.cache.ResolverServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+    <!--<servlet>-->
+        <!--<servlet-name>resolver</servlet-name>-->
+        <!--<servlet-class>eu.europeana.cache.ResolverServlet</servlet-class>-->
+        <!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
 
-    <servlet-mapping>
-        <servlet-name>resolver</servlet-name>
-        <url-pattern>/resolve/*</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>resolver</servlet-name>-->
+        <!--<url-pattern>/resolve/*</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <welcome-file-list>
         <welcome-file>/index.html</welcome-file>
@@ -82,11 +83,6 @@
 
     <filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>
-        <url-pattern>*.html</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CharacterEncodingFilter</filter-name>
         <url-pattern>/</url-pattern>
     </filter-mapping>
 
@@ -97,7 +93,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>*.html</url-pattern>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 
     <session-config>
@@ -111,6 +107,7 @@
         <error-code>404</error-code>
         <location>/error.html</location>
     </error-page>
+
     <error-page>
         <exception-type>org.springframework.security.ui.rememberme.CookieTheftException</exception-type>
         <location>/remember-me-theft.html</location>

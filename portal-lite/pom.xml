@@ -69,8 +69,12 @@
     <dependencies>
          <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>portal-core</artifactId>
-            <version>${europeana.portal.version}</version>
+            <artifactId>database</artifactId>
+            <version>${europeana.database.version}</version>
+        </dependency>
+                <dependency>
+                <groupId>net.jawr</groupId>
+                <artifactId>jawr</artifactId>
         </dependency>
          <dependency>
             <groupId>org.mortbay.jetty</groupId>
