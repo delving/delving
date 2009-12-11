@@ -9,7 +9,7 @@ function showDefaultLarge(rType,obj,iType){
         switch(iType)
         {
         case "TEXT":
-          obj.src="images/item-page-large.gif";   
+          obj.src="images/item-page-large.gif";
           break;
         case "IMAGE":
           obj.src="images/item-image-large.gif";
@@ -50,7 +50,7 @@ function sendEmail(objId){
     }
     return false;
 }
-function addTag(tagText,fullDocId,thumbnailId,objTitle,objType){
+function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
      $("#form-addtag").validate({
         rules: {tag: "required"}
     });
@@ -59,8 +59,8 @@ function addTag(tagText,fullDocId,thumbnailId,objTitle,objType){
         sr.style.display = 'block';
         $.ajax({
            type: "POST",
-           url: "save-social-tag.ajax",
-           data: "europeanaUri="+fullDocId+"&europeanaObject="+thumbnailId+"&title="+objTitle+"&tag=" + encodeURIComponent(tagText) +"&docType="+objType,
+           url: "save.ajax",
+           data: "className="+className+"&europeanaUri="+fullDocId+"&europeanaObject="+thumbnailId+"&title="+objTitle+"&tag=" + encodeURIComponent(tagText) +"&docType="+objType,
            success: function(msg){
                 sr.innerHTML = " tag saved";
                 document.getElementById("tag").value = "";
@@ -75,13 +75,13 @@ function addTag(tagText,fullDocId,thumbnailId,objTitle,objType){
     }
     return false;
 };
-function saveItem(postTitle,postAuthor,objUri,thumbnail,type){
+function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
     var sr = document.getElementById("msg-save-item");
     sr.style.display = 'block';
     $.ajax({
        type: "POST",
-       url: "save-item.ajax",
-       data: "title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
+       url: "save.ajax",
+       data: "className="+className+"&title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
        success: function(msg){
            sr.innerHTML = msgItemSaveSuccess;
            var ss = document.getElementById("savedItemsCount");

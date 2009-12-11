@@ -88,7 +88,7 @@
         <div class="related-links">
             <p class="linetop">
                 <#if user??>
-                    <a id="saveQuery" href="#" onclick="saveQuery('${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
                 <#else>
                     <a href="#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
                 </#if>
@@ -153,7 +153,7 @@
                 </#if>
                <#break/>
         </#switch>
-    
+
         <#assign facet_max = 20/>
 
         <#if facet.links?size &gt; 0>

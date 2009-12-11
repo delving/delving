@@ -5,13 +5,13 @@
     { fxAnimation:'slide', fxSpeed:'fast', className:'toggler' });
 });*/
 
-function saveQuery(queryToSave, queryString){
+function saveQuery(className, queryToSave, queryString){
     var sr = document.getElementById("msg-save-search");
     sr.style.display = 'block';
     $.ajax({
        type: "POST",
-       url: "save-search.ajax",
-       data: "query="+queryToSave+"&queryString="+queryString,
+       url: "save.ajax",
+       data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
            sr.innerHTML = msgSearchSaveSuccess;
            var ss = document.getElementById("savedSearchesCount");

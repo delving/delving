@@ -22,6 +22,7 @@
     <!-- Interceptors and Resolvers -->
     <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
+        <property name="requestLogger" ref="requestLogger"/>
     </bean>
 
     <!-- The old session based storing of user changed locale -->
@@ -51,11 +52,9 @@
         <property name="mappings">
             <props>
                 <!--the ajax controllers-->
-                <prop key="/save-search.ajax">saveSearchController</prop>
-                <prop key="/save-item.ajax">saveItemController</prop>
-                <prop key="/save-social-tag.ajax">saveSocialTagController</prop>
                 <prop key="/email-to-friend.ajax">emailToFriendController</prop>
                 <prop key="/remove.ajax">removeController</prop>
+                <prop key="/save.ajax">saveController</prop>
                 <prop key="/tag-autocomplete.ajax">tagAutocompleteController</prop>
 
                 <!--the special brief doc with its different output formats-->
@@ -158,19 +157,11 @@
         <!--<property name="sessionForm" value="true"/>-->
     </bean>
 
-    <bean id="saveSearchController" class="eu.europeana.web.controller.SaveSearchController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
-
-    <bean id="saveItemController" class="eu.europeana.web.controller.SaveItemController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
-
-    <bean id="saveSocialTagController" class="eu.europeana.web.controller.SaveSocialTagController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
-
     <bean id="removeController" class="eu.europeana.web.controller.RemoveController">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="saveController" class="eu.europeana.web.controller.SaveController">
         <property name="userDao" ref="userDao"/>
     </bean>
 
