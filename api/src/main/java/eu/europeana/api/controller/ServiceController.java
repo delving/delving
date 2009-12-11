@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,16 +48,13 @@ public class ServiceController {
     @Autowired
     private DigitalObjectCache digitalObjectCache;
 
+    @Autowired
+    @Qualifier("displayPageUrl")
     private String displayPageUrl;
+
+    @Autowired
+    @Qualifier("resolverUrlPrefix")
     private String resolverUrlPrefix;
-
-    public void setDisplayPageUrl(String displayPageUrl) {
-        this.displayPageUrl = displayPageUrl;
-    }
-
-    public void setResolverUrlPrefix(String resolverUrlPrefix) {
-        this.resolverUrlPrefix = resolverUrlPrefix;
-    }
 
     @RequestMapping("/resolve")
     public void resolve(
@@ -80,7 +78,6 @@ public class ServiceController {
                 response.sendRedirect(redirect);
             }
         }
-
     }
 
     @RequestMapping("/cache")
