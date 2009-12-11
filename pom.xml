@@ -88,7 +88,6 @@
     </pluginRepositories>
 
     <modules>
-        <module>common</module>
         <module>database</module>
         <module>normalizer</module>
         <module>dashboard</module>

@@ -55,14 +55,14 @@
 
     <!-- Take care of environment specific settings -->
     <util:map id="config">
-        <entry key="piwik.jsUrl"   value="${piwik.jsUrl}"/>
-        <entry key="piwik.logUrl"  value="${piwik.logUrl}"/>
-        <entry key="cacheUrl"      value="${cacheUrl}"/>
-        <entry key="feedback.to"   value="${feedback.to}"/>
-        <entry key="admin.to"      value="${admin.to}"/>
-        <entry key="exception.to"  value="${exception.to}"/>
+        <entry key="piwik.jsUrl" value="${piwik.jsUrl}"/>
+        <entry key="piwik.logUrl" value="${piwik.logUrl}"/>
+        <entry key="cacheUrl" value="${cacheUrl}"/>
+        <entry key="feedback.to" value="${feedback.to}"/>
+        <entry key="admin.to" value="${admin.to}"/>
+        <entry key="exception.to" value="${exception.to}"/>
         <entry key="feedback.from" value="${feedback.from}"/>
-        <entry key="debug"         value="${debug}"/>
+        <entry key="debug" value="${debug}"/>
         <entry key="piwik.enabled" value="${piwik.enabled}"/>
         <entry key="message.static_pages" value="${message.static_pages}"/>
         <entry key="message.network" value="${message.network}"/>
@@ -71,9 +71,9 @@
     <!-- normal config -->
     <security:http auto-config="true" create-session="never">
 
-        <security:intercept-url pattern="/secure/*.html"       access="ROLE_USER"/>
-        <security:intercept-url pattern="/myeuropeana.html"    access="ROLE_USER"/>
-        <security:intercept-url pattern="/*.ajax"              access="ROLE_USER"/>
+        <security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
+        <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
+        <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
 
         <security:form-login login-page="/login.html"
                              authentication-failure-url="/login.html?error=1"/>
@@ -84,11 +84,20 @@
     </security:http>
 
 
-    <!-- beans -->
+    <!-- beans DO NOT COMMIT THIS THING! -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="${smtp.host}"/>
-        <property name="username" value="${smtp.username}"/>
-        <property name="password" value="${smtp.password}"/>
+        <property name="host" value="smtp.gmail.com"/>
+        <property name="username" value="darwinathome@gmail.com"/>
+        <property name="password" value="buckyfuller"/>
+        <property name="port" value="465"/>
+        <property name="protocol" value="smtps"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtps.auth">true</prop>
+                <prop key="mail.smtps.starttls.enable">true</prop>
+                <prop key="mail.smtps.debug">true</prop>
+            </props>
+        </property>
     </bean>
 
     <bean id="daoUserDetailsService" class="eu.europeana.web.util.UserDaoDetailsService">
@@ -100,7 +109,7 @@
         <property name="searchTermDao" ref="searchTermDao"/>
     </bean-->
 
-     <bean id="proposedSearchTermSampler" class="eu.europeana.web.util.ProposedSearchTermSampler">
+    <bean id="proposedSearchTermSampler" class="eu.europeana.web.util.ProposedSearchTermSampler">
         <property name="displayCount" value="3"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
@@ -193,13 +202,13 @@
     </bean>
 
     <!--<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
-        <!--<property name="triggers">-->
-            <!--<list>-->
-                <!--<ref bean="proposedSearchTermRefreshTrigger"/>-->
-                <!--<ref bean="carouselItemRefreshTrigger"/>-->
-                <!--<ref bean="partnerListRefreshTrigger"/>-->
-            <!--</list>-->
-        <!--</property>-->
+    <!--<property name="triggers">-->
+    <!--<list>-->
+    <!--<ref bean="proposedSearchTermRefreshTrigger"/>-->
+    <!--<ref bean="carouselItemRefreshTrigger"/>-->
+    <!--<ref bean="partnerListRefreshTrigger"/>-->
+    <!--</list>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <!-- TODO is it still used? -->

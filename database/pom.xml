@@ -126,12 +126,7 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>common</artifactId>
-            <version>${europeana.common.version}</version>
-        </dependency>
-        <dependency>
+xs        <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
@@ -212,6 +207,10 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>

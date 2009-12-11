@@ -64,8 +64,8 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>common</artifactId>
-            <version>${europeana.common.version}</version>
+            <artifactId>database</artifactId>
+            <version>${europeana.database.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
