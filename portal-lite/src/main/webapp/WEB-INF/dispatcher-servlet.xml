@@ -66,7 +66,6 @@
                 <prop key="/full-doc.html">fullDocController</prop>
 
                 <!--the dynamic controllers-->
-                <prop key="/bob.html">bobController</prop>
                 <prop key="/">indexController</prop>
                 <prop key="/index.html">indexController</prop>
                 <prop key="/login.html">loginController</prop>
@@ -74,8 +73,6 @@
                 <prop key="/myeuropeana.html">myEuropeanaController</prop>
                 <prop key="/register.html">registerController</prop>
                 <prop key="/change-password.html">changePasswordController</prop>
-                <prop key="/tag-grid.html">tagGridController</prop>
-                <prop key="/year-grid.html">yearGridController</prop>
 
                 <!--a special controller to introduce security-->
                 <prop key="/secure/*.html">switchToSecureController</prop>
@@ -85,21 +82,9 @@
 
                 <!-- Static page Controllers -->
                 <prop key="/advancedsearch.html">advancedSearchController</prop>
-                <prop key="/aboutus.html">aboutUsController</prop>
-                <prop key="/accessibility.html">accessibilityController</prop>
-                <prop key="/communities.html">communitiesController</prop>
                 <prop key="/contact.html">contactController</prop>
                 <prop key="/error.html">errorController</prop>
-                <prop key="/languagepolicy.html">languagePolicyController</prop>
-                <prop key="/new-content.html">newContentController</prop>
-                <prop key="/partners.html">partnersController</prop>
-                <prop key="/privacy.html">privacyController</prop>
-                <prop key="/sitemap.html">sitemapController</prop>
-                <prop key="/termsofservice.html">termsOfServiceController</prop>
-                <prop key="/thought-lab.html">thoughtLabController</prop>
-                <prop key="/using-europeana.html">usingEuropeanaController</prop>
                 <prop key="/remember-me-theft.html">rememberMeTheftController</prop>
-                <prop key="/thinkvideo.html">thinkVideoController</prop>
             </props>
         </property>
     </bean>
@@ -149,20 +134,6 @@
         <property name="queryModelFactory" ref="queryModelFactory"/>
         <property name="dashboardDao" ref="dashboardDao"/>
     </bean>
-
-    <bean id="bobController" class="eu.europeana.web.controller.BobController">
-        <property name="queryModelFactory" ref="queryModelFactory"/>
-    </bean>
-
-    <bean id="yearGridController" class="eu.europeana.web.controller.YearGridController">
-        <property name="queryModelFactory" ref="queryModelFactory"/>
-    </bean>
-
-    <bean id="tagGridController" class="eu.europeana.web.controller.TagGridController">
-        <property name="queryModelFactory" ref="queryModelFactory"/>
-    </bean>
-
-    <bean id="thoughtLabController" class="eu.europeana.web.controller.ThougtLabController"/>
 
     <bean id="myEuropeanaController" class="eu.europeana.web.controller.MyEuropeanaController">
         <property name="userDao" ref="userDao"/>
@@ -219,56 +190,6 @@
         <property name="notLoadableFromDb" value="true"/>
     </bean>
 
-    <bean id="aboutUsController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="aboutus"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
-    <bean id="accessibilityController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="accessibility"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
-    <bean name="errorController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="error"/>
-        <property name="notLoadableFromDb" value="true"/>
-    </bean>
-
-    <bean id="languagePolicyController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="languagepolicy"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
-    <bean id="newContentController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="newcontent"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
-    <bean id="partnersController" class="eu.europeana.web.controller.PartnerPageController">
-        <property name="partnerListSampler" ref="partnerListSampler"/>
-        <property name="config" ref="config"/>
-    </bean>
-
-    <bean id="privacyController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="privacy"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
-    <bean id="sitemapController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="sitemap"/>
-        <property name="notLoadableFromDb" value="true"/>
-    </bean>
-
-    <bean id="termsOfServiceController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="termsofservice"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
-    <bean id="usingEuropeanaController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="usingeuropeana"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
-
     <bean id="contactController" class="eu.europeana.web.controller.ContactController">
         <property name="emailSender" ref="emailSenderForUserFeedback"/>
         <property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>
@@ -276,14 +197,12 @@
         <property name="formView" value="contact"/>
     </bean>
 
-    <bean id="communitiesController" class="eu.europeana.web.controller.CommunitiesController"/>
-
     <bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName" value="redirect:/login.html"/>
     </bean>
 
-    <bean id="thinkVideoController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="thinkvideo"/>
+    <bean name="errorController" class="eu.europeana.web.controller.StaticPageController">
+        <property name="template" value="error"/>
         <property name="notLoadableFromDb" value="true"/>
     </bean>
 
