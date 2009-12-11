@@ -1,21 +1,11 @@
 package eu.europeana.web.controller;
 
 import eu.europeana.json.JsonResultModel;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.QueryProblem;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
-import eu.europeana.web.util.CQL2Lucene;
-import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.FormatType;
-import eu.europeana.web.util.NextQueryFacet;
-import eu.europeana.web.util.QueryConstraints;
-import eu.europeana.web.util.ResultPagination;
-import javax.servlet.http.HttpServletRequest;
+import eu.europeana.query.*;
+import eu.europeana.web.util.*;
 import org.apache.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -40,6 +30,8 @@ public class BriefDocController extends AbstractPortalController {
     private static final String BREADCRUMBS_PARAM = "breadcrumbs";
     private static final String PAGINATION_PARAM = "pagination";
     private static final String SERVLET_URL_PARAM = "servletUrl";
+    private static final String REQUEST_LOGGER = "requestLogger";
+
 
     private Logger log = Logger.getLogger(getClass());
     private QueryModelFactory queryModelFactory;
@@ -148,6 +140,7 @@ public class BriefDocController extends AbstractPortalController {
         model.put(PAGINATION_PARAM, resultPagination);
         model.put(QUERY_TO_SAVE, request.getQueryString());
         model.put(SERVLET_URL_PARAM, ControllerUtil.getServletUrl(request));
+        model.put(REQUEST_LOGGER, new RequestLogger(resultModel, queryModel, resultPagination, getClass()));
     }
 
     private FormatType getFormatType(HttpServletRequest request) {
