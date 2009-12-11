@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <!-- Freemarker Template config -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".ftl"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeRequestAttributes" value="false"/>
+        <property name="requestContextAttribute" value="requestContext"/>
+    </bean>
+
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+
+    <!-- Interceptors and Resolvers -->
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"/>
+    </bean>
+
+    <!-- The old session based storing of user changed locale -->
+    <!--<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>-->
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieMaxAge" value="3600"/>
+        <property name="defaultLocale" value="en"/>
+    </bean>
+
+
+    <bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor">
+        <property name="config" ref="config"/>
+    </bean>
+
+    <!-- UrlMappings -->
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localeChangeInterceptor"/>
+                <ref bean="configInterceptor"/>
+            </list>
+        </property>
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="messageSource" class="eu.europeana.web.util.SwitchableMessageSource">
+        <property name="sources">
+            <util:map>
+                <entry key="bundle">
+                    <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+                        <property name="basename" value="WEB-INF/classes/messages"/>
+                        <property name="fileEncodings" value="UTF-8"/>
+                        <property name="defaultEncoding" value="UTF-8"/>
+                    </bean>
+                </entry>
+                <entry key="database">
+                    <bean class="eu.europeana.database.integration.DaoMessageSource">
+                        <property name="languageDao" ref="languageDao"/>
+                    </bean>
+                </entry>
+            </util:map>
+        </property>
+        <property name="choice" ref="messageSourceChoice"/>
+    </bean>
+
+    <!-- Controllers -->
+
+</beans>

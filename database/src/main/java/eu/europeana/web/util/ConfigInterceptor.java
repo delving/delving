@@ -19,8 +19,6 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
 
-        // todo: enable later when request logger is finished
-
 //        RequestLogger requestLogger;
 //        if (modelAndView.getModel().containsKey("requestLogger")) {
 //            // use requestLogger added to the model and write to log

@@ -12,7 +12,6 @@ import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.FormatType;
 import eu.europeana.web.util.NextQueryFacet;
 import eu.europeana.web.util.QueryConstraints;
-import eu.europeana.web.util.RequestLogger;
 import eu.europeana.web.util.ResultPagination;
 import org.apache.log4j.Logger;
 
@@ -151,7 +150,6 @@ public class BriefDocController extends AbstractPortalController {
         model.put(PAGINATION_PARAM, resultPagination);
         model.put(QUERY_TO_SAVE, request.getQueryString());
         model.put(SERVLET_URL_PARAM, ControllerUtil.getServletUrl(request));
-        model.put(REQUEST_LOGGER, new RequestLogger(resultModel, queryModel, resultPagination, getClass()));
     }
 
     private FormatType getFormatType(HttpServletRequest request) {
