@@ -120,7 +120,8 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
+	<bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
+    <bean name="tokenDao" class="eu.europeana.database.dao.TokenDaoImpl"/>
 
     <bean name="tokenService" class="eu.europeana.web.util.TokenService"/>
 
