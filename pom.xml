@@ -380,7 +380,6 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.common.version>1.0.1</europeana.common.version>
         <europeana.database.version>1.0.1</europeana.database.version>
         <europeana.bootstrap.version>0.5</europeana.bootstrap.version>
         <europeana.normalizer.version>2.8</europeana.normalizer.version>

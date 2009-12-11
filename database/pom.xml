@@ -126,7 +126,12 @@
     </build>
 
     <dependencies>
-xs        <dependency>
+        <dependency>
+            <groupId>eu.europeana</groupId>
+            <artifactId>database</artifactId>
+            <version>${europeana.database.version}</version>
+        </dependency>
+        <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
@@ -209,13 +214,13 @@ xs        <dependency>
             <artifactId>lucene-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
