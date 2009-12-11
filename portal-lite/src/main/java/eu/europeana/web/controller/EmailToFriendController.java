@@ -3,8 +3,8 @@ package eu.europeana.web.controller;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
-import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.TreeMap;
 

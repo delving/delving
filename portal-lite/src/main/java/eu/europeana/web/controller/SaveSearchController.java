@@ -4,8 +4,8 @@ import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.ControllerUtil;
-import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 
 /**

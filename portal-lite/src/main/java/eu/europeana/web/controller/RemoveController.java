@@ -9,6 +9,7 @@ import eu.europeana.database.domain.SearchTerm;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.ControllerUtil;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**

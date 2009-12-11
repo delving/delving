@@ -8,8 +8,6 @@ import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -18,6 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;

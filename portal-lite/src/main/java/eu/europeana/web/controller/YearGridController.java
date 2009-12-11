@@ -1,6 +1,11 @@
 package eu.europeana.web.controller;
 
-import eu.europeana.query.*;
+import eu.europeana.query.Facet;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.QueryModel;
+import eu.europeana.query.QueryModelFactory;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
 import eu.europeana.web.util.ControllerUtil;
 
 import javax.servlet.http.HttpServletRequest;

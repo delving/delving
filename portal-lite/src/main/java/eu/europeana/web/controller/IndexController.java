@@ -4,6 +4,7 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.web.util.CarouselItemSampler;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.ProposedSearchTermSampler;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
