@@ -120,7 +120,7 @@
                     <systemProperties>
                         <property>
                             <name>europeana.properties</name>
-                            <value>../common/src/test/resources/europeana.properties</value>
+                            <value>../database/src/test/resources/europeana-test.properties</value>
                         </property>
                     </systemProperties>
                 </configuration>
