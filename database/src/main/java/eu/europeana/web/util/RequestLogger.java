@@ -4,13 +4,11 @@ import eu.europeana.database.domain.User;
 import eu.europeana.query.QueryExpression;
 import eu.europeana.query.QueryModel;
 import eu.europeana.query.ResultModel;
-import eu.europeana.web.controller.IndexController;
-import eu.europeana.web.controller.StaticPageController;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 import java.util.Date;
 
@@ -69,11 +67,11 @@ public class RequestLogger {
     public RequestLogger(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) {
         // determine the Class
         final Class<? extends Object> aClass = o.getClass();
-        if (aClass == StaticPageController.class) {
-            actions = UserActions.STATICPAGE;
-        } else if (aClass == IndexController.class) {
-            actions = UserActions.INDEXPAGE;
-        }
+//        if (aClass == StaticPageController.class) {
+//            actions = UserActions.STATICPAGE;
+//        } else if (aClass == IndexController.class) {
+//            actions = UserActions.INDEXPAGE;
+//        }
     }
 
     // this constructor is for search Controllers
