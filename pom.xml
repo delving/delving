@@ -93,7 +93,6 @@
         <module>dashboard</module>
         <module>api</module>
         <module>bootstrap</module>
-        <module>portal-core</module>
         <module>portal-lite</module>
         <module>portal-full</module>
     </modules>
