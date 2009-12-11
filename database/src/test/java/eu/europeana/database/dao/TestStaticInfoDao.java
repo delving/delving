@@ -40,8 +40,13 @@ public class TestStaticInfoDao {
     @Autowired
     private DatabaseFixture databaseFixture;
 
+
     private static List<Partner> partners;
     private static List<Contributor> contributors;
+    private static List<User> users;
+    private static List<SavedItem> savedItems;
+    private static List<EuropeanaId> europeanaIds;
+    private static List<CarouselItem> carouselItems;
     private int instanceCount = 11;
 
     @Before
@@ -50,11 +55,32 @@ public class TestStaticInfoDao {
             partners = databaseFixture.createPartners("Nicola", instanceCount);
             log.info("Partner 10: " + partners.get(10).getName());
         }
+
         if (contributors == null) {
             contributors = databaseFixture.createContributors("Nicola", instanceCount);
             log.info("Contributor 10: " + contributors.get(10).getOriginalName());
         }
 
+        if (users == null) {
+            users = databaseFixture.createUsers("Nicola", instanceCount);
+            log.info("users 10: " + users.get(10).getFirstName());
+        }
+
+/*
+        if (europeanaIds == null) {
+            europeanaIds = databaseFixture.createEuropeanaIds("Nicola", instanceCount);
+            log.info("europeanaId 10: " + europeanaIds.get(10).getEuropeanaUri());
+        }
+
+
+        if (carouselItems == null) {
+            carouselItems = databaseFixture.createCarouselItems("Nicola", instanceCount, europeanaIds);
+            log.info("carouselItems 10: " + carouselItems.get(10).getEuropeanaUri());
+        }*/
+        /* if (savedItems == null) {
+            savedItems = databaseFixture.createSavedItems("Nicola", instanceCount, carouselItems, europeanaIds, users);
+            log.info("savedItems 10: " + savedItems.get(10).getAuthor());
+        }*/
     }
 
 
@@ -217,10 +243,33 @@ public class TestStaticInfoDao {
         }
     }
 
+    //@Test
+    public void createCarouselItem() {
+
+        carouselItems.clear();
+        log.info("Testing createCarouselItem: ");
+        for (int walk = 0; walk < instanceCount; walk++) {
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(europeanaIds.get(walk), savedItems.get(walk).getId());
+            assertNotNull(carouselItem);
+            assertEquals(carouselItem.getEuropeanaId().getCreated(), europeanaIds.get(walk).getCreated());
+            carouselItems.add(carouselItem);
+        }
+    }
+
+
+    //@Test
+    public void removeCarouselItem() {
+
+        boolean removed;
+        log.info("Testing removeCarouselItem: ");
+        for (int walk = 0; walk < instanceCount; walk++) {
+            removed = staticInfoDao.removeCarouselItem(carouselItems.get(walk).getId());
+            assertTrue(removed);
+        }
+    }
+
 // todo: these methods must be tested
 
-//    Boolean removeCarouselItem(Long id);
-//    CarouselItem createCarouselItem(String europeanaUri, Long savedItemId);
 //    void removeFromCarousel(SavedItem savedItem);
 //    List<CarouselItem> fetchCarouselItems();
 //    List<EditorPick> fetchEditorPicksItems();

@@ -1,20 +1,18 @@
 package eu.europeana.database.dao.fixture;
 
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.Country;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.PartnerSector;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
+import eu.europeana.query.DocType;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Tools to put some data into the database for testing
@@ -110,6 +108,51 @@ public class DatabaseFixture {
         return contributors;
     }
 
+    @Transactional
+    public List<SavedItem> createSavedItems(String name, int count, List<CarouselItem> carouselItems, List<EuropeanaId> europeanaIds, List<User> users) {
+        List<SavedItem> savedItems = new ArrayList<SavedItem>();
+
+        for (int walk = 0; walk < count; walk++) {
+            SavedItem savedItem = new SavedItem();
+            savedItem.setAuthor("Author " + name + walk);
+            CarouselItem carouselItem = entityManager.find(CarouselItem.class, carouselItems.get(walk).getId());
+            savedItem.setCarouselItem(carouselItem);
+            savedItem.setDateSaved(new Date());
+            savedItem.setDocType(DocType.IMAGE);
+            savedItem.setEuropeanaId(europeanaIds.get(walk));
+            savedItem.setEuropeanaObject("http://europeana.uri.pretend/item" + walk);
+            savedItem.setTitle("Title " + name + walk);
+            savedItem.setUser(users.get(walk));
+            savedItem.setLanguage(Language.EN);
+            entityManager.persist(savedItem);
+            savedItems.add(savedItem);
+        }
+        return savedItems;
+    }
+
+    @Transactional
+    public List<CarouselItem> createCarouselItems(String name, int count, List<EuropeanaId> europeanaIds) {
+        List<CarouselItem> carouselItems = new ArrayList<CarouselItem>();
+
+        for (int walk = 0; walk < count; walk++) {
+            CarouselItem carouselItem = new CarouselItem();
+            carouselItem.setCreator("Creator " + name + walk);
+            carouselItem.setEuropeanaUri("http://europeana.uri.pretend/item" + walk);
+            carouselItem.setEuropeanaId(europeanaIds.get(walk));
+            carouselItem.setLanguage(Language.EN);
+            carouselItem.setProvider("Provider " + name + walk);
+            carouselItem.setTitle("Title " + name + walk);
+            carouselItem.setThumbnail("thumbnail " + name + walk);
+            carouselItem.setYear("2009");
+            carouselItem.setType(DocType.IMAGE);
+            // carouselItem.setSavedItem();
+
+            entityManager.persist(carouselItem);
+            carouselItems.add(carouselItem);
+        }
+        return carouselItems;
+    }
+
 
     @Transactional
     public Partner getPartner(Long partnerId) {
@@ -120,4 +163,13 @@ public class DatabaseFixture {
     public Contributor getContributor(Long contributorId) {
         return entityManager.find(Contributor.class, contributorId);
     }
+
+    @Transactional
+    public CarouselItem getCarouselItem(Long id) {
+        Query query = entityManager.createQuery("select ci from CarouselItem ci where ci.id = :id");
+        query.setParameter("id", id);
+        return (CarouselItem) query.getSingleResult();
+    }
+
+
 }
