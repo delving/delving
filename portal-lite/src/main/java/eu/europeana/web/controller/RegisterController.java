@@ -28,7 +28,7 @@ import java.util.TreeMap;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class    RegisterController extends SimpleFormController {
+public class RegisterController extends SimpleFormController {
     private Logger log = Logger.getLogger(getClass());
 
     private UserDao userDao;
