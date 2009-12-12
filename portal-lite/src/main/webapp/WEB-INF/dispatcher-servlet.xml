@@ -12,8 +12,16 @@
     <context:component-scan base-package="eu.europeana.web.controller"/>
 
     <!-- Freemarker Template config -->
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <bean id="viewHtmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeRequestAttributes" value="false"/>
+        <property name="requestContextAttribute" value="requestContext"/>
+    </bean>
+
+    <bean id="viewXmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".xml.ftl"/>
         <property name="exposeSpringMacroHelpers" value="true"/>
         <property name="exposeSessionAttributes" value="true"/>
         <property name="exposeRequestAttributes" value="false"/>

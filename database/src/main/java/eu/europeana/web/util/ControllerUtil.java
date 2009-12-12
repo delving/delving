@@ -125,7 +125,7 @@ public class ControllerUtil {
             try {
                 template.process(modelAndView, out);
             } catch (TemplateException e) {
-
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -146,8 +146,6 @@ public class ControllerUtil {
         ModelAndView page = new ModelAndView(view);
         User user = ControllerUtil.getUser();
         page.addObject("user", user);
-        // if you want another content type you have to overide it in the model
-        page.addObject("contentType", "text/html;charset=UTF-8");
         return page;
     }
 }

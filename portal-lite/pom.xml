@@ -28,18 +28,19 @@
     <name>Europeana Portal Web Application (Lite)</name>
     <version>${europeana.portal.version}</version>
     <description>The lite version of the Europeana Portal contains all the core pages
-	    (index, brief-doc, full-doc, myEuropeana) and functionality of the production
-	    Europeana portal. This version is made open source to stimulate development
-	    and reuse.</description>
+        (index, brief-doc, full-doc, myEuropeana) and functionality of the production
+        Europeana portal. This version is made open source to stimulate development
+        and reuse.
+    </description>
     <inceptionYear>2009</inceptionYear>
 
-  <parent>
-    <groupId>eu.europeana</groupId>
-    <artifactId>europeana</artifactId>
-    <version>1</version>
-  </parent>
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
 
-   <developers>
+    <developers>
         <developer>
             <name>Sjoerd Siebinga</name>
             <email>sjoerd.siebinga@gmail.com</email>
@@ -67,21 +68,25 @@
     </build>
 
     <dependencies>
-         <dependency>
+        <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>database</artifactId>
             <version>${europeana.database.version}</version>
         </dependency>
-                <dependency>
-                <groupId>net.jawr</groupId>
-                <artifactId>jawr</artifactId>
+        <dependency>
+            <groupId>net.jawr</groupId>
+            <artifactId>jawr</artifactId>
         </dependency>
-         <dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
             <scope>test</scope>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
