@@ -54,7 +54,7 @@ public class EuropeanaBackendStarter {
         }
         Server server = new Server(port);
         server.addHandler(new WebAppContext(root + "api/src/main/webapp", "/api"));
-        server.addHandler(new WebAppContext(root + "bootstrap/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
+        server.addHandler(new WebAppContext(root + "bootstrap/src/test/solr/solr.war", "/solr"));
         server.start();
     }
 

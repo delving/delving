@@ -105,7 +105,7 @@ public class IngestionFixture {
         System.setProperty("solr.solr.home", findRoot().getAbsolutePath()+"/src/test/solr/home");
         System.setProperty("solr.data.dir", findTarget().getAbsolutePath()+"/solrdata");
         server = new Server(8983);
-        server.addHandler(new WebAppContext(findRoot().getAbsolutePath()+"/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
+        server.addHandler(new WebAppContext(findRoot().getAbsolutePath()+"/src/test/solr/solr.war", "/solr"));
         server.start();
     }
 

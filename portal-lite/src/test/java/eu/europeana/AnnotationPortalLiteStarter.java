@@ -35,17 +35,17 @@ public class AnnotationPortalLiteStarter {
     public static void main(String... args) throws Exception {
     	System.setProperty("solr.solr.home", "./bootstrap/src/test/solr/solr");
     	System.setProperty("hibernate.bytecode.provider", "javassist");
-        
+
     	int backendPort = 8983;
     	int frontendPort = 8080;
 
     	Server serverBackEnd = new Server(backendPort);
     	serverBackEnd.addHandler(new WebAppContext("api/src/main/webapp", "/api"));
-    	serverBackEnd.addHandler(new WebAppContext("bootstrap/src/test/solr/apache-solr-1.4-dev.war", "/solr"));
+    	serverBackEnd.addHandler(new WebAppContext("bootstrap/src/test/solr/solr.war", "/solr"));
     	serverBackEnd.start();
-    	
+
     	Server serverFrontEnd = new Server(frontendPort);
-    	serverFrontEnd.addHandler(new WebAppContext("portal-lite/src/main/webapp", "/portal"));        
+    	serverFrontEnd.addHandler(new WebAppContext("portal-lite/src/main/webapp", "/portal"));
         // TODO fix the paths
     	serverFrontEnd.addHandler(new WebAppContext("../annotation-middleware/target/annotation-middleware", "/annotation-middleware"));
     	serverFrontEnd.addHandler(new WebAppContext("../image-annotation-frontend/target/image-annotation-frontend", "/image-annotation-frontend"));
