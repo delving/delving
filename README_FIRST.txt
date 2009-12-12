@@ -1,5 +1,7 @@
 Europeana Development HOWTO
 
+todo: rewrite documentation to reflect changes after refactor (11-12-2009)
+
 This file is found in the root of the Europeana Prototype. The purpose of this file is to show you how to setup
 your local development environment to start developing on the Europeana Prototype. If you want to deploy the Europeana
 Prototype on a server environment, consult DEPLOY.txt
@@ -18,12 +20,8 @@ Components
 ------------------------
 
 The Europeana Core environment contains the following modules:
-    - Query Module (This contains the java interfaces, enums, and exceptions that are shared between all the modules).
-    - Cache Module (This contains the java code to cache thumbnails. It is required by the Dashboard and Cache-servlet modules).
-    - Cache-Servlet Module (This module is solely used to serve cached thumbnails. It requires the Cache module).
-    - Resolver-Servlet Module (This module is used to resolve the persistent europeana uri directly to the portal full-doc page).
     - Database Module (This module contains all the database access objecs, etc. It is required by the portal and dashboard modules).
-    - Portal-core Module (This module contains all the java code. It requires database and query module.)
+    - API Module (This module contains the cache, resolve, and websearch api's)
     - Portal-lite Module (This module contains all the web-gui code of the Open Source Version. It requires database, portal-core and query module.)
 
     Not open-sourced yet.
@@ -59,20 +57,8 @@ Build and install components in local maven2 repository
 
 //Build the components from the root where this file is found.
 
-// build and install query component.
-# cd query
-# mvn clean install
-
-//build and install cache component.
-# cd ../cache
-# mvn clean install -Dmaven.test.skip=true
-
-//build and install database component.
-# cd ../database
-# mvn clean install -Dmaven.test.skip=true
-
-//build and install portal-core component.
-# cd ../portal-core
+// build and install database component.
+# cd database
 # mvn clean install -Dmaven.test.skip=true
 
 
@@ -88,11 +74,11 @@ then you don't have to change the database settings.
 Setting up your IDE
 ---------------------------------
 
-Intellij Idea
+== Intellij Idea ==
 
 New Project > import project from external model > maven > set root to source pom > import
 
-Eclipse
+== Eclipse ==
 
 - install m2eclipse plugin (http://m2eclipse.codehaus.org/)
 - go to File > import > general > maven projects > next > select root (dir that contains this file) > finish
@@ -114,9 +100,9 @@ Launch the Europeana environment
 -----------------------------------------
 To launch the complete Europeana environment portal-lite, resolver, cache, solr you need to run the class
 ./bootstrap/src/main/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
-Server at http://localhost:8983/{resolve|cache|solr}/
+Server at http://localhost:8983/{api|solr}/
 
 Each module with a web-app (api, portal-lite) has a jetty starter class in the test directories. Use it
 to run the module during development. This allows for quick development cycles. Also all template, javascript and css files
-are live updated. You can find these instances of JettyStarter at http://localhost:8080/{portal|resolve|cache}/. For these
+are live updated. You can find these instances of JettyStarter at http://localhost:8080/portal/. For these
 classes to have images and search capabilities you need to have an instance of EuropeanaStarter running as well.

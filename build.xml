@@ -35,7 +35,6 @@
       <!-- copy selected modules -->
       <copy todir="${ostmp}">
           <fileset dir="." includes="bootstrap/**" excludes="${excludePattern}" />
-          <fileset dir="." includes="common/**" excludes="${excludePattern}" />
           <fileset dir="." includes="database/**" excludes="${excludePattern}" />
           <fileset dir="." includes="portal-core/**" excludes="${excludePattern}" />
           <fileset dir="." includes="portal-lite/**" excludes="${excludePattern}" />

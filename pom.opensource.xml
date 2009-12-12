@@ -31,10 +31,8 @@
     <version>1</version>
     <packaging>pom</packaging>
     <modules>
-        <module>common</module>
         <module>database</module>
         <module>api</module>
-        <module>portal-core</module>
         <module>portal-lite</module>
         <module>bootstrap</module>
     </modules>

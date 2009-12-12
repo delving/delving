@@ -20,16 +20,8 @@ Build Components
 
 //Build the components from the root where this file is found.
 
-// build query component and install in your local maven2 repository
-# cd query
-# mvn clean install
-
-//build common component and install in your local maven2 repository
-# cd ../common
-# mvn clean install -Dmaven.test.skip=true
-
 //build database component and install in your local maven2 repository
-# cd ../database
+# cd database
 # mvn clean install -Dmaven.test.skip=true
 
 //builds api component. The war file can be found in the target dir.
