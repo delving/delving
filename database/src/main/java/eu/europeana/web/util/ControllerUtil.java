@@ -6,7 +6,6 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.web.servlet.LocaleResolver;
@@ -14,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -137,5 +137,17 @@ public class ControllerUtil {
         Locale locale = localeResolver.resolveLocale(request);
         String currentLangCode = locale.getLanguage();
         return Language.findByCode(currentLangCode);
+    }
+
+    /*
+     * This creates the default ModelAndView for the portal applications. It should be used in every Controller.
+     */
+    public static ModelAndView createModelAndViewPage(String view) {
+        ModelAndView page = new ModelAndView(view);
+        User user = ControllerUtil.getUser();
+        page.addObject("user", user);
+        // if you want another content type you have to overide it in the model
+        page.addObject("contentType", "text/html;charset=UTF-8");
+        return page;
     }
 }

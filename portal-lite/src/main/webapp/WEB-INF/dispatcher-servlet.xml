@@ -4,9 +4,12 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="eu.europeana.web.controller"/>
 
     <!-- Freemarker Template config -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
@@ -39,8 +42,9 @@
         <property name="config" ref="config"/>
     </bean>
 
-    <!-- UrlMappings -->
-    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors">
             <list>
                 <ref bean="localeChangeInterceptor"/>
@@ -48,45 +52,57 @@
                 <ref bean="configInterceptor"/>
             </list>
         </property>
-        <property name="alwaysUseFullPath" value="true"/>
-        <property name="mappings">
-            <props>
-                <!--the ajax controllers-->
-                <prop key="/email-to-friend.ajax">emailToFriendController</prop>
-                <prop key="/remove.ajax">removeController</prop>
-                <prop key="/save.ajax">saveController</prop>
-                <prop key="/tag-autocomplete.ajax">tagAutocompleteController</prop>
-
-                <!--the special brief doc with its different output formats-->
-                <prop key="/brief-doc.html">briefDocController</prop>
-                <prop key="/brief-doc.rss">briefDocController</prop>
-                <prop key="/brief-doc.rdf">briefDocController</prop>
-                <prop key="/brief-doc.srw">briefDocController</prop>
-                <prop key="/full-doc.html">fullDocController</prop>
-
-                <!--the dynamic controllers-->
-                <prop key="/">indexController</prop>
-                <prop key="/index.html">indexController</prop>
-                <prop key="/login.html">loginController</prop>
-                <prop key="/logout.html">logoutController</prop>
-                <prop key="/myeuropeana.html">myEuropeanaController</prop>
-                <prop key="/register.html">registerController</prop>
-                <prop key="/change-password.html">changePasswordController</prop>
-
-                <!--a special controller to introduce security-->
-                <prop key="/secure/*.html">switchToSecureController</prop>
-
-                <!-- a special controller to redirect isShownAt and isShownBy links-->
-                <prop key="redirect.html">redirectionController</prop>
-
-                <!-- Static page Controllers -->
-                <prop key="/advancedsearch.html">advancedSearchController</prop>
-                <prop key="/contact.html">contactController</prop>
-                <prop key="/error.html">errorController</prop>
-                <prop key="/remember-me-theft.html">rememberMeTheftController</prop>
-            </props>
-        </property>
     </bean>
+
+
+    <!-- UrlMappings -->
+    <!--<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+        <!--<property name="interceptors">-->
+            <!--<list>-->
+                <!--<ref bean="localeChangeInterceptor"/>-->
+                <!--<ref bean="formatInterceptor"/>-->
+                <!--<ref bean="configInterceptor"/>-->
+            <!--</list>-->
+        <!--</property>-->
+        <!--<property name="alwaysUseFullPath" value="true"/>-->
+        <!--<property name="mappings">-->
+            <!--<props>-->
+                <!--&lt;!&ndash;the ajax controllers&ndash;&gt;-->
+                <!--<prop key="/email-to-friend.ajax">emailToFriendController</prop>-->
+                <!--<prop key="/remove.ajax">removeController</prop>-->
+                <!--<prop key="/save.ajax">saveController</prop>-->
+                <!--<prop key="/tag-autocomplete.ajax">tagAutocompleteController</prop>-->
+
+                <!--&lt;!&ndash;the special brief doc with its different output formats&ndash;&gt;-->
+                <!--&lt;!&ndash;<prop key="/brief-doc.html">briefDocController</prop>&ndash;&gt;-->
+                <!--&lt;!&ndash;<prop key="/brief-doc.rss">briefDocController</prop>&ndash;&gt;-->
+                <!--&lt;!&ndash;<prop key="/brief-doc.rdf">briefDocController</prop>&ndash;&gt;-->
+                <!--&lt;!&ndash;<prop key="/brief-doc.srw">briefDocController</prop>&ndash;&gt;-->
+                <!--&lt;!&ndash;<prop key="/full-doc.html">fullDocController</prop>&ndash;&gt;-->
+
+                <!--&lt;!&ndash;the dynamic controllers&ndash;&gt;-->
+                <!--<prop key="/">indexController</prop>-->
+                <!--<prop key="/index.html">indexController</prop>-->
+                <!--<prop key="/login.html">loginController</prop>-->
+                <!--<prop key="/logout.html">logoutController</prop>-->
+                <!--<prop key="/myeuropeana.html">myEuropeanaController</prop>-->
+                <!--<prop key="/register.html">registerController</prop>-->
+                <!--<prop key="/change-password.html">changePasswordController</prop>-->
+
+                <!--&lt;!&ndash;a special controller to introduce security&ndash;&gt;-->
+                <!--<prop key="/secure/*.html">switchToSecureController</prop>-->
+
+                <!--&lt;!&ndash; a special controller to redirect isShownAt and isShownBy links&ndash;&gt;-->
+                <!--<prop key="redirect.html">redirectionController</prop>-->
+
+                <!--&lt;!&ndash; Static page Controllers &ndash;&gt;-->
+                <!--<prop key="/advancedsearch.html">advancedSearchController</prop>-->
+                <!--<prop key="/contact.html">contactController</prop>-->
+                <!--<prop key="/error.html">errorController</prop>-->
+                <!--<prop key="/remember-me-theft.html">rememberMeTheftController</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <bean id="messageSource" class="eu.europeana.web.util.SwitchableMessageSource">
         <property name="sources">
@@ -109,92 +125,79 @@
     </bean>
 
     <!-- Controllers -->
-    <bean id="switchToSecureController" class="eu.europeana.web.controller.SwitchToSecureController"/>
+    <!--<bean id="switchToSecureController" class="eu.europeana.web.controller.SwitchToSecureController"/>-->
 
-    <bean id="redirectionController" class="eu.europeana.web.controller.RedirectionController"/>
+    <!--<bean id="redirectionController" class="eu.europeana.web.controller.RedirectionController"/>-->
 
-    <bean id="loginController" class="eu.europeana.web.controller.LoginController">
-        <property name="registrationEmailSender" ref="registrationEmailSender"/>
-        <property name="userDao" ref="userDao"/>
-    </bean>
+    <!--<bean id="loginController" class="eu.europeana.web.controller.LoginController">-->
+        <!--<property name="registrationEmailSender" ref="registrationEmailSender"/>-->
+        <!--<property name="userDao" ref="userDao"/>-->
+    <!--</bean>-->
 
-    <bean id="logoutController" class="eu.europeana.web.controller.LogoutController"/>
+    <!--<bean id="logoutController" class="eu.europeana.web.controller.LogoutController"/>-->
 
-    <bean id="indexController" class="eu.europeana.web.controller.IndexController">
-        <property name="proposedSearchTermSampler" ref="proposedSearchTermSampler"/>
-        <property name="carouselItemSampler" ref="carouselItemSampler"/>
-    </bean>
+    <!--<bean id="briefDocController" class="eu.europeana.web.controller.BriefDocController">-->
+        <!--<property name="queryModelFactory" ref="queryModelFactory"/>-->
+    <!--</bean>-->
 
-    <bean id="briefDocController" class="eu.europeana.web.controller.BriefDocController">
-        <property name="queryModelFactory" ref="queryModelFactory"/>
-    </bean>
+    <!--<bean id="fullDocController" class="eu.europeana.web.controller.FullDocController">-->
+        <!--<property name="queryModelFactory" ref="queryModelFactory"/>-->
+        <!--<property name="dashboardDao" ref="dashboardDao"/>-->
+    <!--</bean>-->
 
-    <bean id="fullDocController" class="eu.europeana.web.controller.FullDocController">
-        <property name="queryModelFactory" ref="queryModelFactory"/>
-        <property name="dashboardDao" ref="dashboardDao"/>
-    </bean>
+    <!--<bean id="myEuropeanaController" class="eu.europeana.web.controller.MyEuropeanaController">-->
+        <!--<property name="userDao" ref="userDao"/>-->
+    <!--</bean>-->
 
-    <bean id="myEuropeanaController" class="eu.europeana.web.controller.MyEuropeanaController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
+    <!--<bean id="registerController" class="eu.europeana.web.controller.RegisterController">-->
+        <!--<property name="tokenService" ref="tokenService"/>-->
+        <!--<property name="notifyEmailSender" ref="emailSenderForRegisterNotify"/>-->
+        <!--<property name="userDao" ref="userDao"/>-->
+        <!--<property name="successView" value="register-success"/>-->
+        <!--<property name="formView" value="register"/>-->
+        <!--&lt;!&ndash;<property name="sessionForm" value="true"/>&ndash;&gt;-->
+    <!--</bean>-->
 
-    <bean id="registerController" class="eu.europeana.web.controller.RegisterController">
-        <property name="tokenService" ref="tokenService"/>
-        <property name="notifyEmailSender" ref="emailSenderForRegisterNotify"/>
-        <property name="userDao" ref="userDao"/>
-        <property name="successView" value="register-success"/>
-        <property name="formView" value="register"/>
-        <!--<property name="sessionForm" value="true"/>-->
-    </bean>
+    <!--<bean id="changePasswordController" class="eu.europeana.web.controller.ChangePasswordController">-->
+        <!--<property name="tokenService" ref="tokenService"/>-->
+        <!--<property name="notifyEmailSender" ref="emailSenderForPasswordChangeNotify"/>-->
+        <!--<property name="userDao" ref="userDao"/>-->
+        <!--<property name="successView" value="register-success"/>-->
+        <!--&lt;!&ndash; TODO change-password-success &ndash;&gt;-->
+        <!--<property name="formView" value="change-password"/>-->
+        <!--&lt;!&ndash;<property name="sessionForm" value="true"/>&ndash;&gt;-->
+    <!--</bean>-->
 
-    <bean id="changePasswordController" class="eu.europeana.web.controller.ChangePasswordController">
-        <property name="tokenService" ref="tokenService"/>
-        <property name="notifyEmailSender" ref="emailSenderForPasswordChangeNotify"/>
-        <property name="userDao" ref="userDao"/>
-        <property name="successView" value="register-success"/>
-        <!-- TODO change-password-success -->
-        <property name="formView" value="change-password"/>
-        <!--<property name="sessionForm" value="true"/>-->
-    </bean>
+    <!--<bean id="removeController" class="eu.europeana.web.controller.RemoveController">-->
+        <!--<property name="userDao" ref="userDao"/>-->
+    <!--</bean>-->
 
-    <bean id="removeController" class="eu.europeana.web.controller.RemoveController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
+    <!--<bean id="saveController" class="eu.europeana.web.controller.SaveController">-->
+        <!--<property name="userDao" ref="userDao"/>-->
+    <!--</bean>-->
 
-    <bean id="saveController" class="eu.europeana.web.controller.SaveController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
-
-    <bean id="emailToFriendController" class="eu.europeana.web.controller.EmailToFriendController">
-        <property name="friendEmailSender" ref="emailSenderForSendToFriend"/>
-        <property name="subject" value="A link from Europeana"/>
-    </bean>
+    <!--<bean id="emailToFriendController" class="eu.europeana.web.controller.EmailToFriendController">-->
+        <!--<property name="friendEmailSender" ref="emailSenderForSendToFriend"/>-->
+        <!--<property name="subject" value="A link from Europeana"/>-->
+    <!--</bean>-->
 
     <!-- AjaxControllers -->
-    <bean id="tagAutocompleteController" class="eu.europeana.web.controller.TagAutoCompleteController">
-        <property name="userDao" ref="userDao"/>
-    </bean>
+    <!--<bean id="tagAutocompleteController" class="eu.europeana.web.controller.TagAutoCompleteController">-->
+        <!--<property name="userDao" ref="userDao"/>-->
+    <!--</bean>-->
 
     <!-- Static pages -->
-    <bean id="advancedSearchController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="advancedsearch"/>
-        <property name="notLoadableFromDb" value="true"/>
-    </bean>
 
-    <bean id="contactController" class="eu.europeana.web.controller.ContactController">
-        <property name="emailSender" ref="emailSenderForUserFeedback"/>
-        <property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>
-        <property name="successView" value="contact"/>
-        <property name="formView" value="contact"/>
-    </bean>
 
-    <bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-        <property name="viewName" value="redirect:/login.html"/>
-    </bean>
+    <!--<bean id="contactController" class="eu.europeana.web.controller.ContactController">-->
+        <!--<property name="emailSender" ref="emailSenderForUserFeedback"/>-->
+        <!--<property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>-->
+        <!--<property name="successView" value="contact"/>-->
+        <!--<property name="formView" value="contact"/>-->
+    <!--</bean>-->
 
-    <bean name="errorController" class="eu.europeana.web.controller.StaticPageController">
-        <property name="template" value="error"/>
-        <property name="notLoadableFromDb" value="true"/>
-    </bean>
+    <!--<bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">-->
+        <!--<property name="viewName" value="redirect:/login.html"/>-->
+    <!--</bean>-->
 
 </beans>

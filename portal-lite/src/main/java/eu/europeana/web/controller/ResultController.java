@@ -3,12 +3,23 @@ package eu.europeana.web.controller;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.User;
 import eu.europeana.json.JsonResultModel;
-import eu.europeana.query.*;
-import eu.europeana.web.util.*;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.QueryModel;
+import eu.europeana.query.QueryModelFactory;
+import eu.europeana.query.QueryProblem;
+import eu.europeana.query.RecordField;
+import eu.europeana.query.ResponseType;
+import eu.europeana.query.ResultModel;
+import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.DocIdWindowPager;
+import eu.europeana.web.util.NextQueryFacet;
+import eu.europeana.web.util.QueryConstraints;
+import eu.europeana.web.util.ResultPagination;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +40,7 @@ import java.util.List;
 public class ResultController {
 
     @Autowired
+    @Qualifier("solrQueryModelFactory")
     private QueryModelFactory queryModelFactory;
 
     @Autowired
@@ -43,7 +55,7 @@ public class ResultController {
             HttpServletRequest request
     ) throws EuropeanaQueryException, UnsupportedEncodingException {
         boolean srwFormat = format != null && format.equals("srw");
-        ModelAndView page = createPage(srwFormat ? "full-doc-srw" : "full-doc");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
         // todo: setContentType("text/xml;charset=UTF-8"); for srw format
         if (uri == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
@@ -82,7 +94,7 @@ public class ResultController {
             @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
     ) throws JSONException, EuropeanaQueryException, UnsupportedEncodingException {
-        ModelAndView page = createPage("brief-doc-window");
+        ModelAndView page = ControllerUtil.createModelAndViewPage("brief-doc-window");
         if (query == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
         }
@@ -152,13 +164,6 @@ public class ResultController {
 //    <prop key="/brief-doc.rss">briefDocController</prop>
 //    <prop key="/brief-doc.rdf">briefDocController</prop>
 //    <prop key="/brief-doc.srw">briefDocController</prop>
-
-    private ModelAndView createPage(String view) {
-        ModelAndView page = new ModelAndView(view);
-        User user = ControllerUtil.getUser();
-        page.addObject("user", user);
-        return page;
-    }
 
     private String createQueryStringForPresentation(String query, QueryConstraints queryConstraints) throws UnsupportedEncodingException {
         StringBuilder queryString = new StringBuilder();

@@ -26,6 +26,7 @@ import java.util.List;
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
+@Deprecated
 public class BriefDocController extends AbstractPortalController {
     private static final String QUERY_PARAMETER = "query";
     private static final String FACET_PARAMETER = "facet";

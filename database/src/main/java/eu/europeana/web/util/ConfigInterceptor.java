@@ -19,14 +19,8 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
 
-//        RequestLogger requestLogger;
-//        if (modelAndView.getModel().containsKey("requestLogger")) {
-//            // use requestLogger added to the model and write to log
-//            requestLogger = (RequestLogger) modelAndView.getModel().get("requestLogger");
-//        } else {
-//            requestLogger = new RequestLogger(httpServletRequest, httpServletResponse, o);
-//        }
-//        requestLogger.writeRequestLog(httpServletRequest, modelAndView);
+        // adding the responsetype set in the ModelAndView to the response
+        httpServletResponse.setContentType(modelAndView.getModel().get("contentType").toString());
 
         if (Boolean.valueOf((String) config.get("piwik.enabled"))) {
             modelAndView.addObject("piwik_js", config.get("piwik.jsUrl"));

@@ -14,6 +14,7 @@ import java.util.TreeMap;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public abstract class AbstractPortalController extends AbstractController {
 
     public interface Model {

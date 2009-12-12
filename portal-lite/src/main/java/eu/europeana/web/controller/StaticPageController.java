@@ -5,6 +5,10 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.StaticPage;
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.web.util.ControllerUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,33 +17,58 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Eric van der Meulen <eric.meulen@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- *
  */
 
-public class StaticPageController extends AbstractPortalController {
+@Controller
+public class StaticPageController {
 
-    private StaticPageType pageType;
+    @Autowired
     private StaticInfoDao staticInfoDao;
-    private boolean notLoadableFromDb;
 
-    public void setTemplate(String template) {
-        this.pageType = StaticPageType.get(template);
-    }
-
-    public void handle(HttpServletRequest request, Model model) throws Exception {
-        if (!notLoadableFromDb) {
-            Language language = ControllerUtil.getLocale(request);
-            StaticPage staticPage = staticInfoDao.getStaticPage(pageType, language);
-            model.put("staticPage", staticPage);
-        }
-        model.setContentType("text/html; charset=utf-8");
-        model.setView(pageType.getViewName());
-    }
-
-     public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
+    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
         this.staticInfoDao = staticInfoDao;
     }
-    public void setNotLoadableFromDb(boolean notLoadableFromDb) {
-        this.notLoadableFromDb = notLoadableFromDb;
+
+
+    /*
+    * freemarker template not loadable from database
+    */
+
+    @RequestMapping("/advancedsearch.html")
+    public ModelAndView AdvancedSearchHandler(HttpServletRequest request) throws Exception {
+        StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
+        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+    }
+
+
+    /*
+     * freemarker Template not loadable from database
+     */
+
+    @RequestMapping("/error.html")
+    public ModelAndView ErrorPageHandler(HttpServletRequest request) throws Exception {
+        StaticPageType pageType = StaticPageType.ERROR;
+        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+    }
+
+    /*
+     * freemarker template loadable from database
+     */
+
+    @RequestMapping("/aboutus.html")
+    public ModelAndView AboutUsPageHandler(HttpServletRequest request) throws Exception {
+        StaticPageType pageType = StaticPageType.ABOUT_US;
+        return loadablePageFromDB(
+                request,
+                pageType,
+                ControllerUtil.createModelAndViewPage(pageType.getViewName())
+        );
+    }
+
+    private ModelAndView loadablePageFromDB(HttpServletRequest request, StaticPageType pageType, ModelAndView page) {
+        Language language = ControllerUtil.getLocale(request);
+        StaticPage staticPage = staticInfoDao.getStaticPage(pageType, language);
+        page.addObject("staticPage", staticPage);
+        return page;
     }
 }

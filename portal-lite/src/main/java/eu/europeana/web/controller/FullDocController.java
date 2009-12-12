@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public class FullDocController extends AbstractPortalController {
     private QueryModelFactory queryModelFactory;
     private DashboardDaoImpl dashboardDao;

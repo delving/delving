@@ -109,6 +109,7 @@
         <property name="simpleQueryModelFactory" ref="solrQueryModelFactory"/>
         <property name="advancedQueryModelFactory" ref="solrQueryModelFactory"/>
     </bean>
+
     <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
         <property name="baseUrl" value="${solr.selectUrl}"/>
         <property name="httpClient" ref="httpClient"/>
