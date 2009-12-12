@@ -23,7 +23,11 @@ package eu.europeana.query;
 
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -49,7 +53,7 @@ public class EuropeanaProperties extends Properties {
         }
         if (inputStream == null) {
             log.warn("No 'europeana.properties', checking for (test) resource.");
-            inputStream = getClass().getResourceAsStream("/europeana.properties");
+            inputStream = getClass().getResourceAsStream("/europeana-test.properties");
             log.info("Test 'europeana.properties' being used");
         }
         if (inputStream == null) {
