@@ -8,6 +8,7 @@ import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.SearchTerm;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
+import eu.europeana.database.integration.TagCount;
 import eu.europeana.query.DocType;
 import eu.europeana.query.RequestLogger;
 import eu.europeana.web.util.ControllerUtil;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -171,8 +173,6 @@ public class AjaxController {
         return true;
     }
 
-    // todo: finish this handler. + give back MAV object
-
     @RequestMapping("/email-to-friend.ajax")
     public ModelAndView handleSendToAFriendHandler(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
@@ -186,8 +186,7 @@ public class AjaxController {
         return createResponsePage(debug, success, exceptionString, response);
     }
 
-
-    public boolean processSendToAFriendHandler(HttpServletRequest request) throws Exception {
+     public boolean processSendToAFriendHandler(HttpServletRequest request) throws Exception {
         String emailAddress = getStringParameter("email", request);
         if (!ControllerUtil.validEmailAddress(emailAddress)) {
             throw new IllegalArgumentException("Email address invalid: [" + emailAddress + "]");
@@ -202,6 +201,26 @@ public class AjaxController {
         friendEmailSender.sendEmail(emailAddress, user.getEmail(), subject, model);
         return true;
     }
+
+    // currently not used. todo: maybe remove later
+    @RequestMapping("/tag-autocomplete.ajax")
+    public ModelAndView handleTagAutoCompleteRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("xml");
+        String query = request.getParameter("q").toLowerCase();
+        if (query == null) {
+            query = "";
+        }
+        ModelAndView page = ControllerUtil.createModelAndViewPage("tag-autocomplete");
+        try {
+            List<TagCount> tagCountList = userDao.getSocialTagCounts(query);
+            page.addObject("tagList", tagCountList);
+        }
+        catch (Exception e) {
+            handleAjaxException(e, response);
+        }
+        return page;
+    }
+
 
     private void handleAjaxException(Exception e, HttpServletResponse response) {
         success = false;

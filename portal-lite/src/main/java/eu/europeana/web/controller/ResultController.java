@@ -10,6 +10,7 @@ import eu.europeana.query.QueryModel;
 import eu.europeana.query.QueryModelFactory;
 import eu.europeana.query.QueryProblem;
 import eu.europeana.query.RecordField;
+import eu.europeana.query.RequestLogger;
 import eu.europeana.query.ResponseType;
 import eu.europeana.query.ResultModel;
 import eu.europeana.web.util.ControllerUtil;
@@ -17,6 +18,7 @@ import eu.europeana.web.util.DocIdWindowPager;
 import eu.europeana.web.util.NextQueryFacet;
 import eu.europeana.web.util.QueryConstraints;
 import eu.europeana.web.util.ResultPagination;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -39,12 +42,17 @@ import java.util.List;
 @Controller
 public class ResultController {
 
+    private Logger log = Logger.getLogger(getClass());
+
     @Autowired
     @Qualifier("solrQueryModelFactory")
     private QueryModelFactory queryModelFactory;
 
     @Autowired
     private DashboardDao dashboardDao;
+
+    @Autowired
+    private RequestLogger requestLogger;
 
     @RequestMapping("/full-doc.html")
     public ModelAndView fullDocHtml(
@@ -72,11 +80,9 @@ public class ResultController {
             EuropeanaId id = dashboardDao.fetchEuropeanaId(uri);
             if (id != null && id.isOrphan()) {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
-            }
-            else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
+            } else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_INDEXED.toString());
-            }
-            else {
+            } else {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
             }
         }
@@ -130,8 +136,7 @@ public class ResultController {
             }
             if (queryProblem == QueryProblem.SOLR_UNREACHABLE) {
                 throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), exception);
-            }
-            else {
+            } else {
                 resultModel = new JsonResultModel(null, ResponseType.SMALL_BRIEF_DOC_WINDOW, true, "Invalid query string.");
             }
         }
@@ -165,6 +170,34 @@ public class ResultController {
 //    <prop key="/brief-doc.rdf">briefDocController</prop>
 //    <prop key="/brief-doc.srw">briefDocController</prop>
 
+    /*
+     * The page where you are redirected to the isShownAt and isShownBy links
+     */
+
+    @RequestMapping("/redirect.html")
+    public ModelAndView handleRedirectFromFullView(HttpServletRequest request) throws Exception {
+        String SHOWN_AT = "shownAt";
+        String SHOWN_BY = "shownBy";
+        String PROVIDER = "provider";
+        String EUROPEANA_ID = "id";
+
+        String isShownAt = request.getParameter(SHOWN_AT);
+        String isShownBy = request.getParameter(SHOWN_BY);
+        String provider = request.getParameter(PROVIDER);
+        String europeanaId = request.getParameter(EUROPEANA_ID);
+        String redirect;
+        if (isShownAt != null) {
+            redirect = isShownAt;
+        } else if (isShownBy != null) {
+            redirect = isShownBy;
+        } else {
+            throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
+        }
+        // todo: implement request log
+        log.info(MessageFormat.format("redirecting to: {0} for id {1}, by provider {2}", redirect, europeanaId, provider));
+        return ControllerUtil.createModelAndViewPage("redirect:" + redirect);
+    }
+
     private String createQueryStringForPresentation(String query, QueryConstraints queryConstraints) throws UnsupportedEncodingException {
         StringBuilder queryString = new StringBuilder();
         queryString.append("query").append("=").append(URLEncoder.encode(query, "utf-8"));
@@ -195,4 +228,5 @@ public class ResultController {
             return true;
         }
     }
+
 }
