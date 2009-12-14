@@ -34,6 +34,8 @@ import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.DocType;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,8 +43,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLDecoder;
@@ -152,9 +152,7 @@ public class AjaxController {
         switch (findModifiable(className)) {
             case CAROUSEL_ITEM:
                 SavedItem savedItemForCarousel = userDao.fetchSavedItemById(Long.valueOf(idString));
-                CarouselItem carouselItem = staticInfoDao.createCarouselItem(
-                        savedItemForCarousel.getEuropeanaId(),
-                        savedItemForCarousel.getId());
+                CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItemForCarousel.getId());
                 if (carouselItem == null) {
                     return false;
                 }
