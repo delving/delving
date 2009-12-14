@@ -2,17 +2,13 @@ package eu.europeana.database.dao.fixture;
 
 import eu.europeana.database.domain.*;
 import eu.europeana.query.DocType;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Tools to put some data into the database for testing
@@ -109,21 +105,20 @@ public class DatabaseFixture {
     }
 
     @Transactional
-    public List<SavedItem> createSavedItems(String name, int count, List<CarouselItem> carouselItems, List<EuropeanaId> europeanaIds, List<User> users) {
+    public List<SavedItem> createSavedItems(String name, int count, List<EuropeanaId> europeanaIds, List<User> users) {
         List<SavedItem> savedItems = new ArrayList<SavedItem>();
-
         for (int walk = 0; walk < count; walk++) {
+            User user = entityManager.find(User.class, users.get(walk).getId());
             SavedItem savedItem = new SavedItem();
             savedItem.setAuthor("Author " + name + walk);
-            CarouselItem carouselItem = entityManager.find(CarouselItem.class, carouselItems.get(walk).getId());
-            savedItem.setCarouselItem(carouselItem);
             savedItem.setDateSaved(new Date());
             savedItem.setDocType(DocType.IMAGE);
             savedItem.setEuropeanaId(europeanaIds.get(walk));
             savedItem.setEuropeanaObject("http://europeana.uri.pretend/item" + walk);
             savedItem.setTitle("Title " + name + walk);
-            savedItem.setUser(users.get(walk));
+            savedItem.setUser(user);
             savedItem.setLanguage(Language.EN);
+            user.getSavedItems().add(savedItem);
             entityManager.persist(savedItem);
             savedItems.add(savedItem);
         }
@@ -145,8 +140,6 @@ public class DatabaseFixture {
             carouselItem.setThumbnail("thumbnail " + name + walk);
             carouselItem.setYear("2009");
             carouselItem.setType(DocType.IMAGE);
-            // carouselItem.setSavedItem();
-
             entityManager.persist(carouselItem);
             carouselItems.add(carouselItem);
         }

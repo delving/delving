@@ -202,13 +202,13 @@ public interface StaticInfoDao {
      * Create a new {@link CarouselItem}, with a reference to the Europeana object, with the given identifier,
      * for the {@link SavedItem}, with the given identifier.
      *
-     * @param europeanaId
-     *@param savedItemId  - Long - the identifier of the item to be added  @return CarouselItem - the new instance of the CarouselItem class
+     * @param savedItemId  - Long - the identifier of the item to be added
+     * @return CarouselItem - the new instance of the CarouselItem class
      * @see {@link CarouselItem}
      * @see {@link SavedItem}
      * @see {@link eu.europeana.database.domain.EuropeanaId}
      */
-    CarouselItem createCarouselItem(EuropeanaId europeanaId, Long savedItemId);
+    CarouselItem createCarouselItem(Long savedItemId);
 
     /**
      * Get all the instances on the {@link CarouselItem} class.

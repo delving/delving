@@ -12,15 +12,12 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.User;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -65,20 +62,6 @@ public class TestDashboardDao {
     }
 
 //    @Test
-    public void testCreateNewCarouselItem() throws IOException, SAXException, ParserConfigurationException {
-//        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_1);
-        // todo rewrite this to test create carouselItem from saved item
-        CarouselItem item = new SavedItem().createCarouselItem();
-        assertNotNull(item);
-        assertNotNull(item.getThumbnail());
-        assertNotNull(item.getTitle());
-        assertNotNull(item.getProvider());
-        assertNotNull(item.getLanguage());
-        assertNotNull(item.getCreator());
-        System.out.println(item.getTitle());
-    }
-
-//    @Test
     public void testFindOrphanedSavedItem() throws Exception {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
@@ -106,7 +89,7 @@ public class TestDashboardDao {
         for (SavedItem savedItem : savedItems) {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
-            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getEuropeanaId(), savedItem.getId());
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItem.getId());
             Assert.assertTrue(carouselItem.getSavedItem() != null);
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());
         }
@@ -143,7 +126,7 @@ public class TestDashboardDao {
         for (SavedItem savedItem : savedItems) {
             assertFalse("SavedItem should have no carousel item", savedItem.hasCarouselItem());
             assertNotNull(savedItem.getId());
-            assertNotNull(staticInfoDao.createCarouselItem(savedItem.getEuropeanaId(), savedItem.getId()));
+            assertNotNull(staticInfoDao.createCarouselItem(savedItem.getId()));
             assertTrue("SavedItem should have one carousel item", savedItem.hasCarouselItem());
         }
         savedItems = user.getSavedItems();

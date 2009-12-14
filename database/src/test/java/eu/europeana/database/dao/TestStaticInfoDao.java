@@ -1,20 +1,28 @@
 package eu.europeana.database.dao;
 
-import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.LanguageDao;
+import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.dao.fixture.DatabaseFixture;
-import eu.europeana.database.domain.*;
-
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.Contributor;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Partner;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.StaticPage;
+import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.database.domain.User;
+import org.apache.log4j.Logger;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.apache.log4j.Logger;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,7 +51,6 @@ public class TestStaticInfoDao {
 
     private static List<Partner> partners;
     private static List<Contributor> contributors;
-    private static List<User> users;
     private static List<SavedItem> savedItems;
     private static List<EuropeanaId> europeanaIds;
     private static List<CarouselItem> carouselItems;
@@ -54,33 +61,16 @@ public class TestStaticInfoDao {
         if (partners == null) {
             partners = databaseFixture.createPartners("Nicola", instanceCount);
             log.info("Partner 10: " + partners.get(10).getName());
-        }
-
-        if (contributors == null) {
             contributors = databaseFixture.createContributors("Nicola", instanceCount);
             log.info("Contributor 10: " + contributors.get(10).getOriginalName());
-        }
-
-        if (users == null) {
-            users = databaseFixture.createUsers("Nicola", instanceCount);
+            List<User> users = databaseFixture.createUsers("Nicola", instanceCount);
             log.info("users 10: " + users.get(10).getFirstName());
-        }
-
-/*
-        if (europeanaIds == null) {
             europeanaIds = databaseFixture.createEuropeanaIds("Nicola", instanceCount);
             log.info("europeanaId 10: " + europeanaIds.get(10).getEuropeanaUri());
-        }
-
-
-        if (carouselItems == null) {
-            carouselItems = databaseFixture.createCarouselItems("Nicola", instanceCount, europeanaIds);
-            log.info("carouselItems 10: " + carouselItems.get(10).getEuropeanaUri());
-        }*/
-        /* if (savedItems == null) {
-            savedItems = databaseFixture.createSavedItems("Nicola", instanceCount, carouselItems, europeanaIds, users);
+            carouselItems = new ArrayList<CarouselItem>();
+            savedItems = databaseFixture.createSavedItems("Nicola", instanceCount, europeanaIds, users);
             log.info("savedItems 10: " + savedItems.get(10).getAuthor());
-        }*/
+        }
     }
 
 
@@ -224,8 +214,6 @@ public class TestStaticInfoDao {
 
     @Test
     public void setAndGetAllStaticPage() {
-
-
         int pageCount = 0;
         String newContent = "content for ";
         for (StaticPageType pageType : StaticPageType.values()) {
@@ -243,29 +231,23 @@ public class TestStaticInfoDao {
         }
     }
 
-    //@Test
+    @Test
     public void createCarouselItem() {
-
         carouselItems.clear();
         log.info("Testing createCarouselItem: ");
         for (int walk = 0; walk < instanceCount; walk++) {
-            CarouselItem carouselItem = staticInfoDao.createCarouselItem(europeanaIds.get(walk), savedItems.get(walk).getId());
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItems.get(walk).getId());
             assertNotNull(carouselItem);
-            assertEquals(carouselItem.getEuropeanaId().getCreated(), europeanaIds.get(walk).getCreated());
             carouselItems.add(carouselItem);
         }
     }
 
-
-    //@Test
+    @Test
     public void removeCarouselItem() {
-
-        boolean removed;
-        Long id;
         log.info("Testing removeCarouselItem: ");
         for (int walk = 0; walk < instanceCount; walk++) {
-            id = carouselItems.get(walk).getId();
-            removed = staticInfoDao.removeCarouselItem(id);
+            Long id = carouselItems.get(walk).getId();
+            boolean removed = staticInfoDao.removeCarouselItem(id);
             assertTrue(removed);
             assertNull(databaseFixture.getCarouselItem(id));
         }

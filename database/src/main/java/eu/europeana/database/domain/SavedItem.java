@@ -1,8 +1,8 @@
 package eu.europeana.database.domain;
 
 import eu.europeana.query.DocType;
-
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -52,7 +52,7 @@ public class SavedItem implements Serializable {
     }
 
     public boolean hasCarouselItem () {
-        return carouselItem != null ? true : false;
+        return carouselItem != null;
     }
 
     public void setCarouselItem(CarouselItem carouselItem) {
@@ -126,18 +126,4 @@ public class SavedItem implements Serializable {
     public void setLanguage(Language language) {
         this.language = language;
     }
-
-    public CarouselItem createCarouselItem() {
-        CarouselItem item = new CarouselItem();
-        item.setEuropeanaUri(getEuropeanaId().getEuropeanaUri());
-        item.setTitle(getTitle());
-        item.setCreator(getAuthor());
-        // add missing fields: year, language, provider
-        // maybe remove from carousel domain object
-
-        item.setType(getDocType());
-        item.setThumbnail(getEuropeanaObject());
-        return item;
-    }
-
 }

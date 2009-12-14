@@ -24,13 +24,13 @@ package eu.europeana.database.dao;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.*;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -133,13 +133,11 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         if (carouselItem == null) {
             throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
         }
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, carouselItem.getSavedItem().getId());
-        if (savedItem == null) {
-            throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
-        }
+        SavedItem savedItem = carouselItem.getSavedItem();
         savedItem.setCarouselItem(null);
+        EuropeanaId europeanaId = carouselItem.getEuropeanaId();
+        europeanaId.getCarouselItems().remove(carouselItem);
         entityManager.remove(carouselItem);
-        entityManager.flush();
         return true;
     }
 
@@ -297,16 +295,24 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public CarouselItem createCarouselItem(EuropeanaId europeanaId, Long savedItemId) {
-//        EuropeanaId europeanaId = dashBoardDao.fetchEuropeanaId(europeanaId);
-        SavedItem savedItem = entityManager.getReference(SavedItem.class, savedItemId);
-        CarouselItem carouselItem = savedItem.createCarouselItem();
-        carouselItem.setEuropeanaId(europeanaId);
+    public CarouselItem createCarouselItem(Long savedItemId) {
+        SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
+        // create the carouselItem
+        CarouselItem carouselItem = new CarouselItem();
+        carouselItem.setEuropeanaUri(savedItem.getEuropeanaId().getEuropeanaUri());
+        carouselItem.setTitle(savedItem.getTitle());
+        carouselItem.setCreator(savedItem.getAuthor());
+        carouselItem.setType(savedItem.getDocType());
+        carouselItem.setThumbnail(savedItem.getEuropeanaObject());
+        carouselItem.setLanguage(savedItem.getLanguage());
+        // add the relations
         carouselItem.setSavedItem(savedItem);
+        carouselItem.setEuropeanaId(savedItem.getEuropeanaId());
+        savedItem.getEuropeanaId().getCarouselItems().add(carouselItem);
         savedItem.setCarouselItem(carouselItem);
+        entityManager.persist(carouselItem);
         return carouselItem;
     }
-
 
     @Transactional
     public void removeFromCarousel(SavedItem savedItem) {

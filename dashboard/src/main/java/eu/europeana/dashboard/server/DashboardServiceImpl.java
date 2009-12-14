@@ -33,7 +33,13 @@ import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.SolrIndexer;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -269,8 +275,7 @@ public class DashboardServiceImpl implements DashboardService {
     public CarouselItemX createCarouselItem(SavedItemX savedItemX) {
         String europeanaUri = savedItemX.getUri();
         audit("create carousel item: " + europeanaUri);
-        EuropeanaId id = dashboardDao.fetchEuropeanaId(europeanaUri);
-        CarouselItem item = staticInfoDao.createCarouselItem(id, savedItemX.getId());
+        CarouselItem item = staticInfoDao.createCarouselItem(savedItemX.getId());
         if (item == null) {
             return null;
         }
