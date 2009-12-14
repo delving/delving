@@ -2,10 +2,10 @@ package eu.europeana.database.dao.fixture;
 
 import eu.europeana.database.domain.*;
 import eu.europeana.query.DocType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,6 +146,28 @@ public class DatabaseFixture {
         return carouselItems;
     }
 
+    @Transactional
+    public List<SavedSearch> createSavedSearch(String name, int count, List<User> users) {
+
+        List<SavedSearch> savedSearchs = new ArrayList<SavedSearch>();
+
+        for (int walk = 0; walk < count; walk++) {
+            SavedSearch savedSearch = new SavedSearch();
+            savedSearch.setDateSaved(new Date());
+            savedSearch.setLanguage(Language.IT);
+            savedSearch.setQuery(name + " query" + walk);
+            savedSearch.setQueryString(name + " querystring" + walk);
+            savedSearch.setUser(users.get(walk));
+            savedSearchs.add(savedSearch);
+        }
+        for (int walk = 0; walk < count; walk++) {
+            User user = entityManager.find(User.class, users.get(walk).getId());
+            user.setSavedSearches(savedSearchs);
+            entityManager.persist(savedSearchs.get(walk));
+        }
+
+        return savedSearchs;
+    }
 
     @Transactional
     public Partner getPartner(Long partnerId) {

@@ -4,6 +4,8 @@ import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.dao.fixture.DatabaseFixture;
 import eu.europeana.database.domain.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import org.apache.log4j.Logger;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -46,6 +48,7 @@ public class TestStaticInfoDao {
     private static List<SavedItem> savedItems;
     private static List<EuropeanaId> europeanaIds;
     private static List<CarouselItem> carouselItems;
+    private static List<SavedSearch> savedSearches;
     private int instanceCount = 11;
     private String name = "Nicola";
 
@@ -63,6 +66,9 @@ public class TestStaticInfoDao {
             carouselItems = new ArrayList<CarouselItem>();
             savedItems = databaseFixture.createSavedItems(name, instanceCount, europeanaIds, users);
             log.info("savedItems 10: " + savedItems.get(10).getAuthor());
+            savedSearches = databaseFixture.createSavedSearch(name, instanceCount, users);
+            log.info("savedSearch 10: " + savedSearches.get(10).getQuery());
+
         }
     }
 
@@ -285,14 +291,22 @@ public class TestStaticInfoDao {
     }
 
 
+    @Test
+    public void addSearchTerm() {
+        log.info("Testing addSearchTerm: ");
+        createCarouselItem();
+        for (int walk = 0; walk < instanceCount; walk++) {
+            Long id = savedSearches.get(walk).getId();
+            SearchTerm searchTerm = staticInfoDao.addSearchTerm(id);
+            assertNotNull(searchTerm);
+            assertEquals(searchTerm.getSavedSearch().getQuery(), savedSearches.get(walk).getQuery());
+        }
+    }
+
+
 // todo: these methods must be tested
 
-//    List<EditorPick> fetchEditorPicksItems();
-//    void removeFromEditorPick(SavedSearch savedSearch);
-//    EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
 //    User removeSearchTerm(User user, Long savedSearchId);
-//    User addEditorPick(User user, EditorPick editorPick);
-//    SearchTerm addSearchTerm(Long savedSearchId);
 //    List<SearchTerm> getAllSearchTerms();
 
 
