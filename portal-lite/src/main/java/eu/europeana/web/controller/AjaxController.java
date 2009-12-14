@@ -1,3 +1,24 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.web.controller;
 
 import eu.europeana.database.StaticInfoDao;
@@ -9,8 +30,8 @@ import eu.europeana.database.domain.SearchTerm;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
 import eu.europeana.database.integration.TagCount;
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.DocType;
-import eu.europeana.query.RequestLogger;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
 import org.apache.log4j.Logger;
@@ -50,7 +71,7 @@ public class AjaxController {
     private StaticInfoDao staticInfoDao;
 
     @Autowired
-    private RequestLogger requestLogger;
+    private ClickStreamLogger clickStreamLogger;
 
     @Autowired
     @Qualifier("emailSenderForSendToFriend")
@@ -81,18 +102,23 @@ public class AjaxController {
         switch (findModifiable(className)) {
             case CAROUSEL_ITEM:
                 user = staticInfoDao.removeCarouselItem(user, id);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
                 user = userDao.removeSavedItem(user, id);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SAVED_ITEM);
                 break;
             case SAVED_SEARCH:
                 user = userDao.removeSavedSearch(user, id);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SAVED_SEARCH);
                 break;
             case SEARCH_TERM:
                 user = staticInfoDao.removeSearchTerm(user, id);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 user = userDao.removeSocialTag(user, id);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SOCIAL_TAG);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -132,6 +158,7 @@ public class AjaxController {
                 if (carouselItem == null) {
                     return false;
                 }
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
@@ -141,6 +168,7 @@ public class AjaxController {
                 savedItem.setLanguage(ControllerUtil.getLocale(request));
                 savedItem.setEuropeanaObject(getStringParameter("europeanaObject", request));
                 user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", request));
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_ITEM);
                 break;
             case SAVED_SEARCH:
                 SavedSearch savedSearch = new SavedSearch();
@@ -148,6 +176,7 @@ public class AjaxController {
                 savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", request), "utf-8"));
                 savedSearch.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSavedSearch(user, savedSearch);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_SEARCH);
                 break;
             case SEARCH_TERM:
                 SearchTerm searchTerm = staticInfoDao.addSearchTerm(Long.valueOf(idString));
@@ -164,6 +193,7 @@ public class AjaxController {
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -199,6 +229,7 @@ public class AjaxController {
         model.put("email", emailAddress);
         String subject = "A link from Europeana"; // replace with injection later
         friendEmailSender.sendEmail(emailAddress, user.getEmail(), subject, model);
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.SEND_EMAIL_TO_FRIEND);
         return true;
     }
 
@@ -218,6 +249,7 @@ public class AjaxController {
         catch (Exception e) {
             handleAjaxException(e, response);
         }
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.TAG_AUTOCOMPLETE);
         return page;
     }
 
@@ -249,10 +281,10 @@ public class AjaxController {
 
 
     private enum Modifiable {
-        SEARCH_TERM(SearchTerm.class),
         CAROUSEL_ITEM(CarouselItem.class),
         SAVED_ITEM(SavedItem.class),
         SAVED_SEARCH(SavedSearch.class),
+        SEARCH_TERM(SearchTerm.class),
         SOCIAL_TAG(SocialTag.class);
 
         private String className;
@@ -296,22 +328,6 @@ public class AjaxController {
             }
         }
         return hasJavascript;
-    }
-
-    public void setFriendEmailSender(EmailSender friendEmailSender) {
-        this.friendEmailSender = friendEmailSender;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
-        this.staticInfoDao = staticInfoDao;
-    }
-
-    public void setRequestLogger(RequestLogger requestLogger) {
-        this.requestLogger = requestLogger;
     }
 
 }

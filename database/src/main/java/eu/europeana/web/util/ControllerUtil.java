@@ -1,3 +1,24 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.web.util;
 
 import eu.europeana.database.domain.Language;
@@ -19,7 +40,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Utility methods for controllers
@@ -41,10 +65,9 @@ public class ControllerUtil {
         }
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDaoDetailsService.UserHolder) {
-            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder)authentication.getPrincipal();
+            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder) authentication.getPrincipal();
             return userHolder.getUser();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -52,7 +75,7 @@ public class ControllerUtil {
     public static void setUser(User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder)authentication.getPrincipal();
+            UserDaoDetailsService.UserHolder userHolder = (UserDaoDetailsService.UserHolder) authentication.getPrincipal();
             userHolder.setUser(user);
         }
     }
@@ -60,7 +83,7 @@ public class ControllerUtil {
     public static String getServletUrl(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
         int index = url.indexOf(request.getServerName());
-        url = url.substring(0,index)+request.getServerName()+":"+request.getServerPort()+request.getContextPath();
+        url = url.substring(0, index) + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         return url;
     }
 
@@ -73,14 +96,13 @@ public class ControllerUtil {
     }
 
     public static int getRows(HttpServletRequest request) {
-        String rowsString = getParameter(request,"rows");
+        String rowsString = getParameter(request, "rows");
         if (rowsString == null) {
-            rowsString = getParameter(request,"maximumRecords");
+            rowsString = getParameter(request, "maximumRecords");
         }
         if (rowsString != null) {
             return Integer.parseInt(rowsString);
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -96,7 +118,7 @@ public class ControllerUtil {
     public static String getExpectedParameter(HttpServletRequest request, String name) {
         String value = getParameter(request, name);
         if (value == null) {
-            throw new IllegalArgumentException("Expected parameter "+name);
+            throw new IllegalArgumentException("Expected parameter " + name);
         }
         return value;
     }
@@ -115,20 +137,21 @@ public class ControllerUtil {
     }
 
     // todo: finish code for prerendering freemarker formatted strings with messageTags
-    public static String getFreemarkerFormattedString (String input) throws IOException {
+
+    public static String getFreemarkerFormattedString(String input) throws IOException {
         Configuration configuration = new Configuration();
-            configuration.setTemplateLoader(new ClassTemplateLoader(FreeMarkerConfigurer.class, ""));
-            Reader reader = new StringReader("<#import \"/spring.ftl\" as spring />" + input);
-            Template template = new Template("staticPageTemplate", reader, configuration, "utf-8");
-            Writer out = new StringWriter();
-            ModelAndView modelAndView = new ModelAndView();
-            try {
-                template.process(modelAndView, out);
-            } catch (TemplateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        configuration.setTemplateLoader(new ClassTemplateLoader(FreeMarkerConfigurer.class, ""));
+        Reader reader = new StringReader("<#import \"/spring.ftl\" as spring />" + input);
+        Template template = new Template("staticPageTemplate", reader, configuration, "utf-8");
+        Writer out = new StringWriter();
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            template.process(modelAndView, out);
+        } catch (TemplateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return out.toString();
     }
 
@@ -142,10 +165,39 @@ public class ControllerUtil {
     /*
      * This creates the default ModelAndView for the portal applications. It should be used in every Controller.
      */
+
     public static ModelAndView createModelAndViewPage(String view) {
         ModelAndView page = new ModelAndView(view);
         User user = ControllerUtil.getUser();
         page.addObject("user", user);
         return page;
     }
+
+    /*
+    * Format full requested uri from HttpServletRequest
+    */
+    public static String formatFullRequestUrl(HttpServletRequest request) {
+        StringBuffer requestURL = request.getRequestURL();
+        if (request.getQueryString() != null) {
+            requestURL.append("?").append(request.getQueryString());
+        } else if (request.getParameterMap() != null) {
+            requestURL.append(formatParameterMapAsQueryString(request.getParameterMap()));
+        }
+        return requestURL.toString();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public static String formatParameterMapAsQueryString(Map parameterMap) {
+        StringBuilder output = new StringBuilder();
+        output.append("?");
+        for (Iterator iterator1 = parameterMap.entrySet().iterator(); iterator1.hasNext();) {
+            Map.Entry<String, String> entry = (Map.Entry<String, String>) iterator1.next();
+            output.append(MessageFormat.format("{0}={1}", entry.getKey(), entry.getValue()));
+            if (iterator1.hasNext()) {
+                output.append("&");
+            }
+        }
+        return output.toString();
+    }
+
 }

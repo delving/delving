@@ -1,22 +1,22 @@
 /*
  * Copyright 2007 EDL FOUNDATION
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * you may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
+ *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
  *
- * http://ec.europa.eu/idabc/eupl
+ *  http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
  */
 
 package eu.europeana.web.util;
@@ -68,7 +68,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             try {
                 Map<String, Object> model = new TreeMap<String, Object>();
                 model.put("hostName", request.getServerName());
-                model.put("request", formatQuerySting(request));
+                model.put("request", ControllerUtil.formatFullRequestUrl(request));
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", config.get("cacheUrl"));
                 String subject = queryProblem.getFragment();
@@ -88,14 +88,6 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);
         return mav;
-    }
-
-    private String formatQuerySting(HttpServletRequest request) {
-        String queryString = request.getRequestURI();
-        if (request.getQueryString() != null) {
-            queryString += "?" + request.getQueryString();
-        }
-        return queryString;
     }
 
     private String getStackTrace(Exception exception) {

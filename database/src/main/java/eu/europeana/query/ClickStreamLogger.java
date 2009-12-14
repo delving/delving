@@ -1,5 +1,27 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.query;
 
+import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.web.util.ResultPagination;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,46 +58,71 @@ import javax.servlet.http.HttpServletResponse;
  *         actions=[languageChange, Result, staticPage, saveItem, saveSearch, SaveTag, register, Error, ReturnResults]
  */
 
-public interface RequestLogger {
+public interface ClickStreamLogger {
 
-    void log(HttpServletRequest request, HttpServletResponse servletResponse, UserActions actions);
+    void log(HttpServletRequest request, HttpServletResponse servletResponse, UserAction action);
 
-    void log(HttpServletRequest request, ModelAndView model, UserActions actions);
+    void log(HttpServletRequest request, UserAction action, ModelAndView model);
 
     void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel,
-             ResultPagination resultPagination, ModelAndView model, UserActions actions);
+             ResultPagination resultPagination, ModelAndView model, UserAction action);
 
-    void log(HttpServletRequest request, UserActions actions);
+    void log(HttpServletRequest request, UserAction action);
+
+    void log(HttpServletRequest request, StaticPageType pageType);
 
     /**
      * Enum for different user actions that can be logged.
      */
-    public enum UserActions {
+    public enum UserAction {
         // todo: add descriptions
+        // language specific actions
         LANGUAGE_CHANGE,
+
+        // search related actions
         BRIEF_RESULT,
+        BRIEF_RESULT_BROWSE,
         FULL_RESULT,
+        MORE_LIKE_THIS,
+        RETURN_TO_RESULTS,
         REDIRECT_OUTLINK,
-        STATICPAGE,
         TIMELINE,
+
+        // ajax related actions
         SAVE_ITEM,
         SAVE_SEARCH,
         SAVE_SOCIAL_TAG,
-        REMOVE_ITEM,
-        REMOVE_SEARCH,
+        SAVE_CAROUSEL_ITEM,
+        SAVE_SEARCH_TERM,
+        REMOVE_SAVED_ITEM,
+        REMOVE_SAVED_SEARCH,
         REMOVE_SOCIAL_TAG,
+        REMOVE_CAROUSEL_ITEM,
+        REMOVE_SEARCH_TERM,
+        SEND_EMAIL_TO_FRIEND,
+        SEND_FEEDBACK,
+        TAG_AUTOCOMPLETE,
+
+        // user management related actions
         REGISTER,
         UNREGISTER,
+        LOGIN,
+        LOGOUT,
+
+        // errors
         ERROR,
-        RETURN_TO_RESULTS,
+        AJAX_ERROR,
+
+        // static pages
+        STATICPAGE,
         INDEXPAGE;
 
         private String description;
 
-        UserActions() {
+        UserAction() {
         }
 
-        UserActions(String description) {
+        UserAction(String description) {
             this.description = description;
         }
     }
