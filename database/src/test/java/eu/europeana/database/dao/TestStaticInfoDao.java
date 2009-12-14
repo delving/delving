@@ -243,7 +243,7 @@ public class TestStaticInfoDao {
         List<CarouselItem> carouselItems = staticInfoDao.fetchCarouselItems();
         assertEquals(carouselItems.size(), instanceCount);
         for (int walk = 0; walk < instanceCount; walk++) {
-            assertTrue(this.carouselItems.get(walk).getTitle().indexOf(name) > 0);
+            assertTrue(carouselItems.get(walk).getTitle().indexOf(name) > 0);
         }
     }
 
@@ -270,17 +270,29 @@ public class TestStaticInfoDao {
     }
 
 
+    @Test
+    public void removeCarouselItemUserSavedItem() {
+        log.info("Testing removeCarouselItemUserSavedItem: ");
+        createCarouselItem();
+        for (int walk = 0; walk < instanceCount; walk++) {
+            Long id = carouselItems.get(walk).getId();
+            SavedItem savedItem = carouselItems.get(walk).getSavedItem();
+            User user = staticInfoDao.removeCarouselItem(savedItem.getUser(), savedItem.getId());
+            assertNotNull(user);
+            assertEquals(user.getLastName(), savedItem.getUser().getLastName());
+            assertNull(databaseFixture.getCarouselItem(id));
+        }
+    }
+
+
 // todo: these methods must be tested
 
-//    List<CarouselItem> fetchCarouselItems();
 //    List<EditorPick> fetchEditorPicksItems();
 //    void removeFromEditorPick(SavedSearch savedSearch);
 //    EditorPick createEditorPick(SavedSearch savedSearch) throws Exception;
-//    User removeCarouselItem(User user, Long savedItemId);
 //    User removeSearchTerm(User user, Long savedSearchId);
 //    User addEditorPick(User user, EditorPick editorPick);
 //    SearchTerm addSearchTerm(Long savedSearchId);
-//    StaticPage fetchStaticPage (Language language, String pageName);
 //    List<SearchTerm> getAllSearchTerms();
 
 

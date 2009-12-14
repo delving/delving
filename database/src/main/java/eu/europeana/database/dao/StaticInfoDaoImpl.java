@@ -24,13 +24,13 @@ package eu.europeana.database.dao;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.*;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -145,8 +145,9 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         // Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
 
         // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
-
-        Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid and :id = id");
+        //  Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid and :id = id");
+        // the previous query was incorrect !! 
+        Query q = entityManager.createQuery("select o from SavedItem as o where o.user.id = :userid and o.id = :id");
         q.setParameter("userid", user.getId());
         q.setParameter("id", savedItemId);
         List results = q.getResultList();
