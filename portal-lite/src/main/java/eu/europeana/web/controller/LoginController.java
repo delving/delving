@@ -1,15 +1,36 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.web.controller;
 
 import eu.europeana.database.UserDao;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.TokenReplyEmailSender;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Where people give us their password
@@ -28,10 +49,12 @@ public class LoginController {
     private UserDao userDao;
 
     @RequestMapping("/login.html")
-    public ModelAndView handle(HttpServletRequest request) throws Exception {
+    public ModelAndView handle(
+            HttpServletRequest request,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "submit_login", required = false) String buttonPressed
+    ) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("login");
-        String email = request.getParameter("email");
-
         boolean failureFormat = false;
         boolean failureExists = false;
         boolean success = false;
@@ -45,7 +68,6 @@ public class LoginController {
 
             String registerUri = request.getRequestURL().toString();
             int lastSlash = registerUri.lastIndexOf("/");
-            String buttonPressed = request.getParameter("submit_login");
 
             //Register
             if ("Register".equals(buttonPressed)) {  //TODO this value is internationalized in the template

@@ -90,7 +90,7 @@ public class AjaxController {
         return createResponsePage(debug, success, exceptionString, response);
     }
 
-    public Boolean processAjaxRemoveRequest(HttpServletRequest request) throws Exception {
+    private Boolean processAjaxRemoveRequest(HttpServletRequest request) throws Exception {
         User user = ControllerUtil.getUser();
         String className = request.getParameter("className");
         String idString = request.getParameter("id");
@@ -141,7 +141,7 @@ public class AjaxController {
         return createResponsePage(debug, success, exceptionString, response);
     }
 
-    public boolean processAjaxSaveRequest(HttpServletRequest request) throws Exception {
+    private boolean processAjaxSaveRequest(HttpServletRequest request) throws Exception {
         User user = ControllerUtil.getUser();
         String className = request.getParameter("className");
         String idString = request.getParameter("id");
@@ -214,7 +214,7 @@ public class AjaxController {
         return createResponsePage(debug, success, exceptionString, response);
     }
 
-     public boolean processSendToAFriendHandler(HttpServletRequest request) throws Exception {
+    private boolean processSendToAFriendHandler(HttpServletRequest request) throws Exception {
         String emailAddress = getStringParameter("email", request);
         if (!ControllerUtil.validEmailAddress(emailAddress)) {
             throw new IllegalArgumentException("Email address invalid: [" + emailAddress + "]");
@@ -234,7 +234,7 @@ public class AjaxController {
     // currently not used. todo: maybe remove later
     @RequestMapping("/tag-autocomplete.ajax")
     public ModelAndView handleTagAutoCompleteRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setContentType("xml");
+        response.setContentType("xml"); // todo: viewResolver should set content type
         String query = request.getParameter("q").toLowerCase();
         if (query == null) {
             query = "";
@@ -261,7 +261,7 @@ public class AjaxController {
 
     private ModelAndView createResponsePage(boolean debug, boolean success, String exceptionString, HttpServletResponse response) {
         ModelAndView page = ControllerUtil.createModelAndViewPage("ajax");
-        response.setContentType("text/xml");
+        response.setContentType("text/xml");  // todo: viewResolver should set content type
         page.addObject("success", String.valueOf(success));
         page.addObject("exception", exceptionString);
         page.addObject("debug", debug);
