@@ -1,7 +1,7 @@
 /*
  * Copyright 2007 EDL FOUNDATION
  *
- *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  Licensed under the EUPL, Version 1.0 or as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -26,43 +26,44 @@ import eu.europeana.database.domain.Token;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * @author vitali
  */
+
+@Controller
+@RequestMapping("/change-password.html")
 public class ChangePasswordController extends SimpleFormController {
     private Logger log = Logger.getLogger(getClass());
 
+    @Autowired
     private UserDao userDao;
+
+    @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    @Qualifier("emailSenderForPasswordChangeNotify")
     private EmailSender notifyEmailSender;
 
     public ChangePasswordController() {
         setValidator(new UserValidator());
-    }
-
-    public void setTokenService(TokenService tokenService) {
-        this.tokenService = tokenService;
-    }
-
-    public void setNotifyEmailSender(EmailSender emailSender) {
-        this.notifyEmailSender = emailSender;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Override
