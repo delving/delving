@@ -28,7 +28,9 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
-            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="eu.europeana.web.controller"/>
 
@@ -86,33 +88,24 @@
 
     <!-- UrlMappings -->
     <!--<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
-        <!--<property name="interceptors">-->
-            <!--<list>-->
-                <!--<ref bean="localeChangeInterceptor"/>-->
-                <!--<ref bean="formatInterceptor"/>-->
-                <!--<ref bean="configInterceptor"/>-->
-            <!--</list>-->
-        <!--</property>-->
-        <!--<property name="alwaysUseFullPath" value="true"/>-->
-        <!--<property name="mappings">-->
-            <!--<props>-->
+    <!--<property name="interceptors">-->
+    <!--<list>-->
+    <!--<ref bean="localeChangeInterceptor"/>-->
+    <!--<ref bean="formatInterceptor"/>-->
+    <!--<ref bean="configInterceptor"/>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--<property name="alwaysUseFullPath" value="true"/>-->
+    <!--<property name="mappings">-->
+    <!--<props>-->
+    <!--&lt;!&ndash;the dynamic controllers&ndash;&gt;-->
+    <!--<prop key="/login.html">loginController</prop>-->
+    <!--<prop key="/register.html">registerController</prop>-->
+    <!--<prop key="/change-password.html">changePasswordController</prop>-->
 
-                <!--&lt;!&ndash;the special brief doc with its different output formats&ndash;&gt;-->
-                <!--&lt;!&ndash;<prop key="/brief-doc.html">briefDocController</prop>&ndash;&gt;-->
-                <!--&lt;!&ndash;<prop key="/brief-doc.rss">briefDocController</prop>&ndash;&gt;-->
-                <!--&lt;!&ndash;<prop key="/brief-doc.rdf">briefDocController</prop>&ndash;&gt;-->
-                <!--&lt;!&ndash;<prop key="/brief-doc.srw">briefDocController</prop>&ndash;&gt;-->
-                <!--&lt;!&ndash;<prop key="/full-doc.html">fullDocController</prop>&ndash;&gt;-->
-
-                <!--&lt;!&ndash;the dynamic controllers&ndash;&gt;-->
-                <!--<prop key="/login.html">loginController</prop>-->
-                <!--<prop key="/register.html">registerController</prop>-->
-                <!--<prop key="/change-password.html">changePasswordController</prop>-->
-
-
-                <!--<prop key="/remember-me-theft.html">rememberMeTheftController</prop>-->
-            <!--</props>-->
-        <!--</property>-->
+    <!--<prop key="/remember-me-theft.html">rememberMeTheftController</prop>-->
+    <!--</props>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <bean id="messageSource" class="eu.europeana.web.util.SwitchableMessageSource">
@@ -137,30 +130,11 @@
 
     <!-- Controllers -->
 
-    <!--<bean id="registerController" class="eu.europeana.web.controller.RegisterController">-->
-        <!--<property name="tokenService" ref="tokenService"/>-->
-        <!--<property name="notifyEmailSender" ref="emailSenderForRegisterNotify"/>-->
-        <!--<property name="userDao" ref="userDao"/>-->
-        <!--<property name="successView" value="register-success"/>-->
-        <!--<property name="formView" value="register"/>-->
-        <!--&lt;!&ndash;<property name="sessionForm" value="true"/>&ndash;&gt;-->
-    <!--</bean>-->
-
-    <!--<bean id="changePasswordController" class="eu.europeana.web.controller.ChangePasswordController">-->
-        <!--<property name="tokenService" ref="tokenService"/>-->
-        <!--<property name="notifyEmailSender" ref="emailSenderForPasswordChangeNotify"/>-->
-        <!--<property name="userDao" ref="userDao"/>-->
-        <!--<property name="successView" value="register-success"/>-->
-        <!--&lt;!&ndash; TODO change-password-success &ndash;&gt;-->
-        <!--<property name="formView" value="change-password"/>-->
-        <!--&lt;!&ndash;<property name="sessionForm" value="true"/>&ndash;&gt;-->
-    <!--</bean>-->
-
     <!--<bean id="contactController" class="eu.europeana.web.controller.ContactController">-->
-        <!--<property name="emailSender" ref="emailSenderForUserFeedback"/>-->
-        <!--<property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>-->
-        <!--<property name="successView" value="contact"/>-->
-        <!--<property name="formView" value="contact"/>-->
+    <!--<property name="emailSender" ref="emailSenderForUserFeedback"/>-->
+    <!--<property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>-->
+    <!--<property name="successView" value="contact"/>-->
+    <!--<property name="formView" value="contact"/>-->
     <!--</bean>-->
 
     <bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">

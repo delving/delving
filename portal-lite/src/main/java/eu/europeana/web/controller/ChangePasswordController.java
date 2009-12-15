@@ -26,31 +26,40 @@ import eu.europeana.database.domain.Token;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
+import javax.validation.Valid;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
+ * This Controller allows people to change their passwords
+ *
  * @author vitali
+ * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 @Controller
 @RequestMapping("/change-password.html")
-public class ChangePasswordController extends SimpleFormController {
+public class ChangePasswordController implements ApplicationContextAware {
     private Logger log = Logger.getLogger(getClass());
+    private ApplicationContext applicationContext;
 
     @Autowired
     private UserDao userDao;
@@ -62,50 +71,40 @@ public class ChangePasswordController extends SimpleFormController {
     @Qualifier("emailSenderForPasswordChangeNotify")
     private EmailSender notifyEmailSender;
 
-    public ChangePasswordController() {
-        setValidator(new UserValidator());
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setValidator(new ChangePasswordFormValidator());
     }
 
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String token = request.getParameter("token");
-        Token rToken = tokenService.getToken(token);
-        if (rToken == null) {
-            return new ModelAndView("token-expired");
+    @RequestMapping(method = RequestMethod.GET)
+    protected String getMethod(@RequestParam("token") String tokenKey, @ModelAttribute("command") ChangePasswordForm form) throws Exception {
+        Token token = tokenService.getToken(tokenKey);
+        if (token == null) {
+            return "token-expired";
         }
-        return super.handleRequestInternal(request, response);
+        form.setToken(token.getToken());
+        form.setEmail(token.getEmail());
+        return "change-password";
     }
 
-    @Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        ChangePasswordForm form = new ChangePasswordForm();
-        if (!isFormSubmission(request)) {
-            String token = request.getParameter("token");
-            Token rToken = tokenService.getToken(token);
-            form.setToken(rToken.getToken());
-            form.setEmail(rToken.getEmail());
+    @RequestMapping(method = RequestMethod.POST)
+    protected String post(@Valid @ModelAttribute("command") ChangePasswordForm form, BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            log.info("The change password form has errors");
+            return "change-password";
         }
-        return form;
-    }
-
-    @Override
-    protected void doSubmitAction(Object o) throws Exception {
-        ChangePasswordForm form = (ChangePasswordForm) o;
         Token token = tokenService.getToken(form.getToken()); //token is validated in handleRequestInternal
         User user = userDao.fetchUserByEmail(token.getEmail()); //don't use email from the form. use token.
         if (user == null) {
             throw new RuntimeException("Expected to find user for "+token.getEmail());
         }
         user.setPassword(form.getPassword());
-
         tokenService.removeToken(token); //remove token. it can not be used any more.
-
         userDao.updateUser(user); //now update the user
 
         //send email notification
-        WebApplicationContext ctx = getWebApplicationContext();
-        Map config = (Map) ctx.getBean("config");
-
+        // todo: this is awkward.. a better solution should be found.  Inject these things?
+        Map config = (Map) applicationContext.getBean("config");
         Map<String, Object> model = new TreeMap<String, Object>();
         model.put("user", user);
         try {
@@ -118,6 +117,11 @@ public class ChangePasswordController extends SimpleFormController {
         catch (Exception e) {
             log.warn("Unable to send email to " + config.get("admin.to"), e);
         }
+        return "register-success"; // todo: strange to go here, isn't it?
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     public static class ChangePasswordForm {
@@ -159,7 +163,7 @@ public class ChangePasswordController extends SimpleFormController {
         }
     }
 
-    public class UserValidator implements Validator {
+    public class ChangePasswordFormValidator implements Validator {
 
         public boolean supports(Class aClass) {
             return ChangePasswordForm.class.equals(aClass);
