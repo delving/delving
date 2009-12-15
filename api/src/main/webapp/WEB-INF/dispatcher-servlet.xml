@@ -26,7 +26,6 @@
     <!-- Interceptors and Resolvers -->
     <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
-        <property name="requestLogger" ref="requestLogger"/>
     </bean>
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
