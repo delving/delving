@@ -191,6 +191,10 @@ public class DatabaseFixture {
         return entityManager.find(SearchTerm.class, id);
     }
 
+    @Transactional
+    public SavedSearch getSavedSearch(Long id) {
+        return entityManager.find(SavedSearch.class, id);
+    }
 
     @Transactional
     public List<SavedSearch> getAllSavedSearch() {
