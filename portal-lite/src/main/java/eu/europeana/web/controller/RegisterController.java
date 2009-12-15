@@ -30,11 +30,9 @@ import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
 import javax.validation.Valid;
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -60,9 +58,14 @@ import java.util.TreeMap;
 
 @Controller
 @RequestMapping("/register.html")
-public class RegisterController implements ApplicationContextAware {
+public class RegisterController {
     private Logger log = Logger.getLogger(getClass());
-    private ApplicationContext applicationContext;
+
+    @Value("#{europeanaProperties['register.to']}")
+    private String registerTo;
+
+    @Value("#{europeanaProperties['system.from']}")
+    private String systemFrom;
 
     @Autowired
     private UserDao userDao;
@@ -82,6 +85,7 @@ public class RegisterController implements ApplicationContextAware {
     @RequestMapping(method = RequestMethod.GET)
     protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm) throws EuropeanaQueryException {
         log.info("Received get request, putting token into registration form model attribute");
+        // todo: when token is null, no useful message appears
         Token token = tokenService.getToken(tokenKey);
         regForm.setToken(token.getToken());
         regForm.setEmail(token.getEmail());
@@ -104,27 +108,19 @@ public class RegisterController implements ApplicationContextAware {
         user.setRole(Role.ROLE_USER);
         tokenService.removeToken(token);    //remove token. it can not be used any more.
         userDao.addUser(user);  //finally save the user.
-
-        //send email notification
-        // todo: this fetching of config is nasty.  can the notifyEmailSender not get these things injected?
-        Map config = (Map) applicationContext.getBean("config");
-        Map<String, Object> model = new TreeMap<String, Object>();
-        model.put("user", user);
-        try {
-            notifyEmailSender.sendEmail(
-                    (String) config.get("register.to"),
-                    (String) config.get("system.from"),
-                    "Somebody Registerd",
-                    model);
-        }
-        catch (Exception e) {
-            log.warn("Unable to send email to " + config.get("register.to"), e);
-        }
+        sendNotificationEmail(user);
         return "register-success";
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    private void sendNotificationEmail(User user) {
+        try {
+            Map<String, Object> model = new TreeMap<String, Object>();
+            model.put("user", user);
+            notifyEmailSender.sendEmail(registerTo, systemFrom, "Somebody Registerd", model);
+        }
+        catch (Exception e) {
+            log.warn("Unable to send email to " + registerTo, e);
+        }
     }
 
     public static class RegistrationForm {

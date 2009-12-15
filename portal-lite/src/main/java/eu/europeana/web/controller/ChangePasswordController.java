@@ -28,11 +28,9 @@ import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
 import javax.validation.Valid;
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -57,9 +55,14 @@ import java.util.TreeMap;
 
 @Controller
 @RequestMapping("/change-password.html")
-public class ChangePasswordController implements ApplicationContextAware {
+public class ChangePasswordController {
     private Logger log = Logger.getLogger(getClass());
-    private ApplicationContext applicationContext;
+
+    @Value("#{europeanaProperties['admin.to']}")
+    private String adminTo;
+
+    @Value("#{europeanaProperties['system.from']}")
+    private String systemFrom;
 
     @Autowired
     private UserDao userDao;
@@ -101,27 +104,19 @@ public class ChangePasswordController implements ApplicationContextAware {
         user.setPassword(form.getPassword());
         tokenService.removeToken(token); //remove token. it can not be used any more.
         userDao.updateUser(user); //now update the user
-
-        //send email notification
-        // todo: this is awkward.. a better solution should be found.  Inject these things?
-        Map config = (Map) applicationContext.getBean("config");
-        Map<String, Object> model = new TreeMap<String, Object>();
-        model.put("user", user);
-        try {
-            notifyEmailSender.sendEmail(
-                    (String) config.get("admin.to"),
-                    (String) config.get("system.from"),
-                    "Password Changed",
-                    model); //TODO subject
-        }
-        catch (Exception e) {
-            log.warn("Unable to send email to " + config.get("admin.to"), e);
-        }
+        sendNotificationEmail(user);
         return "register-success"; // todo: strange to go here, isn't it?
     }
 
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    private void sendNotificationEmail(User user) {
+        try {
+            Map<String, Object> model = new TreeMap<String, Object>();
+            model.put("user", user);
+            notifyEmailSender.sendEmail(adminTo, systemFrom, "Password Changed", model);
+        }
+        catch (Exception e) {
+            log.warn("Unable to send email to " + adminTo, e);
+        }
     }
 
     public static class ChangePasswordForm {
