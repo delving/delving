@@ -40,7 +40,7 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
         >
 
-    <import resource="database-application-context.xml"/>
+    <import resource="classpath:/database-application-context.xml"/>
 
     <!-- JSR-303 support will be detected on classpath and enabled automatically -->
     <!--<mvc:annotation-driven/>-->
