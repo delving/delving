@@ -45,6 +45,8 @@
         <property name="properties" ref="europeanaProperties"/>
     </bean>
 
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+    
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="${db.driverClass}"/>
         <property name="jdbcUrl" value="${db.jdbcUrl}"/>

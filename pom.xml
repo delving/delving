@@ -386,7 +386,7 @@
 
         <jdkLevel>1.6</jdkLevel>
 
-        <spring.version>3.0.0.M3</spring.version>
+        <spring.version>3.0.0.RC3</spring.version>
         <spring.security.version>2.0.3</spring.security.version>
 
         <hibernate.version>3.2.7.ga</hibernate.version>
