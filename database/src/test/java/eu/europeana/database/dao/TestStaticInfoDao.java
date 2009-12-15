@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +44,13 @@ public class TestStaticInfoDao {
     @Autowired
     private DatabaseFixture databaseFixture;
 
+    @PersistenceContext
+    protected EntityManager entityManager;
+
 
     private static List<Partner> partners;
     private static List<Contributor> contributors;
     private static List<SavedItem> savedItems;
-    private static List<EuropeanaId> europeanaIds;
     private static List<CarouselItem> carouselItems;
     private static List<SavedSearch> savedSearches;
     private int instanceCount = 11;
@@ -61,29 +65,26 @@ public class TestStaticInfoDao {
             log.info("Contributor 10: " + contributors.get(10).getOriginalName());
             List<User> users = databaseFixture.createUsers(name, instanceCount);
             log.info("users 10: " + users.get(10).getFirstName());
-            europeanaIds = databaseFixture.createEuropeanaIds(name, instanceCount);
+            List<EuropeanaId> europeanaIds = databaseFixture.createEuropeanaIds(name, instanceCount);
             log.info("europeanaId 10: " + europeanaIds.get(10).getEuropeanaUri());
             carouselItems = new ArrayList<CarouselItem>();
             savedItems = databaseFixture.createSavedItems(name, instanceCount, europeanaIds, users);
             log.info("savedItems 10: " + savedItems.get(10).getAuthor());
             savedSearches = databaseFixture.createSavedSearch(name, instanceCount, users);
             log.info("savedSearch 10: " + savedSearches.get(10).getQuery());
-
         }
     }
 
 
     @Test
     public void getAllPartnerItems() throws Exception {
-
-        String name;
-        boolean found;
+        log.info("Testing getAllPartnerItems: ");
         List<Partner> allPartners = staticInfoDao.getAllPartnerItems();
         assertNotNull(allPartners);
         assertTrue(partners.size() >= instanceCount);
         for (Partner partner : partners) {
-            name = partner.getName();
-            found = false;
+            String name = partner.getName();
+            boolean found = false;
             for (Partner dbPartner : allPartners) {
                 if (dbPartner.getName().equals(name)) {
                     found = true;
@@ -94,20 +95,17 @@ public class TestStaticInfoDao {
                 fail();
             }
         }
-
-
     }
 
     @Test
     public void getAllContributors() {
-        String name;
-        boolean found;
+        log.info("Testing getAllContributors: ");
         List<Contributor> allContributors = staticInfoDao.getAllContributors();
         assertNotNull(allContributors);
         assertTrue(contributors.size() >= instanceCount);
         for (Contributor contributor : contributors) {
-            name = contributor.getOriginalName();
-            found = false;
+            String name = contributor.getOriginalName();
+            boolean found = false;
             for (Contributor dbContributor : allContributors) {
                 if (dbContributor.getOriginalName().equals(name)) {
                     found = true;
@@ -122,14 +120,13 @@ public class TestStaticInfoDao {
 
     @Test
     public void getAllContributorsByIdentifier() {
-        String name;
-        boolean found;
+        log.info("Testing getAllContributorsByIdentifier: ");
         List<Contributor> allContributors = staticInfoDao.getAllContributorsByIdentifier();
         assertNotNull(allContributors);
         assertTrue(contributors.size() >= instanceCount);
         for (Contributor contributor : contributors) {
-            name = contributor.getOriginalName();
-            found = false;
+            String name = contributor.getOriginalName();
+            boolean found = false;
             for (Contributor dbContributor : allContributors) {
                 if (dbContributor.getOriginalName().equals(name)) {
                     found = true;
@@ -144,6 +141,7 @@ public class TestStaticInfoDao {
 
     @Test
     public void saveContributor() {
+        log.info("Testing saveContributor: ");
         String name = "MofidiedName";
         Contributor contributor = contributors.get(10);
         contributor.setOriginalName(name);
@@ -156,6 +154,7 @@ public class TestStaticInfoDao {
 
     @Test
     public void savePartner() {
+        log.info("Testing savePartner: ");
         String name = "MofidiedName";
         Partner partner = partners.get(10);
         partner.setName(name);
@@ -168,6 +167,7 @@ public class TestStaticInfoDao {
 
     @Test
     public void removePartner() {
+        log.info("Testing removePartner: ");
         Long partnerId = partners.get(10).getId();
         assertTrue(staticInfoDao.removePartner(partnerId));
         assertNull(databaseFixture.getPartner(partnerId));
@@ -176,6 +176,7 @@ public class TestStaticInfoDao {
 
     @Test
     public void removeContributor() {
+        log.info("Testing removeContributor: ");
         Long contributorId = contributors.get(10).getId();
         assertTrue(staticInfoDao.removeContributor(contributorId));
         assertNull(databaseFixture.getContributor(contributorId));
@@ -183,11 +184,9 @@ public class TestStaticInfoDao {
 
     @Test
     public void getStaticPage() {
-
-        StaticPage staticPage;
         for (StaticPageType pageType : StaticPageType.values()) {
             for (Language language : languageDao.getActiveLanguages()) {
-                staticPage = staticInfoDao.getStaticPage(pageType, language);
+                StaticPage staticPage = staticInfoDao.getStaticPage(pageType, language);
                 assertNotNull(staticPage);
                 assertEquals(staticPage.getPageType(), pageType);
                 assertEquals(staticPage.getLanguage(), language);
@@ -199,7 +198,7 @@ public class TestStaticInfoDao {
 
     @Test
     public void updateStaticPage() {
-
+        log.info("Testing updateStaticPage: ");
         StaticPage staticPage;
         String newContent = "This is the new page content";
         staticPage = staticInfoDao.getStaticPage(StaticPageType.ABOUT_US, Language.EN);
@@ -208,11 +207,11 @@ public class TestStaticInfoDao {
         assertNotNull(staticPage);
         staticPage = staticInfoDao.getStaticPage(StaticPageType.ABOUT_US, Language.EN);
         assertEquals(staticPage.getContent(), newContent);
-
     }
 
     @Test
     public void setAndGetAllStaticPage() {
+        log.info("Testing setAndGetAllStaticPage: ");
         int pageCount = 0;
         String newContent = "content for ";
         for (StaticPageType pageType : StaticPageType.values()) {
@@ -304,10 +303,42 @@ public class TestStaticInfoDao {
     }
 
 
-// todo: these methods must be tested
+    @Test
+    public void getAllSearchTerms() {
+        log.info("Testing getAllSearchTerms: ");
+        List<SearchTerm> searchTerms = staticInfoDao.getAllSearchTerms();
+        assertNotNull(searchTerms);
+        assertTrue(searchTerms.size() == instanceCount);
+        for (SearchTerm searchTerm : searchTerms) {
+            String query = searchTerm.getSavedSearch().getQuery();
+            boolean found = false;
+            for (SavedSearch savedSearch : savedSearches) {
+                if (savedSearch.getQuery().equals(query)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                fail();
+            }
 
-//    User removeSearchTerm(User user, Long savedSearchId);
-//    List<SearchTerm> getAllSearchTerms();
+        }
+    }
 
+
+    @Test
+    public void removeSearchTerm() {
+        log.info("Testing removeSearchTerm: ");
+        List<SavedSearch> savedSearches = databaseFixture.getAllSavedSearch();
+        for (SavedSearch savedSearch : savedSearches) {
+            Long savedSearchId = savedSearch.getId();
+            Long searchSearchId = savedSearch.getSearchTerm().getId();
+            User user = savedSearch.getUser();
+            user = staticInfoDao.removeSearchTerm(user, savedSearchId);
+            assertNotNull(user);
+            assertEquals(user.getLastName(), savedSearch.getUser().getLastName());
+            assertNull(databaseFixture.getSearchTerm(searchSearchId));
+        }
+    }
 
 }

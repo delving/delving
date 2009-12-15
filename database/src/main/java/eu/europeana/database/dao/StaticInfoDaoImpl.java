@@ -146,7 +146,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
 
         // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
         //  Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid and :id = id");
-        // the previous query was incorrect !! 
+        // the previous query was incorrect Nicola !! 
         Query q = entityManager.createQuery("select o from SavedItem as o where o.user.id = :userid and o.id = :id");
         q.setParameter("userid", user.getId());
         q.setParameter("id", savedItemId);
@@ -179,9 +179,9 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         //Query q = entityManager.createQuery("select o from SavedSearch as o where userid = :userid and :id = id");
 
         // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
+        // the previous query was incorrect   -> Nicola !!
 
-
-        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :userid and :id = id");
+        Query q = entityManager.createQuery("select o from SavedSearch as o where o.user.id = :userid and :id = id");
         q.setParameter("userid", user.getId());
         q.setParameter("id", savedSearchId);
         List results = q.getResultList();

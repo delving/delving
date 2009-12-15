@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -182,6 +183,20 @@ public class DatabaseFixture {
     @Transactional
     public CarouselItem getCarouselItem(Long id) {
         return entityManager.find(CarouselItem.class, id);
+    }
+
+
+    @Transactional
+    public SearchTerm getSearchTerm(Long id) {
+        return entityManager.find(SearchTerm.class, id);
+    }
+
+
+    @Transactional
+    public List<SavedSearch> getAllSavedSearch() {
+        Query query = entityManager.createQuery("select s from SavedSearch s order by s.id ");
+        return (List<SavedSearch>) query.getResultList();
+
     }
 
 
