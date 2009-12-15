@@ -64,12 +64,18 @@ Build and install components in local maven2 repository
 
 Prepare the europeana.properties file
 -------------------------------------------------------
-Make a copy of the europeana.properties.template and rename it europeana.properties. Place this file in the same directory
-where you find this file. Please edit it to make it reflect your system. If you have postgres running on the same machine,
+Make a copy of the europeana.properties.template and rename it europeana.properties. Please edit it to make it reflect your system. If you have postgres running on the same machine,
 then you don't have to change the database settings.
+
 
 !!! If you are running everything locally you will only have to edit the email adresses, imageMagick path and the smtp settings.
 
+Place europeana.properties somewhere. For launching, either 
+
+- Start the JVM with parameter -Deuropeana.properties=/path/to/europeana.properties, or
+- Set the environment variable 'EUROPEANA_PROPERTIES' to /path/to/europeana.properties
+
+Here /path/to/europeana.properties can be absolute or relative.
 
 Setting up your IDE
 ---------------------------------
