@@ -4,10 +4,6 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.springframework.mail.MailPreparationException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessagePreparator;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.BodyPart;
@@ -18,7 +14,17 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.*;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessagePreparator;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,7 +34,6 @@ import java.util.Map;
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Borys Omelayenko
  * @author Lucien van Wouw
- *
  */
 
 public class EmailSender {
@@ -47,18 +52,12 @@ public class EmailSender {
         this.template = templateName;
     }
 
-    public void sendEmail(String toEmail, String fromEmail, String subject, Map<String,Object> model) throws IOException, TemplateException {
-
-        final String toEmailFinal = toEmail;
-        final String fromEmailFinal = fromEmail;
-        final String subjectFinal = subject;
-        final Map<String,Object> modelFinal = model;
-
+    public void sendEmail(final String toEmail, final String fromEmail, final String subject, final Map<String, Object> model) throws IOException, TemplateException {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             public void prepare(MimeMessage mimeMessage) throws MessagingException, IOException {
-                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmailFinal));
-                mimeMessage.setFrom(new InternetAddress(fromEmailFinal));
-                mimeMessage.setSubject(subjectFinal);
+                mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+                mimeMessage.setFrom(new InternetAddress(fromEmail));
+                mimeMessage.setSubject(subject);
 
                 Multipart mp = new MimeMultipart("alternative");
 
@@ -67,20 +66,24 @@ public class EmailSender {
                 Template textTemplate = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
                 final StringWriter textWriter = new StringWriter();
                 try {
-                    textTemplate.process(modelFinal, textWriter);
-                } catch (TemplateException e) {
+                    textTemplate.process(model, textWriter);
+                }
+                catch (TemplateException e) {
                     throw new MailPreparationException("Can't generate text subscription mail", e);
                 }
                 textPart.setDataHandler(new DataHandler(new DataSource() {
                     public InputStream getInputStream() throws IOException {
                         return new ByteArrayInputStream(textWriter.toString().getBytes("utf-8"));
                     }
+
                     public OutputStream getOutputStream() throws IOException {
                         throw new IOException("Read-only data");
                     }
+
                     public String getContentType() {
                         return "text/plain";
                     }
+
                     public String getName() {
                         return "main";
                     }
@@ -93,20 +96,24 @@ public class EmailSender {
                 Template htmlTemplate = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_HTML);
                 final StringWriter htmlWriter = new StringWriter();
                 try {
-                    htmlTemplate.process(modelFinal, htmlWriter);
-                } catch (TemplateException e) {
+                    htmlTemplate.process(model, htmlWriter);
+                }
+                catch (TemplateException e) {
                     throw new MailPreparationException("Can't generate HTML subscription mail", e);
                 }
                 htmlPage.setDataHandler(new DataHandler(new DataSource() {
                     public InputStream getInputStream() throws IOException {
                         return new ByteArrayInputStream(htmlWriter.toString().getBytes("utf-8"));
                     }
+
                     public OutputStream getOutputStream() throws IOException {
                         throw new IOException("Read-only data");
                     }
+
                     public String getContentType() {
                         return "text/html";
                     }
+
                     public String getName() {
                         return "main";
                     }
@@ -122,8 +129,9 @@ public class EmailSender {
 
         try {
             mailSender.send(preparator);
-        } catch (Exception e) {
-            throw new IOException("Unable to send email" + e);
+        }
+        catch (Exception e) {
+            throw new IOException("Unable to send email", e);
         }
         /*
            Multipart mp = new MimeMultipart("alternative");
@@ -187,13 +195,13 @@ public class EmailSender {
            mailSender.send(message);
         */
     }
-  /*
-    private String createEmailText(Map<String,Object> model) throws IOException, TemplateException {
-        StringWriter out = new StringWriter();
-        template.process(model, out);
-        return out.toString();
-    }
-               */
+    /*
+private String createEmailText(Map<String,Object> model) throws IOException, TemplateException {
+StringWriter out = new StringWriter();
+template.process(model, out);
+return out.toString();
+}
+    */
 
     protected Template getResourceTemplate(String fileName) throws IOException {
         return getTemplate(fileName, new InputStreamReader(getClass().getResourceAsStream(fileName)));

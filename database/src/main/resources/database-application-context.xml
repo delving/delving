@@ -46,7 +46,15 @@
     </bean>
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
-    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="webBindingInitializer">
+            <!-- Configures Spring MVC DataBinder instances -->
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="validator" ref="validator"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="${db.driverClass}"/>
         <property name="jdbcUrl" value="${db.jdbcUrl}"/>
@@ -157,6 +165,8 @@
         <entry key="piwik.logUrl" value="${piwik.logUrl}"/>
         <entry key="cacheUrl" value="${cacheUrl}"/>
         <entry key="feedback.to" value="${feedback.to}"/>
+        <entry key="register.to" value="${register.to}"/>
+        <entry key="system.from" value="${system.from}"/>
         <entry key="admin.to" value="${admin.to}"/>
         <entry key="exception.to" value="${exception.to}"/>
         <entry key="feedback.from" value="${feedback.from}"/>

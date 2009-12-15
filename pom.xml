@@ -83,6 +83,7 @@
         <module>api</module>
         <module>bootstrap</module>
         <module>portal-lite</module>
+        <module>portal-full</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
