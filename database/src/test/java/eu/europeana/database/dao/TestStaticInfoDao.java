@@ -54,6 +54,7 @@ public class TestStaticInfoDao {
     private static List<CarouselItem> carouselItems;
     private static List<SavedSearch> savedSearches;
     private static List<User> users;
+    private static List<EuropeanaId> europeanaIds;
     private int instanceCount = 11;
     private String name = "Nicola";
 
@@ -66,10 +67,16 @@ public class TestStaticInfoDao {
         if (users == null) {
             users = databaseFixture.createUsers(name, instanceCount);
             log.info("users " + (instanceCount - 1) + "  " + users.get(instanceCount - 1).getFirstName());
-            List<EuropeanaId> europeanaIds = databaseFixture.createEuropeanaIds(name, instanceCount);
+        }
+        if (europeanaIds == null) {
+            europeanaIds = databaseFixture.createEuropeanaIds(name, instanceCount);
             log.info("europeanaId " + (instanceCount - 1) + "  " + europeanaIds.get(instanceCount - 1).getEuropeanaUri());
+        }
+        if (savedItems == null) {
             savedItems = databaseFixture.createSavedItems(name, instanceCount, europeanaIds, users);
             log.info("savedItems " + (instanceCount - 1) + "  " + savedItems.get(instanceCount - 1).getAuthor());
+        }
+        if (savedSearches == null) {
             savedSearches = databaseFixture.createSavedSearch(name, instanceCount, users);
             log.info("savedSearch " + (instanceCount - 1) + "  " + savedSearches.get(instanceCount - 1).getQuery());
         }
@@ -77,12 +84,12 @@ public class TestStaticInfoDao {
             contributors = databaseFixture.createContributors(name, instanceCount);
             log.info("Contributor " + (instanceCount - 1) + "  " + contributors.get(instanceCount - 1).getOriginalName());
         }
-
     }
 
 
     @Test
-    public void getAllPartnerItems() throws Exception {
+    public void getAllPartnerItems
+            () throws Exception {
         log.info("Testing getAllPartnerItems: ");
         List<Partner> allPartners = staticInfoDao.getAllPartnerItems();
         assertNotNull(allPartners);
@@ -104,7 +111,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void getAllContributors() {
+    public void getAllContributors
+            () {
         log.info("Testing getAllContributors: ");
         List<Contributor> allContributors = staticInfoDao.getAllContributors();
         assertNotNull(allContributors);
@@ -126,7 +134,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void getAllContributorsByIdentifier() {
+    public void getAllContributorsByIdentifier
+            () {
         log.info("Testing getAllContributorsByIdentifier: ");
         List<Contributor> allContributors = staticInfoDao.getAllContributorsByIdentifier();
         assertNotNull(allContributors);
@@ -148,7 +157,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void saveContributor() {
+    public void saveContributor
+            () {
         log.info("Testing saveContributor: ");
         String name = "MofidiedName";
         Contributor contributor = contributors.get(instanceCount - 1);
@@ -162,7 +172,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void savePartner() {
+    public void savePartner
+            () {
         log.info("Testing savePartner: ");
         String name = "MofidiedName";
         Partner partner = partners.get(instanceCount - 1);
@@ -176,7 +187,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void removePartner() {
+    public void removePartner
+            () {
         log.info("Testing removePartner: ");
         for (Partner partner : partners) {
             Long partnerId = partner.getId();
@@ -189,7 +201,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void removeContributor() {
+    public void removeContributor
+            () {
         log.info("Testing removeContributor: ");
         for (Contributor contributor : contributors) {
             Long id = contributor.getId();
@@ -201,21 +214,23 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void getStaticPage() {
+    public void getStaticPage
+            () {
         for (StaticPageType pageType : StaticPageType.values()) {
             for (Language language : languageDao.getActiveLanguages()) {
                 StaticPage staticPage = staticInfoDao.getStaticPage(pageType, language);
                 assertNotNull(staticPage);
                 assertEquals(staticPage.getPageType(), pageType);
                 assertEquals(staticPage.getLanguage(), language);
-                log.info("Testing PageType: " + pageType + "language: " + language);
+                //     log.info("Testing PageType: " + pageType + "language: " + language);
             }
         }
         log.info("getStaticPage Test is OK! ");
     }
 
     @Test
-    public void updateStaticPage() {
+    public void updateStaticPage
+            () {
         log.info("Testing updateStaticPage: ");
         StaticPage staticPage;
         String newContent = "This is the new page content";
@@ -229,7 +244,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void setAndGetAllStaticPage() {
+    public void setAndGetAllStaticPage
+            () {
         log.info("Testing setAndGetAllStaticPage: ");
         int pageCount = 0;
         String newContent = "content for ";
@@ -250,7 +266,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void createCarouselItem() {
+    public void createCarouselItem
+            () {
         if (carouselItems == null) {
             carouselItems = new ArrayList<CarouselItem>();
             log.info("Testing createCarouselItem: ");
@@ -266,7 +283,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void fetchCarouselItems() {
+    public void fetchCarouselItems
+            () {
         log.info("Testing fetchCarouselItems: ");
         List<CarouselItem> carouselItems = staticInfoDao.fetchCarouselItems();
         assertEquals(carouselItems.size(), instanceCount);
@@ -277,7 +295,8 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void removeCarouselItem() {
+    public void removeCarouselItem
+            () {
         log.info("Testing removeCarouselItem: ");
         if (carouselItems == null) {
             createCarouselItem();
@@ -294,7 +313,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void removeFromCarousel() {
+    public void removeFromCarousel
+            () {
         log.info("Testing removeFromCarousel: ");
         if (carouselItems == null) {
             createCarouselItem();
@@ -311,7 +331,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void removeCarouselItemUserSavedItem() {
+    public void removeCarouselItemUserSavedItem
+            () {
         log.info("Testing removeCarouselItemUserSavedItem: ");
         if (carouselItems == null) {
             createCarouselItem();
@@ -331,7 +352,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void addSearchTerm() {
+    public void addSearchTerm
+            () {
         log.info("Testing addSearchTerm: ");
         createCarouselItem();
         for (int walk = 0; walk < instanceCount; walk++) {
@@ -345,7 +367,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void getAllSearchTerms() {
+    public void getAllSearchTerms
+            () {
         log.info("Testing getAllSearchTerms: ");
         List<SearchTerm> searchTerms = staticInfoDao.getAllSearchTerms();
         assertNotNull(searchTerms);
@@ -369,7 +392,8 @@ public class TestStaticInfoDao {
 
 
     @Test
-    public void removeSearchTerm() {
+    public void removeSearchTerm
+            () {
         log.info("Testing removeSearchTerm: ");
         List<SavedSearch> searches = databaseFixture.getAllSavedSearch();
         for (SavedSearch savedSearch : searches) {

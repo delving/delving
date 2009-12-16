@@ -40,6 +40,7 @@ public class DatabaseFixture {
             entityManager.persist(user);
             users.add(user);
         }
+        entityManager.flush();
         return users;
     }
 
@@ -54,6 +55,14 @@ public class DatabaseFixture {
             EuropeanaId id = new EuropeanaId(collection);
             id.setCreated(new Date());
             id.setEuropeanaUri("http://europeana.uri.pretend/item" + walk);
+            id.setBoostFactor(Float.valueOf("0.5"));
+            id.setTimesViewed(0);
+            id.setCarouselItems(null);
+            id.setEuropeanaObjects(null);
+            id.setLastModified(new Date());
+            id.setLastViewed(new Date());
+            id.setOrphan(false);
+            id.setSocialTags(null);
             entityManager.persist(id);
             ids.add(id);
         }
