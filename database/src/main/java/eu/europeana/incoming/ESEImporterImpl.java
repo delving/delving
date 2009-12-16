@@ -42,6 +42,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -70,9 +71,9 @@ public class ESEImporterImpl implements ESEImporter {
     private static final DecimalFormat COUNT_FORMAT = new DecimalFormat("000000000");
     private static final String ESE_SCHEMA = "ESE-V3.2.xsd";
     private Logger log = Logger.getLogger(getClass());
-    private SolrIndexer solrIndexer;
-    private ImportRepository importRepository;
     private DashboardDao dashboardDao;
+    private ImportRepository importRepository;
+    private SolrIndexer solrIndexer;
     private boolean normalized;
     private boolean commitImmediately;
     private int chunkSize = 1000;
@@ -86,16 +87,19 @@ public class ESEImporterImpl implements ESEImporter {
         void start();
     }
 
-    public void setImportRepository(ImportRepository importRepository) {
-        this.importRepository = importRepository;
-    }
-
+    @Autowired
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
     }
 
+    @Autowired
     public void setSolrIndexer(SolrIndexer solrIndexer) {
         this.solrIndexer = solrIndexer;
+    }
+
+    // npot @Autowired because there are multiple
+    public void setImportRepository(ImportRepository importRepository) {
+        this.importRepository = importRepository;
     }
 
     public void setChunkSize(int chunkSize) {
@@ -138,7 +142,6 @@ public class ESEImporterImpl implements ESEImporter {
                     return processor.getFile();
                 }
             }
-            ;
             ImportProcessor importProcessor = new ImportProcessor(importingFile, dashboardDao.prepareForImport(collectionId));
             processors.add(importProcessor);
             importProcessor.start();

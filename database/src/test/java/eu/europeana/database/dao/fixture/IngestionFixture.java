@@ -135,7 +135,7 @@ public class IngestionFixture {
             solrIndexer.setHttpClient(httpClient);
             solrIndexer.setTargetUrl(SOLR_UPDATE_URL);
             solrIndexer.setQueryModelFactory(getQueryModelFactory());
-            solrIndexer.setChunkSize(10);
+            solrIndexer.setChunkSize("10");
         }
         return solrIndexer;
     }
@@ -146,7 +146,9 @@ public class IngestionFixture {
                 delete(sub);
             }
         }
-        file.delete();
+        if (!file.delete()) {
+            log.info("Unable to delete "+file.getAbsolutePath());
+        }
     }
 
     private File findSolrData() {

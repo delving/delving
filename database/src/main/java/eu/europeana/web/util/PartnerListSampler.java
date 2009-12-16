@@ -24,6 +24,7 @@ package eu.europeana.web.util;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Contributor;
 import eu.europeana.database.domain.Partner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +36,11 @@ import java.util.List;
  */
 
 public class PartnerListSampler {
-    private StaticInfoDao staticInfoDao;
     private List<Partner> partnerCache = new ArrayList<Partner>();
     private List<Contributor> contributorCache = new ArrayList<Contributor>();
 
-    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
-        this.staticInfoDao = staticInfoDao;
-    }
+    @Autowired
+    private StaticInfoDao staticInfoDao;
 
     public List<Partner> getPartnerCache() {
         return partnerCache;

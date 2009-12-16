@@ -27,6 +27,7 @@ import eu.europeana.database.domain.CacheState;
 import eu.europeana.database.domain.CacheingQueueEntry;
 import eu.europeana.database.domain.EuropeanaObject;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,17 +41,13 @@ import java.util.concurrent.Executors;
 public class CacheBuilder implements Runnable {
     private Logger log = Logger.getLogger(getClass());
     private int chunkSize = 10;
-    private DashboardDao dashboardDao;
-    private DigitalObjectCache digitalObjectCache;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
-    }
+    @Autowired
+    private DashboardDao dashboardDao;
 
-    public void setDigitalObjectCache(DigitalObjectCache digitalObjectCache) {
-        this.digitalObjectCache = digitalObjectCache;
-    }
+    @Autowired
+    private DigitalObjectCache digitalObjectCache;
 
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;

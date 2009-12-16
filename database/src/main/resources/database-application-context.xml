@@ -40,7 +40,26 @@
 
     <context:annotation-config/>
 
+    <tx:annotation-driven proxy-target-class="true"/>
+
+    <!--todo: is this bean necessary?-->
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+    <security:authentication-provider user-service-ref="daoUserDetailsService">
+        <security:password-encoder hash="sha"/>
+    </security:authentication-provider>
+
+    <security:http auto-config="true" create-session="never">
+        <security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
+        <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
+        <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
+        <security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
+        <security:logout logout-url="/logout.html"/>
+        <security:remember-me token-repository-ref="tokenRepositoryService"/>
+    </security:http>
+
     <bean id="europeanaProperties" class="eu.europeana.query.EuropeanaProperties"/>
+    
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" ref="europeanaProperties"/>
     </bean>
@@ -52,28 +71,25 @@
         <property name="password" value="#{europeanaProperties['db.password']}"/>
     </bean>
 
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
-
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
-
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-        <property name="webBindingInitializer">
-            <!-- Configures Spring MVC DataBinder instances -->
-            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-                <property name="validator" ref="validator"/>
-            </bean>
-        </property>
-    </bean>
-
-    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-        <property name="showSql" value="false"/>
-        <property name="generateDdl" value="true"/>
-    </bean>
+    <!--todo: these declarations are related to using annotation-based validation-->
+    <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
+    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
+        <!--<property name="webBindingInitializer">-->
+            <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
+                <!--<property name="validator" ref="validator"/>-->
+            <!--</bean>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceXmlLocation" value="classpath:/db/persistence.xml"/>
         <property name="dataSource" ref="dataSource"/>
-        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="showSql" value="false"/>
+                <property name="generateDdl" value="true"/>
+            </bean>
+        </property>
     </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -89,30 +105,31 @@
 
     <bean name="languageDao" class="eu.europeana.database.dao.LanguageDaoImpl"/>
 
-    <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
+    <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
 
-    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
-        <property name="maxTotalConnections" value="512"/>
-        <property name="defaultMaxConnectionsPerHost" value="64"/>
-    </bean>
+    <bean name="tokenDao" class="eu.europeana.database.dao.TokenDaoImpl"/>
+
+    <bean name="tokenService" class="eu.europeana.web.util.TokenService"/>
 
     <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
         <constructor-arg>
             <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
-                <property name="params" ref="connectionManagerParams"/>
+                <property name="params">
+                    <bean class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+                        <property name="maxTotalConnections" value="512"/>
+                        <property name="defaultMaxConnectionsPerHost" value="64"/>
+                    </bean>
+                </property>
             </bean>
         </constructor-arg>
     </bean>
-
 
     <bean id="normalizedImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="#{europeanaProperties['dashboard.normalized.import.repository']}"/>
     </bean>
 
     <bean id="normalizedEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
-        <property name="dashboardDao" ref="dashboardDao"/>
         <property name="importRepository" ref="normalizedImportRepository"/>
-        <property name="solrIndexer" ref="solrIndexer"/>
         <property name="normalized" value="true"/>
     </bean>
 
@@ -123,21 +140,16 @@
 
     <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
         <property name="baseUrl" value="#{europeanaProperties['solr.selectUrl']}"/>
-        <property name="httpClient" ref="httpClient"/>
     </bean>
 
     <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">
-        <property name="dashboardDao" ref="dashboardDao"/>
-        <property name="httpClient" ref="httpClient"/>
         <property name="targetUrl" value="#{europeanaProperties['solr.updateUrl']}"/>
-        <property name="queryModelFactory" ref="queryModelFactory"/>
         <property name="chunkSize" value="#{europeanaProperties['solr.chunkSize']}"/>
+        <property name="queryModelFactory" ref="queryModelFactory"/>
     </bean>
 
     <bean id="databaseCacheMaintainer" class="eu.europeana.incoming.CacheBuilder">
         <property name="chunkSize" value="30"/>
-        <property name="dashboardDao" ref="dashboardDao"/>
-        <property name="digitalObjectCache" ref="digitalObjectCache"/>
     </bean>
 
     <bean id="digitalObjectCache" class="eu.europeana.cache.DigitalObjectCacheImpl">
@@ -145,61 +157,17 @@
         <property name="root" value="#{europeanaProperties['cache.cacheRoot']}"/>
     </bean>
 
-    <!-- Annotation based controller Support -->
-    <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>-->
-    <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>-->
-    <!-- Scan package for Controller Annotated Classes -->
-    <!--<context:component-scan base-package="eu.europeana.web.controller"/>-->
-
-    <!-- Freemarker Template config -->
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPath" value="#{europeanaProperties['template.path']}"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.web.util.ClickStreamLoggerImpl"/>
 
-    <context:annotation-config/>
-
-    <!-- Take care of environment specific settings -->
-    <util:map id="config">
-        <entry key="piwik.jsUrl" value="#{europeanaProperties['piwik.jsUrl']}"/>
-        <entry key="piwik.logUrl" value="#{europeanaProperties['piwik.logUrl']}"/>
-        <entry key="cacheUrl" value="#{europeanaProperties['cacheUrl']}"/>
-        <entry key="feedback.to" value="#{europeanaProperties['feedback.to']}"/>
-        <entry key="admin.to" value="#{europeanaProperties['admin.to']}"/>
-        <entry key="exception.to" value="#{europeanaProperties['exception.to']}"/>
-        <entry key="feedback.from" value="#{europeanaProperties['feedback.from']}"/>
-        <entry key="debug" value="#{europeanaProperties['debug']}"/>
-        <entry key="piwik.enabled" value="#{europeanaProperties['piwik.enabled']}"/>
-        <entry key="message.static_pages" value="#{europeanaProperties['message.static_pages']}"/>
-        <entry key="message.network" value="#{europeanaProperties['message.network']}"/>
-        <entry key="displayPageUrl" value="#{europeanaProperties['displayPageUrl']}"/>
-        <entry key="resolverUrlPrefixe" value="#{europeanaProperties['resolverUrlPrefix']}"/>
-    </util:map>
-
-    <!-- normal config -->
-    <security:http auto-config="true" create-session="never">
-
-        <security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
-        <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
-        <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
-
-        <security:form-login login-page="/login.html"
-                             authentication-failure-url="/login.html?error=1"/>
-
-        <security:logout logout-url="/logout.html"/>
-        <security:remember-me token-repository-ref="tokenRepositoryService"/>
-
-    </security:http>
-
-
-    <!-- beans -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="#{europeanaProperties['smtp.host']}"/>
         <property name="username" value="#{europeanaProperties['smtp.username']}"/>
         <property name="password" value="#{europeanaProperties['smtp.password']}"/>
     </bean>
-
 
     <bean id="daoUserDetailsService" class="eu.europeana.web.util.UserDaoDetailsService">
         <property name="userDao" ref="userDao"/>
@@ -207,57 +175,35 @@
 
     <bean id="proposedSearchTermSampler" class="eu.europeana.web.util.ProposedSearchTermSampler">
         <property name="displayCount" value="3"/>
-        <property name="staticInfoDao" ref="staticInfoDao"/>
     </bean>
 
     <bean id="carouselItemSampler" class="eu.europeana.web.util.CarouselItemSampler">
-        <property name="staticInfoDao" ref="staticInfoDao"/>
         <property name="displayCount" value="40"/>
     </bean>
 
-    <bean id="partnerListSampler" class="eu.europeana.web.util.PartnerListSampler">
-        <property name="staticInfoDao" ref="staticInfoDao"/>
-    </bean>
+    <bean id="partnerListSampler" class="eu.europeana.web.util.PartnerListSampler"/>
 
-    <security:authentication-provider user-service-ref="daoUserDetailsService">
-        <security:password-encoder hash="sha"/>
-    </security:authentication-provider>
-
-    <tx:annotation-driven proxy-target-class="true"/>
-
-    <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
-    <bean name="tokenDao" class="eu.europeana.database.dao.TokenDaoImpl"/>
-
-    <bean name="tokenService" class="eu.europeana.web.util.TokenService"/>
-
-    <!-- Email Senders -->
     <bean id="emailSenderForExceptions" class="eu.europeana.web.util.EmailSender">
-        <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/exception"/>
     </bean>
 
     <bean id="emailSenderForRegisterNotify" class="eu.europeana.web.util.EmailSender">
-        <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/register-notify"/>
     </bean>
 
     <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.web.util.EmailSender">
-        <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/password-change-notify"/>
     </bean>
 
     <bean id="emailSenderForSendToFriend" class="eu.europeana.web.util.EmailSender">
-        <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/to-friend"/>
     </bean>
 
     <bean id="emailSenderForUserFeedback" class="eu.europeana.web.util.EmailSender">
-        <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/feedback"/>
     </bean>
 
     <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.web.util.EmailSender">
-        <property name="mailSender" ref="mailSender"/>
         <property name="template" value="/email/feedback-confirmation"/>
     </bean>
 
@@ -303,38 +249,19 @@
             <map>
                 <entry key="register">
                     <bean class="eu.europeana.web.util.EmailSender">
-                        <property name="mailSender" ref="mailSender"/>
                         <property name="template" value="/email/confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
                     <bean class="eu.europeana.web.util.EmailSender">
-                        <property name="mailSender" ref="mailSender"/>
                         <property name="template" value="/email/forgot-password"/>
                     </bean>
                 </entry>
             </map>
         </property>
-        <property name="tokenService" ref="tokenService"/>
-        <property name="from" value="#{europeanaProperties['system.from']}"/>
     </bean>
 
-    <bean id="messageSourceChoice" class="java.lang.String">
-        <constructor-arg value="#{europeanaProperties['message.source']}"/>
-    </bean>
+    <bean id="exceptionResolver" class="eu.europeana.web.util.ExceptionResolver"/>
 
-    <bean id="displayPageUrl" class="java.lang.String">
-        <constructor-arg value="#{europeanaProperties['displayPageUrl']}"/>
-    </bean>
-
-    <bean id="resolverUrlPrefix" class="java.lang.String">
-        <constructor-arg value="#{europeanaProperties['resolverUrlPrefix']}"/>
-    </bean>
-
-    <bean id="exceptionResolver" class="eu.europeana.web.util.ExceptionResolver">
-        <property name="emailSender" ref="emailSenderForExceptions"/>
-        <property name="emailFrom" value="#{europeanaProperties['system.from']}"/>
-        <property name="targetEmailAddress" value="#{europeanaProperties['exception.to']}"/>
-    </bean>
 </beans>
 

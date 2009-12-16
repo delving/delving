@@ -14,6 +14,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -37,13 +38,12 @@ import java.util.Map;
  */
 
 public class EmailSender {
-
     private static final String TEMPLATE_NAME_AFFIX_TEXT = ".txt.ftl";
     private static final String TEMPLATE_NAME_AFFIX_HTML = ".html.ftl";
-
     private JavaMailSender mailSender;
     private String template;
 
+    @Autowired
     public void setMailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }

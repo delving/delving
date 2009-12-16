@@ -2,6 +2,7 @@ package eu.europeana.web.util;
 
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.CarouselItem;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,17 +15,15 @@ import java.util.List;
  */
 
 public class CarouselItemSampler {
-    private StaticInfoDao staticInfoDao;
     private int displayCount = 3;
     private List<CarouselItem> cache = new ArrayList<CarouselItem>();
-
-    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
-        this.staticInfoDao = staticInfoDao;
-    }
 
     public void setDisplayCount(int displayCount) {
         this.displayCount = displayCount;
     }
+
+    @Autowired
+    private StaticInfoDao staticInfoDao;
 
     void setCache(List<CarouselItem> cache) {
         this.cache = cache;

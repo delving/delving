@@ -86,7 +86,7 @@
                 </entry>
             </util:map>
         </property>
-        <property name="choice" ref="messageSourceChoice"/>
+        <property name="choice" value="#{europeanaProperties['message.source']}"/>
     </bean>
 
     <!-- Controllers -->

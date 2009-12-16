@@ -23,13 +23,15 @@ package eu.europeana.web.util;
 
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
@@ -43,9 +45,9 @@ import java.util.TreeMap;
 
 public class ExceptionResolver implements HandlerExceptionResolver {
     private Logger log = Logger.getLogger(getClass());
+    @Autowired
+    @Qualifier("emailSenderForExceptions")
     private EmailSender emailSender;
-    private String targetEmailAddress;
-    private String emailFrom;
 
     @Value("#{europeanaProperties['cacheUrl']}")
     private String cacheUrl;
@@ -53,13 +55,14 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{europeanaProperties['debug']}")
     private String debug;
 
+    @Value("#{europeanaProperties['exception.to']}")
+    private String emailFrom;
+
+    @Value("#{europeanaProperties['exception.to']}")
+    private String targetEmailAddress;
 
     public void setEmailSender(EmailSender emailSender) {
         this.emailSender = emailSender;
-    }
-
-    public void setTargetEmailAddress(String targetEmailAddress) {
-        this.targetEmailAddress = targetEmailAddress;
     }
 
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
@@ -102,9 +105,5 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);
         return stringWriter.toString();
-    }
-
-    public void setEmailFrom(String emailFrom) {
-        this.emailFrom = emailFrom;
     }
 }

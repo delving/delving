@@ -27,15 +27,16 @@ import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.query.*;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -49,19 +50,26 @@ import java.util.List;
  */
 
 public class SolrIndexerImpl implements SolrIndexer {
-    protected Logger log = Logger.getLogger(getClass());
+    private Logger log = Logger.getLogger(getClass());
     private XMLOutputFactory outFactory = new WstxOutputFactory();
-    private HttpClient httpClient;
-    protected DashboardDao dashboardDao;
     private QueryModelFactory queryModelFactory;
+    private DashboardDao dashboardDao;
+    private HttpClient httpClient;
     private String targetUrl;
     protected int chunkSize = 100;
     boolean httpError;
 
+    // not @Autowired because there are multiple
     public void setQueryModelFactory(QueryModelFactory queryModelFactory) {
         this.queryModelFactory = queryModelFactory;
     }
 
+    @Autowired
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    @Autowired
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
     }
@@ -70,12 +78,8 @@ public class SolrIndexerImpl implements SolrIndexer {
         this.targetUrl = targetUrl;
     }
 
-    public void setHttpClient(HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
-    public void setChunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
+    public void setChunkSize(String chunkSize) {
+        this.chunkSize = Integer.parseInt(chunkSize);
     }
 
     public boolean indexRecordList(List<Record> recordList) {

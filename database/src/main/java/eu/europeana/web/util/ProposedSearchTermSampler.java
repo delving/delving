@@ -3,6 +3,7 @@ package eu.europeana.web.util;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.SearchTerm;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,13 +18,11 @@ import java.util.Map;
  */
 
 public class ProposedSearchTermSampler {
-    private StaticInfoDao staticInfoDao;
     private int displayCount = 3;
     private Map<Language, List<SearchTerm>> cache = new HashMap<Language, List<SearchTerm>>();
 
-    public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
-        this.staticInfoDao = staticInfoDao;
-    }
+    @Autowired
+    private StaticInfoDao staticInfoDao;
 
     public void setDisplayCount(int displayCount) {
         this.displayCount = displayCount;
