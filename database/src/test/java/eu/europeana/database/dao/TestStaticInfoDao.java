@@ -63,9 +63,6 @@ public class TestStaticInfoDao {
             partners = databaseFixture.createPartners(name, instanceCount);
             log.info("Partner " + (instanceCount - 1) + "  " + partners.get(instanceCount - 1).getName());
         }
-        /*if (carouselItems == null) {
-            carouselItems = new ArrayList<CarouselItem>();           
-        }*/
         if (users == null) {
             users = databaseFixture.createUsers(name, instanceCount);
             log.info("users " + (instanceCount - 1) + "  " + users.get(instanceCount - 1).getFirstName());
@@ -103,6 +100,7 @@ public class TestStaticInfoDao {
                 fail();
             }
         }
+        log.info("getAllPartnerItems Test is OK! ");
     }
 
     @Test
@@ -124,6 +122,7 @@ public class TestStaticInfoDao {
                 fail();
             }
         }
+        log.info("getAllContributors Test is OK! ");
     }
 
     @Test
@@ -145,6 +144,7 @@ public class TestStaticInfoDao {
                 fail();
             }
         }
+        log.info("getAllContributorsByIdentifier Test is OK! ");
     }
 
     @Test
@@ -158,6 +158,7 @@ public class TestStaticInfoDao {
         assertEquals(contributor.getId(), modifiedContributor.getId());
         assertEquals(contributor.getOriginalName(), modifiedContributor.getOriginalName());
         assertEquals(name, databaseFixture.getContributor(modifiedContributor.getId()).getOriginalName());
+        log.info("saveContributor Test is OK! ");
     }
 
     @Test
@@ -171,6 +172,7 @@ public class TestStaticInfoDao {
         assertEquals(partner.getId(), modifiedPartner.getId());
         assertEquals(partner.getName(), modifiedPartner.getName());
         assertEquals(name, databaseFixture.getPartner(modifiedPartner.getId()).getName());
+        log.info("savePartner Test is OK! ");
     }
 
     @Test
@@ -182,6 +184,7 @@ public class TestStaticInfoDao {
             assertNull(databaseFixture.getPartner(partnerId));
         }
         partners = null;
+        log.info("removePartner Test is OK! ");
     }
 
 
@@ -194,6 +197,7 @@ public class TestStaticInfoDao {
             assertNull(databaseFixture.getContributor(id));
         }
         contributors = null;
+        log.info("removeContributor Test is OK! ");
     }
 
     @Test
@@ -207,7 +211,7 @@ public class TestStaticInfoDao {
                 log.info("Testing PageType: " + pageType + "language: " + language);
             }
         }
-
+        log.info("getStaticPage Test is OK! ");
     }
 
     @Test
@@ -221,6 +225,7 @@ public class TestStaticInfoDao {
         assertNotNull(staticPage);
         staticPage = staticInfoDao.getStaticPage(StaticPageType.ABOUT_US, Language.EN);
         assertEquals(staticPage.getContent(), newContent);
+        log.info("updateStaticPage Test is OK! ");
     }
 
     @Test
@@ -241,6 +246,7 @@ public class TestStaticInfoDao {
             assertEquals(staticPage.getContent().substring(0, newContent.length()), newContent);
             log.info("Static Page: " + staticPage.getPageType() + " " + staticPage.getContent());
         }
+        log.info("setAndGetAllStaticPage Test is OK! ");
     }
 
     @Test
@@ -254,6 +260,7 @@ public class TestStaticInfoDao {
                 carouselItems.add(carouselItem);
             }
             assertEquals(carouselItems.size(), instanceCount);
+            log.info("createCarouselItem Test is OK! ");
         }
     }
 
@@ -266,6 +273,7 @@ public class TestStaticInfoDao {
         for (int walk = 0; walk < instanceCount; walk++) {
             assertTrue(carouselItems.get(walk).getTitle().indexOf(name) > 0);
         }
+        log.info("fetchCarouselItems Test is OK! ");
     }
 
     @Test
@@ -281,10 +289,11 @@ public class TestStaticInfoDao {
             assertNull(databaseFixture.getCarouselItem(id));
         }
         carouselItems = null;
+        log.info("removeCarouselItem Test is OK! ");
     }
 
 
-    // @Test
+    @Test
     public void removeFromCarousel() {
         log.info("Testing removeFromCarousel: ");
         if (carouselItems == null) {
@@ -292,10 +301,12 @@ public class TestStaticInfoDao {
         }
         for (int walk = 0; walk < instanceCount; walk++) {
             Long id = carouselItems.get(walk).getId();
+            savedItems.get(walk).setCarouselItem(carouselItems.get(walk));
             staticInfoDao.removeFromCarousel(savedItems.get(walk));
             assertNull(databaseFixture.getCarouselItem(id));
         }
         carouselItems = null;
+        log.info("removeFromCarousel Test is OK! ");
     }
 
 
@@ -314,6 +325,8 @@ public class TestStaticInfoDao {
             assertNull(databaseFixture.getCarouselItem(id));
         }
         carouselItems = null;
+        log.info("removeCarouselItemUserSavedItem Test is OK! ");
+
     }
 
 
@@ -327,6 +340,7 @@ public class TestStaticInfoDao {
             assertNotNull(searchTerm);
             assertEquals(searchTerm.getSavedSearch().getQuery(), savedSearches.get(walk).getQuery());
         }
+        log.info("addSearchTerm Test is OK! ");
     }
 
 
@@ -350,14 +364,15 @@ public class TestStaticInfoDao {
             }
 
         }
+        log.info("getAllSearchTerms Test is OK! ");
     }
 
 
     @Test
     public void removeSearchTerm() {
         log.info("Testing removeSearchTerm: ");
-        List<SavedSearch> savedSearches = databaseFixture.getAllSavedSearch();
-        for (SavedSearch savedSearch : savedSearches) {
+        List<SavedSearch> searches = databaseFixture.getAllSavedSearch();
+        for (SavedSearch savedSearch : searches) {
             Long savedSearchId = savedSearch.getId();
             Long searchSearchId = savedSearch.getSearchTerm().getId();
             User user = savedSearch.getUser();
@@ -366,9 +381,8 @@ public class TestStaticInfoDao {
             assertEquals(user.getLastName(), savedSearch.getUser().getLastName());
             assertNull(databaseFixture.getSearchTerm(searchSearchId));
         }
-        this.savedSearches = databaseFixture.createSavedSearch(this.name, instanceCount, users);
-        //removeCarouselItem();
+        savedSearches = databaseFixture.createSavedSearch(this.name, instanceCount, users);
         addSearchTerm();
+        log.info("removeSearchTerm Test is OK! ");
     }
-
 }
