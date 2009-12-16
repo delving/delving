@@ -24,95 +24,99 @@ package eu.europeana.web.controller;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * @author Eric van der Meulen <eric.meulen@gmail.com>, vitali
+ * This controller handles the contact information
+ *
+ * @author Eric van der Meulen <eric.meulen@gmail.com>
+ * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-//@Controller
+@Controller
+@RequestMapping("/contact.html")
 public class ContactController {
 
     @Autowired
     @Qualifier("emailSenderForUserFeedback")
-    private EmailSender emailSender;
+    private EmailSender userFeedbackSender;
 
     @Autowired
     @Qualifier("emailSenderForUserFeedbackConfirmation")
-    private EmailSender feedbackConfirmationEmailSender;
+    private EmailSender userFeedbackConfirmSender;
 
-    @Autowired
-    @Qualifier("config")
-    private Map<String, String> config;
+    @Value("#{europeanaProperties['feedback.to']}")
+    private String feedbackTo;
 
-    @ModelAttribute("contactForm")
-    protected ContactForm formBackingObject(HttpServletRequest request) throws Exception {
+    @Value("#{europeanaProperties['feedback.from']}")
+    private String feedbackFrom;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setValidator(new ContactFormValidator());
+    }
+
+    @ModelAttribute("command")
+    public ContactForm createContactForm() {
         ContactForm form = new ContactForm();
-        if (!isFormSubmission(request)) {
-            User user = ControllerUtil.getUser();
-            if (user != null) {
-                form.setEmail(user.getEmail());
-            }
+        User user = ControllerUtil.getUser();
+        if (user != null) {
+            form.setEmail(user.getEmail());
         }
         return form;
     }
 
-    private boolean isFormSubmission(HttpServletRequest request) {
-        return "POST".equals(request.getMethod());
+    @ModelAttribute("user")
+    public User fetchUser() {
+        return ControllerUtil.getUser();
     }
 
-    @RequestMapping(value = "/contact.html", method=RequestMethod.GET)
-    public ModelAndView handleGet(HttpServletRequest request) throws Exception {
-        return ControllerUtil.createModelAndViewPage("contact");
+    @RequestMapping(method = RequestMethod.GET)
+    public String handleGet() {
+        return "contact";
     }
 
-    @RequestMapping(value = "/contact.html", method=RequestMethod.POST)
-    protected ModelAndView submit(@ModelAttribute("contactForm") @Valid ContactForm form) throws Exception {
-        Map<String, Object> templateModel = new TreeMap<String, Object>();
-        templateModel.put("email", form.getEmail());
-        templateModel.put("feedback", form.getFeedbackText());
-
-//        emailSender.sendEmail(
-//                (String) config.get("feedback.to"),
-//                (String) config.get("feedback.from"),
-//                "User Feedback",
-//                templateModel
-//        );
-//
-//        feedbackConfirmationEmailSender.sendEmail(
-//                form.getEmail(), // user's email
-//                (String) config.get("feedback.from"),
-//                "User Feedback",
-//                templateModel
-//        );
-        //TODO i18n subjects above
-
-        form.setSubmitMessage("Your feedback was successfully sent. Thank you!"); //TODO i18n
-
-        return new ModelAndView(new RedirectView("/contact.html"));
+    @RequestMapping(method = RequestMethod.POST)
+    protected String handlePost(@ModelAttribute("contactForm") @Valid ContactForm form, BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
+        }
+        else {
+            Map<String, Object> model = new TreeMap<String, Object>();
+            model.put("email", form.getEmail());
+            model.put("feedback", form.getFeedbackText());
+            userFeedbackSender.sendEmail(feedbackTo, feedbackFrom, "User Feedback", model);
+            userFeedbackConfirmSender.sendEmail(form.getEmail(), feedbackFrom, "User Feedback", model);
+            form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
+        }
+        return "contact";
     }
 
     public static class ContactForm {
-        @NotEmpty(message = "Email is required")
-        @Pattern(
-                regexp = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)",
-                message = "Please enter a valid email address")
+//        @NotEmpty(message = "Email is required")
+//        @Pattern(
+//                regexp = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[_A-Za-z0-9-]+)",
+//                message = "Please enter a valid email address"
+//        )
         String email = ""; //empty by default (for freemarker)
 
-        @NotEmpty(message = "Please enter some feedback text")
+//        @NotEmpty(message = "Please enter some feedback text")
         String feedbackText = ""; //empty by default (for freemarker)
         String submitMessage = null;
 
@@ -141,21 +145,21 @@ public class ContactController {
         }
     }
 
-//    public class ContactValidator implements Validator {
-//
-//        public boolean supports(Class aClass) {
-//            return ContactForm.class.equals(aClass);
-//        }
-//
-//        public void validate(Object o, Errors errors) {
-//            ContactForm form = (ContactForm) o;
-//            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "email.required", "Email is required");
-//            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "feedbackText", "feedbackText.required", "Please enter some feedback text");
-//
-//            if (!ControllerUtil.validEmailAddress(form.getEmail())) {
-//                errors.rejectValue("email", "email.invalidEmail", "Please enter a valid email address");
-//            }
-//        }
-//    }
+    public class ContactFormValidator implements Validator {
+
+        public boolean supports(Class aClass) {
+            return ContactForm.class.equals(aClass);
+        }
+
+        public void validate(Object o, Errors errors) {
+            ContactForm form = (ContactForm) o;
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "email.required", "Email is required");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "feedbackText", "feedbackText.required", "Please enter some feedback text");
+
+            if (!ControllerUtil.validEmailAddress(form.getEmail())) {
+                errors.rejectValue("email", "email.invalidEmail", "Please enter a valid email address");
+            }
+        }
+    }
 
 }
