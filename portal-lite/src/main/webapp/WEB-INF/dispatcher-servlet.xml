@@ -2,7 +2,7 @@
 <!--
   ~ Copyright 2007 EDL FOUNDATION
   ~
-  ~  Licensed under the EUPL, Version 1.0 or as soon they
+  ~  Licensed under the EUPL, Version 1.1 or as soon they
   ~  will be approved by the European Commission - subsequent
   ~  versions of the EUPL (the "Licence");
   ~  you may not use this work except in compliance with the
@@ -69,9 +69,7 @@
 
     <bean id="formatInterceptor" class="eu.europeana.web.util.FormatInterceptor"/>
 
-    <bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor">
-        <property name="config" ref="config"/>
-    </bean>
+    <bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor"/>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 

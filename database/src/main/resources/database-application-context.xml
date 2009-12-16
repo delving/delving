@@ -2,7 +2,7 @@
 <!--
   ~ Copyright 2007 EDL FOUNDATION
   ~
-  ~  Licensed under the EUPL, Version 1.0 or as soon they
+  ~  Licensed under the EUPL, Version 1.1 or as soon they
   ~  will be approved by the European Commission - subsequent
   ~  versions of the EUPL (the "Licence");
   ~  you may not use this work except in compliance with the
@@ -165,8 +165,6 @@
         <entry key="piwik.logUrl" value="${piwik.logUrl}"/>
         <entry key="cacheUrl" value="${cacheUrl}"/>
         <entry key="feedback.to" value="${feedback.to}"/>
-        <entry key="register.to" value="${register.to}"/>
-        <entry key="system.from" value="${system.from}"/>
         <entry key="admin.to" value="${admin.to}"/>
         <entry key="exception.to" value="${exception.to}"/>
         <entry key="feedback.from" value="${feedback.from}"/>
@@ -194,7 +192,7 @@
     </security:http>
 
 
-    <!-- beans DO NOT COMMIT THIS THING! -->
+    <!-- beans -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="${smtp.host}"/>
         <property name="username" value="${smtp.username}"/>
@@ -336,6 +334,5 @@
         <property name="emailSender" ref="emailSenderForExceptions"/>
         <property name="emailFrom" value="${system.from}"/>
         <property name="targetEmailAddress" value="${exception.to}"/>
-        <property name="config" ref="config"/>
     </bean>
 </beans>

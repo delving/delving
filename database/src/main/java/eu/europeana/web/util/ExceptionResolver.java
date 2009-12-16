@@ -1,7 +1,7 @@
 /*
  * Copyright 2007 EDL FOUNDATION
  *
- *  Licensed under the EUPL, Version 1.0 or as soon they
+ *  Licensed under the EUPL, Version 1.1 or as soon they
  *  will be approved by the European Commission - subsequent
  *  versions of the EUPL (the "Licence");
  *  you may not use this work except in compliance with the
@@ -24,6 +24,7 @@ package eu.europeana.web.util;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,7 +46,13 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     private EmailSender emailSender;
     private String targetEmailAddress;
     private String emailFrom;
-    private Map config;
+
+    @Value("#{europeanaProperties['cacheUrl']}")
+    private String cacheUrl;
+
+    @Value("#{europeanaProperties['debug']}")
+    private String debug;
+
 
     public void setEmailSender(EmailSender emailSender) {
         this.emailSender = emailSender;
@@ -62,7 +69,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         if (exception instanceof EuropeanaQueryException) {
             queryProblem = ((EuropeanaQueryException) exception).getFetchProblem();
         }
-        Boolean debugMode = Boolean.valueOf((String) config.get("debug"));
+        Boolean debugMode = Boolean.valueOf(debug);
         String stackTrace = getStackTrace(exception);
         if (queryProblem == QueryProblem.NONE || queryProblem == QueryProblem.SOLR_UNREACHABLE) {
             try {
@@ -70,7 +77,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("hostName", request.getServerName());
                 model.put("request", ControllerUtil.formatFullRequestUrl(request));
                 model.put("stackTrace", stackTrace);
-                model.put("cacheUrl", config.get("cacheUrl"));
+                model.put("cacheUrl", cacheUrl);
                 String subject = queryProblem.getFragment();
                 emailSender.sendEmail(targetEmailAddress, emailFrom, subject, model);
             }
@@ -83,7 +90,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         }
         ModelAndView mav = new ModelAndView("exception");
         mav.addObject("debug", debugMode);
-        mav.addObject("cacheUrl", config.get("cacheUrl"));
+        mav.addObject("cacheUrl", cacheUrl);
         mav.addObject("queryProblem", queryProblem);
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);
@@ -95,10 +102,6 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);
         return stringWriter.toString();
-    }
-
-    public void setConfig(Map config) {
-        this.config = config;
     }
 
     public void setEmailFrom(String emailFrom) {
