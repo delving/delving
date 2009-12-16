@@ -45,7 +45,17 @@
         <property name="properties" ref="europeanaProperties"/>
     </bean>
 
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="#{europeanaProperties['db.driverClass']}"/>
+        <property name="jdbcUrl" value="#{europeanaProperties['db.jdbcUrl']}"/>
+        <property name="user" value="#{europeanaProperties['db.user']}"/>
+        <property name="password" value="#{europeanaProperties['db.password']}"/>
+    </bean>
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="webBindingInitializer">
             <!-- Configures Spring MVC DataBinder instances -->
@@ -54,15 +64,6 @@
             </bean>
         </property>
     </bean>
-
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="${db.driverClass}"/>
-        <property name="jdbcUrl" value="${db.jdbcUrl}"/>
-        <property name="user" value="${db.user}"/>
-        <property name="password" value="${db.password}"/>
-    </bean>
-
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
         <property name="showSql" value="false"/>
@@ -105,7 +106,7 @@
 
 
     <bean id="normalizedImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
-        <property name="dataDirectory" value="${dashboard.normalized.import.repository}"/>
+        <property name="dataDirectory" value="#{europeanaProperties['dashboard.normalized.import.repository']}"/>
     </bean>
 
     <bean id="normalizedEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
@@ -121,16 +122,16 @@
     </bean>
 
     <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
-        <property name="baseUrl" value="${solr.selectUrl}"/>
+        <property name="baseUrl" value="#{europeanaProperties['solr.selectUrl']}"/>
         <property name="httpClient" ref="httpClient"/>
     </bean>
 
     <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="httpClient" ref="httpClient"/>
-        <property name="targetUrl" value="${solr.updateUrl}"/>
+        <property name="targetUrl" value="#{europeanaProperties['solr.updateUrl']}"/>
         <property name="queryModelFactory" ref="queryModelFactory"/>
-        <property name="chunkSize" value="${solr.chunkSize}"/>
+        <property name="chunkSize" value="#{europeanaProperties['solr.chunkSize']}"/>
     </bean>
 
     <bean id="databaseCacheMaintainer" class="eu.europeana.incoming.CacheBuilder">
@@ -140,8 +141,8 @@
     </bean>
 
     <bean id="digitalObjectCache" class="eu.europeana.cache.DigitalObjectCacheImpl">
-        <property name="imageMagickPath" value="${cache.imageMagickPath}"/>
-        <property name="root" value="${cache.cacheRoot}"/>
+        <property name="imageMagickPath" value="#{europeanaProperties['cache.imageMagickPath']}"/>
+        <property name="root" value="#{europeanaProperties['cache.cacheRoot']}"/>
     </bean>
 
     <!-- Annotation based controller Support -->
@@ -152,7 +153,7 @@
 
     <!-- Freemarker Template config -->
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <property name="templateLoaderPath" value="${template.path}"/>
+        <property name="templateLoaderPath" value="#{europeanaProperties['template.path']}"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.web.util.ClickStreamLoggerImpl"/>
@@ -161,19 +162,19 @@
 
     <!-- Take care of environment specific settings -->
     <util:map id="config">
-        <entry key="piwik.jsUrl" value="${piwik.jsUrl}"/>
-        <entry key="piwik.logUrl" value="${piwik.logUrl}"/>
-        <entry key="cacheUrl" value="${cacheUrl}"/>
-        <entry key="feedback.to" value="${feedback.to}"/>
-        <entry key="admin.to" value="${admin.to}"/>
-        <entry key="exception.to" value="${exception.to}"/>
-        <entry key="feedback.from" value="${feedback.from}"/>
-        <entry key="debug" value="${debug}"/>
-        <entry key="piwik.enabled" value="${piwik.enabled}"/>
-        <entry key="message.static_pages" value="${message.static_pages}"/>
-        <entry key="message.network" value="${message.network}"/>
-        <entry key="displayPageUrl" value="${displayPageUrl}"/>
-        <entry key="resolverUrlPrefixe" value="${resolverUrlPrefix}"/>
+        <entry key="piwik.jsUrl" value="#{europeanaProperties['piwik.jsUrl']}"/>
+        <entry key="piwik.logUrl" value="#{europeanaProperties['piwik.logUrl']}"/>
+        <entry key="cacheUrl" value="#{europeanaProperties['cacheUrl']}"/>
+        <entry key="feedback.to" value="#{europeanaProperties['feedback.to']}"/>
+        <entry key="admin.to" value="#{europeanaProperties['admin.to']}"/>
+        <entry key="exception.to" value="#{europeanaProperties['exception.to']}"/>
+        <entry key="feedback.from" value="#{europeanaProperties['feedback.from']}"/>
+        <entry key="debug" value="#{europeanaProperties['debug']}"/>
+        <entry key="piwik.enabled" value="#{europeanaProperties['piwik.enabled']}"/>
+        <entry key="message.static_pages" value="#{europeanaProperties['message.static_pages']}"/>
+        <entry key="message.network" value="#{europeanaProperties['message.network']}"/>
+        <entry key="displayPageUrl" value="#{europeanaProperties['displayPageUrl']}"/>
+        <entry key="resolverUrlPrefixe" value="#{europeanaProperties['resolverUrlPrefix']}"/>
     </util:map>
 
     <!-- normal config -->
@@ -194,9 +195,9 @@
 
     <!-- beans -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="${smtp.host}"/>
-        <property name="username" value="${smtp.username}"/>
-        <property name="password" value="${smtp.password}"/>
+        <property name="host" value="#{europeanaProperties['smtp.host']}"/>
+        <property name="username" value="#{europeanaProperties['smtp.username']}"/>
+        <property name="password" value="#{europeanaProperties['smtp.password']}"/>
     </bean>
 
 
@@ -315,24 +316,25 @@
             </map>
         </property>
         <property name="tokenService" ref="tokenService"/>
-        <property name="from" value="${system.from}"/>
+        <property name="from" value="#{europeanaProperties['system.from']}"/>
     </bean>
 
     <bean id="messageSourceChoice" class="java.lang.String">
-        <constructor-arg value="${message.source}"/>
+        <constructor-arg value="#{europeanaProperties['message.source']}"/>
     </bean>
 
     <bean id="displayPageUrl" class="java.lang.String">
-        <constructor-arg value="${displayPageUrl}"/>
+        <constructor-arg value="#{europeanaProperties['displayPageUrl']}"/>
     </bean>
 
     <bean id="resolverUrlPrefix" class="java.lang.String">
-        <constructor-arg value="${resolverUrlPrefix}"/>
+        <constructor-arg value="#{europeanaProperties['resolverUrlPrefix']}"/>
     </bean>
 
     <bean id="exceptionResolver" class="eu.europeana.web.util.ExceptionResolver">
         <property name="emailSender" ref="emailSenderForExceptions"/>
-        <property name="emailFrom" value="${system.from}"/>
-        <property name="targetEmailAddress" value="${exception.to}"/>
+        <property name="emailFrom" value="#{europeanaProperties['system.from']}"/>
+        <property name="targetEmailAddress" value="#{europeanaProperties['exception.to']}"/>
     </bean>
 </beans>
+
