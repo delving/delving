@@ -127,12 +127,11 @@ public interface UserDao {
     /**
      * Remove a social tag from the user
      *
-     * @param user who to remove from
      * @param socialTagId the internal id of the social tag
      * @return the user with the tag removed
      */
 
-    User removeSocialTag(User user, Long socialTagId);
+    User removeSocialTag(Long socialTagId);
 
     /**
      * Add a saved item to the given user.  Ths saved item needs to be linked to a particular EuropeanaID so
@@ -167,12 +166,11 @@ public interface UserDao {
     /**
      * Removed a specific saved item from a user object.
      *
-     * @param user who to remove from?
      * @param savedItemId internal id
      * @return the user with the saved item removed
      */
 
-    User removeSavedItem(User user, Long savedItemId);
+    User removeSavedItem(Long savedItemId);
 
     /**
      * Add a saved search to a user
@@ -204,11 +202,10 @@ public interface UserDao {
     /**
      * Remove a saved search when its id is known
      *
-     * @param user which user saved it
      * @param savedSearchId which saved search, internal id
      * @return the User without the saved search
      */
 
-    User removeSavedSearch(User user, Long savedSearchId);
+    User removeSavedSearch(Long savedSearchId);
 
 }

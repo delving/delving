@@ -92,7 +92,8 @@ public class UserDaoImpl implements UserDao {
             user.getSavedSearches().size();
             user.getSocialTags().size();
             return user;
-        } else {
+        }
+        else {
             entityManager.persist(fresh);
             return fresh;
         }
@@ -140,7 +141,6 @@ public class UserDaoImpl implements UserDao {
         return user.getSavedItems();
     }
 
-
     @Transactional
     public SavedItem fetchSavedItemById(Long id) {
         if (id == null) {
@@ -154,25 +154,13 @@ public class UserDaoImpl implements UserDao {
 
     @Transactional
     public List<SavedSearch> fetchSavedSearches(Long userId) {
-        User user = entityManager.find(User.class, userId);
-        user.getSavedSearches().size();
-        return user.getSavedSearches();
+        return entityManager.find(User.class, userId).getSavedSearches();
     }
 
     @Transactional
     public SavedSearch fetchSavedSearchById(Long savedSearchId) {
-        if (savedSearchId == null) {
-            throw new IllegalArgumentException("Parameter has null value: userId:" + savedSearchId);
-        }
-        Query q = entityManager.createQuery("select o from SavedSearch as o where o.id = :id");
-        q.setParameter("id", savedSearchId);
-        List results = q.getResultList();
-        if (results.size() != 1) {
-            return null;
-        }
-        return (SavedSearch) results.get(0);
+        return entityManager.find(SavedSearch.class, savedSearchId);
     }
-
 
     @Transactional
     public User addSavedItem(User user, SavedItem savedItem, String europeanaUri) {
@@ -216,62 +204,36 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Transactional
-    public User removeSocialTag(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SocialTag  as o where user = :user and :id = id");
-        q.setParameter("user", user);
-        q.setParameter("id", id);
-        List objects = q.getResultList();
-        if (objects.size() != 1) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
-        }
-        Object object = objects.get(0);
-        SocialTag socialTag = (SocialTag) object;
+    public User removeSocialTag(Long socialTagId) {
+        SocialTag socialTag = entityManager.find(SocialTag.class, socialTagId);
+        User user = socialTag.getUser();
+        user.getSocialTags().remove(socialTag);
         socialTag.getEuropeanaId().setLastModified(new Date());
-        entityManager.remove(object);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
+        entityManager.remove(socialTag);
         user.getSavedItems().size();
         user.getSavedSearches().size();
-        user.getSocialTags().size();
         return user;
     }
 
     @Transactional
-    public User removeSavedItem(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SavedItem  as o where user = :user and :id = id");
-        q.setParameter("user", user);
-        q.setParameter("id", id);
-        List objects = q.getResultList();
-        if (objects.size() != 1) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
-        }
-        Object object = objects.get(0);
-
-        entityManager.remove(object);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        user.getSavedItems().size();
-        user.getSavedSearches().size();
+    public User removeSavedItem(Long savedItemId) {
+        SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
+        User user = savedItem.getUser();
+        user.getSavedItems().remove(savedItem);
+        entityManager.remove(savedItem);
         user.getSocialTags().size();
+        user.getSavedSearches().size();
         return user;
     }
 
     @Transactional
-    public User removeSavedSearch(User user, Long id) {
-        Query q = entityManager.createQuery("select o from SavedSearch  as o where user = :user and id = :id");
-        q.setParameter("user", user);
-        q.setParameter("id", id);
-        List objects = q.getResultList();
-        if (objects.size() != 1) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + id);
-        }
-        Object object = objects.get(0);
-        entityManager.remove(object);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        user.getSavedItems().size();
-        user.getSavedSearches().size();
+    public User removeSavedSearch(Long savedSearchId) {
+        SavedSearch savedSearch = entityManager.find(SavedSearch.class, savedSearchId);
+        User user = savedSearch.getUser();
+        user.getSavedSearches().remove(savedSearch);
+        entityManager.remove(savedSearch);
         user.getSocialTags().size();
+        user.getSavedItems().size();
         return user;
     }
 

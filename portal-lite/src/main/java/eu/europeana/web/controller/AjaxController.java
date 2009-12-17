@@ -101,23 +101,23 @@ public class AjaxController {
 
         switch (findModifiable(className)) {
             case CAROUSEL_ITEM:
-                user = staticInfoDao.removeCarouselItem(user, id);
+                user = staticInfoDao.removeCarouselItemFromSavedItem(id);
                 clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
-                user = userDao.removeSavedItem(user, id);
+                user = userDao.removeSavedItem(id);
                 clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SAVED_ITEM);
                 break;
             case SAVED_SEARCH:
-                user = userDao.removeSavedSearch(user, id);
+                user = userDao.removeSavedSearch(id);
                 clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SAVED_SEARCH);
                 break;
             case SEARCH_TERM:
-                user = staticInfoDao.removeSearchTerm(user, id);
+                user = staticInfoDao.removeSearchTerm(id);
                 clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
-                user = userDao.removeSocialTag(user, id);
+                user = userDao.removeSocialTag(id);
                 clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SOCIAL_TAG);
                 break;
             default:

@@ -166,7 +166,6 @@ public interface StaticInfoDao {
      * Remove the {@link SavedItem} instance with the given identifier from the Carousel of the given {@link User}.
      * It return an instance of the {@link User} class.
      *
-     * @param user        - User - the instance of the User class to which the item belongs
      * @param savedItemId - Long - the identifier of the item to remove
      * @return User - the instance of the User class
      * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
@@ -175,7 +174,7 @@ public interface StaticInfoDao {
      * @see {@link SavedItem}
      */
 
-    User removeCarouselItem(User user, Long savedItemId);        // one of the 3 is enough
+    User removeCarouselItemFromSavedItem(Long savedItemId);        // one of the 3 is enough
 
     /**
      * Remove the given {@link SavedItem} from the Carousel.
@@ -283,7 +282,6 @@ public interface StaticInfoDao {
      * Remove the {@link SearchTerm} instance referenced by the SavedSearch with the given identifier
      * and the given {@link User}. It return an instance of the {@link User} class.
      *
-     * @param user          - User - the instance of the User class to which the item belongs
      * @param savedSearchId - Long - the identifier of SavedSearch instance
      * @return User - the instance of the User class
      * @throws IllegalArgumentException if input parameter(s) is/are null or the user doesn't own the object.
@@ -291,5 +289,5 @@ public interface StaticInfoDao {
      * @see {@link SavedSearch}
      * @see {@link SearchTerm}
      */
-    User removeSearchTerm(User user, Long savedSearchId);
+    User removeSearchTerm(Long savedSearchId);
 }

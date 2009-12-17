@@ -4,6 +4,8 @@ import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.dao.fixture.DatabaseFixture;
 import eu.europeana.database.domain.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import org.apache.log4j.Logger;
@@ -14,9 +16,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.List;
         "/test-application-context.xml"
 })
 
+@Transactional
 public class TestStaticInfoDao {
     private Logger log = Logger.getLogger(TestStaticInfoDao.class);
     @Autowired
@@ -48,42 +50,29 @@ public class TestStaticInfoDao {
     protected EntityManager entityManager;
 
 
-    private static List<Partner> partners;
-    private static List<Contributor> contributors;
-    private static List<SavedItem> savedItems;
-    private static List<CarouselItem> carouselItems;
-    private static List<SavedSearch> savedSearches;
-    private static List<User> users;
-    private static List<EuropeanaId> europeanaIds;
+    private List<Partner> partners;
+    private List<Contributor> contributors;
+    private List<SavedItem> savedItems;
+    private List<CarouselItem> carouselItems;
+    private List<SavedSearch> savedSearches;
+    private List<User> users;
     private int instanceCount = 11;
     private String name = "Nicola";
 
     @Before
     public void init() throws IOException {
-        if (partners == null) {
-            partners = databaseFixture.createPartners(name, instanceCount);
-            log.info("Partner " + (instanceCount - 1) + "  " + partners.get(instanceCount - 1).getName());
-        }
-        if (users == null) {
-            users = databaseFixture.createUsers(name, instanceCount);
-            log.info("users " + (instanceCount - 1) + "  " + users.get(instanceCount - 1).getFirstName());
-        }
-        if (europeanaIds == null) {
-            europeanaIds = databaseFixture.createEuropeanaIds(name, instanceCount);
-            log.info("europeanaId " + (instanceCount - 1) + "  " + europeanaIds.get(instanceCount - 1).getEuropeanaUri());
-        }
-        if (savedItems == null) {
-            savedItems = databaseFixture.createSavedItems(name, instanceCount, europeanaIds, users);
-            log.info("savedItems " + (instanceCount - 1) + "  " + savedItems.get(instanceCount - 1).getAuthor());
-        }
-        if (savedSearches == null) {
-            savedSearches = databaseFixture.createSavedSearch(name, instanceCount, users);
-            log.info("savedSearch " + (instanceCount - 1) + "  " + savedSearches.get(instanceCount - 1).getQuery());
-        }
-        if (contributors == null) {
-            contributors = databaseFixture.createContributors(name, instanceCount);
-            log.info("Contributor " + (instanceCount - 1) + "  " + contributors.get(instanceCount - 1).getOriginalName());
-        }
+        partners = databaseFixture.createPartners(name, instanceCount);
+        log.info("Partner " + (instanceCount - 1) + "  " + partners.get(instanceCount - 1).getName());
+        users = databaseFixture.createUsers(name, instanceCount);
+        log.info("users " + (instanceCount - 1) + "  " + users.get(instanceCount - 1).getFirstName());
+        List<EuropeanaId> europeanaIds = databaseFixture.createEuropeanaIds(name, instanceCount);
+        log.info("europeanaId " + (instanceCount - 1) + "  " + europeanaIds.get(instanceCount - 1).getEuropeanaUri());
+        savedItems = databaseFixture.createSavedItems(name, instanceCount, europeanaIds, users);
+        log.info("savedItems " + (instanceCount - 1) + "  " + savedItems.get(instanceCount - 1).getAuthor());
+        savedSearches = databaseFixture.createSavedSearch(name, instanceCount, users);
+        log.info("savedSearch " + (instanceCount - 1) + "  " + savedSearches.get(instanceCount - 1).getQuery());
+        contributors = databaseFixture.createContributors(name, instanceCount);
+        log.info("Contributor " + (instanceCount - 1) + "  " + contributors.get(instanceCount - 1).getOriginalName());
     }
 
 
@@ -256,23 +245,22 @@ public class TestStaticInfoDao {
     }
 
     @Test
-    public void createCarouselItem() {
-        if (carouselItems == null) {
-            carouselItems = new ArrayList<CarouselItem>();
-            log.info("Testing createCarouselItem: ");
-            for (int walk = 0; walk < instanceCount; walk++) {
-                CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItems.get(walk).getId());
-                assertNotNull(carouselItem);
-                carouselItems.add(carouselItem);
-            }
-            assertEquals(instanceCount, carouselItems.size());
-            log.info("createCarouselItem Test is OK! ");
+    public void createCarouselItems() {
+        carouselItems = new ArrayList<CarouselItem>();
+        log.info("Testing createCarouselItem: ");
+        for (int walk = 0; walk < instanceCount; walk++) {
+            CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItems.get(walk).getId());
+            assertNotNull(carouselItem);
+            carouselItems.add(carouselItem);
         }
+        assertEquals(instanceCount, carouselItems.size());
+        log.info("createCarouselItem Test is OK! ");
     }
 
 
     @Test
     public void fetchCarouselItems() {
+        createCarouselItems();
         log.info("Testing fetchCarouselItems: ");
         List<CarouselItem> carouselItems = staticInfoDao.fetchCarouselItems();
         assertEquals(instanceCount, carouselItems.size());
@@ -284,62 +272,50 @@ public class TestStaticInfoDao {
 
     @Test
     public void removeCarouselItem() {
+        createCarouselItems();
         log.info("Testing removeCarouselItem: ");
-        if (carouselItems == null) {
-            createCarouselItem();
-        }
         for (int walk = 0; walk < instanceCount; walk++) {
             Long id = carouselItems.get(walk).getId();
             boolean removed = staticInfoDao.removeCarouselItem(id);
             assertTrue(removed);
             assertNull(databaseFixture.getCarouselItem(id));
         }
-        carouselItems = null;
         log.info("removeCarouselItem Test is OK! ");
     }
 
 
     @Test
     public void removeFromCarousel() {
+        createCarouselItems();
         log.info("Testing removeFromCarousel: ");
-        if (carouselItems == null) {
-            createCarouselItem();
-        }
         for (int walk = 0; walk < instanceCount; walk++) {
             Long id = carouselItems.get(walk).getId();
             savedItems.get(walk).setCarouselItem(carouselItems.get(walk));
             staticInfoDao.removeFromCarousel(savedItems.get(walk));
             assertNull(databaseFixture.getCarouselItem(id));
         }
-        carouselItems = null;
         log.info("removeFromCarousel Test is OK! ");
     }
 
-
     @Test
     public void removeCarouselItemUserSavedItem() {
+        createCarouselItems();
         log.info("Testing removeCarouselItemUserSavedItem: ");
-        if (carouselItems == null) {
-            createCarouselItem();
-        }
         for (int walk = 0; walk < instanceCount; walk++) {
             Long id = carouselItems.get(walk).getId();
             SavedItem savedItem = carouselItems.get(walk).getSavedItem();
-            User user = staticInfoDao.removeCarouselItem(savedItem.getUser(), savedItem.getId());
+            User user = staticInfoDao.removeCarouselItemFromSavedItem(savedItem.getId());
             assertNotNull(user);
             assertEquals(savedItem.getUser().getLastName(), user.getLastName());
             assertNull(databaseFixture.getCarouselItem(id));
         }
-        carouselItems = null;
         log.info("removeCarouselItemUserSavedItem Test is OK! ");
-
     }
 
-
     @Test
-    public void addSearchTerm() {
+    public void addSearchTerms() {
+        createCarouselItems();
         log.info("Testing addSearchTerm: ");
-        createCarouselItem();
         for (int walk = 0; walk < instanceCount; walk++) {
             Long id = savedSearches.get(walk).getId();
             SearchTerm searchTerm = staticInfoDao.addSearchTerm(id);
@@ -349,13 +325,13 @@ public class TestStaticInfoDao {
         log.info("addSearchTerm Test is OK! ");
     }
 
-
     @Test
     public void getAllSearchTerms() {
+        addSearchTerms();
         log.info("Testing getAllSearchTerms: ");
         List<SearchTerm> searchTerms = staticInfoDao.getAllSearchTerms();
         assertNotNull(searchTerms);
-        assertTrue(searchTerms.size() == instanceCount);
+        assertEquals(instanceCount, searchTerms.size());
         for (SearchTerm searchTerm : searchTerms) {
             String query = searchTerm.getSavedSearch().getQuery();
             boolean found = false;
@@ -373,22 +349,21 @@ public class TestStaticInfoDao {
         log.info("getAllSearchTerms Test is OK! ");
     }
 
-
     @Test
     public void removeSearchTerm() {
+        addSearchTerms();
         log.info("Testing removeSearchTerm: ");
         List<SavedSearch> searches = databaseFixture.getAllSavedSearch();
         for (SavedSearch savedSearch : searches) {
             Long savedSearchId = savedSearch.getId();
             Long searchSearchId = savedSearch.getSearchTerm().getId();
-            User user = savedSearch.getUser();
-            user = staticInfoDao.removeSearchTerm(user, savedSearchId);
+            User user = staticInfoDao.removeSearchTerm(savedSearchId);
             assertNotNull(user);
             assertEquals(savedSearch.getUser().getLastName(), user.getLastName());
             assertNull(databaseFixture.getSearchTerm(searchSearchId));
         }
         savedSearches = databaseFixture.createSavedSearch(this.name, instanceCount, users);
-        addSearchTerm();
+        addSearchTerms();
         log.info("removeSearchTerm Test is OK! ");
     }
 }

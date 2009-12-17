@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Date;
@@ -35,6 +36,7 @@ import java.util.List;
         "/test-application-context.xml"
 })
 
+@Transactional
 public class TestUserDao {
     private Logger log = Logger.getLogger(TestUserDao.class);
 
@@ -44,16 +46,14 @@ public class TestUserDao {
     @Autowired
     private DatabaseFixture databaseFixture;
 
-    private static List<User> users;
-    private static List<EuropeanaId> europeanaIds;
+    private List<User> users;
+    private List<EuropeanaId> europeanaIds;
 
     @Before
     public void prepare() throws IOException {
-        if (users == null) {
-            users = databaseFixture.createUsers("Gumby", 100);
-            log.info("User 10: " + users.get(10).getEmail());
-            europeanaIds = databaseFixture.createEuropeanaIds("Test Collection", 10);
-        }
+        users = databaseFixture.createUsers("Gumby", 100);
+        log.info("User 10: " + users.get(10).getEmail());
+        europeanaIds = databaseFixture.createEuropeanaIds("Test Collection", 10);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class TestUserDao {
         assertEquals(1, user25.getSavedSearches().size());
         // test remove retrievedSavedSearch
         final SavedSearch retrievedSavedSearch = user25.getSavedSearches().get(0);
-        user25 = userDao.removeSavedSearch(users.get(25), retrievedSavedSearch.getId());
+        user25 = userDao.removeSavedSearch(retrievedSavedSearch.getId());
         assertEquals(0, user25.getSavedSearches().size());
         log.info("User.savesSearch.size: " + user25.getSavedSearches().size());
     }

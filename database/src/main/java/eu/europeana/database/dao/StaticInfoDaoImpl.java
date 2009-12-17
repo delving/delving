@@ -21,16 +21,15 @@
 
 package eu.europeana.database.dao;
 
-import eu.europeana.database.DashboardDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.*;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +40,6 @@ import java.util.List;
  */
 public class StaticInfoDaoImpl implements StaticInfoDao {
     private Logger log = Logger.getLogger(getClass());
-
-    private DashboardDao dashBoardDao;
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -110,21 +107,12 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
-    public User removeCarouselItem(User user, Long savedItemId) {
-        // remove carousel item and give back a user
-        if (savedItemId == null || user == null) {
-            throw new IllegalArgumentException("Input parameter(s) null ");
-        }
-        SavedItem savedItem = fetchSavedItem(user, savedItemId);
-        if (savedItem == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedItemId);
-        }
+    public User removeCarouselItemFromSavedItem(Long savedItemId) {
+        SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
         CarouselItem carouselItem = savedItem.getCarouselItem();
         savedItem.setCarouselItem(null);
         entityManager.remove(carouselItem);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        return user;
+        return savedItem.getUser();
     }
 
     @Transactional
@@ -141,54 +129,13 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return true;
     }
 
-    private SavedItem fetchSavedItem(User user, Long savedItemId) {
-        // Query q = entityManager.createQuery("select o from SavedItem as o where userid = :userid and :id = id");
-
-        // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
-        //  Query q = entityManager.createQuery("select o from SavedItem as o where o.id  = :userid and :id = id");
-        // the previous query was incorrect Nicola !! 
-        Query q = entityManager.createQuery("select o from SavedItem as o where o.user.id = :userid and o.id = :id");
-        q.setParameter("userid", user.getId());
-        q.setParameter("id", savedItemId);
-        List results = q.getResultList();
-        if (results.size() != 1) {
-            return null;
-        }
-        return (SavedItem) results.get(0);
-    }
-
     @Transactional
-    public User removeSearchTerm(User user, Long savedSearchId) {
-        // remove carousel item and give back a user
-        if (savedSearchId == null || user == null) {
-            throw new IllegalArgumentException("Input parameter(s) null");
-        }
-        SavedSearch savedSearch = fetchSavedSearch(user, savedSearchId);
-        if (savedSearch == null) {
-            throw new IllegalArgumentException("The user doesn't own the object. user: " + user.getId() + ", object: " + savedSearchId);
-        }
+    public User removeSearchTerm(Long savedSearchId) {
+        SavedSearch savedSearch = entityManager.find(SavedSearch.class, savedSearchId);
         SearchTerm searchTerm = savedSearch.getSearchTerm();
         savedSearch.setSearchTerm(null);
         entityManager.remove(searchTerm);
-        entityManager.flush();
-        user = entityManager.find(User.class, user.getId());
-        return user;
-    }
-
-    private SavedSearch fetchSavedSearch(User user, Long savedSearchId) {
-        //Query q = entityManager.createQuery("select o from SavedSearch as o where userid = :userid and :id = id");
-
-        // the previous instruction is incorrect. Maybe should be as follow, but is strange (id is filtered twice in the where clause)
-        // the previous query was incorrect   -> Nicola !!
-
-        Query q = entityManager.createQuery("select o from SavedSearch as o where o.user.id = :userid and :id = id");
-        q.setParameter("userid", user.getId());
-        q.setParameter("id", savedSearchId);
-        List results = q.getResultList();
-        if (results.size() != 1) {
-            return null;
-        }
-        return (SavedSearch) results.get(0);
+        return savedSearch.getUser();
     }
 
     @Transactional
@@ -201,7 +148,6 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         savedSearch.setSearchTerm(searchTerm);
         return searchTerm;
     }
-
 
     @Transactional
     public boolean addSearchTerm(Language language, String term) {
@@ -234,6 +180,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<String> fetchSearchTerms(Language language) {
         Query query = entityManager.createQuery("select term.proposedSearchTerm from SearchTerm as term where term.language = :language");
         query.setParameter("language", language);
@@ -241,6 +188,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<Contributor> getAllContributorsByIdentifier() {
         Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
         return (List<Contributor>) query.getResultList();
@@ -328,9 +276,9 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<SearchTerm> getAllSearchTerms() {
         Query q = entityManager.createQuery("select st from SearchTerm st");
-        List searchTerms = q.getResultList();
-        return (List<SearchTerm>) searchTerms;
+        return (List<SearchTerm>) q.getResultList();
     }
 }

@@ -103,7 +103,7 @@ public class TestDashboardDao {
                     savedItem.getCarouselItem().getTitle());
             assertNotNull(savedItem.getCarouselItem().getEuropeanaId().isOrphan());
 //            Assert.assertEquals(savedItem.getUser(), savedItem.getCarouselItem().getUser());
-            assertNotNull(staticInfoDao.removeCarouselItem(user, savedItem.getId()));
+            assertNotNull(staticInfoDao.removeCarouselItemFromSavedItem(savedItem.getId()));
             assertFalse("has no Carousel Item", savedItem.hasCarouselItem());
 //            assertFalse("EuropeanaId has no associated CarouselItem", savedItem.getEuropeanaId().hasCarouselItem());
         }
@@ -160,7 +160,7 @@ public class TestDashboardDao {
                     search1.getQueryString(),
                     savedSearch.getSearchTerm().getProposedSearchTerm());
 //            Assert.assertEquals(savedSearch.getUser(), savedSearch.getSearchTerm().getUser());
-            user = staticInfoDao.removeSearchTerm(user, savedSearch.getId());
+            user = staticInfoDao.removeSearchTerm(savedSearch.getId());
             assertFalse("has no Search Term", savedSearch.hasSearchTerm());
         }
     }
