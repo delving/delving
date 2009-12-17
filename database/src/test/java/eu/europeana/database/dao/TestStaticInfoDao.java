@@ -4,8 +4,10 @@ import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.dao.fixture.DatabaseFixture;
 import eu.europeana.database.domain.*;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import org.apache.log4j.Logger;
@@ -324,6 +326,20 @@ public class TestStaticInfoDao {
         }
         log.info("addSearchTerm Test is OK! ");
     }
+
+    @Test
+    public void addSearchTermsForLanguage() {
+        createCarouselItems();
+        log.info("Testing addSearchTermsForLanguage: ");
+        for (Language language : Language.values()) {
+            boolean done = staticInfoDao.addSearchTerm(language, name);
+            assertTrue(done);
+        }
+        List<SearchTerm> searchTerms = staticInfoDao.getAllSearchTerms();
+        assertEquals(Language.values().length, searchTerms.size());
+        log.info("addSearchTermsForLanguage Test is OK! ");
+    }
+
 
     @Test
     public void getAllSearchTerms() {
