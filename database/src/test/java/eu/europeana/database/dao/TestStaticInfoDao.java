@@ -332,7 +332,7 @@ public class TestStaticInfoDao {
         createCarouselItems();
         log.info("Testing addSearchTermsForLanguage: ");
         for (Language language : Language.values()) {
-            boolean done = staticInfoDao.addSearchTerm(language, name);
+            boolean done = staticInfoDao.addSearchTerm(language, name + language.getCode());
             assertTrue(done);
         }
         List<SearchTerm> searchTerms = staticInfoDao.getAllSearchTerms();
@@ -366,6 +366,32 @@ public class TestStaticInfoDao {
     }
 
     @Test
+    public void getAllSearchTermsForLanguage() {
+        addSearchTermsForLanguage();
+        log.info("Testing getAllSearchTermsForLanguage: ");
+        for (Language language : Language.values()) {
+            List<String> searchTerms = staticInfoDao.fetchSearchTerms(language);
+            assertNotNull(searchTerms);
+            assertEquals(1, searchTerms.size());
+            assertEquals(name + language.getCode(), searchTerms.get(0));
+        }
+        log.info("getAllSearchTermsForLanguage Test is OK! ");
+    }
+
+    @Test
+    public void removeSearchTermsForLanguage() {
+        addSearchTermsForLanguage();
+        log.info("Testing removeSearchTermsForLanguage: ");
+        for (Language language : Language.values()) {
+            boolean done = staticInfoDao.removeSearchTerm(language, name + language.getCode());
+            assertTrue(done);
+            assertEquals(0, databaseFixture.getSearchTerm(language, name + language.getCode()).size());
+        }
+        log.info("removeSearchTermsForLanguage Test is OK! ");
+    }
+
+
+    @Test
     public void removeSearchTerm() {
         addSearchTerms();
         log.info("Testing removeSearchTerm: ");
@@ -382,4 +408,5 @@ public class TestStaticInfoDao {
         addSearchTerms();
         log.info("removeSearchTerm Test is OK! ");
     }
+
 }

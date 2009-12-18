@@ -160,11 +160,12 @@ public class DatabaseFixture {
     public List<SavedSearch> createSavedSearch(String name, int count, List<User> users) {
 
         List<SavedSearch> savedSearchs = new ArrayList<SavedSearch>();
+        Language languages[] = Language.values();
 
         for (int walk = 0; walk < count; walk++) {
             SavedSearch savedSearch = new SavedSearch();
             savedSearch.setDateSaved(new Date());
-            savedSearch.setLanguage(Language.IT);
+            savedSearch.setLanguage(languages[walk]);
             savedSearch.setQuery(name + " query" + walk);
             savedSearch.setQueryString(name + " querystring" + walk);
             savedSearch.setUser(users.get(walk));
@@ -198,6 +199,15 @@ public class DatabaseFixture {
     @Transactional
     public SearchTerm getSearchTerm(Long id) {
         return entityManager.find(SearchTerm.class, id);
+    }
+
+
+    @Transactional
+    public List<String> getSearchTerm(Language language, String term) {
+        Query query = entityManager.createQuery("select s from SearchTerm s where s.language = :language and s.proposedSearchTerm = :term");
+        query.setParameter("term", term);
+        query.setParameter("language", language);
+        return (List<String>) query.getResultList();
     }
 
     @Transactional
