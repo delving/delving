@@ -52,7 +52,7 @@ Deploy Solr
 
 //Make sure that Jetty is installed. (We prefer to use Jetty for solr deployment. However, there is no reason why it cannot
 be deployed on Tomcat with the other components. Just remember to increase the heap space if you do so. )
-- Copy ./bootstrap/src/test/solr/solr.war to the jetty deploy directory (i.e. webapps dir in the
+- Copy ./database/src/test/solr/solr.war to the jetty deploy directory (i.e. webapps dir in the
 jetty root) on the server and rename to solr.war.
 - Copy the Solr Home from ./portal/src/test/solr/solr/ to the server (!recursively copy all files). Any location would do.
 Remember that the index is stored inside the Solr Home so make sure that there is enough disk space available where you place solr home.

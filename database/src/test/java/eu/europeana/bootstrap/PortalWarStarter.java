@@ -25,19 +25,17 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
+ * Convenience class to test functionality of build portal.war file
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
-public class SolrStarter {
+public class PortalWarStarter {
     private Server server;
 
     public void start() throws Exception {
-        //elevate.xml config file is not being searched for on the classpath.
-        //it needs to be in a conf dir.
-        //So we will set the solr.home property instead of
-        //relying on resources being on classpath
-        System.setProperty("solr.solr.home", "./bootstrap/src/test/solr/solr");
-        WebAppContext webAppContext = new WebAppContext("./bootstrap/src/test/solr/solr.war", "/solr");
-        server = new Server(8983);
+        // todo: add test to see if portal.war is actually build
+        WebAppContext webAppContext = new WebAppContext("./portal-lite/target/portal.war", "/portal");
+        server = new Server(8080);
         server.setHandler(webAppContext);
         server.start();
     }
@@ -47,7 +45,7 @@ public class SolrStarter {
     }
 
     public static void main(String... args) throws Exception {
-        new SolrStarter().start();
+        new PortalWarStarter().start();
     }
 
 }

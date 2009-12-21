@@ -70,7 +70,7 @@ then you don't have to change the database settings.
 
 !!! If you are running everything locally you will only have to edit the email adresses, imageMagick path and the smtp settings.
 
-Place europeana.properties somewhere. For launching, either 
+Place europeana.properties somewhere. For launching, either
 
 - Start the JVM with parameter -Deuropeana.properties=/path/to/europeana.properties, or
 - Set the environment variable 'EUROPEANA_PROPERTIES' to /path/to/europeana.properties
@@ -97,7 +97,7 @@ if you have problems with finding the M2_REPO add it to Preferences > Java > Bui
 Initiate the Database and Index
 -----------------------------------------
 
-In order to load the static content and fill the index you have to run the class ./bootstrap/src/test/java/eu/europeana/bootstrap/LoadContent.java
+In order to load the static content and fill the index you have to run the class ./database/src/test/java/eu/europeana/bootstrap/LoadContent.java
 from your ide. (In eclipse make sure you run in from ${workspace_loc:europeana}, otherwise the europeana.properties file might
 not be found).
 
@@ -105,7 +105,7 @@ not be found).
 Launch the Europeana environment
 -----------------------------------------
 To launch the complete Europeana environment portal-lite, resolver, cache, solr you need to run the class
-./bootstrap/src/main/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
+./database/src/main/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
 Server at http://localhost:8983/{api|solr}/
 
 Each module with a web-app (api, portal-lite) has a jetty starter class in the test directories. Use it
