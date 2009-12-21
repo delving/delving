@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europeana</groupId>
+    <artifactId>sip-creator</artifactId>
+    <packaging>jar</packaging>
+    <name>Normalizing XML to Europeana input format, validating, etc</name>
+    <version>${europeana.sip-creator.version}</version>
+    <inceptionYear>2008</inceptionYear>
+
+  <parent>
+    <groupId>eu.europeana</groupId>
+    <artifactId>europeana</artifactId>
+    <version>1</version>
+  </parent>
+
+   <developers>
+        <developer>
+            <name>Sjoerd Siebinga</name>
+            <email>sjoerd.siebinga@gmail.com</email>
+            <roles>
+                <role>architect</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Gerald de Jong</name>
+            <email>geralddejong@gmail.com</email>
+            <roles>
+                <role>consultant</role>
+            </roles>
+        </developer>
+    </developers>
+    <organization>
+        <name>Europeana Foundation</name>
+        <url>http://www.europeana.eu</url>
+    </organization>
+    <build>
+        <defaultGoal>compile</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>eu.europeana.sip.NormalizerGUI</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>eu.europeana</groupId>
+            <artifactId>database</artifactId>
+            <version>${europeana.database.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-lgpl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.htmlparser</groupId>
+            <artifactId>htmlparser</artifactId>
+        </dependency>
+    </dependencies>
+</project>
