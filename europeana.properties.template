@@ -78,13 +78,12 @@ template.path = WEB-INF/templates/
 # other
 #
 #cacheUrl = http://dashboard.europeana.sara.nl/cache/image/?
-cacheUrl = http://localhost:8983/cache/image/?
-
+cacheUrl = http://localhost:8983/api/image/?
 
 #
 # Resolver Servlet
 #
-resolverUrlPrefix  = http://localhost:8983
+resolverUrlPrefix  = http://localhost:8983/api/resolve
 displayPageUrl     = http://localhost:8983/portal/full-doc.html
 
 #
