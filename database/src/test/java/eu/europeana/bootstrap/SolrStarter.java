@@ -35,7 +35,7 @@ public class SolrStarter {
         //it needs to be in a conf dir.
         //So we will set the solr.home property instead of
         //relying on resources being on classpath
-        System.setProperty("solr.solr.home", "./database/src/test/solr/solr");
+        System.setProperty("solr.solr.home", "./database/src/test/solr/home");
         WebAppContext webAppContext = new WebAppContext("./database/src/test/solr/solr.war", "/solr");
         server = new Server(8983);
         server.setHandler(webAppContext);
