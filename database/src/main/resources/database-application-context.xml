@@ -134,12 +134,7 @@
         <property name="normalized" value="true"/>
     </bean>
 
-    <bean id="queryModelFactory" class="eu.europeana.json.JsonQueryModelFactory">
-        <property name="simpleQueryModelFactory" ref="solrQueryModelFactory"/>
-        <property name="advancedQueryModelFactory" ref="solrQueryModelFactory"/>
-    </bean>
-
-    <bean id="solrQueryModelFactory" class="eu.europeana.json.solr.SolrQueryModelFactory">
+    <bean id="queryModelFactory" class="eu.europeana.json.SolrQueryModelFactory">
         <property name="baseUrl" value="#{europeanaProperties['solr.selectUrl']}"/>
     </bean>
 

@@ -27,9 +27,6 @@ import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.query.*;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -37,6 +34,9 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -215,7 +215,7 @@ public class SolrIndexerImpl implements SolrIndexer {
 
     private ESERecord fetchRecordFromSolr(String uri) throws EuropeanaQueryException {
         log.info("fetching record for "+uri);
-        QueryModel queryModel = queryModelFactory.createQueryModel(QueryModelFactory.SearchType.SIMPLE);
+        QueryModel queryModel = queryModelFactory.createQueryModel();
         queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
         queryModel.setQueryExpression(new UriExpression(uri));
         ResultModel resultModel = queryModel.fetchResult();

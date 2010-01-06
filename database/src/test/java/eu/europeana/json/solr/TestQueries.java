@@ -1,5 +1,6 @@
 package eu.europeana.json.solr;
 
+import eu.europeana.json.SolrQueryExpression;
 import eu.europeana.query.QueryExpression;
 import org.junit.Assert;
 import org.junit.Test;

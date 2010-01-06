@@ -25,24 +25,11 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.json.JsonResultModel;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.QueryProblem;
-import eu.europeana.query.RecordField;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
-import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.DocIdWindowPager;
-import eu.europeana.web.util.NextQueryFacet;
-import eu.europeana.web.util.QueryConstraints;
-import eu.europeana.web.util.ResultPagination;
+import eu.europeana.query.*;
+import eu.europeana.web.util.*;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,7 +53,6 @@ public class ResultController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    @Qualifier("solrQueryModelFactory")
     private QueryModelFactory queryModelFactory;
 
     @Autowired
@@ -89,7 +75,7 @@ public class ResultController {
         if (uri == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
-        QueryModel queryModel = queryModelFactory.createQueryModel(QueryModelFactory.SearchType.SIMPLE);
+        QueryModel queryModel = queryModelFactory.createQueryModel();
         if (query != null && start != null) {
             page.addObject("pagination", new DocIdWindowPager(uri, request, queryModel));
         }
@@ -127,13 +113,8 @@ public class ResultController {
         }
         QueryConstraints queryConstraints = new QueryConstraints(request.getParameterValues(QueryConstraints.PARAM_KEY));
         // check if we are dealing with a request from the advanced search page
-        QueryModelFactory.SearchType type = QueryModelFactory.SearchType.SIMPLE;
-        if (request.getParameter("query") == null) {
-            type = QueryModelFactory.SearchType.ADVANCED;
-        }
-
         // construct query model
-        QueryModel queryModel = queryModelFactory.createQueryModel(type);
+        QueryModel queryModel = queryModelFactory.createQueryModel();
         queryModel.setResponseType(ResponseType.SMALL_BRIEF_DOC_WINDOW);
         queryModel.setStartRow(ControllerUtil.getStartRow(request));
         int rows = ControllerUtil.getRows(request);

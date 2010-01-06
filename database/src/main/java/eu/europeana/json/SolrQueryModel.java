@@ -1,6 +1,5 @@
-package eu.europeana.json.sql;
+package eu.europeana.json;
 
-import eu.europeana.json.JsonResultModel;
 import eu.europeana.query.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -18,30 +17,41 @@ import java.util.List;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public class SqlQueryModel implements QueryModel {
+public class SolrQueryModel implements QueryModel {
 
     private Logger log = Logger.getLogger(getClass());
     private HttpClient httpClient;
-    private String baseUrl;
+    private String solrBaseUrl;
     private ResponseType responseType;
     private QueryModel.Constraints constraints;
     private String queryString = "*:*";
-    private QueryExpression.QueryType queryType = QueryExpression.QueryType.ADVANCED_QUERY;
+    private QueryExpression.QueryType queryType = QueryExpression.QueryType.SIMPLE_QUERY;
+    private String facetLimit = "100";
+    private String facetMinCount = "1";
+    private boolean moreLikeThis;
     private boolean facets;
     private int startRow;
     private int rows = 0;
     private RecordFieldChoice recordFieldChoice;
 
-    public void setBaseUrlList(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setSolrBaseUrl(String solrBaseUrl) {
+        this.solrBaseUrl = solrBaseUrl;
     }
 
     public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
+    public void setFacetLimit(String facetLimit) {
+        this.facetLimit = facetLimit;
+    }
+
+    public void setFacetMinCount(String facetMinCount) {
+        this.facetMinCount = facetMinCount;
+    }
+
     public QueryExpression setQueryString(String queryString) throws EuropeanaQueryException {
-        QueryExpression queryExpression = new SqlQueryExpression(queryString);
+        QueryExpression queryExpression = new SolrQueryExpression(queryString);
         setQueryExpression(queryExpression);
         return queryExpression;
     }
@@ -49,6 +59,7 @@ public class SqlQueryModel implements QueryModel {
     public void setQueryExpression(QueryExpression queryExpression) {
         this.queryString = queryExpression.getBackendQueryString();
         this.queryType = queryExpression.getType();
+        this.moreLikeThis = queryExpression.isMoreLikeThis();
     }
 
     public void setQueryConstraints(Constraints constraints) {
@@ -94,54 +105,45 @@ public class SqlQueryModel implements QueryModel {
         return rows;
     }
 
-    public ResponseType getResponseType() {
-        return responseType;
-    }
-
-    public Constraints getConstraints() {
-        return constraints;
-    }
-
-    public String getQueryString() {
-        return queryString;
-    }
-
-    public QueryExpression.QueryType getQueryType() {
-        return queryType;
-    }
-
-    public RecordFieldChoice getRecordFieldChoice() {
-        return recordFieldChoice;
-    }
-
     public ResultModel fetchResult() throws EuropeanaQueryException {
         Exception firstException = null;
         int attempt = 0;
         while (attempt < 5) {
             GetMethod method = null;
             try {
-                method = new GetMethod(baseUrl);
+                method = new GetMethod(solrBaseUrl);
                 method.setQueryString(createRequestParameters());
-                log.info(method.getQueryString());
+                log.debug(method.getQueryString());
                 httpClient.executeMethod(method);
                 if (method.getStatusCode() == HttpStatus.SC_OK) {
                     String responseString = method.getResponseBodyAsString();
-                    log.info(responseString);
+                    log.debug(responseString);
                     return new JsonResultModel(responseString, responseType);
                 }
-                log.warn("Request to " + baseUrl + " returned HTTP error " + method.getStatusCode() + ": " + method.getStatusText());
+                else if (method.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+                    log.warn("Request to " + solrBaseUrl + " returned HTTP error " + method.getStatusCode() + ": " + method.getStatusText());
+                    String errorMessage = method.getStatusText();
+                    if (!errorMessage.startsWith("undefined field")) {
+                        //"undefined field" means user provided invalid query.
+                        //there might be more user input errors.
+                        errorMessage = ""; //Hide possibly confusing error messages.
+                    }
+                    return new JsonResultModel(null, responseType, true, errorMessage);
+                }
             }
             catch (IOException e) {
                 log.error("Unable to fetch result", e);
-                if (firstException == null) {
+                if (firstException == null) { // todo: this is always null. maybe the exception here shuld not be thrown until after retries
                     firstException = e;
                 }
+                throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), firstException);
             }
             catch (JSONException e) {
                 log.error("Unable to fetch result", e);
                 if (firstException == null) {
                     firstException = e;
                 }
+                throw new EuropeanaQueryException(QueryProblem.UNABLE_TO_PARSE_JSON.toString(), firstException);
             }
             finally {
                 // because we use multithreaded connection manager the connection needs to be released manually
@@ -151,65 +153,69 @@ public class SqlQueryModel implements QueryModel {
             }
             attempt++;
         }
-        throw new EuropeanaQueryException("Attempts exhausted", firstException);
+        throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), firstException);
     }
+
 
     private NameValuePair[] createRequestParameters() {
         NameValueList list = new NameValueList();
         list.put("q", queryString);
-//        list.put("qt", queryType.toString());
+        list.put("wt", "json");
+        list.put("indent", "false");
+        list.put("qt", queryType.toString());
         list.put("start", String.valueOf(startRow));
         list.put("rows", String.valueOf(rows));
-        list.put("fq", buildFilterString());
-//        if (facets) {
-//            list.put("facet", "true");
-//            list.put("facet.mincount", facetMinCount);
-//            list.put("facet.limit", facetLimit);
-//            for (FacetType field : FacetType.values()) {
-//                if (field.isSearchable()) {
-//                    list.put("facet.field", field.toString());
-//                }
-//            }
-//        }
-//        if (moreLikeThis) {
-//            list.put("mlt", "true");
-//        }
-//        if (queryType == QueryExpression.QueryType.MORE_LIKE_THIS_QUERY || moreLikeThis) {
-//            list.put("mlt.mindf","1");
-//            list.put("mlt.mintf","1");
-//            list.put("mlt.match.include","true");
-//            list.put("mlt.interestingTerms","details"); // options: list, details, none
-//            list.put("mlt.boost","false");
-//            list.put("mlt.fl", "title,description,what,when,who");
-//            list.put("mlt.minwl", "3");
-//            list.put("mlt.maxwl", "15");
-//        }
-//        list.put("fl", toCommaDelimited(recordFieldChoice.getRecordFields()));
+        if (constraints != null) {
+            for (FacetType facetType : constraints.getFacetTypes()) {
+                list.put("fq", buildFilterString(facetType));
+            }
+        }
+        if (facets) {
+            list.put("facet", "true");
+            list.put("facet.mincount", facetMinCount);
+            list.put("facet.limit", facetLimit);
+            for (FacetType field : FacetType.values()) {
+                if (field.isSearchable()) {
+                    list.put("facet.field", String.format("{!ex=%s}%s", field.getTagName(), field.toString()));
+                }
+            }
+        }
+        if (moreLikeThis) {
+            list.put("mlt", "true");
+        }
+        if (queryType == QueryExpression.QueryType.MORE_LIKE_THIS_QUERY || moreLikeThis) {
+            list.put("mlt.fl", "title,description,what,when,who");
+            list.put("mlt.minwl", "3");
+            list.put("mlt.maxwl", "15");
+        }
+        list.put("fl", toCommaDelimited(recordFieldChoice.getRecordFields()));
         return list.getArray();
     }
 
-    private String buildFilterString() {
-        if (constraints == null) {
-            return "";
-        }
+    String buildFilterString(FacetType facetType) {
         StringBuilder out = new StringBuilder();
-        for (FacetType facetType : constraints.getFacetTypes()) {
-            out.append(' ');
-            List<String> values = constraints.getConstraint(facetType);
-            if (values.size() == 1) {
-                for (String value : values) {
-                    out.append(facetType).append(":").append('"').append(value).append('"');
+//            out.append(' ');
+        List<String> values = constraints.getConstraint(facetType);
+        if (values.size() == 1) {
+            for (String value : values) {
+                // add !tag to exclude this fq= from the facet count
+                out.append("{!tag=").append(facetType.getTagName()).append("}");
+                out.append(facetType).append(":").append('"').append(value).append('"');
+            }
+        }
+        else {
+            int count = values.size();
+            // add !tag to exclude this fq= from the facet count
+            out.append("{!tag=").append(facetType.getTagName()).append("}");
+            out.append(facetType).append(":").append("(\"");
+            for (String value : values) {
+                out.append(value);
+                --count;
+                if (count > 0) {
+                    out.append("\" OR \"");
                 }
             }
-            else {
-                int count = values.size();
-                for (String value : values) {
-                    out.append(facetType).append(":").append('"').append(value).append('"');
-                    if (--count > 0) {
-                        out.append(" OR ");
-                    }
-                }
-            }
+            out.append("\")");
         }
         return out.toString();
     }
@@ -235,4 +241,23 @@ public class SqlQueryModel implements QueryModel {
         }
     }
 
+    public ResponseType getResponseType() {
+        return responseType;
+    }
+
+    public Constraints getConstraints() {
+        return constraints;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public QueryExpression.QueryType getQueryType() {
+        return queryType;
+    }
+
+    public RecordFieldChoice getRecordFieldChoice() {
+        return recordFieldChoice;
+    }
 }

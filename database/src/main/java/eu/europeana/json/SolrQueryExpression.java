@@ -1,4 +1,4 @@
-package eu.europeana.json.solr;
+package eu.europeana.json;
 
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryExpression;

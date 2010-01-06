@@ -21,19 +21,9 @@
 package eu.europeana.database.dao.fixture;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.incoming.ESEImporter;
-import eu.europeana.incoming.ESEImporterImpl;
-import eu.europeana.incoming.ImportRepository;
-import eu.europeana.incoming.ImportRepositoryImpl;
-import eu.europeana.incoming.SolrIndexer;
-import eu.europeana.incoming.SolrIndexerImpl;
-import eu.europeana.json.solr.SolrQueryModelFactory;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
+import eu.europeana.incoming.*;
+import eu.europeana.json.SolrQueryModelFactory;
+import eu.europeana.query.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
@@ -88,7 +78,7 @@ public class IngestionFixture {
     }
 
     public ResultModel queryFullDoc(String uri) throws EuropeanaQueryException {
-        QueryModel queryModel = getQueryModelFactory().createQueryModel(QueryModelFactory.SearchType.SIMPLE);
+        QueryModel queryModel = getQueryModelFactory().createQueryModel();
         QueryExpression expression = queryModel.setQueryString("europeana_uri:\""+uri+"\"");
         log.info("Backend Query: "+ expression.getBackendQueryString());
         queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);

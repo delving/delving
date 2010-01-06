@@ -21,13 +21,11 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.json.solr.SolrQueryModelFactory;
+import eu.europeana.json.SolrQueryModelFactory;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +33,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -57,7 +57,7 @@ public class TestDocIdWindowPager {
 
     @Before
     public void beforeTest() {
-        queryModel = factory.createQueryModel(QueryModelFactory.SearchType.SIMPLE);
+        queryModel = factory.createQueryModel();
         request = new MockHttpServletRequest();
     }
 

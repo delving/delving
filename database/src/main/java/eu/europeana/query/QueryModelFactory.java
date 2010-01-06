@@ -27,10 +27,5 @@ package eu.europeana.query;
  */
 
 public interface QueryModelFactory {
-    enum SearchType {
-        SIMPLE,
-        ADVANCED
-    }
-
-    QueryModel createQueryModel(SearchType searchType);
+    QueryModel createQueryModel();
 }
