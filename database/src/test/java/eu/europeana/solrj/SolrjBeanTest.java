@@ -1,13 +1,21 @@
 package eu.europeana.solrj;
 
 import eu.europeana.bootstrap.SolrStarter;
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -16,7 +24,9 @@ import org.junit.Test;
 
 public class SolrjBeanTest {
 
-    private final String url = "http://localhost:8983/solr";
+    private Logger log = Logger.getLogger(getClass());
+
+    private static final String url = "http://localhost:8983/solr";
     /*
       CommonsHttpSolrServer is thread-safe and if you are using the following constructor,
       you *MUST* re-use the same instance for all requests.  If instances are created on
@@ -28,15 +38,11 @@ public class SolrjBeanTest {
     private static CommonsHttpSolrServer server;
 
     @BeforeClass
-    public void init() throws Exception {
+    public static void init() throws Exception {
         // start the solr server
         SolrStarter solrStarter = new SolrStarter();
         solrStarter.start();
-
-        // connect to the solr server
         server = new CommonsHttpSolrServer(url);
-
-        // server settings
         server.setSoTimeout(1000);  // socket read timeout
         server.setConnectionTimeout(100);
         server.setDefaultMaxConnectionsPerHost(100);
@@ -44,34 +50,40 @@ public class SolrjBeanTest {
         server.setFollowRedirects(false);  // defaults to false
         // allowCompression defaults to false.
         // Server side must support gzip or deflate for this to have any effect.
-        server.setAllowCompression(true);
+//        server.setAllowCompression(true);
         server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
     }
 
 
     @Test
     public void testSolrjAddBean() throws Exception {
-
+        List<BriefBean> list = new ArrayList<BriefBean>();
+        for (int walk = 0; walk < 10; walk++) {
+            BriefBean b = new BriefBean();
+            b.id = "id" + walk;
+            b.title = new String[]{"title" + walk};
+            b.creator = "creator";
+            b.year = "year";
+            b.provider = "provider";
+            b.collectionName = "collection";
+            b.europeanaUri = "uri";
+            list.add(b);
+        }
+        server.addBeans(list);
+        UpdateResponse response = server.commit();
+        assertTrue(response != null);
+        log.info("request url:" + response.getRequestUrl());
     }
 
     @Test
-    @Ignore
     public void testSolrjGetBeans() throws Exception {
-        // get server instance
-        SolrServer server = getSolrServer();
-
-        // create Solr Query
-        SolrQuery query = new SolrQuery();
-        query.setQuery("*:*");
-
-        // get response from server
-
-        QueryResponse rsp = server.query(query);
-
-        // get beans todo replace Item with Europeana Bean class
-
-//         List<Item> beans = rsp.getBeans(Item.class);
-
+        SolrQuery query = new SolrQuery().setQuery("*:*");
+        QueryResponse response = server.query(query);
+        List<BriefBean> beans = response.getBeans(BriefBean.class);
+        assertEquals(10, beans.size());
+        for (BriefBean bean : beans) {
+            log.info("bean: " + bean.id);
+        }
     }
 
     @Test
@@ -80,8 +92,27 @@ public class SolrjBeanTest {
         throw new Exception("not implemented yet");
     }
 
+    public static class BriefBean {
 
-    private CommonsHttpSolrServer getSolrServer() {
-        return server;
+        @Field
+        String id;
+
+        @Field
+        String[] title;
+
+        @Field
+        String creator;
+
+        @Field("YEAR")
+        String year;
+
+        @Field("PROVIDER")
+        String provider;
+
+        @Field("europeana_collectionName")
+        String collectionName;
+
+        @Field("europeana_uri")
+        String europeanaUri;
     }
 }
