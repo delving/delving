@@ -1,7 +1,13 @@
 package eu.europeana.solrj;
 
 import eu.europeana.bootstrap.SolrStarter;
+import eu.europeana.query.QueryExpression;
+import eu.europeana.query.ResponseType;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,12 +54,45 @@ public class SolrjQueryTest {
 
     @Test
     public void testSolrjQuery() throws Exception {
+        // Europeana Stuff
+        ResponseType responseType = ResponseType.LARGE_BRIEF_DOC_WINDOW;
+
+
+        // get server instance
+        SolrServer server = getSolrServer();
+
+        // create Solr Query
+        SolrQuery query = new SolrQuery()
+                .setQueryType(QueryExpression.QueryType.SIMPLE_QUERY.toString()) // == "europeana"
+                        // set paging stuff
+                .setRows(responseType.getRows())
+                        // set facets
+                .setFacet(true)
+
+                        // set filter constraints
+                .setFilterQueries()
+                .setQuery("*:*");
+
+        // get response from server
+
+        QueryResponse rsp = server.query(query);
+
+        // get result List
+
+        SolrDocumentList docs = rsp.getResults();
+
 
     }
 
     @Test
     @Ignore
-    public void testSolrjIndexing() throws Exception {
+    public void testSolrjXmlUpload() throws Exception {
+        throw new Exception("not implemented yet");
+    }
+
+    @Test
+    @Ignore
+    public void testSolrjBinaryUpload() throws Exception {
         throw new Exception("not implemented yet");
     }
 

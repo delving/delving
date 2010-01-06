@@ -1,7 +1,10 @@
 package eu.europeana.solrj;
 
 import eu.europeana.bootstrap.SolrStarter;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -53,7 +56,27 @@ public class SolrjBeanTest {
 
     @Test
     @Ignore
-    public void testSolrjGetBean() throws Exception {
+    public void testSolrjGetBeans() throws Exception {
+        // get server instance
+        SolrServer server = getSolrServer();
+
+        // create Solr Query
+        SolrQuery query = new SolrQuery();
+        query.setQuery("*:*");
+
+        // get response from server
+
+        QueryResponse rsp = server.query(query);
+
+        // get beans todo replace Item with Europeana Bean class
+
+//         List<Item> beans = rsp.getBeans(Item.class);
+
+    }
+
+    @Test
+    @Ignore
+    public void testSolrjQueryBea() throws Exception {
         throw new Exception("not implemented yet");
     }
 
