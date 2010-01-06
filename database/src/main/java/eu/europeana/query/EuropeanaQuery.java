@@ -67,7 +67,7 @@ public interface EuropeanaQuery {
     }
 
     // from DocIdWindow
-    public interface DocIdWindow extends eu.europeana.query.PagingWindow {
+    public interface DocIdWindow extends PagingWindow {
         List<String> getIds();
     }
 
@@ -125,7 +125,7 @@ public interface EuropeanaQuery {
 
         RecordFieldChoice getRecordFieldChoice();
 
-        eu.europeana.query.ResultModel fetchResult() throws EuropeanaQueryException;
+        ResultModel fetchResult() throws EuropeanaQueryException;
 
         public interface Constraints {
 
@@ -151,7 +151,7 @@ public interface EuropeanaQuery {
             ADVANCED
         }
 
-        eu.europeana.query.QueryModel createQueryModel(SearchType searchType);
+        QueryModel createQueryModel(SearchType searchType);
     }
 
     // From result Model
@@ -164,11 +164,11 @@ public interface EuropeanaQuery {
 
         BriefDoc getMatchDoc();
 
-        eu.europeana.query.BriefDocWindow getBriefDocWindow();
+        BriefDocWindow getBriefDocWindow();
 
         DocIdWindow getDocIdWindow();
 
-        List<eu.europeana.query.Facet> getFacets();
+        List<Facet> getFacets();
 
         boolean isBadRequest();
 
