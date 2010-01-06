@@ -99,11 +99,6 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
                     RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
             );
             tabPanel.addTab(
-                    new GodWidget(this),
-                    messages.GodTab(),
-                    RoleX.ROLE_GOD
-            );
-            tabPanel.addTab(
                     new LogWidget(this),
                     messages.logTab(),
                     RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
