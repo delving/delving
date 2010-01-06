@@ -59,7 +59,7 @@
     </security:http>
 
     <bean id="europeanaProperties" class="eu.europeana.query.EuropeanaProperties"/>
-    
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" ref="europeanaProperties"/>
     </bean>
@@ -134,9 +134,7 @@
         <property name="normalized" value="true"/>
     </bean>
 
-    <bean id="queryModelFactory" class="eu.europeana.json.SolrQueryModelFactory">
-        <property name="baseUrl" value="#{europeanaProperties['solr.selectUrl']}"/>
-    </bean>
+    <bean id="queryModelFactory" class="eu.europeana.json.SolrQueryModelFactory"/>
 
     <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">
         <property name="targetUrl" value="#{europeanaProperties['solr.updateUrl']}"/>

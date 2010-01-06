@@ -1,16 +1,23 @@
 package eu.europeana.solrj;
 
 import eu.europeana.bootstrap.SolrStarter;
-import eu.europeana.query.QueryExpression;
+import eu.europeana.query.FacetType;
 import eu.europeana.query.ResponseType;
+import junit.framework.Assert;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -19,7 +26,7 @@ import org.junit.Test;
 
 public class SolrjQueryTest {
 
-    private final String url = "http://localhost:8983/solr";
+    private static final String url = "http://localhost:8983/solr";
     /*
       CommonsHttpSolrServer is thread-safe and if you are using the following constructor,
       you *MUST* re-use the same instance for all requests.  If instances are created on
@@ -29,11 +36,12 @@ public class SolrjQueryTest {
     */
 
     private static CommonsHttpSolrServer server;
+    private static SolrStarter solrStarter;
 
     @BeforeClass
-    public void init() throws Exception {
+    public static void init() throws Exception {
         // start the solr server
-        SolrStarter solrStarter = new SolrStarter();
+        solrStarter = new SolrStarter();
         solrStarter.start();
 
         // connect to the solr server
@@ -51,6 +59,10 @@ public class SolrjQueryTest {
         server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
     }
 
+    @AfterClass
+    public static void after() throws Exception {
+        solrStarter.stop();
+    }
 
     @Test
     public void testSolrjQuery() throws Exception {
@@ -63,23 +75,47 @@ public class SolrjQueryTest {
 
         // create Solr Query
         SolrQuery query = new SolrQuery()
-                .setQueryType(QueryExpression.QueryType.SIMPLE_QUERY.toString()) // == "europeana"
+//                .setQueryType(QueryExpression.QueryType.SIMPLE_QUERY.toString()) // == "europeana"
+                .setQuery("*:*")
                         // set paging stuff
-                .setRows(responseType.getRows())
+
                         // set facets
                 .setFacet(true)
+                .setFacetMinCount(0)
+                .setFacetLimit(9)
+//                .setFacetPrefix(FacetType.LANGUAGE.toString(), FacetType.LANGUAGE.getTagName()) // for each facet field
+                .addFacetField(FacetType.LANGUAGE.toString())
 
                         // set filter constraints
-                .setFilterQueries()
-                .setQuery("*:*");
+                .setFilterQueries("LANGUAGE:mul")
+                .setRows(responseType.getRows())
+                .setStart(0); //  solr is zero based
+
 
         // get response from server
 
+//        Thread.sleep(10000);
         QueryResponse rsp = server.query(query);
 
         // get result List
 
         SolrDocumentList docs = rsp.getResults();
+        List<FacetField> list = rsp.getFacetFields();
+
+        Assert.assertTrue("must return more then zero docs", docs.size() != 0);
+
+        for (SolrDocument doc : docs) {
+            System.out.println(doc.getFieldValue("dc_title"));
+        }
+
+        for (FacetField facetField : list) {
+            List<FacetField.Count> values = facetField.getValues();
+            for (FacetField.Count value : values) {
+                System.out.println("get name + count" + value.getName() + value.getCount());
+                System.out.println("get filter query" + value.getAsFilterQuery());
+                System.out.println("get facet name" + value.getFacetField().getName());
+            }
+        }
 
 
     }
@@ -93,6 +129,10 @@ public class SolrjQueryTest {
     @Test
     @Ignore
     public void testSolrjBinaryUpload() throws Exception {
+        CommonsHttpSolrServer solrServer = getSolrServer();
+
+        // upload binary instead of XML
+        solrServer.setRequestWriter(new BinaryRequestWriter());
         throw new Exception("not implemented yet");
     }
 

@@ -4,6 +4,7 @@ import eu.europeana.query.QueryModel;
 import eu.europeana.query.QueryModelFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -14,6 +15,7 @@ public class SolrQueryModelFactory implements QueryModelFactory {
     private HttpClient httpClient;
     private String baseUrl;
 
+    @Value("#{europeanaProperties['solr.selectUrl']}")
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }

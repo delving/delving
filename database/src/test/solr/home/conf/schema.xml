@@ -668,12 +668,12 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
-   <copyField source="cat" dest="text"/>
-   <copyField source="name" dest="text"/>
-   <copyField source="manu" dest="text"/>
-   <copyField source="features" dest="text"/>
-   <copyField source="includes" dest="text"/>
-   <copyField source="manu" dest="manu_exact"/>
+   <!--<copyField source="cat" dest="text"/>-->
+   <!--<copyField source="name" dest="text"/>-->
+   <!--<copyField source="manu" dest="text"/>-->
+   <!--<copyField source="features" dest="text"/>-->
+   <!--<copyField source="includes" dest="text"/>-->
+   <!--<copyField source="manu" dest="manu_exact"/>-->
 
    <!-- Europeana copy fields -->
 
