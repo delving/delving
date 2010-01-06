@@ -14,7 +14,7 @@ registration : ${user.registrationDate?date}<br/>
 ==========</p>
 
 <p>- Europeana Registration Machine<br />
-eu.europeana.web.controller.RegisterController</p>
+RegisterController</p>
 
 </body>
 

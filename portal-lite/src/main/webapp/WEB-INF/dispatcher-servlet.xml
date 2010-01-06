@@ -128,7 +128,7 @@
 
     <!-- Controllers -->
 
-    <!--<bean id="contactController" class="eu.europeana.web.controller.ContactController">-->
+    <!--<bean id="contactController" class="eu.europeana.web.controller.ContactPageControllerller">-->
     <!--<property name="emailSender" ref="emailSenderForUserFeedback"/>-->
     <!--<property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>-->
     <!--<property name="successView" value="contact"/>-->

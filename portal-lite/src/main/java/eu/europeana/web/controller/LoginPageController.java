@@ -24,13 +24,14 @@ package eu.europeana.web.controller;
 import eu.europeana.database.UserDao;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.TokenReplyEmailSender;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Where people give us their password
@@ -39,12 +40,12 @@ import org.springframework.web.servlet.ModelAndView;
  */
 
 @Controller
-public class LoginController {
+public class LoginPageController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private TokenReplyEmailSender tokenReplyEmailSender;
-    
+
     @Autowired
     private UserDao userDao;
 

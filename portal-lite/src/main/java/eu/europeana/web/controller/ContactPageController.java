@@ -24,7 +24,6 @@ package eu.europeana.web.controller;
 import eu.europeana.database.domain.User;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +38,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -51,7 +51,7 @@ import java.util.TreeMap;
 
 @Controller
 @RequestMapping("/contact.html")
-public class ContactController {
+public class ContactPageController {
 
     @Autowired
     @Qualifier("emailSenderForUserFeedback")

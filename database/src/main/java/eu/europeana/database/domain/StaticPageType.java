@@ -16,7 +16,12 @@ public enum StaticPageType {
     ERROR("error"),
     SITEMAP("sitemap"),
     ADVANCED_SEARCH("advancedsearch"),
-    NEWS("news");
+    NEWS("news"),
+    COMMUNITIES("communities"),
+    THOUGHT_LAB("thought-lab"),
+    CONTRIBUTORS("partners"),
+    TAG_GRID("tag-grid"),
+    YEAR_GRID("yeargrid");
 
     private String viewName;
 
@@ -36,4 +41,5 @@ public enum StaticPageType {
         }
         throw new IllegalArgumentException("Did not recognize StaticPageType: ["+string+"]");
     }
+
 }

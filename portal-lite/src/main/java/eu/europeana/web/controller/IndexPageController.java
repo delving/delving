@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @Controller
-public class IndexController {
+public class IndexPageController {
 
     @Autowired
     private CarouselItemSampler carouselItemSampler;

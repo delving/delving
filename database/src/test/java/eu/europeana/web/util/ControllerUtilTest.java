@@ -45,6 +45,12 @@ public class ControllerUtilTest {
     }
 
     @Test
+    @Ignore("implement first")
+    public void testFreemarkerRenderFromTemplate() throws Exception {
+
+    }
+
+    @Test
     @Ignore("Implement first")
     public void testFormatFullRequestUrl() throws Exception {
     }

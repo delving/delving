@@ -23,19 +23,12 @@ package eu.europeana.web.controller;
 
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 import eu.europeana.database.integration.TagCount;
 import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.DocType;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +36,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLDecoder;
@@ -91,7 +86,7 @@ public class AjaxController {
     }
 
     private Boolean processAjaxRemoveRequest(HttpServletRequest request) throws Exception {
-        User user = ControllerUtil.getUser();
+        User user;
         String className = request.getParameter("className");
         String idString = request.getParameter("id");
         if (className == null || idString == null) {

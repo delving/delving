@@ -28,7 +28,6 @@ import eu.europeana.database.domain.User;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
-import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,12 +38,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -58,7 +54,7 @@ import java.util.TreeMap;
 
 @Controller
 @RequestMapping("/register.html")
-public class RegisterController {
+public class RegisterPageController {
     private Logger log = Logger.getLogger(getClass());
 
     @Value("#{europeanaProperties['register.to']}")

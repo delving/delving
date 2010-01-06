@@ -87,6 +87,9 @@ public interface ClickStreamLogger {
         RETURN_TO_RESULTS,
         REDIRECT_OUTLINK,
         TIMELINE,
+        TAG_GRID,
+        YEAR_GRID,
+        BROWSE_BOB,
 
         // ajax related actions
         SAVE_ITEM,
