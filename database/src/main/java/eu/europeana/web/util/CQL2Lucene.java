@@ -10,6 +10,7 @@ import org.z3950.zing.cql.CQLParser;
 import java.io.IOException;
 import java.util.HashMap;
 
+@Deprecated
 public class CQL2Lucene
 {
 	private static final HashMap<String, String> SUPPORTED_SEARCH_FIELDS = new HashMap<String, String>();

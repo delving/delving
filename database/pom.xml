@@ -269,6 +269,10 @@
             <artifactId>srw_lucene</artifactId>
             <!--suppress MavenModelInspection -->
         </dependency>
+         <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+        </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
