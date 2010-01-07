@@ -34,7 +34,6 @@
         <module>database</module>
         <module>api</module>
         <module>portal-lite</module>
-        <module>bootstrap</module>
     </modules>
 
     <organization>
