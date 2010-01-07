@@ -590,7 +590,7 @@ concurrently.  An error is returned if this limit is exceeded. Recommend
                 ord(popularity)^0.5
             </str>
             <str name="fl">
-                title, YEAR, source, LANGUAGE, TYPE, contributor
+                europeana_uri, title, YEAR, source, LANGUAGE, TYPE, contributor
             </str>
             <str name="mm">
                 2&lt;-1 5&lt;-2 6&lt;90%

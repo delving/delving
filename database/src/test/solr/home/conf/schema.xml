@@ -762,7 +762,6 @@
    <copyField source="dcterms_hasFormat" dest="relation" />
    <copyField source="dcterms_hasPart" dest="relation" />
    <copyField source="dcterms_hasVersion" dest="relation" />
-   <copyField source="dcterms_hasVersion" dest="relation" />
    <copyField source="dcterms_isReferencedBy" dest="relation" />
    <copyField source="dcterms_isReplacedBy" dest="relation" />
    <copyField source="dcterms_isRequiredBy" dest="relation" />

@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.junit.BeforeClass;
@@ -78,11 +79,24 @@ public class SolrjBeanTest {
     @Test
     public void testSolrjGetBeans() throws Exception {
         SolrQuery query = new SolrQuery().setQuery("*:*");
+        query.setFacet(true);
+        query.addFacetField("PROVIDER");
+        query.setQueryType("moreLikeThis");
         QueryResponse response = server.query(query);
         List<BriefBean> beans = response.getBeans(BriefBean.class);
         assertEquals(10, beans.size());
         for (BriefBean bean : beans) {
-            log.info("bean: " + bean.id);
+            log.info("bean: " + bean.europeanaUri);
+        }
+
+        List<FacetField> facetFieldList = response.getFacetFields();
+        for (FacetField facetField : facetFieldList) {
+            if (facetField.getName().equalsIgnoreCase("PROVIDER")) {
+                List<FacetField.Count> list = facetField.getValues();
+                for (FacetField.Count count : list) {
+                    log.info("tag: " + count.getName() + count.getCount());
+                }
+            }
         }
     }
 
@@ -114,5 +128,8 @@ public class SolrjBeanTest {
 
         @Field("europeana_uri")
         String europeanaUri;
+
+        @Field("europeana_object")
+        String[] europeanaObject;
     }
 }
