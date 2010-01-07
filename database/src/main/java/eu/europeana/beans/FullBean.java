@@ -7,13 +7,8 @@ import org.apache.solr.client.solrj.beans.Field;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public class FullBean extends BriefBean{
+public class FullBean extends RequiredBean {
 
-    // Facet Fields
-    @Field("COUNTRY")
-    @Europeana(copyField = true, facet = true, facetPrefix = "coun")
-    @Solr(fieldType = "string")
-    String[] country;
 
     // Europeana namespace
     @Europeana
@@ -50,6 +45,21 @@ public class FullBean extends BriefBean{
     @Solr(namespace = "europeana", name = "isShownBy", fieldType = "string", toCopyField = {"text"})
     @Field("europeana_isShownBy")
     String[] europeanaisShownBy;
+
+    @Europeana()
+    @Solr(namespace = "europeana", name = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
+    @Field("europeana_year")
+    String[] europeanaYear;
+
+    @Europeana()
+    @Solr(namespace = "europeana", name = "hasObject", fieldType = "boolean")
+    @Field("europeana_hasObject")
+    boolean europeanahasObject;
+
+    @Europeana()
+    @Solr(namespace = "europeana", name = "provider", toCopyField = {"PROVIDER"})
+    @Field("europeana_provider")
+    boolean europeanaProvider;
 
 
     // Dublin Core / ESE fields

@@ -8,6 +8,12 @@ import org.apache.solr.client.solrj.beans.Field;
  */
 public class AllFieldBean extends FullBean {
 
+    // Facet Fields
+    @Field("COUNTRY")
+    @Europeana(copyField = true, facet = true, facetPrefix = "coun")
+    @Solr(fieldType = "string")
+    String[] country;
+
     // disabled facet fields
 
     @Field("LOCATION")
@@ -97,10 +103,4 @@ public class AllFieldBean extends FullBean {
     @Europeana(copyField = true, fullDoc = false)
     @Solr()
     String[] where;
-
-    // search fields
-    @Europeana(fullDoc = false)
-    @Solr(namespace = "europeana", name = "hasObject", fieldType = "boolean")
-    @Field("europeana_hasObject")
-    boolean europeanahasObject;
 }
