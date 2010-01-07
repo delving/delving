@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2007 EDL FOUNDATION
@@ -133,7 +132,19 @@
         <property name="defaultMaxConnectionsPerHost" value="64"/>
         <property name="maxTotalConnections" value="512"/>
         <property name="followRedirects" value="false"/>
-    </bean> 
+    </bean>
+
+    <bean id="annotationProcessor" class="eu.europeana.beans.AnnotationProcessorImpl">
+        <property name="classes">
+            <util:list>
+                <value type="java.lang.Class">eu.europeana.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.beans.RequiredBean</value>
+                <value type="java.lang.Class">eu.europeana.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.beans.AllFieldBean</value>
+            </util:list>
+        </property>
+    </bean>
 
     <bean id="normalizedImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="#{europeanaProperties['dashboard.normalized.import.repository']}"/>
