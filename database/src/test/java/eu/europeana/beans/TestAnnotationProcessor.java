@@ -3,7 +3,6 @@ package eu.europeana.beans;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +26,13 @@ public class TestAnnotationProcessor {
         list.add(AllFieldBean.class);
         AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
         annotationProcessor.setClasses(list);
-        assertEquals(9, annotationProcessor.getFields(BriefBean.class).size());
-        for (Field field : annotationProcessor.getFields(BriefBean.class)) {
+        EuropeanaBean bean = annotationProcessor.getEuropeanaBean(BriefBean.class);
+        assertEquals(9, bean.getFields().size());
+        for (EuropeanaField field : bean.getFields()) {
             log.info("BriefBean field "+field.getName());
         }
         assertEquals(5, annotationProcessor.getFacetFields().size());
-        for (FacetField ff : annotationProcessor.getFacetFields()) {
+        for (EuropeanaField ff : annotationProcessor.getFacetFields()) {
             log.info("facet " + ff.getFieldNameString());
         }
 

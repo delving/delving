@@ -12,10 +12,9 @@ import java.util.*;
  */
 
 public class AnnotationProcessorImpl implements AnnotationProcessor {
-
     private Logger log = Logger.getLogger(getClass());
-    private Set<FacetFieldImpl> facetFields = new HashSet<FacetFieldImpl>();
-    private Map<Class<?>, Set<Field>> beanFieldMap = new HashMap<Class<?>, Set<Field>>();
+    private Set<EuropeanaFieldImpl> facetFields = new HashSet<EuropeanaFieldImpl>();
+    private Map<Class<?>, EuropeanaBean> beanMap = new HashMap<Class<?>, EuropeanaBean>();
 
     public void setClasses(List<Class<?>> classes) {
         for (Class<?> c : classes) {
@@ -23,29 +22,31 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         }
     }
 
-    public Set<? extends FacetField> getFacetFields() {
+    @Override
+    public Set<? extends EuropeanaField> getFacetFields() {
         return facetFields;
     }
 
-    public Set<Field> getFields(Class<?> c) {
-        return beanFieldMap.get(c);
+    @Override
+    public EuropeanaBean getEuropeanaBean(Class<?> c) {
+        return beanMap.get(c);
     }
 
     // from here private
 
     private void processAnnotations(Class<?> c) {
-        if (!beanFieldMap.containsKey(c)) {
-            Set<Field> fieldSet = new HashSet<Field>();
+        if (!beanMap.containsKey(c)) {
+            EuropeanaBeanImpl europeanaBean = new EuropeanaBeanImpl(c);
             Class<?> clazz = c;
             while (clazz != Object.class) {
                 for (Field field : clazz.getDeclaredFields()) {
                     processSolrAnnotation(field);
                     processEuropeanaAnnotation(field);
-                    fieldSet.add(field);
+                    europeanaBean.addField(new EuropeanaFieldImpl(field));
                 }
                 clazz = clazz.getSuperclass();
             }
-            beanFieldMap.put(c, fieldSet);
+            beanMap.put(c, europeanaBean);
         }
     }
 
@@ -54,7 +55,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         if (europeana != null) {
             logEuropeanaAttributes(field, europeana);
             if (europeana.facet()) {
-                facetFields.add(new FacetFieldImpl(field));
+                facetFields.add(new EuropeanaFieldImpl(field));
             }
         }
     }
@@ -96,10 +97,41 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         }
     }
 
-    private class FacetFieldImpl implements FacetField {
+    private static class EuropeanaBeanImpl implements EuropeanaBean {
+        private Class<?> beanClass;
+        private Set<EuropeanaField> fields = new HashSet<EuropeanaField>();
+
+        private EuropeanaBeanImpl(Class<?> beanClass) {
+            this.beanClass = beanClass;
+            if (beanClass.getAnnotation(EuropeanaView.class) == null) {
+                throw new RuntimeException("Bean class must be annotated with @EuropeanaView");
+            }
+        }
+
+        @Override
+        public int rows() {
+            return beanClass.getAnnotation(EuropeanaView.class).rows();
+        }
+
+        @Override
+        public boolean facets() {
+            return beanClass.getAnnotation(EuropeanaView.class).facets();
+        }
+
+        @Override
+        public Set<EuropeanaField> getFields() {
+            return fields;
+        }
+
+        void addField(EuropeanaField field) {
+            fields.add(field);
+        }
+    }
+
+    private static class EuropeanaFieldImpl implements EuropeanaField {
         private Field field;
 
-        private FacetFieldImpl(Field field) {
+        private EuropeanaFieldImpl(Field field) {
             this.field = field;
         }
 
@@ -128,7 +160,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            FacetFieldImpl that = (FacetFieldImpl) o;
+            EuropeanaFieldImpl that = (EuropeanaFieldImpl) o;
             return !(field != null ? !field.equals(that.field) : that.field != null);
         }
 

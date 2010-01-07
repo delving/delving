@@ -1,6 +1,5 @@
 package eu.europeana.beans;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 
 /**
@@ -10,6 +9,6 @@ import java.util.Set;
  */
 
 public interface AnnotationProcessor {
-    Set<? extends FacetField> getFacetFields();
-    Set<Field> getFields(Class<?> c);
+    Set<? extends EuropeanaField> getFacetFields();
+    EuropeanaBean getEuropeanaBean(Class<?> c);
 }

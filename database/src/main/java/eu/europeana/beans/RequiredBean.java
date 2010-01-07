@@ -6,6 +6,8 @@ import org.apache.solr.client.solrj.beans.Field;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:16:57 AM
  */
+
+@EuropeanaView(facets = false, rows = 10)
 public class RequiredBean extends IdBean {
 
     @Europeana

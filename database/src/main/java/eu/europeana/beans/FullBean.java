@@ -11,8 +11,8 @@ import org.apache.solr.client.solrj.beans.Field;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@EuropeanaView(facets = false, rows = 10)
 public class FullBean extends RequiredBean implements FullDoc {
-
 
     // Europeana namespace
     @Europeana

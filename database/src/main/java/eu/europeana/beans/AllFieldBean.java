@@ -6,6 +6,8 @@ import org.apache.solr.client.solrj.beans.Field;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:17:26 AM
  */
+
+@EuropeanaView(facets = false, rows = 10)
 public class AllFieldBean extends FullBean {
 
     // Facet Fields

@@ -6,7 +6,7 @@ package eu.europeana.beans;
  * @author Gerald de Jong geralddejong@gmail.com
  */
 
-public interface FacetField {
+public interface EuropeanaField {
     String getPrefix();
     String getName();
     String getFieldNameString();
