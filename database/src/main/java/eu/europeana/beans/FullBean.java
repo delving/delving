@@ -7,70 +7,15 @@ import org.apache.solr.client.solrj.beans.Field;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public class FullBean {
+public class FullBean extends BriefBean{
 
     // Facet Fields
-    @Field("LANGUAGE")
-    @Europeana(copyField = true, facet = true, facetPrefix = "lang", briefDoc = true)
-    @Solr(fieldType = "string")
-    String[] language;
-
-    @Field("YEAR")
-    @Europeana(copyField = true, facet = true, facetPrefix = "yr", briefDoc = true)
-    @Solr(fieldType = "string")
-    String[] year;
-
-    @Field("PROVIDER")
-    @Europeana(copyField = true, facet = true, facetPrefix = "prov", briefDoc = true)
-    @Solr(fieldType = "string")
-    String[] provider;
-
-    @Field("TYPE")
-    @Europeana(copyField = true, facet = true, facetPrefix = "type", briefDoc = true)
-    @Solr(fieldType = "string")
-    String[] docType;
-
     @Field("COUNTRY")
     @Europeana(copyField = true, facet = true, facetPrefix = "coun")
     @Solr(fieldType = "string")
     String[] country;
 
-    // disabled facet fields
-
-    @Field("LOCATION")
-    @Europeana(copyField = true, facet = false, facetPrefix = "loc")
-    @Solr(fieldType = "string")
-    String[] location;
-
-    @Field("CONTRIBUTOR")
-    @Europeana(copyField = true, facet = false, facetPrefix = "cont")
-    @Solr(fieldType = "string")
-    String[] contributor;
-
-    @Field("USERTAGS")
-    @Europeana(copyField = true, facet = false, facetPrefix = "ut")
-    @Solr(fieldType = "string")
-    String[] userTags;
-
-    @Field("SUBJECT")
-    @Europeana(copyField = true, facet = false, facetPrefix = "sub")
-    @Solr(fieldType = "string")
-    String[] subject;
-
-
     // Europeana namespace
-
-    // required field
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
-
-    @Europeana
-    @Solr(namespace = "europeana", name = "collectionName", multivalued = false, required = true)
-    @Field("europeana_collectionName")
-    String collectionName;
-
     @Europeana
     @Solr(namespace = "europeana", name = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     @Field("europeana_type")
@@ -85,16 +30,6 @@ public class FullBean {
     @Solr(namespace = "europeana", name = "language", fieldType = "string", toCopyField = {"text", "LANGUAGE"})
     @Field("europeana_language")
     String[] europeanaLanguage;
-
-    @Europeana()
-    @Solr(namespace = "europeana", name = "unstored", stored = false)
-    @Field("europeana_unstored")
-    String[] europeanaUnstored;
-
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "object")
-    @Field("europeana_object")
-    String[] europeanaObject;
 
     @Europeana()
     @Solr(namespace = "europeana", name = "country")
@@ -115,11 +50,6 @@ public class FullBean {
     @Solr(namespace = "europeana", name = "isShownBy", fieldType = "string", toCopyField = {"text"})
     @Field("europeana_isShownBy")
     String[] europeanaisShownBy;
-
-    @Europeana()
-    @Solr(namespace = "europeana", name = "hasObject", fieldType = "boolean")
-    @Field("europeana_hasObject")
-    boolean europeanahasObject;
 
 
     // Dublin Core / ESE fields
@@ -310,76 +240,4 @@ public class FullBean {
     @Field("dcterms_temporal")
     String[] dctermsTemporal;
 
-    // copy fields
-
-    @Field
-    @Europeana(copyField = true, briefDoc = true)
-    @Solr()
-    String[] title;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] description;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] date;
-
-    @Field
-    @Solr()
-    @Europeana(copyField = true, briefDoc = true)
-    String creator;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] format;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] publisher;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] source;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] rights;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] identifier;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] relation;
-
-    // wh copy fields
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] who;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] when;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] what;
-
-    @Field
-    @Europeana(copyField = true)
-    @Solr()
-    String[] where;
 }
