@@ -3,7 +3,9 @@ package eu.europeana.beans;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,6 +18,7 @@ public class AnnotationProcessor {
 
     private Logger log = Logger.getLogger(getClass());
     private Set<FacetFieldImpl> facetFields = new HashSet<FacetFieldImpl>();
+    private Map<Class<?>, Set<Field>> beanFieldMap = new HashMap<Class<?>, Set<Field>>();
 
     public AnnotationProcessor(Class<?>... classes) {
         for (Class<?> c : classes) {
@@ -27,10 +30,23 @@ public class AnnotationProcessor {
         return facetFields;
     }
 
+    public Set<Field> getFields(Class<?> c) {
+        return beanFieldMap.get(c);
+    }
+
     private void processAnnotations(Class<?> c) {
-        for (Field field : c.getDeclaredFields()) {
-            processSolrAnnotation(field);
-            processEuropeanaAnnotation(field);
+        if (!beanFieldMap.containsKey(c)) {
+            Set<Field> fieldSet = new HashSet<Field>();
+            Class<?> clazz = c;
+            while (clazz != Object.class) {
+                for (Field field : clazz.getDeclaredFields()) {
+                    processSolrAnnotation(field);
+                    processEuropeanaAnnotation(field);
+                    fieldSet.add(field);
+                }
+                clazz = clazz.getSuperclass();
+            }
+            beanFieldMap.put(c, fieldSet);
         }
     }
 

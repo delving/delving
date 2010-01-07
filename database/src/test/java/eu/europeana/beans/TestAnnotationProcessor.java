@@ -1,8 +1,11 @@
 package eu.europeana.beans;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -21,10 +24,15 @@ public class TestAnnotationProcessor {
                 FullBean.class,
                 AllFieldBean.class
         );
-        Assert.assertEquals(5, processor.getFacetFields().size());
+        assertEquals(9, processor.getFields(BriefBean.class).size());
+        for (Field field : processor.getFields(BriefBean.class)) {
+            log.info("BriefBean field "+field.getName());
+        }
+        assertEquals(5, processor.getFacetFields().size());
         for (FacetField ff : processor.getFacetFields()) {
             log.info("facet " + ff.getFieldNameString());
         }
+
     }
 
 }
