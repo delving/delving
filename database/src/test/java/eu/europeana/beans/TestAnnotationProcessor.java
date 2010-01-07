@@ -1,6 +1,7 @@
 package eu.europeana.beans;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -20,7 +21,7 @@ public class TestAnnotationProcessor {
                 FullBean.class,
                 AllFieldBean.class
         );
-        // todo: assertions
+        Assert.assertEquals(5, processor.getFacetFields().size());
     }
 
 }

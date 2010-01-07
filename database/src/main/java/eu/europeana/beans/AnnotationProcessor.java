@@ -3,6 +3,8 @@ package eu.europeana.beans;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Interpret the annotations in the beans which define the search model
@@ -13,11 +15,16 @@ import java.lang.reflect.Field;
 public class AnnotationProcessor {
 
     private Logger log = Logger.getLogger(getClass());
+    private Set<Field> facetFields = new HashSet<Field>();
 
     public AnnotationProcessor(Class<?>... classes) {
         for (Class<?> c : classes) {
             processAnnotations(c);
         }
+    }
+
+    public Set<Field> getFacetFields() {
+        return facetFields;
     }
 
     private void processAnnotations(Class<?> c) {
@@ -31,6 +38,16 @@ public class AnnotationProcessor {
         Europeana europeana = field.getAnnotation(Europeana.class);
         if (europeana != null) {
             logEuropeanaAttributes(field, europeana);
+            if (europeana.facet()) {
+                facetFields.add(field);
+            }
+        }
+    }
+
+    private void processSolrAnnotation(Field field) {
+        Solr solr = field.getAnnotation(Solr.class);
+        if (solr != null) {
+            logSolrAttributes(field, solr);
         }
     }
 
@@ -43,13 +60,6 @@ public class AnnotationProcessor {
         log.info(prefix + "copyField(flag)="+europeana.copyField());
         log.info(prefix + "facet="+europeana.facet());
         log.info(prefix + "hidden="+europeana.hidden());
-    }
-
-    private void processSolrAnnotation(Field field) {
-        Solr solr = field.getAnnotation(Solr.class);
-        if (solr != null) {
-            logSolrAttributes(field, solr);
-        }
     }
 
     private void logSolrAttributes(Field field, Solr solr) {
