@@ -144,13 +144,8 @@ public class SolrQueryModel implements QueryModel {
                 }
                 else if (method.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     log.warn("Request to " + solrBaseUrl + " returned HTTP error " + method.getStatusCode() + ": " + method.getStatusText());
-                    String errorMessage = method.getStatusText();
-                    if (!errorMessage.startsWith("undefined field")) {
-                        //"undefined field" means user provided invalid query.
-                        //there might be more user input errors.
-                        errorMessage = ""; //Hide possibly confusing error messages.
-                    }
-                    return new JsonResultModel(null, responseType, true, errorMessage);
+                    return new JsonResultModel(null, responseType);
+//                    return new JsonResultModel(null, responseType, true, errorMessage);
                 }
             }
             catch (IOException e) {

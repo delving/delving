@@ -21,24 +21,19 @@
 
 package eu.europeana.query;
 
+import eu.europeana.beans.EuropeanaView;
+
 import java.util.List;
 
 /**
- * This interface describes the results that every implementation of the Europeana backend must
- * implement.
+ * Feeding the full view
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface ResultModel {
-
+@EuropeanaView(facets = false, rows = 10) // todo: this might be the right place for this annotation
+public interface FullResultModel {
     FullDoc getFullDoc();
-
-    BriefDocWindow getBriefDocWindow();
-    DocIdWindow getDocIdWindow();
-
-    List<Facet> getFacets();
-
-    boolean isMissingFullDoc();
+    List<BriefDoc> relatedBriefDocs();
 }

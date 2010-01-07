@@ -40,15 +40,11 @@ import java.util.List;
 
 public class JsonResultModel implements ResultModel {
 
-    private Integer queryDuration;
     private FullDoc fullDoc;
-    private BriefDoc matchDoc;
     private BriefDocWindow briefDocWindow;
     private DocIdWindow docIdWindow;
     private List<Facet> facets = new ArrayList<Facet>();
-    private boolean badRequest = false;
     private boolean missingFullDoc = false;
-    private String errorMessage;
 
     private static final String BAD_REQUEST_RESULT =
             "{\n" +
@@ -61,32 +57,20 @@ public class JsonResultModel implements ResultModel {
                     " }}";
 
     public JsonResultModel(String jsonString, ResponseType responseType) throws JSONException {
-        this(jsonString, responseType, false, null);
-    }
-
-    public JsonResultModel(String jsonString, ResponseType responseType, boolean badRequest, String errorMessage) throws JSONException {
         if (jsonString == null) {
             jsonString = BAD_REQUEST_RESULT;
         }
-        this.badRequest = badRequest;
-        this.errorMessage = errorMessage;
         JSONObject jsonObject = new JSONObject(jsonString);
-        JSONObject responseHeader = jsonObject.getJSONObject("responseHeader");
-        this.queryDuration = JsonUtil.getInteger(responseHeader, "QTime");
         JSONObject match = null;
         if (jsonObject.has("match")) {
             match = jsonObject.getJSONObject("match");
             if (match.getJSONArray("docs").length() == 0) {
                 jsonObject = new JSONObject(BAD_REQUEST_RESULT);
-                match = null;
                 missingFullDoc = true;
             }
         }
         JSONObject response = jsonObject.getJSONObject("response");
         Integer hitCount = JsonUtil.getInteger(response, "numFound");
-//        todo: add rows to model. check if change in hitcount from rows to numFound
-//        JSONObject params = responseHeader.getJSONObject("params");
-//        Integer rows = new Integer(JsonUtil.getString(params, "rows"));
         Integer offset = JsonUtil.getInteger(response, "start") + 1; // solr starts record count at zero
         JSONArray docsArray = response.getJSONArray("docs");
         switch (responseType) {
@@ -108,9 +92,6 @@ public class JsonResultModel implements ResultModel {
                 break;
             case SMALL_BRIEF_DOC_WINDOW:
             case LARGE_BRIEF_DOC_WINDOW:
-                if (match != null) {
-                    matchDoc = new BriefDocImpl((JSONObject) match.getJSONArray("docs").get(0), offset);
-                }
                 briefDocWindow = new BriefDocWindowImpl(hitCount, offset);
                 List<BriefDocImpl> docs = new ArrayList<BriefDocImpl>();
                 for (int walk = 0; walk < docsArray.length(); walk++) {
@@ -171,16 +152,8 @@ public class JsonResultModel implements ResultModel {
         return writer.toString();
     }
 
-    public Integer getQueryDuration() {
-        return queryDuration;
-    }
-
     public FullDoc getFullDoc() {
         return fullDoc;
-    }
-
-    public BriefDoc getMatchDoc() {
-        return matchDoc;
     }
 
     public BriefDocWindow getBriefDocWindow() {
@@ -193,14 +166,6 @@ public class JsonResultModel implements ResultModel {
 
     public List<Facet> getFacets() {
         return facets;
-    }
-
-    public boolean isBadRequest() {
-        return badRequest;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public boolean isMissingFullDoc() {
@@ -556,10 +521,6 @@ public class JsonResultModel implements ResultModel {
             return new BriefDocImpl(
                     dcCreator[0], id, europeanaLanguage[0], thumbnail[0], dcTitle[0], europeanaType, europeanaYear[0], europeanaProvider[0]
             );
-        }
-
-        public ESERecord getEseRecord() {
-            return eseRecord;
         }
     }
 

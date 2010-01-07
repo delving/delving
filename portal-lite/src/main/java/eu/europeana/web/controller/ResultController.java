@@ -139,7 +139,7 @@ public class ResultController {
             if (queryProblem == QueryProblem.SOLR_UNREACHABLE) {
                 throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), exception);
             } else {
-                resultModel = new JsonResultModel(null, ResponseType.SMALL_BRIEF_DOC_WINDOW, true, "Invalid query string.");
+                resultModel = new JsonResultModel(null, ResponseType.SMALL_BRIEF_DOC_WINDOW); // todo: show there was a problem
             }
         }
         List<NextQueryFacet> nextQueryFacets;

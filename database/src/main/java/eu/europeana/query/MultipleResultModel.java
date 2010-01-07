@@ -21,24 +21,19 @@
 
 package eu.europeana.query;
 
+import eu.europeana.beans.EuropeanaView;
+
 import java.util.List;
 
 /**
- * This interface describes the results that every implementation of the Europeana backend must
- * implement.
+ * For feeding a view that shows multiple entries
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface ResultModel {
-
-    FullDoc getFullDoc();
-
-    BriefDocWindow getBriefDocWindow();
-    DocIdWindow getDocIdWindow();
-
+@EuropeanaView(facets = true, rows = 10) // todo: this might be the right place for this annotation
+public interface MultipleResultModel extends PagingWindow {
+    List<BriefDoc> getBriefDocs();
     List<Facet> getFacets();
-
-    boolean isMissingFullDoc();
 }

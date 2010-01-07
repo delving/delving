@@ -21,24 +21,18 @@
 
 package eu.europeana.query;
 
+import eu.europeana.beans.EuropeanaView;
+
 import java.util.List;
 
 /**
- * This interface describes the results that every implementation of the Europeana backend must
- * implement.
+ * This describes the result of a query to fetch a list of doc ids for pagination
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface ResultModel {
-
-    FullDoc getFullDoc();
-
-    BriefDocWindow getBriefDocWindow();
-    DocIdWindow getDocIdWindow();
-
-    List<Facet> getFacets();
-
-    boolean isMissingFullDoc();
+@EuropeanaView(facets = false, rows = 100) // todo: this might be the right place for this annotation
+public interface PaginationResultModel extends PagingWindow {
+    List<String> getIds();
 }
