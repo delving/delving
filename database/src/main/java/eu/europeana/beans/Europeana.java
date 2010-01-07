@@ -1,4 +1,4 @@
-package eu.europeana.solrj;
+package eu.europeana.beans;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

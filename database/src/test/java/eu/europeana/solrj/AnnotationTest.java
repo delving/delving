@@ -1,5 +1,7 @@
 package eu.europeana.solrj;
 
+import eu.europeana.beans.Europeana;
+import eu.europeana.beans.Solr;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.beans.Field;
 import org.junit.Test;
