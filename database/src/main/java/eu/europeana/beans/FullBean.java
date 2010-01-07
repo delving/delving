@@ -1,5 +1,9 @@
 package eu.europeana.beans;
 
+import eu.europeana.query.BriefDoc;
+import eu.europeana.query.DocType;
+import eu.europeana.query.ESERecord;
+import eu.europeana.query.FullDoc;
 import org.apache.solr.client.solrj.beans.Field;
 
 /**
@@ -7,7 +11,7 @@ import org.apache.solr.client.solrj.beans.Field;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public class FullBean extends RequiredBean {
+public class FullBean extends RequiredBean implements FullDoc {
 
 
     // Europeana namespace
@@ -59,7 +63,7 @@ public class FullBean extends RequiredBean {
     @Europeana()
     @Solr(namespace = "europeana", name = "provider", toCopyField = {"PROVIDER"})
     @Field("europeana_provider")
-    boolean europeanaProvider;
+    String[] europeanaProvider;
 
 
     // Dublin Core / ESE fields
@@ -250,4 +254,265 @@ public class FullBean extends RequiredBean {
     @Field("dcterms_temporal")
     String[] dctermsTemporal;
 
+    @Override
+    public String getId() {
+        return europeanaUri;
+    }
+
+    @Override
+    public String[] getThumbnail() {
+        return europeanaObject;
+    }
+
+    @Override
+    public String[] getEuropeanaIsShownAt() {
+        return europeanaisShownAt;
+    }
+
+    @Override
+    public String[] getEuropeanaIsShownBy() {
+        return europeanaisShownBy;
+    }
+
+    @Override
+    public String[] getEuropeanaUserTag() {
+        return europeanaUserTag;
+    }
+
+    @Override
+    public Boolean getEuropeanaHasObject() {
+        return europeanahasObject;
+    }
+
+    @Override
+    public String[] getEuropeanaCountry() {
+        return europeanaCountry;
+    }
+
+    @Override
+    public String[] getEuropeanaProvider() {
+        return europeanaProvider;
+    }
+
+    @Override
+    public String[] getEuropeanaSource() {
+        return europeanaSource;
+    }
+
+    @Override
+    public DocType getEuropeanaType() {
+        return DocType.get(europeanaType);
+    }
+
+    @Override
+    public String[] getEuropeanaLanguage() {
+        return europeanaLanguage;
+    }
+
+    @Override
+    public String[] getEuropeanaYear() {
+        return europeanaYear;
+    }
+
+    // DCTERMS fields
+
+    @Override
+    public String[] getDcTermsAlternative() {
+        return dctermsAlternative;
+    }
+
+    @Override
+    public String[] getDcTermsConformsTo() {
+        return dctermsConformsTo;
+    }
+
+    @Override
+    public String[] getDcTermsCreated() {
+        return dctermsCreated;
+    }
+
+    @Override
+    public String[] getDcTermsExtent() {
+        return dctermsExtent;
+    }
+
+    @Override
+    public String[] getDcTermsHasFormat() {
+        return dctermsHasFormat;
+    }
+
+    @Override
+    public String[] getDcTermsHasPart() {
+        return dctermsHasPart;
+    }
+
+    @Override
+    public String[] getDcTermsHasVersion() {
+        return dctermsHasVersion;
+    }
+
+    @Override
+    public String[] getDcTermsIsFormatOf() {
+        return dctermsIsFormatOf;
+    }
+
+    @Override
+    public String[] getDcTermsIsPartOf() {
+        return dctermsIsPartOf;
+    }
+
+    @Override
+    public String[] getDcTermsIsReferencedBy() {
+        return dctermsIsReferencedBy;
+    }
+
+    @Override
+    public String[] getDcTermsIsReplacedBy() {
+        return dctermsIsReplacedBy;
+    }
+
+    @Override
+    public String[] getDcTermsIsRequiredBy() {
+        return dctermsIsRequiredBy;
+    }
+
+    @Override
+    public String[] getDcTermsIssued() {
+        return dctermsIssued;
+    }
+
+    @Override
+    public String[] getDcTermsIsVersionOf() {
+        return dctermsIsVersionOf;
+    }
+
+    @Override
+    public String[] getDcTermsMedium() {
+        return dctermsMedium;
+    }
+
+    @Override
+    public String[] getDcTermsProvenance() {
+        return dctermsProvenance;
+    }
+
+    @Override
+    public String[] getDcTermsReferences() {
+        return dctermsReferences;
+    }
+
+    @Override
+    public String[] getDcTermsReplaces() {
+        return dctermsReplaces;
+    }
+
+    @Override
+    public String[] getDcTermsRequires() {
+        return dctermsRequires;
+    }
+
+    @Override
+    public String[] getDcTermsSpatial() {
+        return dctermsSpatial;
+    }
+
+    @Override
+    public String[] getDcTermsTableOfContents() {
+        return dctermsTableOfContents;
+    }
+
+    @Override
+    public String[] getDcTermsTemporal() {
+        return dctermsTemporal;
+    }
+
+    @Override
+    public String[] getDcContributor() {
+        return dcContributor;
+    }
+
+    @Override
+    public String[] getDcCoverage() {
+        return dcCoverage;
+    }
+
+    @Override
+    public String[] getDcCreator() {
+        return dcCreator;
+    }
+
+    @Override
+    public String[] getDcDate() {
+        return dcDate;
+    }
+
+    @Override
+    public String[] getDcDescription() {
+        return dcContributor;
+    }
+
+    @Override
+    public String[] getDcFormat() {
+        return dcFormat;
+    }
+
+    @Override
+    public String[] getDcIdentifier() {
+        return dcIdentifier;
+    }
+
+    @Override
+    public String[] getDcLanguage() {
+        return dcLanguage;
+    }
+
+    @Override
+    public String[] getDcPublisher() {
+        return dcPublisher;
+    }
+
+    @Override
+    public String[] getDcRelation() {
+        return dcRelation;
+    }
+
+    @Override
+    public String[] getDcRights() {
+        return dcRights;
+    }
+
+    @Override
+    public String[] getDcSource() {
+        return dcSource;
+    }
+
+    @Override
+    public String[] getDcSubject() {
+        return dcSubject;
+    }
+
+    @Override
+    public String[] getDcTitle() {
+        return dcTitle;
+    }
+
+    @Override
+    public String[] getDcType() {
+        return dcType;
+    }
+
+    @Override
+    public BriefDoc getBriefDoc() {
+        return null;
+    }
+
+    @Override
+    public String getEuropeanaCollectionName() {
+        return europeanaCollectionName;
+    }
+
+    @Override
+    public ESERecord getESERecord() {
+        return null; // todo: implement
+    }
 }

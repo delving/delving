@@ -544,7 +544,7 @@
              <!--<field name="year" type="text_ws" indexed="true" stored="true" multiValued="true" />-->
              <!-- comes from europeana:uri add to text later -->
              <field name="europeana_uri" type="string" indexed="true" stored="true" required="true" />
-             <field name="europeana_collectionName" type="string" indexed="true" stored="true" required="true" />
+             <field name="europeana_collectionName" type="string" indexed="true" stored="true" required="true" multiValued="false" />
              <field name="europeana_type" type="string" indexed="true" stored="true" multiValued="false" />
              <field name="europeana_userTag" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="europeana_unstored" type="text" indexed="true" stored="false" multiValued="true" />

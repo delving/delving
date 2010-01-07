@@ -22,6 +22,7 @@
 package eu.europeana.json;
 
 import eu.europeana.query.*;
+import org.apache.commons.lang.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -220,7 +221,7 @@ public class JsonResultModel implements ResultModel {
         private String[] europeanaYear;
         private String[] europeanaSource;
         private String[] europeanaProvider;
-        private String[] europeanaCollectionName;
+        private String europeanaCollectionName;
 
         // here the dcterms namespaces starts
         private String[] dcTermsAlternative;
@@ -279,7 +280,7 @@ public class JsonResultModel implements ResultModel {
             europeanaProvider = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_PROVIDER, FacetType.PROVIDER);
             europeanaCountry = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_COUNTRY, FacetType.COUNTRY);
             europeanaSource = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_SOURCE);
-            europeanaCollectionName = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_COLLECTION_NAME);
+            europeanaCollectionName = JsonUtil.getString(jsonObject, RecordField.EUROPEANA_COLLECTION_NAME.toString());
             // here the dcterms namespaces starts
             dcTermsAlternative = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_ALTERNATIVE);
             dcTermsConformsTo = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_CONFORMS_TO);
@@ -368,14 +369,18 @@ public class JsonResultModel implements ResultModel {
         }
 
         public String[] getEuropeanaCountry() {
-            return europeanaCountry;
+            List<String> upperCasedCountries = new ArrayList<String>();
+            for (String country : europeanaCountry) {
+                upperCasedCountries.add(WordUtils.capitalizeFully(country));
+            }
+            return (String[]) upperCasedCountries.toArray();
         }
 
         public String[] getEuropeanaProvider() {
             return europeanaProvider;
         }
 
-        public String[] getEuropeanaCollectionName() {
+        public String getEuropeanaCollectionName() {
             return europeanaCollectionName;
         }
 
