@@ -15,7 +15,7 @@ import java.util.Set;
 public class AnnotationProcessor {
 
     private Logger log = Logger.getLogger(getClass());
-    private Set<Field> facetFields = new HashSet<Field>();
+    private Set<FacetFieldImpl> facetFields = new HashSet<FacetFieldImpl>();
 
     public AnnotationProcessor(Class<?>... classes) {
         for (Class<?> c : classes) {
@@ -23,7 +23,7 @@ public class AnnotationProcessor {
         }
     }
 
-    public Set<Field> getFacetFields() {
+    public Set<? extends FacetField> getFacetFields() {
         return facetFields;
     }
 
@@ -39,7 +39,7 @@ public class AnnotationProcessor {
         if (europeana != null) {
             logEuropeanaAttributes(field, europeana);
             if (europeana.facet()) {
-                facetFields.add(field);
+                facetFields.add(new FacetFieldImpl(field));
             }
         }
     }
@@ -54,7 +54,6 @@ public class AnnotationProcessor {
     private void logEuropeanaAttributes(Field field, Europeana europeana) {
         String prefix = "Field ["+field.getName()+"]: ";
         log.info(prefix + "facetPrefix="+europeana.facetPrefix());
-        log.info(prefix + "facetName="+europeana.facetName());
         log.info(prefix + "briefDoc="+europeana.briefDoc());
         log.info(prefix + "fullDoc="+europeana.fullDoc());
         log.info(prefix + "copyField(flag)="+europeana.copyField());
@@ -82,5 +81,45 @@ public class AnnotationProcessor {
         }
     }
 
+    private class FacetFieldImpl implements FacetField {
+        private Field field;
 
+        private FacetFieldImpl(Field field) {
+            this.field = field;
+        }
+
+        @Override
+        public String getPrefix() {
+            return field.getAnnotation(Europeana.class).facetPrefix();
+        }
+
+        @Override
+        public String getName() {
+            String name = field.getAnnotation(org.apache.solr.client.solrj.beans.Field.class).value();
+            if (!name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
+                return name;
+            }
+            else {
+                return field.getName();
+            }
+        }
+
+        @Override
+        public String getFieldNameString() {
+            return getPrefix()+'_'+getName();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FacetFieldImpl that = (FacetFieldImpl) o;
+            return !(field != null ? !field.equals(that.field) : that.field != null);
+        }
+
+        @Override
+        public int hashCode() {
+            return field != null ? field.hashCode() : 0;
+        }
+    }
 }

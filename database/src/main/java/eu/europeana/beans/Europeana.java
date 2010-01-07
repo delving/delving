@@ -24,7 +24,6 @@ public @interface Europeana {
 
     // Facets
     boolean facet() default false;
-    String facetName() default "";       // overrides Field name
     String facetPrefix() default "";     // must be unique
     // String presentationOrder() default "last";
 

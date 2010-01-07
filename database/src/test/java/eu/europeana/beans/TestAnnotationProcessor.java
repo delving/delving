@@ -22,6 +22,9 @@ public class TestAnnotationProcessor {
                 AllFieldBean.class
         );
         Assert.assertEquals(5, processor.getFacetFields().size());
+        for (FacetField ff : processor.getFacetFields()) {
+            log.info("facet " + ff.getFieldNameString());
+        }
     }
 
 }
