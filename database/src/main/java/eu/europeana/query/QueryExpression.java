@@ -26,6 +26,7 @@ package eu.europeana.query;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public interface QueryExpression {
     String getQueryString();
     String getBackendQueryString();

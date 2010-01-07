@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public class SolrQueryExpression implements QueryExpression {
     private static final Pattern OR_PATTERN = Pattern.compile("\\s+[oO][rR]\\s+");
     private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");

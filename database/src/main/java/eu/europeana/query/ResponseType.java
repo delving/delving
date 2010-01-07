@@ -26,6 +26,7 @@ package eu.europeana.query;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public enum ResponseType {
     SINGLE_FULL_DOC(5, false),
     FACETS_ONLY(0, true),

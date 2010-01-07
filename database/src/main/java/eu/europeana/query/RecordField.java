@@ -21,6 +21,7 @@
 
 package eu.europeana.query;
 
+@Deprecated
 public enum RecordField {
     EUROPEANA_URI("europeana","uri"),
     EUROPEANA_TYPE("europeana","type", FacetType.TYPE),

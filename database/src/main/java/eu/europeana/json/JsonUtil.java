@@ -13,6 +13,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class JsonUtil {
 
     public static Integer getInteger(JSONObject jsonObject, String... name) throws JSONException {

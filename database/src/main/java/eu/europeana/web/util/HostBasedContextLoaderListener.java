@@ -1,11 +1,11 @@
 package eu.europeana.web.util;
 
-import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 
+import javax.servlet.ServletContext;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class HostBasedContextLoaderListener extends ContextLoaderListener {
     private Logger log = Logger.getLogger(getClass());
 

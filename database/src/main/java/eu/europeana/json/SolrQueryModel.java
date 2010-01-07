@@ -6,11 +6,17 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -20,6 +26,9 @@ import java.util.List;
 public class SolrQueryModel implements QueryModel {
 
     private Logger log = Logger.getLogger(getClass());
+
+
+
     private HttpClient httpClient;
     private String solrBaseUrl;
     private ResponseType responseType;
@@ -34,38 +43,46 @@ public class SolrQueryModel implements QueryModel {
     private int rows = 0;
     private RecordFieldChoice recordFieldChoice;
 
+    @Deprecated
     public void setSolrBaseUrl(String solrBaseUrl) {
         this.solrBaseUrl = solrBaseUrl;
     }
 
+    @Deprecated
     public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
+    @Deprecated
     public void setFacetLimit(String facetLimit) {
         this.facetLimit = facetLimit;
     }
 
+    @Deprecated
     public void setFacetMinCount(String facetMinCount) {
         this.facetMinCount = facetMinCount;
     }
 
+    @Deprecated
     public QueryExpression setQueryString(String queryString) throws EuropeanaQueryException {
         QueryExpression queryExpression = new SolrQueryExpression(queryString);
         setQueryExpression(queryExpression);
         return queryExpression;
     }
 
+    @Deprecated
     public void setQueryExpression(QueryExpression queryExpression) {
         this.queryString = queryExpression.getBackendQueryString();
         this.queryType = queryExpression.getType();
         this.moreLikeThis = queryExpression.isMoreLikeThis();
     }
 
+    @Deprecated
     public void setQueryConstraints(Constraints constraints) {
         this.constraints = constraints;
     }
 
+    @Deprecated
     public void setResponseType(ResponseType responseType) {
         this.responseType = responseType;
         this.rows = responseType.getRows();
@@ -89,22 +106,27 @@ public class SolrQueryModel implements QueryModel {
         }
     }
 
+    @Deprecated
     public void setStartRow(int startRow) {
         this.startRow = startRow;
     }
 
+    @Deprecated
     public int getStartRow() {
         return startRow;
     }
 
+    @Deprecated
     public void setRows(int rows) {
         this.rows = rows;
     }
 
+    @Deprecated
     public int getRows() {
         return rows;
     }
 
+    @Deprecated
     public ResultModel fetchResult() throws EuropeanaQueryException {
         Exception firstException = null;
         int attempt = 0;
@@ -156,7 +178,7 @@ public class SolrQueryModel implements QueryModel {
         throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), firstException);
     }
 
-
+    @Deprecated
     private NameValuePair[] createRequestParameters() {
         NameValueList list = new NameValueList();
         list.put("q", queryString);
@@ -192,6 +214,7 @@ public class SolrQueryModel implements QueryModel {
         return list.getArray();
     }
 
+    @Deprecated
     String buildFilterString(FacetType facetType) {
         StringBuilder out = new StringBuilder();
 //            out.append(' ');
@@ -220,6 +243,7 @@ public class SolrQueryModel implements QueryModel {
         return out.toString();
     }
 
+    @Deprecated
     private static String toCommaDelimited(ArrayList<String> list) {
         StringBuilder out = new StringBuilder();
         for (String element : list) {
@@ -229,6 +253,7 @@ public class SolrQueryModel implements QueryModel {
         return out.toString().substring(1); // first comma
     }
 
+    @Deprecated
     private static class NameValueList extends ArrayList<NameValuePair> {
         private static final long serialVersionUID = -1770113063469852797L;
 
@@ -241,23 +266,101 @@ public class SolrQueryModel implements QueryModel {
         }
     }
 
+    @Deprecated
     public ResponseType getResponseType() {
         return responseType;
     }
 
+    @Deprecated
     public Constraints getConstraints() {
         return constraints;
     }
 
+    @Deprecated
     public String getQueryString() {
         return queryString;
     }
 
+    @Deprecated
     public QueryExpression.QueryType getQueryType() {
         return queryType;
     }
 
+    @Deprecated
     public RecordFieldChoice getRecordFieldChoice() {
         return recordFieldChoice;
+    }
+
+
+    // new solrJ implementation methods
+    @Autowired
+    private CommonsHttpSolrServer solrServer;
+
+    public void setSolrServer(CommonsHttpSolrServer solrServer) {
+        this.solrServer = solrServer;
+    }
+
+
+    // create solr query from http query parameters
+    public SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException {
+        SolrQuery solrQuery = new SolrQuery();
+        if (!params.containsKey("query")) {
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
+        }
+        solrQuery.setQuery(params.get("query")[0]); // only get the first one
+        if (params.containsKey("start")) {
+            solrQuery.setStart(Integer.valueOf(params.get("start")[0]));
+        }
+        if (params.containsKey("rows")) {
+            solrQuery.setRows(Integer.valueOf(params.get("rows")[0]));
+        }
+        solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()));
+
+        //set constraints
+        solrQuery.setFilterQueries(params.get("qf"));
+
+
+        return solrQuery;
+    }
+
+    private String findSolrQueryType(String query) {
+        // todo: finish this
+        QueryType queryType = null;
+
+        return queryType.appearance;
+    }
+
+    public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException { // add bean to ???
+        // set facets
+
+        // set search fields
+
+        //set more like this
+
+
+        QueryResponse queryResponse;
+        try {
+            queryResponse = solrServer.query(solrQuery);
+        } catch (SolrServerException e) {
+            log.error("Unable to fetch result", e);
+                throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
+        }
+        return queryResponse;
+    }
+
+    public enum QueryType {
+        SIMPLE_QUERY("europeana"),
+        ADVANCED_QUERY("standard"),
+        MORE_LIKE_THIS_QUERY("moreLikeThis");
+
+        private String appearance;
+
+        QueryType(String appearance) {
+            this.appearance = appearance;
+        }
+
+        public String toString() {
+            return appearance;
+        }
     }
 }

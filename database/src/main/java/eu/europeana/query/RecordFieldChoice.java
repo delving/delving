@@ -27,6 +27,8 @@ import java.util.ArrayList;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Feb 9, 2009: 4:24:55 PM
  */
+
+@Deprecated
 public enum RecordFieldChoice {
     FULL_DOC(getFullDocFields()),
     BRIEF_DOC(getBriefDocFields()),

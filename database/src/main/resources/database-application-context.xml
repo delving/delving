@@ -157,6 +157,8 @@
 
     <bean id="queryModelFactory" class="eu.europeana.json.SolrQueryModelFactory"/>
 
+    <bean id="solrQueryModel" class="eu.europeana.json.SolrQueryModel"/>
+
     <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">
         <property name="targetUrl" value="#{europeanaProperties['solr.updateUrl']}"/>
         <property name="chunkSize" value="#{europeanaProperties['solr.chunkSize']}"/>
