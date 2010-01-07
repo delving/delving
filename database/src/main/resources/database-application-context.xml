@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2007 EDL FOUNDATION
@@ -124,6 +125,15 @@
             </bean>
         </constructor-arg>
     </bean>
+
+    <bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+        <constructor-arg value="#{europeanaProperties['solr.updateUrl']}"/>
+        <property name="soTimeout" value="1000"/>
+        <property name="connectionTimeout" value="100"/>
+        <property name="defaultMaxConnectionsPerHost" value="64"/>
+        <property name="maxTotalConnections" value="512"/>
+        <property name="followRedirects" value="false"/>
+    </bean> 
 
     <bean id="normalizedImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="#{europeanaProperties['dashboard.normalized.import.repository']}"/>
