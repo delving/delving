@@ -1,12 +1,15 @@
 package eu.europeana.solrj;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.solr.client.solrj.SolrQuery;
 
 /**
  * Marshal and unmarshal a SolrQuery into a byte array, also able to work with base64 encodings.
@@ -31,8 +34,7 @@ public class SolrQueryBlob {
 
 
     public SolrQueryBlob(String base64Encoding) throws IOException {
-        BASE64Decoder decoder = new BASE64Decoder();
-        this.bytes = decoder.decodeBuffer(base64Encoding);
+        this.bytes = Base64.decodeBase64(base64Encoding);
     }
 
     public SolrQuery getQuery() throws IOException, ClassNotFoundException {
@@ -45,7 +47,6 @@ public class SolrQueryBlob {
     }
 
     public String toString() {
-        BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(bytes);
+        return Base64.encodeBase64String(bytes);
     }
 }
