@@ -33,7 +33,8 @@ import java.util.List;
  */
 
 @EuropeanaView(facets = true, rows = 10) // todo: this might be the right place for this annotation
-public interface MultipleResultModel extends PagingWindow {
+public interface MultipleResultModel {
     List<BriefDoc> getBriefDocs();
     List<Facet> getFacets();
+    ResultPagination getPagination();
 }

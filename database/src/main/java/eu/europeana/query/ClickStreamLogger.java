@@ -22,7 +22,6 @@
 package eu.europeana.query;
 
 import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.web.util.ResultPagination;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;

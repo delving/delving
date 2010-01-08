@@ -49,16 +49,22 @@ public class SolrQueryModelTest {
     public void testCreateFromQueryParams() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("query", "*:*");
-        request.addParameter("qf", new String[]{"LANGUAGE:en", "LANGUAGE:de"});
+        request.addParameter("qf", new String[]{"LANGUAGE:mul"});
         request.addParameter("start", "1");
         request.addParameter("rows", "12");
 
         Map<String,String[]> requestMap = request.getParameterMap();
-        SolrQueryModelFactory queryModel = new SolrQueryModelFactory();
-        SolrQuery solrQuery = queryModel.createFromQueryParams(requestMap);
+        SolrQueryModelFactory solrQueryModelFactory = new SolrQueryModelFactory();
+        SolrQuery solrQuery = solrQueryModelFactory.createFromQueryParams(requestMap);
+
+        // manually inject the solrServer
+        solrQueryModelFactory.setSolrServer(server);
+
         assertNotNull("solrQuery should not be null", solrQuery);
         assertEquals("query string should be equal", request.getParameter("query"), solrQuery.getQuery());
         assertEquals("Filter queries should be the same", request.getParameterValues("qf"), solrQuery.getFilterQueries());
+        SolrQueryModelFactory.BriefBeanView resultView = solrQueryModelFactory.getBriefResultView(solrQuery);
+        assertNotNull(resultView);
     }
 
     @Test

@@ -23,10 +23,7 @@ package eu.europeana.web.util;
 
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.database.domain.User;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.query.QueryExpression;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.ResultModel;
+import eu.europeana.query.*;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.web.servlet.ModelAndView;

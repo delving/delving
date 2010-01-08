@@ -21,6 +21,7 @@
 
 package eu.europeana.query;
 
+import eu.europeana.json.SolrQueryModelFactory;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
@@ -38,4 +39,6 @@ public interface QueryModelFactory {
     QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException;
 
     SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
+
+    SolrQueryModelFactory.BriefBeanView getBriefResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
 }

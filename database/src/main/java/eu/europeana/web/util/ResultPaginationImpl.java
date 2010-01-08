@@ -1,5 +1,8 @@
 package eu.europeana.web.util;
 
+import eu.europeana.query.PresentationQuery;
+import eu.europeana.query.ResultPagination;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import java.util.List;
  */
 
 
-public class ResultPagination {
+public class ResultPaginationImpl implements ResultPagination {
     private static final int MARGIN = 5;
     private static final int PAGE_NUMBER_THRESHOLD = 7;
 
@@ -22,8 +25,9 @@ public class ResultPagination {
     private int start;
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
     private int rows;
+    private List<QueryConstraints.Breadcrumb> breadcrumbs;
 
-    public ResultPagination(int numFound, int rows, int start) {
+    public ResultPaginationImpl(int numFound, int rows, int start) {
         this.numFound = numFound;
         this.start = start;
         this.rows = rows;
@@ -39,7 +43,7 @@ public class ResultPagination {
             toPage = Math.min(pageNumber + MARGIN - 1, totalPages);
         }
         if (toPage - fromPage < MARGIN * 2 - 1) {
-            fromPage = Math.max(1, toPage - MARGIN * 2 + 1); 
+            fromPage = Math.max(1, toPage - MARGIN * 2 + 1);
         }
         this.isPrevious = start > 1;
         this.previousPage = start - rows;
@@ -50,40 +54,59 @@ public class ResultPagination {
         }
     }
 
+    @Override
     public boolean isPrevious() {
         return isPrevious;
     }
 
+    @Override
     public int getPreviousPage() {
         return previousPage;
     }
 
+    @Override
     public boolean isNext() {
         return isNext;
     }
 
+    @Override
     public int getNextPage() {
         return nextPage;
     }
 
+    @Override
     public int getLastViewableRecord() {
         return Math.min(nextPage-1,numFound);
     }
 
+    @Override
     public int getNumFound() {
         return numFound;
     }
 
+    @Override
     public int getRows() {
         return rows;
     }
 
+    @Override
     public int getStart() {
         return start;
     }
 
+    @Override
     public List<PageLink> getPageLinks() {
         return pageLinks;
+    }
+
+    @Override
+    public List<QueryConstraints.Breadcrumb> getBreadcrumbs() {
+        return breadcrumbs;
+    }
+
+    @Override
+    public PresentationQuery getQuery() {
+        return null;  //TODO: implement this
     }
 
     public String toString() {

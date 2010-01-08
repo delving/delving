@@ -1,12 +1,10 @@
 package eu.europeana.json;
 
 import eu.europeana.beans.AnnotationProcessor;
-import eu.europeana.beans.EuropeanaBean;
-import eu.europeana.beans.EuropeanaField;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.query.QueryProblem;
+import eu.europeana.query.*;
+import eu.europeana.web.util.NextQueryFacet;
+import eu.europeana.web.util.QueryConstraints;
+import eu.europeana.web.util.ResultPaginationImpl;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -15,8 +13,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -24,25 +22,6 @@ import java.util.Set;
  */
 
 public class SolrQueryModelFactory implements QueryModelFactory {
-    private HttpClient httpClient;
-    private String baseUrl;
-
-    @Value("#{europeanaProperties['solr.selectUrl']}")
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    @Autowired
-    public void setHttpClient(HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
-    public QueryModel createQueryModel() {
-        SolrQueryModel queryModel = new SolrQueryModel();
-        queryModel.setSolrBaseUrl(baseUrl);
-        queryModel.setHttpClient(httpClient);
-        return queryModel;
-    }
 
     // new solrJ implementation methods
     @Autowired
@@ -57,6 +36,7 @@ public class SolrQueryModelFactory implements QueryModelFactory {
     private AnnotationProcessor annotationProcessor;
 
     // create solr query from http query parameters
+
     @Override
     public SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
@@ -81,26 +61,82 @@ public class SolrQueryModelFactory implements QueryModelFactory {
 
     private String findSolrQueryType(String query) {
         // todo: finish this
-        QueryType queryType = null;
+        QueryType queryType = QueryType.SIMPLE_QUERY;
 
         return queryType.appearance;
+    }
+
+    private eu.europeana.query.ResultPagination createPagination(QueryResponse response, SolrQuery query) {
+        int numFound = Integer.parseInt(response.getResponseHeader().get("numFound").toString());
+        return new ResultPaginationImpl(numFound, query.getStart(), query.getRows());
+    }
+
+    // I am not quite sure this is the right place
+
+    private List<QueryConstraints.Breadcrumb> createBreadcrumbs() {
+        return null;
+    }
+
+    private Class<?> briefBean;
+
+    public void setBriefBean(Class<?> briefBean) {
+        this.briefBean = briefBean;
+    }
+
+    @Override
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery) throws EuropeanaQueryException {
+        return new BriefBeanViewImpl(solrQuery, getSolrResponse(solrQuery, briefBean));
+    }
+
+
+    public interface BriefBeanView {
+        List<? extends BriefDoc> getBriefDocs();
+        List<NextQueryFacet> getNextQueryFacets();
+        ResultPagination getPagination();
+    }
+
+    public class BriefBeanViewImpl implements BriefBeanView {
+        private SolrQuery solrQuery;
+        private QueryResponse solrResponse;
+        private ResultPagination pagination;
+
+        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse) {
+            this.solrQuery = solrQuery;
+            this.solrResponse = solrResponse;
+            pagination = createPagination(solrResponse, solrQuery);
+        }
+
+        @Override
+        public List<? extends BriefDoc> getBriefDocs() {
+            return (List<BriefDoc>) solrResponse.getBeans(briefBean);
+        }
+
+        @Override
+        public List<NextQueryFacet> getNextQueryFacets() {
+            return null;  //TODO: implement this
+        }
+
+        @Override
+        public ResultPagination getPagination() {
+            return pagination;
+        }
     }
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException { // add bean to ???
         // set facets
-        Set<? extends EuropeanaField> facetFields = annotationProcessor.getFacetFields();
+//        Set<? extends EuropeanaField> facetFields = annotationProcessor.getFacetFields();
 
         // set search fields
-        EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
-        Set<EuropeanaField> fieldSet = bean.getFields();
-        String[] fieldStrings = new String[fieldSet.size()];
-        int index = 0;
-        for (EuropeanaField europeanaField : fieldSet) {
-            fieldStrings[index] = europeanaField.getFieldNameString();
-            index++;
-        }
-        solrQuery.setFields(fieldStrings);
+//        EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
+//        Set<EuropeanaField> fieldSet = bean.getFields();
+//        String[] fieldStrings = new String[fieldSet.size()];
+//        int index = 0;
+//        for (EuropeanaField europeanaField : fieldSet) {
+//            fieldStrings[index] = europeanaField.getFieldNameString();
+//            index++;
+//        }
+//        solrQuery.setFields(fieldStrings);
 
 
         //set more like this
@@ -111,7 +147,7 @@ public class SolrQueryModelFactory implements QueryModelFactory {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrServerException e) {
 //            log.error("Unable to fetch result", e);
-                throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
+            throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
         }
         return queryResponse;
     }
@@ -131,5 +167,28 @@ public class SolrQueryModelFactory implements QueryModelFactory {
             return appearance;
         }
     }
+
+    // todo remove later
+
+    private HttpClient httpClient;
+    private String baseUrl;
+
+    @Value("#{europeanaProperties['solr.selectUrl']}")
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    @Autowired
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    public QueryModel createQueryModel() {
+        SolrQueryModel queryModel = new SolrQueryModel();
+        queryModel.setSolrBaseUrl(baseUrl);
+        queryModel.setHttpClient(httpClient);
+        return queryModel;
+    }
+
 
 }

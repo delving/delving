@@ -187,10 +187,10 @@ public class TestUtilities {
     }
 
     private String makePage(int numFound, int rows, int start) throws Exception {
-        return makePage(new ResultPagination(numFound, rows, start));
+        return makePage(new ResultPaginationImpl(numFound, rows, start));
     }
 
-    private String makePage(ResultPagination p) throws Exception {
+    private String makePage(ResultPaginationImpl p) throws Exception {
         Map<String, Object> model = new TreeMap<String, Object>();
         model.put("pagination", p);
         return FreemarkerUtil.processResource("/example-pagination.ftl", model);
