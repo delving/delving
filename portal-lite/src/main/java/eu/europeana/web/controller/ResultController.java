@@ -143,7 +143,7 @@ public class ResultController {
             }
         }
         List<NextQueryFacet> nextQueryFacets;
-        ResultPagination resultPagination = new ResultPagination(
+        ResultPagination resultPagination = new ResultPaginationImpl(
                 resultModel.getBriefDocWindow().getHitCount(),
                 queryModel.getRows(),
                 queryModel.getStartRow() + 1

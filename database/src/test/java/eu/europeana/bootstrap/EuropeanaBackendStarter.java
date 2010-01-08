@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * Bootstrap the entire system, including the portal, resolver and cache servlet
+ * Bootstrap the entire system, including the ApacheSolr, resolver and cache servlet
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
