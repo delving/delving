@@ -172,6 +172,11 @@ public class JsonResultModel implements ResultModel {
         return missingFullDoc;
     }
 
+    @Override
+    public boolean isBadRequest() {
+        return false;  //TODO: implement this
+    }
+
     private static class FullDocImpl implements FullDoc {
         // europeana elements
         private String id;
@@ -245,7 +250,7 @@ public class JsonResultModel implements ResultModel {
             europeanaProvider = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_PROVIDER, FacetType.PROVIDER);
             europeanaCountry = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_COUNTRY, FacetType.COUNTRY);
             europeanaSource = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.EUROPEANA_SOURCE);
-            europeanaCollectionName = JsonUtil.getString(jsonObject, RecordField.EUROPEANA_COLLECTION_NAME.toString());
+            europeanaCollectionName = JsonUtil.getString(jsonObject, RecordField.EUROPEANA_COLLECTION_NAME.toFieldNameString());
             // here the dcterms namespaces starts
             dcTermsAlternative = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_ALTERNATIVE);
             dcTermsConformsTo = getStringArray(jsonObject, JsonUtil.Default.UNKNOWN, false, RecordField.DCTERMS_CONFORMS_TO);
@@ -338,7 +343,7 @@ public class JsonResultModel implements ResultModel {
             for (String country : europeanaCountry) {
                 upperCasedCountries.add(WordUtils.capitalizeFully(country));
             }
-            return (String[]) upperCasedCountries.toArray();
+            return upperCasedCountries.toArray(new String[upperCasedCountries.size()]);
         }
 
         public String[] getEuropeanaProvider() {

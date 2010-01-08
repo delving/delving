@@ -59,15 +59,17 @@ public class LoadContent {
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
 
         // load static content etc.
-        log.info("Start loading static content.");
-        DataMigration migration = new DataMigration();
-        migration.setLanguageDao(languageDao);
-        migration.setPartnerDao(staticInfoDao);
-        migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
-        migration.readTableFromResource(DataMigration.Table.PARTNERS);
-        migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
-        migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
-        log.info("Finished loading static content.");
+        if ((args.length <= 0) || !args[0].equalsIgnoreCase("skip=true")) {
+            log.info("Start loading static content.");
+            DataMigration migration = new DataMigration();
+            migration.setLanguageDao(languageDao);
+            migration.setPartnerDao(staticInfoDao);
+            migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
+            migration.readTableFromResource(DataMigration.Table.PARTNERS);
+            migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
+            migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
+            log.info("Finished loading static content.");
+        }
 
 
         // import and index sample records
@@ -98,6 +100,6 @@ public class LoadContent {
         solr.stop();
         log.info("Stopping Solr server");
 
-        // check if default user exist otherwise create 
+        // check if default user exist otherwise create
     }
 }

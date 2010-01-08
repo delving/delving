@@ -41,4 +41,5 @@ public interface ResultModel {
     List<Facet> getFacets();
 
     boolean isMissingFullDoc();
+    boolean isBadRequest();
 }

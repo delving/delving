@@ -1,5 +1,6 @@
 package eu.europeana.json;
 
+import eu.europeana.beans.BriefBean;
 import eu.europeana.bootstrap.SolrStarter;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -53,7 +54,7 @@ public class SolrQueryModelTest {
         request.addParameter("rows", "12");
 
         Map<String,String[]> requestMap = request.getParameterMap();
-        SolrQueryModel queryModel = new SolrQueryModel();
+        SolrQueryModelFactory queryModel = new SolrQueryModelFactory();
         SolrQuery solrQuery = queryModel.createFromQueryParams(requestMap);
         assertNotNull("solrQuery should not be null", solrQuery);
         assertEquals("query string should be equal", request.getParameter("query"), solrQuery.getQuery());
@@ -65,9 +66,9 @@ public class SolrQueryModelTest {
         SolrQuery solrQuery = new SolrQuery("*:*");
         solrQuery.addFilterQuery("LANGUAGE:mul");
 
-        SolrQueryModel queryModel = new  SolrQueryModel();
+        SolrQueryModelFactory queryModel = new SolrQueryModelFactory();
         queryModel.setSolrServer(server);
-        QueryResponse queryResponse = queryModel.getSolrResponse(solrQuery);
+        QueryResponse queryResponse = queryModel.getSolrResponse(solrQuery, BriefBean.class);
         assertNotNull(queryResponse);
         assertTrue(queryResponse.getResults().getNumFound() > 0);
     }

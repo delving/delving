@@ -79,7 +79,7 @@
                         <@show_array_values "europeana:country" doc.europeanaCountry  showFieldNames />
                         <#--<@show_array_values "europeana:source" doc.europeanaSource  showFieldNames />-->
                         <@show_array_values "europeana:provider" doc.europeanaProvider  showFieldNames />
-                        <@show_array_values "europeana:collectionName" doc.europeanaCollectionName showFieldNames/>
+                        <@show_value "europeana:collectionName" doc.europeanaCollectionName showFieldNames/>
                         <@show_value "europeana:hasObject" doc.europeanaHasObject?string  showFieldNames />
                         <@show_array_values "europeana:isShownAt" doc.europeanaIsShownAt  showFieldNames />
                         <@show_array_values "europeana:isShownBy" doc.europeanaIsShownBy  showFieldNames />
