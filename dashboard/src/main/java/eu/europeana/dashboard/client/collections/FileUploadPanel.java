@@ -5,6 +5,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.dto.ImportFileX;
 
@@ -40,6 +42,8 @@ import eu.europeana.dashboard.client.dto.ImportFileX;
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
         form.addSubmitHandler(new FormPanel.SubmitHandler() {
+        	
+        	@Override
             public void onSubmit(FormPanel.SubmitEvent event) {
                 if (fileUpload.getFilename().length() == 0) {
                     Window.alert(world.messages().fileUploadNoFile());
@@ -54,10 +58,16 @@ import eu.europeana.dashboard.client.dto.ImportFileX;
                     notifier.uploadStarted(getFileName());
                 }
             }
-            public void onSubmitComplete(FormSubmitCompleteEvent event) {
-                notifier.uploadEnded(getFileName());
-                submitButton.setEnabled(true);
-            }
+            
+        });
+        form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+
+			@Override
+			public void onSubmitComplete(SubmitCompleteEvent event) {
+               notifier.uploadEnded(getFileName());
+               submitButton.setEnabled(true);
+			}
+        	
         });
         submitButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
