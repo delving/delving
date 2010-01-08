@@ -80,7 +80,6 @@
         <module>database</module>
         <module>api</module>
         <module>portal-lite</module>
-        <module>portal-full</module>
         <module>dashboard</module>
         <module>sip-creator</module>
     </modules>
