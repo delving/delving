@@ -41,6 +41,8 @@ public class UserChooser extends DashboardWidget {
         HorizontalPanel panel = new HorizontalPanel();
         suggestBox = new SuggestBox(new UserOracle());
         suggestBox.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+        	
+        	@Override
             public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
                 UserSuggestion suggestion = (UserSuggestion)event.getSelectedItem();
                 selectedUser = suggestion.user;

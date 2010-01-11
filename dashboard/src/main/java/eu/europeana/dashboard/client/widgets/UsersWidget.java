@@ -76,6 +76,8 @@ public class UsersWidget extends DashboardWidget {
     private Widget createUserChooser() {
         userChooser = new UserChooser(world);
         userChooser.setListener(new UserChooser.Listener() {
+        	
+        	@Override
             public void userSelected(UserX user) {
                 setUser(user);
             }
