@@ -39,6 +39,7 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
+<!-- 
             <plugin>
                 <groupId>com.totsp.gwt</groupId>
                 <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
@@ -46,7 +47,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <!--<goal>mergewebxml</goal>-->
+                            <!- -<goal>mergewebxml</goal>- ->
                             <goal>compile</goal>
                             <goal>test</goal>
                         </goals>
@@ -95,47 +96,12 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
-                    <!--<webXml>target/web.xml</webXml>-->
+                    <!- -<webXml>target/web.xml</webXml>- ->
                 </configuration>
-            </plugin>
+            </plugin> 
+     -->
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>gwt-dev-windows</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <properties>
-                <platform>windows</platform>
-            </properties>
-        </profile>
-        <profile>
-            <id>gwt-dev-mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <platform>mac</platform>
-            </properties>
-        </profile>
-        <profile>
-            <id>gwt-dev-linux</id>
-            <activation>
-                <os>
-                    <name>Linux</name>
-                </os>
-            </activation>
-            <properties>
-                <platform>linux</platform>
-            </properties>
-        </profile>
-    </profiles>
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
@@ -162,30 +128,15 @@
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-lgpl</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwtVersion}</version>
-            <type>zip</type>
-            <classifier>${platform}-libs</classifier>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwtVersion}</version>
-            <classifier>${platform}</classifier>
             <scope>provided</scope>
         </dependency>
 
