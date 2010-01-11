@@ -13,6 +13,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class NextQueryFacet {
     private FacetType type;
     private List<FacetCountLink> links = new ArrayList<FacetCountLink>();

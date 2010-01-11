@@ -1,6 +1,6 @@
 package eu.europeana.query;
 
-import eu.europeana.web.util.QueryConstraints;
+import eu.europeana.web.util.Breadcrumb;
 import eu.europeana.web.util.ResultPaginationImpl;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public interface ResultPagination {
 
     List<ResultPaginationImpl.PageLink> getPageLinks();
 
-    List<QueryConstraints.Breadcrumb> getBreadcrumbs();
+    List<Breadcrumb> getBreadcrumbs();
 
     PresentationQuery getQuery();
 }

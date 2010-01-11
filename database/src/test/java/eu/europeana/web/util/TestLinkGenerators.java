@@ -21,13 +21,12 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.query.Facet;
-import eu.europeana.query.FacetCount;
-import eu.europeana.query.FacetType;
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +38,12 @@ import static junit.framework.Assert.assertEquals;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class TestFacetQueryLinks {
+public class TestLinkGenerators {
+    private Logger log = Logger.getLogger(getClass());
 
     @Test
     public void facetQueryLinks() throws Exception {
+        log.info("facet query links");
         List<FacetField> facets = new ArrayList<FacetField>();
         FacetField facet = new FacetField("LANGUAGE");
         facet.add("en", 1);
@@ -60,7 +61,6 @@ public class TestFacetQueryLinks {
         query.addFacetQuery("LANGUAGE:nl");
         query.addFacetQuery("YEAR:1980");
         List<FacetQueryLinks> facetLinks = FacetQueryLinks.createDecoratedFacets(query, facets);
-        System.out.println();
         String[] expect = new String[]{
                 "<a href='&qf=LANGUAGE:de&qf=LANGUAGE:nl&qf=YEAR:1980&qf=LANGUAGE:en'>en</a> (add)",
                 "<a href='&qf=LANGUAGE:nl&qf=YEAR:1980'>de</a> (remove)",
@@ -72,42 +72,35 @@ public class TestFacetQueryLinks {
         int index = 0;
         for (FacetQueryLinks facetLink : facetLinks) {
             for (FacetQueryLinks.FacetCountLink link : facetLink.getLinks()) {
-                System.out.println("\"" + link + "\",");
+                log.info(link);
                 assertEquals(expect[index++], link.toString());
             }
         }
     }
 
-    private class FacetImpl implements Facet {
-        private FacetType facetType;
-        private List<FacetCount> counts = new ArrayList<FacetCount>();
-
-        private FacetImpl(FacetType facetType) {
-            this.facetType = facetType;
-        }
-
-        public FacetType getType() {
-            return facetType;
-        }
-
-        public List<FacetCount> getCounts() {
-            return counts;
-        }
-    }
-
-    private class FacetCountImpl implements FacetCount {
-        private String value;
-
-        private FacetCountImpl(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public Integer getCount() {
-            return 0;
+    @Test
+    public void breadcrumbs() throws UnsupportedEncodingException {
+        log.info("breadcrumbs");
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.addFacetField("YEAR", "LOCATION");
+        solrQuery.addFacetQuery("YEAR:1900");
+        solrQuery.addFacetQuery("YEAR:1901");
+        solrQuery.addFacetQuery("LOCATION:Here");
+        solrQuery.setQuery("kultur");
+        List<Breadcrumb> breadcrumbs = Breadcrumb.createList(solrQuery);
+        String [][] expect = new String[][] {
+                {"query=kultur", "kultur", "false" },
+                {"query=kultur&qf=YEAR:1900", "YEAR:1900", "false" },
+                {"query=kultur&qf=YEAR:1900&qf=YEAR:1901", "YEAR:1901", "false"},
+                {"query=kultur&qf=YEAR:1900&qf=YEAR:1901&qf=LOCATION:Here", "LOCATION:Here", "true" },
+        };
+        int index = 0;
+        for (Breadcrumb breadcrumb : breadcrumbs) {
+            log.info(breadcrumb);
+            assertEquals(breadcrumb.getHref(),expect[index][0]);
+            assertEquals(breadcrumb.getDisplay(),expect[index][1]);
+            assertEquals(String.valueOf(breadcrumb.getLast()),expect[index][2]);
+            index++;
         }
     }
 

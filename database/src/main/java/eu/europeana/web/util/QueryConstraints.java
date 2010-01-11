@@ -12,6 +12,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class QueryConstraints implements QueryModel.Constraints {
     public static final String PARAM_KEY = "qf";
     private static final String PROMPT = "&"+PARAM_KEY+"=";

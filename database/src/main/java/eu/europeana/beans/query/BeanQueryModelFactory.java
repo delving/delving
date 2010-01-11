@@ -203,7 +203,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
 
     private ResultPagination createPagination(QueryResponse response, SolrQuery query) {
         int numFound = (int) response.getResults().getNumFound();
-        return new ResultPaginationImpl(numFound, query.getStart(), query.getRows());
+        return new ResultPaginationImpl(query, numFound);
     }
 
     public enum QueryType {

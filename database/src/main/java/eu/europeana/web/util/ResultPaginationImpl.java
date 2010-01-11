@@ -2,6 +2,7 @@ package eu.europeana.web.util;
 
 import eu.europeana.query.PresentationQuery;
 import eu.europeana.query.ResultPagination;
+import org.apache.solr.client.solrj.SolrQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,26 +17,25 @@ import java.util.List;
 public class ResultPaginationImpl implements ResultPagination {
     private static final int MARGIN = 5;
     private static final int PAGE_NUMBER_THRESHOLD = 7;
-
+    private SolrQuery solrQuery;
     private boolean isPrevious;
     private int previousPage;
     private boolean isNext;
     private int nextPage;
     private int numFound;
-    private int start;
+    private List<Breadcrumb> breadcrumbs;
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
-    private int rows;
-    private List<QueryConstraints.Breadcrumb> breadcrumbs;
 
-    public ResultPaginationImpl(int numFound, int rows, int start) {
+    public ResultPaginationImpl(SolrQuery solrQuery, int numFound) {
+        this.solrQuery = solrQuery;
         this.numFound = numFound;
-        this.start = start;
-        this.rows = rows;
-        int totalPages = numFound/rows;
+        int rows = solrQuery.getRows();
+        int totalPages = numFound / rows;
         if (numFound % rows != 0) {
             totalPages++;
         }
-        int pageNumber = start/rows + 1;
+        int start = solrQuery.getStart();
+        int pageNumber = start / rows + 1;
         int fromPage = 1;
         int toPage = Math.min(totalPages, MARGIN * 2);
         if (pageNumber > PAGE_NUMBER_THRESHOLD) {
@@ -52,6 +52,7 @@ public class ResultPaginationImpl implements ResultPagination {
         for (int page = fromPage; page <= toPage; page++) {
             pageLinks.add(new PageLink(page, (page - 1) * rows + 1, pageNumber != page));
         }
+        breadcrumbs = Breadcrumb.createList(solrQuery);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class ResultPaginationImpl implements ResultPagination {
 
     @Override
     public int getLastViewableRecord() {
-        return Math.min(nextPage-1,numFound);
+        return Math.min(nextPage - 1, numFound);
     }
 
     @Override
@@ -86,12 +87,12 @@ public class ResultPaginationImpl implements ResultPagination {
 
     @Override
     public int getRows() {
-        return rows;
+        return solrQuery.getRows();
     }
 
     @Override
     public int getStart() {
-        return start;
+        return solrQuery.getStart();
     }
 
     @Override
@@ -100,7 +101,7 @@ public class ResultPaginationImpl implements ResultPagination {
     }
 
     @Override
-    public List<QueryConstraints.Breadcrumb> getBreadcrumbs() {
+    public List<Breadcrumb> getBreadcrumbs() {
         return breadcrumbs;
     }
 
@@ -111,14 +112,14 @@ public class ResultPaginationImpl implements ResultPagination {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append(isPrevious ? "previous="+previousPage : "no-previous");
+        out.append(isPrevious ? "previous=" + previousPage : "no-previous");
         out.append('\n');
         for (PageLink link : pageLinks) {
             out.append('\t');
             out.append(link.toString());
             out.append('\n');
         }
-        out.append(isNext ? "next="+previousPage : "no-next");
+        out.append(isNext ? "next=" + previousPage : "no-next");
         out.append('\n');
         return out.toString();
     }
@@ -148,7 +149,7 @@ public class ResultPaginationImpl implements ResultPagination {
 
         public String toString() {
             if (linked) {
-                return display+":"+start;
+                return display + ":" + start;
             }
             else {
                 return String.valueOf(display);
