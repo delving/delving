@@ -10,6 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ */
+
 public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private DocIdWindow docIdWindow;

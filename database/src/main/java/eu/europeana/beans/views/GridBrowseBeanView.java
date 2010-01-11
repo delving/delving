@@ -5,5 +5,5 @@ package eu.europeana.beans.views;
  * @since Jan 9, 2010 11:59:59 AM
  */
 public interface GridBrowseBeanView {
-    
+    //todo: implement it
 }

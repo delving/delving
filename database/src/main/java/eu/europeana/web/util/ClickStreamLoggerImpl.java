@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
 
 /**
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());

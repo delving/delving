@@ -1,5 +1,9 @@
 package eu.europeana.beans;
 
+/**
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ */
+
 public class BeanUtil {
     private static final String[] STRINGS = new String[]{};
     private static final String EMPTY_STRING = " ";
