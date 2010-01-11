@@ -40,7 +40,7 @@ public interface NewQueryModelFactory {
 
     SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
 
-    BriefBeanView getBriefResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
+    BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException;
 
     FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException;
 

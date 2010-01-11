@@ -146,7 +146,8 @@ public class ResultController {
         List<NextQueryFacet> nextQueryFacets;
         ResultPagination resultPagination = new ResultPaginationImpl(
                 new SolrQuery(), // todo: this will fail
-                resultModel.getBriefDocWindow().getHitCount()
+                resultModel.getBriefDocWindow().getHitCount(),
+                request.getQueryString()
         );
         nextQueryFacets = NextQueryFacet.createDecoratedFacets(
                 resultModel.getFacets(),

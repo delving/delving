@@ -163,7 +163,7 @@ public class TestUtilities {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setStart(start);
         solrQuery.setRows(rows);
-        return makePage(new ResultPaginationImpl(solrQuery, numFound));
+        return makePage(new ResultPaginationImpl(solrQuery, numFound, "queryString??"));
     }
 
     private String makePage(ResultPaginationImpl p) throws Exception {

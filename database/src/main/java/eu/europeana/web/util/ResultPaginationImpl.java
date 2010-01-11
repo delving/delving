@@ -4,6 +4,8 @@ import eu.europeana.query.PresentationQuery;
 import eu.europeana.query.ResultPagination;
 import org.apache.solr.client.solrj.SolrQuery;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
 
 
 public class ResultPaginationImpl implements ResultPagination {
+    private static final String FACET_PROMPT = "&qf=";
     private static final int MARGIN = 5;
     private static final int PAGE_NUMBER_THRESHOLD = 7;
     private SolrQuery solrQuery;
@@ -24,9 +27,10 @@ public class ResultPaginationImpl implements ResultPagination {
     private int nextPage;
     private int numFound;
     private List<Breadcrumb> breadcrumbs;
+    private PresentationQueryImpl presentationQuery = new PresentationQueryImpl();
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
 
-    public ResultPaginationImpl(SolrQuery solrQuery, int numFound) {
+    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString) {
         this.solrQuery = solrQuery;
         this.numFound = numFound;
         int rows = solrQuery.getRows();
@@ -53,6 +57,27 @@ public class ResultPaginationImpl implements ResultPagination {
             pageLinks.add(new PageLink(page, (page - 1) * rows + 1, pageNumber != page));
         }
         breadcrumbs = Breadcrumb.createList(solrQuery);
+        presentationQuery.queryForPresentation = createQueryForPresentation(solrQuery);
+        presentationQuery.queryToSave = requestQueryString;
+        presentationQuery.userSubmittedQuery = solrQuery.getQuery();
+    }
+
+    private String createQueryForPresentation(SolrQuery solrQuery) {
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("query").append("=").append(encode(solrQuery.getQuery()));
+        for (String facetTerm : solrQuery.getFacetQuery()) {
+            queryString.append(FACET_PROMPT).append(facetTerm);
+        }
+        return queryString.toString();
+    }
+
+    private static String encode(String value) {
+        try {
+            return URLEncoder.encode(value, "utf-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -107,7 +132,7 @@ public class ResultPaginationImpl implements ResultPagination {
 
     @Override
     public PresentationQuery getQuery() {
-        return null;  //TODO: implement this
+        return presentationQuery;
     }
 
     public String toString() {
@@ -122,6 +147,27 @@ public class ResultPaginationImpl implements ResultPagination {
         out.append(isNext ? "next=" + previousPage : "no-next");
         out.append('\n');
         return out.toString();
+    }
+
+    private class PresentationQueryImpl implements PresentationQuery {
+        private String userSubmittedQuery;
+        private String queryForPresentation;
+        private String queryToSave;
+
+        @Override
+        public String getUserSubmittedQuery() {
+            return null; // todo: implement
+        }
+
+        @Override
+        public String getQueryForPresentation() {
+            return null; // todo: implement
+        }
+
+        @Override
+        public String getQueryToSave() {
+            return null; // todo: implement
+        }
     }
 
     public static class PageLink {

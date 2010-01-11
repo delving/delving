@@ -85,8 +85,8 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     }
 
     @Override
-    public BriefBeanView getBriefResultView(SolrQuery solrQuery) throws EuropeanaQueryException {
-        return new BriefBeanViewImpl(solrQuery, getSolrResponse(solrQuery, briefBean));
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException {
+        return new BriefBeanViewImpl(solrQuery, getSolrResponse(solrQuery, briefBean), requestQueryString);
     }
 
     @Override
@@ -104,10 +104,10 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         private QueryResponse solrResponse;
         private ResultPagination pagination;
 
-        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse) {
+        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) {
             this.solrQuery = solrQuery;
             this.solrResponse = solrResponse;
-            pagination = createPagination(solrResponse, solrQuery);
+            pagination = createPagination(solrResponse, solrQuery, requestQueryString);
         }
 
         @Override
@@ -181,9 +181,9 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         return getSolrResponse(solrQuery);
     }
 
-    private ResultPagination createPagination(QueryResponse response, SolrQuery query) {
+    private ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) {
         int numFound = (int) response.getResults().getNumFound();
-        return new ResultPaginationImpl(query, numFound);
+        return new ResultPaginationImpl(query, numFound, requestQueryString);
     }
 
     public enum QueryType {
