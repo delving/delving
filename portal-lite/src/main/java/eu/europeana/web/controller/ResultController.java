@@ -28,6 +28,7 @@ import eu.europeana.json.JsonResultModel;
 import eu.europeana.query.*;
 import eu.europeana.web.util.*;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -144,9 +145,8 @@ public class ResultController {
         }
         List<NextQueryFacet> nextQueryFacets;
         ResultPagination resultPagination = new ResultPaginationImpl(
-                resultModel.getBriefDocWindow().getHitCount(),
-                queryModel.getRows(),
-                queryModel.getStartRow() + 1
+                new SolrQuery(), // todo: this will fail
+                resultModel.getBriefDocWindow().getHitCount()
         );
         nextQueryFacets = NextQueryFacet.createDecoratedFacets(
                 resultModel.getFacets(),
