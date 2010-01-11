@@ -1,9 +1,6 @@
 package eu.europeana.beans.query;
 
-import eu.europeana.beans.AnnotationProcessor;
-import eu.europeana.beans.BriefBean;
-import eu.europeana.beans.EuropeanaBean;
-import eu.europeana.beans.FullBean;
+import eu.europeana.beans.*;
 import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.beans.views.FullBeanView;
 import eu.europeana.beans.views.GridBrowseBeanView;
@@ -78,10 +75,10 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         this.fullBean = fullBean;
     }
 
-    private Class<?> IdBean;
+    private Class<?> idBean;
 
     public void setIdBean(Class<?> idBean) {
-        IdBean = idBean;
+        this.idBean = idBean;
     }
 
     @Override
@@ -98,6 +95,23 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     public GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException {
         return null;  //TODO: implement this
     }
+
+    //todo review this code
+    @Override
+    public List<IdBean> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
+        SolrQuery solrQuery = createFromQueryParams(params);
+        Integer start = solrQuery.getStart();
+        if (start  > 1 ) {
+            solrQuery.setStart(start - 2);
+        }
+        solrQuery.setRows(3);
+        solrQuery.setFields("europeana_uri");
+        // Fetch results from server
+        QueryResponse queryResponse = solrServer.query(solrQuery);
+        // fetch beans
+        return queryResponse.getBeans(IdBean.class);
+    }
+
 
     public class BriefBeanViewImpl implements BriefBeanView {
         private SolrQuery solrQuery;
@@ -139,7 +153,13 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
 
         @Override
         public DocIdWindowPager getDocIdWindowPager() throws Exception {
-            return new DocIdWindowPagerImpl(params, createFromQueryParams(params), solrServer);
+            int offSet = Integer.parseInt(solrResponse.getResponseHeader().get("start").toString());
+            int numFound = Integer.parseInt(solrResponse.getResponseHeader().get("numFound").toString());
+            return new DocIdWindowPagerImpl(
+                    params,
+                    getDocIdList(params),
+                    offSet,
+                    numFound);
         }
 
         @Override

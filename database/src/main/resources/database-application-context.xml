@@ -157,6 +157,8 @@
 
     <bean id="queryModelFactory" class="eu.europeana.json.SolrQueryModelFactory"/>
 
+    <bean id="beanQueryModelFactory" class="eu.europeana.beans.query.BeanQueryModelFactory"/>
+
     <bean id="solrQueryModel" class="eu.europeana.json.SolrQueryModel"/>
 
     <bean id="solrIndexer" class="eu.europeana.incoming.SolrIndexerImpl">

@@ -2,9 +2,6 @@ package eu.europeana.web.util;
 
 import eu.europeana.beans.IdBean;
 import eu.europeana.query.*;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -30,7 +27,8 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String returnToResults;
     private String pageId;
     private String tab;
-
+    private String offSet;
+    private String numFound;
 
     public DocIdWindowPagerImpl(String uri, HttpServletRequest request, QueryModel queryModel) throws EuropeanaQueryException, UnsupportedEncodingException {
         fullDocUri = uri;
@@ -82,7 +80,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     // todo implement contstructor
     // Warning completely untested
-    public DocIdWindowPagerImpl(Map<String, String[]> params, SolrQuery solrQuery, CommonsHttpSolrServer solrServer) throws Exception {
+    public DocIdWindowPagerImpl(Map<String, String[]> params, List<IdBean> docIdList, int offSet, int numFound) throws Exception {
         if (params.get("uri") == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
@@ -95,43 +93,43 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         if (tab == null) {
             tab = "all";
         }
-        solrQuery.setFields("europeana_uri");
-        String startParam = params.get("start")[0];
-        pageId = params.get("pageId")[0];
-//        if (pageId != null) {
-        // todo uncomment and implemnent createReturnPage with params instead of request
-//            returnToResults = createReturnPage(query, startPage, pageId, tab, request);
+//        solrQuery.setFields("europeana_uri");
+//        String startParam = params.get("start")[0];
+//        pageId = params.get("pageId")[0];
+////        if (pageId != null) {
+//        // todo uncomment and implemnent createReturnPage with params instead of request
+////            returnToResults = createReturnPage(query, startPage, pageId, tab, request);
+////        }
+//        if (startParam != null) {
+//            fullDocUriInt = Integer.valueOf(startParam);
 //        }
-        if (startParam != null) {
-            fullDocUriInt = Integer.valueOf(startParam);
-        }
-        int startRow = fullDocUriInt;
-        hasPrevious = fullDocUriInt > 1;
-        if (hasPrevious) {
-            startRow -= 2;
-        }
-        solrQuery.setStart(startRow);
-        solrQuery.setRows(3);
-        // Fetch results from server
-        QueryResponse queryResponse = solrServer.query(solrQuery);
-        // fetch beans
-        List<IdBean> list = queryResponse.getBeans(IdBean.class);
+//        int startRow = fullDocUriInt;
+//        hasPrevious = fullDocUriInt > 1;
+//        if (hasPrevious) {
+//            startRow -= 2;
+//        }
+//        solrQuery.setStart(startRow);
+//        solrQuery.setRows(3);
+//        // Fetch results from server
+//        QueryResponse queryResponse = solrServer.query(solrQuery);
+//        // fetch beans
+//        List<IdBean> list = queryResponse.getBeans(IdBean.class);
         // populate this DocIdWindowPager object
-        int offSet = Integer.parseInt(queryResponse.getHeader().get("start").toString());
-        int hitCount = Integer.parseInt(queryResponse.getHeader().get("numFound").toString());
-        hasNext = offSet + 1 < hitCount;
-        if (fullDocUriInt > hitCount|| list.size() < 2) {
-            hasPrevious = false;
-            hasNext = false;
-        }
-        if (hasPrevious) {
-            previousInt = fullDocUriInt - 1;
-            previousUri = list.get(0).getEuropeanaUri();
-        }
-        if (hasNext) {
-            nextInt = fullDocUriInt + 1;
-            nextUri = list.get(2).getEuropeanaUri();
-        }
+//        int offSet = Integer.parseInt(queryResponse.getHeader().get("start").toString());
+//        int hitCount = Integer.parseInt(queryResponse.getHeader().get("numFound").toString());
+//        hasNext = offSet + 1 < hitCount;
+//        if (fullDocUriInt > hitCount || list.size() < 2) {
+//            hasPrevious = false;
+//            hasNext = false;
+//        }
+//        if (hasPrevious) {
+//            previousInt = fullDocUriInt - 1;
+//            previousUri = list.get(0).getEuropeanaUri();
+//        }
+//        if (hasNext) {
+//            nextInt = fullDocUriInt + 1;
+//            nextUri = list.get(2).getEuropeanaUri();
+//        }
     }
 
     private String createReturnPage(String query, String startPage, String pageId, String tab, HttpServletRequest request) throws UnsupportedEncodingException {
@@ -237,6 +235,14 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public String getTab() {
         return tab;
+    }
+
+    public String getOffSet() {
+        return offSet;
+    }
+
+    public String getNumFound() {
+        return numFound;
     }
 
     @Override

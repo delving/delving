@@ -21,12 +21,15 @@
 
 package eu.europeana.query;
 
+import eu.europeana.beans.IdBean;
 import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.beans.views.FullBeanView;
 import eu.europeana.beans.views.GridBrowseBeanView;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +48,8 @@ public interface NewQueryModelFactory {
     FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException;
 
     GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
+
+    List<IdBean> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException;
 }
