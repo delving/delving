@@ -2,7 +2,7 @@ package eu.europeana.beans.query;
 
 import eu.europeana.beans.AnnotationProcessor;
 import eu.europeana.beans.BriefBean;
-import eu.europeana.beans.EuropeanaField;
+import eu.europeana.beans.EuropeanaBean;
 import eu.europeana.beans.FullBean;
 import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.beans.views.FullBeanView;
@@ -19,10 +19,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -173,31 +171,13 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     public QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException { // add bean to ???
         // set facets
         if (beanClass == briefBean) {
-            Set<? extends EuropeanaField> facetFields = annotationProcessor.getFacetFields();
-            ArrayList<String> facets = new ArrayList<String>();
-            for (EuropeanaField facetField : facetFields) {
-                facets.add(facetField.getFieldNameString());
-            }
-            String[] facetArr = facets.toArray(new String[facets.size()]);
             solrQuery.setFacet(true);
-            solrQuery.addFacetField(facetArr);
+            solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
         }
-
         // set search fields
-//        EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
-//        Set<EuropeanaField> fieldSet = bean.getFields();
-//        String[] fieldStrings = new String[fieldSet.size()];
-//        int index = 0;
-//        for (EuropeanaField europeanaField : fieldSet) {
-//            fieldStrings[index] = europeanaField.getFieldNameString();
-//            index++;
-//        }
-//        solrQuery.setFields(fieldStrings);
-
-
-        //set more like this
-
-
+        EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
+        solrQuery.setFields(bean.getFieldStrings());
+        // todo: set more like this
         return getSolrResponse(solrQuery);
     }
 

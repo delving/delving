@@ -10,5 +10,6 @@ import java.util.Set;
 
 public interface AnnotationProcessor {
     Set<? extends EuropeanaField> getFacetFields();
+    String [] getFacetFieldStrings();
     EuropeanaBean getEuropeanaBean(Class<?> c);
 }

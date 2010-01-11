@@ -12,4 +12,5 @@ public interface EuropeanaBean {
     int rows();
     boolean facets();
     Set<EuropeanaField> getFields();
+    String [] getFieldStrings();
 }

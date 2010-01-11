@@ -28,6 +28,16 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     @Override
+    public String[] getFacetFieldStrings() {
+        String [] strings = new String[facetFields.size()];
+        int index = 0;
+        for (EuropeanaField facetField : facetFields) {
+            strings[index] = facetField.getFieldNameString();
+        }
+        return strings;
+    }
+
+    @Override
     public EuropeanaBean getEuropeanaBean(Class<?> c) {
         return beanMap.get(c);
     }
@@ -121,6 +131,17 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         @Override
         public Set<EuropeanaField> getFields() {
             return fields;
+        }
+
+        @Override
+        public String[] getFieldStrings() {
+            String[] strings = new String[fields.size()];
+            int index = 0;
+            for (EuropeanaField europeanaField : fields) {
+                strings[index] = europeanaField.getFieldNameString();
+                index++;
+            }
+            return strings;
         }
 
         void addField(EuropeanaField field) {
