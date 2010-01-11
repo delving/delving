@@ -93,7 +93,6 @@ if you have problems with finding the M2_REPO add it to Preferences > Java > Bui
 (then in the pop-up fill in name = M2_REPO; path = ~/.m2/repository)
 
 
-
 Initiate the Database and Index
 -----------------------------------------
 
