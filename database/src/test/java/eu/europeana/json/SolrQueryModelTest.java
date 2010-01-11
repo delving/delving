@@ -3,7 +3,6 @@ package eu.europeana.json;
 import eu.europeana.beans.BriefBean;
 import eu.europeana.beans.FullBean;
 import eu.europeana.beans.query.BeanQueryModelFactory;
-import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.bootstrap.SolrStarter;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -16,7 +15,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -59,25 +59,7 @@ public class SolrQueryModelTest {
         request.addParameter("rows", "12");
 
         Map<String,String[]> requestMap = request.getParameterMap();
-<<<<<<< HEAD
-        SolrQueryModelFactory solrQueryModelFactory = new SolrQueryModelFactory();
-=======
         BeanQueryModelFactory solrQueryModelFactory = new BeanQueryModelFactory();
->>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
-        SolrQuery solrQuery = solrQueryModelFactory.createFromQueryParams(requestMap);
-
-        // manually inject the solrServer
-        solrQueryModelFactory.setSolrServer(server);
-
-        assertNotNull("solrQuery should not be null", solrQuery);
-        assertEquals("query string should be equal", request.getParameter("query"), solrQuery.getQuery());
-        assertEquals("Filter queries should be the same", request.getParameterValues("qf"), solrQuery.getFilterQueries());
-<<<<<<< HEAD
-        SolrQueryModelFactory.BriefBeanView resultView = solrQueryModelFactory.getBriefResultView(solrQuery);
-=======
-        BriefBeanView resultView = solrQueryModelFactory.getBriefResultView(solrQuery);
->>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
-        assertNotNull(resultView);
     }
 
     @Test
