@@ -241,9 +241,9 @@ public class UserDaoImpl implements UserDao {
     public List<User> fetchUsers(String pattern) {
         Query query = entityManager.createQuery(
                 "select u from User as u " +
-                        "where u.userName like :searchField " +
-                        "or u.email like :searchField " +
-                        "or u.firstName like :searchField");
+                        "where lower(u.userName) like :searchField " +
+                        "or lower(u.email) like :searchField " +
+                        "or lower(u.firstName) like :searchField");
         StringBuilder cleanPattern = new StringBuilder();
         for (int walk = 0; walk < pattern.length(); walk++) {
             if (pattern.charAt(walk) != '%') {
@@ -251,7 +251,7 @@ public class UserDaoImpl implements UserDao {
             }
         }
         cleanPattern.append("%");
-        query.setParameter("searchField", cleanPattern.toString());
+        query.setParameter("searchField", cleanPattern.toString().toLowerCase());
         return (List<User>) query.getResultList();
     }
 

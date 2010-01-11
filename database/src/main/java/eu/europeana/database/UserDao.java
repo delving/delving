@@ -50,7 +50,7 @@ public interface UserDao {
 
     /**
      * Fetch a number of user objects that contain the given pattern in either their user name
-     * first name, or email address.  Used for suggestion list.
+     * first name, or email address, all case-insensitive.  Used for suggestion list.
      *
      * @param pattern a few letters
      * @return a list of matching users
