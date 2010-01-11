@@ -105,7 +105,7 @@ not be found).
 Launch the Europeana environment
 -----------------------------------------
 To launch the complete Europeana environment portal-lite, resolver, cache, solr you need to run the class
-./database/src/main/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
+./database/src/test/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
 Server at http://localhost:8983/{api|solr}/
 
 Each module with a web-app (api, portal-lite) has a jetty starter class in the test directories. Use it
