@@ -131,7 +131,7 @@ public class ResultPaginationImpl implements ResultPagination {
     }
 
     @Override
-    public PresentationQuery getQuery() {
+    public PresentationQuery getPresentationQuery() {
         return presentationQuery;
     }
 

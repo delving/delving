@@ -30,5 +30,5 @@ public interface ResultPagination {
 
     List<Breadcrumb> getBreadcrumbs();
 
-    PresentationQuery getQuery();
+    PresentationQuery getPresentationQuery();
 }
