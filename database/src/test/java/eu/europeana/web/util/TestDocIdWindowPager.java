@@ -22,6 +22,7 @@
 package eu.europeana.web.util;
 
 import eu.europeana.json.SolrQueryModelFactory;
+import eu.europeana.query.DocIdWindowPager;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryModel;
 import org.apache.commons.httpclient.HttpClient;
@@ -78,7 +79,7 @@ public class TestDocIdWindowPager {
         request.addParameter("start", "2");
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "bd");
-        DocIdWindowPager pager = new DocIdWindowPager(uri, request, queryModel);
+        DocIdWindowPager pager = new DocIdWindowPagerImpl(uri, request, queryModel);
         assertEquals(pager.isPrevious(), true);
         assertEquals(pager.isNext(), true);
         assertEquals(pager.getFullDocUri(), uri);
@@ -97,7 +98,7 @@ public class TestDocIdWindowPager {
         request.addParameter("start", "1");
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "bd");
-        DocIdWindowPager pager = new DocIdWindowPager(uri, request, queryModel);
+        DocIdWindowPager pager = new DocIdWindowPagerImpl(uri, request, queryModel);
         assertEquals(pager.isPrevious(), false);
         assertEquals(pager.isNext(), true);
         assertEquals(pager.getNextInt(), 2);
@@ -114,7 +115,7 @@ public class TestDocIdWindowPager {
         request.addParameter("start", "14");
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "bd");
-        DocIdWindowPager pager = new DocIdWindowPager(uri, request, queryModel);
+        DocIdWindowPager pager = new DocIdWindowPagerImpl(uri, request, queryModel);
         assertEquals(pager.isNext(), false);
         assertEquals(pager.isPrevious(), true);
         assertEquals(pager.getPreviousInt(), 13);
@@ -130,7 +131,7 @@ public class TestDocIdWindowPager {
         request.addParameter("start", "18");
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "bd");
-        DocIdWindowPager pager = new DocIdWindowPager(uri, request, queryModel);
+        DocIdWindowPager pager = new DocIdWindowPagerImpl(uri, request, queryModel);
         assertEquals(pager.isNext(), false);
         assertEquals(pager.isPrevious(), false);
         assertEquals(pager.getDocIdWindow().getIds().size(), 0);
@@ -146,7 +147,7 @@ public class TestDocIdWindowPager {
         request.addParameter("start", "1");
         request.addParameter("query", "1920 max devrient");
         request.addParameter("pageId", "yg");
-        DocIdWindowPager pager = new DocIdWindowPager(uri, request, queryModel);
+        DocIdWindowPager pager = new DocIdWindowPagerImpl(uri, request, queryModel);
         assertEquals(pager.getReturnToResults(), "year-grid.html?query=max+devrient&bq=1920+max+devrient&start=1&view=table&tab=null");
         assertEquals(pager.isNext(), true);
         assertEquals(pager.isPrevious(), false);

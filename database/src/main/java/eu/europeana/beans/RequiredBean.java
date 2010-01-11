@@ -25,4 +25,9 @@ public class RequiredBean extends IdBean {
     @Solr(namespace = "europeana", name = "object")
     @Field("europeana_object")
     String[] europeanaObject;
+
+    @Field("COUNTRY")
+    @Europeana(copyField = true, facet = true, facetPrefix = "coun")
+    @Solr(fieldType = "string")
+    String[] country;
 }

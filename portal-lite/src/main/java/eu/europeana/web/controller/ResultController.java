@@ -77,7 +77,7 @@ public class ResultController {
         }
         QueryModel queryModel = queryModelFactory.createQueryModel();
         if (query != null && start != null) {
-            page.addObject("pagination", new DocIdWindowPager(uri, request, queryModel));
+            page.addObject("pagination", new DocIdWindowPagerImpl(uri, request, queryModel));
         }
         queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
         queryModel.setStartRow(0);

@@ -28,6 +28,7 @@ import java.util.List;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public interface QueryModel {
 
     QueryExpression setQueryString(String queryString) throws EuropeanaQueryException;
@@ -44,7 +45,7 @@ public interface QueryModel {
     String getQueryString();
     QueryExpression.QueryType getQueryType();
     RecordFieldChoice getRecordFieldChoice();
-    
+
     ResultModel fetchResult() throws EuropeanaQueryException;
 
     public interface Constraints {

@@ -21,24 +21,12 @@
 
 package eu.europeana.query;
 
-import eu.europeana.json.SolrQueryModelFactory;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
-
-import java.util.Map;
-
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public interface QueryModelFactory {
-    @Deprecated
     QueryModel createQueryModel();
-
-    QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException;
-
-    SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
-
-    SolrQueryModelFactory.BriefBeanView getBriefResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
 }

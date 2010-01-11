@@ -31,7 +31,7 @@ public interface FullDoc {
     // Europeana elements
     String getId(); // this is europeanaId
 
-    String[] getThumbnail();  // this is europeanaObject
+    String[] getThumbnails();  // this is europeanaObject
 
     String[] getEuropeanaIsShownAt();
 

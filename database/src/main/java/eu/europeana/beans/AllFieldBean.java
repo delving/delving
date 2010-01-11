@@ -11,10 +11,6 @@ import org.apache.solr.client.solrj.beans.Field;
 public class AllFieldBean extends FullBean {
 
     // Facet Fields
-    @Field("COUNTRY")
-    @Europeana(copyField = true, facet = true, facetPrefix = "coun")
-    @Solr(fieldType = "string")
-    String[] country;
 
     // disabled facet fields
 

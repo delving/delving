@@ -17,6 +17,7 @@ import java.util.List;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public class SolrQueryModel implements QueryModel {
 
     private Logger log = Logger.getLogger(getClass());

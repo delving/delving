@@ -46,7 +46,7 @@
                           alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
                           >
                         <#if useCache="true">
-                            <img src="${cacheUrl}uri=${result.fullDoc.thumbnail[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+                            <img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
                              class="full" alt="Image title: ${result.fullDoc.dcTitle[0]}" />
                         <#else>
                             <script>
@@ -57,7 +57,7 @@
                                     }
                                 }
                             </script>
-                            <img src="${result.fullDoc.thumbnail[0]}"
+                            <img src="${result.fullDoc.thumbnails[0]}"
                                  alt="Image title: ${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
                                  onload="checkSize(this.height);"
@@ -84,7 +84,7 @@
                         <@show_array_values "europeana:isShownAt" doc.europeanaIsShownAt  showFieldNames />
                         <@show_array_values "europeana:isShownBy" doc.europeanaIsShownBy  showFieldNames />
                         <#--<@show_array_values "europeana:unstored" doc.europeanaUnstored  showFieldNames />-->
-                        <@show_array_values "europeana:object" doc.thumbnail  showFieldNames />
+                        <@show_array_values "europeana:object" doc.thumbnails  showFieldNames />
                         <@show_array_values "europeana:language" doc.europeanaLanguage  showFieldNames />
                         <@show_value "europeana:type" doc.europeanaType  showFieldNames />
                         <@show_array_values "europeana:userTag" doc.europeanaUserTag  showFieldNames />

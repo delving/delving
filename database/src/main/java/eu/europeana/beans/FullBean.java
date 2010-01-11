@@ -6,13 +6,16 @@ import eu.europeana.query.ESERecord;
 import eu.europeana.query.FullDoc;
 import org.apache.solr.client.solrj.beans.Field;
 
+import static eu.europeana.beans.BeanUtil.returnArrayOrElse;
+import static eu.europeana.beans.BeanUtil.returnStringOrElse;
+
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 @EuropeanaView(facets = false, rows = 10)
-public class FullBean extends RequiredBean implements FullDoc {
+public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
     @Europeana
@@ -80,7 +83,7 @@ public class FullBean extends RequiredBean implements FullDoc {
     @Europeana()
     @Solr(namespace = "dc", name = "description", toCopyField = {"text", "description"})
     @Field("dc_description")
-    String[] dcDestcription;
+    String[] dcDescription;
 
     @Europeana()
     @Solr(namespace = "dc", name = "creator", toCopyField = {"text", "who", "creator"})
@@ -260,23 +263,23 @@ public class FullBean extends RequiredBean implements FullDoc {
     }
 
     @Override
-    public String[] getThumbnail() {
-        return europeanaObject;
+    public String[] getThumbnails() {
+        return returnArrayOrElse(europeanaObject);
     }
 
     @Override
     public String[] getEuropeanaIsShownAt() {
-        return europeanaisShownAt;
+        return returnArrayOrElse(europeanaisShownAt);
     }
 
     @Override
     public String[] getEuropeanaIsShownBy() {
-        return europeanaisShownBy;
+        return returnArrayOrElse(europeanaisShownBy);
     }
 
     @Override
     public String[] getEuropeanaUserTag() {
-        return europeanaUserTag;
+        return returnArrayOrElse(europeanaUserTag);
     }
 
     @Override
@@ -286,219 +289,219 @@ public class FullBean extends RequiredBean implements FullDoc {
 
     @Override
     public String[] getEuropeanaCountry() {
-        return europeanaCountry;
+        return returnArrayOrElse(europeanaCountry, country);
     }
 
     @Override
     public String[] getEuropeanaProvider() {
-        return europeanaProvider;
+        return returnArrayOrElse(europeanaProvider, provider);
     }
 
     @Override
     public String[] getEuropeanaSource() {
-        return europeanaSource;
+        return returnArrayOrElse(europeanaSource);
     }
 
     @Override
     public DocType getEuropeanaType() {
-        return DocType.get(europeanaType);
+        return DocType.get(docType);
     }
 
     @Override
     public String[] getEuropeanaLanguage() {
-        return europeanaLanguage;
+        return returnArrayOrElse(europeanaLanguage, language);
     }
 
     @Override
     public String[] getEuropeanaYear() {
-        return europeanaYear;
+        return returnArrayOrElse(europeanaYear);
     }
 
     // DCTERMS fields
 
     @Override
     public String[] getDcTermsAlternative() {
-        return dctermsAlternative;
+        return returnArrayOrElse(dctermsAlternative);
     }
 
     @Override
     public String[] getDcTermsConformsTo() {
-        return dctermsConformsTo;
+        return returnArrayOrElse(dctermsConformsTo);
     }
 
     @Override
     public String[] getDcTermsCreated() {
-        return dctermsCreated;
+        return returnArrayOrElse(dctermsCreated);
     }
 
     @Override
     public String[] getDcTermsExtent() {
-        return dctermsExtent;
+        return returnArrayOrElse(dctermsExtent);
     }
 
     @Override
     public String[] getDcTermsHasFormat() {
-        return dctermsHasFormat;
+        return returnArrayOrElse(dctermsHasFormat);
     }
 
     @Override
     public String[] getDcTermsHasPart() {
-        return dctermsHasPart;
+        return returnArrayOrElse(dctermsHasPart);
     }
 
     @Override
     public String[] getDcTermsHasVersion() {
-        return dctermsHasVersion;
+        return returnArrayOrElse(dctermsHasVersion);
     }
 
     @Override
     public String[] getDcTermsIsFormatOf() {
-        return dctermsIsFormatOf;
+        return returnArrayOrElse(dctermsIsFormatOf);
     }
 
     @Override
     public String[] getDcTermsIsPartOf() {
-        return dctermsIsPartOf;
+        return returnArrayOrElse(dctermsIsPartOf);
     }
 
     @Override
     public String[] getDcTermsIsReferencedBy() {
-        return dctermsIsReferencedBy;
+        return returnArrayOrElse(dctermsIsReferencedBy);
     }
 
     @Override
     public String[] getDcTermsIsReplacedBy() {
-        return dctermsIsReplacedBy;
+        return returnArrayOrElse(dctermsIsReplacedBy);
     }
 
     @Override
     public String[] getDcTermsIsRequiredBy() {
-        return dctermsIsRequiredBy;
+        return returnArrayOrElse(dctermsIsRequiredBy);
     }
 
     @Override
     public String[] getDcTermsIssued() {
-        return dctermsIssued;
+        return returnArrayOrElse(dctermsIssued);
     }
 
     @Override
     public String[] getDcTermsIsVersionOf() {
-        return dctermsIsVersionOf;
+        return returnArrayOrElse(dctermsIsVersionOf);
     }
 
     @Override
     public String[] getDcTermsMedium() {
-        return dctermsMedium;
+        return returnArrayOrElse(dctermsMedium);
     }
 
     @Override
     public String[] getDcTermsProvenance() {
-        return dctermsProvenance;
+        return returnArrayOrElse(dctermsProvenance);
     }
 
     @Override
     public String[] getDcTermsReferences() {
-        return dctermsReferences;
+        return returnArrayOrElse(dctermsReferences);
     }
 
     @Override
     public String[] getDcTermsReplaces() {
-        return dctermsReplaces;
+        return returnArrayOrElse(dctermsReplaces);
     }
 
     @Override
     public String[] getDcTermsRequires() {
-        return dctermsRequires;
+        return returnArrayOrElse(dctermsRequires);
     }
 
     @Override
     public String[] getDcTermsSpatial() {
-        return dctermsSpatial;
+        return returnArrayOrElse(dctermsSpatial);
     }
 
     @Override
     public String[] getDcTermsTableOfContents() {
-        return dctermsTableOfContents;
+        return returnArrayOrElse(dctermsTableOfContents);
     }
 
     @Override
     public String[] getDcTermsTemporal() {
-        return dctermsTemporal;
+        return returnArrayOrElse(dctermsTemporal);
     }
 
     @Override
     public String[] getDcContributor() {
-        return dcContributor;
+        return returnArrayOrElse(dcContributor);
     }
 
     @Override
     public String[] getDcCoverage() {
-        return dcCoverage;
+        return returnArrayOrElse(dcCoverage);
     }
 
     @Override
     public String[] getDcCreator() {
-        return dcCreator;
+        return returnArrayOrElse(dcCreator);
     }
 
     @Override
     public String[] getDcDate() {
-        return dcDate;
+        return returnArrayOrElse(dcDate);
     }
 
     @Override
     public String[] getDcDescription() {
-        return dcContributor;
+        return returnArrayOrElse(dcDescription);
     }
 
     @Override
     public String[] getDcFormat() {
-        return dcFormat;
+        return returnArrayOrElse(dcFormat);
     }
 
     @Override
     public String[] getDcIdentifier() {
-        return dcIdentifier;
+        return returnArrayOrElse(dcIdentifier);
     }
 
     @Override
     public String[] getDcLanguage() {
-        return dcLanguage;
+        return returnArrayOrElse(dcLanguage);
     }
 
     @Override
     public String[] getDcPublisher() {
-        return dcPublisher;
+        return returnArrayOrElse(dcPublisher);
     }
 
     @Override
     public String[] getDcRelation() {
-        return dcRelation;
+        return returnArrayOrElse(dcRelation);
     }
 
     @Override
     public String[] getDcRights() {
-        return dcRights;
+        return returnArrayOrElse(dcRights);
     }
 
     @Override
     public String[] getDcSource() {
-        return dcSource;
+        return returnArrayOrElse(dcSource);
     }
 
     @Override
     public String[] getDcSubject() {
-        return dcSubject;
+        return returnArrayOrElse(dcSubject);
     }
 
     @Override
     public String[] getDcTitle() {
-        return dcTitle;
+        return returnArrayOrElse(dcTitle);
     }
 
     @Override
     public String[] getDcType() {
-        return dcType;
+        return returnArrayOrElse(dcType);
     }
 
     @Override
@@ -508,7 +511,7 @@ public class FullBean extends RequiredBean implements FullDoc {
 
     @Override
     public String getEuropeanaCollectionName() {
-        return europeanaCollectionName;
+        return returnStringOrElse(europeanaCollectionName);
     }
 
     @Override
@@ -516,3 +519,4 @@ public class FullBean extends RequiredBean implements FullDoc {
         return null; // todo: implement
     }
 }
+

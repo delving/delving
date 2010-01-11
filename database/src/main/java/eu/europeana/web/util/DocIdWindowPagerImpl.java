@@ -1,19 +1,19 @@
 package eu.europeana.web.util;
 
-import eu.europeana.query.DocIdWindow;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryModel;
-import eu.europeana.query.ResponseType;
-import eu.europeana.query.ResultModel;
-import javax.servlet.http.HttpServletRequest;
+import eu.europeana.beans.IdBean;
+import eu.europeana.query.*;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DocIdWindowPager {
+public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private DocIdWindow docIdWindow;
     private boolean hasNext;
@@ -32,7 +32,7 @@ public class DocIdWindowPager {
     private String tab;
 
 
-    public DocIdWindowPager(String uri, HttpServletRequest request, QueryModel queryModel) throws EuropeanaQueryException, UnsupportedEncodingException {
+    public DocIdWindowPagerImpl(String uri, HttpServletRequest request, QueryModel queryModel) throws EuropeanaQueryException, UnsupportedEncodingException {
         fullDocUri = uri;
         query = request.getParameter("query");
         startPage = request.getParameter("startPage");
@@ -80,6 +80,60 @@ public class DocIdWindowPager {
         }
     }
 
+    // todo implement contstructor
+    // Warning completely untested
+    public DocIdWindowPagerImpl(Map<String, String[]> params, SolrQuery solrQuery, CommonsHttpSolrServer solrServer) throws Exception {
+        if (params.get("uri") == null) {
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
+        }
+        fullDocUri = params.get("uri")[0];
+        startPage = params.get("startPage")[0];
+        if (startPage == null) {
+            startPage = "1";
+        }
+        tab = params.get("tab")[0];
+        if (tab == null) {
+            tab = "all";
+        }
+        solrQuery.setFields("europeana_uri");
+        String startParam = params.get("start")[0];
+        pageId = params.get("pageId")[0];
+//        if (pageId != null) {
+        // todo uncomment and implemnent createReturnPage with params instead of request
+//            returnToResults = createReturnPage(query, startPage, pageId, tab, request);
+//        }
+        if (startParam != null) {
+            fullDocUriInt = Integer.valueOf(startParam);
+        }
+        int startRow = fullDocUriInt;
+        hasPrevious = fullDocUriInt > 1;
+        if (hasPrevious) {
+            startRow -= 2;
+        }
+        solrQuery.setStart(startRow);
+        solrQuery.setRows(3);
+        // Fetch results from server
+        QueryResponse queryResponse = solrServer.query(solrQuery);
+        // fetch beans
+        List<IdBean> list = queryResponse.getBeans(IdBean.class);
+        // populate this DocIdWindowPager object
+        int offSet = Integer.parseInt(queryResponse.getHeader().get("start").toString());
+        int hitCount = Integer.parseInt(queryResponse.getHeader().get("numFound").toString());
+        hasNext = offSet + 1 < hitCount;
+        if (fullDocUriInt > hitCount|| list.size() < 2) {
+            hasPrevious = false;
+            hasNext = false;
+        }
+        if (hasPrevious) {
+            previousInt = fullDocUriInt - 1;
+            previousUri = list.get(0).getEuropeanaUri();
+        }
+        if (hasNext) {
+            nextInt = fullDocUriInt + 1;
+            nextUri = list.get(2).getEuropeanaUri();
+        }
+    }
+
     private String createReturnPage(String query, String startPage, String pageId, String tab, HttpServletRequest request) throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         if (pageId.equalsIgnoreCase("bd")) {
@@ -115,58 +169,72 @@ public class DocIdWindowPager {
         return queryString.toString();
     }
 
+    @Override
     public DocIdWindow getDocIdWindow() {
         return docIdWindow;
     }
 
+    @Override
     public boolean isNext() {
         return hasNext;
     }
 
+    @Override
     public boolean isPrevious() {
         return hasPrevious;
     }
 
+    @Override
     public String getQueryStringForPaging() {
         return queryStringForPaging;
     }
 
+    @Override
     public String getFullDocUri() {
         return fullDocUri;
     }
 
+    @Override
     public int getFullDocUriInt() {
         return fullDocUriInt;
     }
 
+    @Override
     public String getNextUri() {
         return nextUri;
     }
 
+    @Override
     public int getNextInt() {
         return nextInt;
     }
 
+    @Override
     public String getPreviousUri() {
         return previousUri;
     }
 
+    @Override
     public int getPreviousInt() {
         return previousInt;
     }
 
+    @Override
     public String getQuery() {
         return query;
     }
 
+    @Override
     public String getReturnToResults() {
         return returnToResults;
     }
 
+    @Override
     public String getPageId() {
         return pageId;
     }
 
+    @Override
     public String getTab() {
         return tab;
     }

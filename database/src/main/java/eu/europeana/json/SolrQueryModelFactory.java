@@ -1,27 +1,33 @@
 package eu.europeana.json;
 
+<<<<<<< HEAD
 import eu.europeana.beans.AnnotationProcessor;
 import eu.europeana.query.*;
 import eu.europeana.web.util.NextQueryFacet;
 import eu.europeana.web.util.QueryConstraints;
 import eu.europeana.web.util.ResultPaginationImpl;
+=======
+import eu.europeana.query.QueryModel;
+import eu.europeana.query.QueryModelFactory;
+>>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Map;
 
+=======
+>>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@Deprecated
 public class SolrQueryModelFactory implements QueryModelFactory {
+<<<<<<< HEAD
 
     // new solrJ implementation methods
     @Autowired
@@ -191,4 +197,30 @@ public class SolrQueryModelFactory implements QueryModelFactory {
     }
 
 
+=======
+
+    // todo remove later
+
+    private HttpClient httpClient;
+    private String baseUrl;
+
+    @Value("#{europeanaProperties['solr.selectUrl']}")
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    @Autowired
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    @Deprecated
+    public QueryModel createQueryModel() {
+        SolrQueryModel queryModel = new SolrQueryModel();
+        queryModel.setSolrBaseUrl(baseUrl);
+        queryModel.setHttpClient(httpClient);
+        return queryModel;
+    }
+
+>>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
 }

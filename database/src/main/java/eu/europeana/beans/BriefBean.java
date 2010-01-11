@@ -5,6 +5,8 @@ import eu.europeana.query.BriefDocWindow;
 import eu.europeana.query.DocType;
 import org.apache.solr.client.solrj.beans.Field;
 
+import static eu.europeana.beans.BeanUtil.returnStringOrElse;
+
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:16:46 AM
@@ -50,32 +52,32 @@ public class BriefBean extends RequiredBean implements BriefDoc {
 
     @Override
     public String getTitle() {
-        return title[0];
+        return returnStringOrElse(title);
     }
 
     @Override
     public String getThumbnail() {
-        return europeanaObject[0];
+        return returnStringOrElse(europeanaObject);
     }
 
     @Override
     public String getCreator() {
-        return creator;
+        return returnStringOrElse(creator);
     }
 
     @Override
     public String getYear() {
-        return year[0];
+        return returnStringOrElse(year);
     }
 
     @Override
     public String getProvider() {
-        return provider[0];
+        return returnStringOrElse(provider);
     }
 
     @Override
     public String getLanguage() {
-        return language[0];
+        return returnStringOrElse(language);
     }
 
     @Override
@@ -87,4 +89,5 @@ public class BriefBean extends RequiredBean implements BriefDoc {
     public BriefDocWindow getMoreLikeThis() {
         return null;  //Todo implement this
     }
+
 }

@@ -1,14 +1,19 @@
 package eu.europeana.json;
 
 import eu.europeana.beans.BriefBean;
+import eu.europeana.beans.FullBean;
+import eu.europeana.beans.query.BeanQueryModelFactory;
+import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.bootstrap.SolrStarter;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -54,7 +59,11 @@ public class SolrQueryModelTest {
         request.addParameter("rows", "12");
 
         Map<String,String[]> requestMap = request.getParameterMap();
+<<<<<<< HEAD
         SolrQueryModelFactory solrQueryModelFactory = new SolrQueryModelFactory();
+=======
+        BeanQueryModelFactory solrQueryModelFactory = new BeanQueryModelFactory();
+>>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
         SolrQuery solrQuery = solrQueryModelFactory.createFromQueryParams(requestMap);
 
         // manually inject the solrServer
@@ -63,7 +72,11 @@ public class SolrQueryModelTest {
         assertNotNull("solrQuery should not be null", solrQuery);
         assertEquals("query string should be equal", request.getParameter("query"), solrQuery.getQuery());
         assertEquals("Filter queries should be the same", request.getParameterValues("qf"), solrQuery.getFilterQueries());
+<<<<<<< HEAD
         SolrQueryModelFactory.BriefBeanView resultView = solrQueryModelFactory.getBriefResultView(solrQuery);
+=======
+        BriefBeanView resultView = solrQueryModelFactory.getBriefResultView(solrQuery);
+>>>>>>> #545 Created NewQueryModelFactory interface for new bean stuff to keep it separate from old QueryModel and ResultModel approach
         assertNotNull(resultView);
     }
 
@@ -72,10 +85,36 @@ public class SolrQueryModelTest {
         SolrQuery solrQuery = new SolrQuery("*:*");
         solrQuery.addFilterQuery("LANGUAGE:mul");
 
-        SolrQueryModelFactory queryModel = new SolrQueryModelFactory();
+
+        BeanQueryModelFactory queryModel = new BeanQueryModelFactory();
         queryModel.setSolrServer(server);
         QueryResponse queryResponse = queryModel.getSolrResponse(solrQuery, BriefBean.class);
         assertNotNull(queryResponse);
         assertTrue(queryResponse.getResults().getNumFound() > 0);
+    }
+
+    @Test
+    public void testGetFullSolrResponse() throws Exception {
+        SolrQuery solrQuery = new SolrQuery("europeana_uri:\"http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735\"");
+        solrQuery.setQueryType(BeanQueryModelFactory.QueryType.MORE_LIKE_THIS_QUERY.toString());
+
+        BeanQueryModelFactory queryModel = new BeanQueryModelFactory();
+        queryModel.setSolrServer(server);
+        QueryResponse queryResponse = queryModel.getSolrResponse(solrQuery);
+        assertNotNull(queryResponse);
+        assertTrue(queryResponse.getResults().getNumFound() > 0);
+
+        List<BriefBean> list = queryResponse.getBeans(BriefBean.class);
+        for (BriefBean briefBean : list) {
+            assertNotNull(briefBean.getYear());
+        }
+        List<FullBean> fbList = queryResponse.getBeans(FullBean.class);
+        for (FullBean fullBean : fbList) {
+            assertNotNull(fullBean.getEuropeanaType());
+            assertNotNull(fullBean.getEuropeanaCountry());
+        }
+        SolrDocumentList matchDoc = (SolrDocumentList) queryResponse.getResponse().get("match");
+        List<FullBean> fullBean = server.getBinder().getBeans(FullBean.class, matchDoc);
+        assertNotNull(fullBean);
     }
 }

@@ -38,6 +38,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class JsonResultModel implements ResultModel {
 
     private FullDoc fullDoc;
@@ -318,7 +319,7 @@ public class JsonResultModel implements ResultModel {
             return id;
         }
 
-        public String[] getThumbnail() {
+        public String[] getThumbnails() {
             return thumbnail;
         }
 
