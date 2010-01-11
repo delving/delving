@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author vitali  Kiruta
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 public class ConfigInterceptor extends HandlerInterceptorAdapter {

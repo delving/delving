@@ -1,17 +1,17 @@
 package eu.europeana.web.util;
 
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
 /**
  * Make sure all returns are UTF8
  *
- * @author Yoann, from TEL
+ * todo: authors?
  */
 
 public class Utf8OnlyFilter extends OncePerRequestFilter {

@@ -1,19 +1,19 @@
 package eu.europeana.web.util;
 
 import eu.europeana.database.domain.AuthenticationToken;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.springframework.security.ui.rememberme.PersistentRememberMeToken;
 import org.springframework.security.ui.rememberme.PersistentTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.Date;
 
 /**
- * @author Vitali Kiruta
+ * todo: authors? was author Vitali Kiruta
  */
 public class TokenRepositoryService implements PersistentTokenRepository {
 

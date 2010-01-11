@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * @author Vitali Kiruta
+ * todo: authors? was author Vitali Kiruta
  */
 @Entity
 public class AuthenticationToken {

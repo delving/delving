@@ -3,15 +3,15 @@ package eu.europeana.web.util;
 import eu.europeana.database.domain.Token;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 /**
- * @author Vitali Kiruta
+ * todo: authors? was author Vitali Kiruta
  */
 public class TokenService {
 

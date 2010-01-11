@@ -26,8 +26,7 @@ import java.util.Map;
  * Handle all email sending
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
- * @author Borys Omelayenko
- * @author Lucien van Wouw
+ * @author Borys Omelayenko <borys.omelayenko@kb.nl>
  */
 
 public class EmailSender {

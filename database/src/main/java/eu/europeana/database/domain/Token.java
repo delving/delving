@@ -1,11 +1,11 @@
 package eu.europeana.database.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Column;
 
 /**
- * @author Vitali Kiruta
+ * todo: authors? was author Vitali Kiruta
  */
 @Entity
 public class Token {

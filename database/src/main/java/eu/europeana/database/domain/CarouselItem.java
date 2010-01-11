@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * @author vitali
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 

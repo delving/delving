@@ -5,23 +5,18 @@ import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.LanguageActivation;
 import eu.europeana.database.domain.MessageKey;
 import eu.europeana.database.domain.Translation;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
- * @author Cesare Concordia
+ * @author Cesare Concordia <cesare.concordia@isti.cnr.it>
  * @author Nicola Aloia  <nicola.aloia@isti.cnr.it>
  */
 
