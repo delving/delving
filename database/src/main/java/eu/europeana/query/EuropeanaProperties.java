@@ -23,11 +23,7 @@ package eu.europeana.query;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -81,7 +77,7 @@ public class EuropeanaProperties extends Properties {
             }
         }
         if (!complete) {
-            throw new IllegalStateException("Europeana configuration properties incomplete.  Check log for details.");
+            throw new IllegalStateException("Europeana configuration properties incomplete.  Check log of this class for warnings.");
         }
     }
 
@@ -108,8 +104,7 @@ public class EuropeanaProperties extends Properties {
             "db.jdbcUrl",
             "db.user",
             "db.password",
-            "solr.updateUrl",
-            "solr.selectUrl",
+            "solr.baseUrl",
             "solr.chunkSize",
             "piwik.enabled",
             "piwik.jsUrl",
