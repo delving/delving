@@ -22,6 +22,7 @@
 package eu.europeana.incoming;
 
 import com.ctc.wstx.stax.WstxOutputFactory;
+import eu.europeana.beans.query.BeanQueryModelFactory;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
@@ -32,6 +33,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -52,16 +54,16 @@ import java.util.List;
 public class SolrIndexerImpl implements SolrIndexer {
     private Logger log = Logger.getLogger(getClass());
     private XMLOutputFactory outFactory = new WstxOutputFactory();
-    private QueryModelFactory queryModelFactory;
+    private BeanQueryModelFactory beanQueryModelFactory;
     private DashboardDao dashboardDao;
     private HttpClient httpClient;
     private String targetUrl;
     protected int chunkSize = 100;
     boolean httpError;
 
-    // not @Autowired because there are multiple
-    public void setQueryModelFactory(QueryModelFactory queryModelFactory) {
-        this.queryModelFactory = queryModelFactory;
+    @Autowired
+    public void setBeanQueryModelFactory(BeanQueryModelFactory beanQueryModelFactory) {
+        this.beanQueryModelFactory = beanQueryModelFactory;
     }
 
     @Autowired
@@ -215,11 +217,9 @@ public class SolrIndexerImpl implements SolrIndexer {
 
     private ESERecord fetchRecordFromSolr(String uri) throws EuropeanaQueryException {
         log.info("fetching record for "+uri);
-        QueryModel queryModel = queryModelFactory.createQueryModel();
-        queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
-        queryModel.setQueryExpression(new UriExpression(uri));
-        ResultModel resultModel = queryModel.fetchResult();
-        if (resultModel.isMissingFullDoc()) {
+        SolrQuery solrQuery = beanQueryModelFactory.createFromUri(uri);
+        FullDoc fullDoc = beanQueryModelFactory.getFullDoc(solrQuery);
+        if (fullDoc == null) {
             EuropeanaId id = dashboardDao.fetchEuropeanaId(uri);
             if (id != null && id.isOrphan()) {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
@@ -231,31 +231,6 @@ public class SolrIndexerImpl implements SolrIndexer {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
             }
         }
-        FullDoc fullDoc = resultModel.getFullDoc();
         return fullDoc.getESERecord();
-    }
-
-    private class UriExpression implements QueryExpression {
-        private String uri;
-
-        private UriExpression(String uri) {
-            this.uri = uri;
-        }
-
-        public String getQueryString() {
-            return getBackendQueryString();
-        }
-
-        public String getBackendQueryString() {
-            return RecordField.EUROPEANA_URI.toFieldNameString()+":\""+uri+"\"";
-        }
-
-        public QueryType getType() {
-            return QueryType.MORE_LIKE_THIS_QUERY;
-        }
-
-        public boolean isMoreLikeThis() {
-            return true;
-        }
     }
 }

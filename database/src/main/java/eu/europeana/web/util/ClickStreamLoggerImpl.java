@@ -23,7 +23,8 @@ package eu.europeana.web.util;
 
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.database.domain.User;
-import eu.europeana.query.*;
+import eu.europeana.query.ClickStreamLogger;
+import eu.europeana.query.QueryExpression;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.web.servlet.ModelAndView;
@@ -66,13 +67,13 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                         action, model.getViewName(), printLogAffix(request)));
     }
 
-    public void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel, ResultPagination resultPagination, ModelAndView model, UserAction action) {
-        // get elements from queryModel
-        nrResults = resultPagination.getNumFound();
-        query = queryModel.getQueryString();
-        queryType = queryModel.getQueryType();
-        queryConstraints = formatQueryConstraints(queryModel.getConstraints());
-    }
+//    public void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel, ResultPagination resultPagination, ModelAndView model, UserAction action) {
+//        // get elements from queryModel
+//        nrResults = resultPagination.getNumFound();
+//        query = queryModel.getQueryString();
+//        queryType = queryModel.getQueryType();
+//        queryConstraints = formatQueryConstraints(queryModel.getConstraints());
+//    }
 
     public void log(HttpServletRequest request, UserAction action) {
         log.info(
@@ -112,8 +113,4 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
-    // todo: format QueryConstraints
-    private String formatQueryConstraints(QueryModel.Constraints constraints) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
-    }
 }

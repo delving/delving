@@ -40,13 +40,17 @@ import java.util.Map;
 
 public interface NewQueryModelFactory {
 
-    QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException;
-
     SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
+
+    SolrQuery createFromUri(String europeanaUri);
+
+    QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException;
 
     BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException;
 
     FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException;
+
+    FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException;
 
     GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
 

@@ -24,7 +24,7 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.fixture.IngestionFixture;
 import eu.europeana.incoming.ImportFile;
-import eu.europeana.query.ResultModel;
+import eu.europeana.query.FullDoc;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -114,11 +114,10 @@ public class TestIngestion {
     @Test
     public void fetchFullDoc() throws Exception {
         String uri = "http://www.europeana.eu/resolve/record/92001/818B4CE5712E5FD54E8AF6D219FE14B21CCE7586";
-        ResultModel result = ingestionFixture.queryFullDoc(uri);
-        log.info("Fetched:\n"+result);
-        assertNotNull("result should not be null", result);
-        assertNotNull("full doc shouldn't be null", result.getFullDoc());
-        assertEquals("uri should equal "+uri, uri, result.getFullDoc().getId());
+        FullDoc fullDoc = ingestionFixture.queryFullDoc(uri);
+        log.info("Fetched:\n"+fullDoc);
+        assertNotNull("result should not be null", fullDoc);
+        assertEquals("uri should equal "+uri, uri, fullDoc.getId());
     }
 
     @Test

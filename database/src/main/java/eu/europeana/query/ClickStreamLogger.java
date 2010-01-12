@@ -43,7 +43,6 @@ import javax.servlet.http.HttpServletResponse;
  *         query=""
  *         queryType=
  *         language=
- *         QueryConstraints=
  *         date=
  *         ip=
  *         pageId=
@@ -63,8 +62,8 @@ public interface ClickStreamLogger {
 
     void log(HttpServletRequest request, UserAction action, ModelAndView model);
 
-    void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel,
-             ResultPagination resultPagination, ModelAndView model, UserAction action);
+//    void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel,
+//             ResultPagination resultPagination, ModelAndView model, UserAction action);
 
     void log(HttpServletRequest request, UserAction action);
 

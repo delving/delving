@@ -25,7 +25,6 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.fixture.IngestionFixture;
 import eu.europeana.incoming.ImportFile;
-import eu.europeana.json.SolrQueryModelFactory;
 import eu.europeana.query.DocIdWindowPager;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -51,9 +50,7 @@ import static org.junit.Assert.assertEquals;
 public class TestDocIdWindowPager {
     private Logger log = Logger.getLogger(TestDocIdWindowPager.class);
 
-//    private QueryModel queryModel;
     private MockHttpServletRequest request;
-    private static SolrQueryModelFactory factory;
 
     @Autowired
     private IngestionFixture ingestionFixture;

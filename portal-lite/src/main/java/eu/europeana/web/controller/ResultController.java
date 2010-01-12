@@ -22,12 +22,10 @@
 package eu.europeana.web.controller;
 
 import eu.europeana.beans.views.BriefBeanView;
+import eu.europeana.beans.views.FullBeanView;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.query.*;
 import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.QueryConstraints;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.json.JSONException;
@@ -39,7 +37,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -53,9 +50,6 @@ import java.util.List;
 public class ResultController {
 
     private Logger log = Logger.getLogger(getClass());
-
-    @Autowired
-    private QueryModelFactory queryModelFactory;
 
     @Autowired
     private DashboardDao dashboardDao;
@@ -80,27 +74,21 @@ public class ResultController {
         if (uri == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
-        QueryModel queryModel = queryModelFactory.createQueryModel();
-        if (query != null && start != null) {
-//            page.addObject("pagination", new DocIdWindowPagerImpl(uri, request, queryModel));
-        }
-        queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
-        queryModel.setStartRow(0);
-        queryModel.setQueryExpression(new UriExpression(uri));
-        ResultModel resultModel = queryModel.fetchResult();
-        if (resultModel.isMissingFullDoc()) {
-            EuropeanaId id = dashboardDao.fetchEuropeanaId(uri);
-            if (id != null && id.isOrphan()) {
-                throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
-            }
-            else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
-                throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_INDEXED.toString());
-            }
-            else {
-                throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
-            }
-        }
-        page.addObject("result", resultModel);
+        SolrQuery solrQuery = beanQueryModelFactory.createFromUri(uri);
+        FullBeanView fullBeanView = beanQueryModelFactory.getFullResultView(solrQuery, request.getParameterMap());
+//        if (resultModel.isMissingFullDoc()) {
+//            EuropeanaId id = dashboardDao.fetchEuropeanaId(uri);
+//            if (id != null && id.isOrphan()) {
+//                throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
+//            }
+//            else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
+//                throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_INDEXED.toString());
+//            }
+//            else {
+//                throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
+//            }
+//        }
+        page.addObject("result", fullBeanView);
         page.addObject("uri", uri);
         if (format != null && format.equalsIgnoreCase("labels")) {
             page.addObject("format", format);
@@ -154,37 +142,6 @@ public class ResultController {
         // todo: implement request log
         log.info(MessageFormat.format("redirecting to: {0} for id {1}, by provider {2}", redirect, europeanaId, provider));
         return ControllerUtil.createModelAndViewPage("redirect:" + redirect);
-    }
-
-    private String createQueryStringForPresentation(String query, QueryConstraints queryConstraints) throws UnsupportedEncodingException {
-        StringBuilder queryString = new StringBuilder();
-        queryString.append("query").append("=").append(URLEncoder.encode(query, "utf-8"));
-        queryString.append(queryConstraints.toQueryString());
-        return queryString.toString();
-    }
-
-    private class UriExpression implements QueryExpression {
-        private String uri;
-
-        private UriExpression(String uri) {
-            this.uri = uri;
-        }
-
-        public String getQueryString() {
-            return getBackendQueryString();
-        }
-
-        public String getBackendQueryString() {
-            return RecordField.EUROPEANA_URI.toFieldNameString() + ":\"" + uri + "\"";
-        }
-
-        public QueryType getType() {
-            return QueryType.MORE_LIKE_THIS_QUERY;
-        }
-
-        public boolean isMoreLikeThis() {
-            return true;
-        }
     }
 
 }

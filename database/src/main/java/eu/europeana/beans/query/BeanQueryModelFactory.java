@@ -25,19 +25,19 @@ import java.util.Map;
  */
 
 public class BeanQueryModelFactory implements NewQueryModelFactory {
-
-    // new solrJ implementation methods
-    @Autowired
     private CommonsHttpSolrServer solrServer;
+    private AnnotationProcessor annotationProcessor;
 
+    @Autowired
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
 
-
     @Autowired
-    private AnnotationProcessor annotationProcessor;
-
+    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
+        this.annotationProcessor = annotationProcessor;
+    }
+    
     /**
      * create solr query from http query parameters
      */
@@ -62,6 +62,13 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         return solrQuery;
     }
 
+    @Override
+    public SolrQuery createFromUri(String europeanaUri) {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setQuery("europeana_uri:\""+europeanaUri+"\"");
+        return solrQuery;
+    }
+
     private Class<?> briefBean;
 
     public void setBriefBean(Class<?> briefBean) {
@@ -83,13 +90,22 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     @Override
     public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
         QueryResponse queryResponse = getSolrResponse(solrQuery, briefBean);
-        BriefBeanViewImpl briefBeanView = new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString);
-        return briefBeanView;
+        return new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString);
     }
 
     @Override
     public FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException {
         return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, fullBean), params);  //TODO: implement this
+    }
+
+    @Override
+    public FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException {
+        QueryResponse response = getSolrResponse(solrQuery);
+        List<FullBean> fullBeanList = response.getBeans(FullBean.class);
+        if (fullBeanList.size() != 1) {
+            throw new EuropeanaQueryException("Full Doc not found");
+        }
+        return fullBeanList.get(0);
     }
 
     @Override

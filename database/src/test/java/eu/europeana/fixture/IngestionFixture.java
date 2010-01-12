@@ -20,12 +20,14 @@
  */
 package eu.europeana.fixture;
 
+import eu.europeana.beans.query.BeanQueryModelFactory;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.incoming.*;
-import eu.europeana.json.SolrQueryModelFactory;
-import eu.europeana.query.*;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.FullDoc;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,16 +43,18 @@ import java.io.IOException;
  */
 
 public class IngestionFixture {
-    private static final String SOLR_SELECT_URL = "http://localhost:8983/solr/select";
+//    private static final String SOLR_SELECT_URL = "http://localhost:8983/solr/select";
     private static final String SOLR_UPDATE_URL = "http://localhost:8983/solr/update";
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private DashboardDao dashboardDao;
 
+    @Autowired
+    private BeanQueryModelFactory beanQueryModelFactory;
+
     private HttpClient httpClient = new HttpClient();
     private Server server;
-    private SolrQueryModelFactory queryModelFactory;
     private SolrIndexerImpl solrIndexer;
     private ImportRepositoryImpl importRepository;
     private ESEImporterImpl eseImporter;
@@ -77,12 +81,9 @@ public class IngestionFixture {
         return eseImporter;
     }
 
-    public ResultModel queryFullDoc(String uri) throws EuropeanaQueryException {
-        QueryModel queryModel = getQueryModelFactory().createQueryModel();
-        QueryExpression expression = queryModel.setQueryString("europeana_uri:\""+uri+"\"");
-        log.info("Backend Query: "+ expression.getBackendQueryString());
-        queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
-        return queryModel.fetchResult();
+    public FullDoc queryFullDoc(String uri) throws EuropeanaQueryException {
+        SolrQuery solrQuery = beanQueryModelFactory.createFromUri(uri);
+        return beanQueryModelFactory.getFullDoc(solrQuery);
     }
 
     public void deleteImportRepository() {
@@ -109,22 +110,13 @@ public class IngestionFixture {
 
     // --- private parts
 
-    private QueryModelFactory getQueryModelFactory() {
-        if (queryModelFactory == null) {
-            queryModelFactory = new SolrQueryModelFactory();
-            queryModelFactory.setBaseUrl(SOLR_SELECT_URL);
-            queryModelFactory.setHttpClient(httpClient);
-        }
-        return queryModelFactory;
-    }
-
     private SolrIndexer getSolrIndexer() {
         if (solrIndexer == null) {
             solrIndexer = new SolrIndexerImpl();
             solrIndexer.setDashboardDao(dashboardDao);
             solrIndexer.setHttpClient(httpClient);
             solrIndexer.setTargetUrl(SOLR_UPDATE_URL);
-            solrIndexer.setQueryModelFactory(getQueryModelFactory());
+            solrIndexer.setBeanQueryModelFactory(beanQueryModelFactory);
             solrIndexer.setChunkSize("10");
         }
         return solrIndexer;
