@@ -27,7 +27,6 @@ import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.query.*;
 import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.DocIdWindowPagerImpl;
 import eu.europeana.web.util.QueryConstraints;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -83,7 +82,7 @@ public class ResultController {
         }
         QueryModel queryModel = queryModelFactory.createQueryModel();
         if (query != null && start != null) {
-            page.addObject("pagination", new DocIdWindowPagerImpl(uri, request, queryModel));
+//            page.addObject("pagination", new DocIdWindowPagerImpl(uri, request, queryModel));
         }
         queryModel.setResponseType(ResponseType.SINGLE_FULL_DOC);
         queryModel.setStartRow(0);

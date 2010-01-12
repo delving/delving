@@ -6,7 +6,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -135,12 +134,11 @@ public class SolrQueryModel implements QueryModel {
                 if (method.getStatusCode() == HttpStatus.SC_OK) {
                     String responseString = method.getResponseBodyAsString();
                     log.debug(responseString);
-                    return new JsonResultModel(responseString, responseType);
+                    return null;
                 }
                 else if (method.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     log.warn("Request to " + solrBaseUrl + " returned HTTP error " + method.getStatusCode() + ": " + method.getStatusText());
-                    return new JsonResultModel(null, responseType);
-//                    return new JsonResultModel(null, responseType, true, errorMessage);
+                    return null;
                 }
             }
             catch (IOException e) {
@@ -149,13 +147,6 @@ public class SolrQueryModel implements QueryModel {
                     firstException = e;
                 }
                 throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), firstException);
-            }
-            catch (JSONException e) {
-                log.error("Unable to fetch result", e);
-                if (firstException == null) {
-                    firstException = e;
-                }
-                throw new EuropeanaQueryException(QueryProblem.UNABLE_TO_PARSE_JSON.toString(), firstException);
             }
             finally {
                 // because we use multithreaded connection manager the connection needs to be released manually

@@ -59,7 +59,6 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         //set constraints
         solrQuery.setFilterQueries(params.get("qf"));
 
-
         return solrQuery;
     }
 
