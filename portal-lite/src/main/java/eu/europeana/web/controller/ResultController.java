@@ -108,6 +108,7 @@ public class ResultController {
         SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
         BriefBeanView resultView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
         page.addObject("result", resultView);
+        page.addObject("briefDocs", resultView.getBriefDocs());
         page.addObject("queryStringForPresentation", resultView.getPagination().getPresentationQuery().getQueryForPresentation());
         page.addObject("breadcrumbs", resultView.getPagination().getBreadcrumbs());
         page.addObject("display", format);

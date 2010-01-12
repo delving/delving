@@ -16,7 +16,7 @@
 <#assign showUserTags = 0 />
 <#assign next = nextQueryFacets>
 <#assign breadcrumbs = breadcrumbs/>
-<#assign seq = result.getBriefDocs/>
+<#assign seq = briefDocs/>
 <#assign pagination = pagination/>
 
 <#--<#list result.facets as facet>-->
