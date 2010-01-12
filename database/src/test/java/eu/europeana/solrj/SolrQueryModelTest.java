@@ -1,4 +1,4 @@
-package eu.europeana.json;
+package eu.europeana.solrj;
 
 import eu.europeana.beans.BriefBean;
 import eu.europeana.beans.FullBean;
