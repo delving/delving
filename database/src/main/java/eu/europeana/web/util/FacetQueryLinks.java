@@ -32,20 +32,22 @@ public class FacetQueryLinks {
         for (FacetField.Count count : facetField.getValues()) {
             boolean remove = false;
             StringBuilder url = new StringBuilder();
-            for (String facetTerm : solrQuery.getFacetQuery()) {
-                int colon = facetTerm.indexOf(":");
-                String facetName = facetTerm.substring(0, colon);
-                String facetValue = facetTerm.substring(colon + 1);
-                if (facetName.equalsIgnoreCase(facetField.getName())) {
-                    if (count.getName().equalsIgnoreCase(facetValue)) {
-                        remove = true;
+            if (solrQuery.getFacetQuery() != null) {
+                for (String facetTerm : solrQuery.getFacetQuery()) {
+                    int colon = facetTerm.indexOf(":");
+                    String facetName = facetTerm.substring(0, colon);
+                    String facetValue = facetTerm.substring(colon + 1);
+                    if (facetName.equalsIgnoreCase(facetField.getName())) {
+                        if (count.getName().equalsIgnoreCase(facetValue)) {
+                            remove = true;
+                        }
+                        else {
+                            url.append(FACET_PROMPT).append(facetTerm);
+                        }
                     }
                     else {
                         url.append(FACET_PROMPT).append(facetTerm);
                     }
-                }
-                else {
-                    url.append(FACET_PROMPT).append(facetTerm);
                 }
             }
             if (onlyRemove) {

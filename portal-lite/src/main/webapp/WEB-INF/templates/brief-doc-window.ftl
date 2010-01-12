@@ -16,79 +16,79 @@
 <#assign showUserTags = 0 />
 <#assign next = nextQueryFacets>
 <#assign breadcrumbs = breadcrumbs/>
-<#assign seq = result.briefDocWindow.docs/>
+<#assign seq = result.getBriefDocs/>
 <#assign pagination = pagination/>
 
-<#list result.facets as facet>
-    <#if facet.type="TYPE">
-        <#list facet.counts as type>
-            <#if type.value = "IMAGE">
-                <#assign imageCount = type.count />
-            </#if>
-            <#if type.value = "TEXT">
-                <#assign textCount = type.count />
-            </#if>
-            <#if type.value = "VIDEO">
-                <#assign videoCount = type.count />
-            </#if>
-            <#if type.value = "SOUND">
-                <#assign audioCount = type.count />
-            </#if>
-        </#list>
-    </#if>
-</#list>
-<#list next as facet>
-    <#if facet.type="TYPE">
-        <#list facet.links as type>
-            <#if type.value = "IMAGE">
-                <#assign IMAGEUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:TEXT", "")?replace("&qf=TYPE:SOUND", "")/>
-            </#if>
-            <#if type.value = "TEXT">
-                <#assign TEXTUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
-            </#if>
-            <#if type.value = "VIDEO">
-                <#assign VIDEOUrl = type.url?replace("&qf=TYPE:TEXT","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
-            </#if>
-            <#if type.value = "SOUND">
-                <#assign audioUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:TEXT", "")/>
-            </#if>
-        </#list>
-    </#if>
-</#list>
+<#--<#list result.facets as facet>-->
+    <#--<#if facet.type="TYPE">-->
+        <#--<#list facet.counts as type>-->
+            <#--<#if type.value = "IMAGE">-->
+                <#--<#assign imageCount = type.count />-->
+            <#--</#if>-->
+            <#--<#if type.value = "TEXT">-->
+                <#--<#assign textCount = type.count />-->
+            <#--</#if>-->
+            <#--<#if type.value = "VIDEO">-->
+                <#--<#assign videoCount = type.count />-->
+            <#--</#if>-->
+            <#--<#if type.value = "SOUND">-->
+                <#--<#assign audioCount = type.count />-->
+            <#--</#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+<#--</#list>-->
+<#--<#list next as facet>-->
+    <#--<#if facet.type="TYPE">-->
+        <#--<#list facet.links as type>-->
+            <#--<#if type.value = "IMAGE">-->
+                <#--<#assign IMAGEUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:TEXT", "")?replace("&qf=TYPE:SOUND", "")/>-->
+            <#--</#if>-->
+            <#--<#if type.value = "TEXT">-->
+                <#--<#assign TEXTUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>-->
+            <#--</#if>-->
+            <#--<#if type.value = "VIDEO">-->
+                <#--<#assign VIDEOUrl = type.url?replace("&qf=TYPE:TEXT","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>-->
+            <#--</#if>-->
+            <#--<#if type.value = "SOUND">-->
+                <#--<#assign audioUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:TEXT", "")/>-->
+            <#--</#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+<#--</#list>-->
 
-<#list next as facet>
-    <#if facet.type="TYPE">
-        <#list facet.links as type>
-            <#if type.remove><#assign showType = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="YEAR">
-        <#list facet.links as date>
-            <#if date.remove><#assign showYear = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="LANGUAGE">
-        <#list facet.links as lang>
-            <#if lang.remove><#assign showLanguage = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="PROVIDER">
-        <#list facet.links as provider>
-            <#if provider.remove><#assign showProvider = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="COUNTRY">
-        <#list facet.links as country>
-            <#if country.remove><#assign showCountry = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="USERTAGS">
-        <#list facet.links as userTags>
-            <#if userTags.remove><#assign showUserTags = 1 /></#if>
-        </#list>
-    </#if>
-</#list>
-<#assign servletUrl = servletUrl/>
+<#--<#list next as facet>-->
+    <#--<#if facet.type="TYPE">-->
+        <#--<#list facet.links as type>-->
+            <#--<#if type.remove><#assign showType = 1 /></#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+    <#--<#if facet.type="YEAR">-->
+        <#--<#list facet.links as date>-->
+            <#--<#if date.remove><#assign showYear = 1 /></#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+    <#--<#if facet.type="LANGUAGE">-->
+        <#--<#list facet.links as lang>-->
+            <#--<#if lang.remove><#assign showLanguage = 1 /></#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+    <#--<#if facet.type="PROVIDER">-->
+        <#--<#list facet.links as provider>-->
+            <#--<#if provider.remove><#assign showProvider = 1 /></#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+    <#--<#if facet.type="COUNTRY">-->
+        <#--<#list facet.links as country>-->
+            <#--<#if country.remove><#assign showCountry = 1 /></#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+    <#--<#if facet.type="USERTAGS">-->
+        <#--<#list facet.links as userTags>-->
+            <#--<#if userTags.remove><#assign showUserTags = 1 /></#if>-->
+        <#--</#list>-->
+    <#--</#if>-->
+<#--</#list>-->
+<#--<#assign servletUrl = servletUrl/>-->
 
 
 

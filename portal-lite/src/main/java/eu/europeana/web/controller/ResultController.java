@@ -24,7 +24,10 @@ package eu.europeana.web.controller;
 import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.beans.views.FullBeanView;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.query.*;
+import eu.europeana.query.ClickStreamLogger;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.NewQueryModelFactory;
+import eu.europeana.query.QueryProblem;
 import eu.europeana.web.util.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -38,7 +41,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.util.List;
 
 /**
  * Annotation-based handling of result pages
@@ -105,8 +107,15 @@ public class ResultController {
         ModelAndView page = ControllerUtil.createModelAndViewPage("brief-doc-window");
         SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
         BriefBeanView resultView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
-        List<? extends BriefDoc> list = resultView.getBriefDocs();
-        page.addObject(resultView);
+        page.addObject("result", resultView);
+        page.addObject("queryStringForPresentation", resultView.getPagination().getPresentationQuery().getQueryForPresentation());
+        page.addObject("breadcrumbs", resultView.getPagination().getBreadcrumbs());
+        page.addObject("display", format);
+        page.addObject("query", query);
+        page.addObject("nextQueryFacets", resultView.getQueryFacetsLinks());
+        page.addObject("pagination", resultView.getPagination());
+        page.addObject("queryToSave", resultView.getPagination().getPresentationQuery().getQueryToSave());
+        page.addObject("servletUrl", ControllerUtil.getServletUrl(request));
         return page;
     }
 

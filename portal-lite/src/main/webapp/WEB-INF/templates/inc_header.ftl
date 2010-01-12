@@ -66,7 +66,7 @@
 
     <div id="search_simple" class="${className}" style="display:${showSim};">
         <#if result?? >
-            <#if result.badRequest >
+            <#if result.badRequest?? >
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
         </#if>
