@@ -1,16 +1,10 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.dao.fixture.DatabaseFixture;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 import eu.europeana.database.integration.TagCount;
+import eu.europeana.fixture.DatabaseFixture;
 import eu.europeana.query.DocType;
-import static junit.framework.Assert.*;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
+import static junit.framework.Assert.*;
 
 /**
  * Test the UserDao methods

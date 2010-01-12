@@ -1,9 +1,13 @@
 package eu.europeana.web.util;
 
 import eu.europeana.beans.IdBean;
-import eu.europeana.query.*;
+import eu.europeana.query.DocIdWindow;
+import eu.europeana.query.DocIdWindowPager;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
@@ -11,11 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 public class DocIdWindowPagerImpl implements DocIdWindowPager {
-
     private DocIdWindow docIdWindow;
     private boolean hasNext;
     private String nextUri;
@@ -27,148 +31,114 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String queryStringForPaging;
     private String startPage;
     private String query;
-    private int fullDocUriInt;
     private String returnToResults;
     private String pageId;
     private String tab;
-    private String offSet;
-    private String numFound;
 
-    public DocIdWindowPagerImpl(String uri, HttpServletRequest request, QueryModel queryModel) throws EuropeanaQueryException, UnsupportedEncodingException {
-        fullDocUri = uri;
-        query = request.getParameter("query");
-        startPage = request.getParameter("startPage");
-        if (startPage == null) {
-            startPage = "1";
+    public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalSolrQuery, SolrServer solrServer) throws SolrServerException {
+        DocIdWindowPagerImpl pager = new DocIdWindowPagerImpl();
+        pager.query = originalSolrQuery.getQuery();
+        pager.fullDocUri = fetchParameter(httpParameters, "uri", "");
+        if (pager.fullDocUri.isEmpty()) {
+            throw new IllegalArgumentException("Expected URI"); // todo: a better exception
         }
-        tab = request.getParameter("tab");
-        if (tab == null) {
-            tab = "all";
+        pager.startPage = fetchParameter(httpParameters, "startPage", "1");
+        pager.tab = fetchParameter(httpParameters, "tab", "all");
+        pager.pageId = fetchParameter(httpParameters, "pageId", "");
+        if (pager.pageId != null) {
+            pager.setReturnToResults(httpParameters);
         }
-        QueryConstraints queryConstraints = new QueryConstraints(request.getParameterValues(QueryConstraints.PARAM_KEY));
-        queryStringForPaging = createQueryStringForPaging(query, queryConstraints);
-        queryModel.setResponseType(ResponseType.DOC_ID_WINDOW);
-        queryModel.setQueryConstraints(queryConstraints);
-        String startParam = request.getParameter("start");
-        pageId = request.getParameter("pageId");
-        if (pageId != null) {
-            returnToResults = createReturnPage(query, startPage, pageId, tab, request);
-        }
-        if (startParam != null) {
-            fullDocUriInt = Integer.valueOf(startParam);
+        String start = fetchParameter(httpParameters, "start", "");
+        int fullDocUriInt = 0;
+        if (!pager.startPage.isEmpty()) {
+            fullDocUriInt = Integer.parseInt(start);
+            pager.setQueryStringForPaging(originalSolrQuery);
         }
         int startRow = fullDocUriInt;
-        hasPrevious = fullDocUriInt > 1;
-        if (hasPrevious) {
+        pager.hasPrevious = fullDocUriInt > 1;
+        if (fullDocUriInt > 1) {
             startRow -= 2;
         }
-        queryModel.setStartRow(startRow);
-        queryModel.setQueryString(query);
-        ResultModel resultModel = queryModel.fetchResult();
-        docIdWindow = resultModel.getDocIdWindow();
-        List<String> ids = docIdWindow.getIds();
-        hasNext = docIdWindow.getOffset() + 1 < docIdWindow.getHitCount();
-        if (fullDocUriInt > docIdWindow.getHitCount() || docIdWindow.getIds().size() < 2) {
-            hasPrevious = false;
-            hasNext = false;
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setFields("europeana_uri");
+        solrQuery.setStart(startRow);
+        solrQuery.setRows(3);
+        QueryResponse queryResponse = solrServer.query(solrQuery);
+        List<IdBean> list = queryResponse.getBeans(IdBean.class);
+        int offset = Integer.parseInt(queryResponse.getHeader().get("start").toString());
+        int numFound = Integer.parseInt(queryResponse.getHeader().get("numFound").toString());
+        pager.hasNext = offset + 1 < numFound;
+        if (fullDocUriInt > numFound || list.size() < 2) {
+            pager.hasPrevious = false;
+            pager.hasNext = false;
         }
-        if (hasPrevious) {
-            previousInt = fullDocUriInt - 1;
-            previousUri = ids.get(0);
+        if (pager.hasPrevious) {
+            pager.previousInt = fullDocUriInt - 1;
+            pager.previousUri = list.get(0).getEuropeanaUri();
         }
-        if (hasNext) {
-            nextInt = fullDocUriInt + 1;
-            nextUri = ids.get(2);
+        if (pager.hasNext) {
+            pager.nextInt = fullDocUriInt + 1;
+            pager.nextUri = list.get(2).getEuropeanaUri();
         }
+        pager.docIdWindow = new DocIdWindowImpl(list, offset, numFound);
+        return pager;
     }
 
-    // todo implement contstructor
-    // Warning completely untested
-    public DocIdWindowPagerImpl(Map<String, String[]> params, List<IdBean> docIdList, int offSet, int numFound) throws Exception {
-        if (params.get("uri") == null) {
-            throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
-        }
-        fullDocUri = params.get("uri")[0];
-        startPage = params.get("startPage")[0];
-        if (startPage == null) {
-            startPage = "1";
-        }
-        tab = params.get("tab")[0];
-        if (tab == null) {
-            tab = "all";
-        }
-//        solrQuery.setFields("europeana_uri");
-//        String startParam = params.get("start")[0];
-//        pageId = params.get("pageId")[0];
-////        if (pageId != null) {
-//        // todo uncomment and implemnent createReturnPage with params instead of request
-////            returnToResults = createReturnPage(query, startPage, pageId, tab, request);
-////        }
-//        if (startParam != null) {
-//            fullDocUriInt = Integer.valueOf(startParam);
-//        }
-//        int startRow = fullDocUriInt;
-//        hasPrevious = fullDocUriInt > 1;
-//        if (hasPrevious) {
-//            startRow -= 2;
-//        }
-//        solrQuery.setStart(startRow);
-//        solrQuery.setRows(3);
-//        // Fetch results from server
-//        QueryResponse queryResponse = solrServer.query(solrQuery);
-//        // fetch beans
-//        List<IdBean> list = queryResponse.getBeans(IdBean.class);
-        // populate this DocIdWindowPager object
-//        int offSet = Integer.parseInt(queryResponse.getHeader().get("start").toString());
-//        int hitCount = Integer.parseInt(queryResponse.getHeader().get("numFound").toString());
-//        hasNext = offSet + 1 < hitCount;
-//        if (fullDocUriInt > hitCount || list.size() < 2) {
-//            hasPrevious = false;
-//            hasNext = false;
-//        }
-//        if (hasPrevious) {
-//            previousInt = fullDocUriInt - 1;
-//            previousUri = list.get(0).getEuropeanaUri();
-//        }
-//        if (hasNext) {
-//            nextInt = fullDocUriInt + 1;
-//            nextUri = list.get(2).getEuropeanaUri();
-//        }
-    }
-
-    private String createReturnPage(String query, String startPage, String pageId, String tab, HttpServletRequest request) throws UnsupportedEncodingException {
-        StringBuilder builder = new StringBuilder();
+    private void setReturnToResults(Map<String, String[]> httpParameters)  {
+        StringBuilder out = new StringBuilder();
         if (pageId.equalsIgnoreCase("bd")) {
-            builder.append("brief-doc.html?");
-            builder.append("query=").append(URLEncoder.encode(query, "utf-8"));
+            out.append("brief-doc.html?");
+            out.append("query=").append(encode(query));
             // todo: add fq parameters
         }
         else if (pageId.equalsIgnoreCase("yg")) {
-            builder.append("year-grid.html?");
+            out.append("year-grid.html?");
             if (query.length() > 4) {
                 String userQueryString = query.replaceFirst("^\\d{4}", "").trim();
-                builder.append("query=").append(URLEncoder.encode(userQueryString, "utf-8")).append("&");
+                out.append("query=").append(encode(userQueryString)).append("&");
             }
-            builder.append("bq=").append(URLEncoder.encode(query, "utf-8"));
+            out.append("bq=").append(encode(query));
         }
-        builder.append("&start=").append(startPage);
-        String view = request.getParameter("view");
-        if (view == null) {
+        out.append("&start=").append(startPage);
+        String view = fetchParameter(httpParameters, "view", "");
+        if (view.isEmpty()) {
             view = "table";
         }
-        builder.append("&view=").append(view);
-        builder.append("&tab=").append(tab);
-        return builder.toString();
+        out.append("&view=").append(view);
+        out.append("&tab=").append(tab);
+        returnToResults = out.toString();
     }
 
-    private String createQueryStringForPaging(String query, QueryConstraints queryConstraints) throws UnsupportedEncodingException {
-        StringBuilder queryString = new StringBuilder();
-        queryString.append("query=").append(URLEncoder.encode(query, "utf-8"));
-        if (queryConstraints != null) {
-            queryString.append(queryConstraints.toQueryString());
+    private void setQueryStringForPaging(SolrQuery solrQuery) {
+        StringBuilder out = new StringBuilder();
+        out.append("query=").append(encode(solrQuery.getQuery()));
+        for (String facetTerm : solrQuery.getFacetQuery()) {
+            out.append("&qf=").append(facetTerm);
         }
-        queryString.append("&startPage=").append(startPage);
-        return queryString.toString();
+        out.append("&startPage=").append(startPage);
+        queryStringForPaging = out.toString();
+    }
+
+    private static String fetchParameter(Map<String, String[]> httpParameters, String key, String defaultValue) {
+        String[] array = httpParameters.get(key);
+        if (array == null || array.length == 0) {
+            return defaultValue;
+        }
+        else {
+            return array[0];
+        }
+    }
+
+    private static String encode(String string) {
+        try {
+            return URLEncoder.encode(string, "utf-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private DocIdWindowPagerImpl() {
     }
 
     @Override
@@ -194,11 +164,6 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public String getFullDocUri() {
         return fullDocUri;
-    }
-
-    @Override
-    public int getFullDocUriInt() {
-        return fullDocUriInt;
     }
 
     @Override
@@ -241,35 +206,53 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         return tab;
     }
 
-    public String getOffSet() {
-        return offSet;
-    }
-
-    public String getNumFound() {
-        return numFound;
-    }
-
     @Override
     public String toString() {
-        Map<String, String> elementMap = new LinkedHashMap<String, String>();
-        elementMap.put("query", query);
-        elementMap.put("queryStringForPaging", queryStringForPaging);
-        elementMap.put("fullDocUri", fullDocUri);
-        elementMap.put("fullDocInt", String.valueOf(fullDocUriInt));
-        elementMap.put("fullDocStart", String.valueOf(docIdWindow.getOffset()));
-        elementMap.put("hitCount", String.valueOf(docIdWindow.getHitCount()));
-        elementMap.put("isPrevious", String.valueOf(hasPrevious));
-        elementMap.put("previousInt", String.valueOf(previousInt));
-        elementMap.put("previousUri", String.valueOf(previousUri));
-        elementMap.put("isNext", String.valueOf(hasNext));
-        elementMap.put("nextInt", String.valueOf(nextInt));
-        elementMap.put("nextUri", String.valueOf(nextUri));
-        elementMap.put("returnToResults", returnToResults);
-
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, String> entry : elementMap.entrySet()) {
-            builder.append(entry.getKey()).append(" => ").append(entry.getValue()).append("\n");
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put("query", query);
+        map.put("queryStringForPaging", queryStringForPaging);
+        map.put("fullDocUri", fullDocUri);
+        map.put("fullDocStart", String.valueOf(docIdWindow.getOffset()));
+        map.put("hitCount", String.valueOf(docIdWindow.getHitCount()));
+        map.put("isPrevious", String.valueOf(hasPrevious));
+        map.put("previousInt", String.valueOf(previousInt));
+        map.put("previousUri", String.valueOf(previousUri));
+        map.put("isNext", String.valueOf(hasNext));
+        map.put("nextInt", String.valueOf(nextInt));
+        map.put("nextUri", String.valueOf(nextUri));
+        map.put("returnToResults", returnToResults);
+        StringBuilder out = new StringBuilder();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            out.append(entry.getKey()).append(" => ").append(entry.getValue()).append("\n");
         }
-        return builder.toString();
+        return out.toString();
+    }
+
+    private static class DocIdWindowImpl implements DocIdWindow {
+
+        private List<IdBean> ids;
+        private int offset;
+        private int hitCount;
+
+        private DocIdWindowImpl(List<IdBean> ids, int offset, int hitCount) {
+            this.ids = ids;
+            this.offset = offset;
+            this.hitCount = hitCount;
+        }
+
+        @Override
+        public List<IdBean> getIds() {
+            return ids;
+        }
+
+        @Override
+        public Integer getOffset() {
+            return offset;
+        }
+
+        @Override
+        public Integer getHitCount() {
+            return hitCount;
+        }
     }
 }

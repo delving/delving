@@ -15,8 +15,6 @@ public interface DocIdWindowPager {
 
     String getFullDocUri();
 
-    int getFullDocUriInt();
-
     String getNextUri();
 
     int getNextInt();

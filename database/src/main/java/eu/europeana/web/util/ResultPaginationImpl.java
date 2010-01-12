@@ -158,17 +158,17 @@ public class ResultPaginationImpl implements ResultPagination {
 
         @Override
         public String getUserSubmittedQuery() {
-            return null; // todo: implement
+            return  userSubmittedQuery;
         }
 
         @Override
         public String getQueryForPresentation() {
-            return null; // todo: implement
+            return queryForPresentation;
         }
 
         @Override
         public String getQueryToSave() {
-            return null; // todo: implement
+            return queryToSave;
         }
     }
 

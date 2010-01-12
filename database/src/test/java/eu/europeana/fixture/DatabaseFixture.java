@@ -1,4 +1,4 @@
-package eu.europeana.database.dao.fixture;
+package eu.europeana.fixture;
 
 import eu.europeana.database.domain.*;
 import eu.europeana.query.DocType;

@@ -2,16 +2,9 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.dao.fixture.DatabaseFixture;
 import eu.europeana.database.domain.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import eu.europeana.fixture.DatabaseFixture;
 import org.apache.log4j.Logger;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +13,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 
 /**

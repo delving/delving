@@ -21,6 +21,8 @@
 
 package eu.europeana.query;
 
+import eu.europeana.beans.IdBean;
+
 import java.util.List;
 
 /**
@@ -29,5 +31,5 @@ import java.util.List;
  */
 
 public interface DocIdWindow extends PagingWindow {
-    List<String> getIds();
+    List<IdBean> getIds();
 }

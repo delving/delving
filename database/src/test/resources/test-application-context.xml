@@ -33,9 +33,9 @@
 
     <context:annotation-config/>
 
-    <bean class="eu.europeana.database.dao.fixture.DatabaseFixture"/>
+    <bean class="eu.europeana.fixture.DatabaseFixture"/>
 
-    <bean class="eu.europeana.database.dao.fixture.IngestionFixture"/>
+    <bean class="eu.europeana.fixture.IngestionFixture"/>
 
 
 </beans>

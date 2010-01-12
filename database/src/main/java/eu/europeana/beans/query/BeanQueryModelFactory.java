@@ -155,13 +155,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
 
         @Override
         public DocIdWindowPager getDocIdWindowPager() throws Exception {
-            int offSet = Integer.parseInt(solrResponse.getResponseHeader().get("start").toString());
-            int numFound = Integer.parseInt(solrResponse.getResponseHeader().get("numFound").toString());
-            return new DocIdWindowPagerImpl(
-                    params,
-                    getDocIdList(params),
-                    offSet,
-                    numFound);
+            return DocIdWindowPagerImpl.fetchPager(params, solrQuery, solrServer);
         }
 
         @Override

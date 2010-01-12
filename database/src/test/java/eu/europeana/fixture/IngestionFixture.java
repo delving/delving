@@ -18,7 +18,7 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-package eu.europeana.database.dao.fixture;
+package eu.europeana.fixture;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.incoming.*;

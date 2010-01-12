@@ -21,18 +21,12 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.dao.fixture.IngestionFixture;
-import eu.europeana.database.domain.CacheState;
-import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.domain.QueueEntry;
+import eu.europeana.database.domain.*;
+import eu.europeana.fixture.IngestionFixture;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.query.ResultModel;
-import static junit.framework.Assert.*;
 import org.apache.log4j.Logger;
 import org.junit.After;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +37,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
+import static junit.framework.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class tests the process of ingesting and indexing metadata
