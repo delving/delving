@@ -10,10 +10,6 @@ import org.apache.solr.client.solrj.beans.Field;
 @EuropeanaView(facets = false, rows = 10)
 public class AllFieldBean extends FullBean {
 
-    // Facet Fields
-
-    // disabled facet fields
-
     @Field("LOCATION")
     @Europeana(copyField = true, facet = false, facetPrefix = "loc", fullDoc = false)
     @Solr(fieldType = "string")

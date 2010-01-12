@@ -24,7 +24,6 @@ package eu.europeana.web.util;
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.database.domain.User;
 import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.query.QueryExpression;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,7 +40,6 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
 
     private ClickStreamLogger.LogTypeId logTypeId;
     private String query; //
-    private QueryExpression.QueryType queryType;
     private String queryConstraints; // a comma separated list of qf's from url.
     private String pageId;
     // private String state;

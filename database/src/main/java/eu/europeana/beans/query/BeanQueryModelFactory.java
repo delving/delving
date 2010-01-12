@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -25,6 +26,10 @@ import java.util.Map;
  */
 
 public class BeanQueryModelFactory implements NewQueryModelFactory {
+    private static final Pattern OR_PATTERN = Pattern.compile("\\s+[oO][rR]\\s+");
+    private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
+    private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
+    private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
 
@@ -47,7 +52,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         if (!params.containsKey("query")) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
         }
-        solrQuery.setQuery(params.get("query")[0]); // only get the first one
+        solrQuery.setQuery(sanitize(params.get("query")[0])); // only get the first one
         if (params.containsKey("start")) {
             solrQuery.setStart(Integer.valueOf(params.get("start")[0]));
         }
@@ -242,4 +247,23 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         return queryType.appearance;
     }
 
+    String sanitize(String query) {
+        StringBuilder out = new StringBuilder();
+        for (int walk = 0; walk < query.length(); walk++) {
+            char ch = query.charAt(walk);
+            switch (ch) {
+                case '{':
+                case '}':
+                    break;
+                default:
+                    out.append(ch);
+            }
+        }
+        String q = out.toString();
+        q = AND_PATTERN.matcher(q).replaceAll(" AND ");
+        q = OR_PATTERN.matcher(q).replaceAll(" OR ");
+        q = NOT_START_PATTERN.matcher(q).replaceAll("NOT ");
+        q = NOT_MIDDLE_PATTERN.matcher(q).replaceAll(" NOT ");
+        return q;
+    }
 }

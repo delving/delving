@@ -75,7 +75,6 @@ public class SolrjQueryTest {
 
         // create Solr Query
         SolrQuery query = new SolrQuery()
-//                .setQueryType(QueryExpression.QueryType.SIMPLE_QUERY.toString()) // == "europeana"
                 .setQuery("*:*")
                         // set paging stuff
 
