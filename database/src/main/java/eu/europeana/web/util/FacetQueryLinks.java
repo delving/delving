@@ -16,6 +16,7 @@ import java.util.List;
 
 public class FacetQueryLinks {
     private static final String FACET_PROMPT = "&qf=";
+    private String type;
     private List<FacetCountLink> links = new ArrayList<FacetCountLink>();
 
     public static List<FacetQueryLinks> createDecoratedFacets(SolrQuery solrQuery, List<FacetField> facetFields) throws UnsupportedEncodingException {
@@ -27,6 +28,7 @@ public class FacetQueryLinks {
     }
 
     private FacetQueryLinks(FacetField facetField, SolrQuery solrQuery, boolean onlyRemove) throws UnsupportedEncodingException {
+        this.type = facetField.getName();
         for (FacetField.Count count : facetField.getValues()) {
             boolean remove = false;
             StringBuilder url = new StringBuilder();
@@ -58,6 +60,10 @@ public class FacetQueryLinks {
                 links.add(new FacetCountLink(count, url.toString(), remove));
             }
         }
+    }
+
+    public String getType() {
+        return type;
     }
 
     public List<FacetCountLink> getLinks() {
