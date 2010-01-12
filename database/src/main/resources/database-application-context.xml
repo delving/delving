@@ -126,7 +126,7 @@
     </bean>
 
     <bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-        <constructor-arg value="#{europeanaProperties['solr.updateUrl']}"/>
+        <constructor-arg value="#{europeanaProperties['solr.selectUrl']}"/>
         <property name="soTimeout" value="1000"/>
         <property name="connectionTimeout" value="100"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
@@ -157,7 +157,17 @@
 
     <bean id="queryModelFactory" class="eu.europeana.json.SolrQueryModelFactory"/>
 
-    <bean id="beanQueryModelFactory" class="eu.europeana.beans.query.BeanQueryModelFactory"/>
+    <bean id="beanQueryModelFactory" class="eu.europeana.beans.query.BeanQueryModelFactory">
+        <property name="briefBean">
+                <value type="java.lang.Class">eu.europeana.beans.BriefBean</value>
+        </property>
+        <property name="fullBean">
+                <value type="java.lang.Class">eu.europeana.beans.FullBean</value>
+        </property>
+        <property name="idBean">
+                <value type="java.lang.Class">eu.europeana.beans.IdBean</value>
+        </property>
+    </bean>
 
     <bean id="solrQueryModel" class="eu.europeana.json.SolrQueryModel"/>
 

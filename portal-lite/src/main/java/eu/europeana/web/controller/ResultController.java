@@ -21,12 +21,14 @@
 
 package eu.europeana.web.controller;
 
+import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.json.JsonResultModel;
 import eu.europeana.query.*;
-import eu.europeana.web.util.*;
+import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.DocIdWindowPagerImpl;
+import eu.europeana.web.util.QueryConstraints;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.json.JSONException;
@@ -60,6 +62,9 @@ public class ResultController {
     private DashboardDao dashboardDao;
 
     @Autowired
+    private NewQueryModelFactory beanQueryModelFactory;
+
+    @Autowired
     private ClickStreamLogger clickStreamLogger;
 
     @RequestMapping("/full-doc.html")
@@ -88,9 +93,11 @@ public class ResultController {
             EuropeanaId id = dashboardDao.fetchEuropeanaId(uri);
             if (id != null && id.isOrphan()) {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
-            } else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
+            }
+            else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_INDEXED.toString());
-            } else {
+            }
+            else {
                 throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
             }
         }
@@ -109,63 +116,10 @@ public class ResultController {
             HttpServletRequest request
     ) throws JSONException, EuropeanaQueryException, UnsupportedEncodingException {
         ModelAndView page = ControllerUtil.createModelAndViewPage("brief-doc-window");
-        if (query == null) {
-            throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
-        }
-        QueryConstraints queryConstraints = new QueryConstraints(request.getParameterValues(QueryConstraints.PARAM_KEY));
-        // check if we are dealing with a request from the advanced search page
-        // construct query model
-        QueryModel queryModel = queryModelFactory.createQueryModel();
-        queryModel.setResponseType(ResponseType.SMALL_BRIEF_DOC_WINDOW);
-        queryModel.setStartRow(ControllerUtil.getStartRow(request));
-        int rows = ControllerUtil.getRows(request);
-        if (rows > 0) {
-            queryModel.setRows(rows);
-        }
-        queryModel.setQueryConstraints(queryConstraints);
-
-        ResultModel resultModel;
-        try {
-            queryModel.setQueryString(query);
-            // execute query
-            resultModel = queryModel.fetchResult();
-        }
-        catch (EuropeanaQueryException exception) {
-            // invalid query string
-            // construct empty result model with error
-            QueryProblem queryProblem = QueryProblem.NONE;
-            if (exception != null) {
-                queryProblem = exception.getFetchProblem();
-            }
-            if (queryProblem == QueryProblem.SOLR_UNREACHABLE) {
-                throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), exception);
-            } else {
-                resultModel = new JsonResultModel(null, ResponseType.SMALL_BRIEF_DOC_WINDOW); // todo: show there was a problem
-            }
-        }
-        List<NextQueryFacet> nextQueryFacets;
-        ResultPagination resultPagination = new ResultPaginationImpl(
-                new SolrQuery(), // todo: this will fail
-                resultModel.getBriefDocWindow().getHitCount(),
-                request.getQueryString()
-        );
-        nextQueryFacets = NextQueryFacet.createDecoratedFacets(
-                resultModel.getFacets(),
-                queryConstraints
-        );
-        // add the model elements
-        page.addObject("result", resultModel);
-        page.addObject("queryStringForPresentation", createQueryStringForPresentation(
-                query,
-                queryConstraints
-        ));
-        page.addObject("breadcrumbs", queryConstraints.toBreadcrumbs("query", query));
-        page.addObject("display", format);
-        page.addObject("query", query);
-        page.addObject("nextQueryFacets", nextQueryFacets);
-        page.addObject("pagination", resultPagination);
-        page.addObject("queryToSave", request.getQueryString());
-        page.addObject("servletUrl", ControllerUtil.getServletUrl(request));
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        BriefBeanView resultView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
+        List<? extends BriefDoc> list = resultView.getBriefDocs();
+        page.addObject(resultView);
         return page;
     }
 
@@ -191,9 +145,11 @@ public class ResultController {
         String redirect;
         if (isShownAt != null) {
             redirect = isShownAt;
-        } else if (isShownBy != null) {
+        }
+        else if (isShownBy != null) {
             redirect = isShownBy;
-        } else {
+        }
+        else {
             throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
         }
         // todo: implement request log

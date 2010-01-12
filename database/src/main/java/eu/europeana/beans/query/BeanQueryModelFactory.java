@@ -82,8 +82,10 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     }
 
     @Override
-    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException {
-        return new BriefBeanViewImpl(solrQuery, getSolrResponse(solrQuery, briefBean), requestQueryString);
+    public BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException {
+        QueryResponse queryResponse = getSolrResponse(solrQuery, briefBean);
+        BriefBeanViewImpl briefBeanView = new BriefBeanViewImpl(solrQuery, queryResponse, requestQueryString);
+        return briefBeanView;
     }
 
     @Override
@@ -114,24 +116,24 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
 
 
     public class BriefBeanViewImpl implements BriefBeanView {
-        private SolrQuery solrQuery;
-        private QueryResponse solrResponse;
         private ResultPagination pagination;
+        private List<? extends BriefDoc> briefDocs;
+        private List<FacetQueryLinks> queryLinks;
 
-        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) {
-            this.solrQuery = solrQuery;
-            this.solrResponse = solrResponse;
+        private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
+            briefDocs = (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
+            queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
         }
 
         @Override
         public List<? extends BriefDoc> getBriefDocs() {
-            return (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
+            return briefDocs;
         }
 
         @Override
-        public List<FacetQueryLinks> getQueryFacetsLinks() throws UnsupportedEncodingException {
-            return FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
+        public List<FacetQueryLinks> getQueryFacetsLinks() {
+            return queryLinks;
         }
 
         @Override
@@ -182,6 +184,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrServerException e) {
 //            log.error("Unable to fetch result", e);
+            //todo determine which errors the SolrServer can throw
             throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
         }
         return queryResponse;
@@ -192,11 +195,13 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         // set facets
         if (beanClass == briefBean) {
             solrQuery.setFacet(true);
-            solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
+            solrQuery.setRows(12); // todo replace with annotation later
+            solrQuery.addFacetField("LANGUAGE");
+//            solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
         }
         // set search fields
         EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
-        solrQuery.setFields(bean.getFieldStrings());
+//        solrQuery.setFields(bean.getFieldStrings());
         // todo: set more like this
         return getSolrResponse(solrQuery);
     }

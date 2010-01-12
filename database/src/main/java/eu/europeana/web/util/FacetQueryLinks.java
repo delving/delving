@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Build a list of alternative queries involving adding or removing facets, based on the current
  * facets of the query and the counts returned from the query.
- * 
+ *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 

@@ -65,7 +65,9 @@ public class ResultPaginationImpl implements ResultPagination {
     private String createQueryForPresentation(SolrQuery solrQuery) {
         StringBuilder queryString = new StringBuilder();
         queryString.append("query").append("=").append(encode(solrQuery.getQuery()));
-        for (String facetTerm : solrQuery.getFacetQuery()) {
+        // todo is this correct or should it be FacetQuery
+        String[] strings = solrQuery.getFacetFields();
+        for (String facetTerm : strings) {
             queryString.append(FACET_PROMPT).append(facetTerm);
         }
         return queryString.toString();
