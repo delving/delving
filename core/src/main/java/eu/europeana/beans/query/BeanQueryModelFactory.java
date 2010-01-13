@@ -56,6 +56,8 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
     private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
     private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
+    private static final Pattern MORE_LIKE_THIS_PATTERN = Pattern.compile("europeana_uri:.*");
+
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
     private UserDaoImpl dashboardDao;
@@ -325,9 +327,16 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         }
     }
 
-    private QueryType findSolrQueryType(String query) {
+    public QueryType findSolrQueryType(String query) {
         // todo: finish this
         QueryType queryType = QueryType.SIMPLE_QUERY;
+        if (MORE_LIKE_THIS_PATTERN.matcher(query).matches()) {
+            queryType = QueryType.MORE_LIKE_THIS_QUERY;
+        }
+        // todo needs to be better
+        else if (AND_PATTERN.matcher(query).matches()) {
+            queryType = QueryType.ADVANCED_QUERY;
+        }
         return queryType;
     }
 
