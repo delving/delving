@@ -138,39 +138,65 @@ public class CarouselItem implements Serializable {
 
     public BriefDoc getDoc() {
         return new BriefDoc() {
-            public int getIndex() {
-                return 0;
+            private int index;
+            @Override
+            public void setIndex(int index) {
+                this.index = index;
             }
+
+            @Override
+            public int getIndex() {
+                return index;
+            }
+
+            @Override
             public String getId() {
                 return europeanaUri;
             }
+
+            @Override
             public String getTitle() {
                 return title;
             }
+
+            @Override
             public String getThumbnail() {
                 return thumbnail;
             }
+
+            @Override
             public String getCreator() {
                 return creator;
             }
+
+            @Override
             public String getYear() {
                 return year;
             }
+
+            @Override
             public String getProvider() {
                 return provider;
             }
+
+            @Override
             public String getLanguage() {
                 if (language == null) {
                     language = Language.EN;
                 }
                 return language.getCode();
             }
-            public DocType getType() {
+
+            @Override
+           public DocType getType() {
                 return type;
             }
+
+            @Override
             public BriefDocWindow getMoreLikeThis() {
                 return null;
             }
+
         };
     }
 
