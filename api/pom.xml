@@ -38,8 +38,8 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>database</artifactId>
-            <version>${europeana.database.version}</version>
+            <artifactId>core</artifactId>
+            <version>${europeana.core.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
