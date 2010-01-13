@@ -37,4 +37,6 @@ public interface BriefDoc { // if multiple-> show first
     String getLanguage(); // used to be Language
     DocType getType();
     BriefDocWindow getMoreLikeThis();
+
+    void setIndex(int index);
 }

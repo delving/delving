@@ -22,19 +22,15 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
+import eu.europeana.database.domain.*;
 import eu.europeana.database.integration.TagCount;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -278,7 +274,7 @@ public class UserDaoImpl implements UserDao {
         return tagCountList;
     }
 
-    private EuropeanaId fetchEuropeanaId(String europeanaUri) {
+    public EuropeanaId fetchEuropeanaId(String europeanaUri) {
         Query query = entityManager.createQuery("select id from EuropeanaId as id where id.europeanaUri = :uri");
         query.setParameter("uri", europeanaUri);
         return (EuropeanaId) query.getSingleResult();

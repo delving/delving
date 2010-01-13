@@ -21,7 +21,6 @@
 
 package eu.europeana.query;
 
-import eu.europeana.beans.IdBean;
 import eu.europeana.beans.views.BriefBeanView;
 import eu.europeana.beans.views.FullBeanView;
 import eu.europeana.beans.views.GridBrowseBeanView;
@@ -42,19 +41,19 @@ public interface NewQueryModelFactory {
 
     SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
 
-    SolrQuery createFromUri(String europeanaUri);
+    SolrQuery createFromUri(String europeanaUri) throws EuropeanaQueryException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException;
 
     BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException;
 
-    FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException;
+    FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 
     FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException;
 
     GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
 
-    List<IdBean> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
+    List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException;
 }

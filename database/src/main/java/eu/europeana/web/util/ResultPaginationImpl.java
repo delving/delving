@@ -26,6 +26,7 @@ public class ResultPaginationImpl implements ResultPagination {
     private boolean isNext;
     private int nextPage;
     private int numFound;
+    private int start;
     private List<Breadcrumb> breadcrumbs;
     private PresentationQueryImpl presentationQuery = new PresentationQueryImpl();
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
@@ -38,7 +39,10 @@ public class ResultPaginationImpl implements ResultPagination {
         if (numFound % rows != 0) {
             totalPages++;
         }
-        int start = solrQuery.getStart();
+        start = 1;
+        if (solrQuery.getStart() != null) {
+            start = solrQuery.getStart();
+        }
         int pageNumber = start / rows + 1;
         int fromPage = 1;
         int toPage = Math.min(totalPages, MARGIN * 2);
@@ -66,9 +70,11 @@ public class ResultPaginationImpl implements ResultPagination {
         StringBuilder queryString = new StringBuilder();
         queryString.append("query").append("=").append(encode(solrQuery.getQuery()));
         // todo is this correct or should it be FacetQuery
-        String[] strings = solrQuery.getFacetFields();
-        for (String facetTerm : strings) {
-            queryString.append(FACET_PROMPT).append(facetTerm);
+        String[] facetQueries = solrQuery.getFacetQuery();
+        if (facetQueries != null) {
+            for (String facetTerm : facetQueries) {
+                queryString.append(FACET_PROMPT).append(facetTerm);
+            }
         }
         return queryString.toString();
     }
@@ -119,7 +125,7 @@ public class ResultPaginationImpl implements ResultPagination {
 
     @Override
     public int getStart() {
-        return solrQuery.getStart();
+        return start;
     }
 
     @Override

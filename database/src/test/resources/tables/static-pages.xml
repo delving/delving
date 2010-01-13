@@ -9204,7 +9204,8 @@ K&amp;#233;rj&amp;#252;k, &amp;#237;rjon nek&amp;#252;nk, amennyiben k&amp;#233;
   <StaticPage>
     <pageType>LANGUAGE_POLICY</pageType>
     <language>GA</language>
-    <content>&lt;h1&gt;Beartas teanga&lt;/h1&gt;
+    <content>
+        &lt;h1&gt;Beartas teanga&lt;/h1&gt;
 
 &lt;p&gt;
 Feidhn&amp;#237;onn Europeana.eu de r&amp;#233;ir treoirl&amp;#237;nte at&amp;#225; cos&amp;#250;il le cinn &lt;a  href=&quot;http://europa.eu/languages/en/home&quot; target=&quot;_blank&quot;&gt;Europa&lt;/a&gt; (tairseach an Aontais Eorpaigh)
@@ -9246,4 +9247,20 @@ I dt&amp;#233;arma&amp;#237; praiticiula cialla&amp;#237;onn seo an m&amp;#233;i
 &lt;/ol&gt;
 </content>
   </StaticPage>
+    <StaticPage>
+        <pageType>NEW_CONTENT</pageType>
+        <language>EN</language>
+        <content>
+            &lt;table id=&quot;tblContributors&quot; class=&quot;tblList&quot;&gt;
+            &lt;tr&gt;
+            &lt;th&gt;Country&lt;/th&gt;&lt;th&gt;Contributor&lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Germany&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;http://www.landesarchiv-bw.de/&quot; target=&quot;_blank&quot;&gt;Landesarchiv Baden-W&amp;#252;rttemberg&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Germany&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;http://www.slub-dresden.de&quot; target=&quot;_blank&quot;&gt;Die S&amp;#228;chsische Landesbibliothek - Staats- und Universit&amp;#228;tsbibliothek Dresden (SLUB)&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Finland&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;http://www.sls.fi&quot; target=&quot;_blank&quot;&gt;Svenska Litteraturs&amp;#228;llskapet i Finland&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Italy&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;http://www.culturaitalia.it/pico/&quot; target=&quot;_blank&quot;&gt;CulturaItalia&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Germany&lt;/td&gt;&lt;td&gt;&lt;a href=&quot;http://www.stadtgeschichtliches-museum-leipzig.de/&quot; target=&quot;_blank&quot;&gt;Stadtgeschichtliches Museum Leipzig&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;/table&gt;
+        </content>
+    </StaticPage>
 </StaticPages>

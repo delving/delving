@@ -69,6 +69,15 @@
         <url-pattern>/eu.europeana.dashboard.EuropeanaDashboard/uploadSandbox</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>dashboardServiceStub</servlet-name>
+        <servlet-class>eu.europeana.dashboard.server.DashboardServiceStub</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dashboardServiceStub</servlet-name>
+        <url-pattern>/eu.europeana.dashboard.EuropeanaDashboard/DashboardService.rpc</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>

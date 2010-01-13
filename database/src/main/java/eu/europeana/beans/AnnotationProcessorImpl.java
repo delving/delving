@@ -32,7 +32,8 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         String [] strings = new String[facetFields.size()];
         int index = 0;
         for (EuropeanaField facetField : facetFields) {
-            strings[index] = facetField.getFieldNameString();
+            strings[index] = facetField.getName();
+            index++;
         }
         return strings;
     }
@@ -138,7 +139,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             String[] strings = new String[fields.size()];
             int index = 0;
             for (EuropeanaField europeanaField : fields) {
-                strings[index] = europeanaField.getFieldNameString();
+                strings[index] = europeanaField.getName();
                 index++;
             }
             return strings;

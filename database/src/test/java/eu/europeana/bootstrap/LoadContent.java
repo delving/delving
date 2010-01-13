@@ -59,15 +59,15 @@ public class LoadContent {
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
 
         // load static content etc.
-        if ((args.length <= 0) || !args[0].equalsIgnoreCase("skip=true")) {
+        if ((args.length > 0) && !args[0].equalsIgnoreCase("skip=true")) {
             log.info("Start loading static content.");
             DataMigration migration = new DataMigration();
             migration.setLanguageDao(languageDao);
             migration.setPartnerDao(staticInfoDao);
             migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
             migration.readTableFromResource(DataMigration.Table.PARTNERS);
-            migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
             migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
+            migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
             log.info("Finished loading static content.");
         }
 

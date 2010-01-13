@@ -3,6 +3,7 @@ package eu.europeana.beans.views;
 import eu.europeana.beans.EuropeanaView;
 import eu.europeana.query.BriefDoc;
 import eu.europeana.query.DocIdWindowPager;
+import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.FullDoc;
 
 import java.io.UnsupportedEncodingException;
@@ -16,5 +17,5 @@ import java.util.List;
 public interface FullBeanView {
     DocIdWindowPager getDocIdWindowPager() throws Exception, UnsupportedEncodingException;
     List<? extends BriefDoc> getRelatedItems();
-    FullDoc getFullDoc();
+    FullDoc getFullDoc() throws EuropeanaQueryException;
 }
