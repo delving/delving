@@ -78,7 +78,7 @@ public class LoadContent {
         solr.start();
 
 
-        final File file = new File("./database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
+        final File file = new File("./core/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
         EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByFileName(file.getName());
         ImportFile importFile = repository.copyToUploaded(file);
         if (europeanaCollection == null) {
