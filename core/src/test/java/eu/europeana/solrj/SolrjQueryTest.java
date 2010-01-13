@@ -1,8 +1,6 @@
 package eu.europeana.solrj;
 
 import eu.europeana.bootstrap.SolrStarter;
-import eu.europeana.query.FacetType;
-import eu.europeana.query.ResponseType;
 import junit.framework.Assert;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -66,28 +64,19 @@ public class SolrjQueryTest {
 
     @Test
     public void testSolrjQuery() throws Exception {
-        // Europeana Stuff
-        ResponseType responseType = ResponseType.LARGE_BRIEF_DOC_WINDOW;
-
-
         // get server instance
         SolrServer server = getSolrServer();
 
         // create Solr Query
         SolrQuery query = new SolrQuery()
                 .setQuery("*:*")
-                        // set paging stuff
-
-                        // set facets
                 .setFacet(true)
                 .setFacetMinCount(0)
                 .setFacetLimit(9)
-//                .setFacetPrefix(FacetType.LANGUAGE.toString(), FacetType.LANGUAGE.getTagName()) // for each facet field
-                .addFacetField(FacetType.LANGUAGE.toString())
-
-                        // set filter constraints
+//                .setFacetPrefix(...LANGUAGE.toString(), .....LANGUAGE.getTagName()) // for each facet field
+                .addFacetField("LANGUAGE")
                 .setFilterQueries("LANGUAGE:mul")
-                .setRows(responseType.getRows())
+                .setRows(10)
                 .setStart(0); //  solr is zero based
 
 

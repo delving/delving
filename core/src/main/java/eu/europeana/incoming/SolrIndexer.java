@@ -22,7 +22,7 @@
 package eu.europeana.incoming;
 
 import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.query.ESERecord;
+import org.apache.solr.common.SolrInputDocument;
 
 import java.util.List;
 
@@ -42,15 +42,6 @@ public interface SolrIndexer {
      */
     
     boolean indexRecordList(List<Record> recordList);
-
-    /**
-     * Reindex a single europeanaId
-     *
-     * @param europeanaId which one to reindex
-     * @return true if it worked
-     */
-
-    boolean indexSingleRecord(EuropeanaId europeanaId);
 
     /**
      * Delete an entire collection from the index
@@ -82,19 +73,19 @@ public interface SolrIndexer {
     
     public class Record {
         private EuropeanaId europeanaId;
-        private ESERecord eseRecord;
+        private SolrInputDocument solrInputDocument;
 
-        public Record(EuropeanaId europeanaId, ESERecord eseRecord) {
+        public Record(EuropeanaId europeanaId, SolrInputDocument solrInputDocument) {
             this.europeanaId = europeanaId;
-            this.eseRecord = eseRecord;
+            this.solrInputDocument = solrInputDocument;
         }
 
         public EuropeanaId getEuropeanaId() {
             return europeanaId;
         }
 
-        public ESERecord getEseRecord() {
-            return eseRecord;
+        public SolrInputDocument getSolrInputDocument() {
+            return solrInputDocument;
         }
     }
 }

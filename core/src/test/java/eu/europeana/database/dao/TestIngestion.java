@@ -81,7 +81,7 @@ public class TestIngestion {
 
     @After
     public void cleanup() throws Exception {
-//        ingestionFixture.stopSolr();
+        ingestionFixture.stopSolr();
     }
 
     @Test

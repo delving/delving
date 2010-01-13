@@ -50,4 +50,29 @@ public interface EuropeanaField {
      */
 
     String getFieldNameString();
+
+    /**
+     * Reveal whether this is a facet field
+     * @return true if it is
+     */
+
+    boolean isFacet();
+
+    /**
+     * When this is a facet field, reveal its name
+     * @return the name of the facet
+     */
+
+    String getFacetName();
+
+    /**
+     * Show whether this field is the europeana URI
+     * @return true if this field is the one
+     */
+    
+    boolean isEuropeanaUri();
+
+    boolean isEuropeanaObject();
+
+    boolean isEuropeanaType();
 }

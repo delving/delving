@@ -25,9 +25,9 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.incoming.*;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.FullDoc;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +43,6 @@ import java.io.IOException;
  */
 
 public class IngestionFixture {
-//    private static final String SOLR_SELECT_URL = "http://localhost:8983/solr/select";
-    private static final String SOLR_UPDATE_URL = "http://localhost:8983/solr/update";
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
@@ -53,7 +51,9 @@ public class IngestionFixture {
     @Autowired
     private BeanQueryModelFactory beanQueryModelFactory;
 
-    private HttpClient httpClient = new HttpClient();
+    @Autowired
+    private SolrServer solrServer;
+
     private Server server;
     private SolrIndexerImpl solrIndexer;
     private ImportRepositoryImpl importRepository;
@@ -113,10 +113,7 @@ public class IngestionFixture {
     private SolrIndexer getSolrIndexer() {
         if (solrIndexer == null) {
             solrIndexer = new SolrIndexerImpl();
-            solrIndexer.setDashboardDao(dashboardDao);
-            solrIndexer.setHttpClient(httpClient);
-            solrIndexer.setTargetUrl(SOLR_UPDATE_URL);
-            solrIndexer.setBeanQueryModelFactory(beanQueryModelFactory);
+            solrIndexer.setSolrServer(solrServer);
             solrIndexer.setChunkSize("10");
         }
         return solrIndexer;

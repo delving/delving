@@ -26,7 +26,6 @@ import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.beans.annotation.Solr;
 import eu.europeana.query.BriefDoc;
 import eu.europeana.query.DocType;
-import eu.europeana.query.ESERecord;
 import eu.europeana.query.FullDoc;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -536,11 +535,6 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String getEuropeanaCollectionName() {
         return returnStringOrElse(europeanaCollectionName);
-    }
-
-    @Override
-    public ESERecord getESERecord() {
-        return null; // todo: implement
     }
 }
 

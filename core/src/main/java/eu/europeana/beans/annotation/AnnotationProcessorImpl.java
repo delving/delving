@@ -190,25 +190,35 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
     private static class EuropeanaFieldImpl implements EuropeanaField {
         private Field field;
+        private Europeana europeanaAnnotation;
+        private org.apache.solr.client.solrj.beans.Field fieldAnnotation;
+        private Solr solrAnnotation;
+        private String fieldNameString;
 
         private EuropeanaFieldImpl(Field field) {
             this.field = field;
-            if (field.getAnnotation(Europeana.class) == null) {
+            europeanaAnnotation = field.getAnnotation(Europeana.class);
+            fieldAnnotation = field.getAnnotation(org.apache.solr.client.solrj.beans.Field.class);
+            solrAnnotation = field.getAnnotation(Solr.class);
+            if (europeanaAnnotation == null) {
                 throw new IllegalStateException("Field must have @Europeana annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
             }
-            if (field.getAnnotation(org.apache.solr.client.solrj.beans.Field.class) == null) {
+            if (fieldAnnotation == null) {
                 throw new IllegalStateException("Field must have solrj @Field annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
+            }
+            if (solrAnnotation == null) {
+                throw new IllegalStateException("Field must have solrj @Solr annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
             }
         }
 
         @Override
         public String getPrefix() {
-            return field.getAnnotation(Europeana.class).facetPrefix();
+            return europeanaAnnotation.facetPrefix();
         }
 
         @Override
         public String getName() {
-            String name = field.getAnnotation(org.apache.solr.client.solrj.beans.Field.class).value();
+            String name = fieldAnnotation.value();
             if (!name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
                 return name;
             }
@@ -219,7 +229,35 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         @Override
         public String getFieldNameString() {
-            return getPrefix()+'_'+getName();
+            if (fieldNameString == null) {
+                fieldNameString = getPrefix()+'_'+getName();
+            }
+            return fieldNameString;
+        }
+
+        @Override
+        public boolean isFacet() {
+            return europeanaAnnotation.facet();
+        }
+
+        @Override
+        public String getFacetName() {
+            return fieldAnnotation.value();
+        }
+
+        @Override
+        public boolean isEuropeanaUri() {
+            return false; // todo: implement
+        }
+
+        @Override
+        public boolean isEuropeanaObject() {
+            return false; // todo: implement
+        }
+
+        @Override
+        public boolean isEuropeanaType() {
+            return false; // todo: implement
         }
 
         @Override

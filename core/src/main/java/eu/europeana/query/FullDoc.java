@@ -131,10 +131,7 @@ public interface FullDoc {
 
     String[] getDcType();
 
-
     BriefDoc getBriefDoc();
 
     String getEuropeanaCollectionName();
-
-    ESERecord getESERecord();
 }

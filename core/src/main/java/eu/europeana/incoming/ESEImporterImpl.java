@@ -22,12 +22,14 @@
 package eu.europeana.incoming;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import eu.europeana.beans.annotation.AnnotationProcessor;
+import eu.europeana.beans.annotation.EuropeanaBean;
+import eu.europeana.beans.annotation.EuropeanaField;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.query.DocType;
-import eu.europeana.query.ESERecord;
-import eu.europeana.query.RecordField;
 import org.apache.log4j.Logger;
+import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -48,7 +50,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -66,6 +71,9 @@ public class ESEImporterImpl implements ESEImporter {
     private DashboardDao dashboardDao;
     private ImportRepository importRepository;
     private SolrIndexer solrIndexer;
+    private AnnotationProcessor annotationProcessor;
+    private Class<?> fullBeanClass;
+    private EuropeanaBean fullBean;
     private boolean normalized;
     private boolean commitImmediately;
     private int chunkSize = 1000;
@@ -87,6 +95,16 @@ public class ESEImporterImpl implements ESEImporter {
     @Autowired
     public void setSolrIndexer(SolrIndexer solrIndexer) {
         this.solrIndexer = solrIndexer;
+    }
+
+    @Autowired
+    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
+        this.annotationProcessor = annotationProcessor;
+    }
+
+    @Autowired
+    public void setFullBeanClass(Class<?> fullBeanClass) {
+        this.fullBeanClass = fullBeanClass;
     }
 
     // npot @Autowired because there are multiple
@@ -260,9 +278,8 @@ public class ESEImporterImpl implements ESEImporter {
             EuropeanaId europeanaId = null;
             Set<String> objectUrls = new TreeSet<String>();
             int recordCount = 0;
-            boolean[] fieldFound = new boolean[RecordField.values().length];
             long time = System.currentTimeMillis();
-            ESERecord eseRecord = null;
+            SolrInputDocument solrInputDocument = null;
             while (thread != null) {
                 switch (xml.getEventType()) {
                     case XMLStreamConstants.START_DOCUMENT:
@@ -272,31 +289,27 @@ public class ESEImporterImpl implements ESEImporter {
                     case XMLStreamConstants.START_ELEMENT:
                         if (isRecordElement(xml)) {
                             europeanaId = new EuropeanaId(collection);
-                            Arrays.fill(fieldFound, false);
-                            eseRecord = new ESERecord();
+                            solrInputDocument = new SolrInputDocument();
                         }
                         else if (europeanaId != null) {
-                            RecordField field = getRecordField(xml.getPrefix(), xml.getLocalName(), recordCount);
+                            EuropeanaField field = getEuropeanaField(xml.getPrefix(), xml.getLocalName(), recordCount);
 //                            String language = fetchLanguage(xml);
                             String text = xml.getElementText();
-                            if (field == RecordField.EUROPEANA_URI) {
+                            if (field.isEuropeanaUri()) {
                                 europeanaId.setEuropeanaUri(text);
                             }
                             else {
-                                switch (field) {
-                                    case EUROPEANA_OBJECT:
-                                        objectUrls.add(text);
-                                        break;
-                                    case EUROPEANA_TYPE:
-                                        DocType.get(text); // checking if it matches one of them
-                                        break;
+                                if (field.isEuropeanaObject()) {
+                                    objectUrls.add(text);
                                 }
-                                fieldFound[field.ordinal()] = true;
+                                else if (field.isEuropeanaType()) {
+                                    DocType.get(text); // checking if it matches one of them
+                                }
                                 if (text.length() > 10000) {
                                     text = text.substring(0, 9999);
                                 }
                                 // language being ignored if (language != null) {...}
-                                eseRecord.put(field, text);
+                                solrInputDocument.addField(field.getFieldNameString(), text);
                             }
                         }
                         break;
@@ -309,30 +322,20 @@ public class ESEImporterImpl implements ESEImporter {
                             recordCount++;
                             if (normalized) {
                                 if (europeanaId.getEuropeanaUri() == null) {
-                                    throw new ImportException("Normalized Record must have a field " + RecordField.EUROPEANA_URI, recordCount);
+                                    throw new ImportException("Normalized Record must have a field designated as europeana uri", recordCount);
                                 }
                             }
                             else {
-                                expectField(fieldFound, RecordField.EUROPEANA_PROVIDER, recordCount);
-                                expectField(fieldFound, RecordField.EUROPEANA_TYPE, recordCount);
-                                if (!(fieldFound[RecordField.EUROPEANA_IS_SHOWN_AT.ordinal()] || fieldFound[RecordField.EUROPEANA_IS_SHOWN_BY.ordinal()])) {
-                                    throw new ImportException("Sandbox Record must have field " + RecordField.EUROPEANA_IS_SHOWN_AT + " or " + RecordField.EUROPEANA_IS_SHOWN_BY, recordCount);
-                                }
-                                // todo: maybe enable later
-//                                expectNoField(fieldFound, RecordField.EUROPEANA_YEAR, recordCount);
-//                                expectNoField(fieldFound, RecordField.EUROPEANA_COUNTRY, recordCount);
-//                                expectNoField(fieldFound, RecordField.EUROPEANA_HAS_OBJECT, recordCount);
-                                expectNoField(fieldFound, RecordField.EUROPEANA_USER_TAG, recordCount);
                                 if (europeanaId.getEuropeanaUri() != null) {
-                                    throw new ImportException("Sandbox Record must not have a field " + RecordField.EUROPEANA_URI, recordCount);
+                                    throw new ImportException("Sandbox Record must not have a field designated as europeana uri", recordCount);
                                 }
                                 europeanaId.setEuropeanaUri(RESOLVABLE_URI + collection.getName() + "/" + COUNT_FORMAT.format(recordCount));
                             }
-                            recordList.add(new SolrIndexer.Record(europeanaId, eseRecord));
+                            recordList.add(new SolrIndexer.Record(europeanaId, solrInputDocument));
                             dashboardDao.saveEuropeanaId(europeanaId, objectUrls);
                             europeanaId = null;
                             objectUrls.clear();
-                            eseRecord = null;
+                            solrInputDocument = null;
                         }
                         break;
 
@@ -371,28 +374,16 @@ public class ESEImporterImpl implements ESEImporter {
             }
         }
 
-        private void expectField(boolean[] found, RecordField recordField, int recordCount) throws ImportException {
-            if (!found[recordField.ordinal()]) {
-                throw new ImportException("Record missing field " + recordField, recordCount);
-            }
-        }
-
-        private void expectNoField(boolean[] found, RecordField recordField, int recordCount) throws ImportException {
-            if (found[recordField.ordinal()]) {
-                throw new ImportException("Record may not have field " + recordField, recordCount);
-            }
-        }
-
-        private RecordField getRecordField(String prefix, String localName, int recordCount) throws ImportException {
-            RecordField field = null;
-            for (RecordField recordField : RecordField.values()) {
-                if (recordField.getPrefix().equals(prefix) && recordField.getLocalName().equals(localName)) {
+        private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
+            EuropeanaField field = null;
+            for (EuropeanaField recordField : getFullBean().getFields()) {
+                if (recordField.getPrefix().equals(prefix) && recordField.getName().equals(localName)) {
                     field = recordField;
                     break;
                 }
             }
             if (field == null) {
-                throw new ImportException("Record field not recognized: " + prefix + ":" + localName, recordCount);
+                throw new ImportException("Field not recognized: " + prefix + ":" + localName, recordCount);
             }
             return field;
         }
@@ -471,7 +462,7 @@ public class ESEImporterImpl implements ESEImporter {
 //                    throw new IOException("Just to keep the catch clause below");
 //                }
                 if (!errorHandler.exceptions.isEmpty()) {
-                    throw new ImportException("File is invalid according to "+ESE_SCHEMA, errorHandler.exceptions.get(0));
+                    throw new ImportException("File is invalid according to "+ESE_SCHEMA, (Throwable)errorHandler.get());
                 }
             }
             catch (SAXException e) {
@@ -513,7 +504,7 @@ public class ESEImporterImpl implements ESEImporter {
         }
 
         private class ErrorHandler extends DefaultHandler {
-            private List<SAXParseException> exceptions = new ArrayList<SAXParseException>();
+            private List<Throwable> exceptions = new ArrayList<Throwable>();
 
             public void error(SAXParseException parseException) throws SAXException {
                 exceptions.add(parseException);
@@ -521,6 +512,15 @@ public class ESEImporterImpl implements ESEImporter {
 
             public void fatalError(SAXParseException parseException) throws SAXException {
                 exceptions.add(parseException);
+            }
+
+            public Object get() {
+                if (exceptions.isEmpty()) {
+                    return null;
+                }
+                else {
+                    return exceptions.get(0);
+                }
             }
         }
 
@@ -563,6 +563,13 @@ public class ESEImporterImpl implements ESEImporter {
             cause = cause.getCause();
         }
         return out.toString();
+    }
+
+    private EuropeanaBean getFullBean() {
+        if (fullBean == null) {
+            fullBean = annotationProcessor.getEuropeanaBean(fullBeanClass);
+        }
+        return fullBean;
     }
 
 }
