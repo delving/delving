@@ -24,6 +24,7 @@ package eu.europeana.beans.annotation;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -83,9 +84,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             Class<?> clazz = c;
             while (clazz != Object.class) {
                 for (Field field : clazz.getDeclaredFields()) {
-                    processSolrAnnotation(field);
-                    processEuropeanaAnnotation(field);
-                    europeanaBean.addField(new EuropeanaFieldImpl(field));
+                    if (!Modifier.isTransient(field.getModifiers())) {
+                        processSolrAnnotation(field);
+                        processEuropeanaAnnotation(field);
+                        europeanaBean.addField(new EuropeanaFieldImpl(field));
+                    }
                 }
                 clazz = clazz.getSuperclass();
             }
@@ -190,6 +193,12 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         private EuropeanaFieldImpl(Field field) {
             this.field = field;
+            if (field.getAnnotation(Europeana.class) == null) {
+                throw new IllegalStateException("Field must have @Europeana annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
+            }
+            if (field.getAnnotation(org.apache.solr.client.solrj.beans.Field.class) == null) {
+                throw new IllegalStateException("Field must have solrj @Field annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
+            }
         }
 
         @Override

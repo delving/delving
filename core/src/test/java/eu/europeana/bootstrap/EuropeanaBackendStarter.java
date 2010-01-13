@@ -47,14 +47,14 @@ public class EuropeanaBackendStarter {
             System.out.println("This bootstrap class must be started with home directory 'europeana'");
             System.exit(1);
         }
-        System.setProperty("solr.solr.home", root + "database/src/test/solr/home");
+        System.setProperty("solr.solr.home", root + "core/src/test/solr/home");
         int port = 8983;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
         }
         Server server = new Server(port);
-        server.addHandler(new WebAppContext(root + "./api/src/main/webapp", "/api"));
-        server.addHandler(new WebAppContext(root + "database/src/test/solr/solr.war", "/solr"));
+        server.addHandler(new WebAppContext(root + "api/src/main/webapp", "/api"));
+        server.addHandler(new WebAppContext(root + "core/src/test/solr/solr.war", "/solr"));
         server.start();
     }
 
@@ -66,7 +66,7 @@ public class EuropeanaBackendStarter {
         });
         return checkFor("portal-lite", subdirs)
                 && checkFor("api", subdirs)
-                && checkFor("database", subdirs);
+                && checkFor("core", subdirs);
     }
 
     private static boolean checkFor(String name, File[] subdirs) {

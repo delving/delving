@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,6 +33,7 @@ import java.util.Map;
 public class EmailSender {
     private static final String TEMPLATE_NAME_AFFIX_TEXT = ".txt.ftl";
     private static final String TEMPLATE_NAME_AFFIX_HTML = ".html.ftl";
+    private Logger log = Logger.getLogger(getClass());
     private JavaMailSender mailSender;
     private String template;
 
@@ -123,6 +125,11 @@ public class EmailSender {
             mailSender.send(preparator);
         }
         catch (Exception e) {
+            log.error("to: "+toEmail);
+            log.error("subject: "+subject);
+            for (Map.Entry<String, Object> entry : model.entrySet()) {
+                log.error(entry.getKey()+" = "+entry.getValue());
+            }
             throw new IOException("Unable to send email", e);
         }
         /*

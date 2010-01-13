@@ -39,7 +39,7 @@ import static eu.europeana.beans.BeanUtil.returnStringOrElse;
 @EuropeanaView(facets = false, rows = 10)
 public class BriefBean extends RequiredBean implements BriefDoc {
 
-    int index;
+    transient int index;
 
     @Field("TYPE")
     @Europeana(copyField = true, facet = true, facetPrefix = "type", briefDoc = true)
@@ -68,7 +68,7 @@ public class BriefBean extends RequiredBean implements BriefDoc {
 
     @Override
     public int getIndex() {
-        return 0;  //Todo: implement this
+        return index;
     }
 
     @Override

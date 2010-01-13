@@ -29,37 +29,39 @@ public class FacetQueryLinks {
 
     private FacetQueryLinks(FacetField facetField, SolrQuery solrQuery, boolean onlyRemove) throws UnsupportedEncodingException {
         this.type = facetField.getName();
-        for (FacetField.Count count : facetField.getValues()) {
-            boolean remove = false;
-            StringBuilder url = new StringBuilder();
-            if (solrQuery.getFacetQuery() != null) {
-                for (String facetTerm : solrQuery.getFacetQuery()) {
-                    int colon = facetTerm.indexOf(":");
-                    String facetName = facetTerm.substring(0, colon);
-                    String facetValue = facetTerm.substring(colon + 1);
-                    if (facetName.equalsIgnoreCase(facetField.getName())) {
-                        if (count.getName().equalsIgnoreCase(facetValue)) {
-                            remove = true;
+        if (facetField.getValueCount() > 0) {
+            for (FacetField.Count count : facetField.getValues()) {
+                boolean remove = false;
+                StringBuilder url = new StringBuilder();
+                if (solrQuery.getFacetQuery() != null) {
+                    for (String facetTerm : solrQuery.getFacetQuery()) {
+                        int colon = facetTerm.indexOf(":");
+                        String facetName = facetTerm.substring(0, colon);
+                        String facetValue = facetTerm.substring(colon + 1);
+                        if (facetName.equalsIgnoreCase(facetField.getName())) {
+                            if (count.getName().equalsIgnoreCase(facetValue)) {
+                                remove = true;
+                            }
+                            else {
+                                url.append(FACET_PROMPT).append(facetTerm);
+                            }
                         }
                         else {
                             url.append(FACET_PROMPT).append(facetTerm);
                         }
                     }
-                    else {
-                        url.append(FACET_PROMPT).append(facetTerm);
+                }
+                if (onlyRemove) {
+                    if (remove) {
+                        links.add(new FacetCountLink(count, url.toString(), true));
                     }
                 }
-            }
-            if (onlyRemove) {
-                if (remove) {
-                    links.add(new FacetCountLink(count, url.toString(), true));
+                else {
+                    if (!remove) {
+                        url.append(FACET_PROMPT).append(count.getAsFilterQuery());
+                    }
+                    links.add(new FacetCountLink(count, url.toString(), remove));
                 }
-            }
-            else {
-                if (!remove) {
-                    url.append(FACET_PROMPT).append(count.getAsFilterQuery());
-                }
-                links.add(new FacetCountLink(count, url.toString(), remove));
             }
         }
     }
