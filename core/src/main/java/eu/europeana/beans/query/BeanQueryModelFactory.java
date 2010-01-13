@@ -109,7 +109,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
         SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery("europeana_uri:\""+europeanaUri+"\"");
+        solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         return solrQuery;
     }
 
@@ -143,12 +143,13 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
         String europeanaUri = params.get("uri")[0];
-        solrQuery.setQuery("europeana_uri:\""+europeanaUri+"\"");
+        solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
         return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, fullBean), params);  //TODO: implement this
     }
 
     // todo remove maybe use FullBeanView.getFullDoc instead
+
     @Override
     public FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException {
         QueryResponse response = getSolrResponse(solrQuery);
@@ -165,11 +166,12 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     }
 
     //todo review this code
+
     @Override
     public List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
         SolrQuery solrQuery = createFromQueryParams(params);
         Integer start = solrQuery.getStart();
-        if (start  > 1 ) {
+        if (start > 1) {
             solrQuery.setStart(start - 2);
         }
         solrQuery.setRows(3);
@@ -190,7 +192,8 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             briefDocs = (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
-            int index = solrQuery.getStart();
+            Integer start = solrQuery.getStart();
+            int index = start == null ? 1 : start;
             for (BriefDoc briefDoc : briefDocs) {
                 briefDoc.setIndex(index++);
             }
@@ -249,15 +252,17 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
 
             // if the record is not found give usefull error message
             if (fullBean.size() == 0) {
-            EuropeanaId id = dashboardDao.fetchEuropeanaId(params.get("uri")[0]);
-            if (id != null && id.isOrphan()) {
-                throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
-            } else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
-                throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_INDEXED.toString());
-            } else {
-                throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
+                EuropeanaId id = dashboardDao.fetchEuropeanaId(params.get("uri")[0]);
+                if (id != null && id.isOrphan()) {
+                    throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
+                }
+                else if (id != null && id.getCollection().getCollectionState() != CollectionState.ENABLED) {
+                    throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_INDEXED.toString());
+                }
+                else {
+                    throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
+                }
             }
-        }
             return fullBean.get(0);
         }
     }
@@ -267,7 +272,8 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         QueryResponse queryResponse;
         try {
             queryResponse = solrServer.query(solrQuery);
-        } catch (SolrServerException e) {
+        }
+        catch (SolrServerException e) {
 //            log.error("Unable to fetch result", e);
             //todo determine which errors the SolrServer can throw
             throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
