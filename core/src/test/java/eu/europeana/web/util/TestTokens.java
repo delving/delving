@@ -45,7 +45,7 @@ import static junit.framework.Assert.assertNotNull;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/database-application-context.xml"})
+@ContextConfiguration(locations = {"/core-application-context.xml"})
 public class TestTokens {
 //    private static final Logger log = Logger.getLogger(TestUtilities.class);
 

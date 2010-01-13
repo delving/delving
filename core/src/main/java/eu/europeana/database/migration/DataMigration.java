@@ -148,7 +148,7 @@ public class DataMigration {
      */
     public static void main(String[] args) throws Exception {
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
-                "/database-application-context.xml",
+                "/core-application-context.xml",
         });
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
         LanguageDao languageDao = (LanguageDao) context.getBean("languageDao");

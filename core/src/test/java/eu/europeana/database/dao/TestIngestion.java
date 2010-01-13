@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "/database-application-context.xml",
+        "/core-application-context.xml",
         "/test-application-context.xml"
 })
 public class TestIngestion {

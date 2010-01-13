@@ -28,7 +28,7 @@ import static junit.framework.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "/database-application-context.xml",
+        "/core-application-context.xml",
         "/test-application-context.xml"
 })
 

@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(locations = {
-//        "/database-application-context.xml"
+//        "/core-application-context.xml"
 //})
 
 public class TestDashboardDao {

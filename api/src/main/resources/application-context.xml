@@ -17,6 +17,6 @@
                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
         >
 
-    <import resource="classpath:/database-application-context.xml"/>
+    <import resource="classpath:/core-application-context.xml"/>
 
 </beans>
