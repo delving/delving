@@ -19,31 +19,14 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.beans;
-
-import eu.europeana.beans.annotation.Europeana;
-import eu.europeana.beans.annotation.EuropeanaView;
-import eu.europeana.beans.annotation.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+package eu.europeana.beans.query;
 
 /**
+ * todo: javadoc
+ * 
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:15:43 AM
+ * @since Jan 9, 2010 11:59:59 AM
  */
-
-@EuropeanaView(facets = false, rows = 10)
-public class IdBean {
-
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
-
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
-
-    public String getId() {
-        return europeanaUri;
-    }
+public interface GridBrowseBeanView {
+    //todo: implement it
 }

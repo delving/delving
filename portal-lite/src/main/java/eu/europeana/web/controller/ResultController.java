@@ -21,8 +21,8 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.beans.views.BriefBeanView;
-import eu.europeana.beans.views.FullBeanView;
+import eu.europeana.beans.query.BriefBeanView;
+import eu.europeana.beans.query.FullBeanView;
 import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.NewQueryModelFactory;

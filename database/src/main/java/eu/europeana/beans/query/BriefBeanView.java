@@ -19,31 +19,28 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.beans;
+package eu.europeana.beans.query;
 
-import eu.europeana.beans.annotation.Europeana;
 import eu.europeana.beans.annotation.EuropeanaView;
-import eu.europeana.beans.annotation.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+import eu.europeana.query.BriefDoc;
+import eu.europeana.query.ResultPagination;
+import eu.europeana.web.util.FacetQueryLinks;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
+ * todo: javadoc
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:15:43 AM
+ * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-@EuropeanaView(facets = false, rows = 10)
-public class IdBean {
+@EuropeanaView(facets = true, rows = 10) // todo: is this the right place for this annotation
+public interface BriefBeanView {
+    List<? extends BriefDoc> getBriefDocs();
 
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
+    List<FacetQueryLinks> getQueryFacetsLinks() throws UnsupportedEncodingException;
 
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
-
-    public String getId() {
-        return europeanaUri;
-    }
+    ResultPagination getPagination();
 }

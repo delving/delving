@@ -19,31 +19,24 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.beans;
+package eu.europeana.beans.annotation;
 
-import eu.europeana.beans.annotation.Europeana;
-import eu.europeana.beans.annotation.EuropeanaView;
-import eu.europeana.beans.annotation.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+import java.util.Set;
 
 /**
+ * Reveal the information about one of the annotated beans
+ *
+ * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:15:43 AM
  */
 
-@EuropeanaView(facets = false, rows = 10)
-public class IdBean {
+public interface EuropeanaBean {
 
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
+    int rows();
 
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
+    boolean facets();
 
-    public String getId() {
-        return europeanaUri;
-    }
+    Set<EuropeanaField> getFields();
+
+    String[] getFieldStrings();
 }

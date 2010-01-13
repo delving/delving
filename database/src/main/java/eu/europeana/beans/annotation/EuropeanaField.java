@@ -19,31 +19,35 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.beans;
-
-import eu.europeana.beans.annotation.Europeana;
-import eu.europeana.beans.annotation.EuropeanaView;
-import eu.europeana.beans.annotation.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+package eu.europeana.beans.annotation;
 
 /**
+ * Reveal information from the annotated bean field
+ *
+ * @author Gerald de Jong geralddejong@gmail.com
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:15:43 AM
  */
 
-@EuropeanaView(facets = false, rows = 10)
-public class IdBean {
+public interface EuropeanaField {
 
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
+    /**
+     * How does its name begin?
+     * @return the first part
+     */
 
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
+    String getPrefix();
 
-    public String getId() {
-        return europeanaUri;
-    }
+    /**
+     * How does the name end?
+     * @return the second part
+     */
+
+    String getName();
+
+    /**
+     * A combination of prefix and name, separated by underscore
+     * @return the name of this field according to Solr
+     */
+
+    String getFieldNameString();
 }

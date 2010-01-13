@@ -1,5 +1,8 @@
 package eu.europeana.beans;
 
+import eu.europeana.beans.annotation.AnnotationProcessorImpl;
+import eu.europeana.beans.annotation.EuropeanaBean;
+import eu.europeana.beans.annotation.EuropeanaField;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 

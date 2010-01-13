@@ -1,4 +1,25 @@
-package eu.europeana.beans;
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
+package eu.europeana.beans.annotation;
 
 import org.apache.log4j.Logger;
 
@@ -6,15 +27,24 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * Interpret the annotations in the beans which define the search model
+ * Interpret the annotations in the beans which define the search model, and
+ * reveal the results through the AnnotationProcessor interface.
  *
- * @author Gerald de Jong geralddejong@gmail.com
+ * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 public class AnnotationProcessorImpl implements AnnotationProcessor {
     private Logger log = Logger.getLogger(getClass());
     private Set<EuropeanaFieldImpl> facetFields = new HashSet<EuropeanaFieldImpl>();
+    private String [] facetFieldStrings;
     private Map<Class<?>, EuropeanaBean> beanMap = new HashMap<Class<?>, EuropeanaBean>();
+
+    /**
+     * Configure the annotation processor to analyze the given list of classes
+     * 
+     * @param classes a list of class objects
+     */
 
     public void setClasses(List<Class<?>> classes) {
         for (Class<?> c : classes) {
@@ -29,13 +59,15 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
     @Override
     public String[] getFacetFieldStrings() {
-        String [] strings = new String[facetFields.size()];
-        int index = 0;
-        for (EuropeanaField facetField : facetFields) {
-            strings[index] = facetField.getName();
-            index++;
+        if (facetFieldStrings == null) {
+            facetFieldStrings = new String[facetFields.size()];
+            int index = 0;
+            for (EuropeanaField facetField : facetFields) {
+                facetFieldStrings[index] = facetField.getName();
+                index++;
+            }
         }
-        return strings;
+        return facetFieldStrings;
     }
 
     @Override
@@ -111,6 +143,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     private static class EuropeanaBeanImpl implements EuropeanaBean {
         private Class<?> beanClass;
         private Set<EuropeanaField> fields = new HashSet<EuropeanaField>();
+        private String [] fieldStrings;
 
         private EuropeanaBeanImpl(Class<?> beanClass) {
             this.beanClass = beanClass;
@@ -136,13 +169,15 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         @Override
         public String[] getFieldStrings() {
-            String[] strings = new String[fields.size()];
-            int index = 0;
-            for (EuropeanaField europeanaField : fields) {
-                strings[index] = europeanaField.getName();
-                index++;
+            if (fieldStrings == null) {
+                fieldStrings = new String[fields.size()];
+                int index = 0;
+                for (EuropeanaField europeanaField : fields) {
+                    fieldStrings[index] = europeanaField.getName();
+                    index++;
+                }
             }
-            return strings;
+            return fieldStrings;
         }
 
         void addField(EuropeanaField field) {

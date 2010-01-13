@@ -21,9 +21,9 @@
 
 package eu.europeana.query;
 
-import eu.europeana.beans.views.BriefBeanView;
-import eu.europeana.beans.views.FullBeanView;
-import eu.europeana.beans.views.GridBrowseBeanView;
+import eu.europeana.beans.query.BriefBeanView;
+import eu.europeana.beans.query.FullBeanView;
+import eu.europeana.beans.query.GridBrowseBeanView;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;

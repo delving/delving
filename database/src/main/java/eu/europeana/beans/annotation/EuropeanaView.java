@@ -19,31 +19,25 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.beans;
+package eu.europeana.beans.annotation;
 
-import eu.europeana.beans.annotation.Europeana;
-import eu.europeana.beans.annotation.EuropeanaView;
-import eu.europeana.beans.annotation.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Annotation at view interface level.
+ *
+ * todo: this may be unnecessary
+ *
+ * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:15:43 AM
  */
 
-@EuropeanaView(facets = false, rows = 10)
-public class IdBean {
-
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
-
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
-
-    public String getId() {
-        return europeanaUri;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface EuropeanaView {
+    int rows();
+    boolean facets();
 }

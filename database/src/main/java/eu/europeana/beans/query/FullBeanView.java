@@ -19,31 +19,26 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.beans;
+package eu.europeana.beans.query;
 
-import eu.europeana.beans.annotation.Europeana;
 import eu.europeana.beans.annotation.EuropeanaView;
-import eu.europeana.beans.annotation.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+import eu.europeana.query.BriefDoc;
+import eu.europeana.query.DocIdWindowPager;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.FullDoc;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
+ * todo: javadoc
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:15:43 AM
+ * @author Gerald de Jong <geralddejong@gmail.com>
  */
-
-@EuropeanaView(facets = false, rows = 10)
-public class IdBean {
-
-    @Europeana(briefDoc = true)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
-    String europeanaUri;
-
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
-
-    public String getId() {
-        return europeanaUri;
-    }
+@EuropeanaView(facets = false, rows = 3) // todo: this might be the right place for this annotation
+public interface FullBeanView {
+    DocIdWindowPager getDocIdWindowPager() throws Exception, UnsupportedEncodingException;
+    List<? extends BriefDoc> getRelatedItems();
+    FullDoc getFullDoc() throws EuropeanaQueryException;
 }

@@ -134,7 +134,7 @@
         <property name="followRedirects" value="false"/>
     </bean>
 
-    <bean id="annotationProcessor" class="eu.europeana.beans.AnnotationProcessorImpl">
+    <bean id="annotationProcessor" class="eu.europeana.beans.annotation.AnnotationProcessorImpl">
         <property name="classes">
             <util:list>
                 <value type="java.lang.Class">eu.europeana.beans.IdBean</value>
