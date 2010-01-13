@@ -190,6 +190,10 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             briefDocs = (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
+            int index = solrQuery.getStart();
+            for (BriefDoc briefDoc : briefDocs) {
+                briefDoc.setIndex(index++);
+            }
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
         }
 
