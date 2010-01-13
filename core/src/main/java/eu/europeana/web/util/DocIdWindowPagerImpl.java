@@ -7,6 +7,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -35,9 +36,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String pageId;
     private String tab;
 
-    public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalSolrQuery, SolrServer solrServer) throws SolrServerException {
+    public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer) throws SolrServerException {
         DocIdWindowPagerImpl pager = new DocIdWindowPagerImpl();
-        pager.query = originalSolrQuery.getQuery();
+        pager.query = originalBriefSolrQuery.getQuery();
         pager.fullDocUri = fetchParameter(httpParameters, "uri", "");
         if (pager.fullDocUri.isEmpty()) {
             throw new IllegalArgumentException("Expected URI"); // todo: a better exception
@@ -52,21 +53,21 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         int fullDocUriInt = 0;
         if (!pager.startPage.isEmpty()) {
             fullDocUriInt = Integer.parseInt(start);
-            pager.setQueryStringForPaging(originalSolrQuery);
+            pager.setQueryStringForPaging(originalBriefSolrQuery);
         }
-        int startRow = fullDocUriInt;
+        int solrStartRow = fullDocUriInt;
         pager.hasPrevious = fullDocUriInt > 1;
-        if (fullDocUriInt > 1) {
-            startRow -= 2;
+        if (fullDocUriInt > 0) {
+            solrStartRow -= 1;
         }
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setFields("europeana_uri");
-        solrQuery.setStart(startRow);
-        solrQuery.setRows(3);
-        QueryResponse queryResponse = solrServer.query(solrQuery);
+        originalBriefSolrQuery.setFields("europeana_uri");
+        originalBriefSolrQuery.setStart(solrStartRow);
+        originalBriefSolrQuery.setRows(3);
+        QueryResponse queryResponse = solrServer.query(originalBriefSolrQuery);
         List<IdBean> list = queryResponse.getBeans(IdBean.class);
-        int offset = Integer.parseInt(queryResponse.getHeader().get("start").toString());
-        int numFound = Integer.parseInt(queryResponse.getHeader().get("numFound").toString());
+        final SolrDocumentList response = queryResponse.getResults();
+        int offset = (int) response.getStart();
+        int numFound = (int) response.getNumFound();
         pager.hasNext = offset + 1 < numFound;
         if (fullDocUriInt > numFound || list.size() < 2) {
             pager.hasPrevious = false;
@@ -112,8 +113,11 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private void setQueryStringForPaging(SolrQuery solrQuery) {
         StringBuilder out = new StringBuilder();
         out.append("query=").append(encode(solrQuery.getQuery()));
-        for (String facetTerm : solrQuery.getFacetQuery()) {
-            out.append("&qf=").append(facetTerm);
+        final String[] facetQueries = solrQuery.getFacetQuery();
+        if (facetQueries != null) {
+            for (String facetTerm : facetQueries) {
+                out.append("&qf=").append(facetTerm);
+            }
         }
         out.append("&startPage=").append(startPage);
         queryStringForPaging = out.toString();

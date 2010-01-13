@@ -88,6 +88,10 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         if (params.containsKey("start")) {
             solrQuery.setStart(Integer.valueOf(params.get("start")[0]));
         }
+        else {
+            solrQuery.setStart(0);
+        }
+
         if (params.containsKey("rows")) {
             solrQuery.setRows(Integer.valueOf(params.get("rows")[0]));
         }
@@ -228,7 +232,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             this.params = params;
             fullDoc = createFullDoc();
             relatedItems = solrResponse.getBeans(BriefBean.class);
-            docIdWindowPager = DocIdWindowPagerImpl.fetchPager(params, solrQuery, solrServer);
+            docIdWindowPager = DocIdWindowPagerImpl.fetchPager(params, createFromQueryParams(params), solrServer);
         }
 
         @Override
