@@ -46,7 +46,7 @@
     <bean id="sandboxEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="importRepository" ref="sandboxImportRepository"/>
-        <property name="solrIndexer" ref="solrIndexer"/>
+        <property name="solrServer" ref="solrServer"/>
         <property name="normalized" value="false"/>
     </bean>
 
@@ -96,7 +96,7 @@
         <property name="cacheUrl" value="${cacheUrl}"/>
         <property name="normalizedImporter" ref="normalizedEseImporter"/>
         <property name="sandboxImporter" ref="sandboxEseImporter"/>
-        <property name="indexDeleter" ref="solrIndexer"/>
+        <property name="solrServer" ref="solrServer"/>
         <property name="digitalObjectCache" ref="digitalObjectCache"/>
     </bean>
 

@@ -30,16 +30,10 @@ import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.incoming.ESEImporter;
-import eu.europeana.incoming.SolrIndexer;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServer;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -52,10 +46,10 @@ public class DashboardServiceImpl implements DashboardService {
     private ESEImporter sandboxImporter;
     private DashboardDao dashboardDao;
     private LanguageDao languageDao;
-    private SolrIndexer indexer;
     private DigitalObjectCache digitalObjectCache;
     private StaticInfoDao staticInfoDao;
     private UserDao userDao;
+    private SolrServer solrServer;
 
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
@@ -85,8 +79,8 @@ public class DashboardServiceImpl implements DashboardService {
         this.sandboxImporter = sandboxImporter;
     }
 
-    public void setIndexDeleter(SolrIndexer indexer) {
-        this.indexer = indexer;
+    public void setSolrServer(SolrServer solrServer) {
+        this.solrServer = solrServer;
     }
 
     public void setDigitalObjectCache(DigitalObjectCache digitalObjectCache) {
@@ -145,7 +139,7 @@ public class DashboardServiceImpl implements DashboardService {
         Session session = sessions.get(cookie);
         collectionX.setFileUserName(session.getUser().getUserName()); // record whodunnit
         if (collectionX.getCollectionState() == CollectionStateX.DISABLED) {
-            if (!indexer.deleteCollectionByName(collectionX.getName())) {
+            if (!deleteCollectionByName(collectionX.getName())) {
                 log.warn("Unable to delete from the index!");
             }
         }
@@ -335,7 +329,7 @@ public class DashboardServiceImpl implements DashboardService {
     public void disableAllCollections() {
         List<EuropeanaCollection> collections = dashboardDao.disableAllCollections();
         for (EuropeanaCollection collection : collections) {
-            indexer.deleteCollectionByName(collection.getName());
+            deleteCollectionByName(collection.getName());
         }
     }
 
@@ -469,6 +463,19 @@ public class DashboardServiceImpl implements DashboardService {
             }
             lastAgeCheck = System.currentTimeMillis();
         }
+    }
+
+    public boolean deleteCollectionByName(String collectionName) {
+        try {
+            log.info(String.format("Delete collection %s from Solr Index", collectionName));
+            solrServer.deleteByQuery("europeana_collection:\""+collectionName+"\"");
+            solrServer.commit();
+            return true;
+        }
+        catch (Exception e) {
+            log.error("Unable to delete collection", e);
+        }
+        return false;
     }
 
 

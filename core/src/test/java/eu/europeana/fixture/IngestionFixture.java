@@ -22,7 +22,10 @@ package eu.europeana.fixture;
 
 import eu.europeana.beans.query.BeanQueryModelFactory;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.incoming.*;
+import eu.europeana.incoming.ESEImporter;
+import eu.europeana.incoming.ESEImporterImpl;
+import eu.europeana.incoming.ImportRepository;
+import eu.europeana.incoming.ImportRepositoryImpl;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.FullDoc;
 import org.apache.log4j.Logger;
@@ -55,7 +58,6 @@ public class IngestionFixture {
     private SolrServer solrServer;
 
     private Server server;
-    private SolrIndexerImpl solrIndexer;
     private ImportRepositoryImpl importRepository;
     private ESEImporterImpl eseImporter;
 
@@ -74,9 +76,8 @@ public class IngestionFixture {
             eseImporter = new ESEImporterImpl();
             eseImporter.setDashboardDao(dashboardDao);
             eseImporter.setImportRepository(getImportRepository());
-            eseImporter.setSolrIndexer(getSolrIndexer());
+            eseImporter.setSolrServer(solrServer);
             eseImporter.setNormalized(true);
-            eseImporter.setCommitImmediately(true);
         }
         return eseImporter;
     }
@@ -100,24 +101,11 @@ public class IngestionFixture {
         server.start();
     }
 
-    public boolean isSolrProblem() {
-        return getSolrIndexer().isHttpError();
-    }
-
     public void stopSolr() throws Exception {
         server.stop();
     }
 
     // --- private parts
-
-    private SolrIndexer getSolrIndexer() {
-        if (solrIndexer == null) {
-            solrIndexer = new SolrIndexerImpl();
-            solrIndexer.setSolrServer(solrServer);
-            solrIndexer.setChunkSize("10");
-        }
-        return solrIndexer;
-    }
 
     private void delete(File file) {
         if (file.isDirectory()) {

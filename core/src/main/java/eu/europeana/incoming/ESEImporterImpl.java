@@ -29,6 +29,8 @@ import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.query.DocType;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
@@ -70,7 +72,7 @@ public class ESEImporterImpl implements ESEImporter {
     private Logger log = Logger.getLogger(getClass());
     private DashboardDao dashboardDao;
     private ImportRepository importRepository;
-    private SolrIndexer solrIndexer;
+    private SolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
     private Class<?> beanClass;
     private EuropeanaBean europeanaBean;
@@ -92,8 +94,8 @@ public class ESEImporterImpl implements ESEImporter {
     }
 
     @Autowired
-    public void setSolrIndexer(SolrIndexer solrIndexer) {
-        this.solrIndexer = solrIndexer;
+    public void setSolrServer(SolrServer solrServer) {
+        this.solrServer = solrServer;
     }
 
     @Autowired
@@ -107,6 +109,7 @@ public class ESEImporterImpl implements ESEImporter {
     }
 
     // npot @Autowired because there are multiple
+
     public void setImportRepository(ImportRepository importRepository) {
         this.importRepository = importRepository;
     }
@@ -176,7 +179,7 @@ public class ESEImporterImpl implements ESEImporter {
         private Thread thread;
         private ImportFile importFile;
         private EuropeanaCollection collection;
-        private List<SolrIndexer.Record> recordList = new ArrayList<SolrIndexer.Record>();
+        private List<SolrInputDocument> recordList = new ArrayList<SolrInputDocument>();
 
         private ImportProcessor(ImportFile importFile, EuropeanaCollection collection) {
             this.importFile = importFile;
@@ -264,9 +267,12 @@ public class ESEImporterImpl implements ESEImporter {
             catch (XMLStreamException e) {
                 throw new ImportException("Problem streaming the XML file", e);
             }
+            catch (SolrServerException e) {
+                throw new ImportException("Problem sending to Solr", e);
+            }
         }
 
-        private void importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, ImportException {
+        private void importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, ImportException, SolrServerException {
             XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
@@ -326,7 +332,7 @@ public class ESEImporterImpl implements ESEImporter {
                                 }
                                 europeanaId.setEuropeanaUri(RESOLVABLE_URI + collection.getName() + "/" + COUNT_FORMAT.format(recordCount));
                             }
-                            recordList.add(new SolrIndexer.Record(europeanaId, solrInputDocument));
+                            recordList.add(solrInputDocument);
                             dashboardDao.saveEuropeanaId(europeanaId, objectUrls);
                             europeanaId = null;
                             objectUrls.clear();
@@ -342,26 +348,22 @@ public class ESEImporterImpl implements ESEImporter {
                     indexRecordList();
                 }
                 if (!xml.hasNext()) {
-                    if (!recordList.isEmpty()) {
-                        indexRecordList();
-                    }
                     break;
                 }
                 xml.next();
+            }
+            if (!recordList.isEmpty()) {
+                indexRecordList();
             }
             time = System.currentTimeMillis() - time;
             log.info("Processed " + recordCount + " records in " + (time / 60000.0) + " minutes");
             inputStream.close();
         }
 
-        private boolean indexRecordList() {
-            if (solrIndexer.indexRecordList(new ArrayList<SolrIndexer.Record>(recordList))) {
-                recordList.clear();
-                return true;
-            }
-            else {
-                return false;
-            }
+        private void indexRecordList() throws IOException, SolrServerException {
+            solrServer.add(recordList);
+            solrServer.commit();
+            recordList.clear();
         }
 
         private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
@@ -441,7 +443,7 @@ public class ESEImporterImpl implements ESEImporter {
             SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
             ErrorHandler errorHandler = new ErrorHandler();
             try {
-                Schema schema = schemaFactory.newSchema(getClass().getResource("/"+ESE_SCHEMA));
+                Schema schema = schemaFactory.newSchema(getClass().getResource("/" + ESE_SCHEMA));
                 Validator validator = schema.newValidator();
                 validator.setErrorHandler(errorHandler);
                 validator.validate(source);
@@ -452,7 +454,7 @@ public class ESEImporterImpl implements ESEImporter {
 //                    throw new IOException("Just to keep the catch clause below");
 //                }
                 if (!errorHandler.exceptions.isEmpty()) {
-                    throw new ImportException("File is invalid according to "+ESE_SCHEMA, (Throwable)errorHandler.get());
+                    throw new ImportException("File is invalid according to " + ESE_SCHEMA, (Throwable) errorHandler.get());
                 }
             }
             catch (SAXException e) {
@@ -561,5 +563,4 @@ public class ESEImporterImpl implements ESEImporter {
         }
         return europeanaBean;
     }
-
 }
