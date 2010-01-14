@@ -50,7 +50,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(briefDoc = true)
+    @Europeana(briefDoc = true, object = true)
     @Solr(namespace = "europeana", name = "object")
     @Field("europeana_object")
     String[] europeanaObject;
@@ -61,7 +61,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     String[] country;
 
     @Field("TYPE")
-    @Europeana(copyField = true, facet = true, facetPrefix = "type", briefDoc = true)
+    @Europeana(copyField = true, facet = true, facetPrefix = "type", briefDoc = true, type = true)
     @Solr(fieldType = "string")
     String[] docType;
 

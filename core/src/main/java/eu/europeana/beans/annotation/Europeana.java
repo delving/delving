@@ -84,4 +84,28 @@ public @interface Europeana {
      */
 
     boolean hidden() default false;
+
+    /**
+     * Is this the europeana id to use
+     * 
+     * @return true if it is
+     */
+
+    boolean id() default false;
+
+    /**
+     * Is this an object to which the record refers?
+     *
+     * @return true if it is
+     */
+
+    boolean object() default false;
+
+    /**
+     * Is this the europeana type?
+     *
+     * @return true if it is
+     */
+
+    boolean type() default false;
 }

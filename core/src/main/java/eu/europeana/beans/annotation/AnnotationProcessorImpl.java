@@ -80,14 +80,17 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
     private void processAnnotations(Class<?> c) {
         if (!beanMap.containsKey(c)) {
+            log.info("Processing "+c.getCanonicalName());
             EuropeanaBeanImpl europeanaBean = new EuropeanaBeanImpl(c);
             Class<?> clazz = c;
             while (clazz != Object.class) {
                 for (Field field : clazz.getDeclaredFields()) {
                     if (!Modifier.isTransient(field.getModifiers())) {
-                        processSolrAnnotation(field);
-                        processEuropeanaAnnotation(field);
-                        europeanaBean.addField(new EuropeanaFieldImpl(field));
+                        EuropeanaFieldImpl europeanaField = new EuropeanaFieldImpl(field);
+                        if (europeanaField.isFacet()) {
+                            facetFields.add(europeanaField);
+                        }
+                        europeanaBean.addField(europeanaField);
                     }
                 }
                 clazz = clazz.getSuperclass();
@@ -96,52 +99,35 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         }
     }
 
-    private void processEuropeanaAnnotation(Field field) {
-        Europeana europeana = field.getAnnotation(Europeana.class);
-        if (europeana != null) {
-            logEuropeanaAttributes(field, europeana);
-            if (europeana.facet()) {
-                facetFields.add(new EuropeanaFieldImpl(field));
-            }
-        }
-    }
-
-    private void processSolrAnnotation(Field field) {
-        Solr solr = field.getAnnotation(Solr.class);
-        if (solr != null) {
-            logSolrAttributes(field, solr);
-        }
-    }
-
-    private void logEuropeanaAttributes(Field field, Europeana europeana) {
-        String prefix = "Field ["+field.getName()+"]: ";
-        log.info(prefix + "facetPrefix="+europeana.facetPrefix());
-        log.info(prefix + "briefDoc="+europeana.briefDoc());
-        log.info(prefix + "fullDoc="+europeana.fullDoc());
-        log.info(prefix + "copyField(flag)="+europeana.copyField());
-        log.info(prefix + "facet="+europeana.facet());
-        log.info(prefix + "hidden="+europeana.hidden());
-    }
-
-    private void logSolrAttributes(Field field, Solr solr) {
-        String prefix = "Field ["+field.getName()+"]: ";
-        log.info(prefix + "name="+solr.name());
-        log.info(prefix + "namespace="+solr.namespace());
-        log.info(prefix + "fieldType="+solr.fieldType());
-        log.info(prefix + "indexed="+solr.indexed());
-        log.info(prefix + "multivalued="+solr.multivalued());
-        log.info(prefix + "defaultValue="+solr.defaultValue());
-        log.info(prefix + "omitNorms="+solr.omitNorms());
-        log.info(prefix + "required="+solr.required());
-        log.info(prefix + "stored="+solr.stored());
-        log.info(prefix + "termOffsets="+solr.termOffsets());
-        log.info(prefix + "termPositions="+solr.termPositions());
-        log.info(prefix + "termVectors="+solr.termVectors());
-        log.info(prefix + "compressed="+solr.compressed());
-        for (String copyField : solr.toCopyField()) {
-            log.info(prefix + "copyField="+copyField);
-        }
-    }
+//    private void logEuropeanaAttributes(Field field, Europeana europeana) {
+//        String prefix = "Field ["+field.getName()+"]: ";
+//        log.info(prefix + "facetPrefix="+europeana.facetPrefix());
+//        log.info(prefix + "briefDoc="+europeana.briefDoc());
+//        log.info(prefix + "fullDoc="+europeana.fullDoc());
+//        log.info(prefix + "copyField(flag)="+europeana.copyField());
+//        log.info(prefix + "facet="+europeana.facet());
+//        log.info(prefix + "hidden="+europeana.hidden());
+//    }
+//
+//    private void logSolrAttributes(Field field, Solr solr) {
+//        String prefix = "Field ["+field.getName()+"]: ";
+//        log.info(prefix + "name="+solr.name());
+//        log.info(prefix + "namespace="+solr.namespace());
+//        log.info(prefix + "fieldType="+solr.fieldType());
+//        log.info(prefix + "indexed="+solr.indexed());
+//        log.info(prefix + "multivalued="+solr.multivalued());
+//        log.info(prefix + "defaultValue="+solr.defaultValue());
+//        log.info(prefix + "omitNorms="+solr.omitNorms());
+//        log.info(prefix + "required="+solr.required());
+//        log.info(prefix + "stored="+solr.stored());
+//        log.info(prefix + "termOffsets="+solr.termOffsets());
+//        log.info(prefix + "termPositions="+solr.termPositions());
+//        log.info(prefix + "termVectors="+solr.termVectors());
+//        log.info(prefix + "compressed="+solr.compressed());
+//        for (String copyField : solr.toCopyField()) {
+//            log.info(prefix + "copyField="+copyField);
+//        }
+//    }
 
     private static class EuropeanaBeanImpl implements EuropeanaBean {
         private Class<?> beanClass;
@@ -247,17 +233,17 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         @Override
         public boolean isEuropeanaUri() {
-            return false; // todo: implement
+            return europeanaAnnotation.id();
         }
 
         @Override
         public boolean isEuropeanaObject() {
-            return false; // todo: implement
+            return europeanaAnnotation.object();
         }
 
         @Override
         public boolean isEuropeanaType() {
-            return false; // todo: implement
+            return europeanaAnnotation.type();
         }
 
         @Override

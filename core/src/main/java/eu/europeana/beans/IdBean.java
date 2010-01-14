@@ -34,7 +34,7 @@ import org.apache.solr.client.solrj.beans.Field;
 @EuropeanaView(facets = false, rows = 10)
 public class IdBean {
 
-    @Europeana(briefDoc = true)
+    @Europeana(briefDoc = true, id = true)
     @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
     @Field("europeana_uri")
     String europeanaUri;

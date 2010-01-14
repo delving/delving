@@ -38,7 +38,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -101,9 +102,6 @@ public class TestIngestion {
         assertTrue(collection.getCollectionLastModified().compareTo(new Date()) < 0);
         do {
             log.info("Importing..");
-            if (ingestionFixture.isSolrProblem()) {
-                fail("Solr problem");
-            }
             Thread.sleep(500);
             collection = dashboardDao.fetchCollection(collection.getId());
         }

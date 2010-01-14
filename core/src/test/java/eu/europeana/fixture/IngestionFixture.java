@@ -57,9 +57,11 @@ public class IngestionFixture {
     @Autowired
     private SolrServer solrServer;
 
+    @Autowired
+    private ESEImporterImpl eseImporter;
+
     private Server server;
     private ImportRepositoryImpl importRepository;
-    private ESEImporterImpl eseImporter;
 
     public ImportRepository getImportRepository() throws IOException {
         if (importRepository == null) {
@@ -72,13 +74,7 @@ public class IngestionFixture {
     }
 
     public ESEImporter getESEImporter() throws IOException {
-        if (eseImporter == null) {
-            eseImporter = new ESEImporterImpl();
-            eseImporter.setDashboardDao(dashboardDao);
-            eseImporter.setImportRepository(getImportRepository());
-            eseImporter.setSolrServer(solrServer);
-            eseImporter.setNormalized(true);
-        }
+        eseImporter.setImportRepository(getImportRepository());
         return eseImporter;
     }
 
