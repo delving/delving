@@ -36,9 +36,29 @@ import static eu.europeana.beans.BeanUtil.returnStringOrElse;
  */
 
 @EuropeanaView(facets = false, rows = 10)
-public class BriefBean extends RequiredBean implements BriefDoc {
+public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
+
+    @Europeana
+    @Solr(namespace = "europeana", name = "europeanaCollectionName", multivalued = false, required = true)
+    @Field("europeana_collectionName")
+    String europeanaCollectionName;
+
+    @Field("PROVIDER")
+    @Europeana(copyField = true, facet = true, facetPrefix = "prov", briefDoc = true)
+    @Solr(fieldType = "string")
+    String[] provider;
+
+    @Europeana(briefDoc = true)
+    @Solr(namespace = "europeana", name = "object")
+    @Field("europeana_object")
+    String[] europeanaObject;
+
+    @Field("COUNTRY")
+    @Europeana(copyField = true, facet = true, facetPrefix = "coun")
+    @Solr(fieldType = "string")
+    String[] country;
 
     @Field("TYPE")
     @Europeana(copyField = true, facet = true, facetPrefix = "type", briefDoc = true)

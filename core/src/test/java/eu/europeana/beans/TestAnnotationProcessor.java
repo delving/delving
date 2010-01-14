@@ -23,7 +23,6 @@ public class TestAnnotationProcessor {
     public void processThem() throws Exception {
         List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(IdBean.class);
-        list.add(RequiredBean.class);
         list.add(BriefBean.class);
         list.add(FullBean.class);
         list.add(AllFieldBean.class);

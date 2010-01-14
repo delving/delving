@@ -72,10 +72,9 @@ public class ESEImporterImpl implements ESEImporter {
     private ImportRepository importRepository;
     private SolrIndexer solrIndexer;
     private AnnotationProcessor annotationProcessor;
-    private Class<?> fullBeanClass;
-    private EuropeanaBean fullBean;
+    private Class<?> beanClass;
+    private EuropeanaBean europeanaBean;
     private boolean normalized;
-    private boolean commitImmediately;
     private int chunkSize = 1000;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
@@ -103,8 +102,8 @@ public class ESEImporterImpl implements ESEImporter {
     }
 
     @Autowired
-    public void setFullBeanClass(Class<?> fullBeanClass) {
-        this.fullBeanClass = fullBeanClass;
+    public void setBeanClass(Class<?> beanClass) {
+        this.beanClass = beanClass;
     }
 
     // npot @Autowired because there are multiple
@@ -118,10 +117,6 @@ public class ESEImporterImpl implements ESEImporter {
 
     public void setNormalized(boolean normalized) {
         this.normalized = normalized;
-    }
-
-    public void setCommitImmediately(boolean commitImmediately) {
-        this.commitImmediately = commitImmediately;
     }
 
     public ImportRepository getImportRepository() {
@@ -362,11 +357,6 @@ public class ESEImporterImpl implements ESEImporter {
         private boolean indexRecordList() {
             if (solrIndexer.indexRecordList(new ArrayList<SolrIndexer.Record>(recordList))) {
                 recordList.clear();
-                if (commitImmediately) {
-                    if (!solrIndexer.commit()) {
-                        log.warn("cannot commit explicitly");
-                    }
-                }
                 return true;
             }
             else {
@@ -376,7 +366,7 @@ public class ESEImporterImpl implements ESEImporter {
 
         private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
             EuropeanaField field = null;
-            for (EuropeanaField recordField : getFullBean().getFields()) {
+            for (EuropeanaField recordField : getEuropeanaBean().getFields()) {
                 if (recordField.getPrefix().equals(prefix) && recordField.getName().equals(localName)) {
                     field = recordField;
                     break;
@@ -565,11 +555,11 @@ public class ESEImporterImpl implements ESEImporter {
         return out.toString();
     }
 
-    private EuropeanaBean getFullBean() {
-        if (fullBean == null) {
-            fullBean = annotationProcessor.getEuropeanaBean(fullBeanClass);
+    private EuropeanaBean getEuropeanaBean() {
+        if (europeanaBean == null) {
+            europeanaBean = annotationProcessor.getEuropeanaBean(beanClass);
         }
-        return fullBean;
+        return europeanaBean;
     }
 
 }

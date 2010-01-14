@@ -138,7 +138,6 @@
         <property name="classes">
             <util:list>
                 <value type="java.lang.Class">eu.europeana.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.beans.RequiredBean</value>
                 <value type="java.lang.Class">eu.europeana.beans.BriefBean</value>
                 <value type="java.lang.Class">eu.europeana.beans.FullBean</value>
                 <value type="java.lang.Class">eu.europeana.beans.AllFieldBean</value>
@@ -155,8 +154,8 @@
         <property name="normalized" value="true"/>
         <property name="chunkSize" value="1000"/>
         <property name="annotationProcessor" ref="annotationProcessor"/>
-        <property name="fullBeanClass">
-            <value type="java.lang.Class">eu.europeana.beans.FullBean</value>
+        <property name="beanClass">
+            <value type="java.lang.Class">eu.europeana.beans.AllFieldBean</value>
         </property>
     </bean>
 
