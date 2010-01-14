@@ -59,7 +59,7 @@ public class LoadContent {
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
 
         // load static content etc.
-        if ((args.length > 0) && !args[0].equalsIgnoreCase("skip=true")) {
+        if ((args.length == 0) || !args[0].equalsIgnoreCase("skip=true")) {
             log.info("Start loading static content.");
             DataMigration migration = new DataMigration();
             migration.setLanguageDao(languageDao);
