@@ -320,7 +320,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             solrQuery.setRows(12); // todo replace with annotation later
             solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
             EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
-            solrQuery.setFields(bean.getFieldStrings());
+//            solrQuery.setFields(bean.getFieldStrings());  //todo fix later. THis is a dirty hack
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
                 solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
             }

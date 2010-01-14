@@ -39,11 +39,7 @@ public class IdBean {
     @Field("europeana_uri")
     String europeanaUri;
 
-    public String getEuropeanaUri() {
-        return europeanaUri;
-    }
-
-    public String getId() {
+    public String getEuropeanaUri() {                            
         return europeanaUri;
     }
 }
