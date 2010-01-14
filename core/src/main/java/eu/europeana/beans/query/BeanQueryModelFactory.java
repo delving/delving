@@ -32,11 +32,13 @@ import eu.europeana.query.*;
 import eu.europeana.web.util.DocIdWindowPagerImpl;
 import eu.europeana.web.util.FacetQueryLinks;
 import eu.europeana.web.util.ResultPaginationImpl;
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
@@ -52,6 +54,8 @@ import java.util.regex.Pattern;
  */
 
 public class BeanQueryModelFactory implements NewQueryModelFactory {
+    private Logger log = Logger.getLogger(getClass());
+
     private static final Pattern OR_PATTERN = Pattern.compile("\\s+[oO][rR]\\s+");
     private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
     private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
@@ -197,12 +201,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         @SuppressWarnings("unchecked")
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
-            briefDocs = (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
-            Integer start = solrQuery.getStart();
-            int index = start == null ? 1 : start;
-            for (BriefDoc briefDoc : briefDocs) {
-                briefDoc.setIndex(index++);
-            }
+            briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean));
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
         }
 
@@ -222,6 +221,15 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         }
     }
 
+    List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList) {
+        Integer start = solrQuery.getStart();
+        int index = start == null ? 1 : start + 1;
+        for (BriefDoc briefDoc : briefDocList) {
+            briefDoc.setIndex(index++);
+        }
+        return briefDocList;
+    }
+
     private class FullBeanViewImpl implements FullBeanView {
         private QueryResponse solrResponse;
         private Map<String, String[]> params;
@@ -233,7 +241,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             this.solrResponse = solrResponse;
             this.params = params;
             fullDoc = createFullDoc();
-            relatedItems = solrResponse.getBeans(BriefBean.class);
+            relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(BriefBean.class));
             docIdWindowPager = DocIdWindowPagerImpl.fetchPager(params, createFromQueryParams(params), solrServer);
         }
 
@@ -275,14 +283,31 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException {
+//        if (solrQuery.getStart() < 1) {
+//            solrQuery.setStart(0);
+//            log.warn("Solr Start cannot be negative");
+//        }
+        // solr query is 0 based
+        if (solrQuery.getStart() != null && solrQuery.getStart() > 0) {
+            solrQuery.setStart(solrQuery.getStart() - 1);
+        }
         QueryResponse queryResponse;
         try {
             queryResponse = solrServer.query(solrQuery);
         }
+        catch (SolrException e) {
+            log.error("unable to execute SolrQuery", e);
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString(), e);
+        }
         catch (SolrServerException e) {
-//            log.error("Unable to fetch result", e);
             //todo determine which errors the SolrServer can throw
-            throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
+            log.error("Unable to fetch result", e);
+            if (e.getMessage().equalsIgnoreCase("Error executing query")) {
+                throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString(), e);
+            }
+            else {
+                throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
+            }
         }
         return queryResponse;
     }
@@ -299,7 +324,9 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
             solrQuery.setFields(bean.getFieldStrings());
             // todo: set more like this
-            solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
+            if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
+                solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
+            }
         }
         if (beanClass == fullBean) {
         }

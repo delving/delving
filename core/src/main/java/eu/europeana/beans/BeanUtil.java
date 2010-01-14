@@ -26,7 +26,7 @@ package eu.europeana.beans;
  */
 
 public class BeanUtil {
-    private static final String[] STRINGS = new String[]{};
+    private static final String[] STRINGS = new String[]{" "};
     private static final String EMPTY_STRING = " ";
 
     static String returnStringOrElse(String[] s) {

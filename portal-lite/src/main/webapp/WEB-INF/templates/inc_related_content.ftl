@@ -4,12 +4,12 @@
 
                 <table summary="related items" id="tbl-related-items" width="100%">
                     <#assign max=3/><!-- max shown in list -->
-                    <#list result.briefDocWindow.docs as doc>
+                    <#list result.relatedItems as doc>
                     <#if doc_index &gt; 2><#break/></#if>
                     <tr>
                         <td width="45" valign="top">
                             <div class="related-thumb-container">
-                                <#if queryStringForPaging?exists>
+                                <#if queryStringForPaging??>
                                     <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=bd&amp;tab=">
                                  <#else>
                                     <a href="full-doc.html?uri=${doc.id}">
@@ -25,7 +25,7 @@
                         </td>
 
                         <td class="item-titles" valign="top" width="130">
-                            <#if queryStringForPaging?exists>
+                            <#if queryStringForPaging??>
                             <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=bd"><@stringLimiter "${doc.title}" "50"/></a>
                             <#else>
                             <a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
@@ -34,7 +34,7 @@
                     </tr>
 
                     </#list>
-                    <#if result.briefDocWindow.docs?size &gt; max>
+                    <#if result.relatedItems?size &gt; max>
                     <tr>
                         <td id="see-all" colspan="2"><a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
                     </tr>

@@ -27,7 +27,11 @@ import eu.europeana.beans.annotation.Solr;
 import eu.europeana.query.BriefDoc;
 import eu.europeana.query.DocType;
 import eu.europeana.query.FullDoc;
+import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static eu.europeana.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.beans.BeanUtil.returnStringOrElse;
@@ -312,7 +316,12 @@ public class FullBean extends BriefBean implements FullDoc {
 
     @Override
     public String[] getEuropeanaCountry() {
-        return returnArrayOrElse(europeanaCountry, country);
+        final String[] countryArr = returnArrayOrElse(europeanaCountry, country);
+        List<String> upperCasedCountries = new ArrayList<String>();
+        for (String country : countryArr) {
+            upperCasedCountries.add(WordUtils.capitalizeFully(country));
+        }
+        return upperCasedCountries.toArray(new String[upperCasedCountries.size()]);
     }
 
     @Override

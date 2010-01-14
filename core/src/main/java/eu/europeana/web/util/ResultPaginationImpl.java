@@ -41,7 +41,7 @@ public class ResultPaginationImpl implements ResultPagination {
         }
         start = 1;
         if (solrQuery.getStart() != null) {
-            start = solrQuery.getStart();
+            start = solrQuery.getStart() + 1; // solr is zero based so + 1
         }
         int pageNumber = start / rows + 1;
         int fromPage = 1;

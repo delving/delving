@@ -77,6 +77,7 @@ public class ResultController {
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
         page.addObject("result", fullResultView);
+        page.addObject("pagination", fullResultView.getDocIdWindowPager());
         page.addObject("uri", fullResultView.getDocIdWindowPager().getFullDocUri());
         if (format != null && format.equalsIgnoreCase("labels")) {
             page.addObject("format", format);

@@ -33,6 +33,7 @@ public enum QueryProblem {
     RECORD_NOT_FOUND("Requested Europeana record not found."),
     RECORD_REVOKED("Europeana record is revoked by the content provider."),
     MALFORMED_URL("Required parameters are missing from the request."),
+    MALFORMED_QUERY("Query to Search Engine is malformed."),
     UNKNOWN("unknown"),
     TOKEN_EXPIRED("Europeana token has expired and is no longer valid."),
     UNKNOWN_TOKEN("Token does not exist."),

@@ -106,7 +106,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             view = "table";
         }
         out.append("&view=").append(view);
-        out.append("&tab=").append(tab);
+        if (tab.isEmpty()) {
+            out.append("&tab=").append(tab);
+        }
         returnToResults = out.toString();
     }
 
