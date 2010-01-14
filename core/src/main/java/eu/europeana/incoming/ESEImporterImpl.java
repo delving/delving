@@ -270,6 +270,9 @@ public class ESEImporterImpl implements ESEImporter {
             catch (SolrServerException e) {
                 throw new ImportException("Problem sending to Solr", e);
             }
+            catch (Exception e) {
+                throw new ImportException("Unknown problem", e);
+            }
         }
 
         private void importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, ImportException, SolrServerException {
@@ -291,6 +294,7 @@ public class ESEImporterImpl implements ESEImporter {
                         if (isRecordElement(xml)) {
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
+                            solrInputDocument.addField("europeana_collectionName", collection.getName()); // todo: can't just use a string field name here
                         }
                         else if (europeanaId != null) {
                             EuropeanaField field = getEuropeanaField(xml.getPrefix(), xml.getLocalName(), recordCount);
@@ -299,25 +303,23 @@ public class ESEImporterImpl implements ESEImporter {
                             if (field.isEuropeanaUri()) {
                                 europeanaId.setEuropeanaUri(text);
                             }
-                            else {
-                                if (field.isEuropeanaObject()) {
-                                    objectUrls.add(text);
-                                }
-                                else if (field.isEuropeanaType()) {
-                                    DocType.get(text); // checking if it matches one of them
-                                }
-                                if (text.length() > 10000) {
-                                    text = text.substring(0, 9999);
-                                }
-                                // language being ignored if (language != null) {...}
-                                solrInputDocument.addField(field.getFieldNameString(), text);
+                            else if (field.isEuropeanaObject()) {
+                                objectUrls.add(text);
                             }
+                            else if (field.isEuropeanaType()) {
+                                DocType.get(text); // checking if it matches one of them
+                            }
+                            if (text.length() > 10000) {
+                                text = text.substring(0, 9999);
+                            }
+                            // language being ignored if (language != null) {...}
+                            solrInputDocument.addField(field.getFieldNameString(), text);
                         }
                         break;
 
                     case XMLStreamConstants.END_ELEMENT:
                         if (isRecordElement(xml) && europeanaId != null) {
-                            if (recordCount % 500 == 0) {
+                            if (recordCount > 0 && recordCount % 500 == 0) {
                                 log.info("imported " + recordCount + " records");
                             }
                             recordCount++;
@@ -341,7 +343,7 @@ public class ESEImporterImpl implements ESEImporter {
                         break;
 
                     case XMLStreamConstants.END_DOCUMENT:
-                        log.info("Document ended");
+                        log.info("Document ended, imported " + recordCount + " records");
                         break;
                 }
                 if (recordList.size() >= chunkSize) {
@@ -361,6 +363,7 @@ public class ESEImporterImpl implements ESEImporter {
         }
 
         private void indexRecordList() throws IOException, SolrServerException {
+            log.info("sending "+recordList.size()+" records to solr");
             solrServer.add(recordList);
             solrServer.commit();
             recordList.clear();

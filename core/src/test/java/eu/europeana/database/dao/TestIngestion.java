@@ -77,12 +77,13 @@ public class TestIngestion {
             collection = dashboardDao.fetchCollectionByName(importFile.deriveCollectionName(), true);
             log.info(collection.getName());
             ingestionFixture.startSolr();
+            log.info("started solr");
         }
     }
 
     @After
     public void cleanup() throws Exception {
-        ingestionFixture.stopSolr();
+//        ingestionFixture.stopSolr();
     }
 
     @Test

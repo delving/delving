@@ -127,8 +127,8 @@
 
     <bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <constructor-arg value="#{europeanaProperties['solr.baseUrl']}"/>
-        <property name="soTimeout" value="1000"/>
-        <property name="connectionTimeout" value="100"/>
+        <property name="soTimeout" value="10000"/>
+        <property name="connectionTimeout" value="5000"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
         <property name="maxTotalConnections" value="512"/>
         <property name="followRedirects" value="false"/>

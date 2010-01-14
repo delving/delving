@@ -90,8 +90,10 @@ public class IngestionFixture {
 
     public void startSolr() throws Exception {
         delete(findSolrData());
-        System.setProperty("solr.solr.home", findRoot().getAbsolutePath()+"/src/test/solr/home");
-        System.setProperty("solr.data.dir", findTarget().getAbsolutePath()+"/solrdata");
+        String solrHome = findRoot().getAbsolutePath()+"/src/test/solr/home";
+        String solrData = findTarget().getAbsolutePath()+"/solrdata";
+        System.setProperty("solr.solr.home", solrHome);
+        System.setProperty("solr.data.dir", solrData);
         server = new Server(8983);
         server.addHandler(new WebAppContext(findRoot().getAbsolutePath()+"/src/test/solr/solr.war", "/solr"));
         server.start();
