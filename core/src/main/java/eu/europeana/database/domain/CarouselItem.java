@@ -1,7 +1,6 @@
 package eu.europeana.database.domain;
 
 import eu.europeana.query.BriefDoc;
-import eu.europeana.query.BriefDocWindow;
 import eu.europeana.query.DocType;
 
 import javax.persistence.*;
@@ -190,11 +189,6 @@ public class CarouselItem implements Serializable {
             @Override
            public DocType getType() {
                 return type;
-            }
-
-            @Override
-            public BriefDocWindow getMoreLikeThis() {
-                return null;
             }
 
         };

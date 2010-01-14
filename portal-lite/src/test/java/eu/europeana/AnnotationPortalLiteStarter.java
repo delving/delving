@@ -33,7 +33,7 @@ public class AnnotationPortalLiteStarter {
 
 	// do not forget to set -Deuropeana.properties and working directory -> see readme file
     public static void main(String... args) throws Exception {
-    	System.setProperty("solr.solr.home", "./database/src/test/solr/solr");
+    	System.setProperty("solr.solr.home", "./core/src/test/solr/home");
     	System.setProperty("hibernate.bytecode.provider", "javassist");
 
     	int backendPort = 8983;
@@ -41,7 +41,7 @@ public class AnnotationPortalLiteStarter {
 
     	Server serverBackEnd = new Server(backendPort);
     	serverBackEnd.addHandler(new WebAppContext("api/src/main/webapp", "/api"));
-    	serverBackEnd.addHandler(new WebAppContext("database/src/test/solr/solr.war", "/solr"));
+    	serverBackEnd.addHandler(new WebAppContext("core/src/test/solr/solr.war", "/solr"));
     	serverBackEnd.start();
 
     	Server serverFrontEnd = new Server(frontendPort);

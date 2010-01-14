@@ -155,7 +155,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         String europeanaUri = params.get("uri")[0];
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
-        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, fullBean), params);  //TODO: implement this
+        return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, fullBean), params);
     }
 
     // todo remove maybe use FullBeanView.getFullDoc instead
@@ -174,8 +174,6 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     public GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException {
         return null;  //TODO: implement this
     }
-
-    //todo review this code
 
     @Override
     public List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
@@ -323,7 +321,6 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
             EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
             solrQuery.setFields(bean.getFieldStrings());
-            // todo: set more like this
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
                 solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
             }

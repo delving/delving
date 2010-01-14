@@ -25,7 +25,6 @@ import eu.europeana.beans.annotation.Europeana;
 import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.beans.annotation.Solr;
 import eu.europeana.query.BriefDoc;
-import eu.europeana.query.BriefDocWindow;
 import eu.europeana.query.DocType;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -114,11 +113,6 @@ public class BriefBean extends RequiredBean implements BriefDoc {
     @Override
     public DocType getType() {
         return DocType.get(docType);
-    }
-
-    @Override
-    public BriefDocWindow getMoreLikeThis() {
-        return null;  //Todo implement this
     }
 
 }

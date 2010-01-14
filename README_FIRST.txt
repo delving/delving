@@ -20,7 +20,7 @@ Components
 ------------------------
 
 The Europeana Core environment contains the following modules:
-    - Database Module (This module contains all the database access objecs, etc. It is required by the portal and dashboard modules).
+    - Core Module (This module contains all the database access objecs, etc. It is required by the portal and dashboard modules).
     - API Module (This module contains the cache, resolve, and websearch api's)
     - Portal-lite Module (This module contains all the web-gui code of the Open Source Version. It requires database, portal-core and query module.)
 
@@ -58,7 +58,7 @@ Build and install components in local maven2 repository
 //Build the components from the root where this file is found.
 
 // build and install database component.
-# cd database
+# cd core
 # mvn clean install -Dmaven.test.skip=true
 
 
@@ -104,7 +104,7 @@ not be found).
 Launch the Europeana environment
 -----------------------------------------
 To launch the complete Europeana environment portal-lite, resolver, cache, solr you need to run the class
-./database/src/test/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
+./core/src/test/java/eu/europeana/bootstrap/EuropeanaBackendStarter.java from you ide. This will launch an embedded Jetty
 Server at http://localhost:8983/{api|solr}/
 
 Each module with a web-app (api, portal-lite) has a jetty starter class in the test directories. Use it

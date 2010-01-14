@@ -272,7 +272,6 @@
         <property name="repeatInterval" value="31000"/>
     </bean>
 
-    <!-- TODO is it still used? -->
     <bean id="registrationEmailSender" class="eu.europeana.web.util.TokenReplyEmailSender">
         <property name="emailSenders">
             <map>

@@ -111,7 +111,7 @@ public class WhoOwnsWhat {
         return
                 checkFor("portal-lite", subdirs)
                         && checkFor("api", subdirs)
-                        && checkFor("database", subdirs);
+                        && checkFor("core", subdirs);
     }
 
     private static File[] getSubdirs(File root) {

@@ -148,7 +148,7 @@ public class IngestionFixture {
             return new File(".");
         }
         else {
-            return new File("database");
+            return new File("core");
         }
     }
 

@@ -23,31 +23,6 @@
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
 
-    <!-- todo remove commented code when old servlets are removed -->
-    <!--<display-name>Europeana Cache</display-name>-->
-	<!--<servlet>-->
-		<!--<servlet-name>cache</servlet-name>-->
-		<!--<servlet-class>eu.europeana.cache.CacheServlet</servlet-class>-->
-		<!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
-
-	<!--<servlet-mapping>-->
-		<!--<servlet-name>cache</servlet-name>-->
-		<!--<url-pattern>/image/*</url-pattern>-->
-	<!--</servlet-mapping>-->
-
-
-    <!--<servlet>-->
-        <!--<servlet-name>resolver</servlet-name>-->
-        <!--<servlet-class>eu.europeana.cache.ResolverServlet</servlet-class>-->
-        <!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
-
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>resolver</servlet-name>-->
-        <!--<url-pattern>/resolve/*</url-pattern>-->
-    <!--</servlet-mapping>-->
-
     <welcome-file-list>
         <welcome-file>/index.html</welcome-file>
     </welcome-file-list>

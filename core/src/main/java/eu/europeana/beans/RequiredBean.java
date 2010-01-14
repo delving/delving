@@ -44,7 +44,6 @@ public class RequiredBean extends IdBean {
     @Solr(fieldType = "string")
     String[] provider;
 
-    // todo determine if this really belongs here
     @Europeana(briefDoc = true)
     @Solr(namespace = "europeana", name = "object")
     @Field("europeana_object")

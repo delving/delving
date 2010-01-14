@@ -39,12 +39,12 @@ Development start-up on IntelliJ
 3. Uploading test dataset
 
  - upload it from
-   database/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml
+   core/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml
 
- - index it. To index, a portal instanse at http://localhost:8983/ should be running as it has solr in it
+ - index it. To index, a portal instance at http://localhost:8983/ should be running as it has solr in it
 
  You should eb able to come back to portal http://localhost:8983/portal, to search for
  *:*
  and see some results (in fact, see all records from the test dataset).
- 
-   
+
+
