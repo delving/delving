@@ -43,7 +43,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
     /**
      * Configure the annotation processor to analyze the given list of classes
-     * 
+     *
      * @param classes a list of class objects
      */
 
@@ -209,6 +209,15 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         @Override
         public String getName() {
+            String name = fieldAnnotation.value();
+            if (name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
+                name = field.getName();
+            }
+            return name;
+        }
+
+        @Override
+        public String getIndexName() {
             String name = solrAnnotation.name();
             if (name.isEmpty()) {
                 name = fieldAnnotation.value();
@@ -226,7 +235,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                     fieldNameString = getName();
                 }
                 else {
-                    fieldNameString = getPrefix()+'_'+getName();
+                    fieldNameString = getPrefix()+'_'+getIndexName();
                 }
             }
             return fieldNameString;

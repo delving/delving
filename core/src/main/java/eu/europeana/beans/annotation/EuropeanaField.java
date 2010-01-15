@@ -69,10 +69,12 @@ public interface EuropeanaField {
      * Show whether this field is the europeana URI
      * @return true if this field is the one
      */
-    
+
     boolean isEuropeanaUri();
 
     boolean isEuropeanaObject();
 
     boolean isEuropeanaType();
+
+    String getIndexName();
 }

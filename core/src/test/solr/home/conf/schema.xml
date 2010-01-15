@@ -781,6 +781,9 @@
    <copyField source="europeana_type" dest="TYPE" />
    <copyField source="europeana_userTag" dest="USERTAGS" />
    <copyField source="europeana_language" dest="LANGUAGE" />
+   <copyField source="europeana_country" dest="COUNTRY" />
+   <copyField source="europeana_year" dest="YEAR" />
+   <copyField source="europeana_provider" dest="PROVIDER" />
 
    <!--<copyField source="europeana_uri" dest="identifier" />-->
    <!--<copyField source="europeana_person" dest="text" />-->

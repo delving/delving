@@ -372,7 +372,7 @@ public class ESEImporterImpl implements ESEImporter {
         private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
             EuropeanaField field = null;
             for (EuropeanaField recordField : getEuropeanaBean().getFields()) {
-                if (recordField.getPrefix().equals(prefix) && recordField.getName().equals(localName)) {
+                if (recordField.getPrefix().equals(prefix) && recordField.getIndexName().equals(localName)) {
                     field = recordField;
                     break;
                 }
