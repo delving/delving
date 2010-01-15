@@ -23,19 +23,13 @@ package eu.europeana.web.util;
 
 import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.User;
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Locale;
@@ -130,25 +124,6 @@ public class ControllerUtil {
             }
         }
         return 0;
-    }
-
-    // todo: finish code for prerendering freemarker formatted strings with messageTags
-
-    public static String getFreemarkerFormattedString(String input) throws IOException {
-        Configuration configuration = new Configuration();
-        configuration.setTemplateLoader(new ClassTemplateLoader(FreeMarkerConfigurer.class, ""));
-        Reader reader = new StringReader("<#import \"/spring.ftl\" as spring />" + input);
-        Template template = new Template("staticPageTemplate", reader, configuration, "utf-8");
-        Writer out = new StringWriter();
-        ModelAndView modelAndView = new ModelAndView();
-        try {
-            template.process(modelAndView, out);
-        } catch (TemplateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return out.toString();
     }
 
     public static Language getLocale(HttpServletRequest request) {
