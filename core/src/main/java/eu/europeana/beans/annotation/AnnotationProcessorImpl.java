@@ -278,5 +278,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         public int hashCode() {
             return field != null ? field.hashCode() : 0;
         }
+
+        public String toString() {
+            return field.getName();
+        }
     }
 }
