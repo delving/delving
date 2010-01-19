@@ -31,6 +31,9 @@ public class FacetQueryLinks {
         this.type = facetField.getName();
         if (facetField.getValueCount() > 0) {
             for (FacetField.Count count : facetField.getValues()) {
+                if (temporarilyPreventYear0000(this.type, count.getName())) {
+                    continue;
+                }
                 boolean remove = false;
                 StringBuilder url = new StringBuilder();
                 if (solrQuery.getFacetQuery() != null) {
@@ -38,6 +41,9 @@ public class FacetQueryLinks {
                         int colon = facetTerm.indexOf(":");
                         String facetName = facetTerm.substring(0, colon);
                         String facetValue = facetTerm.substring(colon + 1);
+                        if (temporarilyPreventYear0000(facetName, facetValue)) {
+                            continue;
+                        }
                         if (facetName.equalsIgnoreCase(facetField.getName())) {
                             if (count.getName().equalsIgnoreCase(facetValue)) {
                                 remove = true;
@@ -64,6 +70,19 @@ public class FacetQueryLinks {
                 }
             }
         }
+    }
+
+    /**
+     * At one point the normalizer was letting unparseable values of year, coded ast 0000,
+     * through to the index.  This bandage solution prevents them from being presented.
+     *
+     * @param facetName year
+     * @param facetValue 0000
+     * @return true if it matches
+     */
+    
+    private boolean temporarilyPreventYear0000(String facetName, String facetValue) {
+        return "YEAR".equals(facetName) && "0000".equals(facetValue);
     }
 
     public String getType() {

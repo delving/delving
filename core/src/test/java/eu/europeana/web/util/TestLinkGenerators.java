@@ -51,6 +51,7 @@ public class TestLinkGenerators {
         facet.add("nl", 1);
         facets.add(facet);
         facet = new FacetField("YEAR");
+        facet.add("0000", 666); // testing to see if this is indeed ignored
         facet.add("1980", 1);
         facet.add("1981", 1);
         facet.add("1982", 1);
