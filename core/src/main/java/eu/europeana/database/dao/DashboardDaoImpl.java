@@ -456,7 +456,7 @@ public class DashboardDaoImpl implements DashboardDao {
     // todo: this function has not been fully tested yet
     @Transactional
     public IndexingQueueEntry getEntryForIndexing() {
-        Query query = entityManager.createQuery("select entry from IndexingQueueEntry as entry where entry.collection.collectionState != :collectionState");
+        Query query = entityManager.createQuery("select entry from IndexingQueueEntry as entry where entry.collection.collectionState <> :collectionState");
         query.setParameter("collectionState", CollectionState.INDEXING);
         List<IndexingQueueEntry> result = (List<IndexingQueueEntry>) query.getResultList();
         if (result.isEmpty()) {
