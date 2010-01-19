@@ -76,7 +76,6 @@ public class TestUserDao {
         savedSearch.setQuery("query");
         savedSearch.setQueryString("querystring");
         User user25 = userDao.addSavedSearch(users.get(25), savedSearch);
-        log.info("User.savesSearch.size: " + user25.getSavedSearches().size());
         assertNotNull(user25);
         log.info("Found " + user25.getFirstName());
         assertEquals(1, user25.getSavedSearches().size());

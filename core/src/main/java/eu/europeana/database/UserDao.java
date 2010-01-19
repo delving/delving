@@ -46,6 +46,7 @@ public interface UserDao {
      * @param password unhashed
      * @return the user if authenticated, otherwise null
      */
+
     User authenticateUser(String email, String password);
 
     /**

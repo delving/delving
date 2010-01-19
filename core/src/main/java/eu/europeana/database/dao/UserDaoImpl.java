@@ -107,6 +107,7 @@ public class UserDaoImpl implements UserDao {
     @Transactional
     public List<SavedSearch> fetchSavedSearches(User user) {
         user = entityManager.find(User.class, user.getId());
+        user.getSavedSearches().size();
         return user.getSavedSearches();
     }
 
@@ -217,8 +218,6 @@ public class UserDaoImpl implements UserDao {
         User user = savedItem.getUser();
         user.getSavedItems().remove(savedItem);
         entityManager.remove(savedItem);
-        user.getSocialTags().size();
-        user.getSavedSearches().size();
         return user;
     }
 
@@ -228,8 +227,6 @@ public class UserDaoImpl implements UserDao {
         User user = savedSearch.getUser();
         user.getSavedSearches().remove(savedSearch);
         entityManager.remove(savedSearch);
-        user.getSocialTags().size();
-        user.getSavedItems().size();
         return user;
     }
 

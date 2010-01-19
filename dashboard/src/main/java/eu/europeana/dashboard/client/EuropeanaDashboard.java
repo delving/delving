@@ -77,12 +77,11 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
                     messages.partnersTab(),
                     RoleX.ROLE_EDITOR, RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
             );
-            // todo: fix search term add and remove to reflect new portal/pacta functionality
-//            tabPanel.addTab(
-//                    new SearchTermWidget(this),
-//                    messages.searchTermsTab(),
-//                    RoleX.ROLE_EDITOR, RoleX.ROLE_PACTA, RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
-//            );
+            tabPanel.addTab(
+                    new SearchTermWidget(this),
+                    messages.searchTermsTab(),
+                    RoleX.ROLE_EDITOR, RoleX.ROLE_PACTA, RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
+            );
             tabPanel.addTab(
                     new CarouselItemsWidget(this),
                     messages.carouselTab(),
