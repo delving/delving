@@ -229,7 +229,7 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
     }
 
     private File extractPDFImage(File file) throws IOException {
-        log.info("Mime type is PDF so exracting a thumbnail with ImageMagick");
+        log.info("Mime type is PDF so extracting a thumbnail with ImageMagick");
         File directory = file.getParentFile();
         String pdfFileName = file.getName();
         String pngFileName = pdfFileName.substring(0, pdfFileName.indexOf(".")) + ".png";

@@ -44,7 +44,7 @@
 		<europeana:country>europe</europeana:country>
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
-		<europeana:language>mul</europeana:language>
+		<europeana:language>no</europeana:language>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -63,7 +63,7 @@
 		<europeana:country>europe</europeana:country>
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
-		<europeana:language>mul</europeana:language>
+		<europeana:language>no</europeana:language>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -82,7 +82,7 @@
 		<europeana:country>europe</europeana:country>
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
-		<europeana:language>mul</europeana:language>
+		<europeana:language>no</europeana:language>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
