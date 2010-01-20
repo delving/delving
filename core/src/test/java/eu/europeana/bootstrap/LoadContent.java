@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -58,8 +59,17 @@ public class LoadContent {
 
         StaticInfoDao staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
 
-        // load static content etc.
-        if ((args.length == 0) || !args[0].equalsIgnoreCase("skip=true")) {
+        load((args.length == 0) || !args[0].equalsIgnoreCase("skip=true"), eseImporter, dashboardDao, repository, languageDao,
+				staticInfoDao);
+    }
+
+
+	public static void load(boolean loadStatic, ESEImporter eseImporter,
+			DashboardDao dashboardDao, ImportRepository repository,
+			LanguageDao languageDao, StaticInfoDao staticInfoDao)
+			throws IOException, Exception, InterruptedException {
+		// load static content etc.
+        if (loadStatic) {
             log.info("Start loading static content.");
             DataMigration migration = new DataMigration();
             migration.setLanguageDao(languageDao);
@@ -101,5 +111,5 @@ public class LoadContent {
         log.info("Stopping Solr server");
 
         // check if default user exist otherwise create
-    }
+	}
 }
