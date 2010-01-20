@@ -9,4 +9,5 @@ public interface PresentationQuery {
     String getUserSubmittedQuery();
     String getQueryForPresentation();
     String getQueryToSave();
+    String getTypeQuery();
 }

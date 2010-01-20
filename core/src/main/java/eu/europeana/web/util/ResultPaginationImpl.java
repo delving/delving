@@ -64,6 +64,26 @@ public class ResultPaginationImpl implements ResultPagination {
         presentationQuery.queryForPresentation = createQueryForPresentation(solrQuery);
         presentationQuery.queryToSave = requestQueryString;
         presentationQuery.userSubmittedQuery = solrQuery.getQuery();
+        presentationQuery.typeQuery = removePresentationFilters(requestQueryString);
+    }
+
+    private String removePresentationFilters(String requestQueryString) {
+        String[] filterQueries = requestQueryString.split("&");
+        StringBuilder url = new StringBuilder();
+        for (String filterQuery : filterQueries) {
+            if (filterQuery.contains("TYPE:")) {
+                continue;
+            }
+            if (filterQuery.contains("tab")) {
+                continue;
+            }
+            if (filterQuery.contains("view")) {
+                continue;
+            }
+            url.append(filterQuery).append("&");
+        }
+        String urlString = url.toString().trim();
+        return urlString.substring(0, urlString.length() - 1);
     }
 
     private String createQueryForPresentation(SolrQuery solrQuery) {
@@ -161,6 +181,7 @@ public class ResultPaginationImpl implements ResultPagination {
         private String userSubmittedQuery;
         private String queryForPresentation;
         private String queryToSave;
+        private String typeQuery;
 
         @Override
         public String getUserSubmittedQuery() {
@@ -175,6 +196,11 @@ public class ResultPaginationImpl implements ResultPagination {
         @Override
         public String getQueryToSave() {
             return queryToSave;
+        }
+
+        @Override
+        public String getTypeQuery() {
+            return typeQuery;
         }
     }
 

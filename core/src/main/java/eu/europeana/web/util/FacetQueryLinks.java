@@ -1,6 +1,5 @@
 package eu.europeana.web.util;
 
-import eu.europeana.query.DocType;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
 
@@ -25,64 +24,6 @@ public class FacetQueryLinks {
         List<FacetQueryLinks> list = new ArrayList<FacetQueryLinks>();
         for (FacetField facetField : facetFields) {
             list.add(new FacetQueryLinks(facetField, solrQuery, false));
-        }
-        return list;
-    }
-
-//<#list next as facet>
-//    <#if facet.type="TYPE">
-//        <#list facet.links as type>
-//            <#if type.value?lower_case = "image">
-//                <#assign imageCount = type.count />
-//            </#if>
-//            <#if type.value?lower_case = "text">
-//                <#assign textCount = type.count />
-//            </#if>
-//            <#if type.value?lower_case = "video">
-//                <#assign videoCount = type.count />
-//            </#if>
-//            <#if type.value?lower_case = "sound">
-//                <#assign audioCount = type.count />
-//            </#if>
-//        </#list>
-//    </#if>
-//</#list>
-//<#list next as facet>
-//    <#if facet.type="TYPE">
-//        <#list facet.links as type>
-//            <#if type.value?upper_case = "IMAGE">
-//                <#assign IMAGEUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:TEXT", "")?replace("&qf=TYPE:SOUND", "")/>
-//            </#if>
-//            <#if type.value?upper_case = "TEXT">
-//                <#assign TEXTUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
-//            </#if>
-//            <#if type.value?upper_case = "VIDEO">
-//                <#assign videoUrl = type.url?replace("&qf=TYPE:TEXT","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
-//            </#if>
-//            <#if type.value?upper_case = "SOUND">
-//                <#assign audioUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:TEXT", "")/>
-//            </#if>
-//        </#list>
-//    </#if>
-//</#list>
-
-    public static List<FacetQueryLinks> createTabFacets(SolrQuery solrQuery, List<FacetField> facetFields) throws UnsupportedEncodingException {
-        List<FacetQueryLinks> list = new ArrayList<FacetQueryLinks>();
-        for (FacetField facetField : facetFields) {
-            if (!"TYPE".equals(facetField.getName())) {
-                continue;
-            }
-            FacetQueryLinks links = new FacetQueryLinks(facetField, solrQuery, false);
-            for (FacetField.Count count : facetField.getValues()) {
-                DocType thisDocType = DocType.get(count.getName());
-                for (DocType docType : DocType.values()) {
-                    if (docType != thisDocType) {
-//                        todo: figure out how to remove this facet
-//                        links.removeFacet("TYPE:"+docType);
-                    }
-                }
-            }
-            list.add(links);
         }
         return list;
     }
