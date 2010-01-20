@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * todo: javadoc
@@ -54,15 +53,9 @@ import java.util.regex.Pattern;
  */
 
 @SuppressWarnings({"ValueOfIncrementOrDecrementUsed"})
-public class BeanQueryModelFactory implements NewQueryModelFactory {
+public class BeanQueryModelFactory implements QueryModelFactory {
     private Logger log = Logger.getLogger(getClass());
-
-    private static final Pattern OR_PATTERN = Pattern.compile("\\s+[oO][rR]\\s+");
-    private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
-    private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
-    private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
-    private static final Pattern MORE_LIKE_THIS_PATTERN = Pattern.compile("europeana_uri:.*");
-
+    private QueryAnalyzer queryAnalyzer = new QueryAnalyzer();
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
     private UserDaoImpl dashboardDao;
@@ -91,7 +84,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         if (!params.containsKey("query")) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
         }
-        solrQuery.setQuery(sanitize(params.get("query")[0])); // only get the first one
+        solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
         if (params.containsKey("start")) {
             solrQuery.setStart(Integer.valueOf(params.get("start")[0]));
         }
@@ -102,7 +95,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         if (params.containsKey("rows")) {
             solrQuery.setRows(Integer.valueOf(params.get("rows")[0]));
         }
-        solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
+        solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
 
         //set constraints
         final String[] filterQueries = params.get("qf");
@@ -323,7 +316,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
             solrQuery.setFields(bean.getFieldStrings());
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
-                solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
+                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }
         }
         if (beanClass == fullBean) {
@@ -334,61 +327,5 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
     private ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) {
         int numFound = (int) response.getResults().getNumFound();
         return new ResultPaginationImpl(query, numFound, requestQueryString);
-    }
-
-    public enum QueryType {
-        SIMPLE_QUERY("europeana"),
-        ADVANCED_QUERY("standard"),
-        MORE_LIKE_THIS_QUERY("moreLikeThis");
-
-        private String appearance;
-
-        QueryType(String appearance) {
-            this.appearance = appearance;
-        }
-
-        public String toString() {
-            return appearance;
-        }
-    }
-
-    /*
-    * The query is an advanced query when the querystring contains
-    *    - " AND ", " OR ", " NOT " (both uppercase)
-    *    - a fielded query (detected by the use of a : seperating field and query), e.g. title:"something
-    *    - a word or phrase prefixed by + or -
-    *    - todo: find out if dismax (simple query) handles phrase queries 
-     */
-    public QueryType findSolrQueryType(String query) {
-        // todo: finish this
-        QueryType queryType = QueryType.SIMPLE_QUERY;
-        if (MORE_LIKE_THIS_PATTERN.matcher(query).matches()) {
-            queryType = QueryType.MORE_LIKE_THIS_QUERY;
-        }
-        // todo needs to be better
-        else if (AND_PATTERN.matcher(query).matches()) {
-            queryType = QueryType.ADVANCED_QUERY;
-        }
-        return queryType;
-    }
-
-    String sanitize(String query) {
-        StringBuilder out = new StringBuilder();
-        for (int walk = 0; walk < query.length(); walk++) {
-            char ch = query.charAt(walk);
-            switch (ch) {
-                case '{':
-                case '}':
-                    break;
-                default:
-                    out.append(ch);
-            }
-        }
-        String q = out.toString();
-        q = AND_PATTERN.matcher(q).replaceAll(" AND ");
-        q = OR_PATTERN.matcher(q).replaceAll(" OR ");
-        q = NOT_START_PATTERN.matcher(q).replaceAll("NOT ");
-        q = NOT_MIDDLE_PATTERN.matcher(q).replaceAll(" NOT ");
-        return q;
     }
 }

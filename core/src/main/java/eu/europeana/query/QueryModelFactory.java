@@ -37,7 +37,7 @@ import java.util.Map;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface NewQueryModelFactory {
+public interface QueryModelFactory {
 
     SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException;
 

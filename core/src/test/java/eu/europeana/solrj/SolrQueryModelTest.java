@@ -3,6 +3,7 @@ package eu.europeana.solrj;
 import eu.europeana.beans.BriefBean;
 import eu.europeana.beans.FullBean;
 import eu.europeana.beans.query.BeanQueryModelFactory;
+import eu.europeana.beans.query.QueryType;
 import eu.europeana.bootstrap.SolrStarter;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -78,7 +79,7 @@ public class SolrQueryModelTest {
     @Test
     public void testGetFullSolrResponse() throws Exception {
         SolrQuery solrQuery = new SolrQuery("europeana_uri:\"http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735\"");
-        solrQuery.setQueryType(BeanQueryModelFactory.QueryType.MORE_LIKE_THIS_QUERY.toString());
+        solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
 
         BeanQueryModelFactory queryModel = new BeanQueryModelFactory();
         queryModel.setSolrServer(server);

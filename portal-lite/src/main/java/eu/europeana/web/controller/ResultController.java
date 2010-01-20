@@ -25,7 +25,7 @@ import eu.europeana.beans.query.BriefBeanView;
 import eu.europeana.beans.query.FullBeanView;
 import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.NewQueryModelFactory;
+import eu.europeana.query.QueryModelFactory;
 import eu.europeana.web.util.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -53,7 +53,7 @@ public class ResultController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    private NewQueryModelFactory beanQueryModelFactory;
+    private QueryModelFactory beanQueryModelFactory;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
