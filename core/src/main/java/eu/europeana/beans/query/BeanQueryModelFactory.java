@@ -106,7 +106,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         final String[] filterQueries = params.get("qf");
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
-                solrQuery.addFacetQuery(filterQuery);
+                solrQuery.addFilterQuery(filterQuery);
             }
         }
         return solrQuery;

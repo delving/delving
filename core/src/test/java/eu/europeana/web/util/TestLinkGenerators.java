@@ -60,9 +60,9 @@ public class TestLinkGenerators {
         facets.add(facet);
         SolrQuery query = new SolrQuery();
         query.addFacetField("LANGUAGE", "YEAR", "TYPE");
-        query.addFacetQuery("LANGUAGE:de");
-        query.addFacetQuery("LANGUAGE:nl");
-        query.addFacetQuery("YEAR:1980");
+        query.addFilterQuery("LANGUAGE:de");
+        query.addFilterQuery("LANGUAGE:nl");
+        query.addFilterQuery("YEAR:1980");
         List<FacetQueryLinks> facetLinks = FacetQueryLinks.createDecoratedFacets(query, facets);
         String[] expect = new String[]{
                 "<a href='&qf=LANGUAGE:de&qf=LANGUAGE:nl&qf=YEAR:1980&qf=LANGUAGE:en'>en</a> (add)",

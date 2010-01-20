@@ -37,8 +37,8 @@ public class FacetQueryLinks {
                 }
                 boolean remove = false;
                 StringBuilder url = new StringBuilder();
-                if (solrQuery.getFacetQuery() != null) {
-                    for (String facetTerm : solrQuery.getFacetQuery()) {
+                if (solrQuery.getFilterQueries() != null) {
+                    for (String facetTerm : solrQuery.getFilterQueries()) {
                         int colon = facetTerm.indexOf(":");
                         String facetName = facetTerm.substring(0, colon);
                         String facetValue = facetTerm.substring(colon + 1);

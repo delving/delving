@@ -48,12 +48,12 @@ public class Breadcrumb {
         List<Breadcrumb> breadcrumbs = new ArrayList<Breadcrumb>();
         String prefix = "query=" + encode(solrQuery.getQuery());
         breadcrumbs.add(new Breadcrumb(prefix, solrQuery.getQuery()));
-        if (solrQuery.getFacetQuery() != null) {
-            int facetQueryCount = solrQuery.getFacetQuery().length;
+        if (solrQuery.getFilterQueries() != null) {
+            int facetQueryCount = solrQuery.getFilterQueries().length;
             for (int walk = 0; walk < facetQueryCount; walk++) {
                 StringBuilder out = new StringBuilder(prefix);
                 int count = walk;
-                for (String facetTerm : solrQuery.getFacetQuery()) {
+                for (String facetTerm : solrQuery.getFilterQueries()) {
                     int colon = facetTerm.indexOf(":");
                     String facetName = facetTerm.substring(0, colon);
                     String facetValue = facetTerm.substring(colon + 1);
