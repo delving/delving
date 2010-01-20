@@ -21,6 +21,10 @@
 
 package eu.europeana.beans.query;
 
+import eu.europeana.beans.annotation.AnnotationProcessor;
+import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.QueryProblem;
+
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -44,9 +48,13 @@ public class QueryAnalyzer {
     private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
     private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
     private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
+    private AnnotationProcessor annotationProcessor;
 
+    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
+        this.annotationProcessor = annotationProcessor;
+    }
 
-    public QueryType findSolrQueryType(String query) {
+    public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
@@ -62,8 +70,12 @@ public class QueryAnalyzer {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
                 else { // todo: check if the field is known?
-
-                    return QueryType.ADVANCED_QUERY;
+                    if (annotationProcessor.getSolrFieldList().contains(field)) {
+                        return QueryType.ADVANCED_QUERY;
+                    }
+                    else {
+                        throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
+                    }
                 }
             }
         }

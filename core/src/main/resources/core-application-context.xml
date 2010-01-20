@@ -160,6 +160,10 @@
         </property>
     </bean>
 
+    <bean id="queryAnalyser" class="eu.europeana.beans.query.QueryAnalyzer">
+        <property name="annotationProcessor" ref="annotationProcessor"/>
+    </bean>
+
     <bean id="beanQueryModelFactory" class="eu.europeana.beans.query.BeanQueryModelFactory">
         <property name="briefBean">
                 <value type="java.lang.Class">eu.europeana.beans.BriefBean</value>

@@ -64,6 +64,11 @@ public class AllFieldBean extends FullBean {
     @Field
     @Europeana(copyField = true, fullDoc = false)
     @Solr()
+    String[] text;
+
+    @Field
+    @Europeana(copyField = true, fullDoc = false)
+    @Solr()
     String[] description;
 
     @Field

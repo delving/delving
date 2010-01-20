@@ -55,7 +55,7 @@ import java.util.Map;
 @SuppressWarnings({"ValueOfIncrementOrDecrementUsed"})
 public class BeanQueryModelFactory implements QueryModelFactory {
     private Logger log = Logger.getLogger(getClass());
-    private QueryAnalyzer queryAnalyzer = new QueryAnalyzer();
+    private QueryAnalyzer queryAnalyzer;
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
     private UserDaoImpl dashboardDao;
@@ -73,6 +73,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Autowired
     public void setDashboardDao(UserDaoImpl dashboardDao) {
         this.dashboardDao = dashboardDao;
+    }
+
+    @Autowired
+    public void setQueryAnalyzer(QueryAnalyzer queryAnalyzer) {
+        this.queryAnalyzer = queryAnalyzer;
     }
 
     /**

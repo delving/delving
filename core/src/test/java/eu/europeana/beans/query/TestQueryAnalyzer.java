@@ -21,7 +21,17 @@
 
 package eu.europeana.beans.query;
 
+import eu.europeana.beans.AllFieldBean;
+import eu.europeana.beans.BriefBean;
+import eu.europeana.beans.FullBean;
+import eu.europeana.beans.IdBean;
+import eu.europeana.beans.annotation.AnnotationProcessorImpl;
+import eu.europeana.query.EuropeanaQueryException;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -33,7 +43,21 @@ import static junit.framework.Assert.assertEquals;
 
 public class TestQueryAnalyzer {
 
-    private QueryAnalyzer qa = new QueryAnalyzer();
+    private QueryAnalyzer qa;
+    private AnnotationProcessorImpl annotationProcessor;
+
+    @Before
+    public void init() {
+        qa = new QueryAnalyzer();
+        List<Class<?>> list = new ArrayList<Class<?>>();
+        list.add(IdBean.class);
+        list.add(BriefBean.class);
+        list.add(FullBean.class);
+        list.add(AllFieldBean.class);
+        annotationProcessor = new AnnotationProcessorImpl();
+        annotationProcessor.setClasses(list);
+        qa.setAnnotationProcessor(annotationProcessor);
+    }
 
     @Test
     public void variety() throws Exception {
@@ -45,23 +69,29 @@ public class TestQueryAnalyzer {
     }
 
     @Test
-    public void sanitize() throws Exception {
+    public void sanitize() {
         sanitize("hello { and { goodbye }", "hello AND goodbye");
+    }
+
+    @Test(expected = EuropeanaQueryException.class)
+    public void testIllegalSearchField() throws Exception {
+        advanced("dc_title:dimitry");
+        advanced("gumby:goes_bad");
     }
 
     private void sanitize(String from, String to) {
         assertEquals("Not sanitized properly", to, qa.sanitize(from));
     }
 
-    private void simple(String query) {
+    private void simple(String query) throws EuropeanaQueryException {
         assertEquals("Not a simple query ["+query+"]", QueryType.SIMPLE_QUERY, qa.findSolrQueryType(query));
     }
 
-    private void advanced(String query) {
+    private void advanced(String query) throws EuropeanaQueryException {
         assertEquals("Not an advanced query ["+query+"]", QueryType.ADVANCED_QUERY, qa.findSolrQueryType(query));
     }
 
-    private void moreLike(String query) {
+    private void moreLike(String query) throws EuropeanaQueryException {
         assertEquals("Not a more-like query ["+query+"]", QueryType.MORE_LIKE_THIS_QUERY, qa.findSolrQueryType(query));
     }
 

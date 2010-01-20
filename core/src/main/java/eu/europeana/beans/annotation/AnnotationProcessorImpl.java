@@ -38,7 +38,9 @@ import java.util.*;
 public class AnnotationProcessorImpl implements AnnotationProcessor {
     private Logger log = Logger.getLogger(getClass());
     private Set<EuropeanaFieldImpl> facetFields = new HashSet<EuropeanaFieldImpl>();
+    private Set<EuropeanaFieldImpl> solrFields = new HashSet<EuropeanaFieldImpl>();
     private String [] facetFieldStrings;
+    private List<String> solrFieldList;
     private Map<Class<?>, EuropeanaBean> beanMap = new HashMap<Class<?>, EuropeanaBean>();
 
     /**
@@ -56,6 +58,22 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     @Override
     public Set<? extends EuropeanaField> getFacetFields() {
         return facetFields;
+    }
+
+    @Override
+    public Set<? extends EuropeanaField> getSolrFields() {
+        return solrFields;
+    }
+
+    @Override
+    public List<String> getSolrFieldList() {
+        if (solrFieldList == null) {
+            solrFieldList = new ArrayList<String>();
+            for (EuropeanaFieldImpl solrField : solrFields) {
+                solrFieldList.add(solrField.getSolrFieldName());
+            }
+        }
+        return solrFieldList;
     }
 
     @Override
@@ -90,6 +108,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                         if (europeanaField.isFacet()) {
                             facetFields.add(europeanaField);
                         }
+                        solrFields.add(europeanaField);
                         europeanaBean.addField(europeanaField);
                     }
                 }
@@ -225,6 +244,15 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                     name = field.getName();
                 }
             }
+            return name;
+        }
+
+        @Override
+        public String getSolrFieldName() {
+            String name = fieldAnnotation.value();
+                if (name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
+                    name = field.getName();
+                }
             return name;
         }
 

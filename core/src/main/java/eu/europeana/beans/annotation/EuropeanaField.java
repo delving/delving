@@ -77,4 +77,6 @@ public interface EuropeanaField {
     boolean isEuropeanaType();
 
     String getIndexName();
+
+    String getSolrFieldName();
 }

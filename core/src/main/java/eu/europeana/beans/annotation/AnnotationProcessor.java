@@ -21,6 +21,7 @@
 
 package eu.europeana.beans.annotation;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,11 +52,29 @@ public interface AnnotationProcessor {
     String [] getFacetFieldStrings();
 
     /**
+     * Retrieve instances of field specifications from the annotations
+     *
+     * @return a set of all fields defined in bean classes
+     */
+
+    Set<? extends EuropeanaField> getSolrFields();
+
+    /**
+     * Get an array of all solr field names which can be passed easily
+     * to the QueryAnalyser to validate the fielded query strings.
+     *
+     * @return an array of Solr name strings
+     */
+
+    List<String> getSolrFieldList();
+
+    /**
      * Fetch the bean interface for the given bean class
      *
      * @param clazz the annotated bean class
      * @return the associated instance revealing annotation info
      */
-    
+
     EuropeanaBean getEuropeanaBean(Class<?> clazz);
+
 }
