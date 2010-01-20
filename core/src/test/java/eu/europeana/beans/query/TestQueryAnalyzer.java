@@ -39,12 +39,14 @@ public class TestQueryAnalyzer {
     public void variety() throws Exception {
         simple("very simple query");
         advanced("advanced and Query");
+        advanced("text:fieldedQuery");
+        advanced("+\"phrase query\"");
         moreLike("europeana_uri:\"http://www.europeana.eu/bla/bla\"");
     }
 
     @Test
     public void sanitize() throws Exception {
-        sanitize("hello { and { goodbye }", "hello and goodbye");
+        sanitize("hello { and { goodbye }", "hello AND goodbye");
     }
 
     private void sanitize(String from, String to) {

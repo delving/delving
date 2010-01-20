@@ -23,6 +23,7 @@ package eu.europeana.beans.query;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 /**
  * Make decisions about how the query has been constructed.
@@ -39,10 +40,19 @@ import java.util.TreeSet;
 
 public class QueryAnalyzer {
 
+    private static final Pattern OR_PATTERN = Pattern.compile("\\s+[oO][rR]\\s+");
+    private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
+    private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
+    private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
+
+
     public QueryType findSolrQueryType(String query) {
         String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
+                return QueryType.ADVANCED_QUERY;
+            }
+            else if (term.startsWith("+") || term.startsWith("-")) {
                 return QueryType.ADVANCED_QUERY;
             }
             else if (term.indexOf(':') > 0) {
@@ -52,6 +62,7 @@ public class QueryAnalyzer {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
                 else { // todo: check if the field is known?
+
                     return QueryType.ADVANCED_QUERY;
                 }
             }
@@ -79,7 +90,12 @@ public class QueryAnalyzer {
                 out.append(' ');
             }
         }
-        return out.toString().trim();
+        String q = out.toString();
+        q = AND_PATTERN.matcher(q).replaceAll(" AND ");
+        q = OR_PATTERN.matcher(q).replaceAll(" OR ");
+        q = NOT_START_PATTERN.matcher(q).replaceAll("NOT ");
+        q = NOT_MIDDLE_PATTERN.matcher(q).replaceAll(" NOT ");
+        return q.trim();
     }
 
     private static final Set<String> BOOLEAN_KEYWORDS = new TreeSet<String>();
