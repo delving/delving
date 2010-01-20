@@ -53,6 +53,7 @@ import java.util.regex.Pattern;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
+@SuppressWarnings({"ValueOfIncrementOrDecrementUsed"})
 public class BeanQueryModelFactory implements NewQueryModelFactory {
     private Logger log = Logger.getLogger(getClass());
 
@@ -320,7 +321,7 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
             solrQuery.setRows(12); // todo replace with annotation later
             solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
             EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
-            solrQuery.setFields(bean.getFieldStrings()); 
+            solrQuery.setFields(bean.getFieldStrings());
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
                 solrQuery.setQueryType(findSolrQueryType(solrQuery.getQuery()).toString());
             }
@@ -351,6 +352,13 @@ public class BeanQueryModelFactory implements NewQueryModelFactory {
         }
     }
 
+    /*
+    * The query is an advanced query when the querystring contains
+    *    - " AND ", " OR ", " NOT " (both uppercase)
+    *    - a fielded query (detected by the use of a : seperating field and query), e.g. title:"something
+    *    - a word or phrase prefixed by + or -
+    *    - todo: find out if dismax (simple query) handles phrase queries 
+     */
     public QueryType findSolrQueryType(String query) {
         // todo: finish this
         QueryType queryType = QueryType.SIMPLE_QUERY;
