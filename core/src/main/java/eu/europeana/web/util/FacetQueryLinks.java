@@ -17,6 +17,7 @@ import java.util.List;
 public class FacetQueryLinks {
     private static final String FACET_PROMPT = "&qf=";
     private String type;
+    private boolean facetSelected = false;
     private List<FacetCountLink> links = new ArrayList<FacetCountLink>();
 
     public static List<FacetQueryLinks> createDecoratedFacets(SolrQuery solrQuery, List<FacetField> facetFields) throws UnsupportedEncodingException {
@@ -47,6 +48,7 @@ public class FacetQueryLinks {
                         if (facetName.equalsIgnoreCase(facetField.getName())) {
                             if (count.getName().equalsIgnoreCase(facetValue)) {
                                 remove = true;
+                                facetSelected = true;
                             }
                             else {
                                 url.append(FACET_PROMPT).append(facetTerm);
@@ -80,7 +82,7 @@ public class FacetQueryLinks {
      * @param facetValue 0000
      * @return true if it matches
      */
-    
+
     private boolean temporarilyPreventYear0000(String facetName, String facetValue) {
         return "YEAR".equals(facetName) && "0000".equals(facetValue);
     }
@@ -91,6 +93,10 @@ public class FacetQueryLinks {
 
     public List<FacetCountLink> getLinks() {
         return links;
+    }
+
+    public boolean isSelected() {
+        return facetSelected;
     }
 
     public class FacetCountLink {

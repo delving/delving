@@ -56,8 +56,10 @@ public class TestLinkGenerators {
         facet.add("1981", 1);
         facet.add("1982", 1);
         facets.add(facet);
+        facet = new FacetField("TYPE");
+        facets.add(facet);
         SolrQuery query = new SolrQuery();
-        query.addFacetField("LANGUAGE", "YEAR");
+        query.addFacetField("LANGUAGE", "YEAR", "TYPE");
         query.addFacetQuery("LANGUAGE:de");
         query.addFacetQuery("LANGUAGE:nl");
         query.addFacetQuery("YEAR:1980");
@@ -72,6 +74,12 @@ public class TestLinkGenerators {
         };
         int index = 0;
         for (FacetQueryLinks facetLink : facetLinks) {
+            if (facetLink.getType().equalsIgnoreCase("TYPE")) {
+                assertEquals(false, facetLink.isSelected());
+            }
+            else {
+                assertEquals(true, facetLink.isSelected());
+            }
             for (FacetQueryLinks.FacetCountLink link : facetLink.getLinks()) {
                 log.info(link);
                 assertEquals(expect[index++], link.toString());
