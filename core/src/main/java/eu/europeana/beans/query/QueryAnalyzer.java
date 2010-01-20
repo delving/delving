@@ -27,11 +27,8 @@ import eu.europeana.query.QueryProblem;
 
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 /**
- * Make decisions about how the query has been constructed.
- * <p/>
  * The query is an advanced query when the query string contains
  * - " AND ", " OR ", " NOT " (both uppercase)
  * - a fielded query (detected by the use of a : seperating field and query), e.g. title:"something
@@ -43,11 +40,6 @@ import java.util.regex.Pattern;
  */
 
 public class QueryAnalyzer {
-
-    private static final Pattern OR_PATTERN = Pattern.compile("\\s+[oO][rR]\\s+");
-    private static final Pattern AND_PATTERN = Pattern.compile("\\s+[aA][nN][dD]\\s+");
-    private static final Pattern NOT_START_PATTERN = Pattern.compile("^\\s*[nN][oO][tT]\\s+");
-    private static final Pattern NOT_MIDDLE_PATTERN = Pattern.compile("\\s+[nN][oO][tT]\\s+");
     private AnnotationProcessor annotationProcessor;
 
     public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
@@ -69,7 +61,7 @@ public class QueryAnalyzer {
                 if ("europeana_uri".equals(field)) {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
-                else { // todo: check if the field is known?
+                else {
                     if (annotationProcessor.getSolrFieldList().contains(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
@@ -86,6 +78,9 @@ public class QueryAnalyzer {
         String[] terms = query.split("\\s+");
         StringBuilder out = new StringBuilder();
         for (String term : terms) {
+            if (BOOLEAN_KEYWORDS.contains(term)) {
+                term = term.toUpperCase();
+            }
             boolean emptyTerm = true;
             for (int walk = 0; walk < term.length(); walk++) {
                 char ch = term.charAt(walk);
@@ -102,24 +97,19 @@ public class QueryAnalyzer {
                 out.append(' ');
             }
         }
-        String q = out.toString();
-        q = AND_PATTERN.matcher(q).replaceAll(" AND ");
-        q = OR_PATTERN.matcher(q).replaceAll(" OR ");
-        q = NOT_START_PATTERN.matcher(q).replaceAll("NOT ");
-        q = NOT_MIDDLE_PATTERN.matcher(q).replaceAll(" NOT ");
-        return q.trim();
+        return out.toString().trim();
     }
 
     private static final Set<String> BOOLEAN_KEYWORDS = new TreeSet<String>();
 
-    private static void add(String keyword) {
+    private static void addBooleanKeyword(String keyword) {
         BOOLEAN_KEYWORDS.add(keyword);
         BOOLEAN_KEYWORDS.add(keyword.toLowerCase());
     }
 
     static {
-        add("AND");
-        add("OR");
-        add("NOT");
+        addBooleanKeyword("AND");
+        addBooleanKeyword("OR");
+        addBooleanKeyword("NOT");
     }
 }
