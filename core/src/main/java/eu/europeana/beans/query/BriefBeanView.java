@@ -39,6 +39,6 @@ import java.util.List;
 @EuropeanaView(facets = true, rows = 10) // todo: is this the right place for this annotation
 public interface BriefBeanView {
     List<? extends BriefDoc> getBriefDocs();
-    List<FacetQueryLinks> getQueryFacetsLinks() throws UnsupportedEncodingException;
+    List<FacetQueryLinks> getFacetQueryLinks() throws UnsupportedEncodingException;
     ResultPagination getPagination();
 }

@@ -34,7 +34,7 @@ public enum DocType {
     UNKNOWN;
 
     public static DocType get(String[] strings) {
-        String string = strings[0]; // this is a workaround remove later
+        String string = strings[0]; // todo: this is a workaround remove later
         for (DocType t : values()) {
             if (t.toString().equalsIgnoreCase(string)) {
                 return t;

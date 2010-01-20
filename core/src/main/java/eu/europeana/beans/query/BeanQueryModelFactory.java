@@ -203,7 +203,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
 
         @Override
-        public List<FacetQueryLinks> getQueryFacetsLinks() {
+        public List<FacetQueryLinks> getFacetQueryLinks() {
             return queryLinks;
         }
 
