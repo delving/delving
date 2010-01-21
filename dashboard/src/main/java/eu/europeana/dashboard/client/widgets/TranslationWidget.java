@@ -4,6 +4,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -11,7 +13,10 @@ import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.TranslationX;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Management of translated strings
@@ -131,24 +136,34 @@ public class TranslationWidget extends DashboardWidget {
         submitLanguageChoice.setEnabled(false);
         treePanel.setWidget(new Label(world.messages().loadingPleaseWait()));
         tree.removeItems();
-        world.service().fetchTranslations(visibleLanguages, new Reply<Map<String,List<TranslationX>>>() {
-            public void onSuccess(Map<String,List<TranslationX>> result) {
-                List<String> sortedKeys = new ArrayList<String>(result.keySet());
-                Collections.sort(sortedKeys);
-                for (String key : sortedKeys) {
+        world.service().fetchMessageKeys(new Reply<List<String>>() {
+            @Override
+            public void onSuccess(List<String> result) {
+                Collections.sort(result);
+                for (String key : result) {
                     TreeItem keyItem = tree.addItem(key);
-                    for (TranslationX translation : result.get(key)) {
-                        keyItem.addItem(new KeyTranslation(keyItem, translation).getWidget());
-                    }
+                    keyItem.addItem(new TreeItem(world.messages().loadingPleaseWait()));
                 }
+                tree.addOpenHandler(new OpenHandler<TreeItem>() {
+                    @Override
+                    public void onOpen(OpenEvent<TreeItem> treeItemOpenEvent) {
+                        final TreeItem treeItem = treeItemOpenEvent.getTarget();
+                        world.service().fetchTranslations(treeItem.getText(), visibleLanguages, new Reply<List<TranslationX>>() {
+                            @Override
+                            public void onSuccess(List<TranslationX> result) {
+                                treeItem.removeItems();
+                                for (TranslationX translation : result) {
+                                    treeItem.addItem(new KeyTranslation(treeItem, translation).getWidget());
+                                }
+                            }
+                        });
+                    }
+                });
                 submitLanguageChoice.setEnabled(true);
                 treePanel.setWidget(tree);
             }
         });
-
     }
-
-//        suggestPanel.add(new Label(world.messages().enterMessageKey()));
 
     private class KeyTranslation {
         private TreeItem keyTreeItem;

@@ -2,27 +2,13 @@ package eu.europeana.dashboard.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.dashboard.client.dto.CarouselItemX;
-import eu.europeana.dashboard.client.dto.ContributorX;
-import eu.europeana.dashboard.client.dto.CountryX;
-import eu.europeana.dashboard.client.dto.DashboardLogX;
-import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFileX;
-import eu.europeana.dashboard.client.dto.LanguageX;
-import eu.europeana.dashboard.client.dto.PartnerX;
-import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.SavedItemX;
-import eu.europeana.dashboard.client.dto.SavedSearchX;
-import eu.europeana.dashboard.client.dto.StaticPageX;
-import eu.europeana.dashboard.client.dto.TranslationX;
-import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.dashboard.client.dto.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class DashboardServiceStub extends RemoteServiceServlet implements DashboardService {
@@ -106,8 +92,8 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         return service().fetchLanguages();
     }
 
-    public Map<String, List<TranslationX>> fetchTranslations(Set<String> keys) {
-        return service().fetchTranslations(keys);
+    public List<TranslationX> fetchTranslations(String key, Set<String> languages) {
+        return service().fetchTranslations(key, languages);
     }
 
     public TranslationX setTranslation(String key, String language, String value) {
