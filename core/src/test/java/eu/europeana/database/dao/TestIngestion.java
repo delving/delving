@@ -23,6 +23,7 @@ package eu.europeana.database.dao;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.fixture.IngestionFixture;
+import eu.europeana.incoming.CacheBuilder;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.query.FullDoc;
 import org.apache.log4j.Logger;
@@ -61,6 +62,9 @@ public class TestIngestion {
 
     @Autowired
     private DashboardDao dashboardDao;
+
+    @Autowired
+    private CacheBuilder cacheBuilder;
 
     private static EuropeanaCollection collection;
     private static ImportFile importFile;
@@ -102,8 +106,8 @@ public class TestIngestion {
         collection = dashboardDao.fetchCollection(collection.getId());
         assertTrue(collection.getCollectionLastModified().compareTo(new Date()) < 0);
         do {
-            log.info("Importing..");
-            Thread.sleep(500);
+            log.info("importFileState="+ImportFileState.IMPORTING);
+            Thread.sleep(1000);
             collection = dashboardDao.fetchCollection(collection.getId());
         }
         while (collection.getFileState() == ImportFileState.IMPORTING);
@@ -120,11 +124,18 @@ public class TestIngestion {
     }
 
     @Test
-    public void cacheStateChange() {
+    public void cacheStateChange() throws InterruptedException {
         collection.setCacheState(CacheState.QUEUED);
         collection = dashboardDao.updateCollection(collection);
         assertEquals(CacheState.QUEUED, collection.getCacheState());
-        List<? extends QueueEntry> queue = dashboardDao.fetchQueueEntries();
-        assertEquals(1, queue.size());
+        assertEquals(1, dashboardDao.fetchQueueEntries().size());
+        cacheBuilder.run(); // should detect the queue entry
+        do {
+            log.info("cacheState="+CacheState.CACHEING);
+            Thread.sleep(2000);
+            collection = dashboardDao.fetchCollection(collection.getId());
+        }
+        while (collection.getCacheState() == CacheState.CACHEING);
+        // todo: figure out how to assert there is cache content
     }
 }
