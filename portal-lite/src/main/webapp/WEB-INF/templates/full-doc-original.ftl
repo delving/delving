@@ -70,6 +70,7 @@
     }
     ;
 
+
     var handleSuccess2 = function(o) {
         var response = o.responseXML;
         var status = response.getElementsByTagName('success')[0].childNodes[0].nodeValue;
@@ -79,6 +80,7 @@
             sr.innerHTML = "<@spring.message 'TagAdded_t' />";
             document.getElementById('tag').value = "";
             //setTimeout("window.location.reload();","2000");
+
         }
         else {
             //alert(o.responseText);
@@ -143,9 +145,9 @@
 
 <#if result.fullDoc.thumbnail?size &gt; 1>
 <!-- smooth gallery -->
-<link rel="stylesheet" href="/css/jd.gallery.css" type="text/css" media="screen" charset="utf-8"/>
-<script src="/javascript/mootools.namespaced.js" type="text/javascript"></script>
-<script src="/javascript/jd.gallery.namespaced.js" type="text/javascript"></script>
+<link rel="stylesheet" href="css/jd.gallery.css" type="text/css" media="screen" charset="utf-8"/>
+<script src="javascript/mootools.namespaced.js" type="text/javascript"></script>
+<script src="javascript/jd.gallery.namespaced.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     function startGallery() {
