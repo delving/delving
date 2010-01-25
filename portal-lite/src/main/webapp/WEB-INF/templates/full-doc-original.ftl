@@ -145,9 +145,9 @@
 
 <#if result.fullDoc.thumbnail?size &gt; 1>
 <!-- smooth gallery -->
-<link rel="stylesheet" href="css/jd.gallery.css" type="text/css" media="screen" charset="utf-8"/>
-<script src="javascript/mootools.namespaced.js" type="text/javascript"></script>
-<script src="javascript/jd.gallery.namespaced.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/css/jd.gallery.css" type="text/css" media="screen" charset="utf-8"/>
+<script src="/javascript/mootools.namespaced.js" type="text/javascript"></script>
+<script src="/javascript/jd.gallery.namespaced.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     function startGallery() {

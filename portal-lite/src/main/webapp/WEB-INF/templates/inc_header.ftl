@@ -161,27 +161,27 @@
     <#assign useJawr = false/>
     <!--- make sure to enable/disable (comment-out) the appropriate JAWR servlets in the web.xml -->
     <#if useJawr >
-        <link rel="stylesheet" type="text/css" href="css/jawr/common.css"/>
-        <script type="text/javascript" src="js/jawr/global.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/jawr/common.css"/>
+        <script type="text/javascript" src="/js/jawr/global.js"></script>
     <#else>
         <#-- unused ??  -->
-        <#--<link rel="stylesheet" type="text/css" href="css/ui.core.css"/>--->
-        <link rel="stylesheet" type="text/css" href="css/reset.css"/>
-        <link rel="stylesheet" type="text/css" href="css/text.css"/>
-        <link rel="stylesheet" type="text/css" href="css/960.css"/>
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
-        <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
+        <#--<link rel="stylesheet" type="text/css" href="/css/ui.core.css"/>--->
+        <link rel="stylesheet" type="text/css" href="/css/reset.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/text.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/960.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/jquery-ui-1.7.2.custom.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/layout-common.css"/>
 
-        <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
-        <script type="text/javascript" src="js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="js/jquery.toggleElements.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.js"></script>
-        <script type="text/javascript" src="js/js_utilities.js"></script>
+        <script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="/js/jquery-ui-1.7.2.custom.min.js"></script>
+        <script type="text/javascript" src="/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/js/jquery.toggleElements.js"></script>
+        <script type="text/javascript" src="/js/jquery.validate.js"></script>
+        <script type="text/javascript" src="/js/js_utilities.js"></script>
 
-        <script type="text/javascript" src="js/briefDoc.js"></script>
-        <script type="text/javascript" src="js/fullDoc.js"></script>
-        <script type="text/javascript" src="js/myEuropeana.js"></script>
+        <script type="text/javascript" src="/js/briefDoc.js"></script>
+        <script type="text/javascript" src="/js/fullDoc.js"></script>
+        <script type="text/javascript" src="/js/myEuropeana.js"></script>
     </#if>
 
     <script type="text/javascript">
@@ -196,7 +196,7 @@
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
-    <#--<script type="text/javascript" src="js/lib/home.js"></script>-->
+    <#--<script type="text/javascript" src="/js/lib/home.js"></script>-->
     <title>Europeana - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">

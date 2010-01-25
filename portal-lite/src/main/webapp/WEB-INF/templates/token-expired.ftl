@@ -14,8 +14,8 @@
 <head>
    <title>Europeana - Token Expired</title>
    <link rel="stylesheet" href="yui/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css"/>
-   <link rel="stylesheet" href="css/common.css" type="text/css"/>
-   <link rel="stylesheet" href="css/login-register.css" type="text/css"/>
+   <link rel="stylesheet" href="/css/common.css" type="text/css"/>
+   <link rel="stylesheet" href="/css/login-register.css" type="text/css"/>
 </head>
 <body onload="">
 <div id="doc4" class="yui-t2">
