@@ -70,7 +70,6 @@
     }
     ;
 
-
     var handleSuccess2 = function(o) {
         var response = o.responseXML;
         var status = response.getElementsByTagName('success')[0].childNodes[0].nodeValue;
@@ -80,7 +79,6 @@
             sr.innerHTML = "<@spring.message 'TagAdded_t' />";
             document.getElementById('tag').value = "";
             //setTimeout("window.location.reload();","2000");
-
         }
         else {
             //alert(o.responseText);

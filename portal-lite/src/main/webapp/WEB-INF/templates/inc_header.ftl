@@ -54,7 +54,6 @@
 </#macro>
 
 <#macro SearchForm className>
-
     <#assign showAdv="none"/>
     <#assign showSim="block"/>
     <#if pageId??>
