@@ -38,7 +38,54 @@
     </organization>
     <build>
         <finalName>${project.artifactId}</finalName>
+        <outputDirectory>war/WEB-INF/classes</outputDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>1.2-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal><!--
+                            <goal>generateAsync</goal>
+                            <goal>test</goal>
+                        --></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <module>eu.europeana.dashboard.EuropeanaDashboard</module>
+                    <runTarget>eu.europeana.dashboard.EuropeanaDashboard/EuropeanaDashboard.html
+                    </runTarget>
+                </configuration>
+            </plugin>
+            <!--
+                If you want to use the target/web.xml file mergewebxml
+                produces, tell the war plugin to use it. Also, exclude
+                what you want from the final artifact here.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webXml>target/web.xml</webXml>
+                    <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <warSourceDirectory>war</warSourceDirectory>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+            </plugin>
 <!--            <plugin>
                 <groupId>com.totsp.gwt</groupId>
                 <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
@@ -130,12 +177,14 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
-            <scope>compile</scope>
+            <scope>runtime</scope>
         </dependency>
+<!-- 
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-dev</artifactId>
         </dependency>
+-->        
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
