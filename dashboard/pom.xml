@@ -63,7 +63,6 @@
                 If you want to use the target/web.xml file mergewebxml
                 produces, tell the war plugin to use it. Also, exclude
                 what you want from the final artifact here.
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -72,7 +71,7 @@
                     <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
                 </configuration>
             </plugin>
-<!-- 
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -82,7 +81,6 @@
                     <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
                 </configuration>
             </plugin>
--->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
