@@ -38,20 +38,34 @@ public class EuropeanaProperties extends Properties {
     private Logger log = Logger.getLogger(getClass());
 
     public EuropeanaProperties() {
-        InputStream inputStream = getInputFromFile(System.getProperty("europeana.properties"));
-        if (inputStream == null) {
-            log.info("System property 'europeana.properties' not found, checking environment.");
-            inputStream = getInputFromFile(System.getenv("EUROPEANA_PROPERTIES"));
-        }
-        if (inputStream == null) {
-            log.warn("No 'europeana.properties' found in system properties or environment, checking for legacy 'europeana.config'.");
-            inputStream = getInputFromFile(System.getProperty("europeana.config"));
-        }
-        if (inputStream == null) {
-            log.warn("No 'europeana.properties', checking for (test) resource.");
-            inputStream = getClass().getResourceAsStream("/europeana-test.properties");
-            log.info("Test 'europeana.properties' being used");
-        }
+    	String europeanaProperties = "";
+    	InputStream inputStream;
+    	try {
+    		europeanaProperties = System.getProperty("europeana.properties");
+    		if (europeanaProperties != null) {
+    			log.info("Found system property 'europeana.properties', resolved to " + new File(europeanaProperties).getCanonicalPath());        	
+    		}
+    		inputStream = getInputFromFile(europeanaProperties);
+    		if (inputStream == null) {
+    			log.info("System property 'europeana.properties' not found, checking environment.");
+    			europeanaProperties = System.getenv("EUROPEANA_PROPERTIES");
+        		if (europeanaProperties != null) {
+        			log.info("Found env property 'EUROPEANA_PROPERTIES', resolved to " + new File(europeanaProperties).getCanonicalPath());        	
+        		}
+    			inputStream = getInputFromFile(europeanaProperties);
+    		}
+    		if (inputStream == null) {
+    			log.warn("No 'europeana.properties' found in system properties or environment, checking for legacy 'europeana.config'.");
+    			inputStream = getInputFromFile(System.getProperty("europeana.config"));
+    		}
+    		if (inputStream == null) {
+    			log.warn("No 'europeana.properties', checking for (test) resource.");
+    			inputStream = getClass().getResourceAsStream("/europeana-test.properties");
+    			log.info("Test 'europeana.properties' being used");
+    		}
+    	} catch (Exception e) {
+            throw new RuntimeException("Error in resolving file defined with " + europeanaProperties);
+		}
         if (inputStream == null) {
             log.fatal(
                     "Configuration not available!\n" +
