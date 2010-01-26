@@ -21,6 +21,13 @@
 
 package eu.europeana.bootstrap;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
@@ -31,12 +38,6 @@ import eu.europeana.database.migration.DataMigration;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.incoming.ImportRepository;
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.io.File;
-import java.io.IOException;
 
 
 /**
