@@ -214,7 +214,7 @@
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>4.0.2.GA</version>
+                <version>${hibernate.validator.version}</version>
             </dependency>
 
             <!-- Spring -->
@@ -402,7 +402,8 @@
         <hibernate.version>3.2.7.ga</hibernate.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
         <hibernate.entitymanager.version>3.3.2.GA</hibernate.entitymanager.version>
-
+        <hibernate.validator.version>4.0.2.GA</hibernate.validator.version>
+        
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
