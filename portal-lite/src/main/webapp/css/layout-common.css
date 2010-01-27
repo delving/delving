@@ -1,51 +1,60 @@
 body {
-	background: #eaeaea url(../images/960/white_bg.gif) top center repeat-y;
-   /*background: #eaeaea url(../images/960/12_col.gif) top center repeat-y;*/
+	/*background: #eaeaea url(../images/960/white_bg.gif) top center repeat-y;*/
+    /*background: #eaeaea url(../images/960/12_col.gif) top center repeat-y;*/
 }
-#container {
+#container {              -
 	overflow: hidden;
+    margin-top: 20px;
+}
+#sidebar {
+    min-width: 160px;
 }
 #main {    
     background: transparent;
-    min-height: 400px;
     overflow: hidden;
 }
-#identity, #language, #search {
-    height: 86px;
-    line-height: 86px;
-
+#main.home {
+    margin-top: 100px;
 }
+#top-bar {
+    text-align: right;
+}
+
+#top-bar, #search, #breadcrumbs, #objTypes, .pagination {
+    margin-bottom: 40px;
+}
+
 #identity h1 {
 	display: none;
 }
-#identity img {
-	margin-top: 6px;
+#logo-home {
+    float: right;    
 }
-.search_result input.txt-input {
+#search_simple input.txt-input{
    width: 300px;
 }
-#language select {
-    float:right;
-    margin-top: 33px;
+.search_home {
+    margin-top: 120px;
 }
-#footer ul, .breadcrumb ul, #navResultTabs ul, .nav ul{
+#search_advanced {
+    background: #fff;
+}
+
+#top-bar ul, #footer ul, .breadcrumb ul, #navResultTabs ul, .nav ul{
 	list-style: none;
 	margin:0 0 0 0;
 	padding: 0 0 0 0;
     position: relative;
 }
-#footer li, .breadcrumb li, #navResultTabs li, .nav li {
+#top-bar li, #footer li, .breadcrumb li, #navResultTabs li, .nav li {
 	float: left;
 	margin: 0;
 	padding: 0 10px 0 0;
 	list-style: none;
 }
 
-#user-bar {
- height: 100px;
-}
 #facet-list {
-    background: transparent;
+    margin-top: 50px;
 }
 
 #facet-list h4 {
@@ -85,19 +94,18 @@ body {
     font-weight: bold;
     text-decoration: none;
 }
+
 /* breadcrumb
 =======================*/
-.breadcrumb {
-    height: 50px;
-}
-.breadcrumb ul {
+
+#breadcrumbs ul {
     margin: 0;
     padding: 0;
     list-style: none;
     font-size: 1.25em;
 }
 
-.breadcrumb ul li {
+#breadcrumbs ul li {
     float: left;
     margin: 0 0 0 0;
     padding: 0 0 0 0;
@@ -105,7 +113,7 @@ body {
     min-width: 15px;
 }
 
-.breadcrumb ul a {
+#breadcrumbs ul a {
     padding: 0 4px 0 0;
     text-decoration: none;
     color: #666;
@@ -113,17 +121,18 @@ body {
     display: block;
 }
 
-.breadcrumb ul a:hover {
+#breadcrumbs ul a:hover {
     color: #666;
     text-decoration: underline;
     cursor: pointer;
 }
 
-.breadcrumb ul .first {
+#breadcrumbs ul .first {
     font-weight: bold;
     cursor: default;
     color: #333;
     text-decoration: none;
+    margin-bottom: 20px;
     margin-right: 10px;
 }
 
@@ -135,18 +144,18 @@ body {
 }
 /* pagination */
 .pagination {
-    height: 60px;
     text-align: left;
     padding: 0;
 }
 
 /* objTypes */
 #objTypes {
-    height: 50px;
+
 }
 #objTypes div:first-child {
     height: 30px;
     margin-right: 20px;
+    float: left;
 }
 #objTypes ul, #pagination ul {
     margin: 0;
@@ -200,14 +209,14 @@ table caption {
     font-size: 90%;
     font-weight: normal;
     line-height: 1.2;
-
+    margin-top: 20px;
 }
 
 #multi h6 {
-    font-weight: bold;
-    font-size: 1em;
+    font-weight: 500;
+    font-size: 1.25em;
     color: #000;
-    margin: 8px 0 8px 0;
+    margin: 0 0 8px 0;
     padding: 0;
 }
 
@@ -220,14 +229,13 @@ table caption {
 #multi ul li {
     margin: 0;
     padding: 0;
-    display: inline-block;
+    /*display: inline-block;*/
     color: #555;
     line-height: 1.25em;
 }
 
 #multi td {
-    padding: 0 8px 8px 0;
-    border: none;
+    padding: 0 8px 20px 0;
 }
 #multi td p {
     margin: 0;
@@ -361,7 +369,7 @@ button.fg-button, input.fg-button { width:auto; overflow:visible; }
 }
 
 /* Login/register */
-.login-register form {border: 1px solid #ccc; padding: 10px;}
+.login-register form {}
 .login-register label {font-weight: bold; }
 .login-register label.norm {font-weight: normal;}
 .login-register input {display: block; margin-bottom: 1em; }
@@ -370,10 +378,7 @@ button.fg-button, input.fg-button { width:auto; overflow:visible; }
 .login-register p.failure {background-color: firebrick; color: #fff;}
 .login-register p.success {background-color: green; color: #fff;}
 
-#regForm {
-    width: 700px;
-    height: 400px;
-    }
+
 #regForm fieldset {
     /*height: 20em;*/
     width: 200px;
@@ -442,20 +447,34 @@ button.fg-button, input.fg-button { width:auto; overflow:visible; }
 #regForm #pt4 h3 {
     display: none;
     }
-#regForm #pt4 #disclaimer {
+#regForm #pt4 #disclaimer-text {
     width: 50em;
     float: left;
     font-size: 0.7em;
     float: left;
     margin-right: 10px;
     }
+/*
 #regForm #pt4 #agree {
     width: 15em;
     float: left;
     color: #000;
     float: left;
     }
-#regForm #pt4 #agree input {
+*/    
+#regForm #pt4 #agree input#disclaimer {
     float:left;
     margin-right: 10px;
 }
+
+
+.fg-green {
+    color: green;
+}
+
+.ui-dialog {
+
+    background: #fff;
+    height: 200px;
+}
+

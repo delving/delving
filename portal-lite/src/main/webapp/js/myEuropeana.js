@@ -1,4 +1,7 @@
-
+$(document).ready(function() {
+       $("#savedItems").tabs({selected: $.cookie('ui-tabs-3')});
+       $("#savedItems").tabs({ cookie: { expires: 30 } });
+    });
 
     function removeRequest(className, id){
         $.ajax({

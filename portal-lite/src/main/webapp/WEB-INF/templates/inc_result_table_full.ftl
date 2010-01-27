@@ -12,7 +12,7 @@
                 + result.fullDoc.dcTermsReplaces + result.fullDoc.dcTermsRequires + result.fullDoc.dcTermsIsVersionOf + result.fullDoc.dcTermsHasVersion
                 + result.fullDoc.dcTermsConformsTo + result.fullDoc.dcTermsHasFormat />
 <#assign moreArr = indentifierArr + publisherArr + provenanceArr + arrsubj + typeArr + relationsArr />
-
+     
      <h5 class="${result.fullDoc.europeanaType}">
         <#assign tl = "">
         <#if !model.fullDoc.dcTitle[0]?matches(" ")>
@@ -28,12 +28,6 @@
         <@stringLimiter "${tl}" "150"/>
     </h5>
 
-
-
-
-<#--    <table border="0" cellspacing="0" cellpadding="0" summary="selected item full description and image with link to original source">
-        <tr>
-            <td valign="top">-->
                 <div class="grid_3 alpha" id="img-full">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
@@ -70,26 +64,25 @@
 <#--            </td>
             <td valign="top">-->
                 <div id="item-detail" class="grid_6 omega">
-
-                    <#if format??>
+ <#--                   <#if format??>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
 
                         <@show_value "europeana:uri" doc.id showFieldNames />
                         <@show_array_values "europeana:country" doc.europeanaCountry  showFieldNames />
-                        <#--<@show_array_values "europeana:source" doc.europeanaSource  showFieldNames />-->
+                        &lt;#&ndash;<@show_array_values "europeana:source" doc.europeanaSource  showFieldNames />&ndash;&gt;
                         <@show_array_values "europeana:provider" doc.europeanaProvider  showFieldNames />
                         <@show_value "europeana:collectionName" doc.europeanaCollectionName showFieldNames/>
                         <@show_value "europeana:hasObject" doc.europeanaHasObject?string  showFieldNames />
                         <@show_array_values "europeana:isShownAt" doc.europeanaIsShownAt  showFieldNames />
                         <@show_array_values "europeana:isShownBy" doc.europeanaIsShownBy  showFieldNames />
-                        <#--<@show_array_values "europeana:unstored" doc.europeanaUnstored  showFieldNames />-->
+                        &lt;#&ndash;<@show_array_values "europeana:unstored" doc.europeanaUnstored  showFieldNames />&ndash;&gt;
                         <@show_array_values "europeana:object" doc.thumbnails  showFieldNames />
                         <@show_array_values "europeana:language" doc.europeanaLanguage  showFieldNames />
                         <@show_value "europeana:type" doc.europeanaType  showFieldNames />
                         <@show_array_values "europeana:userTag" doc.europeanaUserTag  showFieldNames />
                         <@show_array_values "europeana:year" doc.europeanaYear  showFieldNames />
-                        <!-- here the dcterms namespaces starts -->
+                        <!-- here the dcterms namespaces starts &ndash;&gt;
                         <@show_array_values "dcterms:alternative" doc.dcTermsAlternative  showFieldNames />
                         <@show_array_values "dcterms:conformsTo" doc.dcTermsConformsTo  showFieldNames />
                         <@show_array_values "dcterms:created" doc.dcTermsCreated  showFieldNames />
@@ -112,7 +105,7 @@
                         <@show_array_values "dcterms:spatial" doc.dcTermsSpatial  showFieldNames />
                         <@show_array_values "dcterms:tableOfContents" doc.dcTermsTableOfContents  showFieldNames />
                         <@show_array_values "dcterms:temporal" doc.dcTermsTemporal  showFieldNames />
-                        <!-- here the dc namespaces starts -->
+                        <!-- here the dc namespaces starts &ndash;&gt;
                         <@show_array_values "dc:contributor" doc.dcContributor  showFieldNames />
                         <@show_array_values "dc:coverage" doc.dcCoverage  showFieldNames />
                         <@show_array_values "dc:creator" doc.dcCreator  showFieldNames />
@@ -128,7 +121,8 @@
                         <@show_array_values "dc:subject" doc.dcSubject  showFieldNames />
                         <@show_array_values "dc:title" doc.dcTitle  showFieldNames />
                         <@show_array_values "dc:type" doc.dcType  showFieldNames />
-                    <#else>
+                    <#else>-->
+
                      <#-- TITLE   -------------------------------------------------------------------------------->
                         <#assign titleArr = result.fullDoc.dcTitle + result.fullDoc.dcTermsAlternative />
                         <#if isNonEmpty(titleArr)>
@@ -281,7 +275,7 @@
 
                     </div>
                     </#if>
-                </#if>
+              <#--  </#if>-->
                 </div>
 <#--
  </td>

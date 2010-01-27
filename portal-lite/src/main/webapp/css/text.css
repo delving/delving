@@ -25,29 +25,31 @@ hr {
 
 /* `Headings
 ----------------------------------------------------------------------------------------------------*/
-
+h1, h2, h3, h4 {
+    color: #555;
+}
 h1 {
-	font-size: 25px;
+	font-size: 22px;
 }
 
 h2 {
-	font-size: 23px;
+	font-size: 20px;
 }
 
 h3 {
-	font-size: 21px;
-}
-
-h4 {
 	font-size: 19px;
 }
 
+h4 {
+	font-size: 16px;
+}
+
 h5 {
-	font-size: 17px;
+	font-size: 14px;
 }
 
 h6 {
-	font-size: 15px;
+	font-size: 12px;
 }
 
 /* `Spacing

@@ -1,7 +1,6 @@
 <#compress>
 
 <#if seq?size &gt; 0>
-
     <#if view = "table">
         <@show_result_table seq = seq/>
     <#elseif view = "flow">
@@ -16,7 +15,7 @@
 
 
 <#macro show_result_table seq>
-<table id="multi" summary="gallery view all search results">
+<table id="multi" summary="gallery view all search results" border="0">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
@@ -37,7 +36,7 @@
                 </a>
             </h6>
             <ul>
-                <#if cell.creator??><#if cell.creator != " ">
+                <#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
                 <li><@stringLimiter "${cell.creator}" "120"/></li>
                 </#if></#if>
                 <#if cell.year != ""><#if cell.year != "0000">
@@ -48,7 +47,7 @@
                 <#if pr?length &gt; 80>
                 <#assign pr = cell.provider?substring(0, 80) + "..."/>
                 </#if>
-                <li title="${cell.provider}">${pr}</li>
+                <li title="${cell.provider}"><span class="fg-green">${pr}</span></li>
                 </#if>
             </ul>
         </td>
@@ -90,7 +89,7 @@
                 <#-- with labels -->
                 <#if !cell.creator[0]?matches(" ")><span><@spring.message 'Creator_t' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message 'Date_t' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: ${cell.provider}</#if>
+                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="fg-green">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>

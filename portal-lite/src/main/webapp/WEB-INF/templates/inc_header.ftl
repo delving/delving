@@ -58,11 +58,11 @@
     <#assign showAdv="none"/>
     <#assign showSim="block"/>
     <#if pageId??>
-    <#if pageId=="adv">
-        <#assign showAdv="block"/>
-        <#assign showSim="none"/>
+        <#if pageId=="adv">
+            <#assign showAdv="block"/>
+            <#assign showSim="none"/>
+        </#if>
     </#if>
-</#if>
 
     <div id="search_simple" class="${className}" style="display:${showSim};">
         <#if result?? >
@@ -113,76 +113,67 @@
 </#macro>
 
 <#macro userbar>
-<div id="user-bar">
-    <dl>
+    <ul>
         <#if !user??>
-        <dt id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
-                href="login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a></dt>
+        <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
+                href="login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a>
+        </li>
         </#if>
         <#if user??>
-        <dt>
+        <li>
             <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
                 href="logout.html"><@spring.message 'LogOut_t' /></a>
-        </dt>
+        </li>
         <#if user.savedItems?exists>
-        <dd>
+        <li>
             <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
                 <@spring.message 'SavedItems_t' />
             </a>
             (<span id="savedItemsCount">${user.savedItems?size}</span>)
-        </dd>
+        </li>
         </#if>
         <#if user.savedSearches?exists>
-        <dd>
+        <li>
             <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
                 <@spring.message 'SavedSearches_t' />
             </a>
             (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
-        </dd>
+        </li>
         </#if>
         <#if user.socialTags?exists>
-        <dd>
+        <li>
             <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
                 <@spring.message 'SavedTags_t' />
             </a>
             (<span id="savedTagsCount">${user.socialTags?size}</span>)
-        </dd>
+        </li>
         </#if>
         </#if>
-    </dl>
-</div>
+    </ul>
 </#macro>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <#-- favicon_red.ico is also available -->
-    <link rel="shortcut icon" href="/portal/favicon_red.ico"/>
-    <#assign useJawr = false/>
-    <!--- make sure to enable/disable (comment-out) the appropriate JAWR servlets in the web.xml -->
-    <#if useJawr >
-        <link rel="stylesheet" type="text/css" href="css/jawr/common.css"/>
-        <script type="text/javascript" src="js/jawr/global.js"></script>
-    <#else>
-        <#-- unused ??  -->
-        <#--<link rel="stylesheet" type="text/css" href="css/ui.core.css"/>--->
-        <link rel="stylesheet" type="text/css" href="css/reset.css"/>
-        <link rel="stylesheet" type="text/css" href="css/text.css"/>
-        <link rel="stylesheet" type="text/css" href="css/960.css"/>
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
-        <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
+    <link rel="shortcut icon" href="/portal/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="css/text.css"/>
+    <link rel="stylesheet" type="text/css" href="css/grid.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
 
-        <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-        <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
-        <script type="text/javascript" src="js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="js/jquery.toggleElements.js"></script>
-        <script type="text/javascript" src="js/jquery.validate.js"></script>
-        <script type="text/javascript" src="js/js_utilities.js"></script>
+    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/jquery.toggleElements.js"></script>
+    <script type="text/javascript" src="js/jquery.validate.js"></script>
+    <script type="text/javascript" src="js/js_utilities.js"></script>
 
-        <script type="text/javascript" src="js/briefDoc.js"></script>
-        <script type="text/javascript" src="js/fullDoc.js"></script>
-        <script type="text/javascript" src="js/myEuropeana.js"></script>
-    </#if>
+    <script type="text/javascript" src="js/briefDoc.js"></script>
+    <script type="text/javascript" src="js/fullDoc.js"></script>
+    <script type="text/javascript" src="js/myEuropeana.js"></script>
+
 
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
@@ -284,34 +275,4 @@
 
 <body>
 
-
 <div id="container" class="container_12">
-
-    <div id="header" class="grid_12">
-
-        <div id="identity" class="grid_3 alpha">
-            <h1>Europeana Lite</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/europeana-lite.png" width="240" height="70"/></a>
-        </div>
-        <div id="search" class="grid_7">
-        <#-- advanced search page has own search placement -->
-        <#if pageId??>
-        <#if pageId != "adv">
-            <@SearchForm "search_result"/>
-        <#else>
-            &#160;
-        </#if>
-        </#if>
-        </div>
-        <div id="language" class="grid_2 omega">
-            <#include "language_select.ftl">
-        </div>
-        <!-- end topnav -->
-
-    </div>
-    <!-- end header -->
-
-    <div class="clearfix"></div>
-
-
-

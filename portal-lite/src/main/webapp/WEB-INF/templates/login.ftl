@@ -5,9 +5,25 @@
 
 <#include "inc_header.ftl">
 
-<div id="main" class="grid_12">
+<div id="sidebar" class="grid_3">
 
-<div id="login-div" class="grid_3 prefix_2 alpha login-register">
+    <div id="identity">
+            <h1>Europeana Lite</h1>
+            <a href="index.html" title="Europeana lite"><img src="images/europeana_open_logo_small.jpg" alt="European Open Source"/></a>
+    </div>
+
+</div>
+
+<div id="main" class="grid_9">
+
+    <div id="top-bar">
+        <@userbar/>
+        <#include "language_select.ftl">
+    </div>
+
+    <div class="clear"></div>
+
+    <div id="login-div" class="grid_3 alpha login-register">
 
     <h3><@spring.message 'LogIn_t' /></h3>
     <#if register == true>
@@ -77,7 +93,7 @@
 
 
     <#if failureForgotFormat || failureForgotDoesntExist || forgotSuccess>
-    <div id="request-password" class="grid_3 login-register">
+    <div id="request-password" class="grid_3 omega login-register">
     <#else >
     <div style="display:none;" id="request-password" class="grid_3 login-register">
     </#if>
@@ -106,10 +122,12 @@
             </p>
             </#if>
         </form>
-    </div>   
+    </div>
 
 
  </div>
 
-        <#include "inc_footer.ftl"/>
+</div>
+
+<#include "inc_footer.ftl"/>
 
