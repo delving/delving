@@ -11,6 +11,8 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  *
  */
+
+@Deprecated // PortalLite can better be used because it also starts up the back-end services by itself
 public class PortalLiteStarter {
 
     public Server startServer() throws Exception {

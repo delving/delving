@@ -33,6 +33,7 @@ import java.io.FileFilter;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
+@Deprecated // background services are now started by the classes PortalFull and PortalLite themselves (mind the javadoc there)
 public class EuropeanaBackendStarter {
 
     public static void main(String... args) throws Exception {
