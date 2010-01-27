@@ -57,35 +57,6 @@
                     <runTarget>eu.europeana.dashboard.EuropeanaDashboard/EuropeanaDashboard.html</runTarget>
                 </configuration>
             </plugin>
-            <!--
-                If you want to use the target/web.xml file mergewebxml
-                produces, tell the war plugin to use it. Also, exclude
-                what you want from the final artifact here.
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <webXml>target/web.xml</webXml>
-                    <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
-                </configuration>
-            </plugin>
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-                    <webResources>
-                         <resource>
-                            <directory>src/main/webapp/WEB-INF</directory>
-                            <excludes>
-                                <exclude>**/web.xml</exclude>
-                            </excludes>
-                         </resource>
-                    </webResources>             
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
