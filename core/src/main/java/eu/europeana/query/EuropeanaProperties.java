@@ -38,34 +38,36 @@ public class EuropeanaProperties extends Properties {
     private Logger log = Logger.getLogger(getClass());
 
     public EuropeanaProperties() {
-    	String europeanaProperties = "";
-    	InputStream inputStream;
-    	try {
-    		europeanaProperties = System.getProperty("europeana.properties");
-    		if (europeanaProperties != null) {
-    			log.info("Found system property 'europeana.properties', resolved to " + new File(europeanaProperties).getCanonicalPath());        	
-    		}
-    		inputStream = getInputFromFile(europeanaProperties);
-    		if (inputStream == null) {
-    			log.info("System property 'europeana.properties' not found, checking environment.");
-    			europeanaProperties = System.getenv("EUROPEANA_PROPERTIES");
-        		if (europeanaProperties != null) {
-        			log.info("Found env property 'EUROPEANA_PROPERTIES', resolved to " + new File(europeanaProperties).getCanonicalPath());        	
-        		}
-    			inputStream = getInputFromFile(europeanaProperties);
-    		}
-    		if (inputStream == null) {
-    			log.warn("No 'europeana.properties' found in system properties or environment, checking for legacy 'europeana.config'.");
-    			inputStream = getInputFromFile(System.getProperty("europeana.config"));
-    		}
-    		if (inputStream == null) {
-    			log.warn("No 'europeana.properties', checking for (test) resource.");
-    			inputStream = getClass().getResourceAsStream("/europeana-test.properties");
-    			log.info("Test 'europeana.properties' being used");
-    		}
-    	} catch (Exception e) {
-            throw new RuntimeException("Error in resolving file defined with " + europeanaProperties);
-		}
+        String europeanaProperties = "";
+        InputStream inputStream = null;
+        try {
+            europeanaProperties = System.getProperty("europeana.properties");
+            if (europeanaProperties != null) {
+                log.info("Found system property 'europeana.properties', resolved to " + new File(europeanaProperties).getCanonicalPath());
+            }
+            inputStream = getInputFromFile(europeanaProperties);
+            if (inputStream == null) {
+                log.info("System property 'europeana.properties' not found, checking environment.");
+                europeanaProperties = System.getenv("EUROPEANA_PROPERTIES");
+                if (europeanaProperties != null) {
+                    log.info("Found env property 'EUROPEANA_PROPERTIES', resolved to " + new File(europeanaProperties).getCanonicalPath());
+                }
+                inputStream = getInputFromFile(europeanaProperties);
+            }
+            if (inputStream == null) {
+                log.warn("No 'europeana.properties' found in system properties or environment, checking for legacy 'europeana.config'.");
+                inputStream = getInputFromFile(System.getProperty("europeana.config"));
+            }
+            if (inputStream == null) {
+                log.warn("No 'europeana.properties', checking for (test) resource.");
+                inputStream = getClass().getResourceAsStream("/europeana-test.properties");
+                log.info("Test 'europeana.properties' being used");
+            }
+        }
+        catch (Exception e) {
+            log.fatal("Error in resolving file defined with " + europeanaProperties);
+            System.exit(1);
+        }
         if (inputStream == null) {
             log.fatal(
                     "Configuration not available!\n" +
@@ -73,40 +75,41 @@ public class EuropeanaProperties extends Properties {
                             "1) Start the JVM with parameter -Deuropeana.properties=/path/to/europeana.properties\n" +
                             "2) Set the environment variable 'EUROPEANA_PROPERTIES' to /path/to/europeana.properties"
             );
-            throw new RuntimeException("Configuration not available!");
+            System.exit(1);
         }
         try {
             load(inputStream);
         }
         catch (IOException e) {
-            log.fatal("Unable to load 'europeana.properties'!");
-            throw new RuntimeException("Unable to load 'europeana.properties'!");
+            log.fatal("Unable to load 'europeana.properties' from input stream!");
+            System.exit(1);
         }
         boolean complete = true;
         for (String expect : EXPECT) {
             String value = getProperty(expect);
             if (value == null) {
-                log.warn("Missing property '"+expect+"'");
+                log.warn("Missing property '" + expect + "'");
                 complete = false;
             }
         }
         if (!complete) {
-            throw new IllegalStateException("Europeana configuration properties incomplete.  Check log of this class for warnings.");
+            log.fatal("Europeana configuration properties incomplete.  Check log of this class for warnings.");
+            System.exit(1);
         }
     }
 
     private InputStream getInputFromFile(String filePath) {
         if (filePath != null) {
             try {
-                log.info("Going to load properties from '"+filePath+"', resolved to "+ new File(filePath).getCanonicalPath());
+                log.info("Going to load properties from '" + filePath + "', resolved to " + new File(filePath).getCanonicalPath());
                 return new FileInputStream(filePath);
             }
             catch (FileNotFoundException e) {
-                throw new RuntimeException("No file found: "+filePath, e);
+                throw new RuntimeException("No file found: " + filePath, e);
             }
             catch (IOException e) {
-                throw new RuntimeException("IO exception on: "+filePath, e);
-			}
+                throw new RuntimeException("IO exception on: " + filePath, e);
+            }
         }
         else {
             return null;
