@@ -466,7 +466,7 @@ public class DashboardServiceImpl implements DashboardService {
     public boolean deleteCollectionByName(String collectionName) {
         try {
             log.info(String.format("Delete collection %s from Solr Index", collectionName));
-            solrServer.deleteByQuery("europeana_collection:\""+collectionName+"\"");
+            solrServer.deleteByQuery("europeana_collectionName:\""+collectionName+"\"");
             solrServer.commit();
             return true;
         }
