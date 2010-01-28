@@ -90,7 +90,7 @@ public class ResultPaginationImpl implements ResultPagination {
         StringBuilder queryString = new StringBuilder();
         queryString.append("query").append("=").append(encode(solrQuery.getQuery()));
         // todo is this correct or should it be FacetQuery
-        String[] facetQueries = solrQuery.getFilterQueries();
+        String[] facetQueries = ControllerUtil.getFilterQueriesWithoutPhrases(solrQuery);
         if (facetQueries != null) {
             for (String facetTerm : facetQueries) {
                 queryString.append(FACET_PROMPT).append(facetTerm);

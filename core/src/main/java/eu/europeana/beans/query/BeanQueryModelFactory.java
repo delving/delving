@@ -29,6 +29,7 @@ import eu.europeana.database.dao.UserDaoImpl;
 import eu.europeana.database.domain.CollectionState;
 import eu.europeana.database.domain.EuropeanaId;
 import eu.europeana.query.*;
+import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.DocIdWindowPagerImpl;
 import eu.europeana.web.util.FacetQueryLinks;
 import eu.europeana.web.util.ResultPaginationImpl;
@@ -109,6 +110,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 solrQuery.addFilterQuery(filterQuery);
             }
         }
+        solrQuery.setFilterQueries(ControllerUtil.getFilterQueriesAsPhrases(solrQuery)); // todo: integrate into the above loop
         return solrQuery;
     }
 

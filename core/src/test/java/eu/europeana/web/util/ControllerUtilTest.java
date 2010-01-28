@@ -21,6 +21,7 @@
 
 package eu.europeana.web.util;
 
+import org.apache.solr.client.solrj.SolrQuery;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -59,5 +60,25 @@ public class ControllerUtilTest {
                 "?id=007&query=sjoerd&className=SavedSearch",
                 ControllerUtil.formatParameterMapAsQueryString(mockParameterMap));
 
+    }
+
+    @Test
+    public void testPhraseConversions() {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setFilterQueries(
+                "PROVIDER:The European Library",
+                "LANGUAGE:en"
+        );
+        String[] phrased = ControllerUtil.getFilterQueriesAsPhrases(solrQuery);
+        for (String s : phrased) {
+            String after = s.substring(s.indexOf(':') + 1);
+            Assert.assertTrue(after.startsWith("\"") && after.endsWith("\""));
+        }
+        solrQuery.setFilterQueries(phrased);
+        String [] unphrased = ControllerUtil.getFilterQueriesWithoutPhrases(solrQuery);
+        for (String s : unphrased) {
+            String after = s.substring(s.indexOf(':') + 1);
+            Assert.assertFalse(after.startsWith("\"") && after.endsWith("\""));
+        }
     }
 }

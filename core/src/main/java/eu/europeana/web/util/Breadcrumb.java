@@ -53,7 +53,7 @@ public class Breadcrumb {
             for (int walk = 0; walk < facetQueryCount; walk++) {
                 StringBuilder out = new StringBuilder(prefix);
                 int count = walk;
-                for (String facetTerm : solrQuery.getFilterQueries()) {
+                for (String facetTerm : ControllerUtil.getFilterQueriesWithoutPhrases(solrQuery)) {
                     int colon = facetTerm.indexOf(":");
                     String facetName = facetTerm.substring(0, colon);
                     String facetValue = facetTerm.substring(colon + 1);

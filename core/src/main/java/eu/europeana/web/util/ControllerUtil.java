@@ -178,7 +178,7 @@ public class ControllerUtil {
         if (filterQueries == null) {
             return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
         }
-        List<String> phraseFilterQueries = new ArrayList<String>();
+        List<String> phraseFilterQueries = new ArrayList<String>(filterQueries.length);
         for (String facetTerm : filterQueries) {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
@@ -186,6 +186,24 @@ public class ControllerUtil {
             phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
+    }
+
+    public static String[] getFilterQueriesWithoutPhrases(SolrQuery solrQuery) {
+        String[] filterQueries = solrQuery.getFilterQueries();
+        if (filterQueries == null) {
+            return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
+        }
+        List<String> nonPhraseFilterQueries = new ArrayList<String>(filterQueries.length);
+        for (String facetTerm : filterQueries) {
+            int colon = facetTerm.indexOf(":");
+            String facetName = facetTerm.substring(0, colon);
+            String facetValue = facetTerm.substring(colon + 1);
+            if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
+                facetValue = facetValue.substring(1, facetValue.length() - 1);
+            }
+            nonPhraseFilterQueries.add(facetName+":"+facetValue);
+        }
+        return nonPhraseFilterQueries.toArray(new String[nonPhraseFilterQueries.size()]);
     }
 
 

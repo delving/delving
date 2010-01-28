@@ -120,7 +120,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private void setQueryStringForPaging(SolrQuery solrQuery) {
         StringBuilder out = new StringBuilder();
         out.append("query=").append(encode(solrQuery.getQuery()));
-        final String[] facetQueries = solrQuery.getFilterQueries();
+        final String[] facetQueries = ControllerUtil.getFilterQueriesWithoutPhrases(solrQuery);
         if (facetQueries != null) {
             for (String facetTerm : facetQueries) {
                 out.append("&qf=").append(facetTerm);
