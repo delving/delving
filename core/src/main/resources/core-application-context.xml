@@ -98,6 +98,8 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <bean name="staticPageCache" class="eu.europeana.web.util.StaticPageCache"/>
+
     <bean name="userDao" class="eu.europeana.database.dao.UserDaoImpl"/>
 
     <bean name="staticInfoDao" class="eu.europeana.database.dao.StaticInfoDaoImpl"/>
