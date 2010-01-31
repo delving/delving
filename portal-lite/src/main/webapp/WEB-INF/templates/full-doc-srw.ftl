@@ -28,12 +28,12 @@
                     <@show_value "europeana:uri" doc.id/>
                     <@show_array_values "europeana:country" doc.europeanaCountry />
                     <@show_value "europeana:hasObject" doc.europeanaHasObject?string />
-                    <@show_array_values "europeana:provider" doc.europeanaProvider />
-                    <@show_array_values "europeana:collectionName" doc.europeanaCollectionName />
+                    <#--<@show_value "europeana:provider" doc.europeanaProvider /> todo fix it-->
+                    <@show_value "europeana:collectionName" doc.europeanaCollectionName?string />
                     <@show_array_values "europeana:isShownAt" doc.europeanaIsShownAt />
                     <@show_array_values "europeana:isShownBy" doc.europeanaIsShownBy />
                     <#--<@show_array_values "europeana:unstored" doc.europeanaUnstored />-->
-                    <@show_array_values "europeana:object" doc.thumbnail />
+                    <@show_array_values "europeana:object" doc.thumbnails />
                     <@show_array_values "europeana:language" doc.europeanaLanguage />
                     <@show_value "europeana:type" doc.europeanaType />
                     <@show_array_values "europeana:userTag" doc.europeanaUserTag />
