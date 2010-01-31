@@ -1,13 +1,12 @@
 body {
 	/*background: #eaeaea url(../images/960/white_bg.gif) top center repeat-y;*/
-    /*background: #eaeaea url(../images/960/12_col.gif) top center repeat-y;*/
 }
 #container {              -
 	overflow: hidden;
     margin-top: 20px;
 }
 #sidebar {
-    min-width: 160px;
+    min-width: 215px;
 }
 #main {    
     background: transparent;
