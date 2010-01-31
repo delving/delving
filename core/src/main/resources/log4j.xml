@@ -7,22 +7,27 @@
             <param name="ConversionPattern" value="%d{ABSOLUTE} %t %-5p %C{1}:%L - %m%n"/>
         </layout>
     </appender>
-    <!--<appender name="file" class="org.apache.log4j.FileAppender">-->
-        <!--<param name="File" value="XMLToSolrConverter.log"/>-->
-        <!--<layout class="org.apache.log4j.PatternLayout">-->
-            <!--<param name="ConversionPattern" value="%d %5p %c:%L - %m%n"/>-->
-        <!--</layout>-->
-    <!--</appender>-->
+    <appender name="clickStreamLogger" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="ClickStreamLogger.log"/>
+        <param name="MaxBackupIndex" value="20"/>
+        <param name="MaxFileSize" value="50MB"/>
+        <param name="append" value="true" />
+        <param name="encoding" value="UTF-8" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <!-- The log message pattern -->
+           <param name="ConversionPattern" value="%m%n"/>
+        </layout>
+    </appender>
+    <logger name="eu.europeana.web.util.ClickStreamLoggerImpl" additivity="true"> <!-- set to false in production -->
+        <level value="INFO"/>
+        <appender-ref ref="clickStreamLogger"/>
+    </logger>
     <logger name="org.apache.commons.httpclient">
         <level value="ERROR"/>
-    </logger>
-    <logger name="eu.europeana.json.solr">
-        <level value="DEBUG"/>
     </logger>
     <root>
         <priority value="INFO"/>
         <appender-ref ref="console"/>
-        <!--<appender-ref ref="file"/>-->
     </root>
 </log4j:configuration>
 

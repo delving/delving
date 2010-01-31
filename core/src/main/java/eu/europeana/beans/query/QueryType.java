@@ -7,8 +7,8 @@ package eu.europeana.beans.query;
  */
 
 public enum QueryType {
-    SIMPLE_QUERY("europeana"),
-    ADVANCED_QUERY("standard"),
+    SIMPLE_QUERY("simple"),
+    ADVANCED_QUERY("advanced"),
     MORE_LIKE_THIS_QUERY("moreLikeThis");
 
     private String appearance;

@@ -22,6 +22,7 @@
 package eu.europeana.web.controller;
 
 import eu.europeana.database.UserDao;
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.TokenReplyEmailSender;
 import org.apache.log4j.Logger;
@@ -49,6 +50,13 @@ public class LoginPageController {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
+    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
+        this.clickStreamLogger = clickStreamLogger;
+    }
+
     @RequestMapping("/login.html")
     public ModelAndView handle(
             HttpServletRequest request,
@@ -74,9 +82,11 @@ public class LoginPageController {
             if ("Register".equals(buttonPressed)) {  //TODO this value is internationalized in the template
                 if (!ControllerUtil.validEmailAddress(email)) {
                     failureFormat = true;
-                } else if (emailExists(email)) {
+                }
+                else if (emailExists(email)) {
                     failureExists = true;
-                } else {
+                }
+                else {
                     registerUri = registerUri.substring(0, lastSlash + 1) + "register.html";
                     tokenReplyEmailSender.sendEmail(email, registerUri, "My Europeana email confirmation", "register");
                     success = true;
@@ -87,9 +97,11 @@ public class LoginPageController {
             else if ("Request".equals(buttonPressed)) {
                 if (!ControllerUtil.validEmailAddress(email)) {
                     failureForgotFormat = true;
-                } else if (!emailExists(email)) {
+                }
+                else if (!emailExists(email)) {
                     failureForgotDoesntExist = true;
-                } else {
+                }
+                else {
                     registerUri = registerUri.substring(0, lastSlash + 1) + "change-password.html";
                     tokenReplyEmailSender.sendEmail(email, registerUri, "My Europeana reset password", "forgotPassword");
                     forgotSuccess = true;
@@ -113,6 +125,7 @@ public class LoginPageController {
         page.addObject("failureExists", failureExists);
         page.addObject("failureForgotFormat", failureForgotFormat);
         page.addObject("failureForgotDoesntExist", failureForgotDoesntExist);
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.LOGIN, page);
         return page;
     }
 

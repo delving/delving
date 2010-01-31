@@ -1,5 +1,6 @@
 package eu.europeana.solrj;
 
+import eu.europeana.beans.query.QueryType;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class TestSolrQueryBlob {
     @Test
     public void testSolrjQuery() throws Exception {
         SolrQuery before = new SolrQuery()
-                .setQueryType("europeana")
+                .setQueryType(QueryType.SIMPLE_QUERY.toString())
                 .setRows(10)
                 .setFacet(true)
                 .setFilterQueries()

@@ -28,6 +28,7 @@ import eu.europeana.web.util.FacetQueryLinks;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * todo: javadoc
@@ -41,4 +42,5 @@ public interface BriefBeanView {
     List<? extends BriefDoc> getBriefDocs();
     List<FacetQueryLinks> getFacetQueryLinks() throws UnsupportedEncodingException;
     ResultPagination getPagination();
+    Map<String,String> getFacetLogs();
 }

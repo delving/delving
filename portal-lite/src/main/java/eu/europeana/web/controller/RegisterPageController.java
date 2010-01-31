@@ -25,6 +25,7 @@ import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.Token;
 import eu.europeana.database.domain.User;
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
@@ -40,6 +41,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.Map;
@@ -70,6 +72,13 @@ public class RegisterPageController {
     private TokenService tokenService;
 
     @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
+    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
+        this.clickStreamLogger = clickStreamLogger;
+    }
+
+    @Autowired
     @Qualifier("emailSenderForRegisterNotify")
     private EmailSender notifyEmailSender;
 
@@ -79,19 +88,21 @@ public class RegisterPageController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm) throws EuropeanaQueryException {
+    protected String getRequest(@RequestParam("token") String tokenKey, @ModelAttribute("command") RegistrationForm regForm, HttpServletRequest request) throws EuropeanaQueryException {
         log.info("Received get request, putting token into registration form model attribute");
         // todo: when token is null, no useful message appears
         Token token = tokenService.getToken(tokenKey);
         regForm.setToken(token.getToken());
         regForm.setEmail(token.getEmail());
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER);
         return "register";
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String formSubmit(@Valid @ModelAttribute("command") RegistrationForm regForm, BindingResult result) throws EuropeanaQueryException {
+    protected String formSubmit(@Valid @ModelAttribute("command") RegistrationForm regForm, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException {
         if (result.hasErrors()) {
             log.info("The registration form has errors");
+            clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             return "register";
         }
         Token token = tokenService.getToken(regForm.getToken()); //the token was validated in handleRequestInternal
@@ -105,6 +116,7 @@ public class RegisterPageController {
         tokenService.removeToken(token);    //remove token. it can not be used any more.
         userDao.addUser(user);  //finally save the user.
         sendNotificationEmail(user);
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success";
     }
 

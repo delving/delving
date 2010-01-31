@@ -37,12 +37,14 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,10 +89,18 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Override
     public SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
-        if (!params.containsKey("query")) {
+        if (params.containsKey("query") || params.containsKey("query1")) {
+            if (!params.containsKey("query1")) {
+                solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+            }
+            else { // support advanced search
+                solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
+            }
+        }
+        else {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
         }
-        solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+
         if (params.containsKey("start")) {
             solrQuery.setStart(Integer.valueOf(params.get("start")[0]));
         }
@@ -121,6 +131,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
+        solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
         return solrQuery;
     }
 
@@ -149,11 +160,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
+    public FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
         if (params.get("uri") == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
         String europeanaUri = params.get("uri")[0];
+        SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
         return new FullBeanViewImpl(solrQuery, getSolrResponse(solrQuery, fullBean), params);
@@ -196,12 +208,38 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private ResultPagination pagination;
         private List<? extends BriefDoc> briefDocs;
         private List<FacetQueryLinks> queryLinks;
+        private Map<String, String> facetLogs;
 
         @SuppressWarnings("unchecked")
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean));
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
+            facetLogs = createFacetLogs(solrResponse);
+        }
+
+        private Map<String, String> createFacetLogs(QueryResponse solrResponse) {
+            Map<String, String> facetLogs = new HashMap<String, String>();
+            List<FacetField> facetFieldList = solrResponse.getFacetFields();
+            for (FacetField facetField : facetFieldList) {
+                if (facetField.getName().equalsIgnoreCase("LANGUAGE") || facetField.getName().equalsIgnoreCase("COUNTRY")) {
+                    StringBuilder out = new StringBuilder();
+                    List<FacetField.Count> list = facetField.getValues();
+                    if (list == null) {
+                        break;
+                    }
+                    int counter = 0;
+                    for (FacetField.Count count : list) {
+                        counter++;
+                        out.append(count.toString()).append(",");
+                        if (counter > 5) {
+                            break;
+                        }
+                    }
+                    facetLogs.put(facetField.getName(), out.toString().substring(0, out.toString().length() -1));
+                }
+            }
+            return facetLogs;
         }
 
         @Override
@@ -217,6 +255,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         @Override
         public ResultPagination getPagination() {
             return pagination;
+        }
+
+        @Override
+        public Map<String, String> getFacetLogs() {
+            return facetLogs;
         }
     }
 
@@ -241,7 +284,15 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             this.params = params;
             fullDoc = createFullDoc();
             relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(BriefBean.class));
-            docIdWindowPager = DocIdWindowPagerImpl.fetchPager(params, createFromQueryParams(params), solrServer);
+            docIdWindowPager = createDocIdPager(params);
+        }
+
+        private DocIdWindowPager createDocIdPager(Map<String, String[]> params) throws SolrServerException, EuropeanaQueryException {
+            DocIdWindowPager idWindowPager = null;
+            if (params.containsKey("query")) {
+                idWindowPager = DocIdWindowPagerImpl.fetchPager(params, createFromQueryParams(params), solrServer);
+            }
+            return idWindowPager;
         }
 
         @Override

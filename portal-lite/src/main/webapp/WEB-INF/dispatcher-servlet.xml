@@ -135,8 +135,5 @@
     <!--<property name="formView" value="contact"/>-->
     <!--</bean>-->
 
-    <bean id="rememberMeTheftController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-        <property name="viewName" value="redirect:/login.html"/>
-    </bean>
 
 </beans>

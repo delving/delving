@@ -18,7 +18,10 @@
 <#assign breadcrumbs = breadcrumbs/>
 <#assign seq = briefDocs/>
 <#assign pagination = pagination/>
-
+<#assign view = "table"/>
+<#if RequestParameters.view??>
+    <#assign view = "${RequestParameters.view}"/>
+</#if>
 <#--<#list result.facets as facet>
     <#if facet.type="TYPE">
         <#list facet.counts as type>

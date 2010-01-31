@@ -47,7 +47,7 @@ public interface QueryModelFactory {
 
     BriefBeanView getBriefResultView(SolrQuery solrQuery, String requestQueryString) throws EuropeanaQueryException, UnsupportedEncodingException;
 
-    FullBeanView getFullResultView(SolrQuery solrQuery, Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
+    FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 
     FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException;
 

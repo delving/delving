@@ -54,7 +54,7 @@
         <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
         <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
-        <security:logout logout-url="/logout.html"/>
+        <security:logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>
         <security:remember-me token-repository-ref="tokenRepositoryService"/>
     </security:http>
 

@@ -27,7 +27,6 @@ import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryModelFactory;
 import eu.europeana.web.util.ControllerUtil;
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,8 +49,6 @@ import java.util.Map;
 @Controller
 public class ResultController {
 
-    private Logger log = Logger.getLogger(getClass());
-
     @Autowired
     private QueryModelFactory beanQueryModelFactory;
 
@@ -71,17 +68,19 @@ public class ResultController {
         boolean srwFormat = format != null && format.equals("srw");
 
         // get results
-        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(params);
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(solrQuery, params);
+        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
 
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
         page.addObject("result", fullResultView);
-        page.addObject("pagination", fullResultView.getDocIdWindowPager());
-        page.addObject("uri", fullResultView.getDocIdWindowPager().getFullDocUri());
+        if (fullResultView.getDocIdWindowPager() != null) {
+            page.addObject("pagination", fullResultView.getDocIdWindowPager());
+            page.addObject("uri", fullResultView.getDocIdWindowPager().getFullDocUri());
+        }
         if (format != null && format.equalsIgnoreCase("labels")) {
             page.addObject("format", format);
         }
+        clickStreamLogger.log(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }
 
@@ -110,6 +109,7 @@ public class ResultController {
         page.addObject("pagination", briefBeanView.getPagination());
         page.addObject("queryToSave", briefBeanView.getPagination().getPresentationQuery().getQueryToSave());
         page.addObject("servletUrl", ControllerUtil.getServletUrl(request));
+        clickStreamLogger.log(request, briefBeanView, solrQuery, page);
         return page;
     }
 
@@ -132,16 +132,17 @@ public class ResultController {
         String isShownBy = request.getParameter(SHOWN_BY);
         String provider = request.getParameter(PROVIDER);
         String europeanaId = request.getParameter(EUROPEANA_ID);
-        String redirect;
+        String redirectLink;
         if (isShownAt != null) {
-            redirect = isShownAt;
+            redirectLink = isShownAt;
         } else if (isShownBy != null) {
-            redirect = isShownBy;
+            redirectLink = isShownBy;
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
         }
         // todo: implement request log
-        log.info(MessageFormat.format("redirecting to: {0} for id {1}, by provider {2}", redirect, europeanaId, provider));
-        return ControllerUtil.createModelAndViewPage("redirect:" + redirect);
+        String logString = MessageFormat.format("outlink={0}, provider={2}, europeana_id={1}", redirectLink, europeanaId, provider);
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REDIRECT_OUTLINK, logString);
+        return ControllerUtil.createModelAndViewPage("redirect:" + redirectLink);
     }
 }

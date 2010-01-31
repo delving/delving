@@ -21,6 +21,7 @@
 
 package eu.europeana.web.util;
 
+import eu.europeana.database.domain.Language;
 import eu.europeana.query.ClickStreamLogger;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.web.servlet.LocaleResolver;
@@ -55,6 +56,7 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws ServletException {
+        Language oldLocale = ControllerUtil.getLocale(request);
         String newLocale = request.getParameter(this.paramName);
         if (newLocale != null) {
             LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
@@ -64,7 +66,7 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
             LocaleEditor localeEditor = new LocaleEditor();
             localeEditor.setAsText(newLocale);
             localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.LANGUAGE_CHANGE);
+            clickStreamLogger.log(request, oldLocale, ClickStreamLogger.UserAction.LANGUAGE_CHANGE);
         }
         // Proceed in any case.
         return true;

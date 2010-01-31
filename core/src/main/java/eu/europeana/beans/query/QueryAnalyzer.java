@@ -25,6 +25,7 @@ import eu.europeana.beans.annotation.AnnotationProcessor;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -50,6 +51,9 @@ public class QueryAnalyzer {
         String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
+                return QueryType.ADVANCED_QUERY;
+            }
+            else if (term.contains("*:*")) {
                 return QueryType.ADVANCED_QUERY;
             }
             else if (term.startsWith("+") || term.startsWith("-")) {
@@ -111,5 +115,35 @@ public class QueryAnalyzer {
         addBooleanKeyword("AND");
         addBooleanKeyword("OR");
         addBooleanKeyword("NOT");
+    }
+
+
+    /**
+     * Create advanced query from params with facet[1-3], operator[1-3], query[1-3].
+     *
+     * This query is structured by the advanced search pane in the portal
+     *
+     * @param params
+     * @return
+     */
+    public String createAdvancedQuery(Map<String, String[]> params) {
+        StringBuilder queryString = new StringBuilder();
+        for (int i = 1; i < 4; i++) {
+            if (params.containsKey("query" + i) && params.containsKey("facet" + i)) {
+                String facet = params.get("facet" + i)[0];
+                String query = params.get("query" + i)[0];
+                String operator = null;
+                if (i != 1) {
+                    operator = params.get("operator" + i)[0];
+                }
+                if (!facet.isEmpty() && !query.isEmpty()) {
+                    if (operator != null) {
+                        queryString.append(" ").append(operator).append(" ");
+                    }
+                    queryString.append(facet).append(":").append(query);
+                }
+            }
+        }
+        return sanitize(queryString.toString());
     }
 }

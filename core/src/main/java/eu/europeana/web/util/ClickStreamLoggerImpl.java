@@ -21,42 +21,27 @@
 
 package eu.europeana.web.util;
 
+import eu.europeana.beans.query.BriefBeanView;
+import eu.europeana.beans.query.FullBeanView;
+import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.database.domain.User;
 import eu.europeana.query.ClickStreamLogger;
+import eu.europeana.query.DocIdWindowPager;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.joda.time.DateTime;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.MessageFormat;
+import java.util.Map;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());
-
-    private ClickStreamLogger.LogTypeId logTypeId;
-    private String query; //
-    private String queryConstraints; // a comma separated list of qf's from url.
-    private String pageId;
-    // private String state;
-    private int pageNr;
-    private int nrResults;
-    private String languageFacets;
-    private String countryFacet;
-    private UserAction action;
-
-
-    /*
-    * this method is used to log actions in Interceptors
-     */
-
-    public void log(HttpServletRequest request, HttpServletResponse servletResponse, UserAction action) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     public void log(HttpServletRequest request, UserAction action, ModelAndView model) {
         log.info(
@@ -65,13 +50,13 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                         action, model.getViewName(), printLogAffix(request)));
     }
 
-//    public void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel, ResultPagination resultPagination, ModelAndView model, UserAction action) {
-//        // get elements from queryModel
-//        nrResults = resultPagination.getNumFound();
-//        query = queryModel.getQueryString();
-//        queryType = queryModel.getQueryType();
-//        queryConstraints = formatQueryConstraints(queryModel.getConstraints());
-//    }
+    /**
+     * This method is used the basic information from the <code>HttpServletRequest<code>
+     * (@See <code>printLogAffix</code> )
+     *
+     * @param request the HttpServletRequest from the controller
+     * @param action  the UserAction performed in the controller
+     */
 
     public void log(HttpServletRequest request, UserAction action) {
         log.info(
@@ -80,7 +65,14 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                         action, printLogAffix(request)));
     }
 
-    // used for logging from staticPages
+    @Override
+    public void log(HttpServletRequest request, UserAction action, String logString) {
+        log.info(
+                MessageFormat.format(
+                        "[action={0}, {2}, {1}]",
+                        action, printLogAffix(request), logString));
+    }
+
     public void log(HttpServletRequest request, StaticPageType pageType) {
         log.info(
                 MessageFormat.format(
@@ -88,27 +80,106 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                         UserAction.STATICPAGE, pageType.getViewName(), printLogAffix(request)));
     }
 
+    @Override
+    public void log(HttpServletRequest request, Language oldLocale, UserAction languageChange) {
+        log.info(
+                MessageFormat.format(
+                        "[action={0}, oldLang={1}, {2}]",
+                        languageChange, oldLocale.toString(), printLogAffix(request)));
+    }
+
+    @Override
+    public void log(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView model) {
+        ClickStreamLogger.LogTypeId logTypeId;
+        String query = briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery(); //
+        String queryConstraints = "";
+        if (solrQuery.getFilterQueries() != null) {
+            String[] filterQueries = solrQuery.getFilterQueries(); // a comma separated list of qf's from url. // todo change to CU variant later
+            StringBuilder out = new StringBuilder();
+            for (String filterQuery : filterQueries) {
+                out.append(filterQuery).append(",");
+            }
+            queryConstraints = out.toString().substring(0, out.toString().length() -1);
+        }
+//        String pageId;
+        // private String state;
+        int pageNr = briefBeanView.getPagination().getPageNumber();
+        int nrResults = briefBeanView.getPagination().getNumFound();
+        String languageFacets = briefBeanView.getFacetLogs().get("LANGUAGE");
+        String countryFacet = briefBeanView.getFacetLogs().get("COUNTRY");
+        log.info(
+                MessageFormat.format(
+                        "[action={0}, view={1}, query={2}, queryType={7}, queryConstraints=\"{3}\", page={4}, " +
+                                "numFound={5}, langFacet={8}, countryFacet={9}, {6}]",
+                        UserAction.BRIEF_RESULT, model.getViewName(), query,
+                        queryConstraints, pageNr, nrResults, printLogAffix(request), solrQuery.getQueryType(),
+                        languageFacets, countryFacet));
+    }
+
+    @Override
+    public void log(HttpServletRequest request, FullBeanView fullResultView, ModelAndView model, String europeanaUri) {
+        // todo implement this
+
+        String originalQuery = "";
+        String startPage = "";
+        try {
+            DocIdWindowPager idWindowPager = fullResultView.getDocIdWindowPager();
+            originalQuery = idWindowPager.getQuery();
+            startPage = idWindowPager.getStartPage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info(
+                MessageFormat.format(
+                        "[action={0}, europeana_uri={2}, query={4}, start={3}, {1}]",
+                        UserAction.FULL_RESULT, printLogAffix(request), europeanaUri,
+                        startPage, originalQuery));
+    }
 
     private String printLogAffix(HttpServletRequest request) {
         DateTime date = new DateTime();
         String ip = request.getRemoteAddr();
-        String reqUrl = ControllerUtil.getServletUrl(request);
+        String reqUrl = getRequestUrl(request);
         final User user = ControllerUtil.getUser();
         String userId;
         if (user != null) {
             userId = user.getId().toString();
-        } else {
+        }
+        else {
             userId = "";
         }
         String language = ControllerUtil.getLocale(request).toString();
         return MessageFormat.format(
-                "userId={0}, lang={1}, date={2}, ip={3}, req={4}",
+                "userId={0}, lang={1}, req={4}, date={2}, ip={3}",
                 userId, language, date, ip, reqUrl);
     }
 
-    // todo: format full request url
     private String getRequestUrl(HttpServletRequest request) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        String base = ControllerUtil.getFullServletUrl(request);
+        String queryStringParameters = request.getQueryString();
+        Map postParameters = request.getParameterMap();
+        StringBuilder out = new StringBuilder();
+        String queryString;
+        out.append(base);
+        if (queryStringParameters != null) {
+            out.append("?").append(queryStringParameters);
+            queryString = out.toString();
+        }
+        else if (postParameters.size() > 0) {
+            out.append("?");
+            for (Object entryKey : postParameters.entrySet()) {
+                Map.Entry entry = (Map.Entry) entryKey;
+                String key = entry.getKey().toString();
+                String[] values = (String[]) entry.getValue();
+                for (String value : values) {
+                    out.append(key).append("=").append(value).append("&");
+                }
+            }
+            queryString = out.toString().substring(0, out.toString().length() - 1);
+        }
+        else {
+            queryString = out.toString();
+        }
+        return queryString;
     }
-
 }

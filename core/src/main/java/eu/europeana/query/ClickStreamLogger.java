@@ -21,11 +21,14 @@
 
 package eu.europeana.query;
 
+import eu.europeana.beans.query.BriefBeanView;
+import eu.europeana.beans.query.FullBeanView;
+import eu.europeana.database.domain.Language;
 import eu.europeana.database.domain.StaticPageType;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -58,16 +61,19 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface ClickStreamLogger {
 
-    void log(HttpServletRequest request, HttpServletResponse servletResponse, UserAction action);
-
     void log(HttpServletRequest request, UserAction action, ModelAndView model);
-
-//    void log(HttpServletRequest request, ResultModel resultModel, QueryModel queryModel,
-//             ResultPagination resultPagination, ModelAndView model, UserAction action);
 
     void log(HttpServletRequest request, UserAction action);
 
     void log(HttpServletRequest request, StaticPageType pageType);
+
+    void log(HttpServletRequest request, Language oldLocale, UserAction languageChange);
+
+    void log(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView page);
+
+    void log(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri) throws Exception;
+
+    void log(HttpServletRequest request, UserAction action, String logString);
 
     /**
      * Enum for different user actions that can be logged.
@@ -84,6 +90,7 @@ public interface ClickStreamLogger {
         MORE_LIKE_THIS,
         RETURN_TO_RESULTS,
         REDIRECT_OUTLINK,
+        REDIRECT_TO_SECURE,
         TIMELINE,
         TAG_GRID,
         YEAR_GRID,
@@ -101,21 +108,31 @@ public interface ClickStreamLogger {
         REMOVE_CAROUSEL_ITEM,
         REMOVE_SEARCH_TERM,
         SEND_EMAIL_TO_FRIEND,
-        SEND_FEEDBACK,
         TAG_AUTOCOMPLETE,
 
         // user management related actions
         REGISTER,
+        REGISTER_SUCCESS,
+        REGISTER_FAILURE,
+        MY_EUROPEANA,
         UNREGISTER,
+        CHANGE_PASSWORD_SUCCES,
+        CHANGE_PASSWORD_FAILURE,
         LOGIN,
         LOGOUT,
+        LOGOUT_COOKIE_THEFT,
 
         // errors
         ERROR,
         AJAX_ERROR,
+        ERROR_TOKEN_EXPIRED,
+        EXCEPTION_CAUGHT,
 
         // static pages
         STATICPAGE,
+        CONTACT_PAGE,
+        FEEDBACK_SEND,
+        FEEDBACK_SEND_FAILURE,
         INDEXPAGE;
 
         private String description;

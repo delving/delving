@@ -77,6 +77,13 @@ public class ControllerUtil {
         return url;
     }
 
+    public static String getFullServletUrl(HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        int index = url.indexOf(request.getServerName());
+        url = url.substring(0, index) + request.getServerName() + ":" + request.getServerPort() + request.getRequestURI();
+        return url;
+    }
+
     public static int getStartRow(HttpServletRequest request) {
         String startValue = request.getParameter("start");
         if (startValue == null) {

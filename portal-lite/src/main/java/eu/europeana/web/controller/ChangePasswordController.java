@@ -24,6 +24,7 @@ package eu.europeana.web.controller;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Token;
 import eu.europeana.database.domain.User;
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
 import org.apache.log4j.Logger;
@@ -38,6 +39,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
@@ -69,37 +71,49 @@ public class ChangePasswordController {
     @Qualifier("emailSenderForPasswordChangeNotify")
     private EmailSender notifyEmailSender;
 
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ChangePasswordFormValidator());
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    protected String getMethod(@RequestParam("token") String tokenKey, @ModelAttribute("command") ChangePasswordForm form) throws Exception {
+    protected String getMethod(@RequestParam("token") String tokenKey,
+                               @ModelAttribute("command") ChangePasswordForm form,
+                               HttpServletRequest request) throws Exception {
         Token token = tokenService.getToken(tokenKey);
         if (token == null) {
+            clickStreamLogger.log(request, ClickStreamLogger.UserAction.ERROR_TOKEN_EXPIRED);
             return "token-expired";
         }
         form.setToken(token.getToken());
         form.setEmail(token.getEmail());
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_SUCCES);
         return "change-password";
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String post(@Valid @ModelAttribute("command") ChangePasswordForm form, BindingResult result) throws Exception {
+    protected String post(@Valid @ModelAttribute("command") ChangePasswordForm form,
+                          BindingResult result,
+                          HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             log.info("The change password form has errors");
+            clickStreamLogger.log(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_FAILURE);
             return "change-password";
         }
         Token token = tokenService.getToken(form.getToken()); //token is validated in handleRequestInternal
         User user = userDao.fetchUserByEmail(token.getEmail()); //don't use email from the form. use token.
         if (user == null) {
-            throw new RuntimeException("Expected to find user for "+token.getEmail());
+            clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
+            throw new RuntimeException("Expected to find user for " + token.getEmail());
         }
         user.setPassword(form.getPassword());
         tokenService.removeToken(token); //remove token. it can not be used any more.
         userDao.updateUser(user); //now update the user
         sendNotificationEmail(user);
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success"; // todo: strange to go here, isn't it?
     }
 

@@ -25,6 +25,7 @@ public class ResultPaginationImpl implements ResultPagination {
     private int previousPage;
     private boolean isNext;
     private int nextPage;
+    private int pageNumber;
     private int numFound;
     private int start;
     private List<Breadcrumb> breadcrumbs;
@@ -43,7 +44,7 @@ public class ResultPaginationImpl implements ResultPagination {
         if (solrQuery.getStart() != null) {
             start = solrQuery.getStart() + 1; // solr is zero based so + 1
         }
-        int pageNumber = start / rows + 1;
+        pageNumber = start / rows + 1;
         int fromPage = 1;
         int toPage = Math.min(totalPages, MARGIN * 2);
         if (pageNumber > PAGE_NUMBER_THRESHOLD) {
@@ -136,6 +137,11 @@ public class ResultPaginationImpl implements ResultPagination {
     @Override
     public int getNumFound() {
         return numFound;
+    }
+
+    @Override
+    public int getPageNumber() {
+        return pageNumber;
     }
 
     @Override

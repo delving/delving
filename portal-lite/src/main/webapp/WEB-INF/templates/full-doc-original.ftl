@@ -63,7 +63,7 @@
 
     var sUrl = "save-item.ajax";
     var title = "${postTitle}";
-    var postData = "title=" + title +  "&author=${postAuthor}&europeanaUri=${result.fullDoc.id}&europeanaObject=${result.fullDoc.thumbnail[0]}";
+    var postData = "title=" + title +  "&author=${postAuthor}&europeanaUri=${result.fullDoc.id}&europeanaObject=${result.fullDoc.thumbnails[0]}";
 
     function saveItem() {
         var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, postData);
@@ -101,7 +101,7 @@
     function addTag(tagText) {
         var tagUrl = "save-social-tag.ajax";
         var title = "${postTitle}";
-        var tagData = "europeanaUri=${result.fullDoc.id}&europeanaObject=${result.fullDoc.thumbnail[0]}&title="+title+"&tag=" + encodeURIComponent(tagText);
+        var tagData = "europeanaUri=${result.fullDoc.id}&europeanaObject=${result.fullDoc.thumbnails[0]}&title="+title+"&tag=" + encodeURIComponent(tagText);
         var request = YAHOO.util.Connect.asyncRequest('POST', tagUrl, callback2, tagData);
     }
     ;
@@ -315,11 +315,11 @@
                         }
                     </script>
                     <a href="${imageRef}" target="_blank">
-                        <img src="${cacheUrl}uri=${result.fullDoc.thumbnail[0]}&size=FULL_DOC&type=${result.fullDoc.europeanaType}"
+                        <img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]}&size=FULL_DOC&type=${result.fullDoc.europeanaType}"
                          class="full" alt="Image title: ${result.fullDoc.dcTitle[0]}" />
-                        <#--<img src="${cacheUrl}uri=${result.fullDoc.thumbnail[0]}&size=FULL_DOC&type=${result.fullDoc.europeanaType}"-->
+                        <#--<img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]}&size=FULL_DOC&type=${result.fullDoc.europeanaType}"-->
                          <#--class="full" alt="Image title: ${result.fullDoc.dcTitle[0]}"/>-->
-                        <#--<img src="${result.fullDoc.thumbnail[0]}" alt="Image title: ${result.fullDoc.dcTitle[0]}" id="imgview" onload="checkSize(this.height);"/>-->
+                        <#--<img src="${result.fullDoc.thumbnails[0]}" alt="Image title: ${result.fullDoc.dcTitle[0]}" id="imgview" onload="checkSize(this.height);"/>-->
                     </a>
 
                 </div>

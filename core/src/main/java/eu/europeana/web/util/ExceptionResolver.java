@@ -21,6 +21,7 @@
 
 package eu.europeana.web.util;
 
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
 import org.apache.log4j.Logger;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -60,6 +62,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Value("#{europeanaProperties['exception.to']}")
     private String targetEmailAddress;
+
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
 
     public void setEmailSender(EmailSender emailSender) {
         this.emailSender = emailSender;
@@ -91,6 +96,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 log.error(stackTrace);
             }
         }
+        String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
         ModelAndView mav = new ModelAndView("exception");
         mav.addObject("debug", debugMode);
         mav.addObject("cacheUrl", cacheUrl);

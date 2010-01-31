@@ -1,7 +1,7 @@
 <#import "spring.ftl" as spring />
 <#assign model = result/>
 <#assign result = result/>
-<#assign uri = uri>
+<#assign uri = result.fullDoc.id/>
 <#assign view = "table"/>
 <#assign thisPage = "full-doc.html"/>
 <#compress>

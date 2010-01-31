@@ -22,6 +22,7 @@
 package eu.europeana.web.controller;
 
 import eu.europeana.database.domain.User;
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.EmailSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.TreeMap;
@@ -67,6 +69,13 @@ public class ContactPageController {
     @Value("#{europeanaProperties['feedback.from']}")
     private String feedbackFrom;
 
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
+    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
+        this.clickStreamLogger = clickStreamLogger;
+    }
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setValidator(new ContactFormValidator());
@@ -93,9 +102,10 @@ public class ContactPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String handlePost(@ModelAttribute("contactForm") @Valid ContactForm form, BindingResult result) throws Exception {
+    protected String handlePost(@ModelAttribute("contactForm") @Valid ContactForm form, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
-            form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
+            form.setSubmitMessage("There was a problem with your feedback. Please try to send again.");
+            clickStreamLogger.log(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }
         else {
             Map<String, Object> model = new TreeMap<String, Object>();
@@ -104,7 +114,9 @@ public class ContactPageController {
             userFeedbackSender.sendEmail(feedbackTo, feedbackFrom, "User Feedback", model);
             userFeedbackConfirmSender.sendEmail(form.getEmail(), feedbackFrom, "User Feedback", model);
             form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
+            clickStreamLogger.log(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
         }
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.CONTACT_PAGE);
         return "contact";
     }
 

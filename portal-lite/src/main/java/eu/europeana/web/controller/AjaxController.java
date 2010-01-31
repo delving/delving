@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static eu.europeana.query.ClickStreamLogger.UserAction;
+
 /**
  * General Controller for all AJAX actions
  *
@@ -80,7 +82,7 @@ public class AjaxController {
             }
         }
         catch (Exception e) {
-            handleAjaxException(e, response);
+            handleAjaxException(e, response, request);
         }
         return createResponsePage(debug, success, exceptionString, response);
     }
@@ -97,23 +99,23 @@ public class AjaxController {
         switch (findModifiable(className)) {
             case CAROUSEL_ITEM:
                 user = staticInfoDao.removeCarouselItemFromSavedItem(id);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_CAROUSEL_ITEM);
+                clickStreamLogger.log(request, UserAction.REMOVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
                 user = userDao.removeSavedItem(id);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SAVED_ITEM);
+                clickStreamLogger.log(request, UserAction.REMOVE_SAVED_ITEM);
                 break;
             case SAVED_SEARCH:
                 user = userDao.removeSavedSearch(id);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SAVED_SEARCH);
+                clickStreamLogger.log(request, UserAction.REMOVE_SAVED_SEARCH);
                 break;
             case SEARCH_TERM:
                 user = staticInfoDao.removeSearchTerm(id);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SEARCH_TERM);
+                clickStreamLogger.log(request, UserAction.REMOVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 user = userDao.removeSocialTag(id);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.REMOVE_SOCIAL_TAG);
+                clickStreamLogger.log(request, UserAction.REMOVE_SOCIAL_TAG);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -131,7 +133,7 @@ public class AjaxController {
             }
         }
         catch (Exception e) {
-            handleAjaxException(e, response);
+            handleAjaxException(e, response, request);
         }
         return createResponsePage(debug, success, exceptionString, response);
     }
@@ -151,7 +153,7 @@ public class AjaxController {
                 if (carouselItem == null) {
                     return false;
                 }
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_CAROUSEL_ITEM);
+                clickStreamLogger.log(request, UserAction.SAVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
@@ -161,7 +163,7 @@ public class AjaxController {
                 savedItem.setLanguage(ControllerUtil.getLocale(request));
                 savedItem.setEuropeanaObject(getStringParameter("europeanaObject", request));
                 user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", request));
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_ITEM);
+                clickStreamLogger.log(request, UserAction.SAVE_ITEM);
                 break;
             case SAVED_SEARCH:
                 SavedSearch savedSearch = new SavedSearch();
@@ -169,13 +171,14 @@ public class AjaxController {
                 savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", request), "utf-8"));
                 savedSearch.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSavedSearch(user, savedSearch);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_SEARCH);
+                clickStreamLogger.log(request, UserAction.SAVE_SEARCH);
                 break;
             case SEARCH_TERM:
                 SearchTerm searchTerm = staticInfoDao.addSearchTerm(Long.valueOf(idString));
                 if (searchTerm == null) {
                     return false;
                 }
+                clickStreamLogger.log(request, UserAction.SAVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
@@ -186,7 +189,7 @@ public class AjaxController {
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG);
+                clickStreamLogger.log(request, UserAction.SAVE_SOCIAL_TAG);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -204,7 +207,7 @@ public class AjaxController {
             }
         }
         catch (Exception e) {
-            handleAjaxException(e, response);
+            handleAjaxException(e, response, request);
         }
         return createResponsePage(debug, success, exceptionString, response);
     }
@@ -222,7 +225,7 @@ public class AjaxController {
         model.put("email", emailAddress);
         String subject = "A link from Europeana"; // replace with injection later
         friendEmailSender.sendEmail(emailAddress, user.getEmail(), subject, model);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.SEND_EMAIL_TO_FRIEND);
+        clickStreamLogger.log(request, UserAction.SEND_EMAIL_TO_FRIEND);
         return true;
     }
 
@@ -240,17 +243,18 @@ public class AjaxController {
             page.addObject("tagList", tagCountList);
         }
         catch (Exception e) {
-            handleAjaxException(e, response);
+            handleAjaxException(e, response, request);
         }
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.TAG_AUTOCOMPLETE);
+        clickStreamLogger.log(request, UserAction.TAG_AUTOCOMPLETE);
         return page;
     }
 
 
-    private void handleAjaxException(Exception e, HttpServletResponse response) {
+    private void handleAjaxException(Exception e, HttpServletResponse response, HttpServletRequest request) {
         success = false;
         response.setStatus(400);
         exceptionString = getStackTrace(e);
+        clickStreamLogger.log(request, UserAction.AJAX_ERROR);
         log.warn("Problem handling AJAX request", e);
     }
 

@@ -19,7 +19,7 @@
     <#assign query = "${RequestParameters.query}">
 </#if>
 <#if format??>
-    <#assign view = format>
+    <#assign format = format>
 </#if>
 
 <#macro localeBased type toSwitch>
