@@ -17,19 +17,24 @@
 <#--<#include "inc_search_form.ftl">-->
 
 <body>
-<div id="doc4" class="yui-t2">
-    <#--<div id="hd">-->
-        <#--<#include "inc_top_nav.ftl"/>-->
-    <#--</div>-->
-   <div id="bd">
-    <div id="yui-main">
-        <div class="yui-b">
-                <div class="yui-g" id="search">
+<div id="sidebar" class="grid_3">
 
-                    <#--<@SearchForm "search_result"/>-->
+    <div id="identity">
+            <h1>Europeana Lite</h1>
+            <a href="index.html" title="Europeana lite"><img src="images/europeana_open_logo_small.jpg" alt="European Open Source"/></a>
+    </div>
 
-                </div>
-                <div class="yui-g">
+</div>
+
+<div id="main" class="grid_9">
+
+    <div id="top-bar">
+
+        <#include "language_select.ftl">
+    </div>
+
+    <div class="clear"></div>
+
                        <#switch queryProblem>
                        <#case 'MATCH_ALL_DOCS'>
                         <div class="ui-widget ui-error">
@@ -85,22 +90,10 @@
                             </#if>
 
                         </#switch>
-                    </div>
-                    <!-- general exception page -->
-                <#--<p style="margin: 0 0 240px 0">Please try another search.</p>-->
-            </div>
-        </div>
-        <div class="yui-b">
-           <a href="index.html">
-               <#-- todo replace with different image here!!! -->
-               <#--<img src="images/logo-sm.gif" alt="logo Europeana think culture" title="logo Europeana think culture" />-->
-           </a>
-        </div>
-   </div>
-   <div id="ft">
+ </div>
+
 	    <#include "inc_footer.ftl"/>
-   </div>
-</div>
+
 </body>
 </html>
 

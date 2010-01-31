@@ -4,24 +4,31 @@
 
 <body>
 
-<div id="doc4" class="yui-t2">
-    <div id="hd">
-        <#include "inc_top_nav.ftl"/>
-    </div>
-   <div id="bd">
-    <div id="yui-main">
-        <div class="yui-b">
-               You have successfully logged out
-        </div>
+<div id="sidebar" class="grid_3">
 
+    <div id="identity">
+            <h1>Europeana Lite</h1>
+            <a href="index.html" title="Europeana lite"><img src="images/europeana_open_logo_small.jpg" alt="European Open Source"/></a>
     </div>
-        <div class="yui-b">
-            <#include "inc_logo_sidebar.ftl"/>
-        </div>
-    </div>
-   <div id="ft">
-	   <#include "inc_footer.ftl"/>
-   </div>
+
 </div>
+
+<div id="main" class="grid_9">
+
+    <div id="top-bar">
+
+        <#include "language_select.ftl">
+    </div>
+
+    <div class="clear"></div>
+
+
+    <h3>You have successfully logged out</h3>
+
+</div>
+
+
+<#include "inc_footer.ftl"/>
+
 </body>
 </html>
