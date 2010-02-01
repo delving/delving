@@ -21,18 +21,15 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.web.util.StaticPageCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Genereric controller for static pages.
@@ -45,52 +42,31 @@ import javax.servlet.http.HttpServletRequest;
 public class StaticPageController {
 
     @Autowired
-    private StaticInfoDao staticInfoDao;
+    private StaticPageCache staticPageCache;
 
-    @Autowired
-    private ClickStreamLogger clickStreamLogger;
-
-    /*
-    * freemarker template not loadable from database
-    */
-
-    @RequestMapping("/advancedsearch.html")
-    public ModelAndView AdvancedSearchHandler(HttpServletRequest request) throws Exception {
-        StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
-        clickStreamLogger.log(request, pageType);
-        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
-    }
-
-    /*
-     * freemarker Template not loadable from database
+    /**
+     * All of the pages are served up from here
+     *
+     * @param pageName name of the page
+     * @param request  where we find locale
+     * @param response where to write it
+     * @throws Exception something went wrong
      */
 
-    @RequestMapping("/error.html")
-    public ModelAndView ErrorPageHandler(HttpServletRequest request) throws Exception {
-        StaticPageType pageType = StaticPageType.ERROR;
-        clickStreamLogger.log(request, pageType);
-        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+    @RequestMapping("/{pageName}.html")
+    public void fetchStaticPage(
+            @PathVariable("pageName") String pageName,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws Exception {
+        String page = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+        if (page == null) {
+            response.sendRedirect("/error.html");
+        }
+        else {
+            response.setContentLength(page.length());
+            response.getWriter().write(page);
+        }
     }
 
-    /*
-     * freemarker template loadable from database
-     */
-
-    @RequestMapping("/aboutus.html")
-    public ModelAndView AboutUsPageHandler(HttpServletRequest request) throws Exception {
-        StaticPageType pageType = StaticPageType.ABOUT_US;
-        return loadablePageFromDB(
-                request,
-                pageType,
-                ControllerUtil.createModelAndViewPage(pageType.getViewName())
-        );
-    }
-
-    private ModelAndView loadablePageFromDB(HttpServletRequest request, StaticPageType pageType, ModelAndView page) {
-        Language language = ControllerUtil.getLocale(request);
-        StaticPage staticPage = staticInfoDao.getStaticPage(pageType, language);
-        page.addObject("staticPage", staticPage);
-        clickStreamLogger.log(request, pageType);
-        return page;
-    }
 }
