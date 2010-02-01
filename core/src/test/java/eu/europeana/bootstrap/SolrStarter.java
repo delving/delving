@@ -39,7 +39,7 @@ public class SolrStarter {
         System.setProperty("solr.data.dir", "./core/target/solrdata");
 
         WebAppContext webAppContext = new WebAppContext("./core/src/test/solr/solr.war", "/solr");
-        server = new Server(8080);
+        server = new Server(8983);
         server.setHandler(webAppContext);
         server.start();
     }

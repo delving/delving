@@ -41,6 +41,7 @@ import java.io.FileFilter;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class PortalLite {
 
     public static void main(String... args) throws Exception {

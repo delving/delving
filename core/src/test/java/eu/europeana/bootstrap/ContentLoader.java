@@ -21,13 +21,6 @@
 
 package eu.europeana.bootstrap;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
@@ -38,14 +31,20 @@ import eu.europeana.database.migration.DataMigration;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.incoming.ImportRepository;
+import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.File;
+import java.io.IOException;
 
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>, Borys Omelayenko
  * @since Jun 29, 2009: 4:15:22 PM
  */
-public class LoadContent {
-    private static final Logger log = Logger.getLogger(LoadContent.class);
+public class ContentLoader {
+    private static final Logger log = Logger.getLogger(ContentLoader.class);
 
     ESEImporter eseImporter;
     DashboardDao dashboardDao;
@@ -56,7 +55,7 @@ public class LoadContent {
 
     public static void main(String... args) throws Exception {
 
-    	LoadContent contentLoader = new LoadContent();
+    	ContentLoader contentLoader = new ContentLoader();
     	contentLoader.init();
     	contentLoader.load((args.length == 0) || !args[0].equalsIgnoreCase("skip=true"));
     }

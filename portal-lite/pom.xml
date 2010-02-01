@@ -76,7 +76,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>eu.europeana.PortalLite</mainClass>
+                    <mainClass>eu.europeana.PortalLiteStarter</mainClass>
                     <classpathScope>test</classpathScope>
                 </configuration>
             </plugin>

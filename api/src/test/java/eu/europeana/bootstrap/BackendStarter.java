@@ -33,8 +33,7 @@ import java.io.FileFilter;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-@Deprecated // background services are now started by the classes PortalFull and PortalLite themselves (mind the javadoc there)
-public class EuropeanaBackendStarter {
+public class BackendStarter {
 
     public static void main(String... args) throws Exception {
         String root = "./";
@@ -49,6 +48,7 @@ public class EuropeanaBackendStarter {
             System.exit(1);
         }
         System.setProperty("solr.solr.home", root + "core/src/test/solr/home");
+        System.setProperty("solr.data.dir", root + "core/target/solrdata");
         int port = 8983;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
@@ -65,9 +65,7 @@ public class EuropeanaBackendStarter {
                 return file.isDirectory();
             }
         });
-        return checkFor("portal-lite", subdirs)
-                && checkFor("api", subdirs)
-                && checkFor("core", subdirs);
+        return checkFor("api", subdirs) && checkFor("core", subdirs);
     }
 
     private static boolean checkFor(String name, File[] subdirs) {
