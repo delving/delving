@@ -273,6 +273,18 @@
         <property name="repeatInterval" value="31000"/>
     </bean>
 
+    <bean id="staticPageCacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="staticPageCache"/>
+                <property name="targetMethod" value="invalidate"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="600000"/>
+        <property name="repeatInterval" value="600000"/>
+    </bean>
+
     <bean id="registrationEmailSender" class="eu.europeana.web.util.TokenReplyEmailSender">
         <property name="emailSenders">
             <map>

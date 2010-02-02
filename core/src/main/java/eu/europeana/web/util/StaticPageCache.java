@@ -55,6 +55,10 @@ public class StaticPageCache {
         return page.getContent();
     }
 
+    public void invalidate() {
+        pageMapCache.clear();
+    }
+
     private Map<String, Page> pageMap() {
         if (pageMapCache.isEmpty()) {
             File root = new File(staticPagePath);
