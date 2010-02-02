@@ -60,7 +60,8 @@
 					<providerImplementations>
 						<svn>javasvn</svn>
 					</providerImplementations>
-				</configuration>
+                    <timestampFormat>{0,date,yyyy-MM-dd HH:mm:ss}</timestampFormat>        
+ 				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -79,7 +80,7 @@
 						<phase>validate</phase>
 						<configuration>
 							<tasks>
-                                <echo message="Build tag: ${buildNumber}" file="portal-full/src/main/webapp/build.txt" />
+                                <echo message="Revision ${buildNumber} built at ${timestamp}" file="portal-full/src/main/webapp/build.txt" />
 							</tasks>
 						</configuration>
 						<goals>
