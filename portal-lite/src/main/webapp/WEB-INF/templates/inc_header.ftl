@@ -157,24 +157,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <#-- favicon_red.ico is also available -->
     <link rel="shortcut icon" href="/portal/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="css/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="css/text.css"/>
-    <link rel="stylesheet" type="text/css" href="css/grid.css"/>
+    <link rel="stylesheet" type="text/css" href="css/reset-text-grid.css"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
 
-    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.4.1.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/jquery.toggleElements.js"></script>
     <script type="text/javascript" src="js/jquery.validate.js"></script>
     <script type="text/javascript" src="js/js_utilities.js"></script>
-
-    <script type="text/javascript" src="js/briefDoc.js"></script>
-    <script type="text/javascript" src="js/fullDoc.js"></script>
+    <script type="text/javascript" src="js/results.js"></script>
     <script type="text/javascript" src="js/myEuropeana.js"></script>
-
-
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>
@@ -182,13 +176,13 @@
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
-    <title>Europeana - Homepage</title>
+    <title>Open-Europeana - Homepage</title>
     <#break>
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
     <#--<script type="text/javascript" src="js/lib/home.js"></script>-->
-    <title>Europeana - Advanced Search</title>
+    <title>Open-Europeana - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "bd"/>
@@ -202,7 +196,7 @@
         });
 
     </script>
-    <title>Europeana - Search results</title>
+    <title>Open-Europeana - Search results</title>
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
@@ -216,7 +210,7 @@
         var msgEmailValid = "<@spring.message 'EnterValidEmail_t' />";
     </script>
     </#if>
-    <title>Europeana - Search results</title>
+    <title>Open-Europeana - Search results</title>
     <#break>
     <#case "myeuropeana.html">
     <#assign pageId = "me"/>
@@ -226,7 +220,7 @@
             $("#savedItems").tabs({ cookie: { expires: 30 } });
         });
     </script>
-    <title>Europeana - My Europeana</title>
+    <title>Open-Europeana - My Open-Europeana</title>
     <#break>
     <#case "exception.html">
     <title>Europeana - Exception</title>
@@ -252,22 +246,22 @@
             });
         });
     </script>
-    <title>Europeana - Login</title>
+    <title>Open-Europeana - Login</title>
     <#break>
     <#case "logout.html">
     <#assign pageId = "lo"/>
-    <title>Europeana - Logout</title>
+    <title>Open-Europeana - Logout</title>
     <#break>
     <#case "register.html">
     <#assign pageId = "rg"/>
-    <title>Europeana - Registration</title>
+    <title>Open-Europeana - Registration</title>
     <#break>
     <#case "forgotPassword.html">
     <#assign pageId = "fp"/>
-    <title>Europeana - Forgot Password</title>
+    <title>Open-Europeana - Forgot Password</title>
     <#break>
     <#case "register-success.html">
-    <title>Europeana - Registration continued</title>
+    <title>Open-Europeana - Registration continued</title>
     <#break>
     </#switch>
 

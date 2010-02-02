@@ -1,7 +1,7 @@
 body {
 	/*background: #eaeaea url(../images/960/white_bg.gif) top center repeat-y;*/
 }
-#container {              -
+#container {
 	overflow: hidden;
     margin-top: 20px;
 }
@@ -66,14 +66,14 @@ body {
     color: #555;
     margin: 0 0 10px 0;
     font-size: 1em;
-    font-weigth: normal;
+    font-weight: normal;
     border-bottom: 1px solid #ccc;
 }
 #facet-list h6 {
     color: #333;
     margin: 10px 0;
     font-size: 1em;
-    font-weigth: normal;
+    font-weight: normal;
 }
 #facet-list div.scroll {
     overflow-x: hidden;
@@ -245,7 +245,6 @@ table caption {
 #item-detail #img-full {
     overflow-x:hidden;
     overflow-y:hidden;
-    scrolling: none;
     text-align:center;
 }
 

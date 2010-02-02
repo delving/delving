@@ -3,13 +3,13 @@ function setLang(lang) {
        var langval = langform.lang;
        langval.value = lang;
        langform.submit();
-};
+}
 
 function toggleObject(oId) {
     var oObj = document.getElementById(oId);
     var cObj = (oObj.style.display == "none") ? "block" : "none";
     oObj.style.display = cObj;
-};
+}
 
 function highLight(oId){
     // makes use of jQuery and jQueryUI javascript files
@@ -17,7 +17,7 @@ function highLight(oId){
        $("#"+oId).effect("pulsate", { times:4 }, 500);
     }
     return false;
-};
+}
 
 function ContactMe(prefix,suffix){
     var m =  Array(109,97,105,108,116,111,58);
@@ -27,14 +27,14 @@ function ContactMe(prefix,suffix){
     }
     window.location.replace(s + prefix + String.fromCharCode(8*8) + suffix);
     return false;
-};
+}
 
 function isEmpty( inputStr ) {
-    if ( null == inputStr || "" == inputStr ) {
+    if ( null === inputStr || "" == inputStr ) {
         return true;
     }
     return false;
-};
+}
 
 function checkFormSimpleSearch(oId){
     var o = document.getElementById(oId);
@@ -43,7 +43,7 @@ function checkFormSimpleSearch(oId){
         return false;
     }
     return true;
-};
+}
 
 
 $(document).ready(function() {
@@ -65,8 +65,7 @@ $(document).ready(function() {
      });
 
     // style all the submit and button elements.
-    $().find("input[type=submit],input[type=reset],button").addClass("fg-button ui-state-default ui-corner-all");
-    
+    $(document).find("input[type=submit],input[type=reset],button").addClass("fg-button ui-state-default ui-corner-all");
     // ui button hover states
 	$(function(){
 		//all hover and click logic for buttons

@@ -31,7 +31,7 @@ $(document).ready(function() {
          });
     };
 
-/*
+
      function showDefault(obj,iType){
         switch(iType)
         {
@@ -50,4 +50,4 @@ $(document).ready(function() {
         default:
           obj.src="images/item-page.gif";
         }
-     }*/
+     }

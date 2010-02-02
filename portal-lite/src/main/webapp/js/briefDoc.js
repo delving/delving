@@ -1,9 +1,4 @@
-// BRIEF DOC
-
-/*$(document).ready(function() {
-    $('div.toggler-c').toggleElements(
-    { fxAnimation:'slide', fxSpeed:'fast', className:'toggler' });
-});*/
+/* ________________BRIEF DOC_______________________*/
 
 function saveQuery(className, queryToSave, queryString){
     var sr = document.getElementById("msg-save-search");
@@ -15,14 +10,14 @@ function saveQuery(className, queryToSave, queryString){
        success: function(msg){
            sr.innerHTML = msgSearchSaveSuccess;
            var ss = document.getElementById("savedSearchesCount");
-           var currentCount = parseInt(ss.innerHTML);
+           var currentCount = parseInt(ss.innerHTML, 10);
            ss.innerHTML = currentCount + 1;
        },
        error: function(msg) {
             sr.innerHTML = msgSearchSaveFail;
        }
      });
-};
+}
 
 function showDefaultSmall(obj, iType) {
     if(obj && iType){
@@ -44,13 +39,12 @@ function showDefaultSmall(obj, iType) {
                 obj.src = "images/item-page.gif";
         }
     }
-};
+}
+/*
 
 function refineSearch(query,qf){
    $("input#query-get").val(query);
     var strqf = $("input#qf-get").val(qf.replace("&qf=",""));
-    //strqf = strqf.replace("&amp;","&");
-
-   $("#form-refine-search").submit();
-}
-
+    strqf = strqf.replace("&amp;","&");
+    $("#form-refine-search").submit();
+}*/
