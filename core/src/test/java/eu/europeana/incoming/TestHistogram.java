@@ -40,7 +40,8 @@ public class TestHistogram {
                     "\t067650: 0025840\n" +
                     "\t109460: 0041811\n" +
                 "}\n", 
-                histogram.toString());
+                histogram.toString()
+        );
     }
 
 }

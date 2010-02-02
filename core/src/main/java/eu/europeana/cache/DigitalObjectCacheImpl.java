@@ -24,9 +24,7 @@ package eu.europeana.cache;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -45,16 +43,8 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
     private CacheHash cacheHash = new CacheHash();
     private HttpClient httpClient;
 
-    public DigitalObjectCacheImpl() {
-        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        connectionManager.closeIdleConnections(10000);
-        HttpConnectionManagerParams params = connectionManager.getParams();
-        params.setDefaultMaxConnectionsPerHost(2);
-        params.setMaxTotalConnections(10);
-        params.setConnectionTimeout(5000);
-        connectionManager.setParams(params);
-
-        httpClient = new HttpClient(connectionManager);
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public void setRoot(File root) {
@@ -73,7 +63,6 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
     public boolean cache(String uri) throws IOException {
         File[] cachedFiles = cacheHash.getItemSizeCachedFiles(root, uri);
         if (cachedFiles != null) {
-//            if (log.isDebugEnabled()) log.debug("Already exists in cache: " + uri);
             log.info("Already exists in cache: " + uri);
             return true;
         }
@@ -162,7 +151,7 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
 
     private boolean fetch(String uri, GetMethod getMethod) throws IOException, IllegalArgumentException {
         log.info("Fetching " + uri);
-        boolean fetchSuccesful = false;
+        boolean fetchSuccessful = false;
         try {
             int httpStatus = httpClient.executeMethod(getMethod);
             if (httpStatus == HttpStatus.SC_OK) {
@@ -170,8 +159,8 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
                 String mimeTypeString = (mimeTypeHeader == null) ? "unknown" : mimeTypeHeader.getValue();
                 MimeType mimeType = cacheHash.getMimeType(mimeTypeString);
                 if (mimeType.isCacheable()) {
-                    fetchSuccesful = cacheItem(uri, getMethod, mimeType);
-                    if (fetchSuccesful) {
+                    fetchSuccessful = cacheItem(uri, getMethod, mimeType);
+                    if (fetchSuccessful) {
                         log.info("Successfully cached: " + uri);
                     }
                     else {
@@ -195,7 +184,7 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
             // because we use multithreaded connection manager the connection needs to be released manually
             getMethod.releaseConnection();
         }
-        return fetchSuccesful;
+        return fetchSuccessful;
     }
 
     private boolean cacheItem(String uri, GetMethod getMethod, MimeType mimeType) throws IOException {
