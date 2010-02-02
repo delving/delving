@@ -68,47 +68,52 @@ public class CacheBuilder implements Runnable {
 
     private class CacheJob implements Runnable {
         private CacheingQueueEntry entry;
+        private Histogram histogram;
 
         private CacheJob(CacheingQueueEntry entry) {
             this.entry = entry;
+            this.histogram = new Histogram(entry.getCollection().getName());
         }
 
         public void run() {
             while (true) {
                 List<EuropeanaObject> newObjects = dashboardDao.getEuropeanaObjectsToCache(chunkSize, entry);
                 if (newObjects.isEmpty()) {
-                    log.debug("No new objects found for "+entry.getCollection());
-                    entry.getCollection().setCacheState(CacheState.CACHED );
+                    log.debug("No new objects found for " + entry.getCollection());
+                    entry.getCollection().setCacheState(CacheState.CACHED);
                     dashboardDao.updateCollection(entry.getCollection());
-                    return;
+                    break;
                 }
                 log.info("Found " + newObjects.size() + "/" + chunkSize + " objects to cache from " + entry.getCollection());
                 try {
-                    long time = System.currentTimeMillis();
                     for (EuropeanaObject object : newObjects) {
                         try {
+                            long before = System.currentTimeMillis();
                             if (!digitalObjectCache.cache(object.getObjectUrl())) {
                                 dashboardDao.setObjectCachedError(object);
                             }
+                            long after = System.currentTimeMillis();
+                            histogram.recordDuration(after - before);
                         }
                         catch (IOException e) {
                             log.warn("Unable to cache " + object, e);
                             dashboardDao.setObjectCachedError(object);
                         }
                     }
-                    log.info("Finished cacheing " + newObjects.size() + " for " + entry.getCollection() + "  in " + (System.currentTimeMillis() - time) + " millis.");
                     entry = dashboardDao.saveObjectsCached(newObjects.size(), entry, newObjects.get(newObjects.size() - 1));
                     if (entry == null) {
                         break;
                     }
                 }
                 catch (Exception e) {
-                    log.error("Unable to submit imported records for caching! "+entry, e);
+                    log.error("Unable to submit imported records for caching! " + entry, e);
                     entry.getCollection().setCacheState(CacheState.UNCACHED);
                     dashboardDao.updateCollection(entry.getCollection());
-                    return;
+                    break;
                 }
             }
+            log.info("Cacheing Performance\n" + histogram);
         }
     }
+
 }
