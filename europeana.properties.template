@@ -48,7 +48,7 @@ piwik.logUrl   = http://localhost:8888/piwik/piwik.php
 #
 # smtp server settings
 #
-smtp.host = smtp.kb.nl
+smtp.host = localhost
 smtp.username = username
 smtp.password = password
 
@@ -61,11 +61,11 @@ trigger.repeatInterval = 3000
 #
 # various email addresses
 #
-admin.to       = sjoerd.siebinga@gmail.com
+admin.to       = username@email.com
 system.from    = noreply@europeana.eu
-register.to    = sjoerd.siebinga@gmail.com
-feedback.to    = sjoerd.siebinga@gmail.com
-exception.to   = sjoerd.siebinga@gmail.com
+register.to    = username@email.com
+feedback.to    = username@email.com
+exception.to   = username@email.com
 feedback.from  = noreply@europeana.eu
 
 #

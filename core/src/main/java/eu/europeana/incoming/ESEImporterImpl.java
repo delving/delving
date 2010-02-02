@@ -365,7 +365,7 @@ public class ESEImporterImpl implements ESEImporter {
         private void indexRecordList() throws IOException, SolrServerException {
             log.info("sending "+recordList.size()+" records to solr");
             solrServer.add(recordList);
-            solrServer.commit();
+//            solrServer.commit();       // It is better to use the  autocommit from solr
             recordList.clear();
         }
 

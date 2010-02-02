@@ -121,7 +121,24 @@
                     <excludePackageNames>*.migration.*, *.json.*, *.integration.*, *.dao.*</excludePackageNames>
                 </configuration>
             </plugin>
-
+            <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                <appendAssemblyId>true</appendAssemblyId>
+                <descriptorRefs>
+                  <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>make-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>assembly</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -264,11 +281,11 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.osuosl.srw</groupId>
-            <artifactId>srw_lucene</artifactId>
-            <!--suppress MavenModelInspection -->
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.osuosl.srw</groupId>-->
+            <!--<artifactId>srw_lucene</artifactId>-->
+            <!--&lt;!&ndash;suppress MavenModelInspection &ndash;&gt;-->
+        <!--</dependency>-->
          <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
