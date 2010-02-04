@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.osuosl.srw</groupId>
-  <artifactId>srw_lucene</artifactId>
-  <version>1.0</version>
-  <description>Artifactory auto generated POM</description>
-</project>
