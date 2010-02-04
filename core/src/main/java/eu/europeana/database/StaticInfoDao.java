@@ -109,7 +109,6 @@ public interface StaticInfoDao {
      * @param savedSearch - the instance of SavedSearch used to initialize the new SearchTerm instance.
      * @return boolean - true todo: always true?
      * @see {@link SavedSearch}
-     * @deprecated
      */
     boolean addSearchTerm(SavedSearch savedSearch);
 

@@ -133,7 +133,6 @@ public class EuropeanaProperties extends Properties {
             "feedback.to",
             "exception.to",
             "feedback.from",
-            "template.path",
             "cacheUrl",
             "resolverUrlPrefix",
             "displayPageUrl",
