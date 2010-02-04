@@ -82,7 +82,6 @@
         <module>portal-lite</module>
         <module>dashboard</module>
         <module>sip-creator</module>
-        <module>portal-full</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
