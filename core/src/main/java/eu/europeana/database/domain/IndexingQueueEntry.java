@@ -100,4 +100,13 @@ public class IndexingQueueEntry implements QueueEntry {
     public Date getUpdated() {
         return updated;
     }
+
+    @Override
+    public String toString() {
+        return "IndexingQueueEntry{" +
+                "collection=" + collection +
+                ", recordsProcessed=" + recordsProcessed +
+                ", totalRecords=" + totalRecords +
+                "}";
+    }
 }

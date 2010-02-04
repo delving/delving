@@ -80,4 +80,13 @@ public class CacheingQueueEntry implements QueueEntry {
     public void setUpdated(Date updated) {
         this.updated = updated;
     }
+
+    @Override
+    public String toString() {
+        return "CacheingQueueEntry{" +
+                "collection=" + collection +
+                ", recordsProcessed=" + recordsProcessed +
+                ", totalRecords=" + totalRecords +
+                '}';
+    }
 }

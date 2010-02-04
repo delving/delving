@@ -1,5 +1,8 @@
 package eu.europeana.incoming;
 
+import org.apache.solr.client.solrj.SolrServerException;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -14,4 +17,5 @@ public interface ESEImporter {
     ImportFile commenceImport(ImportFile importFile, Long collectionId);
     ImportFile abortImport(ImportFile importFile);
     List<ImportFile> getActiveImports();
+    void commit() throws IOException, SolrServerException;
 }

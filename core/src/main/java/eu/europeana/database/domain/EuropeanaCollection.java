@@ -57,15 +57,15 @@ public class EuropeanaCollection implements Serializable {
     @Column(length = 256)
     private String fileName;
 
-    @Column(length=25)
+    @Column(length = 25)
     @Enumerated(EnumType.STRING)
     private ImportFileState fileState = ImportFileState.NONEXISTENT;
 
-    @Column(length=25)
+    @Column(length = 25)
     @Enumerated(EnumType.STRING)
     private CacheState cacheState = CacheState.EMPTY;
 
-    @Column(length=25)
+    @Column(length = 25)
     @Enumerated(EnumType.STRING)
     private CollectionState collectionState = CollectionState.EMPTY;
 
@@ -189,5 +189,10 @@ public class EuropeanaCollection implements Serializable {
 
     public void setImportError(String importError) {
         this.importError = importError;
+    }
+
+    @Override
+    public String toString() {
+        return "EuropeanaCollection{" + name + "}";
     }
 }

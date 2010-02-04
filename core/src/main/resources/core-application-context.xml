@@ -138,10 +138,8 @@
 
     <bean id="normalizedEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
         <property name="importRepository" ref="normalizedImportRepository"/>
-        <property name="solrServer" ref="solrServer"/>
         <property name="normalized" value="true"/>
-        <property name="chunkSize" value="1000"/>
-        <property name="annotationProcessor" ref="annotationProcessor"/>
+        <property name="chunkSize" value="#{europeanaProperties['solr.chunkSize']}"/>
         <property name="beanClass">
             <value type="java.lang.Class">eu.europeana.beans.AllFieldBean</value>
         </property>
