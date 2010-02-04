@@ -53,20 +53,6 @@ public interface DashboardService extends RemoteService {
 
     List<SavedSearchX> fetchSavedSearches(UserX userX);
 
-    List<String> fetchPartnerSectors();
-    List<PartnerX> fetchPartners();
-    List<CountryX> fetchCountries();
-    List<ContributorX> fetchContributors();
-    PartnerX savePartner(PartnerX partner);
-    ContributorX saveContributor(ContributorX contributor);
-
-    boolean removePartner(Long partnerId);
-    boolean removeContributor(Long contributorId);
-
-    List<String> fetchStaticPageTypes();
-    StaticPageX fetchStaticPage(String pageType, LanguageX language);
-    StaticPageX saveStaticPage(Long staticPageId, String content);
-
     void removeMessageKey(String key);
     void addMessageKey(String key);
 

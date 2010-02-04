@@ -44,12 +44,9 @@
         <mapping class="eu.europeana.database.domain.Translation"/>
         <mapping class="eu.europeana.database.domain.SearchTerm"/>
         <mapping class="eu.europeana.database.domain.CarouselItem"/>
-        <mapping class="eu.europeana.database.domain.Contributor"/>
-        <mapping class="eu.europeana.database.domain.Partner"/>
         <mapping class="eu.europeana.database.domain.EuropeanaObject"/>
         <mapping class="eu.europeana.database.domain.IndexingQueueEntry"/>
         <mapping class="eu.europeana.database.domain.CacheingQueueEntry"/>
-        <mapping class="eu.europeana.database.domain.StaticPage"/>
         <mapping class="eu.europeana.database.domain.DashboardLog"/>
     </session-factory>
 </hibernate-configuration>

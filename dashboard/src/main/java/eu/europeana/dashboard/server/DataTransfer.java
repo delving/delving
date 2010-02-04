@@ -21,37 +21,8 @@
 
 package eu.europeana.dashboard.server;
 
-import eu.europeana.dashboard.client.dto.CarouselItemX;
-import eu.europeana.dashboard.client.dto.ContributorX;
-import eu.europeana.dashboard.client.dto.CountryX;
-import eu.europeana.dashboard.client.dto.DashboardLogX;
-import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.EuropeanaIdX;
-import eu.europeana.dashboard.client.dto.ImportFileX;
-import eu.europeana.dashboard.client.dto.LanguageX;
-import eu.europeana.dashboard.client.dto.PartnerX;
-import eu.europeana.dashboard.client.dto.RoleX;
-import eu.europeana.dashboard.client.dto.SavedSearchX;
-import eu.europeana.dashboard.client.dto.StaticPageX;
-import eu.europeana.dashboard.client.dto.TranslationX;
-import eu.europeana.dashboard.client.dto.UserX;
-import eu.europeana.database.domain.CacheState;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.CollectionState;
-import eu.europeana.database.domain.Contributor;
-import eu.europeana.database.domain.Country;
-import eu.europeana.database.domain.DashboardLog;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.EuropeanaId;
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.Partner;
-import eu.europeana.database.domain.PartnerSector;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.StaticPage;
-import eu.europeana.database.domain.Translation;
-import eu.europeana.database.domain.User;
+import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.database.domain.*;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.query.DocType;
 
@@ -139,48 +110,6 @@ public class DataTransfer {
         );
     }
 
-    public static PartnerX convert(Partner partner) {
-        return new PartnerX(
-                partner.getId(),
-                partner.getName(),
-                partner.getSector().toString(),
-                partner.getUrl()
-        );
-    }
-
-    public static Partner convert(PartnerX partnerX) {
-        Partner partner = new Partner(partnerX.getId());
-        partner.setName(partnerX.getName());
-        partner.setSector(PartnerSector.valueOf(partnerX.getSector()));
-        partner.setUrl(partnerX.getUrl());
-        return partner;
-    }
-
-    public static ContributorX convert(Contributor contributor) {
-        return new ContributorX(
-                contributor.getId(),
-                convert(contributor.getCountry()),
-                contributor.getProviderId(),
-                contributor.getOriginalName(),
-                contributor.getEnglishName(),
-                contributor.getAcronym(),
-                contributor.getNumberOfPartners(),
-                contributor.getUrl()
-        );
-    }
-
-    public static Contributor convert(ContributorX contributorX) {
-        Contributor contributor = new Contributor(contributorX.getId());
-        contributor.setCountry(Country.valueOf(contributorX.getCountry().getCode()));
-        contributor.setProviderId(contributorX.getProviderId());
-        contributor.setOriginalName(contributorX.getOriginalName());
-        contributor.setEnglishName(contributorX.getEnglishName());
-        contributor.setAcronym(contributorX.getAcronym());
-        contributor.setNumberOfPartners(contributorX.getNumberOfPartners());
-        contributor.setUrl(contributorX.getUrl());
-        return contributor;
-    }
-
     public static CountryX convert(Country country) {
         return new CountryX(country.toString(), country.getEnglishName());
     }
@@ -217,15 +146,6 @@ public class DataTransfer {
                 userX.isNewsletter(),
                 Role.valueOf(userX.getRole().toString()),
                 userX.isEnabled()
-        );
-    }
-
-    public static StaticPageX convert(StaticPage page) {
-        return new StaticPageX(
-                page.getId(),
-                page.getPageType().toString(),
-                convert(page.getLanguage()),
-                page.getContent()
         );
     }
 

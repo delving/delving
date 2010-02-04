@@ -70,28 +70,6 @@ public interface DashboardServiceAsync {
 
     void fetchSavedSearches(UserX userX, AsyncCallback<List<SavedSearchX>> async);
 
-    void fetchPartnerSectors(AsyncCallback<List<String>> async);
-
-    void fetchPartners(AsyncCallback<List<PartnerX>> async);
-
-    void fetchCountries(AsyncCallback<List<CountryX>> async);
-
-    void fetchContributors(AsyncCallback<List<ContributorX>> async);
-
-    void savePartner(PartnerX partner, AsyncCallback<PartnerX> async);
-
-    void saveContributor(ContributorX contributor, AsyncCallback<ContributorX> async);
-
-    void removePartner(Long partnerId, AsyncCallback<Boolean> async);
-
-    void removeContributor(Long contributorId, AsyncCallback<Boolean> async);
-
-    void fetchStaticPageTypes(AsyncCallback<List<String>> async);
-
-    void fetchStaticPage(String pageType, LanguageX language, AsyncCallback<StaticPageX> async);
-
-    void saveStaticPage(Long staticPageId, String content, AsyncCallback<StaticPageX> async);
-
     void removeMessageKey(String key, AsyncCallback<Void> async);
 
     void addMessageKey(String key, AsyncCallback<Void> async);

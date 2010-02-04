@@ -552,12 +552,6 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public List<Contributor> fetchContributors() {
-        Query query = entityManager.createQuery("select c from Contributor c order by c.providerId");
-        return (List<Contributor>) query.getResultList();
-    }
-
-    @Transactional
     public void log(String who, String what) {
         DashboardLog log = new DashboardLog(who, new Date(), what);
         entityManager.persist(log);

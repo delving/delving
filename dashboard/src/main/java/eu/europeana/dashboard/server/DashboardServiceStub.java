@@ -144,50 +144,6 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         return service().fetchSavedSearches(user);
     }
 
-    public List<String> fetchPartnerSectors() {
-        return service().fetchPartnerSectors();
-    }
-
-    public List<PartnerX> fetchPartners() {
-        return service().fetchPartners();
-    }
-
-    public List<CountryX> fetchCountries() {
-        return service().fetchCountries();
-    }
-
-    public List<ContributorX> fetchContributors() {
-        return service().fetchContributors();
-    }
-
-    public PartnerX savePartner(PartnerX partner) {
-        return service().savePartner(partner);
-    }
-
-    public ContributorX saveContributor(ContributorX contributor) {
-        return service().saveContributor(contributor);
-    }
-
-    public boolean removePartner(Long partnerId) {
-        return service().removePartner(partnerId);
-    }
-
-    public boolean removeContributor(Long contributorId) {
-        return service().removeContributor(contributorId);
-    }
-
-    public List<String> fetchStaticPageTypes() {
-        return service().fetchStaticPageTypes();
-    }
-
-    public StaticPageX fetchStaticPage(String pageType, LanguageX language) {
-        return service().fetchStaticPage(pageType, language);
-    }
-
-    public StaticPageX saveStaticPage(Long staticPageId, String content) {
-        return service().saveStaticPage(staticPageId, content);
-    }
-
     public void removeMessageKey(String key) {
         service().removeMessageKey(key);
     }

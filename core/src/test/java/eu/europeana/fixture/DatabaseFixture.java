@@ -82,39 +82,6 @@ public class DatabaseFixture {
     }
 
     @Transactional
-    public List<Partner> createPartners(String name, int count) {
-        List<Partner> partners = new ArrayList<Partner>();
-        for (int walk = 0; walk < count; walk++) {
-            Partner partner = new Partner();
-            partner.setName(name + walk);
-            partner.setUrl("http://europeana.uri.pretend/item" + walk);
-            partner.setSector(PartnerSector.RESEARCH_INSTITUTIONS);
-            entityManager.persist(partner);
-            partners.add(partner);
-        }
-        return partners;
-    }
-
-    @Transactional
-    public List<Contributor> createContributors(String name, int count) {
-        List<Contributor> contributors = new ArrayList<Contributor>();
-
-        for (int walk = 0; walk < count; walk++) {
-            Contributor contributor = new Contributor();
-            contributor.setAcronym(name + walk);
-            contributor.setCountry(Country.ITALY);
-            contributor.setEnglishName(name + walk);
-            contributor.setOriginalName(name + walk);
-            contributor.setNumberOfPartners(String.valueOf(walk));
-            contributor.setProviderId(name + walk);
-            contributor.setUrl("http://europeana.uri.pretend/item" + walk);
-            entityManager.persist(contributor);
-            contributors.add(contributor);
-        }
-        return contributors;
-    }
-
-    @Transactional
     public List<SavedItem> createSavedItems(String name, int count, List<EuropeanaId> europeanaIds, List<User> users) {
         List<SavedItem> savedItems = new ArrayList<SavedItem>();
         for (int walk = 0; walk < count; walk++) {
@@ -178,16 +145,6 @@ public class DatabaseFixture {
         }
 
         return savedSearchs;
-    }
-
-    @Transactional
-    public Partner getPartner(Long partnerId) {
-        return entityManager.find(Partner.class, partnerId);
-    }
-
-    @Transactional
-    public Contributor getContributor(Long contributorId) {
-        return entityManager.find(Contributor.class, contributorId);
     }
 
     @Transactional

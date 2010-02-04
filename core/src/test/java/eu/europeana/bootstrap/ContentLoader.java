@@ -27,7 +27,6 @@ import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.database.migration.DataMigration;
 import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.incoming.ImportRepository;
@@ -36,7 +35,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
-import java.io.IOException;
 
 
 /**
@@ -57,7 +55,7 @@ public class ContentLoader {
 
     	ContentLoader contentLoader = new ContentLoader();
     	contentLoader.init();
-    	contentLoader.load((args.length == 0) || !args[0].equalsIgnoreCase("skip=true"));
+    	contentLoader.load();
     }
 
     public void init() throws Exception {
@@ -77,27 +75,8 @@ public class ContentLoader {
     public void postLoad() {
     	
     }
-    
-	public UserDao getUserDao() {
-		return userDao;
-	}
 
-	public void load(boolean loadStatic)
-			throws IOException, Exception, InterruptedException {
-		// load static content etc.
-        if (loadStatic) {
-            log.info("Start loading static content.");
-            DataMigration migration = new DataMigration();
-            migration.setLanguageDao(languageDao);
-            migration.setPartnerDao(staticInfoDao);
-            migration.readTableFromResource(DataMigration.Table.CONTRIBUTORS);
-            migration.readTableFromResource(DataMigration.Table.PARTNERS);
-            migration.readTableFromResource(DataMigration.Table.TRANSLATION_KEYS);
-            migration.readTableFromResource(DataMigration.Table.STATIC_PAGE);
-            log.info("Finished loading static content.");
-        }
-
-
+    public void load() throws Exception {
         // import and index sample records
         SolrStarter solr = new SolrStarter();
         log.info("Starting Solr Server");
