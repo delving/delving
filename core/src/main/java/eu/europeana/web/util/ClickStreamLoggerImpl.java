@@ -43,6 +43,7 @@ import java.util.Map;
 public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());
 
+    @Override
     public void log(HttpServletRequest request, UserAction action, ModelAndView model) {
         log.info(
                 MessageFormat.format(
@@ -58,6 +59,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
      * @param action  the UserAction performed in the controller
      */
 
+    @Override
     public void log(HttpServletRequest request, UserAction action) {
         log.info(
                 MessageFormat.format(

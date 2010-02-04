@@ -182,14 +182,15 @@ public class AjaxController {
                 break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
-                socialTag.setTag(getStringParameter("tag", request));
+                String tagValue = getStringParameter("tag", request);
+                socialTag.setTag(tagValue);
                 socialTag.setEuropeanaUri(getStringParameter("europeanaUri", request));
                 socialTag.setDocType(DocType.valueOf(getStringParameter("docType", request)));
                 socialTag.setEuropeanaObject(getStringParameter("europeanaObject", request));
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
-                clickStreamLogger.log(request, UserAction.SAVE_SOCIAL_TAG);
+                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");

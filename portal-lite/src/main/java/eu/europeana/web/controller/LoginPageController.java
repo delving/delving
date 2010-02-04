@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
  * Where people give us their password
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 @Controller

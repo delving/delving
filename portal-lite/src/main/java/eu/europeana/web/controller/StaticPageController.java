@@ -22,6 +22,7 @@
 package eu.europeana.web.controller;
 
 import eu.europeana.database.domain.StaticPageType;
+import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.StaticPageCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class StaticPageController {
     @Autowired
     private StaticPageCache staticPageCache;
 
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
     /**
      * All of the pages are served up from here
      *
@@ -61,13 +65,11 @@ public class StaticPageController {
     ) throws Exception {
         String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
-        if (pageValue == null) {
-            return ControllerUtil.createModelAndViewPage("redirect:/error.html");
-        }
-        else {
+        if (pageValue != null) {
             pageModel.addObject("pageValue", pageValue);
-            return pageModel;
         }
+        clickStreamLogger.log(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ pageName);
+        return pageModel;
     }
 
     /*
@@ -77,6 +79,7 @@ public class StaticPageController {
     @RequestMapping("/advancedsearch.html")
     public ModelAndView AdvancedSearchHandler(HttpServletRequest request) throws Exception {
         StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
+        clickStreamLogger.log(request, pageType);
         return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 
@@ -88,6 +91,7 @@ public class StaticPageController {
     @RequestMapping("/error.html")
     public ModelAndView ErrorPageHandler(HttpServletRequest request) throws Exception {
         StaticPageType pageType = StaticPageType.ERROR;
+        clickStreamLogger.log(request, pageType);
         return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 

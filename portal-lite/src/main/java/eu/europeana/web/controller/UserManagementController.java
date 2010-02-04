@@ -42,16 +42,8 @@ public class UserManagementController {
     @Autowired
     private UserDao userDao;
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-
-    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
-        this.clickStreamLogger = clickStreamLogger;
-    }
 
     @RequestMapping("/myeuropeana.html")
     public ModelAndView myEuropeanaHandler(HttpServletRequest request) throws Exception {

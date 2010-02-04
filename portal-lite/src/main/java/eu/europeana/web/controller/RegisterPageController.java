@@ -72,15 +72,11 @@ public class RegisterPageController {
     private TokenService tokenService;
 
     @Autowired
-    private ClickStreamLogger clickStreamLogger;
-
-    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
-        this.clickStreamLogger = clickStreamLogger;
-    }
-
-    @Autowired
     @Qualifier("emailSenderForRegisterNotify")
     private EmailSender notifyEmailSender;
+
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {

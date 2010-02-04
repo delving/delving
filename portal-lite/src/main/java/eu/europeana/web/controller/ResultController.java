@@ -140,7 +140,6 @@ public class ResultController {
         } else {
             throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
         }
-        // todo: implement request log
         String logString = MessageFormat.format("outlink={0}, provider={2}, europeana_id={1}", redirectLink, europeanaId, provider);
         clickStreamLogger.log(request, ClickStreamLogger.UserAction.REDIRECT_OUTLINK, logString);
         return ControllerUtil.createModelAndViewPage("redirect:" + redirectLink);
