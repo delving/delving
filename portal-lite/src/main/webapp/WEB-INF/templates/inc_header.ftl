@@ -185,7 +185,7 @@
     <title>Open-Europeana - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">
-    <#assign pageId = "bd"/>
+    <#assign pageId = "brd"/>
     <script type="text/javascript">
         var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
         var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";

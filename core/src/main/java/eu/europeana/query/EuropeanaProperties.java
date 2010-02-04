@@ -142,6 +142,7 @@ public class EuropeanaProperties extends Properties {
             "cache.imageMagickPath",
             "cache.cacheRoot",
             "debug",
+            "static.page.path",
             "message.source",
             "message.static_pages",
             "message.network",

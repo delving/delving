@@ -93,6 +93,11 @@ cache.cacheRoot=/tmp/europeana-cache
 debug = false
 
 #
+# Where the static pages can be found
+#
+static.page.path = portal-full/src/test/staticpages/
+
+#
 # Where to get messages from:  database or bundle
 #
 message.source = database

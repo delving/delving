@@ -92,7 +92,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private void setReturnToResults(Map<String, String[]> httpParameters)  {
         StringBuilder out = new StringBuilder();
-        if (pageId.equalsIgnoreCase("bd")) {
+        if (pageId.equalsIgnoreCase("brd")) {
             out.append("brief-doc.html?");
             out.append("query=").append(encode(query));
             final String[] filterQueries = httpParameters.get("qf");

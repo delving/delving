@@ -89,7 +89,7 @@ public class TestDocIdWindowPager {
         request.addParameter("startPage", "1");
         request.addParameter("start", "2");
         request.addParameter("query", "max devrient");
-        request.addParameter("pageId", "bd");
+        request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
         DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
         assertEquals(pager.isPrevious(), true);
@@ -109,7 +109,7 @@ public class TestDocIdWindowPager {
         request.addParameter("startPage", "1");
         request.addParameter("start", "1");
         request.addParameter("query", "max devrient");
-        request.addParameter("pageId", "bd");
+        request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
         DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
         assertEquals(pager.isPrevious(), false);
@@ -127,7 +127,7 @@ public class TestDocIdWindowPager {
         request.addParameter("startPage", "13");
         request.addParameter("start", "14");
         request.addParameter("query", "max devrient");
-        request.addParameter("pageId", "bd");
+        request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
         DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
         assertEquals(pager.isNext(), false);
@@ -144,7 +144,7 @@ public class TestDocIdWindowPager {
         request.addParameter("uri", uri);
         request.addParameter("start", "18");
         request.addParameter("query", "max devrient");
-        request.addParameter("pageId", "bd");
+        request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
         DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
         assertEquals(pager.isNext(), false);

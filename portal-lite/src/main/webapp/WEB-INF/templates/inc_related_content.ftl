@@ -10,7 +10,7 @@
                         <td width="45" valign="top">
                             <div class="related-thumb-container">
                                 <#if queryStringForPaging??>
-                                    <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=bd&amp;tab=">
+                                    <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
                                  <#else>
                                     <a href="full-doc.html?uri=${doc.id}">
                                  </#if>
@@ -26,7 +26,7 @@
 
                         <td class="item-titles" valign="top" width="130">
                             <#if queryStringForPaging??>
-                            <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=bd"><@stringLimiter "${doc.title}" "50"/></a>
+                            <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
                             <#else>
                             <a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
                             </#if>
