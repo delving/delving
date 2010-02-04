@@ -22,9 +22,6 @@
 package eu.europeana.bootstrap;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.LanguageDao;
-import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.EuropeanaCollection;
 import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.incoming.ESEImporter;
@@ -47,19 +44,14 @@ public class ContentLoader {
     ESEImporter eseImporter;
     DashboardDao dashboardDao;
     ImportRepository repository;
-    LanguageDao languageDao;
-    StaticInfoDao staticInfoDao;
-    protected UserDao userDao;
 
     public static void main(String... args) throws Exception {
-
     	ContentLoader contentLoader = new ContentLoader();
     	contentLoader.init();
     	contentLoader.load();
     }
 
     public void init() throws Exception {
-
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/core-application-context.xml"
         });
@@ -67,13 +59,10 @@ public class ContentLoader {
         eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         repository = (ImportRepository) context.getBean("normalizedImportRepository");
-        languageDao = (LanguageDao) context.getBean("languageDao");
-        staticInfoDao = (StaticInfoDao) context.getBean("staticInfoDao");
-        userDao = (UserDao) context.getBean("userDao");
     }
 
     public void postLoad() {
-    	
+
     }
 
     public void load() throws Exception {
