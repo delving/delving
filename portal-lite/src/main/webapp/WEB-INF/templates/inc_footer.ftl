@@ -48,16 +48,6 @@
   <li class="signoff"><@spring.message 'FundedBy_t' /><img src="images/eu-flag.gif" alt="icon-european union flag"/></li>
 </ul>-->
 
-<#-- Piwik tracking -->
-<#if piwik_js?? >
-    <script type="text/javascript" src="${piwik_js}"></script>
-    <script type="text/javascript">
-        var piwik_action_name = '';
-        var piwik_idsite = 1;
-        var piwik_url = "${piwik_log_url}";
-        piwik_log(piwik_action_name, piwik_idsite, piwik_url);
-    </script>
-</#if>
 </div><!-- end footer -->
 </div><!-- end container_12 -->
 

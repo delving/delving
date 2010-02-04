@@ -39,13 +39,6 @@ solr.chunkSize = 1000
 slqSearch.url  = http://146.48.83.12:8080/backend5/ObjectBridgeServlet
 
 #
-# piwik connection settings
-#
-piwik.enabled  = false
-piwik.jsUrl    = http://localhost:8888/piwik/piwik.js
-piwik.logUrl   = http://localhost:8888/piwik/piwik.php
-
-#
 # smtp server settings
 #
 smtp.host = localhost
