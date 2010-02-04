@@ -214,8 +214,6 @@
         <property name="displayCount" value="40"/>
     </bean>
 
-    <bean id="partnerListSampler" class="eu.europeana.web.util.PartnerListSampler"/>
-
     <bean id="emailSenderForExceptions" class="eu.europeana.web.util.EmailSender">
         <property name="template" value="/email/exception"/>
     </bean>
@@ -262,18 +260,6 @@
         </property>
         <property name="startDelay" value="0"/>
         <property name="repeatInterval" value="11000"/>
-    </bean>
-
-    <bean id="partnerListRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="partnerListSampler"/>
-                <property name="targetMethod" value="refresh"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="0"/>
-        <property name="repeatInterval" value="31000"/>
     </bean>
 
     <bean id="staticPageCacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">

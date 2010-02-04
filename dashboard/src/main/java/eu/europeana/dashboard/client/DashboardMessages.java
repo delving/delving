@@ -185,17 +185,9 @@ public interface DashboardMessages extends Messages {
 
     String typeSearchTerm();
 
-    String partnersTab();
-
-    String addPartnerTitle(String text);
-
     String namePrompt();
 
     String urlPrompt();
-
-    String addContributorTitle(String text);
-
-    String contributorsTab();
 
     String providerIdPrompt();
 
@@ -222,20 +214,6 @@ public interface DashboardMessages extends Messages {
     String loginSuccessful();
 
     String accessDenied();
-
-    String staticPagesTag();
-
-    String selectPage();
-
-    String selectLanguage();
-
-    String previewPage();
-
-    String editHtml();
-
-    String revert();
-
-    String numberOfPartnersPrompt();
 
     String languages();
 
