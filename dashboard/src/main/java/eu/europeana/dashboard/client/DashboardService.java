@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import eu.europeana.dashboard.client.dto.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * This is the client side of the RPC connection needed by the dashboard
@@ -33,10 +32,7 @@ public interface DashboardService extends RemoteService {
     ImportFileX abortImport(ImportFileX file, boolean normalized);
     ImportFileX checkImportFileStatus(String fileName, boolean normalized);
 
-    List<String> fetchMessageKeys();
     List<LanguageX> fetchLanguages();
-    List<TranslationX> fetchTranslations(String key, Set<String> languageCodes);
-    TranslationX setTranslation(String key, String language, String value);
 
     String fetchCacheUrl();
     List<CarouselItemX> fetchCarouselItems();
@@ -52,9 +48,6 @@ public interface DashboardService extends RemoteService {
     void deleteAllOrphans();
 
     List<SavedSearchX> fetchSavedSearches(UserX userX);
-
-    void removeMessageKey(String key);
-    void addMessageKey(String key);
 
     List<DashboardLogX> fetchLogEntriesFrom(Long topId, int pageSize);
     List<DashboardLogX> fetchLogEntriesTo(Long bottomId, int pageSize);

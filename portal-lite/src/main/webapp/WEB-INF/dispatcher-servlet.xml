@@ -34,7 +34,6 @@
 
     <context:component-scan base-package="eu.europeana.web.controller"/>
 
-    <!-- Freemarker Template config -->
     <bean id="viewHtmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
         <property name="exposeSpringMacroHelpers" value="true"/>
@@ -53,14 +52,10 @@
 
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
-    <!-- Interceptors and Resolvers -->
     <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
         <property name="clickStreamLogger" ref="clickStreamLogger"/>
     </bean>
-
-    <!-- The old session based storing of user changed locale -->
-    <!--<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>-->
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
         <property name="cookieMaxAge" value="3600"/>
@@ -83,57 +78,11 @@
         </property>
     </bean>
 
-
-    <!-- UrlMappings -->
-    <!--<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
-    <!--<property name="interceptors">-->
-    <!--<list>-->
-    <!--<ref bean="localeChangeInterceptor"/>-->
-    <!--<ref bean="formatInterceptor"/>-->
-    <!--<ref bean="configInterceptor"/>-->
-    <!--</list>-->
-    <!--</property>-->
-    <!--<property name="alwaysUseFullPath" value="true"/>-->
-    <!--<property name="mappings">-->
-    <!--<props>-->
-    <!--&lt;!&ndash;the dynamic controllers&ndash;&gt;-->
-    <!--<prop key="/login.html">loginController</prop>-->
-    <!--<prop key="/register.html">registerController</prop>-->
-    <!--<prop key="/change-password.html">changePasswordController</prop>-->
-
-    <!--<prop key="/remember-me-theft.html">rememberMeTheftController</prop>-->
-    <!--</props>-->
-    <!--</property>-->
-    <!--</bean>-->
-
-    <bean id="messageSource" class="eu.europeana.web.util.SwitchableMessageSource">
-        <property name="sources">
-            <util:map>
-                <entry key="bundle">
-                    <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-                        <property name="basename" value="WEB-INF/classes/messages"/>
-                        <property name="fileEncodings" value="UTF-8"/>
-                        <property name="defaultEncoding" value="UTF-8"/>
-                    </bean>
-                </entry>
-                <entry key="database">
-                    <bean class="eu.europeana.database.integration.DaoMessageSource">
-                        <property name="languageDao" ref="languageDao"/>
-                    </bean>
-                </entry>
-            </util:map>
-        </property>
-        <property name="choice" value="#{europeanaProperties['message.source']}"/>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="#{europeanaProperties['message.resource']}"/>
+        <property name="cacheSeconds" value="#{europeanaProperties['message.cache.seconds']}"/>
+        <property name="fileEncodings" value="UTF-8"/>
+        <property name="defaultEncoding" value="UTF-8"/>
     </bean>
-
-    <!-- Controllers -->
-
-    <!--<bean id="contactController" class="eu.europeana.web.controller.ContactPageControllerller">-->
-    <!--<property name="emailSender" ref="emailSenderForUserFeedback"/>-->
-    <!--<property name="feedbackConfirmationEmailSender" ref="emailSenderForUserFeedbackConfirmation"/>-->
-    <!--<property name="successView" value="contact"/>-->
-    <!--<property name="formView" value="contact"/>-->
-    <!--</bean>-->
-
 
 </beans>

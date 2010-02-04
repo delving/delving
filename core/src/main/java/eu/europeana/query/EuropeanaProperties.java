@@ -143,8 +143,7 @@ public class EuropeanaProperties extends Properties {
             "cache.cacheRoot",
             "debug",
             "static.page.path",
-            "message.source",
-            "message.static_pages",
-            "message.network",
+            "message.resource",
+            "message.cache.seconds"
     };
 }

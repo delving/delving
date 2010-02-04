@@ -53,14 +53,6 @@ public interface DashboardMessages extends Messages {
 
     String haltedWithAnError();
 
-    String enterMessageKey();
-
-    String translationSubmit();
-
-    String translationReset();
-
-    String pleaseWait();
-
     String serverProblem();
 
     String yesIAmSure();
@@ -222,8 +214,6 @@ public interface DashboardMessages extends Messages {
     String updateThisUser();
 
     String deleteThisUser();
-
-    String messageKey();
 
     String add();
 

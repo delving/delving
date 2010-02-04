@@ -1,6 +1,5 @@
 package eu.europeana.database.dao;
 
-import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.fixture.DatabaseFixture;
@@ -39,10 +38,6 @@ public class TestStaticInfoDao {
     private Logger log = Logger.getLogger(TestStaticInfoDao.class);
     @Autowired
     private StaticInfoDao staticInfoDao;
-
-    @Autowired
-    private LanguageDao languageDao;
-
 
     @Autowired
     private DatabaseFixture databaseFixture;

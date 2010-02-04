@@ -58,11 +58,6 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
                     RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
             );
             tabPanel.addTab(
-                    new TranslationWidget(this),
-                    messages.translationsTab(),
-                    RoleX.ROLE_EDITOR, RoleX.ROLE_TRANSLATOR, RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD
-            );
-            tabPanel.addTab(
                     new SearchTermWidget(this),
                     messages.searchTermsTab(),
                     RoleX.ROLE_EDITOR, RoleX.ROLE_PACTA, RoleX.ROLE_ADMINISTRATOR, RoleX.ROLE_GOD

@@ -39,7 +39,6 @@
         <mapping class="eu.europeana.database.domain.EuropeanaCollection"/>
         <mapping class="eu.europeana.database.domain.AuthenticationToken"/>
         <mapping class="eu.europeana.database.domain.Token"/>
-        <mapping class="eu.europeana.database.domain.LanguageActivation"/>
         <mapping class="eu.europeana.database.domain.SearchTerm"/>
         <mapping class="eu.europeana.database.domain.CarouselItem"/>
         <mapping class="eu.europeana.database.domain.EuropeanaObject"/>

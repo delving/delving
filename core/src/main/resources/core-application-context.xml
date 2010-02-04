@@ -106,8 +106,6 @@
 
     <bean name="dashboardDao" class="eu.europeana.database.dao.DashboardDaoImpl"/>
 
-    <bean name="languageDao" class="eu.europeana.database.dao.LanguageDaoImpl"/>
-
     <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
 
     <bean name="tokenDao" class="eu.europeana.database.dao.TokenDaoImpl"/>

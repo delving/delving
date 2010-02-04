@@ -33,7 +33,6 @@
 
     <context:component-scan base-package="eu.europeana.api.controller"/>
 
-    <!-- Freemarker Template config -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
         <property name="exposeSpringMacroHelpers" value="true"/>
@@ -44,7 +43,6 @@
 
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
-    <!-- Interceptors and Resolvers -->
     <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
         <property name="clickStreamLogger" ref="clickStreamLogger"/>
@@ -55,11 +53,6 @@
         <property name="defaultLocale" value="en"/>
     </bean>
 
-
-    <!--<bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor">-->
-    <!--<property name="config" ref="config"/>-->
-    <!--</bean>-->
-
     <bean id="annotationMapper" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors">
             <list>
@@ -69,28 +62,11 @@
         </property>
     </bean>
 
-    <bean id="messageSource" class="eu.europeana.web.util.SwitchableMessageSource">
-        <property name="sources">
-            <util:map>
-                <entry key="bundle">
-                    <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-                        <property name="basename" value="WEB-INF/classes/messages"/>
-                        <property name="fileEncodings" value="UTF-8"/>
-                        <property name="defaultEncoding" value="UTF-8"/>
-                    </bean>
-                </entry>
-                <entry key="database">
-                    <bean class="eu.europeana.database.integration.DaoMessageSource">
-                        <property name="languageDao" ref="languageDao"/>
-                    </bean>
-                </entry>
-            </util:map>
-        </property>
-        <property name="choice" value="#{europeanaProperties['message.source']}"/>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="#{europeanaProperties['message.resource']}"/>
+        <property name="cacheSeconds" value="#{europeanaProperties['message.cache.seconds']}"/>
+        <property name="fileEncodings" value="UTF-8"/>
+        <property name="defaultEncoding" value="UTF-8"/>
     </bean>
-
-    <!-- Controllers -->
-    <!-- All controllers are Annotated and Autowired so they don't need to be declared anymore. -->
-
 
 </beans>

@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import eu.europeana.dashboard.client.dto.*;
 
 import java.util.List;
-import java.util.Set;
 
 public interface DashboardServiceAsync {
 
@@ -40,13 +39,7 @@ public interface DashboardServiceAsync {
 
     void checkImportFileStatus(String fileName, boolean normalized, AsyncCallback<ImportFileX> async);
 
-    void fetchMessageKeys(AsyncCallback<List<String>> async);
-
     void fetchLanguages(AsyncCallback<List<LanguageX>> async);
-
-    void fetchTranslations(String key, Set<String> languageCodes, AsyncCallback<List<TranslationX>> async);
-
-    void setTranslation(String key, String language, String value, AsyncCallback<TranslationX> async);
 
     void fetchCacheUrl(AsyncCallback<String> async);
 
@@ -69,10 +62,6 @@ public interface DashboardServiceAsync {
     void deleteAllOrphans(AsyncCallback<Void> async);
 
     void fetchSavedSearches(UserX userX, AsyncCallback<List<SavedSearchX>> async);
-
-    void removeMessageKey(String key, AsyncCallback<Void> async);
-
-    void addMessageKey(String key, AsyncCallback<Void> async);
 
     void fetchLogEntriesFrom(Long topId, int pageSize, AsyncCallback<List<DashboardLogX>> async);
 

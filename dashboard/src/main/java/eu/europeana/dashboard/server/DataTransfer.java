@@ -149,13 +149,6 @@ public class DataTransfer {
         );
     }
 
-    public static TranslationX convert(Translation translation) {
-        return new TranslationX(
-                convert(translation.getLanguage()),
-                translation.getValue()
-        );
-    }
-
     public static DashboardLogX convert(DashboardLog log) {
         return new DashboardLogX(
                 log.getId(),

@@ -25,7 +25,6 @@ import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.dashboard.client.DashboardService;
 import eu.europeana.dashboard.client.dto.*;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.LanguageDao;
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.*;
@@ -33,7 +32,10 @@ import eu.europeana.incoming.ESEImporter;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -45,7 +47,6 @@ public class DashboardServiceImpl implements DashboardService {
     private ESEImporter normalizedImporter;
     private ESEImporter sandboxImporter;
     private DashboardDao dashboardDao;
-    private LanguageDao languageDao;
     private DigitalObjectCache digitalObjectCache;
     private StaticInfoDao staticInfoDao;
     private UserDao userDao;
@@ -53,10 +54,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     public void setDashboardDao(DashboardDao dashboardDao) {
         this.dashboardDao = dashboardDao;
-    }
-
-    public void setLanguageDao(LanguageDao languageDao) {
-        this.languageDao = languageDao;
     }
 
     public void setStaticInfoDao(StaticInfoDao staticInfoDao) {
@@ -223,34 +220,14 @@ public class DashboardServiceImpl implements DashboardService {
         return normalized ? normalizedImporter : sandboxImporter;
     }
 
-    public List<String> fetchMessageKeys() {
-        return languageDao.fetchMessageKeyStrings();
-    }
-
     public List<LanguageX> fetchLanguages() {
-        EnumSet<Language> activeLanguages = languageDao.getActiveLanguages();
         List<LanguageX> languages = new ArrayList<LanguageX>(Language.values().length);
-        for (Language active : activeLanguages) {
+        for (Language active : Language.values()) {
             languages.add(DataTransfer.convert(active));
         }
         return languages;
     }
 
-    public List<TranslationX> fetchTranslations(String key, Set<String> languageCodes) {
-        MessageKey messageKey = languageDao.fetchMessageKey(key);
-        List<TranslationX> translations = new ArrayList<TranslationX>();
-        for (Translation translation : messageKey.getTranslations()) {
-            if (languageCodes.contains(translation.getLanguage().getCode())) {
-                translations.add(DataTransfer.convert(translation));
-            }
-        }
-        return translations;
-    }
-
-    public TranslationX setTranslation(String key, String languageCode, String value) {
-        audit("set translation " + key + "/" + languageCode + "=" + value);
-        return DataTransfer.convert(languageDao.setTranslation(key, Language.findByCode(languageCode), value));
-    }
 
     public String fetchCacheUrl() {
         return cacheUrl;
@@ -343,16 +320,6 @@ public class DashboardServiceImpl implements DashboardService {
             result.add(DataTransfer.convert(search));
         }
         return result;
-    }
-
-    public void removeMessageKey(String key) {
-        audit("remove message key: " + key);
-        languageDao.removeMessageKey(key);
-    }
-
-    public void addMessageKey(String key) {
-        audit("add message key: " + key);
-        languageDao.addMessagekey(key);
     }
 
     public List<DashboardLogX> fetchLogEntriesFrom(Long topId, int pageSize) {
