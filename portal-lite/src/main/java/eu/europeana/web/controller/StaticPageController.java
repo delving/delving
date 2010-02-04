@@ -21,15 +21,16 @@
 
 package eu.europeana.web.controller;
 
+import eu.europeana.database.domain.StaticPageType;
 import eu.europeana.web.util.ControllerUtil;
 import eu.europeana.web.util.StaticPageCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Genereric controller for static pages.
@@ -49,24 +50,45 @@ public class StaticPageController {
      *
      * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @throws Exception something went wrong
+     * @return ModelAndView
      */
 
     @RequestMapping("/{pageName}.html")
-    public void fetchStaticPage(
+    public ModelAndView fetchStaticPage(
             @PathVariable("pageName") String pageName,
-            HttpServletRequest request,
-            HttpServletResponse response
+            HttpServletRequest request
     ) throws Exception {
-        String page = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
-        if (page == null) {
-            response.sendRedirect("/error.html");
+        String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+        ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
+        if (pageValue == null) {
+            return ControllerUtil.createModelAndViewPage("redirect:/error.html");
         }
         else {
-            response.setContentLength(page.length());
-            response.getWriter().write(page);
+            pageModel.addObject("pageValue", pageValue);
+            return pageModel;
         }
+    }
+
+    /*
+    * freemarker template not loadable from database
+    */
+
+    @RequestMapping("/advancedsearch.html")
+    public ModelAndView AdvancedSearchHandler(HttpServletRequest request) throws Exception {
+        StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
+        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+    }
+
+
+    /*
+     * freemarker Template not loadable from database
+     */
+
+    @RequestMapping("/error.html")
+    public ModelAndView ErrorPageHandler(HttpServletRequest request) throws Exception {
+        StaticPageType pageType = StaticPageType.ERROR;
+        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 
 }

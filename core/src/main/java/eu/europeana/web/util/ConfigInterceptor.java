@@ -33,40 +33,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ConfigInterceptor extends HandlerInterceptorAdapter {
 
-    @Value("#{europeanaProperties['piwik.enabled']}")
-    private String piwikEnabled;
-
-    @Value("#{europeanaProperties['piwik.jsUrl']}")
-    private String piwikJsUrl;
-
-    @Value("#{europeanaProperties['piwik_log_url']}")
-    private String piwikLogUrl;
-
     @Value("#{europeanaProperties['debug']}")
     private String debug;
 
     @Value("#{europeanaProperties['cacheUrl']}")
     private String cacheUrl;
 
-    @Value("#{europeanaProperties['message.static_pages']}")
-    private String staticPagesSources;
-
-
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
-        if (modelAndView != null) {
-            if (Boolean.valueOf(piwikEnabled)) {
-                modelAndView.addObject("piwik_js", piwikJsUrl);
-                modelAndView.addObject("piwik_log_url", piwikLogUrl);
-            }
-            if (!modelAndView.getViewName().startsWith("redirect:")) {
-                modelAndView.addObject("debug", Boolean.valueOf(debug));
-                modelAndView.addObject("cacheUrl", cacheUrl);
-                modelAndView.addObject("staticPagesSource", staticPagesSources);
-            }
+        if (!modelAndView.getViewName().startsWith("redirect:")) {
+            modelAndView.addObject("debug", Boolean.valueOf(debug));
+            modelAndView.addObject("cacheUrl", cacheUrl);
         }
     }
-
-
 }
