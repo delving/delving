@@ -38,8 +38,8 @@ import java.util.Map;
 
 @SuppressWarnings({"AssignmentToMethodParameter", "ResultOfMethodCallIgnored", "ValueOfIncrementOrDecrementUsed"})
 public class CacheHash {
-    private Map<String,MimeType> mimeMap = new HashMap<String,MimeType>();
-    private Map<String,MimeType> extensionMap = new HashMap<String,MimeType>();
+    private Map<String, MimeType> mimeMap = new HashMap<String, MimeType>();
+    private Map<String, MimeType> extensionMap = new HashMap<String, MimeType>();
     private final MessageDigest digest;
 
     CacheHash() {
@@ -71,7 +71,7 @@ public class CacheHash {
     MimeType getMimeType(String mimeString) {
         int semi = mimeString.indexOf(";");
         if (semi > 0) {
-            mimeString = mimeString.substring(0,semi);
+            mimeString = mimeString.substring(0, semi);
         }
         MimeType mt = mimeMap.get(mimeString);
         if (mt == null) {
@@ -83,29 +83,27 @@ public class CacheHash {
     }
 
     File[] getItemSizeCachedFiles(File root, String uri) {
-        String hash = createHash(uri);
-        File cacheRoot = getCacheRoot(root,hash);
-        final String fileName = getFile(hash);
-        File [] files = cacheRoot.listFiles(new FileFilter() {
+        final String hash = createHash(uri);
+        File cacheRoot = getCacheRoot(root, hash);
+        File[] files = cacheRoot.listFiles(new FileFilter() {
             public boolean accept(File file) {
-                return file.getName().startsWith(fileName);
+                return file.getName().startsWith(hash);
             }
         });
         if (files.length == 0) {
             return null;
         }
-        File [] sizeFiles = new File[ItemSize.values().length];
+        File[] sizeFiles = new File[ItemSize.values().length];
         for (ItemSize size : ItemSize.values()) {
-            sizeFiles[size.ordinal()] = fetchFile(size,files);
+            sizeFiles[size.ordinal()] = fetchFile(size, files);
         }
         return sizeFiles;
     }
 
     File createOriginalCachedFile(File root, String uri, MimeType mimeType) {
         String hash = createHash(uri);
-        File cacheRoot = getCacheRoot(root,hash);
-        String fileName = getFile(hash);
-        return new File(cacheRoot,fileName+mimeType.getExtension());
+        File cacheRoot = getCacheRoot(root, hash);
+        return new File(cacheRoot, hash + mimeType.getExtension());
     }
 
     private File fetchFile(ItemSize size, File[] files) {
@@ -126,16 +124,12 @@ public class CacheHash {
     }
 
     private String getDirectory(String hash) {
-        return hash.substring(0,3);
-    }
-
-    private String getFile(String hash) {
-        return hash.substring(3);
+        return hash.substring(0, 2) + File.separator + hash.substring(2, 4);
     }
 
     private String createHash(String uri) {
         byte[] raw;
-        synchronized(digest) {
+        synchronized (digest) {
             digest.reset();
             try {
                 raw = digest.digest(uri.getBytes("UTF-8"));
