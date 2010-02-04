@@ -34,11 +34,6 @@ solr.baseUrl = http://localhost:8983/solr
 solr.chunkSize = 1000
 
 #
-# sql engine for advanced search
-#
-slqSearch.url  = http://146.48.83.12:8080/backend5/ObjectBridgeServlet
-
-#
 # smtp server settings
 #
 smtp.host = localhost
@@ -62,14 +57,8 @@ exception.to   = username@email.com
 feedback.from  = noreply@europeana.eu
 
 #
-# FreeMarker Template Home
-#
-template.path = WEB-INF/templates/
-
-#
 # other
 #
-#cacheUrl = http://dashboard.europeana.sara.nl/cache/image/?
 cacheUrl = http://localhost:8983/api/image/?
 
 #

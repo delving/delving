@@ -50,7 +50,11 @@ public class StaticPageCache {
         String fileName = pageName+"_"+language.getCode();
         Page page = pageMap().get(fileName);
         if (page == null) {
-            return null;
+            fileName = pageName + "_" + Language.EN.getCode();
+            page = pageMap().get(fileName);
+            if (page == null) {
+                return null;
+            }
         }
         return page.getContent();
     }

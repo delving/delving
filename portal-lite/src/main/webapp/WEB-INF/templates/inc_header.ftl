@@ -21,7 +21,7 @@
 <#if format??>
     <#assign format = format>
 </#if>
-
+<#assign interfaceLanguage = interfaceLanguage/>
 <#macro localeBased type toSwitch>
     <#-- if locale is something like en_us, then shorten to en -->
     <#if locale?length &gt; 2>
