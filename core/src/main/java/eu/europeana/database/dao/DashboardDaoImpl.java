@@ -23,6 +23,7 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -309,7 +310,15 @@ public class DashboardDaoImpl implements DashboardDao {
         }
     }
 
-    @Transactional
+    @Override
+    @Transactional(readOnly = true)
+	public List<EuropeanaId> fetchCollectionObjects(EuropeanaCollection collection) {
+        Query query = entityManager.createQuery("select id from EuropeanaId as id where id.collection = :collection");
+        query.setParameter("collection", collection);
+        return (List<EuropeanaId>) query.getResultList();
+	}
+
+	@Transactional
     public CacheingQueueEntry getEntryForCacheing() {
         Query query = entityManager.createQuery("select entry from CacheingQueueEntry as entry where entry.updated is null or entry.updated < :tooOld");
         Date tooOld = new Date(System.currentTimeMillis() - CACHE_RESTART_MILLIS);

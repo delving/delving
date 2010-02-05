@@ -166,6 +166,13 @@ public interface DashboardDao {
     EuropeanaId fetchEuropeanaId(String europeanaUri);
 
     /**
+     * Fetch objects from a collection
+     *
+     */
+
+    List<EuropeanaId> fetchCollectionObjects(EuropeanaCollection collection);
+
+    /**
      * Remove the europeana object entities which refer to the given object by its url.
      *
      * @param objectUrl the url of what is to be removed
