@@ -93,6 +93,8 @@
                 </executions>
                 <configuration>
                     <nosuffix>true</nosuffix>
+                    <gzip>true</gzip>
+                    <jswarn>false</jswarn>
                 </configuration>
             </plugin>
         </plugins>
@@ -104,12 +106,6 @@
             <artifactId>core</artifactId>
             <version>${europeana.core.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>net.jawr</groupId>
-            <artifactId>jawr</artifactId>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
