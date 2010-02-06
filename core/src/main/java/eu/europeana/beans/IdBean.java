@@ -26,6 +26,8 @@ import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.beans.annotation.Solr;
 import org.apache.solr.client.solrj.beans.Field;
 
+import java.util.Date;
+
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:15:43 AM
@@ -39,7 +41,16 @@ public class IdBean {
     @Field("europeana_uri")
     String europeanaUri;
 
-    public String getEuropeanaUri() {                            
+    @Europeana
+    @Solr(name = "timestamp", multivalued = false, defaultValue = "NOW")
+    @Field("timestamp")
+    Date timestamp;
+
+    public String getEuropeanaUri() {
         return europeanaUri;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
     }
 }

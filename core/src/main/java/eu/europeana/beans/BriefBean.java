@@ -83,7 +83,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Field
     @Solr()
     @Europeana(copyField = true, briefDoc = true)
-    String creator;
+    String[] creator;
 
     @Override
     public int getIndex() {

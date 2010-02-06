@@ -93,10 +93,10 @@ public class ContentLoader {
                 job.collection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
             }
             importFile = eseImporter.commenceImport(importFile, job.collection.getId());
-            LOG.info("Importing commenced for " + importFile);
+            LOG.info(String.format("Importing commenced for %s", importFile));
         }
         while (!jobs.isEmpty()) {
-            Thread.sleep(1000);
+            Thread.sleep(5000);
             Iterator<Job> importingFileWalk = jobs.iterator();
             while (importingFileWalk.hasNext()) {
                 Job job = importingFileWalk.next();
@@ -104,7 +104,7 @@ public class ContentLoader {
                     importingFileWalk.remove();
                 }
                 else {
-                    LOG.info("Busy importing "+job.collection);
+                    LOG.info(String.format("Busy importing %s", job.collection));
                 }
             }
         }
@@ -126,6 +126,7 @@ public class ContentLoader {
         solrStarter.start();
         contentLoader.loadMetadata();
         LOG.info("Stopping Solr Server");
+        Thread.sleep(10000);
         solrStarter.stop();
     }
 }

@@ -1,22 +1,20 @@
 package eu.europeana.solrj;
 
+import eu.europeana.beans.BriefBean;
+import eu.europeana.beans.IdBean;
 import eu.europeana.bootstrap.SolrStarter;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.beans.Field;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -57,26 +55,6 @@ public class SolrjBeanTest {
 
 
     @Test
-    public void testSolrjAddBean() throws Exception {
-        List<BriefBean> list = new ArrayList<BriefBean>();
-        for (int walk = 0; walk < 10; walk++) {
-            BriefBean b = new BriefBean();
-            b.id = "id" + walk;
-            b.title = new String[]{"title" + walk};
-            b.creator = "creator";
-            b.year = "year";
-            b.provider = "provider";
-            b.collectionName = "collection";
-            b.europeanaUri = "uri";
-            list.add(b);
-        }
-        server.addBeans(list);
-        UpdateResponse response = server.commit();
-        assertTrue(response != null);
-        log.info("request url:" + response.getRequestUrl());
-    }
-
-    @Test
     public void testSolrjGetBeans() throws Exception {
         SolrQuery query = new SolrQuery().setQuery("*:*");
         query.setFacet(true);
@@ -86,7 +64,7 @@ public class SolrjBeanTest {
         List<BriefBean> beans = response.getBeans(BriefBean.class);
         assertEquals(10, beans.size());
         for (BriefBean bean : beans) {
-            log.info("bean: " + bean.europeanaUri);
+            log.info(String.format("bean: %s", bean.getId()));
         }
 
         List<FacetField> facetFieldList = response.getFacetFields();
@@ -94,42 +72,22 @@ public class SolrjBeanTest {
             if (facetField.getName().equalsIgnoreCase("PROVIDER")) {
                 List<FacetField.Count> list = facetField.getValues();
                 for (FacetField.Count count : list) {
-                    log.info("tag: " + count.getName() + count.getCount());
+                    log.info(String.format("tag: %s%d", count.getName(), count.getCount()));
                 }
             }
         }
     }
 
     @Test
-    @Ignore
-    public void testSolrjQueryBea() throws Exception {
-        throw new Exception("not implemented yet");
-    }
-
-    public static class BriefBean {
-
-        @Field
-        String id;
-
-        @Field
-        String[] title;
-
-        @Field
-        String creator;
-
-        @Field("YEAR")
-        String year;
-
-        @Field("PROVIDER")
-        String provider;
-
-        @Field("europeana_collectionName")
-        String collectionName;
-
-        @Field("europeana_uri")
-        String europeanaUri;
-
-        @Field("europeana_object")
-        String[] europeanaObject;
+    public void testSolrjgetBeanId() throws Exception {
+        SolrQuery query = new SolrQuery().setQuery("*:*");
+        query.setRows(10);
+        query.setFields("europeana_uri", "timestamp");
+        QueryResponse response = server.query(query);
+        List<IdBean> list = response.getBeans(IdBean.class);
+        Assert.assertNotNull(list);
+        for (IdBean idBean : list) {
+            log.info(String.format("bean: %s timestamp: %s", idBean.getEuropeanaUri(), idBean.getTimestamp()));
+        }
     }
 }
