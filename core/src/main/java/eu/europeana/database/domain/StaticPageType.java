@@ -14,7 +14,7 @@ public enum StaticPageType {
     USING_EUROPEANA("usingeuropeana"),
     THINK_VIDEO("thinkvideo"),
     ERROR("error"),
-    SITEMAP("sitemap"),
+    SITEMAP("sitemap-outline"),
     ADVANCED_SEARCH("advancedsearch"),
     NEWS("news"),
     COMMUNITIES("communities"),
