@@ -23,6 +23,7 @@ package eu.europeana.beans.query;
 
 import eu.europeana.beans.BriefBean;
 import eu.europeana.beans.FullBean;
+import eu.europeana.beans.IdBean;
 import eu.europeana.beans.annotation.AnnotationProcessor;
 import eu.europeana.beans.annotation.EuropeanaBean;
 import eu.europeana.database.dao.UserDaoImpl;
@@ -201,6 +202,60 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         QueryResponse queryResponse = solrServer.query(solrQuery);
         // fetch beans
         return queryResponse.getBeans(idBean);
+    }
+
+    /**
+     * Get records from Sorl for a particular collection for the siteMap.
+     *
+     * @param europeanaCollectionName the europeana collectionName as stored in the EuropeanaCollection Domain object
+     * @param rowsToBeReturned number of rows to be returned from Solr
+     * @param pageNumber which page of the sitemap per collection will be returned.
+     * @return list of IdBeans
+     * @throws EuropeanaQueryException
+     * @throws SolrServerException
+     */
+    @Override
+    public SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsToBeReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException  {
+        SolrQuery solrQuery = new SolrQuery("europeana_collectionName:"+europeanaCollectionName);
+        solrQuery.setRows(rowsToBeReturned);
+        solrQuery.setFields("europeana_uri", "timestamp");
+        solrQuery.setStart(pageNumber * rowsToBeReturned);
+        QueryResponse queryResponse = solrServer.query(solrQuery);
+        return new SiteMapBeanViewImpl(europeanaCollectionName, queryResponse, rowsToBeReturned);
+    }
+
+    public class SiteMapBeanViewImpl implements SiteMapBeanView {
+        private String europeanaCollectionName;
+        private List<IdBean> idBeans;
+        private int numFound;
+        private int maxPageForCollection;
+
+        public SiteMapBeanViewImpl(String europeanaCollectionName, QueryResponse response, int rowsToBeReturned) {
+            this.europeanaCollectionName = europeanaCollectionName;
+            this.numFound = (int) response.getResults().getNumFound();
+            this.idBeans = response.getBeans(IdBean.class);
+            this.maxPageForCollection = numFound / rowsToBeReturned + 1;
+        }
+
+        @Override
+        public List<IdBean> getIdBeans() {
+            return idBeans;
+        }
+
+        @Override
+        public int getNumFound() {
+            return numFound;
+        }
+
+        @Override
+        public String getCollectionName() {
+            return europeanaCollectionName;
+        }
+
+        @Override
+        public int getMaxPageForCollection() {
+            return maxPageForCollection;
+        }
     }
 
 

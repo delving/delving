@@ -1,16 +1,23 @@
 package eu.europeana.web.controller;
 
+import eu.europeana.beans.IdBean;
+import eu.europeana.beans.query.SiteMapBeanView;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.query.SitemapIndexEntry;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.query.QueryModelFactory;
+import eu.europeana.web.util.ControllerUtil;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,79 +25,88 @@ import java.util.List;
  * @since Feb 5, 2010 10:48:27 PM
  */
 
+@Controller
 public class SiteMapController {
 
-    // todo this class must be completely rewritten to use Solr instead of database to file the sitemap
+    private static final int MAX_RECORDS_PER_SITEMAP_FILE = 1000;
 
-    private static final int MAX_RECORDS_PER_SITEMAP_FILE = 45000;
+    @Value("#{europeanaProperties['displayPageUrl']}")
+    private String fullViewUrl;
 
-	private static final String EUROPEANA_URL = "http://europeana.eu/portal/";
+    @Autowired
+    private QueryModelFactory beanQueryModelFactory;
 
-	private static final String PREFIX_FULL_VIEW = EUROPEANA_URL + "full-doc.html?uri=";
-
-	@Autowired
+    @Autowired
     DashboardDao dashboardDao;
 
-	@RequestMapping("/sitemap.xml")
-	public ModelAndView handleSitemap(
-			@RequestParam(value = "collection", required = false) String collection,
-			@RequestParam(value = "page", required = false) String page,
-			HttpServletRequest request
-	) throws Exception {
+    @RequestMapping("/sitemap.xml")
+    public ModelAndView handleSitemap(
+            @RequestParam(value = "collection", required = false) String collection,
+            @RequestParam(value = "page", required = false) String page,
+            HttpServletRequest request
+    ) throws Exception {
+        ModelAndView mavPage;
+        String fullDocPageString = "full-doc.html";
+        if (fullViewUrl.endsWith(fullDocPageString)) {
+            fullViewUrl = fullViewUrl.substring(0, fullViewUrl.length() - fullDocPageString.length());
+        }
+        if (collection == null) {
+            List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
+            List<EuropeanaCollection> europeanaCollections = dashboardDao.fetchCollections();
+            for (EuropeanaCollection europeanaCollection : europeanaCollections) {
+                for (int i = 0; i <= europeanaCollection.getTotalRecords() / MAX_RECORDS_PER_SITEMAP_FILE; i++) {
+                    // add each page of a collection to the index.
+                    entries.add(
+                            new SitemapIndexEntry(
+                                    StringEscapeUtils.escapeXml(String.format("%ssitemap.xml?collection=%s&page=%d", fullViewUrl, europeanaCollection.getName(), i)),
+                                    europeanaCollection.getCollectionLastModified()));
+                }
+            }
 
-		Format dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
-		ModelAndView mavPage = null;
+            mavPage = ControllerUtil.createModelAndViewPage("sitemap-index");
+            mavPage.addObject("entries", entries);
+        }
+        else {
+            mavPage = ControllerUtil.createModelAndViewPage("sitemap");
+            mavPage.addObject("fullViewUrl", fullViewUrl);
 
-//		if (collection == null) {
-//
-//			// generate sitemap_index
-//            // Use solr index instead query *:* with Facet collectionName
-//            // use result list to iterate over all collections
-//
-//			List<EuropeanaCollection> europeanaCollections = dashboardDao.fetchCollections();
-//			for (EuropeanaCollection europeanaCollection : europeanaCollections) {
-//				for (int i = 0; i <= europeanaCollection.getTotalRecords() / MAX_RECORDS_PER_SITEMAP_FILE; i++) {
-//					entries.add(
-//							new SitemapIndexEntry(
-//									StringEscapeUtils.escapeXml(EUROPEANA_URL + "sitemap.xml?collection=" + europeanaCollection.getName() + "&page=" + i),
-//									dateFormatter.format(europeanaCollection.getCollectionLastModified())));
-//				}
-//			}
-//
-//			mavPage = ControllerUtil.createModelAndViewPage("sitemap-index-xml");
-//		} else {
-//
-//			// generate sitemap for a collection
-//			if (page != null && page.length() > 0 && page.length() < 3 && NumberUtils.isDigits(page)) {
-//
-//				EuropeanaCollection europeanaCollection = dashboardDao.fetchCollectionByName(collection, false);
-//				int maxPageForCollection = europeanaCollection.getTotalRecords() / MAX_RECORDS_PER_SITEMAP_FILE + 1;
-//				int pageInt = Integer.parseInt(page);
-//
-//				if (pageInt <= maxPageForCollection) {
-//
-//					// dump this page of records
-//					List<EuropeanaId> collectionObjects = dashboardDao.fetchCollectionObjects(europeanaCollection);
-//					for (
-//							int i = pageInt * MAX_RECORDS_PER_SITEMAP_FILE;
-//							i < (pageInt + 1) * MAX_RECORDS_PER_SITEMAP_FILE && i < collectionObjects.size();
-//							i++) {
-//
-//						entries.add(
-//								new SitemapEntry(
-//										StringEscapeUtils.escapeXml(PREFIX_FULL_VIEW + collectionObjects.get(i).getEuropeanaUri()),
-//										dateFormatter.format(europeanaCollection.getCollectionLastModified()),
-//										"monthly",
-//										"0.5"
-//								));
-//					}
-//				}
-//
-//			}
-//			mavPage = ControllerUtil.createModelAndViewPage("sitemap-xml");
-//		}
-//		mavPage.addObject("entries", entries);
-		return mavPage;
-	}
+            // generate sitemap for a collection
+            if (page != null && page.length() > 0 && page.length() < 4 && NumberUtils.isDigits(page)) {
+                int pageInt = Integer.parseInt(page);
+                SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
+                int maxPageForCollection = siteMapBeanView.getMaxPageForCollection();
+                if (pageInt <= maxPageForCollection) {
+                    List<IdBean> list = siteMapBeanView.getIdBeans();
+                    mavPage.addObject("idBeanList", list);
+                }
+            }
+        }
+        return mavPage;
+    }
+
+    /**
+     * Sitemap index entry, model for MVC.
+     *
+     * @author Borys Omelayenko
+     */
+    public static class SitemapIndexEntry {
+
+        private String loc;
+        private final Date lastmod;
+
+        public String getLoc() {
+            return loc;
+        }
+
+        public Date getLastmod() {
+            return lastmod;
+        }
+
+        public SitemapIndexEntry(String loc, Date lastmod) {
+            this.loc = loc;
+            this.lastmod = lastmod;
+        }
+
+    }
+
 }

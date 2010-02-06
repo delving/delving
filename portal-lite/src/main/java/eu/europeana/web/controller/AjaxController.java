@@ -190,7 +190,7 @@ public class AjaxController {
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
-                clickStreamLogger.log(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
+                clickStreamLogger.log(request, UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");

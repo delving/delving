@@ -23,7 +23,6 @@ package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
-
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,7 +99,9 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Transactional
     public List<EuropeanaCollection> fetchCollections() {
-        Query query = entityManager.createQuery("select c from EuropeanaCollection c");
+        Query query = entityManager.createQuery("select c from EuropeanaCollection c where c.collectionState = :collectionState order by c.name");
+        //important because only enabled collections are available in the search engine
+        query.setParameter("collectionState", CollectionState.ENABLED);
         return (List<EuropeanaCollection>) query.getResultList();
     }
 
@@ -550,7 +551,7 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Transactional
     public int markOrphans(EuropeanaCollection collection) {
-        int numberUpdated = 0;
+        int numberUpdated;
         Query orphanQountUpdate = entityManager.createQuery("update EuropeanaId id set orphan = :orphan where collection = :collection and lastModified < :lastmodified");
         orphanQountUpdate.setParameter("collection", collection);
         orphanQountUpdate.setParameter("orphan", true);

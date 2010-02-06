@@ -72,8 +72,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
         QueryProblem queryProblem = QueryProblem.NONE;
-        // todo: decide if we are going to give an error code on the exception resolver
-        // response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         if (exception instanceof EuropeanaQueryException) {
             queryProblem = ((EuropeanaQueryException) exception).getFetchProblem();
         }
@@ -100,6 +99,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         clickStreamLogger.log(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
         ModelAndView mav = new ModelAndView("exception");
         mav.addObject("debug", debugMode);
+        mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
         mav.addObject("cacheUrl", cacheUrl);
         mav.addObject("queryProblem", queryProblem);
         mav.addObject("exception", exception);

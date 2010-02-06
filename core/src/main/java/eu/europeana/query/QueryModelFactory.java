@@ -24,6 +24,7 @@ package eu.europeana.query;
 import eu.europeana.beans.query.BriefBeanView;
 import eu.europeana.beans.query.FullBeanView;
 import eu.europeana.beans.query.GridBrowseBeanView;
+import eu.europeana.beans.query.SiteMapBeanView;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -56,4 +57,6 @@ public interface QueryModelFactory {
     List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException;
+
+    SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException;
 }
