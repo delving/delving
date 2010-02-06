@@ -59,7 +59,7 @@ public class ResultController {
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocHtml(
             @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "uri", required = false) String uri,
+            @RequestParam(value = "uri", required = true) String uri,
             @RequestParam(value = "start", required = false) String start,
             @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
@@ -75,11 +75,11 @@ public class ResultController {
         page.addObject("result", fullResultView);
         if (fullResultView.getDocIdWindowPager() != null) {
             page.addObject("pagination", fullResultView.getDocIdWindowPager());
-            page.addObject("uri", fullResultView.getDocIdWindowPager().getFullDocUri());
         }
         if (format != null && format.equalsIgnoreCase("labels")) {
             page.addObject("format", format);
         }
+        page.addObject("uri", uri);
         clickStreamLogger.log(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }

@@ -47,8 +47,9 @@ public class SiteMapController {
     ) throws Exception {
         ModelAndView mavPage;
         String fullDocPageString = "full-doc.html";
-        if (fullViewUrl.endsWith(fullDocPageString)) {
-            fullViewUrl = fullViewUrl.substring(0, fullViewUrl.length() - fullDocPageString.length());
+        String baseUrl = fullViewUrl;
+        if (baseUrl.endsWith(fullDocPageString)) {
+            baseUrl = baseUrl.substring(0, fullViewUrl.length() - fullDocPageString.length());
         }
         if (collection == null) {
             List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
@@ -58,7 +59,7 @@ public class SiteMapController {
                     // add each page of a collection to the index.
                     entries.add(
                             new SitemapIndexEntry(
-                                    StringEscapeUtils.escapeXml(String.format("%ssitemap.xml?collection=%s&page=%d", fullViewUrl, europeanaCollection.getName(), i)),
+                                    StringEscapeUtils.escapeXml(String.format("%ssitemap.xml?collection=%s&page=%d", baseUrl, europeanaCollection.getName(), i)),
                                     europeanaCollection.getCollectionLastModified()));
                 }
             }
