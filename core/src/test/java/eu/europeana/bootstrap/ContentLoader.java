@@ -28,7 +28,10 @@ import eu.europeana.incoming.ESEImporter;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.incoming.ImportRepository;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -81,7 +84,7 @@ public class ContentLoader {
             jobs.add(new Job(file));
         }
         else {
-            throw new IllegalArgumentException("File ["+fileName+"] does not exist!");
+            throw new IllegalArgumentException("File [" + fileName + "] does not exist!");
         }
     }
 
@@ -113,6 +116,20 @@ public class ContentLoader {
         LOG.info("Committed Solr");
     }
 
+    private static boolean isSorlRunning() {
+        boolean solrAlive = false;
+        try {
+            SolrServer server = new CommonsHttpSolrServer("http://localhost:8983/solr/");
+            SolrPingResponse response = server.ping();
+            solrAlive = response.getResponse().get("status").toString().equalsIgnoreCase("ok");
+        } catch (SolrServerException e) {
+            LOG.warn("Could not find external Solr Running, so we proceed to start a local Solr instance");
+        } catch (IOException e) {
+            LOG.warn("Could not find external Solr Running, so we proceed to start a local Solr instance");
+        }
+        return solrAlive;
+    }
+
     public static void main(String... commandLine) throws Exception {
         ContentLoader contentLoader = new ContentLoader();
         if (commandLine.length == 0) {
@@ -121,12 +138,20 @@ public class ContentLoader {
         else for (String fileName : commandLine) {
             contentLoader.addMetadataFile(fileName);
         }
-        LOG.info("Starting Solr Server");
-        SolrStarter solrStarter = new SolrStarter();
-        solrStarter.start();
-        contentLoader.loadMetadata();
-        LOG.info("Stopping Solr Server");
-        Thread.sleep(10000);
-        solrStarter.stop();
+        if (isSorlRunning()) {
+            LOG.info("start loading content");
+            contentLoader.loadMetadata();
+            LOG.info("finished loading content");
+        }
+        else {
+            LOG.info("Starting Solr Server");
+            SolrStarter solrStarter = new SolrStarter();
+            solrStarter.start();
+            contentLoader.loadMetadata();
+            LOG.info("Stopping Solr Server");
+            Thread.sleep(10000);
+            solrStarter.stop();
+            LOG.info("finished loading content");
+        }
     }
 }
