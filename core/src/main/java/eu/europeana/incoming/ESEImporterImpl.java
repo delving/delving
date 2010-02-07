@@ -35,6 +35,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -49,15 +50,10 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -80,6 +76,7 @@ public class ESEImporterImpl implements ESEImporter {
     private EuropeanaBean europeanaBean;
     private boolean normalized;
     private int chunkSize = 1000;
+    private String cacheRoot;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
     private interface Processor {
@@ -121,6 +118,11 @@ public class ESEImporterImpl implements ESEImporter {
 
     public void setNormalized(boolean normalized) {
         this.normalized = normalized;
+    }
+
+    @Value("#{europeanaProperties['cache.cacheRoot']}")
+    public void setCacheRoot(String cacheRoot) {
+        this.cacheRoot = cacheRoot;
     }
 
     public ImportRepository getImportRepository() {
@@ -186,7 +188,6 @@ public class ESEImporterImpl implements ESEImporter {
         private ImportFile importFile;
         private EuropeanaCollection collection;
         private List<SolrInputDocument> recordList = new ArrayList<SolrInputDocument>();
-        private List<String> objectList = new ArrayList<String>();
 
         private ImportProcessor(ImportFile importFile, EuropeanaCollection collection) {
             this.importFile = importFile;
@@ -286,6 +287,8 @@ public class ESEImporterImpl implements ESEImporter {
             XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
+            BufferedWriter objectsOut = new BufferedWriter(new FileWriter(cacheRoot + File.separator + collection.getName() + "_urls.sh", false));
+            objectsOut.write("#!/usr/bin/env sh\n");
             EuropeanaId europeanaId = null;
             Set<String> objectUrls = new TreeSet<String>();
             int recordCount = 0;
@@ -313,8 +316,8 @@ public class ESEImporterImpl implements ESEImporter {
                             }
                             else if (field.isEuropeanaObject()) {
                                 objectCount++;
-                                objectUrls.add(text);
-                                objectList.add(createCacheEntry(text));
+//                                objectUrls.add(text); // todo remove this
+                                objectsOut.write(createCacheEntry(text) + "\n");
                             }
                             else if (field.isEuropeanaType()) {
                                 DocType.get(text); // checking if it matches one of them
@@ -345,8 +348,8 @@ public class ESEImporterImpl implements ESEImporter {
                                 europeanaId.setEuropeanaUri(String.format("%s%s/%s", RESOLVABLE_URI, collection.getName(), COUNT_FORMAT.format(recordCount)));
                             }
                             recordList.add(solrInputDocument);
-                            objectUrls.clear(); // don't store objectUrls in the database
-                            log.info(String.format("%d : %s", recordCount, europeanaId.getEuropeanaUri()));
+//                            objectUrls.clear(); // don't store objectUrls in the database todo remove later
+//                            log.info(String.format("%d : %s", recordCount, europeanaId.getEuropeanaUri()));
                             dashboardDao.saveEuropeanaId(europeanaId, objectUrls);
                             europeanaId = null;
                             solrInputDocument = null;
@@ -369,9 +372,14 @@ public class ESEImporterImpl implements ESEImporter {
                 indexRecordList();
             }
             String elapsedTime = DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time);
-            log.info("Processed " + recordCount + " records in " + elapsedTime);
-            log.info("Processed " + objectCount + " cacheable objects in " + elapsedTime);
+            Date now = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss");
+            String footerStats = "\n# collection: " + collection.getName() + " imported and indexed at " + formatter.format(now) +
+                    "\n# Processed " + recordCount + " records and " + objectCount + " cacheable objects in " + elapsedTime;
+            log.info(footerStats);
+            objectsOut.write(footerStats);
             inputStream.close();
+            objectsOut.close();
         }
 
         private void indexRecordList() throws IOException, SolrServerException {
@@ -379,7 +387,6 @@ public class ESEImporterImpl implements ESEImporter {
             solrServer.add(recordList);
 //            solrServer.commit();       // It is better to use the  autocommit from solr
             recordList.clear();
-            objectList.clear();
         }
 
         private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
@@ -583,6 +590,7 @@ public class ESEImporterImpl implements ESEImporter {
     private String createCacheEntry(String uri) {
         CacheHash hash = new CacheHash();
         String cacheString = hash.createHash(uri);
-        return String.format("%s :: %s", uri, cacheString);
+        String cacheDirectory = cacheRoot + File.separator + "repository" + File.separator + "ORIGINAL" + File.separator + hash.getDirectory(cacheString);
+        return String.format("wget %s -O %s/%s.jpg", uri, cacheDirectory, cacheString);
     }
 }
