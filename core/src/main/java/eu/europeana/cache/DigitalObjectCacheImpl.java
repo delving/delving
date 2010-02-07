@@ -53,6 +53,8 @@ public class DigitalObjectCacheImpl implements DigitalObjectCache {
         if (!this.root.exists()) {
             log.info("Creating root directory");
             this.root.mkdirs();
+            //todo: create all subdirs if they don't exist
+//            cacheHash.createNewStyleCacheDir(this.root);
         }
     }
 
