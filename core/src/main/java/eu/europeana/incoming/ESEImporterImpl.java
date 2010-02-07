@@ -25,9 +25,11 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import eu.europeana.beans.annotation.AnnotationProcessor;
 import eu.europeana.beans.annotation.EuropeanaBean;
 import eu.europeana.beans.annotation.EuropeanaField;
+import eu.europeana.cache.CacheHash;
 import eu.europeana.database.DashboardDao;
 import eu.europeana.database.domain.*;
 import eu.europeana.query.DocType;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -184,6 +186,7 @@ public class ESEImporterImpl implements ESEImporter {
         private ImportFile importFile;
         private EuropeanaCollection collection;
         private List<SolrInputDocument> recordList = new ArrayList<SolrInputDocument>();
+        private List<String> objectList = new ArrayList<String>();
 
         private ImportProcessor(ImportFile importFile, EuropeanaCollection collection) {
             this.importFile = importFile;
@@ -286,6 +289,7 @@ public class ESEImporterImpl implements ESEImporter {
             EuropeanaId europeanaId = null;
             Set<String> objectUrls = new TreeSet<String>();
             int recordCount = 0;
+            int objectCount = 0;
             long time = System.currentTimeMillis();
             SolrInputDocument solrInputDocument = null;
             while (thread != null) {
@@ -308,7 +312,9 @@ public class ESEImporterImpl implements ESEImporter {
                                 europeanaId.setEuropeanaUri(text);
                             }
                             else if (field.isEuropeanaObject()) {
+                                objectCount++;
                                 objectUrls.add(text);
+                                objectList.add(createCacheEntry(text));
                             }
                             else if (field.isEuropeanaType()) {
                                 DocType.get(text); // checking if it matches one of them
@@ -324,7 +330,7 @@ public class ESEImporterImpl implements ESEImporter {
                     case XMLStreamConstants.END_ELEMENT:
                         if (isRecordElement(xml) && europeanaId != null) {
                             if (recordCount > 0 && recordCount % 500 == 0) {
-                                log.info("imported " + recordCount + " records");
+                                log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time)));
                             }
                             recordCount++;
                             if (normalized) {
@@ -336,18 +342,19 @@ public class ESEImporterImpl implements ESEImporter {
                                 if (europeanaId.getEuropeanaUri() != null) {
                                     throw new ImportException("Sandbox Record must not have a field designated as europeana uri", recordCount);
                                 }
-                                europeanaId.setEuropeanaUri(RESOLVABLE_URI + collection.getName() + "/" + COUNT_FORMAT.format(recordCount));
+                                europeanaId.setEuropeanaUri(String.format("%s%s/%s", RESOLVABLE_URI, collection.getName(), COUNT_FORMAT.format(recordCount)));
                             }
                             recordList.add(solrInputDocument);
+                            objectUrls.clear(); // don't store objectUrls in the database
+                            log.info(String.format("%d : %s", recordCount, europeanaId.getEuropeanaUri()));
                             dashboardDao.saveEuropeanaId(europeanaId, objectUrls);
                             europeanaId = null;
-                            objectUrls.clear();
                             solrInputDocument = null;
                         }
                         break;
 
                     case XMLStreamConstants.END_DOCUMENT:
-                        log.info("Document ended, imported " + recordCount + " records");
+                        log.info(String.format("Document ended, imported %d records", recordCount));
                         break;
                 }
                 if (recordList.size() >= chunkSize) {
@@ -361,16 +368,18 @@ public class ESEImporterImpl implements ESEImporter {
             if (!recordList.isEmpty()) {
                 indexRecordList();
             }
-            time = System.currentTimeMillis() - time;
-            log.info("Processed " + recordCount + " records in " + (time / 60000.0) + " minutes");
+            String elapsedTime = DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time);
+            log.info("Processed " + recordCount + " records in " + elapsedTime);
+            log.info("Processed " + objectCount + " cacheable objects in " + elapsedTime);
             inputStream.close();
         }
 
         private void indexRecordList() throws IOException, SolrServerException {
-            log.info("sending "+recordList.size()+" records to solr");
+            log.info("sending " + recordList.size() + " records to solr");
             solrServer.add(recordList);
 //            solrServer.commit();       // It is better to use the  autocommit from solr
             recordList.clear();
+            objectList.clear();
         }
 
         private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
@@ -569,5 +578,11 @@ public class ESEImporterImpl implements ESEImporter {
             europeanaBean = annotationProcessor.getEuropeanaBean(beanClass);
         }
         return europeanaBean;
+    }
+
+    private String createCacheEntry(String uri) {
+        CacheHash hash = new CacheHash();
+        String cacheString = hash.createHash(uri);
+        return String.format("%s :: %s", uri, cacheString);
     }
 }

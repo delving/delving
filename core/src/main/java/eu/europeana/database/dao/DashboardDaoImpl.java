@@ -262,8 +262,10 @@ public class DashboardDaoImpl implements DashboardDao {
             detachedId.setLastModified(now);
             detachedId.setCreated(now);
             entityManager.persist(detachedId);
-            for (String objectUrl : objectUrls) {
-                detachedId.getEuropeanaObjects().add(new EuropeanaObject(detachedId, objectUrl));
+            if (objectUrls.size() > 0) {
+                for (String objectUrl : objectUrls) {
+                    detachedId.getEuropeanaObjects().add(new EuropeanaObject(detachedId, objectUrl));
+                }
             }
             persistentId = detachedId;
         }

@@ -37,12 +37,12 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"AssignmentToMethodParameter", "ResultOfMethodCallIgnored", "ValueOfIncrementOrDecrementUsed"})
-public class CacheHash {
+public class  CacheHash {
     private Map<String, MimeType> mimeMap = new HashMap<String, MimeType>();
     private Map<String, MimeType> extensionMap = new HashMap<String, MimeType>();
     private final MessageDigest digest;
 
-    CacheHash() {
+    public CacheHash() {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         }
@@ -127,7 +127,7 @@ public class CacheHash {
         return hash.substring(0, 2) + File.separator + hash.substring(2, 4);
     }
 
-    private String createHash(String uri) {
+    public String createHash(String uri) {
         byte[] raw;
         synchronized (digest) {
             digest.reset();
