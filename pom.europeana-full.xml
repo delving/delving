@@ -35,7 +35,10 @@
 	</parent>
 
 	<modules>
-		<module>core</module>
+	<!-- 
+	    We build core separately
+        <module>core</module>
+	 -->
 		<module>api</module>
 		<module>portal-lite</module>
 		<module>portal-full</module>
