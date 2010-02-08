@@ -30,7 +30,10 @@ import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
-import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.dashboard.client.dto.CollectionStateX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.QueueEntryX;
 
 import java.util.*;
 
@@ -88,11 +91,6 @@ public class CollectionsWidget extends DashboardWidget {
         for (CollectionStateX state : CollectionStateX.values()) {
             collectionStateBox.addItem(state.toString());
         }
-        final ListBox cacheStateBox = new ListBox();
-        cacheStateBox.addItem(world.messages().anyCacheState());
-        for (CacheStateX state : CacheStateX.values()) {
-            cacheStateBox.addItem(state.toString());
-        }
         final ListBox fileStateBox = new ListBox();
         fileStateBox.addItem(world.messages().anyImportFileState());
         for (ImportFileX.State state : ImportFileX.State.values()) {
@@ -102,12 +100,10 @@ public class CollectionsWidget extends DashboardWidget {
         select.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event)  {
                 int collectionIndex = collectionStateBox.getSelectedIndex();
-                int cacheIndex = cacheStateBox.getSelectedIndex();
                 int fileStateIndex = fileStateBox.getSelectedIndex();
                 CollectionStateX collectionState = collectionIndex == 0 ? null : CollectionStateX.values()[collectionIndex - 1];
-                CacheStateX cacheState = cacheIndex == 0 ? null : CacheStateX.values()[cacheIndex - 1];
                 ImportFileX.State fileState = fileStateIndex == 0 ? null : ImportFileX.State.values()[fileStateIndex - 1];
-                for (EuropeanaCollectionX collection : collectionList.getCollections(collectionState, cacheState, fileState)) {
+                for (EuropeanaCollectionX collection : collectionList.getCollections(collectionState, fileState)) {
                     if (!collectionPanels.containsKey(collection.getName())) {
                         addCollectionPanel(collection);
                     }
@@ -117,7 +113,6 @@ public class CollectionsWidget extends DashboardWidget {
         HorizontalPanel p = new HorizontalPanel();
         p.setSpacing(4);
         p.add(collectionStateBox);
-        p.add(cacheStateBox);
         p.add(fileStateBox);
         p.add(select);
         return p;
@@ -201,7 +196,6 @@ public class CollectionsWidget extends DashboardWidget {
         collection.setDescription(importFile.getFileName());
         collection.setCollectionLastModified(new Date());
         collection.setFileUserName(world.user().getUserName());
-        collection.setCacheState(CacheStateX.EMPTY);
         collection.setFileState(importFile.getState());
         collection.setCollectionState(CollectionStateX.EMPTY);
         return collection;

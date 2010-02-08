@@ -29,7 +29,6 @@ import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
-import eu.europeana.dashboard.client.collections.CacheStatusWidget;
 import eu.europeana.dashboard.client.collections.CollectionStatusWidget;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
@@ -46,19 +45,14 @@ public class CollectionWidget extends DashboardWidget {
     private HTML counts = new HTML();
     private ImportFileWidget importFileWidget;
     private CollectionStatusWidget collectionStatus;
-    private CacheStatusWidget cacheStatus;
     private CollectionHolder holder;
 
     public CollectionWidget(World world, EuropeanaCollectionX collection, CollectionHolder.CollectionAddListener collectionAddListener) {
         super(world);
         this.holder = new CollectionHolder(world.service(), collectionAddListener, collection);
-        this.counts = new HTML(world.messages().dataSetCounters(
-                collection.getTotalRecords(),
-                collection.getTotalObjects()
-        ));
+        this.counts = new HTML(world.messages().dataSetRecords(collection.getTotalRecords()));
         this.importFileWidget = new ImportFileWidget(world, holder);
         this.collectionStatus = new CollectionStatusWidget(world, holder);
-        this.cacheStatus = new CacheStatusWidget(world, holder);
     }
 
     public CollectionWidget(World world, CollectionHolder.CollectionAddListener collectionAddListener, String name) {
@@ -66,30 +60,16 @@ public class CollectionWidget extends DashboardWidget {
     }
 
     public void setQueueEntry(QueueEntryX entry) {
-        this.counts.setText(world.messages().dataSetCounters(
-                entry.getCollection().getTotalRecords(),
-                entry.getCollection().getTotalObjects()
-        ));
-        switch (entry.getType()) {
-            case INDEX:
-                collectionStatus.setRecordsProcessed(entry.getRecordsProcessed());
-                collectionStatus.setTotalRecords(entry.getTotalRecords());
-                break;
-            case CACHE:
-                cacheStatus.setRecordsProcessed(entry.getRecordsProcessed());
-                cacheStatus.setTotalRecords(entry.getTotalRecords());
-                break;
-        }
+        this.counts.setText(world.messages().dataSetRecords(entry.getCollection().getTotalRecords()));
+        collectionStatus.setRecordsProcessed(entry.getRecordsProcessed());
+        collectionStatus.setTotalRecords(entry.getTotalRecords());
         holder.setCollection(entry.getCollection());
     }
 
     public void setCollection(EuropeanaCollectionX collection) {
         if (collection != null) {
             holder.setCollection(collection);
-            this.counts.setText(world.messages().dataSetCounters(
-                    collection.getTotalRecords(),
-                    collection.getTotalObjects()
-            ));
+            this.counts.setText(world.messages().dataSetRecords(collection.getTotalRecords()));
         }
     }
 
@@ -181,8 +161,7 @@ public class CollectionWidget extends DashboardWidget {
     private Widget createIndexCachePanel() {
         VerticalPanel panel = new VerticalPanel();
         panel.add(collectionStatus.getWidget());
-        panel.add(cacheStatus.getWidget());
-        return createDisclosurePanel(panel, world.messages().indexCacheTitle());
+        return createDisclosurePanel(panel, world.messages().indexTitle());
     }
 
     private Widget createDisclosurePanel(Widget widget, String title) {

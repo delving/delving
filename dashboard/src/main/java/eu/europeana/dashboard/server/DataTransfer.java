@@ -46,11 +46,8 @@ public class DataTransfer {
                 collection.getCollectionLastModified(),
                 collection.getFileUserName(),
                 collection.getFileState().toString(),
-                collection.getCacheState().toString(),
                 collection.getCollectionState().toString(),
                 collection.getTotalRecords(),
-                collection.getTotalObjects(),
-                collection.getTotalOrphans(),
                 collection.getImportError()
         );
     }
@@ -63,7 +60,6 @@ public class DataTransfer {
         collection.setCollectionLastModified(collectionX.getCollectionLastModified());
         collection.setFileUserName(collectionX.getFileUserName());
         collection.setFileState(ImportFileState.valueOf(collectionX.getFileState().toString()));
-        collection.setCacheState(CacheState.valueOf(collectionX.getCacheState().toString()));
         collection.setCollectionState(CollectionState.valueOf(collectionX.getCollectionState().toString()));
         return collection;
     }

@@ -21,9 +21,11 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CollectionState;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.IndexingQueueEntry;
 import eu.europeana.fixture.IngestionFixture;
-import eu.europeana.incoming.CacheBuilder;
 import eu.europeana.incoming.ImportFile;
 import eu.europeana.query.FullDoc;
 import org.apache.log4j.Logger;
@@ -63,9 +65,6 @@ public class TestIngestion {
     @Autowired
     private DashboardDao dashboardDao;
 
-    @Autowired
-    private CacheBuilder cacheBuilder;
-
     private static EuropeanaCollection collection;
     private static ImportFile importFile;
 
@@ -95,7 +94,7 @@ public class TestIngestion {
         collection.setCollectionState(CollectionState.QUEUED);
         collection = dashboardDao.updateCollection(collection);
         assertEquals(CollectionState.QUEUED, collection.getCollectionState());
-        List<? extends QueueEntry> queue = dashboardDao.fetchQueueEntries();
+        List<IndexingQueueEntry> queue = dashboardDao.fetchQueueEntries();
         assertEquals(1, queue.size());
     }
 
@@ -123,19 +122,4 @@ public class TestIngestion {
         assertEquals("uri should equal "+uri, uri, fullDoc.getId());
     }
 
-    @Test
-    public void cacheStateChange() throws InterruptedException {
-        collection.setCacheState(CacheState.QUEUED);
-        collection = dashboardDao.updateCollection(collection);
-        assertEquals(CacheState.QUEUED, collection.getCacheState());
-        assertEquals(1, dashboardDao.fetchQueueEntries().size());
-        cacheBuilder.run(); // should detect the queue entry
-        do {
-            log.info("cacheState="+CacheState.CACHEING);
-            Thread.sleep(2000);
-            collection = dashboardDao.fetchCollection(collection.getId());
-        }
-        while (collection.getCacheState() == CacheState.CACHEING);
-        // todo: figure out how to assert there is cache content
-    }
 }

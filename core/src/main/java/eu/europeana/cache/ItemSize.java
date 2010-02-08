@@ -28,6 +28,7 @@ package eu.europeana.cache;
  */
 
 public enum ItemSize {
+    ORIGINAL,
     FULL_DOC,
     BRIEF_DOC
 }

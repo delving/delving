@@ -162,28 +162,7 @@
         </property>
     </bean>
 
-    <bean id="databaseCacheMaintainer" class="eu.europeana.incoming.CacheBuilder">
-        <property name="chunkSize" value="30"/>
-    </bean>
-
-    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
-        <constructor-arg>
-            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
-                <property name="params">
-                    <bean class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
-                        <property name="maxTotalConnections" value="64"/>
-                        <property name="defaultMaxConnectionsPerHost" value="8"/>
-                        <property name="connectionTimeout" value="30000"/>
-                        <property name="staleCheckingEnabled" value="true"/>
-                    </bean>
-                </property>
-            </bean>
-        </constructor-arg>
-    </bean>
-
-    <bean id="digitalObjectCache" class="eu.europeana.cache.DigitalObjectCacheImpl">
-        <property name="httpClient" ref="httpClient"/>
-        <property name="imageMagickPath" value="#{europeanaProperties['cache.imageMagickPath']}"/>
+    <bean id="objectCache" class="eu.europeana.cache.ObjectCacheImpl">
         <property name="root" value="#{europeanaProperties['cache.cacheRoot']}"/>
     </bean>
 

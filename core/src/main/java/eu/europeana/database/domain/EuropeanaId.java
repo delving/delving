@@ -76,12 +76,7 @@ public class EuropeanaId implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
     @JoinColumn(name = "europeanaid")
-    private List<EuropeanaObject> europeanaObjects;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
-    @JoinColumn(name = "europeanaid")
     private List<CarouselItem> carouselItems;
-
 
     @Column(nullable = true)
     private Float boostFactor;
@@ -162,26 +157,6 @@ public class EuropeanaId implements Serializable {
 
     public void setSocialTags(List<SocialTag> socialTags) {
         this.socialTags = socialTags;
-    }
-
-    public List<EuropeanaObject> getEuropeanaObjects() {
-        if (europeanaObjects == null) {
-            europeanaObjects = new ArrayList<EuropeanaObject>();
-        }
-        return europeanaObjects;
-    }
-
-    public void setEuropeanaObjects(List<EuropeanaObject> europeanaObjects) {
-        this.europeanaObjects = europeanaObjects;
-    }
-
-    public EuropeanaObject getEuropeanaObject(String url) {
-        for (EuropeanaObject object : getEuropeanaObjects()) {
-            if (object.getObjectUrl().equals(url)) {
-                return object;
-            }
-        }
-        return null;
     }
 
     public List<CarouselItem> getCarouselItems() {

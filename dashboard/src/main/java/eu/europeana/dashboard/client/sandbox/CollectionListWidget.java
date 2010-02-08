@@ -85,7 +85,6 @@ public class CollectionListWidget extends DashboardWidget {
             checkBox.addClickHandler(clickHandler);
             panel.add(checkBox);
         }
-        stack.add(panel, world.messages().cacheStateTitle());
         HTML selectAll = new HTML(world.messages().selectAll());
         selectAll.setStyleName("actionLink");
         selectAll.addClickHandler(new ClickHandler() {
@@ -130,7 +129,6 @@ public class CollectionListWidget extends DashboardWidget {
         for (EuropeanaCollectionX collection : collections) {
             if (
                     collectionState.get(collection.getCollectionState().getFilterChoice()).getValue() ||
-                    cacheState.get(collection.getCacheState().getFilterChoice()).getValue() ||
                     importFileState.get(collection.getFileState().getFilterChoice()).getValue()
             ) {
                 list.add(collection);

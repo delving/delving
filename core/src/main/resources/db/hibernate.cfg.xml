@@ -41,9 +41,7 @@
         <mapping class="eu.europeana.database.domain.Token"/>
         <mapping class="eu.europeana.database.domain.SearchTerm"/>
         <mapping class="eu.europeana.database.domain.CarouselItem"/>
-        <mapping class="eu.europeana.database.domain.EuropeanaObject"/>
         <mapping class="eu.europeana.database.domain.IndexingQueueEntry"/>
-        <mapping class="eu.europeana.database.domain.CacheingQueueEntry"/>
         <mapping class="eu.europeana.database.domain.DashboardLog"/>
     </session-factory>
 </hibernate-configuration>

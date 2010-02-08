@@ -138,7 +138,6 @@ public class EuropeanaProperties extends Properties {
             "displayPageUrl",
             "dashboard.normalized.import.repository",
             "dashboard.sandbox.import.repository",
-            "cache.imageMagickPath",
             "cache.cacheRoot",
             "debug",
             "static.page.path",

@@ -1,7 +1,6 @@
 package eu.europeana.dashboard.client.collections;
 
 import com.google.gwt.user.client.ui.SuggestOracle;
-import eu.europeana.dashboard.client.dto.CacheStateX;
 import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.ImportFileX;
@@ -26,14 +25,11 @@ public class CollectionList {
         return new CollectionOracle();
     }
 
-    public List<EuropeanaCollectionX> getCollections(CollectionStateX collectionState, CacheStateX cacheState, ImportFileX.State fileState) {
+    public List<EuropeanaCollectionX> getCollections(CollectionStateX collectionState, ImportFileX.State fileState) {
         List<EuropeanaCollectionX> list = new ArrayList<EuropeanaCollectionX>();
         for (EuropeanaCollectionX collection : collections) {
             boolean included = true;
             if (collectionState != null && collection.getCollectionState() != collectionState) {
-                included = false;
-            }
-            if (cacheState != null && collection.getCacheState() != cacheState) {
                 included = false;
             }
             if (fileState != null && collection.getFileState() != fileState) {

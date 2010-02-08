@@ -1,11 +1,9 @@
 package eu.europeana.api.controller;
 
-import eu.europeana.cache.DigitalObjectCache;
 import eu.europeana.cache.ItemSize;
 import eu.europeana.cache.MimeType;
+import eu.europeana.cache.ObjectCache;
 import eu.europeana.query.DocType;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.URLEncoder;
 
 /**
@@ -43,10 +38,10 @@ public class ServiceController {
             {ItemSize.FULL_DOC.toString(), DocType.VIDEO.toString(), "/cache/item-video-large.gif"},
     };
     private final int CACHE_DURATION_IN_SECOND = 60 * 60 * 2; // 2 hour
-    private final long CACHE_DURATION_IN_MS = CACHE_DURATION_IN_SECOND  * 1000;
+    private final long CACHE_DURATION_IN_MS = CACHE_DURATION_IN_SECOND * 1000;
 
     @Autowired
-    private DigitalObjectCache digitalObjectCache;
+    private ObjectCache objectCache;
 
     @Value("#{europeanaProperties['displayPageUrl']}")
     private String displayPageUrl;
@@ -82,48 +77,41 @@ public class ServiceController {
     public void cache(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(value = "type", required=false) String type,
-            @RequestParam(value = "uri", required=false) String uri
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "uri", required = false) String uri
     ) throws IOException {
         if (uri == null) {
             log.warn("Needs 'uri' parameter");
             reportURIRequired(response, type, ItemSize.BRIEF_DOC);
         }
         else {
-            ItemSize size = ItemSize.FULL_DOC;
+            ItemSize itemSize = ItemSize.FULL_DOC;
             String sizeString = request.getParameter("size");
             if (sizeString != null) {
                 try {
-                    size = ItemSize.valueOf(sizeString);
+                    itemSize = ItemSize.valueOf(sizeString);
                 }
                 catch (IllegalArgumentException e) {
                     log.warn("Parameter 'size' is invalid");
-                    size = ItemSize.FULL_DOC;
+                    itemSize = ItemSize.FULL_DOC;
                 }
             }
             else {
-                log.warn("No 'size' parameter, using " + size);
+                log.warn("No 'size' parameter, using " + itemSize);
             }
-            File[] cachedFiles = digitalObjectCache.getItemSizeCachedFiles(uri);
-            File cachedFile = null;
-            if (cachedFiles != null) {
-                cachedFile = cachedFiles[size.ordinal()];
-            }
+            File cachedFile = objectCache.getFile(itemSize, uri);
             if (cachedFile == null) {
-                reportURINotCached(response, uri, type, size, "Nothing in cache for this URI.");
+                reportURINotCached(response, uri, type, itemSize, "Nothing in cache for this URI.");
             }
-            else {
-                if (!respondWithContent(response, cachedFile)) {
-                    reportURINotCached(response, uri, type, size, "Cacheing of this URI resulted in an error.");
-                }
+            else if (!respondWithContent(response, cachedFile)) {
+                reportURINotCached(response, uri, type, itemSize, "Cacheing of this URI resulted in an error.");
             }
         }
-
     }
 
     @SuppressWarnings({"NestedAssignment"})
     private boolean respondWithContent(HttpServletResponse response, File cachedFile) throws IOException {
-        MimeType mimeType = digitalObjectCache.getMimeType(cachedFile);
+        MimeType mimeType = objectCache.getMimeType(cachedFile);
         if (mimeType == MimeType.ERROR) {
             return false;
         }
@@ -210,6 +198,7 @@ public class ServiceController {
     }
 
     /* Sets the HTTP header that instruct cache control to the browser. */
+
     private void setCacheControlHeaders(HttpServletResponse response) {
         long now = System.currentTimeMillis();
         response.addHeader("Cache-Control", "max-age=" + CACHE_DURATION_IN_SECOND);

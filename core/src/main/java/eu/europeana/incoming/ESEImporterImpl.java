@@ -25,9 +25,12 @@ import com.ctc.wstx.stax.WstxInputFactory;
 import eu.europeana.beans.annotation.AnnotationProcessor;
 import eu.europeana.beans.annotation.EuropeanaBean;
 import eu.europeana.beans.annotation.EuropeanaField;
-import eu.europeana.cache.CacheHash;
+import eu.europeana.cache.ObjectCache;
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CollectionState;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.ImportFileState;
 import eu.europeana.query.DocType;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
@@ -35,7 +38,6 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -53,7 +55,9 @@ import javax.xml.validation.Validator;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
 
@@ -72,11 +76,11 @@ public class ESEImporterImpl implements ESEImporter {
     private ImportRepository importRepository;
     private SolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
+    private ObjectCache objectCache;
     private Class<?> beanClass;
     private EuropeanaBean europeanaBean;
     private boolean normalized;
     private int chunkSize = 1000;
-    private String cacheRoot;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
     private interface Processor {
@@ -102,6 +106,11 @@ public class ESEImporterImpl implements ESEImporter {
         this.annotationProcessor = annotationProcessor;
     }
 
+    @Autowired
+    public void setObjectCache(ObjectCache objectCache) {
+        this.objectCache = objectCache;
+    }
+
     public void setBeanClass(Class<?> beanClass) {
         this.beanClass = beanClass;
     }
@@ -118,11 +127,6 @@ public class ESEImporterImpl implements ESEImporter {
 
     public void setNormalized(boolean normalized) {
         this.normalized = normalized;
-    }
-
-    @Value("#{europeanaProperties['cache.cacheRoot']}")
-    public void setCacheRoot(String cacheRoot) {
-        this.cacheRoot = cacheRoot;
     }
 
     public ImportRepository getImportRepository() {
@@ -230,9 +234,6 @@ public class ESEImporterImpl implements ESEImporter {
                     importFile = importRepository.transition(importFile, ImportFileState.IMPORTED);
                     collection.setFileState(ImportFileState.IMPORTED);
                     collection.setCollectionState(CollectionState.ENABLED);
-                    if (collection.getCacheState() == CacheState.EMPTY) {
-                        collection.setCacheState(CacheState.UNCACHED);
-                    }
                 }
                 else {
                     log.info("Aborted importing " + importFile);
@@ -287,10 +288,10 @@ public class ESEImporterImpl implements ESEImporter {
             XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
-            BufferedWriter objectsOut = new BufferedWriter(new FileWriter(cacheRoot + File.separator + collection.getName() + "_urls.sh", false));
-            objectsOut.write("#!/usr/bin/env sh\n");
+            BufferedWriter fetchScript = new BufferedWriter(new FileWriter(objectCache.getFetchScriptFile(collection)));
+            fetchScript.write(objectCache.createFetchScriptHeader());
+            fetchScript.write("\n");
             EuropeanaId europeanaId = null;
-            Set<String> objectUrls = new TreeSet<String>();
             int recordCount = 0;
             int objectCount = 0;
             long time = System.currentTimeMillis();
@@ -316,8 +317,8 @@ public class ESEImporterImpl implements ESEImporter {
                             }
                             else if (field.isEuropeanaObject()) {
                                 objectCount++;
-//                                objectUrls.add(text); // todo remove this
-                                objectsOut.write(createCacheEntry(text) + "\n");
+                                fetchScript.write(objectCache.createFetchCommand(text));
+                                fetchScript.write("\n");
                             }
                             else if (field.isEuropeanaType()) {
                                 DocType.get(text); // checking if it matches one of them
@@ -348,9 +349,7 @@ public class ESEImporterImpl implements ESEImporter {
                                 europeanaId.setEuropeanaUri(String.format("%s%s/%s", RESOLVABLE_URI, collection.getName(), COUNT_FORMAT.format(recordCount)));
                             }
                             recordList.add(solrInputDocument);
-//                            objectUrls.clear(); // don't store objectUrls in the database todo remove later
-//                            log.info(String.format("%d : %s", recordCount, europeanaId.getEuropeanaUri()));
-                            dashboardDao.saveEuropeanaId(europeanaId, objectUrls);
+                            dashboardDao.saveEuropeanaId(europeanaId);
                             europeanaId = null;
                             solrInputDocument = null;
                         }
@@ -377,9 +376,9 @@ public class ESEImporterImpl implements ESEImporter {
             String footerStats = "\n# collection: " + collection.getName() + " imported and indexed at " + formatter.format(now) +
                     "\n# Processed " + recordCount + " records and " + objectCount + " cacheable objects in " + elapsedTime;
             log.info(footerStats);
-            objectsOut.write(footerStats);
+            fetchScript.write(footerStats);
             inputStream.close();
-            objectsOut.close();
+            fetchScript.close();
         }
 
         private void indexRecordList() throws IOException, SolrServerException {
@@ -585,12 +584,5 @@ public class ESEImporterImpl implements ESEImporter {
             europeanaBean = annotationProcessor.getEuropeanaBean(beanClass);
         }
         return europeanaBean;
-    }
-
-    private String createCacheEntry(String uri) {
-        CacheHash hash = new CacheHash();
-        String cacheString = hash.createHash(uri);
-        String cacheDirectory = cacheRoot + File.separator + "repository" + File.separator + "ORIGINAL" + File.separator + hash.getDirectory(cacheString);
-        return String.format("wget %s -O %s/%s.jpg", uri, cacheDirectory, cacheString);
     }
 }

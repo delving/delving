@@ -15,9 +15,7 @@
         <class>eu.europeana.database.domain.Token</class>
         <class>eu.europeana.database.domain.SearchTerm</class>
         <class>eu.europeana.database.domain.CarouselItem</class>
-        <class>eu.europeana.database.domain.EuropeanaObject</class>
         <class>eu.europeana.database.domain.IndexingQueueEntry</class>
-        <class>eu.europeana.database.domain.CacheingQueueEntry</class>
         <class>eu.europeana.database.domain.DashboardLog</class>
     </persistence-unit>
 

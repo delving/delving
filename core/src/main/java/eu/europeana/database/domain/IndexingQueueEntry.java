@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "indexqueue")
-public class IndexingQueueEntry implements QueueEntry {
+public class IndexingQueueEntry {
     private static final long serialVersionUID = 3194890599784829178L;
 
     @Id

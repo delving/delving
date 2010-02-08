@@ -9,11 +9,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.junit.Assert.*;
 
@@ -51,22 +48,6 @@ public class TestDashboardDao {
     public void init() {
         user1 = createUser("test1", "tester1", "test1@tester.com");
         user2 = createUser("test2", "tester2", "test2@tester.com");
-
-    }
-
-//    @Test
-    public void testFindOrphanedSavedItem() throws Exception {
-        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
-        assertFalse("Orphan should be false", europeanaId.isOrphan());
-        User user = userDao.addUser(user1);
-        user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_2);
-        List<SavedItem> savedItems = user.getSavedItems();
-        assertTrue(!savedItems.isEmpty());
-        europeanaId.setOrphan(true);
-        for (SavedItem savedItem : savedItems) {
-            assertTrue("Orphan should be true", savedItem.getEuropeanaId().isOrphan());
-            assertFalse("Orphan should not have carouselItem", savedItem.hasCarouselItem());
-        }
 
     }
 
@@ -157,125 +138,6 @@ public class TestDashboardDao {
             assertFalse("has no Search Term", savedSearch.hasSearchTerm());
         }
     }
-
-//    @Test
-    public void testFindOrphans() {
-        EuropeanaCollection testCol = dashboardDao.fetchCollectionByName("TestCollection", true);
-        Set<String> objectUrls = new TreeSet<String>();
-        // create 10 orphans
-        createIds(testCol, objectUrls, 0, false);
-        // update the last modified date and update collection
-        testCol.setCollectionLastModified(new Date());
-        dashboardDao.updateCollection(testCol);
-        // create 10 records normal records
-        createIds(testCol, objectUrls, 10, false);
-
-        EuropeanaCollection updatedCollection = dashboardDao.updateCollectionCounters(testCol.getId());
-        Assert.assertEquals("total number objects", 0, updatedCollection.getTotalObjects().intValue());
-        Assert.assertEquals("total number records", 10, updatedCollection.getTotalRecords().intValue());
-        Assert.assertEquals("total number of orphans", 10, updatedCollection.getTotalOrphans().intValue());
-
-        int orphans = dashboardDao.markOrphans(testCol);
-        Assert.assertEquals("total number of orphans", 10, orphans);
-
-        boolean addedToQueue = dashboardDao.addToIndexQueue(testCol);
-        Assert.assertTrue("check if collection is added to the indexing queue", addedToQueue);
-        IndexingQueueEntry indexingQueueEntry = dashboardDao.getEntryForIndexing();
-        Assert.assertEquals("Check if we are indexing the test collection", testCol.getId(), indexingQueueEntry.getCollection().getId());
-
-        List<EuropeanaId> idsForIndexing = dashboardDao.getEuropeanaIdsForIndexing(100, indexingQueueEntry);
-        Assert.assertEquals("See if number of ids to index does not include orphans", 10, idsForIndexing.size());
-    }
-
-
-//    @Test
-    public void testWithObjects() {
-        long start = System.currentTimeMillis();
-        EuropeanaCollection collection = dashboardDao.fetchCollectionByName("TestCollection", true);
-        runWithObjects(collection);
-        log.info("finished first run in: " + (System.currentTimeMillis() - start));
-        EuropeanaId iddy = dashboardDao.fetchEuropeanaId(createEuropeanaId(0, collection).getEuropeanaUri());
-        Assert.assertEquals(2, iddy.getEuropeanaObjects().size());
-
-        start = System.currentTimeMillis();
-        runWithObjects(collection);
-        log.info("finished second run in: " + (System.currentTimeMillis() - start));
-//        start = System.currentTimeMillis();
-//        runWithObjects(collection);
-//        log.info("finished third run in: " + (System.currentTimeMillis() - start));
-        iddy = dashboardDao.fetchEuropeanaId(createEuropeanaId(99, collection).getEuropeanaUri());
-        Assert.assertEquals(2, iddy.getEuropeanaObjects().size());
-        for (EuropeanaObject europeanaObject : iddy.getEuropeanaObjects()) {
-            log.info(String.format("object: %s", europeanaObject.getObjectUrl()));
-        }
-        Assert.assertEquals(iddy.getEuropeanaUri(), createEuropeanaId(99, collection).getEuropeanaUri());
-        Assert.assertNotSame(iddy.getEuropeanaUri(), createEuropeanaId(0, collection).getEuropeanaUri());
-    }
-
-//    @Test
-    public void testWithoutObjects() {
-        long start = System.currentTimeMillis();
-        EuropeanaCollection collection = dashboardDao.fetchCollectionByName("TestCollection", true);
-        Set<String> objectUrls = new TreeSet<String>();
-        runWithoutObjects(collection, objectUrls);
-        log.info("finished first run in: " + (System.currentTimeMillis() - start));
-        EuropeanaId iddy = dashboardDao.fetchEuropeanaId(createEuropeanaId(0, collection).getEuropeanaUri());
-        Assert.assertEquals(0, iddy.getEuropeanaObjects().size());
-
-        start = System.currentTimeMillis();
-        runWithoutObjects(collection, objectUrls);
-        log.info("finished second run in: " + (System.currentTimeMillis() - start));
-        iddy = dashboardDao.fetchEuropeanaId(createEuropeanaId(99, collection).getEuropeanaUri());
-        Assert.assertEquals(0, iddy.getEuropeanaObjects().size());
-        Assert.assertEquals(iddy.getEuropeanaUri(), createEuropeanaId(99, collection).getEuropeanaUri());
-    }
-
-    private void runWithObjects(EuropeanaCollection collection) {
-        for (int walk = 0; walk < 100; walk++) {
-            EuropeanaId id = createEuropeanaId(walk, collection);
-            Set<String> objectList = createObjectList(walk);
-            dashboardDao.saveEuropeanaId(id, objectList);
-//            log.info(MessageFormat.format("saved europeanaid: ({0}) {1} with {2} objects.", walk, id.getEuropeanaUri(), objectList.size()));
-        }
-    }
-
-    private void runWithoutObjects(EuropeanaCollection collection, Set<String> objectUrls) {
-        for (int walk = 0; walk < 100; walk++) {
-            EuropeanaId id = createEuropeanaId(walk, collection);
-            dashboardDao.saveEuropeanaId(id, objectUrls);
-//            log.info(MessageFormat.format("saved europeanaid: ({0}) {1} with {2} objects.", walk, id.getEuropeanaUri(), objectUrls.size()));
-        }
-    }
-
-    private void createIds(EuropeanaCollection collection, Set<String> objectUrls, int offSet, Boolean createOrphan) {
-        for (int walk = 0; walk < 10; walk++) {
-            EuropeanaId id = createEuropeanaId(walk + offSet, collection);
-            if (createOrphan) {
-                id.setOrphan(true);
-            }
-            dashboardDao.saveEuropeanaId(id, objectUrls);
-            log.info(MessageFormat.format("saved europeanaid: ({0}) {1} with {2} objects.", walk, id.getEuropeanaUri(), objectUrls.size()));
-        }
-    }
-
-
-    private Set<String> createObjectList(int walk) {
-        Set<String> objectUrls = new TreeSet<String>();
-        for (int i = 0; i < 2; i++) {
-            String object = new StringBuilder().append("http://host/objecturl/pathy/thing").append(walk).append(i).append(".jpg").toString();
-            objectUrls.add(object);
-        }
-        return objectUrls;
-    }
-
-    private EuropeanaId createEuropeanaId(int number, EuropeanaCollection collection) {
-        EuropeanaId europeanaId = new EuropeanaId(collection);
-        europeanaId.setCreated(new Date());
-        europeanaId.setLastModified(new Date());
-        europeanaId.setEuropeanaUri("http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735" + number);
-        return europeanaId;
-    }
-
 
     private User createUser(String firstName, String lastName, String email) {
         User user = new User();

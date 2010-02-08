@@ -1,6 +1,5 @@
 package eu.europeana.dashboard.client;
 
-import eu.europeana.dashboard.client.dto.CacheStateX;
 import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.ImportFileX;
@@ -70,11 +69,6 @@ public class CollectionHolder {
 
     public void setCollectionState(CollectionStateX state) {
         collection.setCollectionState(state);
-        updateCollection();
-    }
-
-    public void setCacheState(CacheStateX state) {
-        collection.setCacheState(state);
         updateCollection();
     }
 

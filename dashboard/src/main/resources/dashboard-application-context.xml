@@ -67,37 +67,22 @@
         <property name="repeatInterval" value="${trigger.repeatInterval}"/>
     </bean>
 
-    <bean id="cacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="databaseCacheMaintainer"/>
-                <property name="targetMethod" value="run"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="${trigger.startDelay}"/>
-        <property name="repeatInterval" value="${trigger.repeatInterval}"/>
-    </bean>
-
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="indexTrigger"/>
-                <ref bean="cacheTrigger"/>
             </list>
         </property>
     </bean>
 
     <bean id="dashboardService" class="eu.europeana.dashboard.server.DashboardServiceImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
-        <property name="languageDao" ref="languageDao"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
         <property name="userDao" ref="userDao"/>
         <property name="cacheUrl" value="${cacheUrl}"/>
         <property name="normalizedImporter" ref="normalizedEseImporter"/>
         <property name="sandboxImporter" ref="sandboxEseImporter"/>
         <property name="solrServer" ref="solrServer"/>
-        <property name="digitalObjectCache" ref="digitalObjectCache"/>
     </bean>
 
 </beans>

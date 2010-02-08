@@ -115,18 +115,6 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         return service().removeSearchTerm(language, term);
     }
 
-    public List<String> getObjectOrphans() {
-        return service().getObjectOrphans();
-    }
-
-    public boolean deleteObjectOrphan(String uri) {
-        return service().deleteObjectOrphan(uri);
-    }
-
-    public void deleteAllOrphans() {
-        service().deleteAllOrphans();
-    }
-
     public List<SavedSearchX> fetchSavedSearches(UserX user) {
         return service().fetchSavedSearches(user);
     }

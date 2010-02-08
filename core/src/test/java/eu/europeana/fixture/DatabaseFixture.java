@@ -58,7 +58,6 @@ public class DatabaseFixture {
             id.setBoostFactor(Float.valueOf("0.5"));
             id.setTimesViewed(0);
             id.setCarouselItems(null);
-            id.setEuropeanaObjects(null);
             id.setLastModified(new Date());
             id.setLastViewed(new Date());
             id.setOrphan(false);
@@ -67,11 +66,6 @@ public class DatabaseFixture {
             ids.add(id);
         }
         return ids;
-    }
-
-    @Transactional
-    public <Entity> Entity fetch(Class<Entity> entityClass, Long id) {
-        return entityManager.find(entityClass, id);
     }
 
     @Transactional

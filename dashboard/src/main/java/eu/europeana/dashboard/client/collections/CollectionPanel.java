@@ -18,11 +18,10 @@ import eu.europeana.dashboard.client.dto.QueueEntryX;
 
 public class CollectionPanel extends DashboardWidget {
     private CollectionHolder holder;
-    private HTML collectionName, collectionCounters;
+    private HTML collectionName, collectionRecords;
     private VerticalPanel mainPanel = new VerticalPanel();
     private ImportFileStatusWidget importFileStatusWidget;
     private CollectionStatusWidget collectionStatusWidget;
-    private CacheStatusWidget cacheStatusWidget;
     private CloseNotifier closeNotifier;
 
     public interface CloseNotifier {
@@ -34,18 +33,13 @@ public class CollectionPanel extends DashboardWidget {
         this.holder = new CollectionHolder(world.service(), null, collection);
         this.importFileStatusWidget = new ImportFileStatusWidget(world, holder);
         this.collectionStatusWidget = new CollectionStatusWidget(world, holder);
-        this.cacheStatusWidget = new CacheStatusWidget(world, holder);
         this.collectionName = new HTML(collection.getName());
         this.collectionName.setStyleName("collectionName");
-        this.collectionCounters = new HTML(world.messages().collectionCounters(
-                collection.getTotalRecords(),
-                collection.getTotalObjects(),
-                collection.getTotalOrphans()
-        ));
+        this.collectionRecords = new HTML(world.messages().collectionRecords(collection.getTotalRecords()));
         this.closeNotifier = closeNotifier;
         holder.addListener(new CollectionHolder.CollectionUpdateListener() {
             public void collectionUpdated(EuropeanaCollectionX collection) {
-                refreshCollectionCounters();
+                refreshCollectionRecords();
             }
         });
     }
@@ -54,13 +48,13 @@ public class CollectionPanel extends DashboardWidget {
         HTML close = new HTML(world.messages().close());
         close.setStyleName("collectionClose");
         close.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event)  {
+            public void onClick(ClickEvent event) {
                 closeNotifier.close(holder.getCollection());
             }
         });
         Button recount = new Button(world.messages().recount());
         recount.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event)  {
+            public void onClick(ClickEvent event) {
                 world.service().updateCollectionCounters(holder.getCollection(), new Reply<EuropeanaCollectionX>() {
                     public void onSuccess(EuropeanaCollectionX result) {
                         setCollection(result);
@@ -71,7 +65,7 @@ public class CollectionPanel extends DashboardWidget {
         HorizontalPanel namePanel = new HorizontalPanel();
         namePanel.setSpacing(6);
         namePanel.add(collectionName);
-        namePanel.add(collectionCounters);
+        namePanel.add(collectionRecords);
         namePanel.add(recount);
         DockPanel root = new DockPanel();
         root.setWidth("100%");
@@ -79,7 +73,6 @@ public class CollectionPanel extends DashboardWidget {
         mainPanel.add(namePanel);
         mainPanel.add(importFileStatusWidget.getWidget());
         mainPanel.add(collectionStatusWidget.getWidget());
-        mainPanel.add(cacheStatusWidget.getWidget());
         root.add(mainPanel, DockPanel.CENTER);
         root.add(close, DockPanel.EAST);
         root.setCellHorizontalAlignment(close, DockPanel.ALIGN_RIGHT);
@@ -112,16 +105,8 @@ public class CollectionPanel extends DashboardWidget {
     }
 
     public void setQueueEntry(QueueEntryX entry) {
-        switch (entry.getType()) {
-            case INDEX:
-                collectionStatusWidget.setRecordsProcessed(entry.getRecordsProcessed());
-                collectionStatusWidget.setTotalRecords(entry.getTotalRecords());
-                break;
-            case CACHE:
-                cacheStatusWidget.setRecordsProcessed(entry.getRecordsProcessed());
-                cacheStatusWidget.setTotalRecords(entry.getTotalRecords());
-                break;
-        }
+        collectionStatusWidget.setRecordsProcessed(entry.getRecordsProcessed());
+        collectionStatusWidget.setTotalRecords(entry.getTotalRecords());
         holder.setCollection(entry.getCollection());
     }
 
@@ -129,11 +114,7 @@ public class CollectionPanel extends DashboardWidget {
         holder.setCollection(collection);
     }
 
-    private void refreshCollectionCounters() {
-        collectionCounters.setText(world.messages().collectionCounters(
-                holder.getCollection().getTotalRecords(),
-                holder.getCollection().getTotalObjects(),
-                holder.getCollection().getTotalOrphans()
-        ));
+    private void refreshCollectionRecords() {
+        collectionRecords.setText(world.messages().collectionRecords(holder.getCollection().getTotalRecords()));
     }
 }

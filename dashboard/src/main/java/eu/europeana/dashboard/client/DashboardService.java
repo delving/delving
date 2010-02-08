@@ -43,10 +43,6 @@ public interface DashboardService extends RemoteService {
     List<String> fetchSearchTerms(String language);
     boolean removeSearchTerm(String language, String term);
 
-    List<String> getObjectOrphans();
-    boolean deleteObjectOrphan(String uri);
-    void deleteAllOrphans();
-
     List<SavedSearchX> fetchSavedSearches(UserX userX);
 
     List<DashboardLogX> fetchLogEntriesFrom(Long topId, int pageSize);

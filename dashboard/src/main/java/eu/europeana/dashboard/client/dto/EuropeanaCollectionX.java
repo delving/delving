@@ -39,11 +39,8 @@ public class EuropeanaCollectionX implements IsSerializable {
     private String fileUserName;
     private Date collectionLastModified;
     private ImportFileX.State fileState = ImportFileX.State.NONEXISTENT;
-    private CacheStateX cacheState = CacheStateX.EMPTY;
     private CollectionStateX collectionState = CollectionStateX.EMPTY;
     private int totalRecords;
-    private int totalObjects;
-    private int totalOrphans;
     private String importError;
 
     public EuropeanaCollectionX() {
@@ -53,7 +50,7 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.name = name;
     }
 
-    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, ImportFileX.State fileState, CacheStateX cacheState, CollectionStateX collectionState, int totalRecords, int totalObjects, int totalOrphans, String importError) {
+    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, ImportFileX.State fileState, CollectionStateX collectionState, int totalRecords, String importError) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -61,15 +58,12 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.collectionLastModified = collectionLastModified;
         this.fileUserName = fileUserName;
         this.fileState = fileState;
-        this.cacheState = cacheState;
         this.collectionState = collectionState;
         this.totalRecords = totalRecords;
-        this.totalObjects = totalObjects;
-        this.totalOrphans = totalOrphans;
         this.importError = importError;
     }
 
-    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, String fileState, String cacheState, String collectionState, int totalRecords, int totalObjects, int totalOrphans, String importError) {
+    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, String fileState, String collectionState, int totalRecords, String importError) {
         this(
                 id,
                 name,
@@ -78,11 +72,8 @@ public class EuropeanaCollectionX implements IsSerializable {
                 collectionLastModified,
                 fileUserName,
                 ImportFileX.State.valueOf(fileState),
-                CacheStateX.valueOf(cacheState),
                 CollectionStateX.valueOf(collectionState),
                 totalRecords,
-                totalObjects,
-                totalOrphans,
                 importError
         );
     }
@@ -139,14 +130,6 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.fileState = fileState;
     }
 
-    public CacheStateX getCacheState() {
-        return cacheState;
-    }
-
-    public void setCacheState(CacheStateX cacheState) {
-        this.cacheState = cacheState;
-    }
-
     public CollectionStateX getCollectionState() {
         return collectionState;
     }
@@ -155,16 +138,8 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.collectionState = collectionState;
     }
 
-    public int getTotalObjects() {
-        return totalObjects;
-    }
-
     public int getTotalRecords() {
         return totalRecords;
-    }
-
-    public int getTotalOrphans() {
-        return totalOrphans;
     }
 
     public String getImportError() {

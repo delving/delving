@@ -67,14 +67,6 @@ public interface DashboardMessages extends Messages {
 
     String disabled();
 
-    String cacheTab();
-
-    String cacheDeleteThisOne();
-
-    String cacheDeleteAllOrphans();
-
-    String cachedObjectsOn(int objectCount, Date date);
-
     String loadingCollections();
 
     String collectionChoose();
@@ -93,18 +85,6 @@ public interface DashboardMessages extends Messages {
 
     String abort();
 
-    String notCached();
-
-    String commenceCacheing();
-
-    String cached();
-
-    String recache();
-
-    String queuedForCacheing();
-
-    String cacheing();
-
     String theCollectionIs();
 
     String itsThumbnailsAre();
@@ -113,11 +93,7 @@ public interface DashboardMessages extends Messages {
 
     String notReadyToIndex();
 
-    String notReadyToCache();
-
     String indexingProgress(int recordsProcessed, int totalRecords);
-
-    String cacheingProgress(int recordsProcessed, int totalRecords);
 
     String title();
 
@@ -141,7 +117,7 @@ public interface DashboardMessages extends Messages {
 
     String deleteThisItem();
 
-    String collectionCounters(int totalRecords, int totalObjects, int totalOrphans);
+    String collectionRecords(int totalRecords);
 
     String recount();
 
@@ -154,8 +130,6 @@ public interface DashboardMessages extends Messages {
     String areYouSureCollection(String action);
 
     String indexAndEnable();
-
-    String cache();
 
     String selectSavedItem();
 
@@ -219,8 +193,6 @@ public interface DashboardMessages extends Messages {
 
     String anyCollectionState();
 
-    String anyCacheState();
-
     String anyImportFileState();
 
     String selectLanguages();
@@ -251,11 +223,9 @@ public interface DashboardMessages extends Messages {
 
     String collectionStateTitle();
 
-    String cacheStateTitle();
-
     String importTitle();
 
-    String indexCacheTitle();
+    String indexTitle();
 
     String dataSetIs();
 
@@ -289,7 +259,7 @@ public interface DashboardMessages extends Messages {
 
     String noImportFilePresent();
 
-    String dataSetCounters(int records, int thumbnails);
+    String dataSetRecords(int records);
 
     String deleteFile();
 

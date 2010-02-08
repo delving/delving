@@ -10,14 +10,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class QueueEntryX implements IsSerializable {
     private long id;
-    private Type type;
     private EuropeanaCollectionX collection;
     private int recordsProcessed;
     private int totalRecords;
 
-    public QueueEntryX(long id, Type type, EuropeanaCollectionX collection, int recordsProcessed, int totalRecords) {
+    public QueueEntryX(long id, EuropeanaCollectionX collection, int recordsProcessed, int totalRecords) {
         this.id = id;
-        this.type = type;
         this.collection = collection;
         this.recordsProcessed = recordsProcessed;
         this.totalRecords = totalRecords;
@@ -28,10 +26,6 @@ public class QueueEntryX implements IsSerializable {
 
     public long getId() {
         return id;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public EuropeanaCollectionX getCollection() {
@@ -46,12 +40,7 @@ public class QueueEntryX implements IsSerializable {
         return totalRecords;
     }
 
-    public enum Type implements IsSerializable {
-        INDEX,
-        CACHE
-    }
-
     public String toString() {
-        return "QueueEntry("+type+", "+collection.getName()+", processed="+recordsProcessed+", total="+totalRecords+")";
+        return "QueueEntry("+collection.getName()+", processed="+recordsProcessed+", total="+totalRecords+")";
     }
 }

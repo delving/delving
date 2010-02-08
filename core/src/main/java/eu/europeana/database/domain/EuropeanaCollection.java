@@ -63,20 +63,10 @@ public class EuropeanaCollection implements Serializable {
 
     @Column(length = 25)
     @Enumerated(EnumType.STRING)
-    private CacheState cacheState = CacheState.EMPTY;
-
-    @Column(length = 25)
-    @Enumerated(EnumType.STRING)
     private CollectionState collectionState = CollectionState.EMPTY;
 
     @Column
     private Integer totalRecords;
-
-    @Column
-    private Integer totalObjects;
-
-    @Column
-    private Integer totalOrphans;
 
     @Lob
     private String importError;
@@ -140,14 +130,6 @@ public class EuropeanaCollection implements Serializable {
         this.fileState = fileState;
     }
 
-    public CacheState getCacheState() {
-        return cacheState;
-    }
-
-    public void setCacheState(CacheState cacheState) {
-        this.cacheState = cacheState;
-    }
-
     public CollectionState getCollectionState() {
         return collectionState;
     }
@@ -163,24 +145,6 @@ public class EuropeanaCollection implements Serializable {
 
     public void setTotalRecords(Integer totalRecords) {
         this.totalRecords = totalRecords;
-    }
-
-    public Integer getTotalObjects() {
-        if (totalObjects == null) totalObjects = 0;
-        return totalObjects;
-    }
-
-    public void setTotalObjects(Integer totalObjects) {
-        this.totalObjects = totalObjects;
-    }
-
-    public Integer getTotalOrphans() {
-        if (totalOrphans == null) totalOrphans = 0;
-        return totalOrphans;
-    }
-
-    public void setTotalOrphans(Integer totalOrphans) {
-        this.totalOrphans = totalOrphans;
     }
 
     public String getImportError() {

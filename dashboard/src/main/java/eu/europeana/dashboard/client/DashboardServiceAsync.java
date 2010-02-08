@@ -55,12 +55,6 @@ public interface DashboardServiceAsync {
 
     void removeSearchTerm(String language, String term, AsyncCallback<Boolean> async);
 
-    void getObjectOrphans(AsyncCallback<List<String>> async);
-
-    void deleteObjectOrphan(String uri, AsyncCallback<Boolean> async);
-
-    void deleteAllOrphans(AsyncCallback<Void> async);
-
     void fetchSavedSearches(UserX userX, AsyncCallback<List<SavedSearchX>> async);
 
     void fetchLogEntriesFrom(Long topId, int pageSize, AsyncCallback<List<DashboardLogX>> async);
