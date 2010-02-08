@@ -36,7 +36,7 @@
 
 	<modules>
 	<!-- 
-	    We build core separately
+	    We build core separately 
         <module>core</module>
 	 -->
 		<module>api</module>
