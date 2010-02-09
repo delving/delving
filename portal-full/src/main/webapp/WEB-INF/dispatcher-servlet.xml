@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~  Licensed under the EUPL, Version 1.1 or as soon they
+  ~  will be approved by the European Commission - subsequent
+  ~  versions of the EUPL (the "Licence");
+  ~  you may not use this work except in compliance with the
+  ~  Licence.
+  ~  You may obtain a copy of the Licence at:
+  ~
+  ~  http://ec.europa.eu/idabc/eupl
+  ~
+  ~  Unless required by applicable law or agreed to in
+  ~  writing, software distributed under the Licence is
+  ~  distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~  express or implied.
+  ~  See the Licence for the specific language governing
+  ~  permissions and limitations under the Licence.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       ">
+
+    <context:component-scan base-package="eu.europeana.web.controller"/>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".ftl"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeRequestAttributes" value="false"/>
+        <property name="requestContextAttribute" value="requestContext"/>
+    </bean>
+
+    <bean id="viewXmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".xml.ftl"/>
+        <property name="contentType" value="text/xml; charset=utf-8"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeRequestAttributes" value="false"/>
+        <property name="requestContextAttribute" value="requestContext"/>
+    </bean>
+
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+
+    <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"/>
+        <property name="clickStreamLogger" ref="clickStreamLogger"/>
+    </bean>
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieMaxAge" value="3600"/>
+        <property name="defaultLocale" value="en"/>
+    </bean>
+
+    <bean id="formatInterceptor" class="eu.europeana.web.util.FormatInterceptor"/>
+
+    <bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor"/>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localeChangeInterceptor"/>
+                <ref bean="formatInterceptor"/>
+                <ref bean="configInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="#{europeanaProperties['message.resource']}"/>
+        <property name="cacheSeconds" value="#{europeanaProperties['message.cache.seconds']}"/>
+        <property name="fileEncodings" value="UTF-8"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+</beans>

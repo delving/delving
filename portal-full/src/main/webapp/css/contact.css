@@ -1,0 +1,13 @@
+#contact { padding: 0 10px 0 0;}
+#contact h4 {border-bottom: 1px solid #eaeaea;}
+#contact p {margin: 4px 0 20px 0;}
+form {}
+fieldset {text-align: left;}
+legend {display:none;}
+label {}
+input.txt {border:1px solid #ccc; width: 50%;padding: 2px 0 0 4px;}
+textarea {width:100%; height: 200px;border:1px solid #ccc;}
+.error {font-size: 11px;margin-left: 4px;}
+ p.success {background-color: green; color: #fff;padding: 4px}
+#effect { padding: 0.4em; position: relative; }
+#effect h3 { margin: 0; padding: 0.4em; text-align: center; }
