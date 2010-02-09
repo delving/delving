@@ -117,7 +117,7 @@ public interface DashboardDao {
      * Prepare a collection for importing by removing any saved import error and setting the date last modified.
      *
      * note: originally the indexing was triggered using the last modified date. is that still the case?
-     * 
+     *
      * @param collectionId the internal identifier
      * @return the updated collection
      */

@@ -52,6 +52,22 @@ public class TestDashboardDao {
     }
 
 //    @Test
+    public void testFindOrphanedSavedItem() throws Exception {
+        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
+        assertFalse("Orphan should be false", europeanaId.isOrphan());
+        User user = userDao.addUser(user1);
+        user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_2);
+        List<SavedItem> savedItems = user.getSavedItems();
+        assertTrue(!savedItems.isEmpty());
+        europeanaId.setOrphan(true);
+        for (SavedItem savedItem : savedItems) {
+            assertTrue("Orphan should be true", savedItem.getEuropeanaId().isOrphan());
+            assertFalse("Orphan should not have carouselItem", savedItem.hasCarouselItem());
+        }
+
+    }
+
+//    @Test
     public void testSavedItemToCarouselItem() throws Exception {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());

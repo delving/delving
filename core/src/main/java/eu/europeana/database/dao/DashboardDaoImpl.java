@@ -383,15 +383,30 @@ public class DashboardDaoImpl implements DashboardDao {
         EuropeanaCollection collection = entityManager.find(EuropeanaCollection.class, collectionId);
         markOrphans(collection);
         Query recordCountQuery = entityManager.createQuery("select count(id) from EuropeanaId as id where id.collection = :collection and orphan = false");
+        Query orphanCountQuery = entityManager.createQuery("select count(id) from EuropeanaId as id where id.collection = :collection and orphan = true");
         // update recordCount
         recordCountQuery.setParameter("collection", collection);
         Long totalNumberOfRecords = (Long) recordCountQuery.getResultList().get(0);
         collection.setTotalRecords(totalNumberOfRecords.intValue());
+        // update orphan count
+        orphanCountQuery.setParameter("collection", collection);
+        Long totalNumberOfOrphans = (Long) orphanCountQuery.getResultList().get(0);
+        collection.setTotalOrphans(totalNumberOfOrphans.intValue());
         return collection;
     }
 
+    /**
+     * Find and mark the orphan objects associated with the given collection, by checking for europeanaIds which have not
+     * been modified since the collection was re-imported, indicating that they were no longer present.
+     *
+     * todo: apparently this method's implementation is in transition, unit tests required
+     *
+     * @param collection use id and last modified value
+     * @return the number of IDs with
+     */
+
     @Transactional
-    private int markOrphans(EuropeanaCollection collection) { // todo: can this not be removed?
+    private int markOrphans(EuropeanaCollection collection) {
         int numberUpdated;
         Query orphanQountUpdate = entityManager.createQuery("update EuropeanaId id set orphan = :orphan where collection = :collection and lastModified < :lastmodified");
         orphanQountUpdate.setParameter("collection", collection);

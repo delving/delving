@@ -126,7 +126,7 @@ public class ObjectCacheImpl implements ObjectCache {
     private File getCacheRoot(File root, ItemSize itemSize, String hash) {
         if (!root.exists()) {
             try {
-                createCacheDirectories(root);
+                createCacheDirectories(root);              
             }
             catch (IOException e) {
                 throw new RuntimeException("Unable to create cache directories", e);
