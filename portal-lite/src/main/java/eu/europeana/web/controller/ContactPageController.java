@@ -102,7 +102,7 @@ public class ContactPageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    protected String handlePost(@ModelAttribute("contactForm") @Valid ContactForm form, BindingResult result, HttpServletRequest request) throws Exception {
+    protected String handlePost(@ModelAttribute("command") @Valid ContactForm form, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             form.setSubmitMessage("There was a problem with your feedback. Please try to send again.");
             clickStreamLogger.log(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
