@@ -1,6 +1,6 @@
 package eu.europeana.database.domain;
 
-import org.springframework.security.ui.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 import javax.persistence.*;
 import java.util.Date;

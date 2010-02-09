@@ -261,12 +261,17 @@
 
             <dependency>
                 <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-taglibs</artifactId>
+                <artifactId>spring-security-config</artifactId>
                 <version>${spring.security.version}</version>
             </dependency>
 
@@ -402,7 +407,7 @@
         <jdkLevel>1.6</jdkLevel>
 
         <spring.version>3.0.0.RELEASE</spring.version>
-        <spring.security.version>2.0.3</spring.security.version>
+        <spring.security.version>3.0.1.RELEASE</spring.security.version>
 
         <hibernate.version>3.2.7.ga</hibernate.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>

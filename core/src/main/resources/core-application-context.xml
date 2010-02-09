@@ -47,21 +47,6 @@
     <!--todo: is this bean necessary?-->
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider user-service-ref="daoUserDetailsService">
-            <security:password-encoder hash="sha"/>
-        </security:authentication-provider>
-    </security:authentication-manager>
-
-    <security:http auto-config="true" create-session="never">
-        <security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
-        <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
-        <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
-        <security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
-        <security:logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>
-        <security:remember-me token-repository-ref="tokenRepositoryService"/>
-    </security:http>
-
     <bean id="europeanaProperties" class="eu.europeana.query.EuropeanaProperties"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -272,6 +257,21 @@
     </bean>
 
     <bean id="exceptionResolver" class="eu.europeana.web.util.ExceptionResolver"/>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider user-service-ref="daoUserDetailsService">
+            <security:password-encoder hash="sha"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <security:http auto-config="true" create-session="never">
+        <security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
+        <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
+        <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
+        <security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
+        <security:logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>
+        <security:remember-me token-repository-ref="tokenRepositoryService"/>
+    </security:http>
 
 </beans>
 

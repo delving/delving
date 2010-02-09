@@ -26,12 +26,15 @@ import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UserDetailsService;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Link spring security with our User dao for authentication
@@ -49,6 +52,7 @@ public class UserDaoDetailsService implements UserDetailsService {
 
     public interface UserHolder {
         User getUser();
+
         void setUser(User user);
     }
 
@@ -70,65 +74,53 @@ public class UserDaoDetailsService implements UserDetailsService {
     private static class DaoUserDetails implements UserDetails, UserHolder {
         private static final long serialVersionUID = 1581860745489819018L;
         private User user;
-        private GrantedAuthority[] authorities;
+        private List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
         private DaoUserDetails(User user) {
             this.user = user;
             switch (user.getRole()) {
                 case ROLE_GOD:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_TRANSLATOR),
-                            new DaoGrantedAuthority(Role.ROLE_EDITOR),
-                            new DaoGrantedAuthority(Role.ROLE_ADMINISTRATOR),
-                            new DaoGrantedAuthority(Role.ROLE_GOD),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_TRANSLATOR);
+                    addRole(Role.ROLE_EDITOR);
+                    addRole(Role.ROLE_ADMINISTRATOR);
+                    addRole(Role.ROLE_GOD);
                     break;
                 case ROLE_TRANSLATOR:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_TRANSLATOR),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_TRANSLATOR);
                     break;
                 case ROLE_ADMINISTRATOR:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_ADMINISTRATOR),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_ADMINISTRATOR);
                     break;
                 case ROLE_EDITOR:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_EDITOR),
-                            new DaoGrantedAuthority(Role.ROLE_PACTA),
-                            new DaoGrantedAuthority(Role.ROLE_CARROUSEL),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_EDITOR);
+                    addRole(Role.ROLE_PACTA);
+                    addRole(Role.ROLE_CARROUSEL);
                     break;
                 case ROLE_PACTA:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_PACTA),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_PACTA);
                     break;
                 case ROLE_CARROUSEL:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_CARROUSEL),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_CARROUSEL);
                     break;
                 case ROLE_CONTENT_TESTER:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                            new DaoGrantedAuthority(Role.ROLE_CONTENT_TESTER),
-                    };
+                    addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_CONTENT_TESTER);
                 case ROLE_USER:
-                    this.authorities = new GrantedAuthority[]{
-                            new DaoGrantedAuthority(Role.ROLE_USER),
-                    };
+                    addRole(Role.ROLE_USER);
                     break;
                 default:
                     throw new IllegalStateException("switch statment must be expanded to include: " + user.getRole());
             }
+        }
+
+        private void addRole(Role role) {
+            authorities.add(new DaoGrantedAuthority(role));
         }
 
         public User getUser() {
@@ -139,7 +131,7 @@ public class UserDaoDetailsService implements UserDetailsService {
             this.user = user;
         }
 
-        public GrantedAuthority[] getAuthorities() {
+        public Collection<GrantedAuthority> getAuthorities() {
             return authorities;
         }
 
@@ -172,7 +164,7 @@ public class UserDaoDetailsService implements UserDetailsService {
         }
     }
 
-    private static class DaoGrantedAuthority implements GrantedAuthority {
+    private static class DaoGrantedAuthority implements GrantedAuthority, Comparable<DaoGrantedAuthority> {
         private static final long serialVersionUID = -534970263836323349L;
         private Role role;
 
@@ -184,8 +176,8 @@ public class UserDaoDetailsService implements UserDetailsService {
             return role.toString();
         }
 
-        public int compareTo(Object o) {
-            DaoGrantedAuthority daoGrantedAuthority = (DaoGrantedAuthority) o;
+        @Override
+        public int compareTo(DaoGrantedAuthority daoGrantedAuthority) {
             return role.compareTo(daoGrantedAuthority.role);
         }
     }

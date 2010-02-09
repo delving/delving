@@ -2,8 +2,8 @@ package eu.europeana.web.util;
 
 import eu.europeana.database.domain.AuthenticationToken;
 import org.apache.log4j.Logger;
-import org.springframework.security.ui.rememberme.PersistentRememberMeToken;
-import org.springframework.security.ui.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

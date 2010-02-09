@@ -6,7 +6,7 @@ import eu.europeana.database.domain.Token;
 import eu.europeana.query.EuropeanaQueryException;
 import eu.europeana.query.QueryProblem;
 import org.apache.log4j.Logger;
-import org.springframework.security.ui.rememberme.PersistentRememberMeToken;
+import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

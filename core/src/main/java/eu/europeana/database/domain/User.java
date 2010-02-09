@@ -1,7 +1,7 @@
 package eu.europeana.database.domain;
 
 import org.hibernate.annotations.Index;
-import org.springframework.security.providers.encoding.ShaPasswordEncoder;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
 import javax.persistence.*;
 import java.io.Serializable;
