@@ -2,6 +2,7 @@
 <#assign thisPage = "register-success.html">
 <#include "spring_form_macros.ftl"/>
 <#include "inc_header.ftl"/>
+<#assign pageId = "rsp">
 <div id="sidebar" class="grid_3">
 
     <div id="identity">
