@@ -4,7 +4,7 @@ initial conntent from the current europeana portal (version 0.4)
 
 html_files - original translated static page templates
 message_keys - original translated properties
-utils
+utils/templates - new templates to use instead of the ones in html_files
 
 100209-initial-properties.sql
     SQL dump to populate database with initial properties, and translation keys
