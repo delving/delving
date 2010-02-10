@@ -20,9 +20,7 @@
 
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
 
-
-===============>>  Not fully operational for the moment <<==============
-
+===============================================================================
 
 The purpose of this packet is to administer the translations of europeana.eu
 
@@ -60,13 +58,15 @@ Dependencies
      It is slightly patched in (rosetta/views.py:translator_allowed ) to only allow a translator to handle languages
      they have permission (rosetta | translator | ...) for.
 
+===============================================================================
 
+          STATUS per 100210
 
+---   Completed   ---
+* Overal structure and operation of this tool
+* Initial import of properties files
 
-
-
-
-
-
-
-INSERT INTO rhine_cms.multi_lingo_portalproperties (tag,txt,description,last_changed,created) values ('susende_t', 'gfdfdfdfdf', '',now(), now());
+---   Remaining   ---
+* Mail notifications for translators
+* Initial import of template pages
+* Implementing procedure to submit content to production servers
