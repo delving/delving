@@ -21,24 +21,22 @@
 
 package eu.europeana.frontend;
 
-import java.io.IOException;
-import java.util.Date;
-
-import org.junit.Test;
-import org.mortbay.jetty.Server;
-
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-
-import eu.europeana.bootstrap.ContentLoader;
 import eu.europeana.bootstrap.PortalFullStarter;
 import eu.europeana.bootstrap.SolrStarter;
 import eu.europeana.database.UserDao;
 import eu.europeana.database.domain.Role;
 import eu.europeana.database.domain.User;
+import eu.europeana.incoming.ContentLoader;
+import org.junit.Test;
+import org.mortbay.jetty.Server;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author Borys Omelayenko
@@ -47,14 +45,14 @@ import eu.europeana.database.domain.User;
 public class FrontendTestUtil {
 
     public static class Constants {
-	
+
 		static final String CAROUSEL_EL_TYPE = "input";
 		static final String CAROUSEL_STYLE = "carousel-input";
 		static final String PACTA_STYLE = "pacta-input";
 		final static String USER_1 = "1" + FrontendTestUtil.EMAIL;
 		final static String USER_2 = "2" + FrontendTestUtil.EMAIL;
 		final static String USER_SIMPLE = "simple" + FrontendTestUtil.EMAIL;
-	
+
 	}
 
 	public static final int TEST_PORT = 8081;
@@ -73,9 +71,9 @@ public class FrontendTestUtil {
         //A temprorary workaround to avoid javascript error caused by jQuery 1.3.1
         //htmlunit does not fully support jQuery 1.3.1 yet.
         webClient.setThrowExceptionOnScriptError(false);
-        
+
         // TODO: remove it
-        
+
         //webClient.setJavaScriptEnabled(false);
 
         return webClient;
@@ -126,13 +124,13 @@ public class FrontendTestUtil {
 
 					@Override
 					public void postLoad() {
-						// create default users 
+						// create default users
 						userDao.addUser(FrontendTestUtil.createUser(Constants.USER_1, Role.ROLE_EDITOR));
 						userDao.addUser(FrontendTestUtil.createUser(Constants.USER_2, Role.ROLE_EDITOR));
 						userDao.addUser(FrontendTestUtil.createUser(Constants.USER_SIMPLE, Role.ROLE_USER));
 						userDao.addUser(FrontendTestUtil.createUser(EMAIL, Role.ROLE_USER));
 					}
-					
+
 				};
 				loader.init();
 				loader.load(true);
