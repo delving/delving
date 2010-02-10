@@ -21,6 +21,8 @@
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
 
 
+===============>>  Not fully operational for the moment <<==============
+
 
 The purpose of this packet is to administer the translations of europeana.eu
 
