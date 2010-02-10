@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link rel="shortcut icon" href="{{ MEDIA_URL }}favicon.ico"/>
+
+  <script type="text/javascript">
+    var msgRequired = "This is a required field";
+  </script>
+  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/common.css"/>
+  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.theme.css"/>
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.3.1.min.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.toggleElements.pack.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.cookie.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/js_utilities.js"></script>
+  {% block header_scripts %}{% comment %}
+===============================================================================
+
+header_scripts
+--------------
+  Here goes page specific extra stylesheets and javascripts
+
+-------------------------------------------------------------------------------
+  {% endcomment %}{% endblock %}
+
+  <title>{% block title %}{% comment %}
+===============================================================================
+
+title
+-----
+  Here goes page title
+
+-------------------------------------------------------------------------------
+  {% endcomment %}{% endblock %}</title>
+
+  <!--[if gte IE 6]>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie6.css" />
+  <![endif]-->
+  <!--[if gte IE 7]>
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie7.css" />
+  <![endif]-->
+</head>
+<body id="">
+<script>
+// JavaScript Document
+function ContactMe(prefix,suffix){
+    var m =  Array(109,97,105,108,116,111,58);
+    var s = '';
+    for (var i = 0; i < m.length; i++){
+        s += String.fromCharCode(m[i]);
+    }
+    window.location.replace(s + prefix + String.fromCharCode(8*8) + suffix);
+    return false;
+}
+</script>
+
+<div id="doc4" class="yui-t2">
+  <div id="hd">
+    {% include "head_default.html" %}
+  </div>
+  <div id="bd">
+    <div id="yui-main">
+      <div class="yui-b">
+        {% block content %}{% comment %}
+===============================================================================
+
+  content
+  -------
+    This is where actual content of the page should go
+
+-------------------------------------------------------------------------------
+        {% endcomment %}{% endblock %}
+      </div>
+    </div>
+    <div class="yui-b">
+      <a href="index.html">
+        <img src="{{ MEDIA_URL }}images/europeana-logo-small.jpg" alt="Click here to return to the Europeana homepage" title="logo Europeana think culture"/>
+        <img src="{{ MEDIA_URL }}images/think_culture_en_small.gif" alt=""/>
+      </a>
+    </div>
+  </div>
+  <div id="ft">
+    {% include "foot_default.html" %}
+  </div>
+</div>
+</body>
+</html>
