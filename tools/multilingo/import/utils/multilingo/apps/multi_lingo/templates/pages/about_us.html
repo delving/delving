@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Europeana - About us" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "About us" %}</h1>
+
+<object type="application/x-shockwave-flash" width="425" height="355" wmode="transparent" data="http://dev.europeana.eu/objects/flvplayer.swf?file=Europeana-master.flv&amp;autoStart=FALSE"><param name="movie" value="http://dev.europeana.eu/objects/flvplayer.swf?file=Europeana-master.flv&amp;autoStart=false" /><param name="wmode" value="transparent" /></object>
+<br /><a href="thinkvideo.html">{% trans "Storyline and Credits" %}</a>
+
+<h2>{% trans "Europeana: think culture" %}</h2>
+
+<p>
+{% blocktrans %}Europeana.eu is about ideas and inspiration. It links you to
+{{ europeana_item_count_mill }} million digital items{% endblocktrans %}.
+</p>
+<ul class="point">
+<li>{% trans "Images - paintings, drawings, maps, photos and pictures of museum objects" %}</li>
+<li>{% trans "Texts - books, newspapers, letters, diaries and archival papers" %}</li>
+<li>{% trans "Sounds - music and spoken word from cylinders, tapes, discs and radio broadcasts" %}</li>
+<li>{% trans "Videos - films, newsreels and TV broadcasts" %}</li>
+</ul>
+
+<p>
+{% trans "Some of these are world famous, others are hidden treasures from Europe's" %}
+</p>
+<ul  class="point">
+<li>{% trans "museums and galleries" %}</li>
+<li>{% trans "archives" %}</li>
+<li>{% trans "libraries" %}</li>
+<li>{% trans "audio-visual collections" %}</li>
+</ul>
+
+<p>Europeana is recruiting for the following positions:
+<a target="_blank" href="http://version1.europeana.eu/web/europeana-project/jobs">
+Java Developer</a> and
+<a target="_blank" href="http://version1.europeana.eu/web/europeana-project/jobs2">Office Manager</a></p>
+
+<p>
+{% trans "Here is a" %}
+<a href="partners.html">{% trans "list of the organisations" %}</a>
+{% blocktrans %}that our content comes from. They include the <strong>Rijksmuseum</strong>
+in Amsterdam, the <strong>British Library</strong> in London and the
+<strong>Louvre</strong> in Paris.{% endblocktrans %}
+</p>
+
+<p>
+{% trans "You can use" %} <a  href="myeuropeana.html">{% trans "My Europeana" %}</a>
+{% trans "to save searches or bookmark things. You can highlight stuff and add it to your own folders" %}.
+</p>
+
+<p>
+{% blocktrans %}This website is a prototype. Europeana Version 1.0 is being developed and will
+launch in 2010 with links to over 10 million digital objects{% endblocktrans %}.
+</p>
+
+<p>
+{% trans "Europeana.eu is funded by the European Commission and the member states" %}.
+</p>
+
+<p>
+{% trans "More about" %}:
+</p>
+<ul  class="point">
+
+<li>{% trans "How Europeana came to be developed" %}:
+    <a  href="#background">{% trans "the background" %}</a>
+    {% trans "to the project" %}</li>
+<li>{% trans "The deliverables from the project" %}:
+    <a  href="#technicalplans">{% trans "technical plans" %}</a> {% trans "etc" %}</li>
+<li>{% trans "New projects that will be channelling material into" %}
+    <a href="http://version1.europeana.eu/" target="_blank">Europeana Version 1.0</a></li>
+<ul class="subpoint">
+<li><a href="http://www.europeanalocal.eu/" target="_blank">EuropeanaLocal</a></li>
+<li><a href="http://www.europeanfilmgateway.eu/" target="_blank">European Film Gateway</a></li>
+</ul>
+<li>{% trans "How organisations can" %}
+    <a  href="#contribute">{% trans "contribute content" %}</a> {% trans "to Europeana" %}</li>
+<li>{% trans "Getting in" %}
+    <a  href="#contact">{% trans "contact" %}</a> {% trans "with the Europeana team" %}</li>
+<li>{% trans "To be added to the" %} <a href="#pressListContact">{% trans "press list" %}</a></li>
+<li>{% trans "The" %}
+    <a  href="http://dev.europeana.eu/enews.php" target="_blank">{% trans "e-news" %}</a>
+    {% trans "to keep you in touch with developments" %}</li>
+</ul>
+
+<a  name="background"/></a>
+<h2>{% trans "Background" %}</h2>
+<p>
+{% blocktrans %}The Commission has been working for a number of years on projects to boost the
+digital economy. These prepared the ground for an online service that would bring
+together Europe's cultural heritage{% endblocktrans %}.
+</p>
+<p>
+{% trans "The idea for Europeana came from a" %}
+<a  href="http://ec.europa.eu/information_society/activities/digital_libraries/doc/letter_1/index_en.htm" target="_blank">{% trans "letter" %}</a>
+{% blocktrans %}to the Presidency of Council and to the Commission on 28 April 2005.
+Six Heads of State and Government suggested the creation of a virtual European
+library, aiming to make Europe's cultural and scientific resources accessible
+for all{% endblocktrans %}.
+</p>
+
+<p>
+{% blocktrans %}On 30 September 2005 the European Commission published the i2010:
+communication on digital libraries, where it announced its strategy to promote
+and support the creation of a European digital library, as a strategic goal
+within the European{% endblocktrans %}
+<a  href="http://europa.eu/i2010" target="_blank">{% trans "Information Society i2010 Initiative" %}</a>,
+{% blocktrans %}which aims to foster growth and jobs in the information society and media industries.
+The European Commission's goal for Europeana is to make European information
+resources easier to use in an online environment. It will build on Europe's
+rich heritage, combining multicultural and multilingual environments with
+technological advances and new business models.
+{% endblocktrans %}</p>
+
+<p>
+{% blocktrans %}The Europeana prototype is the result of a 2-year project that began in July 2007.
+Europeana.eu went live on 20 November 2008, launched by Viviane Reding,
+European Commissioner for Information Society and Media{% endblocktrans %}.
+</p>
+<p>
+{% trans "Europeana is a Thematic Network funded by  the European Commission under the" %}
+<a target="_blank" href="http://ec.europa.eu/information_society/activities/econtentplus/index_en.htm">eContent<em>plus</em> programme</a>,
+{% trans "as part of the" %}
+<a target="_blank"
+href="http://ec.europa.eu/information_society/activities/digital_libraries/index_en.htm">{% trans "i2010  policy" %}</a>.
+{% blocktrans %}Originally known as the European digital library network &ndash; EDLnet  &ndash;&nbsp;
+it is a partnership  of 100 representatives of heritage and knowledge
+organisations and IT  experts from throughout Europe.
+They contribute to the Work Packages that are solving the technical and
+usability issues.
+{% endblocktrans %}</p>
+
+<p>
+{% trans "The project is run by a core team based in  the national library of the Netherlands, the" %}
+<a href="http://www.kb.nl/" target="_blank">Koninklijke  Bibliotheek</a>.
+{% trans "It builds on the project management and technical  expertise developed by" %}
+<a target="_blank" href="http://www.theeuropeanlibrary.org/">{% trans "The  European Library" %}</a>,
+{% trans "which is a service of the" %}
+<a target="_blank" href="http://www.nlib.ee/cenl/about.php">
+{% trans "Conference of European National  Librarians" %}</a>.
+</p>
+
+<p>
+{% trans "Overseeing the project is the" %}
+<a href="http://version1.europeana.eu/web/guest/edl-foundation/" target="_blank">EDL Foundation</a>,
+{% blocktrans %}which includes key European  cultural heritage associations from the four
+domains. The Foundation&rsquo;{% endblocktrans %}
+<a href="http://version1.europeana.eu/c/document_library/get_file?uuid=8493d624-7b32-4a6a-8a41-0c765922874e&groupId=10602" target="_blank">{% trans "statutes" %}</a>
+{% trans "commit members to" %}:
+</p>
+
+
+<ul type="point">
+<li>{% trans "Providing access to Europe&rsquo;s cultural and scientific heritage though a <strong>cross-domain portal</strong>" %}</li>
+<li>{% trans "Co-operating in the delivery and <strong>sustainability</strong> of the joint portal" %}</li>
+<li>{% trans "Stimulating initiatives to <strong>bring together existing digital content</strong>" %}</li>
+<li>{% trans "Supporting  <strong>digitisation</strong> of Europe&rsquo;s cultural and scientific heritage" %}</li>
+</ul>
+<p>&#160;</p>
+
+<a  name="technicalplans"/></a>
+<h2>{% trans "Technical plans" %}</h2>
+<p>
+{% blocktrans %}The development route, site architecture and technical specifications are all
+published as{% endblocktrans %}
+<a href="http://version1.europeana.eu/web/europeana-project/documents/"
+target="_blank">{% trans "deliverable outcomes" %}</a>
+{% blocktrans %}of the project. After the launch of the Europeana prototype, the project's
+final task is to recommend a business model that will ensure the sustainability
+of the website. It will also report on the further research and implementation
+needed to make Europe's cultural heritage fully interoperable and accessible
+through a truly multilingual service{% endblocktrans %}.
+</p>
+
+
+<a  name="contact"/></a>
+<h2>{% trans "Contact us" %}</h2>
+<p>
+<a href="contact.html">{% trans "Feedback form" %}</a>
+</p>
+<!--<p>-->
+<!--Phone +31 [0] 70 314 xxxx-->
+<!--</p>-->
+<p>
+Europeana.eu
+<br />
+c/o the Koninklijke Bibliotheek
+<br />
+National Library of the Netherlands
+<br />
+PO Box 90407
+<br />
+2509 LK The Hague
+</p>
+
+<a  name="pressListContact"/></a>
+<h2>{% trans "To be added to the press list contact" %}</h2>
+<p>
+<a href="#" onclick="return ContactMe('jonathan.purday','bl.uk');">Jonathan Purday</a>
+Phone 00 44 1937 546614
+</p>
+
+<a  name="contribute"/></a>
+<a  name="contributeContent"/></a>
+<h2>{% trans "To provide content to Europeana" %}</h2>
+<p>
+{% trans "See the" %}
+<a href="http://version1.europeana.eu/web/guest/provide_content">{% trans "content providers" %}</a>
+{% trans "page on our project site" %}.
+</p>
+{% endblock %}

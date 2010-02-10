@@ -1,0 +1,1661 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-09 14:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: templates/prop_file.html:24
+msgid ""
+"I understand that My Europeana gives me the opportunity to create tags for "
+"any item I wish. I agree that I will not create any tags that could be "
+"considered libelous, harmful, threatening, unlawful, defamatory, infringing, "
+"abusive, inflammatory, harassing, pornographic, obscene, fraudulent, "
+"invasive of privacy or publicity rights, hateful, or racially, ethnically or "
+"otherwise objectionable. By clicking this box I agree to abide by this "
+"agreement, and understand that if I don't my membership of My Europeana will "
+"be terminated."
+msgstr ""
+
+#: templates/prop_file.html:25
+msgid "You must agree to our code of conduct to register for My Europeana"
+msgstr ""
+
+#: templates/prop_file.html:26
+msgid "I agree"
+msgstr ""
+
+#: templates/prop_file.html:27 templates/prop_file.html.py:239
+msgid "Contributor"
+msgstr ""
+
+#: templates/prop_file.html:28
+msgid "Contributors"
+msgstr ""
+
+#: templates/prop_file.html:29
+msgid "Country"
+msgstr ""
+
+#: templates/prop_file.html:30
+msgid "Sector"
+msgstr ""
+
+#: templates/prop_file.html:31
+msgid "Partner"
+msgstr ""
+
+#: templates/prop_file.html:32
+msgid ""
+"This is the network of partners who collaborated to make Europeana happen, "
+"and who represent Europeana in their countries and professional associations."
+msgstr ""
+
+#: templates/prop_file.html:33
+msgid ""
+"These are the organisations that are contributing content - digitised "
+"paintings, books, broadcasts etc. Some of these contributors are  "
+"aggregators*, Culture.fr is the largest aggregator, providing content from "
+"about 480 organisations in France, including the Louvre and the Musée "
+"d’Orsay. The number of organisations contributing to an aggregator is shown "
+"in brackets after the aggregator’s name, e.g. Videoactive (10)"
+msgstr ""
+
+#: templates/prop_file.html:34
+msgid ""
+"*An aggregator collects material from a range of other contributors, "
+"displays it on their own website and also channels it into Europeana."
+msgstr ""
+
+#: templates/prop_file.html:35
+msgid "This is a required field"
+msgstr ""
+
+#: templates/prop_file.html:36
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: templates/prop_file.html:37
+msgid "Logged in as"
+msgstr ""
+
+#: templates/prop_file.html:38
+msgid "Saved items"
+msgstr ""
+
+#: templates/prop_file.html:39
+msgid "Saved searches"
+msgstr ""
+
+#: templates/prop_file.html:40
+msgid "Saved tags"
+msgstr ""
+
+#: templates/prop_file.html:41
+msgid "Login"
+msgstr ""
+
+#: templates/prop_file.html:42
+msgid "Log out"
+msgstr ""
+
+#: templates/prop_file.html:43 templates/pages/about_us.html:49
+msgid "My Europeana"
+msgstr ""
+
+#: templates/prop_file.html:44
+msgid ""
+"Thank you very much for your feedback. If your feedback requires a response "
+"a member of the Europeana team will get back to you as soon as possible. For "
+"faster response feedback should be submitted in English."
+msgstr ""
+
+#: templates/prop_file.html:45
+msgid "Keep me in touch with new developments to Europeana"
+msgstr ""
+
+#: templates/prop_file.html:46
+msgid "User Conduct"
+msgstr ""
+
+#: templates/prop_file.html:47
+msgid ""
+"I understand that My Europeana gives me the opportunity to create tags for "
+"any item I wish. I agree that I will not create any tags that could be "
+"considered libelous, harmful, threatening, unlawful, defamatory, infringing, "
+"abusive, inflammatory, harassing, pornographic, obscene, fraudulent, "
+"invasive of privacy or publicity rights, hateful, or racially, ethnically or "
+"otherwise objectionable. By clicking this box I agree to abide by this "
+"agreement, and understand that if I don't my membership of My Europeana will "
+"be terminated. CLICK TO AGREE"
+msgstr ""
+
+#: templates/prop_file.html:48
+msgid "First name"
+msgstr ""
+
+#: templates/prop_file.html:49
+msgid "Last name"
+msgstr ""
+
+#: templates/prop_file.html:50
+msgid ""
+"To make optimal use of this website you need to have JavaScript activated"
+msgstr ""
+
+#: templates/prop_file.html:51
+msgid "Storyline and credits"
+msgstr ""
+
+#: templates/prop_file.html:52
+msgid "Check the FAQs - they may cover your feedback"
+msgstr ""
+
+#: templates/prop_file.html:53
+msgid "Communities"
+msgstr ""
+
+#: templates/prop_file.html:54
+msgid "Partners"
+msgstr ""
+
+#: templates/prop_file.html:55
+msgid "Timeline"
+msgstr ""
+
+#: templates/prop_file.html:56
+msgid "Thought lab"
+msgstr ""
+
+#: templates/prop_file.html:57
+msgid "Choose a language"
+msgstr ""
+
+#: templates/prop_file.html:58
+msgid "This is Europeana"
+msgstr ""
+
+#: templates/prop_file.html:59
+msgid ""
+"a place for inspiration and ideas. Search through the cultural collections "
+"of Europe, connect to other user pathways and share your discoveries."
+msgstr ""
+
+#: templates/prop_file.html:60
+msgid "Find out more"
+msgstr ""
+
+#: templates/prop_file.html:61
+msgid "Search"
+msgstr ""
+
+#: templates/prop_file.html:62
+msgid "Reset"
+msgstr ""
+
+#: templates/prop_file.html:63
+msgid "Previous"
+msgstr ""
+
+#: templates/prop_file.html:64
+msgid "Next"
+msgstr ""
+
+#: templates/prop_file.html:65
+msgid "Advanced search"
+msgstr ""
+
+#: templates/prop_file.html:66
+msgid "Hide advanced search"
+msgstr ""
+
+#: templates/prop_file.html:67
+msgid "and"
+msgstr ""
+
+#: templates/prop_file.html:68
+msgid "or"
+msgstr ""
+
+#: templates/prop_file.html:69
+msgid "not"
+msgstr ""
+
+#: templates/prop_file.html:70
+msgid "Any field"
+msgstr ""
+
+#: templates/prop_file.html:71
+msgid "Share your ideas"
+msgstr ""
+
+#: templates/prop_file.html:72
+msgid "Tagging"
+msgstr ""
+
+#: templates/prop_file.html:73
+msgid "Send us feedback"
+msgstr ""
+
+#: templates/prop_file.html:74
+msgid "People are currently thinking about"
+msgstr ""
+
+#: templates/prop_file.html:75
+msgid "Timeline navigator"
+msgstr ""
+
+#: templates/prop_file.html:76
+msgid "Browse through time"
+msgstr ""
+
+#: templates/prop_file.html:77
+msgid "New content"
+msgstr ""
+
+#: templates/prop_file.html:78
+msgid ""
+"From our partner museums, archives, libraries and audio-visual collections"
+msgstr ""
+
+#: templates/prop_file.html:79 templates/pages/about_us.html:7
+msgid "About us"
+msgstr ""
+
+#: templates/prop_file.html:80
+msgid "Using Europeana"
+msgstr ""
+
+#: templates/prop_file.html:81 templates/pages/accessibility.html:7
+msgid "Accessibility"
+msgstr ""
+
+#: templates/prop_file.html:82
+msgid "Sitemap"
+msgstr ""
+
+#: templates/prop_file.html:83
+msgid "Terms and conditions"
+msgstr ""
+
+#: templates/prop_file.html:84
+msgid "Privacy"
+msgstr ""
+
+#: templates/prop_file.html:85 templates/pages/languagepolicy.html:7
+msgid "Language policy"
+msgstr ""
+
+#: templates/prop_file.html:86
+msgid "Contacts"
+msgstr ""
+
+#: templates/prop_file.html:87
+msgid "co-funded by the European Union"
+msgstr ""
+
+#: templates/prop_file.html:88
+msgid "logo Europeana think culture"
+msgstr ""
+
+#: templates/prop_file.html:89
+msgid "Click here to return to the Europeana homepage"
+msgstr ""
+
+#: templates/prop_file.html:90
+msgid "Refine your search"
+msgstr ""
+
+#: templates/prop_file.html:91
+msgid "By language"
+msgstr ""
+
+#: templates/prop_file.html:92
+msgid "By country"
+msgstr ""
+
+#: templates/prop_file.html:93
+msgid "By date"
+msgstr ""
+
+#: templates/prop_file.html:94
+msgid "By provider"
+msgstr ""
+
+#: templates/prop_file.html:95
+msgid "By user tag"
+msgstr ""
+
+#: templates/prop_file.html:96
+msgid "By type"
+msgstr ""
+
+#: templates/prop_file.html:97
+msgid "Actions"
+msgstr ""
+
+#: templates/prop_file.html:98
+msgid "Save this search"
+msgstr ""
+
+#: templates/prop_file.html:99
+msgid "Search saved"
+msgstr ""
+
+#: templates/prop_file.html:100
+msgid "Saving search failed"
+msgstr ""
+
+#: templates/prop_file.html:101
+msgid "You have searched for"
+msgstr ""
+
+#: templates/prop_file.html:102
+msgid "Matches for"
+msgstr ""
+
+#: templates/prop_file.html:103
+msgid "You are viewing related items"
+msgstr ""
+
+#: templates/prop_file.html:104
+msgid "All"
+msgstr ""
+
+#: templates/prop_file.html:105
+msgid "Texts"
+msgstr ""
+
+#: templates/prop_file.html:106
+msgid "Images"
+msgstr ""
+
+#: templates/prop_file.html:107
+msgid "Videos"
+msgstr ""
+
+#: templates/prop_file.html:108
+msgid "Sounds"
+msgstr ""
+
+#: templates/prop_file.html:109
+msgid "Text"
+msgstr ""
+
+#: templates/prop_file.html:110
+msgid "Image"
+msgstr ""
+
+#: templates/prop_file.html:111
+msgid "Video"
+msgstr ""
+
+#: templates/prop_file.html:112
+msgid "Sound"
+msgstr ""
+
+#: templates/prop_file.html:113
+msgid "List view"
+msgstr ""
+
+#: templates/prop_file.html:114
+msgid "Table view"
+msgstr ""
+
+#: templates/prop_file.html:115
+msgid "Page"
+msgstr ""
+
+#: templates/prop_file.html:116
+msgid "of"
+msgstr ""
+
+#: templates/prop_file.html:117
+msgid "click here for previous page of results"
+msgstr ""
+
+#: templates/prop_file.html:118
+msgid "Click here for next page of results"
+msgstr ""
+
+#: templates/prop_file.html:119
+msgid "Print this page"
+msgstr ""
+
+#: templates/prop_file.html:120
+msgid "Click for more information"
+msgstr ""
+
+#: templates/prop_file.html:121
+msgid "No items found"
+msgstr ""
+
+#: templates/prop_file.html:122
+msgid "Related content"
+msgstr ""
+
+#: templates/prop_file.html:123
+msgid "See all related items"
+msgstr ""
+
+#: templates/prop_file.html:124
+msgid "User tags"
+msgstr ""
+
+#: templates/prop_file.html:125
+msgid "Add a tag"
+msgstr ""
+
+#: templates/prop_file.html:126
+msgid "Add"
+msgstr ""
+
+#: templates/prop_file.html:127
+msgid "Tag added"
+msgstr ""
+
+#: templates/prop_file.html:128
+msgid "Tag addition failed"
+msgstr ""
+
+#: templates/prop_file.html:129
+msgid "Share with a friend"
+msgstr ""
+
+#: templates/prop_file.html:130
+msgid "Email address"
+msgstr ""
+
+#: templates/prop_file.html:131
+msgid "Email sent"
+msgstr ""
+
+#: templates/prop_file.html:132
+msgid "Email could not be sent"
+msgstr ""
+
+#: templates/prop_file.html:133
+msgid "Send"
+msgstr ""
+
+#: templates/prop_file.html:134
+msgid "Save to My Europeana"
+msgstr ""
+
+#: templates/prop_file.html:135
+msgid "Item saved"
+msgstr ""
+
+#: templates/prop_file.html:136
+msgid "Save item failed"
+msgstr ""
+
+#: templates/prop_file.html:137
+msgid "Error"
+msgstr ""
+
+#: templates/prop_file.html:138
+msgid "Error details"
+msgstr ""
+
+#: templates/prop_file.html:139
+msgid "Return to results"
+msgstr ""
+
+#: templates/prop_file.html:140
+msgid "More"
+msgstr ""
+
+#: templates/prop_file.html:141
+msgid "Less"
+msgstr ""
+
+#: templates/prop_file.html:142
+msgid "Items"
+msgstr ""
+
+#: templates/prop_file.html:143
+msgid "Item details"
+msgstr ""
+
+#: templates/prop_file.html:144
+msgid "View as XML"
+msgstr ""
+
+#: templates/prop_file.html:145
+msgid "View with labels"
+msgstr ""
+
+#: templates/prop_file.html:146
+msgid "View without labels"
+msgstr ""
+
+#: templates/prop_file.html:147
+msgid "Opens in a new window"
+msgstr ""
+
+#: templates/prop_file.html:148
+msgid "View in original context"
+msgstr ""
+
+#: templates/prop_file.html:149
+msgid "Provider"
+msgstr ""
+
+#: templates/prop_file.html:150 templates/prop_file.html.py:237
+msgid "Title"
+msgstr ""
+
+#: templates/prop_file.html:151 templates/prop_file.html.py:244
+msgid "Description"
+msgstr ""
+
+#: templates/prop_file.html:152
+msgid "Creator"
+msgstr ""
+
+#: templates/prop_file.html:153 templates/prop_file.html.py:241
+msgid "Date"
+msgstr ""
+
+#: templates/prop_file.html:154 templates/prop_file.html.py:243
+msgid "Subject"
+msgstr ""
+
+#: templates/prop_file.html:155
+msgid "Show all"
+msgstr ""
+
+#: templates/prop_file.html:156
+msgid "Delete"
+msgstr ""
+
+#: templates/prop_file.html:157
+msgid "No saved items"
+msgstr ""
+
+#: templates/prop_file.html:158
+msgid "No saved searches"
+msgstr ""
+
+#: templates/prop_file.html:159
+msgid "No saved tags"
+msgstr ""
+
+#: templates/prop_file.html:160
+msgid "Date saved"
+msgstr ""
+
+#: templates/prop_file.html:161
+msgid "Remove"
+msgstr ""
+
+#: templates/prop_file.html:162
+msgid "Welcome to MyEuropeana"
+msgstr ""
+
+#: templates/prop_file.html:163
+msgid "Please click on the following link to confirm your registration"
+msgstr ""
+
+#: templates/prop_file.html:164
+msgid "The Europeana Team"
+msgstr ""
+
+#: templates/prop_file.html:165
+msgid "Results"
+msgstr ""
+
+#: templates/prop_file.html:166
+msgid "Invalid query"
+msgstr ""
+
+#: templates/prop_file.html:167
+msgid "This feature is currently disabled."
+msgstr ""
+
+#: templates/prop_file.html:168
+msgid "Password"
+msgstr ""
+
+#: templates/prop_file.html:169
+msgid "Remember me on this computer"
+msgstr ""
+
+#: templates/prop_file.html:170
+msgid "I forgot my password"
+msgstr ""
+
+#: templates/prop_file.html:171
+msgid "Sign in"
+msgstr ""
+
+#: templates/prop_file.html:172
+msgid "Register"
+msgstr ""
+
+#: templates/prop_file.html:173
+msgid "Register again"
+msgstr ""
+
+#: templates/prop_file.html:174
+msgid ""
+"An error occurred while trying to process your registration. Please try again"
+msgstr ""
+
+#: templates/prop_file.html:175
+msgid "An email has been sent to the following address"
+msgstr ""
+
+#: templates/prop_file.html:176
+msgid ""
+"Please follow the link provided in the email and finish the registration "
+"process"
+msgstr ""
+
+#: templates/prop_file.html:177
+msgid "Please make sure your email is correctly formatted and try again"
+msgstr ""
+
+#: templates/prop_file.html:178
+msgid "This email is already registered"
+msgstr ""
+
+#: templates/prop_file.html:179
+msgid "Create an account"
+msgstr ""
+
+#: templates/prop_file.html:180
+msgid "The link you used to complete registration is invalid or has expired."
+msgstr ""
+
+#: templates/prop_file.html:181
+msgid "Enter your email"
+msgstr ""
+
+#: templates/prop_file.html:182
+msgid ""
+"You will use your email together with your password to log into the site"
+msgstr ""
+
+#: templates/prop_file.html:183 templates/prop_file.html.py:187
+msgid "Your username will be displayed when you have logged in"
+msgstr ""
+
+#: templates/prop_file.html:184
+msgid "Username"
+msgstr ""
+
+#: templates/prop_file.html:185
+msgid "is in use. Please choose another username"
+msgstr ""
+
+#: templates/prop_file.html:186
+msgid "Choose a username"
+msgstr ""
+
+#: templates/prop_file.html:188
+msgid "User information"
+msgstr ""
+
+#: templates/prop_file.html:189
+msgid "Choose a password"
+msgstr ""
+
+#: templates/prop_file.html:190
+msgid "Passwords must be 6-30 characters in length"
+msgstr ""
+
+#: templates/prop_file.html:191
+msgid "Repeat password"
+msgstr ""
+
+#: templates/prop_file.html:192
+msgid "Finish registration"
+msgstr ""
+
+#: templates/prop_file.html:193
+msgid "You have successfully registered"
+msgstr ""
+
+#: templates/prop_file.html:194 templates/prop_file.html.py:248
+msgid "Language"
+msgstr ""
+
+#: templates/prop_file.html:195
+msgid "English (eng)"
+msgstr ""
+
+#: templates/prop_file.html:196
+msgid "Croatian (hrv)"
+msgstr ""
+
+#: templates/prop_file.html:197
+msgid "Czech (cze/cse)"
+msgstr ""
+
+#: templates/prop_file.html:198
+msgid "Greek (ell/gre)"
+msgstr ""
+
+#: templates/prop_file.html:199
+msgid "Estonian (est)"
+msgstr ""
+
+#: templates/prop_file.html:200
+msgid "Danish (dan)"
+msgstr ""
+
+#: templates/prop_file.html:201
+msgid "Dutch (dut)"
+msgstr ""
+
+#: templates/prop_file.html:202
+msgid "Finnish (fin)"
+msgstr ""
+
+#: templates/prop_file.html:203
+msgid "French (fre)"
+msgstr ""
+
+#: templates/prop_file.html:204
+msgid "German (deu)"
+msgstr ""
+
+#: templates/prop_file.html:205
+msgid "Hungarian (hun)"
+msgstr ""
+
+#: templates/prop_file.html:206
+msgid "Italian (ita)"
+msgstr ""
+
+#: templates/prop_file.html:207
+msgid "Latvian (lav)"
+msgstr ""
+
+#: templates/prop_file.html:208
+msgid "Lithuanian (lit)"
+msgstr ""
+
+#: templates/prop_file.html:209
+msgid "Luxemburgish (ltz)"
+msgstr ""
+
+#: templates/prop_file.html:210
+msgid "Maltese (mlt)"
+msgstr ""
+
+#: templates/prop_file.html:211
+msgid "Norwegian (nor)"
+msgstr ""
+
+#: templates/prop_file.html:212
+msgid "Polish (pol)"
+msgstr ""
+
+#: templates/prop_file.html:213
+msgid "Portuguese (por)"
+msgstr ""
+
+#: templates/prop_file.html:214
+msgid "Romanian (rom)"
+msgstr ""
+
+#: templates/prop_file.html:215
+msgid "Russian (rus)"
+msgstr ""
+
+#: templates/prop_file.html:216
+msgid "Serbian (scc)"
+msgstr ""
+
+#: templates/prop_file.html:217
+msgid "Slovak (slo)"
+msgstr ""
+
+#: templates/prop_file.html:218
+msgid "Slovenian (slv)"
+msgstr ""
+
+#: templates/prop_file.html:219
+msgid "Spanish (esp)"
+msgstr ""
+
+#: templates/prop_file.html:220
+msgid "Icelandic (ice)"
+msgstr ""
+
+#: templates/prop_file.html:221
+msgid "Swedish (sve/swe)"
+msgstr ""
+
+#: templates/prop_file.html:222
+msgid "Other"
+msgstr ""
+
+#: templates/prop_file.html:223
+msgid "Alternative Title"
+msgstr ""
+
+#: templates/prop_file.html:224
+msgid "Provenance"
+msgstr ""
+
+#: templates/prop_file.html:225
+msgid "Is Part of"
+msgstr ""
+
+#: templates/prop_file.html:226
+msgid "Has part"
+msgstr ""
+
+#: templates/prop_file.html:227
+msgid "Replaces"
+msgstr ""
+
+#: templates/prop_file.html:228
+msgid "Is replaced by"
+msgstr ""
+
+#: templates/prop_file.html:229
+msgid "Is referenced by"
+msgstr ""
+
+#: templates/prop_file.html:230
+msgid "References"
+msgstr ""
+
+#: templates/prop_file.html:231
+msgid "Conforms to"
+msgstr ""
+
+#: templates/prop_file.html:232
+msgid "Requires"
+msgstr ""
+
+#: templates/prop_file.html:233
+msgid "Has format"
+msgstr ""
+
+#: templates/prop_file.html:234
+msgid "Is format of"
+msgstr ""
+
+#: templates/prop_file.html:235
+msgid "Spatial coverage"
+msgstr ""
+
+#: templates/prop_file.html:236
+msgid "Temporal coverage"
+msgstr ""
+
+#: templates/prop_file.html:238
+msgid "Author"
+msgstr ""
+
+#: templates/prop_file.html:240
+msgid "Coverage"
+msgstr ""
+
+#: templates/prop_file.html:242
+msgid "Format"
+msgstr ""
+
+#: templates/prop_file.html:245
+msgid "Publisher"
+msgstr ""
+
+#: templates/prop_file.html:246
+msgid "Identifier"
+msgstr ""
+
+#: templates/prop_file.html:247
+msgid "Source"
+msgstr ""
+
+#: templates/prop_file.html:249
+msgid "Relation"
+msgstr ""
+
+#: templates/prop_file.html:250
+msgid "Rights"
+msgstr ""
+
+#: templates/prop_file.html:251
+msgid "Type"
+msgstr ""
+
+#: templates/prop_file.html:252
+msgid "Austria"
+msgstr ""
+
+#: templates/prop_file.html:253
+msgid "Croatia"
+msgstr ""
+
+#: templates/prop_file.html:254
+msgid "Denmark"
+msgstr ""
+
+#: templates/prop_file.html:255
+msgid "Finland"
+msgstr ""
+
+#: templates/prop_file.html:256
+msgid "France"
+msgstr ""
+
+#: templates/prop_file.html:257
+msgid "Germany"
+msgstr ""
+
+#: templates/prop_file.html:258
+msgid "Italy-Florence"
+msgstr ""
+
+#: templates/prop_file.html:259
+msgid "Italy-Rome"
+msgstr ""
+
+#: templates/prop_file.html:260
+msgid "Ireland"
+msgstr ""
+
+#: templates/prop_file.html:261
+msgid "Netherlands"
+msgstr ""
+
+#: templates/prop_file.html:262
+msgid "Portugal"
+msgstr ""
+
+#: templates/prop_file.html:263
+msgid "Russia - Moscow"
+msgstr ""
+
+#: templates/prop_file.html:264
+msgid "Russia - Saint Petersburg"
+msgstr ""
+
+#: templates/prop_file.html:265
+msgid "Romania"
+msgstr ""
+
+#: templates/prop_file.html:266
+msgid "Former Yugoslav Republic Of Macedonia"
+msgstr ""
+
+#: templates/prop_file.html:267
+msgid "Ukraine"
+msgstr ""
+
+#: templates/prop_file.html:268
+msgid "Moldova"
+msgstr ""
+
+#: templates/prop_file.html:269
+msgid "Albania"
+msgstr ""
+
+#: templates/prop_file.html:270
+msgid "Georgia"
+msgstr ""
+
+#: templates/prop_file.html:271
+msgid "Armenia"
+msgstr ""
+
+#: templates/prop_file.html:272
+msgid "Bosnia and Herzegovina"
+msgstr ""
+
+#: templates/prop_file.html:273
+msgid "Azerbaijan"
+msgstr ""
+
+#: templates/prop_file.html:274
+msgid "Turkey"
+msgstr ""
+
+#: templates/prop_file.html:275
+msgid "Bulgaria"
+msgstr ""
+
+#: templates/prop_file.html:276
+msgid "Serbia"
+msgstr ""
+
+#: templates/prop_file.html:277
+msgid "Slovenia"
+msgstr ""
+
+#: templates/prop_file.html:278
+msgid "Switzerland"
+msgstr ""
+
+#: templates/prop_file.html:279
+msgid "United Kingdom"
+msgstr ""
+
+#: templates/prop_file.html:280
+msgid "Czech Republic"
+msgstr ""
+
+#: templates/prop_file.html:281
+msgid "Cyprus"
+msgstr ""
+
+#: templates/prop_file.html:282
+msgid "Estonia"
+msgstr ""
+
+#: templates/prop_file.html:283
+msgid "Latvia"
+msgstr ""
+
+#: templates/prop_file.html:284
+msgid "Lithuania"
+msgstr ""
+
+#: templates/prop_file.html:285
+msgid "Hungary"
+msgstr ""
+
+#: templates/prop_file.html:286
+msgid "Malta"
+msgstr ""
+
+#: templates/prop_file.html:287
+msgid "Poland"
+msgstr ""
+
+#: templates/prop_file.html:288
+msgid "Slovakia"
+msgstr ""
+
+#: templates/prop_file.html:289
+msgid "Spain"
+msgstr ""
+
+#: templates/prop_file.html:290
+msgid "Belgium"
+msgstr ""
+
+#: templates/prop_file.html:291
+msgid "Iceland"
+msgstr ""
+
+#: templates/prop_file.html:292
+msgid "Norway"
+msgstr ""
+
+#: templates/prop_file.html:293
+msgid "Sweden"
+msgstr ""
+
+#: templates/prop_file.html:294
+msgid "Liechtenstein"
+msgstr ""
+
+#: templates/prop_file.html:295
+msgid "Luxembourg"
+msgstr ""
+
+#: templates/prop_file.html:296
+msgid "Greece"
+msgstr ""
+
+#: templates/pages/about_us.html:4
+msgid "Europeana - About us"
+msgstr ""
+
+#: templates/pages/about_us.html:10
+msgid "Storyline and Credits"
+msgstr ""
+
+#: templates/pages/about_us.html:12
+msgid "Europeana: think culture"
+msgstr ""
+
+#: templates/pages/about_us.html:15
+#, python-format
+msgid ""
+"Europeana.eu is about ideas and inspiration. It links you to\n"
+"%(europeana_item_count_mill)s million digital items"
+msgstr ""
+
+#: templates/pages/about_us.html:19
+msgid ""
+"Images - paintings, drawings, maps, photos and pictures of museum objects"
+msgstr ""
+
+#: templates/pages/about_us.html:20
+msgid "Texts - books, newspapers, letters, diaries and archival papers"
+msgstr ""
+
+#: templates/pages/about_us.html:21
+msgid ""
+"Sounds - music and spoken word from cylinders, tapes, discs and radio "
+"broadcasts"
+msgstr ""
+
+#: templates/pages/about_us.html:22
+msgid "Videos - films, newsreels and TV broadcasts"
+msgstr ""
+
+#: templates/pages/about_us.html:26
+msgid ""
+"Some of these are world famous, others are hidden treasures from Europe's"
+msgstr ""
+
+#: templates/pages/about_us.html:29
+msgid "museums and galleries"
+msgstr ""
+
+#: templates/pages/about_us.html:30
+msgid "archives"
+msgstr ""
+
+#: templates/pages/about_us.html:31
+msgid "libraries"
+msgstr ""
+
+#: templates/pages/about_us.html:32
+msgid "audio-visual collections"
+msgstr ""
+
+#: templates/pages/about_us.html:41
+msgid "Here is a"
+msgstr ""
+
+#: templates/pages/about_us.html:42
+msgid "list of the organisations"
+msgstr ""
+
+#: templates/pages/about_us.html:43
+msgid ""
+"that our content comes from. They include the <strong>Rijksmuseum</strong>\n"
+"in Amsterdam, the <strong>British Library</strong> in London and the\n"
+"<strong>Louvre</strong> in Paris."
+msgstr ""
+
+#: templates/pages/about_us.html:49
+msgid "You can use"
+msgstr ""
+
+#: templates/pages/about_us.html:50
+msgid ""
+"to save searches or bookmark things. You can highlight stuff and add it to "
+"your own folders"
+msgstr ""
+
+#: templates/pages/about_us.html:54
+msgid ""
+"This website is a prototype. Europeana Version 1.0 is being developed and "
+"will\n"
+"launch in 2010 with links to over 10 million digital objects"
+msgstr ""
+
+#: templates/pages/about_us.html:59
+msgid "Europeana.eu is funded by the European Commission and the member states"
+msgstr ""
+
+#: templates/pages/about_us.html:63
+msgid "More about"
+msgstr ""
+
+#: templates/pages/about_us.html:67
+msgid "How Europeana came to be developed"
+msgstr ""
+
+#: templates/pages/about_us.html:68
+msgid "the background"
+msgstr ""
+
+#: templates/pages/about_us.html:69
+msgid "to the project"
+msgstr ""
+
+#: templates/pages/about_us.html:70
+msgid "The deliverables from the project"
+msgstr ""
+
+#: templates/pages/about_us.html:71
+msgid "technical plans"
+msgstr ""
+
+#: templates/pages/about_us.html:71
+msgid "etc"
+msgstr ""
+
+#: templates/pages/about_us.html:72
+msgid "New projects that will be channelling material into"
+msgstr ""
+
+#: templates/pages/about_us.html:78
+msgid "How organisations can"
+msgstr ""
+
+#: templates/pages/about_us.html:79
+msgid "contribute content"
+msgstr ""
+
+#: templates/pages/about_us.html:79
+msgid "to Europeana"
+msgstr ""
+
+#: templates/pages/about_us.html:80
+msgid "Getting in"
+msgstr ""
+
+#: templates/pages/about_us.html:81
+msgid "contact"
+msgstr ""
+
+#: templates/pages/about_us.html:81
+msgid "with the Europeana team"
+msgstr ""
+
+#: templates/pages/about_us.html:82
+msgid "To be added to the"
+msgstr ""
+
+#: templates/pages/about_us.html:82
+msgid "press list"
+msgstr ""
+
+#: templates/pages/about_us.html:83
+msgid "The"
+msgstr ""
+
+#: templates/pages/about_us.html:84
+msgid "e-news"
+msgstr ""
+
+#: templates/pages/about_us.html:85
+msgid "to keep you in touch with developments"
+msgstr ""
+
+#: templates/pages/about_us.html:89
+msgid "Background"
+msgstr ""
+
+#: templates/pages/about_us.html:91
+msgid ""
+"The Commission has been working for a number of years on projects to boost "
+"the\n"
+"digital economy. These prepared the ground for an online service that would "
+"bring\n"
+"together Europe's cultural heritage"
+msgstr ""
+
+#: templates/pages/about_us.html:96
+msgid "The idea for Europeana came from a"
+msgstr ""
+
+#: templates/pages/about_us.html:97
+msgid "letter"
+msgstr ""
+
+#: templates/pages/about_us.html:98
+msgid ""
+"to the Presidency of Council and to the Commission on 28 April 2005.\n"
+"Six Heads of State and Government suggested the creation of a virtual "
+"European\n"
+"library, aiming to make Europe's cultural and scientific resources "
+"accessible\n"
+"for all"
+msgstr ""
+
+#: templates/pages/about_us.html:105
+msgid ""
+"On 30 September 2005 the European Commission published the i2010:\n"
+"communication on digital libraries, where it announced its strategy to "
+"promote\n"
+"and support the creation of a European digital library, as a strategic goal\n"
+"within the European"
+msgstr ""
+
+#: templates/pages/about_us.html:109
+msgid "Information Society i2010 Initiative"
+msgstr ""
+
+#: templates/pages/about_us.html:110
+msgid ""
+"which aims to foster growth and jobs in the information society and media "
+"industries.\n"
+"The European Commission's goal for Europeana is to make European "
+"information\n"
+"resources easier to use in an online environment. It will build on Europe's\n"
+"rich heritage, combining multicultural and multilingual environments with\n"
+"technological advances and new business models.\n"
+msgstr ""
+
+#: templates/pages/about_us.html:118
+msgid ""
+"The Europeana prototype is the result of a 2-year project that began in July "
+"2007.\n"
+"Europeana.eu went live on 20 November 2008, launched by Viviane Reding,\n"
+"European Commissioner for Information Society and Media"
+msgstr ""
+
+#: templates/pages/about_us.html:123
+msgid ""
+"Europeana is a Thematic Network funded by  the European Commission under the"
+msgstr ""
+
+#: templates/pages/about_us.html:125
+msgid "as part of the"
+msgstr ""
+
+#: templates/pages/about_us.html:127
+msgid "i2010  policy"
+msgstr ""
+
+#: templates/pages/about_us.html:128
+msgid ""
+"Originally known as the European digital library network &ndash; EDLnet  "
+"&ndash;&nbsp;\n"
+"it is a partnership  of 100 representatives of heritage and knowledge\n"
+"organisations and IT  experts from throughout Europe.\n"
+"They contribute to the Work Packages that are solving the technical and\n"
+"usability issues.\n"
+msgstr ""
+
+#: templates/pages/about_us.html:136
+msgid ""
+"The project is run by a core team based in  the national library of the "
+"Netherlands, the"
+msgstr ""
+
+#: templates/pages/about_us.html:138
+msgid ""
+"It builds on the project management and technical  expertise developed by"
+msgstr ""
+
+#: templates/pages/about_us.html:139
+msgid "The  European Library"
+msgstr ""
+
+#: templates/pages/about_us.html:140
+msgid "which is a service of the"
+msgstr ""
+
+#: templates/pages/about_us.html:142
+msgid "Conference of European National  Librarians"
+msgstr ""
+
+#: templates/pages/about_us.html:146
+msgid "Overseeing the project is the"
+msgstr ""
+
+#: templates/pages/about_us.html:148
+msgid ""
+"which includes key European  cultural heritage associations from the four\n"
+"domains. The Foundation&rsquo;"
+msgstr ""
+
+#: templates/pages/about_us.html:150
+msgid "statutes"
+msgstr ""
+
+#: templates/pages/about_us.html:151
+msgid "commit members to"
+msgstr ""
+
+#: templates/pages/about_us.html:156
+msgid ""
+"Providing access to Europe&rsquo;s cultural and scientific heritage though a "
+"<strong>cross-domain portal</strong>"
+msgstr ""
+
+#: templates/pages/about_us.html:157
+msgid ""
+"Co-operating in the delivery and <strong>sustainability</strong> of the "
+"joint portal"
+msgstr ""
+
+#: templates/pages/about_us.html:158
+msgid ""
+"Stimulating initiatives to <strong>bring together existing digital content</"
+"strong>"
+msgstr ""
+
+#: templates/pages/about_us.html:159
+msgid ""
+"Supporting  <strong>digitisation</strong> of Europe&rsquo;s cultural and "
+"scientific heritage"
+msgstr ""
+
+#: templates/pages/about_us.html:164
+msgid "Technical plans"
+msgstr ""
+
+#: templates/pages/about_us.html:166
+msgid ""
+"The development route, site architecture and technical specifications are "
+"all\n"
+"published as"
+msgstr ""
+
+#: templates/pages/about_us.html:169
+msgid "deliverable outcomes"
+msgstr ""
+
+#: templates/pages/about_us.html:170
+msgid ""
+"of the project. After the launch of the Europeana prototype, the project's\n"
+"final task is to recommend a business model that will ensure the "
+"sustainability\n"
+"of the website. It will also report on the further research and "
+"implementation\n"
+"needed to make Europe's cultural heritage fully interoperable and "
+"accessible\n"
+"through a truly multilingual service"
+msgstr ""
+
+#: templates/pages/about_us.html:179
+msgid "Contact us"
+msgstr ""
+
+#: templates/pages/about_us.html:181
+msgid "Feedback form"
+msgstr ""
+
+#: templates/pages/about_us.html:199
+msgid "To be added to the press list contact"
+msgstr ""
+
+#: templates/pages/about_us.html:207
+msgid "To provide content to Europeana"
+msgstr ""
+
+#: templates/pages/about_us.html:209
+msgid "See the"
+msgstr ""
+
+#: templates/pages/about_us.html:210
+msgid "content providers"
+msgstr ""
+
+#: templates/pages/about_us.html:211
+msgid "page on our project site"
+msgstr ""
+
+#: templates/pages/accessibility.html:4
+msgid "Europeana - Accessibility"
+msgstr ""
+
+#: templates/pages/accessibility.html:9
+msgid ""
+"Europeana.eu features and content have been designed to be universally\n"
+"accessible by users and user agents/devices. We strive to meet the WC3 Web\n"
+"Content Accessibility Guidelines Version 1.0"
+msgstr ""
+
+#: templates/pages/accessibility.html:14
+msgid ""
+"Our User Centred Design team frequently conducts usability testing of\n"
+"Europeana.eu navigation, flow, labels, and consistency. Furthermore,\n"
+"we will produce a version - post this prototype phase - for blind individuals"
+msgstr ""
+
+#: templates/pages/accessibility.html:19
+msgid "Some of the accessibility features of our site include"
+msgstr ""
+
+#: templates/pages/accessibility.html:22
+msgid "Meaningful page titles to help with orientation"
+msgstr ""
+
+#: templates/pages/accessibility.html:23
+msgid "Most all images have either a meaningful alt-text (text equivalent)"
+msgstr ""
+
+#: templates/pages/accessibility.html:24
+msgid "Minimal use of frames"
+msgstr ""
+
+#: templates/pages/accessibility.html:25
+msgid "Use of resizable fonts"
+msgstr ""
+
+#: templates/pages/accessibility.html:26
+msgid "Use Cascading Style Sheets (CSS) to separate content from presentation"
+msgstr ""
+
+#: templates/pages/accessibility.html:27
+msgid "Notifying a user when a link opens a new window"
+msgstr ""
+
+#: templates/pages/accessibility.html:28
+msgid "The (core) functionalities are usable without JavaScript"
+msgstr ""
+
+#: templates/pages/accessibility.html:32
+msgid ""
+"Please send us any feedback or questions on the accessibility of\n"
+"Europeana.eu with the"
+msgstr ""
+
+#: templates/pages/accessibility.html:34
+msgid "feedback form"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:4
+msgid "Europeana - Language policy"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:10
+msgid "Europeana.eu follows similar policy guidelines to"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:11
+msgid "Europa"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:12
+msgid "(the portal site of The European Union)"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:16
+msgid ""
+"As far as possible, the aim is to provide the public with the information "
+"they\n"
+"are looking for in their own language. However, due to constraints on "
+"resources,\n"
+"this isn't always possible"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:22
+msgid ""
+"Therefore the following guidelines apply in Europa and will\n"
+"apply in Europeana.eu"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:26
+msgid "all top (*) level pages in all full partner languages"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:27
+msgid "prioritise speed of publication over availability of translation"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:28
+msgid "Allow limited "
+msgstr ""
+
+#: templates/pages/languagepolicy.html:33
+msgid "(*) i.e.: the navigation, search, retrieval and display interfaces"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:36
+msgid "(**) Language mixing = more than one language on a page"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:40
+msgid "In practical terms this means the following"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:43
+msgid ""
+"Tools to manage translation will be developed and maintained by Europeana.eu"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:44
+msgid ""
+"The completion of the translations will be the responsibility of\n"
+"each designated volunteer partner institution"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:46
+msgid ""
+"Europeana.eu will notify each designated volunteer partner\n"
+"institution should an update be required but will not chase for that\n"
+"update"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:49
+msgid ""
+"Information that is urgent or has a very short life is in\n"
+"English only e.g.: Ad-hoc error messages"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:51
+msgid ""
+"All surveys about the site will be produced in all\n"
+"feasible languages only"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:53
+msgid ""
+"Search Engine Promotion to be executed in English, in the\n"
+"first instance"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:55
+msgid ""
+"The Management section and the technical information will\n"
+"be maintained solely in English, as the working language of\n"
+"Europeana.eu"
+msgstr ""
+
+#: templates/pages/languagepolicy.html:58
+msgid ""
+"If, however, an individual institution wishes to translate and maintain\n"
+"any of the above from within their own resources, Europeana.eu would be "
+"happy\n"
+"to enable its display"
+msgstr ""

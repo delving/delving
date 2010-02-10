@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Europeana - Language policy" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Language policy" %}</h1>
+
+<p>
+{% trans "Europeana.eu follows similar policy guidelines to" %}
+<a href="http://europa.eu/languages/en/home" target="_blank">{% trans "Europa" %}</a>
+{% trans "(the portal site of The European Union)" %}
+</p>
+
+<p><strong><i>
+{% blocktrans %}As far as possible, the aim is to provide the public with the information they
+are looking for in their own language. However, due to constraints on resources,
+this isn't always possible{% endblocktrans %}
+</i></strong></p>
+
+<p>
+{% blocktrans %}Therefore the following guidelines apply in Europa and will
+apply in Europeana.eu{% endblocktrans %}:
+</p>
+<ul class="point">
+<li>{% trans "all top (*) level pages in all full partner languages" %}</li>
+<li>{% trans "prioritise speed of publication over availability of translation" %}</li>
+<li>{% trans "Allow limited "language mixing" (**) i.e.: where a warning sign needs to be displayed" %}</li>
+</ul>
+
+
+<p>
+{% trans "(*) i.e.: the navigation, search, retrieval and display interfaces" %}
+</p>
+<p>
+{% trans "(**) Language mixing = more than one language on a page" %}
+</p>
+
+<p>
+{% trans "In practical terms this means the following" %}:
+</p>
+<ol class="number">
+<li>{% trans "Tools to manage translation will be developed and maintained by Europeana.eu" %}</li>
+<li>{% blocktrans %}The completion of the translations will be the responsibility of
+each designated volunteer partner institution{% endblocktrans %}</li>
+<li>{% blocktrans %}Europeana.eu will notify each designated volunteer partner
+institution should an update be required but will not chase for that
+update{% endblocktrans %}</li>
+<li>{% blocktrans %}Information that is urgent or has a very short life is in
+English only e.g.: Ad-hoc error messages{% endblocktrans %}</li>
+<li>{% blocktrans %}All surveys about the site will be produced in all
+feasible languages only{% endblocktrans %}</li>
+<li>{% blocktrans %}Search Engine Promotion to be executed in English, in the
+first instance{% endblocktrans %}</li>
+<li>{% blocktrans %}The Management section and the technical information will
+be maintained solely in English, as the working language of
+Europeana.eu{% endblocktrans %}</li>
+<li>{% blocktrans %}If, however, an individual institution wishes to translate and maintain
+any of the above from within their own resources, Europeana.eu would be happy
+to enable its display{% endblocktrans %}</li>
+</ol>
+{% endblock %}
