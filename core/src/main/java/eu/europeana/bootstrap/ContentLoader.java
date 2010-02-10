@@ -55,6 +55,7 @@ public class ContentLoader {
     private final ImportRepository repository;
     private List<Job> jobs = new ArrayList<Job>();
 
+
     private class Job {
         EuropeanaCollection collection;
         File file;
@@ -122,36 +123,29 @@ public class ContentLoader {
             SolrServer server = new CommonsHttpSolrServer("http://localhost:8983/solr/");
             SolrPingResponse response = server.ping();
             solrAlive = response.getResponse().get("status").toString().equalsIgnoreCase("ok");
-        } catch (SolrServerException e) {
+        }
+        catch (SolrServerException e) {
             LOG.warn("Could not find external Solr Running, so we proceed to start a local Solr instance");
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             LOG.warn("Could not find external Solr Running, so we proceed to start a local Solr instance");
         }
         return solrAlive;
     }
 
     public static void main(String... commandLine) throws Exception {
+        if (!isSorlRunning()) {
+            throw new Exception("Expected to find SOLR running.");
+        }
         ContentLoader contentLoader = new ContentLoader();
         if (commandLine.length == 0) {
-            contentLoader.addMetadataFile("./core/src/test/resources/test-files/92001_Ag_EU_TELtreasures.xml");
+            throw new Exception("Parameters: XML input files");
         }
         else for (String fileName : commandLine) {
             contentLoader.addMetadataFile(fileName);
         }
-        if (isSorlRunning()) {
-            LOG.info("start loading content");
-            contentLoader.loadMetadata();
-            LOG.info("finished loading content");
-        }
-        else {
-            LOG.info("Starting Solr Server");
-            SolrStarter solrStarter = new SolrStarter();
-            solrStarter.start();
-            contentLoader.loadMetadata();
-            LOG.info("Stopping Solr Server");
-            Thread.sleep(10000);
-            solrStarter.stop();
-            LOG.info("finished loading content");
-        }
+        LOG.info("start loading content");
+        contentLoader.loadMetadata();
+        LOG.info("finished loading content");
     }
 }
