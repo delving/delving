@@ -24,6 +24,7 @@ package eu.europeana.web.util;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -88,13 +89,40 @@ public class TestLinkGenerators {
     }
 
     @Test
-    public void breadcrumbs() throws UnsupportedEncodingException {
-        log.info("breadcrumbs");
-        SolrQuery solrQuery = new SolrQuery();
+    @Ignore("It doesn't work with facet queries")
+    public void breadcrumbsFromFacetQueries() throws UnsupportedEncodingException {
+       SolrQuery solrQuery = new SolrQuery();
         solrQuery.addFacetField("YEAR", "LOCATION");
         solrQuery.addFacetQuery("YEAR:1900");
         solrQuery.addFacetQuery("YEAR:1901");
         solrQuery.addFacetQuery("LOCATION:Here");
+        solrQuery.setQuery("kultur");
+        List<Breadcrumb> breadcrumbs = Breadcrumb.createList(solrQuery);
+        String [][] expect = new String[][] {
+                {"query=kultur", "kultur", "false" },
+                {"query=kultur&qf=YEAR:1900", "YEAR:1900", "false" },
+                {"query=kultur&qf=YEAR:1900&qf=YEAR:1901", "YEAR:1901", "false"},
+                {"query=kultur&qf=YEAR:1900&qf=YEAR:1901&qf=LOCATION:Here", "LOCATION:Here", "true" },
+        };
+        int index = 0;
+        for (Breadcrumb breadcrumb : breadcrumbs) {
+            log.info(breadcrumb);
+            assertEquals(breadcrumb.getHref(),expect[index][0]);
+            assertEquals(breadcrumb.getDisplay(),expect[index][1]);
+            assertEquals(String.valueOf(breadcrumb.getLast()),expect[index][2]);
+            index++;
+        }
+    }
+
+
+    @Test
+    public void breadcrumbsFromFilterQueries() throws UnsupportedEncodingException {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setFilterQueries(
+                "YEAR:1900",
+                "YEAR:1901",
+                "LOCATION:Here"
+        );
         solrQuery.setQuery("kultur");
         List<Breadcrumb> breadcrumbs = Breadcrumb.createList(solrQuery);
         String [][] expect = new String[][] {
