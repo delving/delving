@@ -50,7 +50,7 @@ public class TestAnnotationProcessor {
         AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
         annotationProcessor.setClasses(list);
         EuropeanaBean bean = annotationProcessor.getEuropeanaBean(BriefBean.class);
-        assertEquals(10, bean.getFields().size());
+        assertEquals(11, bean.getFields().size());
         for (EuropeanaField field : bean.getFields()) {
             log.info("BriefBean field "+field.getName());
         }
