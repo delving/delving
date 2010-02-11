@@ -75,6 +75,9 @@ public class Breadcrumb {
     }
 
     private static String encode(String value) {
+        if (value == null) {
+            throw new RuntimeException("Cannot encode null value!");
+        }
         try {
             return URLEncoder.encode(value, "utf-8");
         }
