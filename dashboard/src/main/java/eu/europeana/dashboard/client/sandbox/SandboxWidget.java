@@ -6,14 +6,24 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HorizontalSplitPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * A simplified way of importing collections for sandbox testing
@@ -165,7 +175,7 @@ public class SandboxWidget extends DashboardWidget {
                     for (Map.Entry<String, CollectionWidget> entry : collectionWidgets.entrySet()) {
                         if (!collectionsTouched.contains(entry.getKey())) {
                             final CollectionWidget collectionWidget = entry.getValue();
-                            world.service().fetchCollection(entry.getKey(), false, new Reply<EuropeanaCollectionX>() {
+                            world.service().fetchCollection(entry.getKey(), null, false, new Reply<EuropeanaCollectionX>() {
                                 public void onSuccess(EuropeanaCollectionX result) {
                                     collectionWidget.setCollection(result);
                                 }

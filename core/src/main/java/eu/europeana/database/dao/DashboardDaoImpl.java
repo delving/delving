@@ -22,7 +22,13 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.*;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.CollectionState;
+import eu.europeana.database.domain.DashboardLog;
+import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.ImportFileState;
+import eu.europeana.database.domain.IndexingQueueEntry;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +36,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This class is an implementation of the DashboardDao using an injected JPA Entity Manager.
@@ -112,38 +122,37 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Transactional
-    public EuropeanaCollection fetchCollectionByName(String name, boolean create) {
-        Query query = entityManager.createQuery("select col from EuropeanaCollection as col where col.name = :name");
-        query.setParameter("name", name);
-        List<EuropeanaCollection> collections = query.getResultList();
-        EuropeanaCollection collection;
-        if (collections.isEmpty()) {
-            if (!create) {
-                return null;
+    public EuropeanaCollection fetchCollection(String collectionName, String collectionFileName, boolean createIfAbsent) {
+        Query query;
+        List<EuropeanaCollection> collections;
+        if (collectionFileName != null) {
+            query = entityManager.createQuery("select col from EuropeanaCollection as col where col.fileName = :collectionFileName");
+            query.setParameter("collectionFileName", collectionFileName);
+            collections = query.getResultList();
+            if (collections.size() == 1) {
+                return collections.get(0);
             }
-            log.info("collection not found, creating: " + name);
-            collection = new EuropeanaCollection();
-            collection.setName(name.replaceFirst(".xml", ""));
-            collection.setFileName(name);
+        }
+        query = entityManager.createQuery("select col from EuropeanaCollection as col where col.name = :collectionName");
+        query.setParameter("collectionName", collectionName);
+        collections = query.getResultList();
+        if (collections.size() == 1) {
+            collections.get(0).setFileName(collectionFileName);
+            return collections.get(0);
+        }
+        else if (createIfAbsent) {
+            log.info("collection not found, creating: " + collectionName);
+            EuropeanaCollection collection = new EuropeanaCollection();
+            collection.setName(collectionName);
+            collection.setFileName(collectionFileName);
             collection.setFileState(ImportFileState.UPLOADING);
             collection.setCollectionLastModified(new Date());
             entityManager.persist(collection);
+            return collection;
         }
         else {
-            collection = collections.get(0);
-        }
-        return collection;
-    }
-
-    @Transactional
-    public EuropeanaCollection fetchCollectionByFileName(String fileName) {
-        Query query = entityManager.createQuery("select col from EuropeanaCollection as col where col.fileName = :fileName");
-        query.setParameter("fileName", fileName);
-        List<EuropeanaCollection> collections = query.getResultList();
-        if (collections.size() != 1) { // todo: potentially dangerous because file names need not be unique!
             return null;
         }
-        return collections.get(0);
     }
 
     @Transactional
@@ -155,6 +164,9 @@ public class DashboardDaoImpl implements DashboardDao {
     public EuropeanaCollection updateCollection(EuropeanaCollection collection) {
         if (collection.getId() != null) {
             EuropeanaCollection existing = entityManager.find(EuropeanaCollection.class, collection.getId());
+            if (existing == null) {
+                throw new RuntimeException("cannot find existing collection");
+            }
             if (collection.getCollectionState() != existing.getCollectionState()) {
                 switch (collection.getCollectionState()) {
                     case QUEUED:
@@ -277,11 +289,11 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Override
     @Transactional(readOnly = true)
-	public List<EuropeanaId> fetchCollectionObjects(EuropeanaCollection collection) {
+    public List<EuropeanaId> fetchCollectionObjects(EuropeanaCollection collection) {
         Query query = entityManager.createQuery("select id from EuropeanaId as id where id.collection = :collection");
         query.setParameter("collection", collection);
         return (List<EuropeanaId>) query.getResultList();
-	}
+    }
 
     @Transactional
     public boolean addToIndexQueue(EuropeanaCollection collection) { // todo: only used by this dao itself, so could be private or inlined
@@ -318,6 +330,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     // todo: this function has not been fully tested yet
+
     @Transactional
     public IndexingQueueEntry getEntryForIndexing() {
         Query query = entityManager.createQuery("select entry from IndexingQueueEntry as entry where entry.collection.collectionState <> :collectionState");
@@ -398,7 +411,7 @@ public class DashboardDaoImpl implements DashboardDao {
     /**
      * Find and mark the orphan objects associated with the given collection, by checking for europeanaIds which have not
      * been modified since the collection was re-imported, indicating that they were no longer present.
-     *
+     * <p/>
      * todo: apparently this method's implementation is in transition, unit tests required
      *
      * @param collection use id and last modified value

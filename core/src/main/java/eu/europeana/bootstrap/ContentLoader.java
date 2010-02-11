@@ -92,10 +92,7 @@ public class ContentLoader {
     public void loadMetadata() throws IOException, InterruptedException, SolrServerException {
         for (Job job : jobs) {
             ImportFile importFile = repository.copyToUploaded(job.file);
-            job.collection = dashboardDao.fetchCollectionByFileName(importFile.getFileName());
-            if (job.collection == null) {
-                job.collection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
-            }
+            job.collection = dashboardDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
             importFile = eseImporter.commenceImport(importFile, job.collection.getId());
             LOG.info(String.format("Importing commenced for %s", importFile));
         }

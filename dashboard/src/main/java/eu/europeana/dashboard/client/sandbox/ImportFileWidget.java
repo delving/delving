@@ -115,7 +115,7 @@ public class ImportFileWidget extends DashboardWidget {
                 case ERROR:
                     String error = collectionHolder.getCollection().getImportError();
                     if (error == null) {
-                        world.service().fetchCollection(collectionHolder.getCollection().getName(), false, new Reply<EuropeanaCollectionX>() {
+                        world.service().fetchCollection(collectionHolder.getCollection().getName(), collectionHolder.getImportFile().getFileName(), false, new Reply<EuropeanaCollectionX>() {
                             public void onSuccess(EuropeanaCollectionX result) {
                                 collectionHolder.setCollection(result);
                                 refreshPanel();

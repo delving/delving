@@ -77,7 +77,7 @@ public class TestIngestion {
             assertEquals(1, importFiles.size());
             importFile = importFiles.get(0);
             log.info(importFile);
-            collection = dashboardDao.fetchCollectionByName(importFile.deriveCollectionName(), true);
+            collection = dashboardDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
             log.info(collection.getName());
             ingestionFixture.startSolr();
             log.info("started solr");

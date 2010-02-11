@@ -26,7 +26,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -35,7 +42,12 @@ import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * A widget to handle collections
@@ -264,7 +276,7 @@ public class CollectionsWidget extends DashboardWidget {
                     for (Map.Entry<String, CollectionPanel> entry : collectionPanels.entrySet()) {
                         if (!collectionsTouched.contains(entry.getKey())) {
                             final CollectionPanel collectionPanel = entry.getValue();
-                            world.service().fetchCollection(entry.getKey(), false, new Reply<EuropeanaCollectionX>() {
+                            world.service().fetchCollection(entry.getKey(), null, false, new Reply<EuropeanaCollectionX>() {
                                 public void onSuccess(EuropeanaCollectionX result) {
                                     if (result != null) {
                                         collectionPanel.setCollection(result);

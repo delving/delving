@@ -53,7 +53,7 @@ public class CollectionHolder {
 
     public void setImportFile(ImportFileX importFile) {
         this.importFile = importFile;
-        service.fetchCollection(collection.getName(), false, new Reply<EuropeanaCollectionX>() {
+        service.fetchCollection(collection.getName(), importFile.getFileName() , false, new Reply<EuropeanaCollectionX>() {
             public void onSuccess(EuropeanaCollectionX result) {
                 setCollection(result);
             }

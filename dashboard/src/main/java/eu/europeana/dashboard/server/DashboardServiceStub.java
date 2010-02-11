@@ -2,7 +2,15 @@ package eu.europeana.dashboard.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.QueueEntryX;
+import eu.europeana.dashboard.client.dto.SavedItemX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.UserX;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +35,8 @@ public class DashboardServiceStub extends RemoteServiceServlet implements Dashbo
         return service().fetchCollections(prefix);
     }
 
-    public EuropeanaCollectionX fetchCollection(String name, boolean create) {
-        return service().fetchCollection(name, create);
+    public EuropeanaCollectionX fetchCollection(String collectionName, String fileName, boolean create) {
+        return service().fetchCollection(collectionName, fileName, create);
     }
 
     public EuropeanaCollectionX updateCollection(EuropeanaCollectionX collection) {

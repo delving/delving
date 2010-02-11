@@ -55,29 +55,16 @@ public interface DashboardDao {
     List<EuropeanaCollection> fetchCollections(String prefix);
 
     /**
-     * Fetch a single collection on the basis of its name, either expecting it to be there
-     * or creating it in case it's absent, depending on the create argument.
+     * Try to find the collection based on the file name, and if that doesn't work use the
+     * collection name, and change the file name to the new value
      *
-     * @param name the collection is called
-     * @param create false if you expect it to be there, true if creating it would be okay
-     * @return the collection, whether new or existing
+     * @param collectionName the name of the collection
+     * @param collectionFileName the file name, null is allowed. todo: this attribute can be removed when collection names ALWAYS depend on file names
+     * @param createIfAbsent create the collection if it wasn't found
+     * @return a europeana collection, or perhaps null if createIfAbsent is null and it wasn't found
      */
 
-    EuropeanaCollection fetchCollectionByName(String name, boolean create);
-
-    /**
-     * Fetch the collection when you know the big XML file which contains its metadata contents.
-     *
-     * <p>
-     *
-     * todo: since the creation of the sandbox dashboard, there is a potential for multiple
-     * todo: collections having the same file name, which is problematic for this method
-     *
-     * @param fileName which file
-     * @return the collection corresponding to the file name, null if it wasn't found
-     */
-
-    EuropeanaCollection fetchCollectionByFileName(String fileName);
+    EuropeanaCollection fetchCollection(String collectionName, String collectionFileName, boolean createIfAbsent);
 
     /**
      * Fetch the collection based on its internal id.  If it's absent there will be an exception.

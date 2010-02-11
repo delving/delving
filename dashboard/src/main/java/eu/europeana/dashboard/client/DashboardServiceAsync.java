@@ -1,7 +1,15 @@
 package eu.europeana.dashboard.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.QueueEntryX;
+import eu.europeana.dashboard.client.dto.SavedItemX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.UserX;
 
 import java.util.List;
 
@@ -21,7 +29,7 @@ public interface DashboardServiceAsync {
 
     void fetchCollections(String prefix, AsyncCallback<List<EuropeanaCollectionX>> async);
 
-    void fetchCollection(String name, boolean create, AsyncCallback<EuropeanaCollectionX> async);
+    void fetchCollection(String collectionName, String fileName, boolean create, AsyncCallback<EuropeanaCollectionX> async);
 
     void updateCollection(EuropeanaCollectionX collection, AsyncCallback<EuropeanaCollectionX> async);
 
