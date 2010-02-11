@@ -23,7 +23,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europeana</groupId>
-    <artifactId>integration-test</artifactId>
+    <artifactId>integration-tests</artifactId>
     <packaging>war</packaging>
     <name>Europeana Portal integration tests</name>
     <version>0.1</version>
@@ -115,5 +115,9 @@
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
         </dependency>
-     </dependencies>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
+      </dependencies>
 </project>

@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.ui.rememberme.AbstractRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 

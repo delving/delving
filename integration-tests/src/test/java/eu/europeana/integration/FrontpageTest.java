@@ -33,12 +33,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 /**
  * Integration tests running against an external system.
@@ -49,6 +50,22 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 @RunWith(JUnit4.class)
 public class FrontpageTest {
 
+	public static HtmlPage navigateSearchSelect(String queryString, boolean goToFullView) throws IOException {
+		HtmlPage page = IntegrationTests.getPortalPage();
+		// search for bible
+		HtmlPage query = (HtmlPage)((HtmlTextInput) page.getElementById("query")).setValueAttribute(queryString);
+		HtmlSubmitInput submit = (HtmlSubmitInput) query.getElementById("submit_search");
+		HtmlPage searchResultPage = submit.click();
+
+		if (goToFullView) {
+			// select the first bible, go to full view
+			HtmlImage selectBibleImg = (HtmlImage) searchResultPage.getElementById("thumb_1");
+			HtmlAnchor selectBible = (HtmlAnchor) selectBibleImg.getParentNode();
+			return selectBible.click();
+		}
+
+		return searchResultPage;
+	}
 
 	/**
 	 * Checks translations of the front page text "This is Europeana ...".
@@ -70,7 +87,7 @@ public class FrontpageTest {
 	 */
 	@Test
 	public void testBible() throws IOException {
-		HtmlPage page = IntegrationTests.navigateSearchSelect("bible", false);
+		HtmlPage page = navigateSearchSelect("bible", false);
 		Assert.assertTrue(IntegrationTests.assertText(page, "//table[@id='multi']/tbody/tr[1]/td[2]/h2", "ible"));
 	}
 
