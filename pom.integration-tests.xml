@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eu.europeana</groupId>
+	<artifactId>europeana-full</artifactId>
+	<version>1</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>eu.europeana</groupId>
+		<artifactId>europeana</artifactId>
+		<version>1</version>
+		<relativePath>pom.xml</relativePath>
+	</parent>
+
+	<modules>
+        <module>core</module>
+		<module>api</module>
+		<module>portal-lite</module>
+		<module>portal-full</module>
+		<module>dashboard</module>
+		<module>sip-creator</module>
+        <module>integration-tests</module>
+	</modules>
+
+</project>
