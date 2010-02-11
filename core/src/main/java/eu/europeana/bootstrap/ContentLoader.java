@@ -91,8 +91,8 @@ public class ContentLoader {
 
     public void loadMetadata() throws IOException, InterruptedException, SolrServerException {
         for (Job job : jobs) {
-            job.collection = dashboardDao.fetchCollectionByFileName(job.file.getName());
             ImportFile importFile = repository.copyToUploaded(job.file);
+            job.collection = dashboardDao.fetchCollectionByFileName(importFile.getFileName());
             if (job.collection == null) {
                 job.collection = dashboardDao.fetchCollectionByName(importFile.getFileName(), true);
             }
