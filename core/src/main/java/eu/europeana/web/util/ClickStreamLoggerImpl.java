@@ -129,7 +129,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             originalQuery = idWindowPager.getQuery();
             startPage = idWindowPager.getStartPage();
         } catch (Exception e) {
-            e.printStackTrace();
+            // todo decide what to do with this error
         }
         log.info(
                 MessageFormat.format(

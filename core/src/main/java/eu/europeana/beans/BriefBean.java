@@ -43,7 +43,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Europeana
     @Solr(namespace = "europeana", name = "europeanaCollectionName", multivalued = false, required = true)
     @Field("europeana_collectionName")
-    String europeanaCollectionName;
+    String[] europeanaCollectionName;
 
     @Field("PROVIDER")
     @Europeana(copyField = true, facet = true, facetPrefix = "prov", briefDoc = true)

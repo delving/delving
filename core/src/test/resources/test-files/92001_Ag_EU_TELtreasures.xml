@@ -44,6 +44,34 @@
 		<europeana:country>europe</europeana:country>
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
+        <europeana:type>TEXT</europeana:type>
+		<europeana:language>no</europeana:language>
+	</record>
+    <!-- duplicate record on purpose -->
+    <record>
+		<dc:description>Biblioteka Kombetare</dc:description>
+		<dc:description>National Library of the Republic of Albania</dc:description>
+		<dc:description>Albania</dc:description>
+		<dc:title>Historia de vita et gestis Scanderbegi Epirotarum Principis</dc:title>
+		<dcterms:alternative>Historia de vita et gestis Scanderbegi Epirotarum Principis</dcterms:alternative>
+		<dc:creator>Barletius, Marinus</dc:creator>
+		<dc:description>Bulla rini Barleti Scodrensis de vita&amp; gestis Scanderbeg</dc:description>
+		<dc:date>1508 - 1510</dc:date>
+		<europeana:year>1508</europeana:year>
+		<dcterms:extent>159 fol.</dcterms:extent>
+		<dcterms:extent>4°, 310 x 210 mm</dcterms:extent>
+		<dc:description>An II/10 B</dc:description>
+		<dc:type>Printing and typography</dc:type>
+		<dc:subject>Literature</dc:subject>
+		<dc:description>This is not the oldest printed book found in the National Library of Albania (the earliest dates from 1473), but it is the most important one concerning the historical-documentary value of the Albanian culture. At the center of the work stands the image of George from the Castriots' family (known by the Osmans as Scanderbegi). For a quarter of a century, at the head of the Albanian military alliance, he faced the Ottoman invaders preventing their irruption in Europe. This work points out the influence of the Albanian prince on the political life of Albanian people, of the Balkan Peninsula people and on the Continent.The author's name, an Albanian from Scodra, appears at the top of the preface: 'Marini Barleti Scodrensis de vita&amp; gestis Scanderbeg'. The publication data are taken from the colophon. The title-page is printed in red and black.The initials B.V. belong to the printer from Venice Bernardinus de Vitalibus, who in 1508-1510 was working in Rome; this suggests that the book was published around the years 1508-1510. It was republished in Latin three more times: in Strassbourg 1537, in Frankfurt-am-Main 1578 and in Zagreb 1743. It was also translated in many other languages, such as German, Italian, French, English, Spanish, Portuguese, Greek, Polish, Russian, etc. Almost all these translations date from the 16th and 17th centuries. In Albanian it was translated in the 20th century (1964).Barlet's 'History of Scanderbeg' became known all over Europe. Based on his work many well known writers wrote on the life and deeds of the Albanian prince. Among them the Frenchman Jacques de Lavardin wrote 'Histoire de Georges Castriot Surnomé Scanderbeg, Roy d'Albanie', which was published in France six times: 1576, 1593, 1596, 1597, 1604, 1621 (in which year it was published twice in Paris by two different publishers). Next to the table of contents appears a portrait of Scanderbeg engraved on wood. On the first leaf there is a miniature portrait (5,3 x 5,4 cm) of the author Marinus Barletius. The title page is surrounded with an engraving on wood that contains also the bicephalous eagle, the emblem of the Castriots.</dc:description>
+		<europeana:isShownBy>http://www.theeuropeanlibrary.org/portal/images/treasures/al01.jpg</europeana:isShownBy>
+		<europeana:object>http://www.theeuropeanlibrary.org/portal/images/treasures/al01.jpg</europeana:object>
+		<europeana:uri>http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735</europeana:uri>
+		<europeana:hasObject>true</europeana:hasObject>
+		<europeana:country>europe</europeana:country>
+		<europeana:provider>The European Library</europeana:provider>
+		<europeana:type>IMAGE</europeana:type>
+        <europeana:type>TEXT</europeana:type>
 		<europeana:language>no</europeana:language>
 	</record>
 	<record>

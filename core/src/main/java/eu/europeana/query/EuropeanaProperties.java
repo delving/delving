@@ -122,6 +122,8 @@ public class EuropeanaProperties extends Properties {
             "db.user",
             "db.password",
             "solr.baseUrl",
+            "solr.timeout",
+            "solr.retries",
             "solr.chunkSize",
             "smtp.host",
             "smtp.username",

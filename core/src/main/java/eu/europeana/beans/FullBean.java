@@ -45,7 +45,7 @@ import static eu.europeana.beans.BeanUtil.returnStringOrElse;
 public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
-    @Europeana
+    @Europeana(type = true)
     @Solr(namespace = "europeana", name = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     @Field("europeana_type")
     String europeanaType;

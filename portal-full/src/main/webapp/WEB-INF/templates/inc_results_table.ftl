@@ -62,19 +62,19 @@
         <li class="${showAll}">
             <a href="${thisPage}?${typeUrl}&amp;view=${view}"><em><@spring.message 'All_t' /> </em></a></li>
         <li class="${showText}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:TEXT&amp;tab=text&amp;view=${view}"><em><@spring.message 'Texts_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:text&amp;tab=text&amp;view=${view}"><em><@spring.message 'Texts_t' />
                 <@print_tab_count showAll showText textCount />
                 </em></a></li>
         <li class="${showImage}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:IMAGE&amp;tab=image&amp;view=${view}"><em><@spring.message 'Images_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:image&amp;tab=image&amp;view=${view}"><em><@spring.message 'Images_t' />
                 <@print_tab_count showAll showImage imageCount />
             </em></a></li>
         <li class="${showVideo}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:VIDEO&amp;tab=video&amp;view=${view}"><em><@spring.message 'Videos_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:video&amp;tab=video&amp;view=${view}"><em><@spring.message 'Videos_t' />
                 <@print_tab_count showAll showVideo videoCount />
             </em></a></li>
         <li class="${showSound}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:SOUND&amp;tab=sound&amp;view=${view}"><em><@spring.message 'Sounds_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:sound&amp;tab=sound&amp;view=${view}"><em><@spring.message 'Sounds_t' />
                 <@print_tab_count showAll showSound audioCount />
             </em></a></li>
     </ul>

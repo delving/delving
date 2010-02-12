@@ -103,12 +103,12 @@
 
     <bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <constructor-arg value="#{europeanaProperties['solr.baseUrl']}"/>
-        <property name="soTimeout" value="15000"/>
-        <property name="connectionTimeout" value="15000"/>
+        <property name="soTimeout" value="#{europeanaProperties['solr.timeout']}"/>
+        <property name="connectionTimeout" value="#{europeanaProperties['solr.timeout']}"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
-        <property name="maxTotalConnections" value="512"/>
+        <property name="maxTotalConnections" value="125"/>
         <property name="followRedirects" value="false"/>
-        <property name="maxRetries" value="1"/>
+        <property name="maxRetries" value="#{europeanaProperties['solr.retries']}"/>
     </bean>
 
     <bean id="annotationProcessor" class="eu.europeana.beans.annotation.AnnotationProcessorImpl">
