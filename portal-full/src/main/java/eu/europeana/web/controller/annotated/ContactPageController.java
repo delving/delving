@@ -87,11 +87,6 @@ public class ContactPageController {
         return form;
     }
 
-    @ModelAttribute("user")
-    public User fetchUser() {
-        return ControllerUtil.getUser();
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     public String handleGet() {
         return "contact";
