@@ -21,12 +21,12 @@
 package eu.europeana.web.util;
 
 import eu.europeana.database.domain.Language;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class StaticPageCache {
     private static final String HTML_EXTENSION = ".html";
+    private Logger log = Logger.getLogger(getClass());
     private Map<String, Page> pageMapCache = new ConcurrentHashMap<String, Page>();
     private String staticPagePath;
 
@@ -46,7 +47,7 @@ public class StaticPageCache {
         this.staticPagePath = staticPagePath;
     }
 
-    public String getPage(String pageName, Language language) throws IOException {
+    public String getPage(String pageName, Language language) {
         String fileName = pageName+"_"+language.getCode();
         Page page = pageMap().get(fileName);
         if (page == null) {
@@ -89,20 +90,29 @@ public class StaticPageCache {
     private class Page {
         private File file;
         private String content;
+        private boolean fetched;
 
         private Page(File file) {
             this.file = file;
         }
 
-        private synchronized String getContent() throws IOException {
-            if (content == null) {
-                Reader fileReader = new FileReader(file);
-                char [] characters = new char[(int) file.length()];
-                if (fileReader.read(characters) != characters.length) {
-                    throw new IOException("Unable to read "+characters.length+" characters from "+file.getAbsolutePath());
+        private synchronized String getContent() {
+            if (!fetched) {
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader(file));
+                    StringBuilder out = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        out.append(line).append('\n');
+                    }
+                    content = out.toString();
                 }
-                fileReader.close();
-                content = new String(characters);
+                catch (Exception e) {
+                    log.warn("Unable to read static page "+file);
+                }
+                finally {
+                    fetched = true;
+                }
             }
             return content;
         }
