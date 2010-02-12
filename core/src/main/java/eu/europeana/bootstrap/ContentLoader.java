@@ -54,7 +54,7 @@ public class ContentLoader {
     private final DashboardDao dashboardDao;
     private final ImportRepository repository;
     private List<Job> jobs = new ArrayList<Job>();
-
+    private int simultaneousJobs = 5;
 
     private class Job {
         EuropeanaCollection collection;
@@ -79,6 +79,10 @@ public class ContentLoader {
         repository = (ImportRepository) context.getBean("normalizedImportRepository");
     }
 
+    public void setSimultaneousJobs(int simultaneousJobs) {
+        this.simultaneousJobs = simultaneousJobs;
+    }
+
     public void addMetadataFile(String fileName) {
         File file = new File(fileName);
         if (file.exists() && file.isFile()) {
@@ -90,24 +94,29 @@ public class ContentLoader {
     }
 
     public void loadMetadata() throws IOException, InterruptedException, SolrServerException {
-        for (Job job : jobs) {
-            ImportFile importFile = repository.copyToUploaded(job.file);
-            job.collection = dashboardDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
-            importFile = eseImporter.commenceImport(importFile, job.collection.getId());
-            LOG.info(String.format("Importing commenced for %s", importFile));
-        }
-        while (!jobs.isEmpty()) {
-            Thread.sleep(5000);
-            Iterator<Job> importingFileWalk = jobs.iterator();
-            while (importingFileWalk.hasNext()) {
-                Job job = importingFileWalk.next();
+        LOG.info("simultaneousJobs="+simultaneousJobs);
+        List<Job> activeJobs = new ArrayList<Job>();
+        while (!jobs.isEmpty() || !activeJobs.isEmpty()) {
+            while (activeJobs.size() < simultaneousJobs && !jobs.isEmpty()) {
+                Job job = jobs.remove(0);
+                ImportFile importFile = repository.copyToUploaded(job.file);
+                job.collection = dashboardDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
+                importFile = eseImporter.commenceImport(importFile, job.collection.getId());
+                LOG.info(String.format("Importing commenced for %s", importFile));
+                activeJobs.add(job);
+            }
+            Thread.sleep(1000);
+            Iterator<Job> importingJobsWalk = activeJobs.iterator();
+            while (importingJobsWalk.hasNext()) {
+                Job job = importingJobsWalk.next();
                 if (job.isFinished()) {
-                    importingFileWalk.remove();
+                    importingJobsWalk.remove();
                 }
                 else {
                     LOG.info(String.format("Busy importing %s", job.collection));
                 }
             }
+            LOG.info("jobs=" + jobs.size() + ", importingJobs=" + activeJobs.size());
         }
         LOG.info("Finished importing, committing Solr");
         eseImporter.commit();
@@ -138,8 +147,14 @@ public class ContentLoader {
         if (commandLine.length == 0) {
             throw new Exception("Parameters: XML input files");
         }
-        else for (String fileName : commandLine) {
-            contentLoader.addMetadataFile(fileName);
+        else for (String command : commandLine) {
+            if (command.startsWith("-")) {
+                int simultaneousJobs = Integer.parseInt(command.substring(1));
+                contentLoader.setSimultaneousJobs(simultaneousJobs);
+            }
+            else {
+                contentLoader.addMetadataFile(command);
+            }
         }
         LOG.info("start loading content");
         contentLoader.loadMetadata();
