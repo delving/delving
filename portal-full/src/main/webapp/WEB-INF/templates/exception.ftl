@@ -69,6 +69,12 @@
                                 <strong>Alert:</strong> Unable to get a response from the Search Engine. <strong>Please</strong> try another search later.
                             </div>
                         <#break>
+                        <#case 'MALFORMED_QUERY'>
+                                <div class="ui-widget ui-error">
+                            Unable to fulfill your request due to a malformed query syntax.
+                            <strong>Please</strong> try another search.
+                            </div>
+                        <#break>
                        <#default>
                             <div class="ui-widget ui-info">
                                 Something went wrong! An email has been sent to inform our technical staff.

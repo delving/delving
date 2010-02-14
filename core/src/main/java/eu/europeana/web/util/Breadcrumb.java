@@ -59,7 +59,7 @@ public class Breadcrumb {
                     String facetValue = facetTerm.substring(colon + 1);
                     appendToURI(out, facetName, facetValue);
                     if (count-- == 0) {
-                        breadcrumbs.add(new Breadcrumb(out.toString(), facetName + ":" + encode(facetValue)));
+                        breadcrumbs.add(new Breadcrumb(out.toString(), facetName + ":" + facetValue));
                         break;
                     }
                 }

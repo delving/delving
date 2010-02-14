@@ -45,7 +45,7 @@
                     <link rel="stylesheet" type="text/css" href="css/index.css"/>
                     <link rel="stylesheet" type="text/css" href="css/jquery.jcarousel.css"/>
                     <script type="text/javascript" src="js/jquery.jcarousel.js"></script>
-                    <script type="text/javascript" src="/js/index.js"></script>
+                    <script type="text/javascript" src="js/index.js"></script>
                     <title>Europeana - Advanced Search</title>
                 <#break>
         <#case "brief-doc.html">

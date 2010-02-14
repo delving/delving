@@ -43,4 +43,5 @@ public interface BriefBeanView {
     List<FacetQueryLinks> getFacetQueryLinks() throws UnsupportedEncodingException;
     ResultPagination getPagination();
     Map<String,String> getFacetLogs();
+    BriefDoc getMatchDoc();
 }

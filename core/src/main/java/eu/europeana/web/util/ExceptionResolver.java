@@ -86,13 +86,16 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", cacheUrl);
                 String subject = queryProblem.getFragment();
-                emailSender.sendEmail(targetEmailAddress, emailFrom, subject, model);
+                if (!debugMode) { // don't send email in debugMode
+                    emailSender.sendEmail(targetEmailAddress, emailFrom, subject, model);
+                }
+                else {
+                    log.error(subject);
+                    log.error(stackTrace);
+                }
             }
             catch (Exception e) {
                 log.warn("Unable to send email to " + targetEmailAddress, e);
-            }
-            if (debugMode) {
-                log.error(stackTrace);
             }
         }
         String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());

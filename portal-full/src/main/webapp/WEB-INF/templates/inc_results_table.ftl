@@ -20,7 +20,7 @@
 </#if></#if>
 <div id="breadcrumb">
     <ul>
-        <#if !result.matchDoc??>
+        <#if !query?starts_with("europeana_uri:")>
         <li class="first"><@spring.message 'MatchesFor_t' />:</li>
         <#list breadcrumbs as crumb><#if !crumb.last>
         <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>

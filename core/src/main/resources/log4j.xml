@@ -8,8 +8,8 @@
         </layout>
     </appender>
     <appender name="clickStreamLogger" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="ClickStreamLogger.log"/>
-        <param name="MaxBackupIndex" value="90"/>
+        <param name="File" value="/export/log/ClickStreamLogger.log"/>
+        <param name="MaxBackupIndex" value="50"/>
         <param name="MaxFileSize" value="25MB"/>
         <param name="append" value="true" />
         <param name="encoding" value="UTF-8" />

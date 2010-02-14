@@ -30,9 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.*;
 
 /**
  * Test the utility classes

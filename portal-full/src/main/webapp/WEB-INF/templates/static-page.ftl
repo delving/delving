@@ -25,7 +25,7 @@ function ContactMe(prefix,suffix){
             <#if pageValue?? >
                  ${pageValue}
             <#else>
-                <h2>Unable to find Page Content.</h2>
+                <h2>Unable to find content for this page. </h2>
             </#if>
 
 

@@ -264,6 +264,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private List<? extends BriefDoc> briefDocs;
         private List<FacetQueryLinks> queryLinks;
         private Map<String, String> facetLogs;
+        private BriefDoc matchDoc;
 
         @SuppressWarnings("unchecked")
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
@@ -271,6 +272,19 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean));
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
             facetLogs = createFacetLogs(solrResponse);
+            matchDoc = createMatchDoc(solrResponse);
+        }
+
+        private BriefDoc createMatchDoc(QueryResponse solrResponse) {
+            BriefDoc briefDoc = null;
+            SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
+            if (matchDoc != null) {
+                List<BriefBean> briefBeanList = solrServer.getBinder().getBeans(BriefBean.class, matchDoc);
+                if (briefBeanList.size() > 0) {
+                    briefDoc = briefBeanList.get(0);
+                }
+            }
+            return briefDoc;
         }
 
         private Map<String, String> createFacetLogs(QueryResponse solrResponse) {
@@ -315,6 +329,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         @Override
         public Map<String, String> getFacetLogs() {
             return facetLogs;
+        }
+
+        @Override
+        public BriefDoc getMatchDoc() {
+            return matchDoc;
         }
     }
 
