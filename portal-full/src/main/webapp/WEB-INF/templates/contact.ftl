@@ -19,7 +19,7 @@
             <div  class="yui-g">
                 <div  class="yui-g first">
 
-                    <div id="thankyou" class="toggler" style="position:absolute; top: 0px; left: 180px; width: 400px; font-size: 12px;">
+                    <div id="thankyou" style="position:absolute; top: 0px; left: 180px; width: 400px; font-size: 12px; display: none">
                     <div id="effect" class="ui-widget-content ui-corner-all">
 
                         <h3 id="close" style="background-image: url( 'images/btn_x_close_y.gif' ) ;background-position: top right;background-repeat: no-repeat;" class="ui-widget-header ui-corner-all"><@spring.message 'SendUsFeedback_t' /></h3>

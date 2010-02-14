@@ -131,8 +131,6 @@
             <#assign bodyId = "contact"/>
                 <#assign  pageId = "co"/>
                 <title>Europeana - Contact/Feedback</title>
-                <script type="text/javascript" src="js/effects.core.js"></script>
-                <script type="text/javascript" src="js/effects.blind.js"></script>
                 <script type="text/javascript" src="js/contact.js"></script>
                 <link rel="stylesheet" href="css/contact.css" type="text/css"/>
             <#break>
