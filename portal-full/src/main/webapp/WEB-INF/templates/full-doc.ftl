@@ -136,7 +136,7 @@
                     <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
                     </#if>
-                       <a href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}" target="_blank">
+                       <a about=${result.fullDoc.id} rel="rdfs:seeAlso" resource="${imageRef}" href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}" target="_blank">
                         <#if useCache="true">
                         <img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
                          class="full" alt="Image title: ${result.fullDoc.dcTitle[0]}" />
@@ -156,7 +156,7 @@
                 </div>
                </td>
             <td>
-                <div id="item-detail">
+                <div about="${result.fullDoc.id}" id="item-detail">
                     <h2 class="${result.fullDoc.europeanaType}">
                         <#assign tl = "">
                         <#if !model.fullDoc.dcTitle[0]?matches(" ")>
@@ -171,66 +171,12 @@
                         </#if>
                         <@stringLimiter "${tl}" "250"/>
                     </h2>
+                    <#assign doc = result.fullDoc />
+                    <#--<meta about="${doc.id}" property="dcterms:date" content="${doc.dcDate}"/>-->
                     <#assign siwaCounter = 0 />
                     <#if format?? && format?contains("labels")>
-                        <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
-                        <@show_value "europeana:uri" doc.id showFieldNames />
-                        <@show_array_values "europeana:country" doc.europeanaCountry  showFieldNames />
-                        <#--<@show_array_values "europeana:source" doc.europeanaSource  showFieldNames />-->
-                        <@show_array_values "europeana:provider" doc.europeanaProvider  showFieldNames />
-                        <@show_value "europeana:collectionName" doc.europeanaCollectionName showFieldNames/>
-                        <@show_value "europeana:hasObject" doc.europeanaHasObject?string  showFieldNames />
-                        <@show_array_values "europeana:isShownAt" doc.europeanaIsShownAt  showFieldNames />
-                        <@show_array_values "europeana:isShownBy" doc.europeanaIsShownBy  showFieldNames />
-                        <#--<@show_array_values "europeana:unstored" doc.europeanaUnstored  showFieldNames />-->
-                        <@show_array_values "europeana:object" doc.thumbnails  showFieldNames />
-                        <@show_array_values "europeana:language" doc.europeanaLanguage  showFieldNames />
-                        <@show_value "europeana:type" doc.europeanaType  showFieldNames />
-                        <@show_array_values "europeana:userTag" doc.europeanaUserTag  showFieldNames />
-                        <@show_array_values "europeana:year" doc.europeanaYear  showFieldNames />
-
-                        <!-- here the dcterms namespaces starts -->
-                        <@show_array_values "dcterms:alternative" doc.dcTermsAlternative  showFieldNames />
-                        <@show_array_values "dcterms:conformsTo" doc.dcTermsConformsTo  showFieldNames />
-                        <@show_array_values "dcterms:created" doc.dcTermsCreated  showFieldNames />
-                        <@show_array_values "dcterms:extent" doc.dcTermsExtent  showFieldNames />
-                        <@show_array_values "dcterms:hasFormat" doc.dcTermsHasFormat  showFieldNames />
-                        <@show_array_values "dcterms:hasPart" doc.dcTermsHasPart  showFieldNames />
-                        <@show_array_values "dcterms:hasVersion" doc.dcTermsHasVersion  showFieldNames />
-                        <@show_array_values "dcterms:isFormatOf" doc.dcTermsIsFormatOf  showFieldNames />
-                        <@show_array_values "dcterms:isPartOf" doc.dcTermsIsPartOf  showFieldNames />
-                        <@show_array_values "dcterms:isReferencedBy" doc.dcTermsIsReferencedBy  showFieldNames />
-                        <@show_array_values "dcterms:isReplacedBy" doc.dcTermsIsReplacedBy  showFieldNames />
-                        <@show_array_values "dcterms:isRequiredBy" doc.dcTermsIsRequiredBy  showFieldNames />
-                        <@show_array_values "dcterms:issued" doc.dcTermsIssued  showFieldNames />
-                        <@show_array_values "dcterms:isVersionOf" doc.dcTermsIsVersionOf  showFieldNames />
-                        <@show_array_values "dcterms:medium" doc.dcTermsMedium  showFieldNames />
-                        <@show_array_values "dcterms:provenance" doc.dcTermsProvenance  showFieldNames />
-                        <@show_array_values "dcterms:references" doc.dcTermsReferences  showFieldNames />
-                        <@show_array_values "dcterms:replaces" doc.dcTermsReplaces  showFieldNames />
-                        <@show_array_values "dcterms:requires" doc.dcTermsRequires  showFieldNames />
-                        <@show_array_values "dcterms:spatial" doc.dcTermsSpatial  showFieldNames />
-                        <@show_array_values "dcterms:tableOfContents" doc.dcTermsTableOfContents  showFieldNames />
-                        <@show_array_values "dcterms:temporal" doc.dcTermsTemporal  showFieldNames />
-
-                        <!-- here the dc namespaces starts -->
-                        <@show_array_values "dc:contributor" doc.dcContributor  showFieldNames />
-                        <@show_array_values "dc:coverage" doc.dcCoverage  showFieldNames />
-                        <@show_array_values "dc:creator" doc.dcCreator  showFieldNames />
-                        <@show_array_values "dc:date" doc.dcDate  showFieldNames />
-                        <@show_array_values "dc:description" doc.dcDescription  showFieldNames />
-                        <@show_array_values "dc:format" doc.dcFormat  showFieldNames />
-                        <@show_array_values "dc:identifier" doc.dcIdentifier  showFieldNames />
-                        <@show_array_values "dc:language" doc.dcLanguage  showFieldNames />
-                        <@show_array_values "dc:publisher" doc.dcPublisher  showFieldNames />
-                        <@show_array_values "dc:relation" doc.dcRelation  showFieldNames />
-                        <@show_array_values "dc:rights" doc.dcRights  showFieldNames />
-                        <@show_array_values "dc:source" doc.dcSource  showFieldNames />
-                        <@show_array_values "dc:subject" doc.dcSubject  showFieldNames />
-                        <@show_array_values "dc:title" doc.dcTitle  showFieldNames />
-                        <@show_array_values "dc:type" doc.dcType  showFieldNames />
-
+                        <@listMetadataFields showFieldNames/>
                      <p id="morelink">
                         <a href="#"  class="fg-green" onclick="toggleObject('moremetadata');toggleObject('lesslink');toggleObject('morelink')"><@spring.message 'More_t' /></a>
                     </p>
@@ -239,6 +185,7 @@
                         <a href="#" class="fg-green" onclick="toggleObject('lesslink');toggleObject('morelink');toggleObject('moremetadata')"><@spring.message 'Less_t' /></a>
                     </p>
                     <#else>
+                    <@listMetadataFields false />
                      <#-- TITLE   -------------------------------------------------------------------------------->
                     <#assign titleArr = result.fullDoc.dcTitle + result.fullDoc.dcTermsAlternative />
                      <#if isNonEmpty(titleArr)>
@@ -375,7 +322,7 @@
                         <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                             <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
                         </#if>
-                        <a href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                        <a rel="rdfs:seeAlso" resource="${UrlRef}" href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                                                   target="_blank"><@spring.message 'ViewInOriginalContext_t' /></a>
                         <@spring.message 'OpensInNewWindow_t'/>
                     </p>
@@ -408,9 +355,9 @@
                 <td width="45" valign="top">
                     <div class="related-thumb-container">
                         <#if queryStringForPaging??>
-                            <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
+                            <a rel="rdfs:seeAlso" resource="${doc.id}" href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
                          <#else>
-                            <a href="full-doc.html?uri=${doc.id}">
+                            <a rel="rdfs:seeAlso" resource="${doc.id}" href="full-doc.html?uri=${doc.id}">
                          </#if>
                          <#if useCache="true">
                             <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>
@@ -521,9 +468,11 @@
         <#if !value?matches(" ") && !value?matches("0000")>
             <#assign siwaCounter = siwaCounter + 1 />
             <#if showFieldName>
-                <p><strong>${fieldName}</strong> = <span id="${siwaCounter}" name="${fieldName}" class="siwa">${value?html}</span></p>
+                <p><strong>${fieldName}</strong> = <span <@rdfaProperty fieldName/> id="${siwaCounter}" name="${fieldName}" class="siwa">${value?html}</span></p>
             <#else>
-                <p><span id="${siwaCounter}" name="${fieldName}" class="siwa">${value?html}</span></p>
+                <#if !fieldName?starts_with("europeana:")>
+                    <meta about="${doc.id}" property="${fieldName?replace("dc:","dcterms:")}" content="${value}"/>
+                </#if>
             </#if>
         </#if>
     </#list>
@@ -532,9 +481,11 @@
 <#macro show_value fieldName value showFieldName>
     <#assign siwaCounter = siwaCounter + 1 />
     <#if showFieldName>
-        <p><strong>${fieldName}</strong> = <span id="${siwaCounter}" name="${fieldName}" class="siwa">${value}</span></p>
+        <p><strong>${fieldName}</strong> = <span <@rdfaProperty fieldName/> id="${siwaCounter}" name="${fieldName}" class="siwa">${value}</span></p>
     <#else>
-        <p>${value}</p>
+        <#if !fieldName?starts_with("europeana:")>
+            <meta about="${doc.id}" property="${fieldName?replace("dc:","dcterms:")}" content="${value}"/>
+        </#if>
     </#if>
 </#macro>
 
@@ -569,7 +520,69 @@
     </#list>
 </#macro>
 
-<#function isNonEmpty values>
+<#macro rdfaProperty fieldName >
+    <#if !fieldName?starts_with("europeana")> property="${fieldName?replace("dc:","dcterms:")}" </#if>
+</#macro>
+
+<#macro listMetadataFields showFieldNames>
+    <@show_value "europeana:uri" doc.id showFieldNames />
+    <@show_array_values "europeana:country" doc.europeanaCountry  showFieldNames />
+    <#--<@show_array_values "europeana:source" doc.europeanaSource  showFieldNames />-->
+    <@show_array_values "europeana:provider" doc.europeanaProvider  showFieldNames />
+    <@show_value "europeana:collectionName" doc.europeanaCollectionName showFieldNames/>
+    <@show_value "europeana:hasObject" doc.europeanaHasObject?string  showFieldNames />
+    <@show_array_values "europeana:isShownAt" doc.europeanaIsShownAt  showFieldNames />
+    <@show_array_values "europeana:isShownBy" doc.europeanaIsShownBy  showFieldNames />
+    <#--<@show_array_values "europeana:unstored" doc.europeanaUnstored  showFieldNames />-->
+    <@show_array_values "europeana:object" doc.thumbnails  showFieldNames />
+    <@show_array_values "europeana:language" doc.europeanaLanguage  showFieldNames />
+    <@show_value "europeana:type" doc.europeanaType  showFieldNames />
+    <@show_array_values "europeana:userTag" doc.europeanaUserTag  showFieldNames />
+    <@show_array_values "europeana:year" doc.europeanaYear  showFieldNames />
+
+    <!-- here the dcterms namespaces starts -->
+    <@show_array_values "dcterms:alternative" doc.dcTermsAlternative  showFieldNames />
+    <@show_array_values "dcterms:conformsTo" doc.dcTermsConformsTo  showFieldNames />
+    <@show_array_values "dcterms:created" doc.dcTermsCreated  showFieldNames />
+    <@show_array_values "dcterms:extent" doc.dcTermsExtent  showFieldNames />
+    <@show_array_values "dcterms:hasFormat" doc.dcTermsHasFormat  showFieldNames />
+    <@show_array_values "dcterms:hasPart" doc.dcTermsHasPart  showFieldNames />
+    <@show_array_values "dcterms:hasVersion" doc.dcTermsHasVersion  showFieldNames />
+    <@show_array_values "dcterms:isFormatOf" doc.dcTermsIsFormatOf  showFieldNames />
+    <@show_array_values "dcterms:isPartOf" doc.dcTermsIsPartOf  showFieldNames />
+    <@show_array_values "dcterms:isReferencedBy" doc.dcTermsIsReferencedBy  showFieldNames />
+    <@show_array_values "dcterms:isReplacedBy" doc.dcTermsIsReplacedBy  showFieldNames />
+    <@show_array_values "dcterms:isRequiredBy" doc.dcTermsIsRequiredBy  showFieldNames />
+    <@show_array_values "dcterms:issued" doc.dcTermsIssued  showFieldNames />
+    <@show_array_values "dcterms:isVersionOf" doc.dcTermsIsVersionOf  showFieldNames />
+    <@show_array_values "dcterms:medium" doc.dcTermsMedium  showFieldNames />
+    <@show_array_values "dcterms:provenance" doc.dcTermsProvenance  showFieldNames />
+    <@show_array_values "dcterms:references" doc.dcTermsReferences  showFieldNames />
+    <@show_array_values "dcterms:replaces" doc.dcTermsReplaces  showFieldNames />
+    <@show_array_values "dcterms:requires" doc.dcTermsRequires  showFieldNames />
+    <@show_array_values "dcterms:spatial" doc.dcTermsSpatial  showFieldNames />
+    <@show_array_values "dcterms:tableOfContents" doc.dcTermsTableOfContents  showFieldNames />
+    <@show_array_values "dcterms:temporal" doc.dcTermsTemporal  showFieldNames />
+
+    <!-- here the dc namespaces starts -->
+    <@show_array_values "dc:contributor" doc.dcContributor  showFieldNames />
+    <@show_array_values "dc:coverage" doc.dcCoverage  showFieldNames />
+    <@show_array_values "dc:creator" doc.dcCreator  showFieldNames />
+    <@show_array_values "dc:date" doc.dcDate  showFieldNames />
+    <@show_array_values "dc:description" doc.dcDescription  showFieldNames />
+    <@show_array_values "dc:format" doc.dcFormat  showFieldNames />
+    <@show_array_values "dc:identifier" doc.dcIdentifier  showFieldNames />
+    <@show_array_values "dc:language" doc.dcLanguage  showFieldNames />
+    <@show_array_values "dc:publisher" doc.dcPublisher  showFieldNames />
+    <@show_array_values "dc:relation" doc.dcRelation  showFieldNames />
+    <@show_array_values "dc:rights" doc.dcRights  showFieldNames />
+    <@show_array_values "dc:source" doc.dcSource  showFieldNames />
+    <@show_array_values "dc:subject" doc.dcSubject  showFieldNames />
+    <@show_array_values "dc:title" doc.dcTitle  showFieldNames />
+    <@show_array_values "dc:type" doc.dcType  showFieldNames />
+</#macro>
+
+    <#function isNonEmpty values>
     <#assign nonEmptyValue = false />
     <#list  values?reverse as value>
         <#if !value?matches(" ") && !value?matches("0000")>
