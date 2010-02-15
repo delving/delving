@@ -21,6 +21,7 @@
 
 package eu.europeana.web.util;
 
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,13 +36,13 @@ import java.util.Map;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Dec 13, 2009 11:03:59 AM
  */
-public class ControllerUtilTest {
+public class TestControllerUtil {
 
-    private MockHttpServletRequest request;
+    private Logger log = Logger.getLogger(getClass());
 
     @Before
     public void testInit() throws Exception {
-        request = new MockHttpServletRequest();
+        MockHttpServletRequest request = new MockHttpServletRequest();
 
     }
 
@@ -96,8 +97,16 @@ public class ControllerUtilTest {
         Map<String, String> facetMap = new HashMap<String, String>();
         facetMap.put("PROVIDER", "prov");
         facetMap.put("LANGUAGE", "lang");
+        String[] expectFilterQueries = new String[]{"{!tag=lang}LANGUAGE:(\"de\" OR \"en\")", "{!tag=prov}PROVIDER:\"The European Library\""};
+        log.info("expecting:");
+        for (String expect : expectFilterQueries) {
+            log.info(expect);
+        }
         String[] actualFilterQueries = ControllerUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap);
-        String[] expectFilterQueries = new String[]{"{!tag=lang}LANGUAGE:(en OR de)", "{!tag=prov}PROVIDER:\"The European Library\""};
+        log.info("actual:");
+        for (String actual : actualFilterQueries) {
+            log.info(actual);
+        }
         Assert.assertArrayEquals("arrays should be equal", expectFilterQueries, actualFilterQueries);
     }
 }

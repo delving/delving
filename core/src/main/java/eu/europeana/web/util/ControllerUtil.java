@@ -32,7 +32,13 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Utility methods for controllers
@@ -183,7 +189,7 @@ public class ControllerUtil {
     public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery, Map<String, String> facetMap) {
         String[] filterQueries = solrQuery.getFilterQueries();
         if (filterQueries == null) {
-            return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
+            return null;
         }
         List<String> phraseFilterQueries = new ArrayList<String>(filterQueries.length);
         for (String facetTerm : filterQueries) {
@@ -202,15 +208,15 @@ public class ControllerUtil {
     public static String[] getFilterQueriesWithoutPhrases(SolrQuery solrQuery) {
         String[] filterQueries = solrQuery.getFilterQueries();
         if (filterQueries == null) {
-            return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
+            return null;
         }
         List<String> nonPhraseFilterQueries = new ArrayList<String>(filterQueries.length);
         for (String facetTerm : filterQueries) {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
-            if (facetName.contains("!tag")) {
-                facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
-            }
+//            if (facetName.contains("!tag")) {
+//                facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
+//            }
             String facetValue = facetTerm.substring(colon + 1);
             if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
                 facetValue = facetValue.substring(1, facetValue.length() - 1);
@@ -220,19 +226,53 @@ public class ControllerUtil {
         return nonPhraseFilterQueries.toArray(new String[nonPhraseFilterQueries.size()]);
     }
 
-
-    /**
+    /*
      * Transform "LANGUAGE:en, LANGUAGE:de, PROVIDER:"The European Library" "  to "{!tag=lang}LANGUAGE:(en OR de), PRODIVER:"The European Library" "
-     *
-     * @param solrQuery
-     * @param facetMap
-     * @return
      */
+
     public static String[] getFilterQueriesAsOrQueries(SolrQuery solrQuery, Map<String, String> facetMap) {
         String[] filterQueries = solrQuery.getFilterQueries();
         if (filterQueries == null) {
-            return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
+            return null;
         }
-        return filterQueries;
+        Arrays.sort(filterQueries);
+        Map<String, List<String>> terms = new TreeMap<String, List<String>>();
+        for (String facetTerm : filterQueries) {
+            int colon = facetTerm.indexOf(":");
+            String facetName = facetTerm.substring(0, colon);
+            if (facetMap.containsKey(facetName)) {
+                String facetPrefix = facetMap.get(facetName);
+                facetName = String.format("{!tag=%s}%s", facetPrefix, facetName);
+            }
+            String facetValue = facetTerm.substring(colon + 1);
+            List<String> values = terms.get(facetName);
+            if (values == null) {
+                terms.put(facetName, values = new ArrayList<String>());
+            }
+            values.add(facetValue);
+        }
+        List<String> queries = new ArrayList<String>(filterQueries.length);
+        for (Map.Entry<String, List<String>> entry : terms.entrySet()) {
+            String facetName = entry.getKey();
+            String facetValue;
+            if (entry.getValue().size() == 1) {
+                facetValue = '"' + entry.getValue().get(0) + '"';
+            }
+            else {
+                StringBuilder orStatement = new StringBuilder("(");
+                Iterator<String> walk = entry.getValue().iterator();
+                while (walk.hasNext()) {
+                    String value = walk.next();
+                    orStatement.append('"').append(value).append('"');
+                    if (walk.hasNext()) {
+                        orStatement.append(" OR ");
+                    }
+                }
+                orStatement.append(")");
+                facetValue = orStatement.toString();
+            }
+            queries.add(facetName+":"+facetValue);
+        }
+        return queries.toArray(new String[queries.size()]);
     }
 }
