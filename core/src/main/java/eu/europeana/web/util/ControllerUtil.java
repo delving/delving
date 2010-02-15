@@ -225,7 +225,7 @@ public class ControllerUtil {
         if (filterQueries == null) {
             return null;
         }
-        String[] sortedFilterQueries = Arrays.copyOf(filterQueries, filterQueries.length);
+        String[] sortedFilterQueries = filterQueries.clone();
         Arrays.sort(sortedFilterQueries);
         Map<String, List<String>> terms = new TreeMap<String, List<String>>();
         for (String facetTerm : sortedFilterQueries) {
