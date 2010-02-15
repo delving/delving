@@ -453,6 +453,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
         if (beanClass == fullBean) {
         }
+        // todo add merge of same facets with OR
+        
         return getSolrResponse(solrQuery);
     }
 

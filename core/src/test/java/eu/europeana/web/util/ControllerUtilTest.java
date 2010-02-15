@@ -84,4 +84,20 @@ public class ControllerUtilTest {
             Assert.assertFalse(after.startsWith("\"") && after.endsWith("\""));
         }
     }
+
+    @Test
+    public void testOrBasedFacetQueries() throws Exception {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setFilterQueries(
+                "PROVIDER:The European Library",
+                "LANGUAGE:en",
+                "LANGUAGE:de"
+        );
+        Map<String, String> facetMap = new HashMap<String, String>();
+        facetMap.put("PROVIDER", "prov");
+        facetMap.put("LANGUAGE", "lang");
+        String[] actualFilterQueries = ControllerUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap);
+        String[] expectFilterQueries = new String[]{"{!tag=lang}LANGUAGE:(en OR de)", "{!tag=prov}PROVIDER:\"The European Library\""};
+        Assert.assertArrayEquals("arrays should be equal", expectFilterQueries, actualFilterQueries);
+    }
 }

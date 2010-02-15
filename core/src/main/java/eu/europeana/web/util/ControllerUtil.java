@@ -221,4 +221,18 @@ public class ControllerUtil {
     }
 
 
+    /**
+     * Transform "LANGUAGE:en, LANGUAGE:de, PROVIDER:"The European Library" "  to "{!tag=lang}LANGUAGE:(en OR de), PRODIVER:"The European Library" "
+     *
+     * @param solrQuery
+     * @param facetMap
+     * @return
+     */
+    public static String[] getFilterQueriesAsOrQueries(SolrQuery solrQuery, Map<String, String> facetMap) {
+        String[] filterQueries = solrQuery.getFilterQueries();
+        if (filterQueries == null) {
+            return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
+        }
+        return filterQueries;
+    }
 }
