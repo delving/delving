@@ -463,7 +463,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         dCopy.setQueryType(solrQuery.getQueryType());
         dCopy.setRows(solrQuery.getRows());
         //todo do you need to add any more copies
-        if (solrQuery.getFacetFields().length > 0) {
+        if (solrQuery.getFacetFields() != null) {
             dCopy.setFacet(true);
             dCopy.setFacetMinCount(solrQuery.getFacetMinCount());
             dCopy.setFacetLimit(solrQuery.getFacetLimit());
