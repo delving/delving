@@ -22,7 +22,6 @@
 package eu.europeana.beans;
 
 import eu.europeana.beans.annotation.Europeana;
-import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.beans.annotation.Solr;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -33,7 +32,6 @@ import java.util.Date;
  * @since Jan 7, 2010 9:15:43 AM
  */
 
-@EuropeanaView(facets = false, rows = 10)
 public class IdBean {
 
     @Europeana(briefDoc = true, id = true)

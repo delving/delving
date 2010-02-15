@@ -22,7 +22,6 @@
 package eu.europeana.beans;
 
 import eu.europeana.beans.annotation.Europeana;
-import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.beans.annotation.Solr;
 import eu.europeana.query.BriefDoc;
 import eu.europeana.query.DocType;
@@ -35,7 +34,6 @@ import static eu.europeana.beans.BeanUtil.returnStringOrElse;
  * @since Jan 7, 2010 9:16:46 AM
  */
 
-@EuropeanaView(facets = false, rows = 10)
 public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;

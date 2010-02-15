@@ -25,7 +25,12 @@ import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Interpret the annotations in the beans which define the search model, and
@@ -162,19 +167,6 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         private EuropeanaBeanImpl(Class<?> beanClass) {
             this.beanClass = beanClass;
-            if (beanClass.getAnnotation(EuropeanaView.class) == null) {
-                throw new RuntimeException("Bean class must be annotated with @EuropeanaView");
-            }
-        }
-
-        @Override
-        public int rows() {
-            return beanClass.getAnnotation(EuropeanaView.class).rows();
-        }
-
-        @Override
-        public boolean facets() {
-            return beanClass.getAnnotation(EuropeanaView.class).facets();
         }
 
         @Override

@@ -21,7 +21,6 @@
 
 package eu.europeana.beans.query;
 
-import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.query.BriefDoc;
 import eu.europeana.query.DocIdWindowPager;
 import eu.europeana.query.EuropeanaQueryException;
@@ -36,7 +35,7 @@ import java.util.List;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-@EuropeanaView(facets = false, rows = 3) // todo: this might be the right place for this annotation
+
 public interface FullBeanView {
     DocIdWindowPager getDocIdWindowPager() throws Exception, UnsupportedEncodingException;
     List<? extends BriefDoc> getRelatedItems();

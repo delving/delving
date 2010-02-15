@@ -21,7 +21,6 @@
 
 package eu.europeana.beans.query;
 
-import eu.europeana.beans.annotation.EuropeanaView;
 import eu.europeana.query.BriefDoc;
 import eu.europeana.query.ResultPagination;
 import eu.europeana.web.util.FacetQueryLinks;
@@ -37,7 +36,6 @@ import java.util.Map;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-@EuropeanaView(facets = true, rows = 10) // todo: is this the right place for this annotation
 public interface BriefBeanView {
     List<? extends BriefDoc> getBriefDocs();
     List<FacetQueryLinks> getFacetQueryLinks() throws UnsupportedEncodingException;
