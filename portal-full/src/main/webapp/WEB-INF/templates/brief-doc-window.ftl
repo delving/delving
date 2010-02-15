@@ -5,7 +5,7 @@
 <#assign typeUrl = typeUrl />
 <#assign query = query />
 <#assign view = "table"/>
-<#if format??> <#assign view = format></#if>
+<#if format??> <#assign format = format></#if>
 <#if RequestParameters.view??> <#assign view = "${RequestParameters.view}"/></#if>
 <#assign result = result/>
 <#assign allCount = 0 />

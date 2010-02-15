@@ -32,13 +32,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Utility methods for controllers
@@ -186,7 +180,7 @@ public class ControllerUtil {
         return output.toString();
     }
 
-    public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery, Map<String, String> facetMap) {
+    public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery) {
         String[] filterQueries = solrQuery.getFilterQueries();
         if (filterQueries == null) {
             return null;
@@ -196,10 +190,6 @@ public class ControllerUtil {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
             String facetValue = facetTerm.substring(colon + 1);
-            if (facetMap.containsKey(facetName)) {
-                String facetPrefix = facetMap.get(facetName);
-                facetName = String.format("{!tag=%s}%s", facetPrefix, facetName);
-            }
             phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
@@ -214,9 +204,9 @@ public class ControllerUtil {
         for (String facetTerm : filterQueries) {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
-//            if (facetName.contains("!tag")) {
-//                facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
-//            }
+            if (facetName.contains("!tag")) {
+                facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
+            }
             String facetValue = facetTerm.substring(colon + 1);
             if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
                 facetValue = facetValue.substring(1, facetValue.length() - 1);
@@ -235,9 +225,10 @@ public class ControllerUtil {
         if (filterQueries == null) {
             return null;
         }
-        Arrays.sort(filterQueries);
+        String[] sortedFilterQueries = Arrays.copyOf(filterQueries, filterQueries.length);
+        Arrays.sort(sortedFilterQueries);
         Map<String, List<String>> terms = new TreeMap<String, List<String>>();
-        for (String facetTerm : filterQueries) {
+        for (String facetTerm : sortedFilterQueries) {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
             if (facetMap.containsKey(facetName)) {
@@ -251,19 +242,21 @@ public class ControllerUtil {
             }
             values.add(facetValue);
         }
-        List<String> queries = new ArrayList<String>(filterQueries.length);
+        List<String> queries = new ArrayList<String>(sortedFilterQueries.length);
         for (Map.Entry<String, List<String>> entry : terms.entrySet()) {
             String facetName = entry.getKey();
             String facetValue;
             if (entry.getValue().size() == 1) {
-                facetValue = '"' + entry.getValue().get(0) + '"';
+//                facetValue = '"' + entry.getValue().get(0) + '"';
+                facetValue = entry.getValue().get(0);
             }
             else {
                 StringBuilder orStatement = new StringBuilder("(");
                 Iterator<String> walk = entry.getValue().iterator();
                 while (walk.hasNext()) {
                     String value = walk.next();
-                    orStatement.append('"').append(value).append('"');
+//                    orStatement.append('"').append(value).append('"');
+                    orStatement.append(value);
                     if (walk.hasNext()) {
                         orStatement.append(" OR ");
                     }
@@ -275,4 +268,6 @@ public class ControllerUtil {
         }
         return queries.toArray(new String[queries.size()]);
     }
+
+
 }

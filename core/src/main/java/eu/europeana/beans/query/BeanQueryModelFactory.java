@@ -121,7 +121,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 solrQuery.addFilterQuery(filterQuery);
             }
         }
-        solrQuery.setFilterQueries(ControllerUtil.getFilterQueriesAsPhrases(solrQuery, annotationProcessor.getFacetMap())); // todo: integrate into the above loop
+        solrQuery.setFilterQueries(ControllerUtil.getFilterQueriesAsPhrases(solrQuery));
         return solrQuery;
     }
 
@@ -439,6 +439,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException { // add bean to ???
         // set facets
+        SolrQuery dCopy;
         if (beanClass == briefBean) {
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
@@ -451,11 +452,26 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }
         }
-        if (beanClass == fullBean) {
+        dCopy = copySolrQuery(solrQuery);
+        return getSolrResponse(dCopy);
+    }
+
+    private SolrQuery copySolrQuery(SolrQuery solrQuery) {
+        SolrQuery dCopy = new SolrQuery();
+        dCopy.setQuery(solrQuery.getQuery());
+        dCopy.setStart(solrQuery.getStart());
+        dCopy.setQueryType(solrQuery.getQueryType());
+        dCopy.setRows(solrQuery.getRows());
+        //todo do you need to add any more copies
+        if (solrQuery.getFacetFields().length > 0) {
+            dCopy.setFacet(true);
+            dCopy.setFacetMinCount(solrQuery.getFacetMinCount());
+            dCopy.setFacetLimit(solrQuery.getFacetLimit());
+            dCopy.addFacetField(solrQuery.getFacetFields());
+            dCopy.setFields(solrQuery.getFields());
         }
-        // todo add merge of same facets with OR
-        
-        return getSolrResponse(solrQuery);
+        dCopy.setFilterQueries(ControllerUtil.getFilterQueriesAsOrQueries(solrQuery, annotationProcessor.getFacetMap()));
+        return dCopy;
     }
 
     private ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) {

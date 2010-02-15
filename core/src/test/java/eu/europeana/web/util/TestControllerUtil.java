@@ -70,10 +70,7 @@ public class TestControllerUtil {
                 "PROVIDER:The European Library",
                 "LANGUAGE:en"
         );
-        Map<String, String> facetMap = new HashMap<String, String>();
-        facetMap.put("PROVIDER", "prov");
-        facetMap.put("LANGUAGE", "lang");
-        String[] phrased = ControllerUtil.getFilterQueriesAsPhrases(solrQuery, facetMap);
+        String[] phrased = ControllerUtil.getFilterQueriesAsPhrases(solrQuery);
         for (String s : phrased) {
             String after = s.substring(s.indexOf(':') + 1);
             Assert.assertTrue(after.startsWith("\"") && after.endsWith("\""));
@@ -90,9 +87,9 @@ public class TestControllerUtil {
     public void testOrBasedFacetQueries() throws Exception {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setFilterQueries(
-                "PROVIDER:The European Library",
-                "LANGUAGE:en",
-                "LANGUAGE:de"
+                "PROVIDER:\"The European Library\"",
+                "LANGUAGE:\"en\"",
+                "LANGUAGE:\"de\""
         );
         Map<String, String> facetMap = new HashMap<String, String>();
         facetMap.put("PROVIDER", "prov");
