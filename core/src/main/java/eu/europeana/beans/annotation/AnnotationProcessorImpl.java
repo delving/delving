@@ -42,6 +42,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     private String [] facetFieldStrings;
     private List<String> solrFieldList;
     private Map<Class<?>, EuropeanaBean> beanMap = new HashMap<Class<?>, EuropeanaBean>();
+    private HashMap<String, String> facetMap = new HashMap<String, String>();
 
     /**
      * Configure the annotation processor to analyze the given list of classes
@@ -82,11 +83,16 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             facetFieldStrings = new String[facetFields.size()];
             int index = 0;
             for (EuropeanaField facetField : facetFields) {
-                facetFieldStrings[index] = facetField.getName();
+                facetFieldStrings[index] = String.format("{!ex=%s}%s", facetField.getFacetPrefix(), facetField.getFacetName());
                 index++;
             }
         }
         return facetFieldStrings;
+    }
+
+    @Override
+    public HashMap<String, String> getFacetMap() {
+        return facetMap;
     }
 
     @Override
@@ -107,6 +113,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                         EuropeanaFieldImpl europeanaField = new EuropeanaFieldImpl(field);
                         if (europeanaField.isFacet()) {
                             facetFields.add(europeanaField);
+                            facetMap.put(europeanaField.getFacetName(), europeanaField.getFacetPrefix());
                         }
                         solrFields.add(europeanaField);
                         europeanaBean.addField(europeanaField);
@@ -277,6 +284,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         @Override
         public String getFacetName() {
             return fieldAnnotation.value();
+        }
+
+        @Override
+        public String getFacetPrefix() {
+            return europeanaAnnotation.facetPrefix();
         }
 
         @Override

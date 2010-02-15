@@ -70,6 +70,9 @@ public interface EuropeanaField {
      * @return true if this field is the one
      */
 
+    String getFacetPrefix();
+
+
     boolean isEuropeanaUri();
 
     boolean isEuropeanaObject();

@@ -69,7 +69,10 @@ public class ControllerUtilTest {
                 "PROVIDER:The European Library",
                 "LANGUAGE:en"
         );
-        String[] phrased = ControllerUtil.getFilterQueriesAsPhrases(solrQuery);
+        Map<String, String> facetMap = new HashMap<String, String>();
+        facetMap.put("PROVIDER", "prov");
+        facetMap.put("LANGUAGE", "lang");
+        String[] phrased = ControllerUtil.getFilterQueriesAsPhrases(solrQuery, facetMap);
         for (String s : phrased) {
             String after = s.substring(s.indexOf(':') + 1);
             Assert.assertTrue(after.startsWith("\"") && after.endsWith("\""));

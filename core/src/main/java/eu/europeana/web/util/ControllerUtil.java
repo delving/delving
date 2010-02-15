@@ -180,7 +180,7 @@ public class ControllerUtil {
         return output.toString();
     }
 
-    public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery) {
+    public static String[] getFilterQueriesAsPhrases(SolrQuery solrQuery, Map<String, String> facetMap) {
         String[] filterQueries = solrQuery.getFilterQueries();
         if (filterQueries == null) {
             return filterQueries; // sometimes needed when the code expects null when no filterqueries are found
@@ -190,6 +190,10 @@ public class ControllerUtil {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
             String facetValue = facetTerm.substring(colon + 1);
+            if (facetMap.containsKey(facetName)) {
+                String facetPrefix = facetMap.get(facetName);
+                facetName = String.format("{!tag=%s}%s", facetPrefix, facetName);
+            }
             phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
@@ -204,6 +208,9 @@ public class ControllerUtil {
         for (String facetTerm : filterQueries) {
             int colon = facetTerm.indexOf(":");
             String facetName = facetTerm.substring(0, colon);
+            if (facetName.contains("!tag")) {
+                facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
+            }
             String facetValue = facetTerm.substring(colon + 1);
             if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
                 facetValue = facetValue.substring(1, facetValue.length() - 1);

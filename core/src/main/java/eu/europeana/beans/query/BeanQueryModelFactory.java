@@ -121,7 +121,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 solrQuery.addFilterQuery(filterQuery);
             }
         }
-        solrQuery.setFilterQueries(ControllerUtil.getFilterQueriesAsPhrases(solrQuery)); // todo: integrate into the above loop
+        solrQuery.setFilterQueries(ControllerUtil.getFilterQueriesAsPhrases(solrQuery, annotationProcessor.getFacetMap())); // todo: integrate into the above loop
         return solrQuery;
     }
 

@@ -21,6 +21,7 @@
 
 package eu.europeana.beans.annotation;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -77,4 +78,5 @@ public interface AnnotationProcessor {
 
     EuropeanaBean getEuropeanaBean(Class<?> clazz);
 
+    HashMap<String, String> getFacetMap();
 }
