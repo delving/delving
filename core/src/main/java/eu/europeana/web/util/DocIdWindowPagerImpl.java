@@ -67,6 +67,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         originalBriefSolrQuery.setStart(solrStartRow);
         originalBriefSolrQuery.setRows(3);
         QueryResponse queryResponse = solrServer.query(originalBriefSolrQuery);
+        if (queryResponse.getResults() == null) {
+            return null; // if no results are found return null to signify that docIdPage can be created.
+        }
         List<IdBean> list = queryResponse.getBeans(IdBean.class);
         final SolrDocumentList response = queryResponse.getResults();
         int offset = (int) response.getStart();
