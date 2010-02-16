@@ -62,7 +62,7 @@ public class ResultController {
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocHtml(
             @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "uri", required = true) String uri,
+            @RequestParam(value = "uri", required = false) String uri,
             @RequestParam(value = "start", required = false) String start,
             @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
