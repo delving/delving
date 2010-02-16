@@ -27,6 +27,7 @@ import eu.europeana.database.domain.Token;
 import eu.europeana.database.domain.User;
 import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.EuropeanaQueryException;
+import eu.europeana.query.QueryProblem;
 import eu.europeana.web.util.EmailSender;
 import eu.europeana.web.util.TokenService;
 import org.apache.log4j.Logger;
@@ -89,8 +90,10 @@ public class RegisterPageController {
             @ModelAttribute("command") RegistrationForm regForm,
             HttpServletRequest request) throws EuropeanaQueryException {
         log.info("Received get request, putting token into registration form model attribute");
-        // todo: when token is null, no useful message appears
         Token token = tokenService.getToken(tokenKey);
+        if (token == null) {  //when token is null, show useful message
+            throw new EuropeanaQueryException(QueryProblem.UNKNOWN_TOKEN.toString());
+        }
         regForm.setToken(token.getToken());
         regForm.setEmail(token.getEmail());
         clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER);
