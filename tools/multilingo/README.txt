@@ -70,3 +70,18 @@ Dependencies
 * Mail notifications for translators
 * Initial import of template pages
 * Implementing procedure to submit content to production servers
+
+
+
+===============================================================================
+
+Translation issues:
+
+Keys perhaps needed to be split:
+
+properties:79 and about_us:7 uses the same key "About us"
+
+German translations
+in about_us file:  &#220;ber uns
+in properties file: Wir Ÿber uns
+
