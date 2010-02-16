@@ -218,7 +218,7 @@ ul#mainNav li.no-border
 	height:50px;
 	margin-top:50px;
 	padding:0;
-    z-index:1000;
+
 }
 
 #search input.search-input
@@ -230,16 +230,15 @@ ul#mainNav li.no-border
 	margin:2px 10px 0 0;
 	padding:1px 0;
 	width:365px;
-    z-index:10001;
+    z-index: 999;
 }
 
-#search input,.search select
+#search input, .search select
 {
 	color:#797979;
 	cursor:text;
 	font-size:1.2em;
 	margin:2px 0 0;
-    z-index:10001;
 }
 
 #search .button,.button
@@ -252,7 +251,6 @@ ul#mainNav li.no-border
 	height:26px;
 	margin:2px 0 0;
 	padding:0 8px;
-    z-index:10001;
 }
 
 #search input:focus,textarea:focus
@@ -289,6 +287,7 @@ input.error
 {
 	margin-left:50px;
 	margin-top:0;
+
 }
 
 #search #search_advanced
@@ -600,4 +599,14 @@ label.error,.fg-pink
 	background:transparent;
 	color:#333;
 	text-decoration:underline;
+}
+
+
+.clear {
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
 }
