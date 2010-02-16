@@ -81,7 +81,7 @@
                     <#if  locale = "mt" || locale = "et">
                        <#assign  showthislang = "en">
                     </#if>
-                       <a class="addthis_button"
+                       <a class="addthis_button" addthis:url="http://www.europeana.eu/portal/images/think_culture_logo_top_4.jpg"
                           href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36">
                          <img src="http://s7.addthis.com/static/btn/lg-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                         <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>

@@ -48,7 +48,9 @@ public class BackendStarter {
             System.exit(1);
         }
         System.setProperty("solr.solr.home", root + "core/src/test/solr/home");
-        System.setProperty("solr.data.dir", root + "core/target/solrdata");
+        if (System.getProperty("solr.data.dir") == null) {
+            System.setProperty("solr.data.dir", root + "core/target/solrdata");
+        }
         int port = 8983;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
@@ -56,6 +58,7 @@ public class BackendStarter {
         Server server = new Server(port);
         server.addHandler(new WebAppContext(root + "api/src/main/webapp", "/api"));
         server.addHandler(new WebAppContext(root + "core/src/test/solr/solr.war", "/solr"));
+//        server.addHandler(new WebAppContext(root + "core/src/test/solr/apache-solr-1.5-dev.war", "/solr"));
         server.start();
     }
 

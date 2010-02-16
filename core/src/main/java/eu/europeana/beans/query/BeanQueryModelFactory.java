@@ -390,7 +390,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
             // if the record is not found give usefull error message
             if (fullBean.size() == 0) {
-                EuropeanaId id = dashboardDao.fetchEuropeanaId(params.get("uri")[0]);
+                EuropeanaId id = null;
+                try {
+                    id = dashboardDao.fetchEuropeanaId(params.get("uri")[0]);
+                } catch (Exception e) {
+                    throw new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
+                }
                 if (id != null && id.isOrphan()) {
                     throw new EuropeanaQueryException(QueryProblem.RECORD_REVOKED.toString());
                 }
