@@ -86,10 +86,10 @@ public class ObjectCacheImpl implements ObjectCache {
     }
 
     @Override
-    public String createFetchCommand(String uri) {
-        String cacheString = createHash(uri);
-        String cacheDirectory = root + File.separator + ItemSize.ORIGINAL + File.separator + getDirectory(cacheString);
-        return String.format("wget %s -O %s/%s.original", uri, cacheDirectory, cacheString);
+    public String createFetchCommand(String europeanaUri, String objectUri) {
+        String cacheString = createHash(objectUri);
+//        String cacheDirectory = root + File.separator + ItemSize.ORIGINAL + File.separator + getDirectory(cacheString);
+        return String.format("%s :: %s :: %s", europeanaUri, objectUri, cacheString);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class ObjectCacheImpl implements ObjectCache {
     private File getCacheRoot(File root, ItemSize itemSize, String hash) {
         if (!root.exists()) {
             try {
-                createCacheDirectories(root);              
+                createCacheDirectories(root);
             }
             catch (IOException e) {
                 throw new RuntimeException("Unable to create cache directories", e);

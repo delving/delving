@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrInputField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -81,6 +82,7 @@ public class ESEImporterImpl implements ESEImporter {
     private EuropeanaBean europeanaBean;
     private boolean normalized;
     private int chunkSize = 1000;
+    private int indexErrorCount = 0;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
     private interface Processor {
@@ -317,11 +319,15 @@ public class ESEImporterImpl implements ESEImporter {
                             }
                             else if (field.isEuropeanaObject()) {
                                 objectCount++;
-                                fetchScript.write(objectCache.createFetchCommand(text));
+                                fetchScript.write(objectCache.createFetchCommand(europeanaId.getEuropeanaUri(), text));
                                 fetchScript.write("\n");
                             }
                             else if (field.isEuropeanaType()) {
                                 DocType.get(text); // checking if it matches one of them
+                                SolrInputField objectField = solrInputDocument.getField("europeana_type");
+                                if (objectField != null) {
+                                    break;
+                                }
                             }
                             if (text.length() > 10000) {
                                 text = text.substring(0, 9999);
@@ -374,7 +380,8 @@ public class ESEImporterImpl implements ESEImporter {
             Date now = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss");
             String footerStats = "\n# collection: " + collection.getName() + " imported and indexed at " + formatter.format(now) +
-                    "\n# Processed " + recordCount + " records and " + objectCount + " cacheable objects in " + elapsedTime;
+                    "\n# Processed " + recordCount + " records and " + objectCount + " cacheable objects in " + elapsedTime +
+                    "\n # index errors " + indexErrorCount;
             log.info(footerStats);
             fetchScript.write(footerStats);
             inputStream.close();
@@ -383,7 +390,16 @@ public class ESEImporterImpl implements ESEImporter {
 
         private void indexRecordList() throws IOException, SolrServerException {
             log.info("sending " + recordList.size() + " records to solr");
-            solrServer.add(recordList);
+            try {
+                solrServer.add(recordList);
+            } catch (SolrServerException e) {
+                log.error("unable to index this batch");
+                log.error(recordList.toString());
+                indexErrorCount++;
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 //            solrServer.commit();       // It is better to use the  autocommit from solr
             recordList.clear();
         }

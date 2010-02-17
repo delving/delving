@@ -46,18 +46,19 @@ public interface ObjectCache {
      * Get the first line of the script file
      * @return a string to put at the top of the file
      */
-    
+
     String createFetchScriptHeader();
 
     /**
-     * Create a wget fetch command which will pick up the object at the given URI and
+     * Create a fetch instruction which will pick up the object at the given URI and
      * store it in the proper part of the cache directory structure.
      *
-     * @param uri what to fetch
-     * @return the wget command to do the fetching
+     * @param europeanaUri
+     * @param objectUri
+     * @return fetch instruction for CacheMachine
      */
-    
-    String createFetchCommand(String uri);
+
+    String createFetchCommand(String europeanaUri, String objectUri);
 
     /**
      * Get a file object which will lead to the proper cached file
