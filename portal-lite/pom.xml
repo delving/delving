@@ -125,5 +125,9 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.sourceforge.wurfl</groupId>
+            <artifactId>wurfl</artifactId>
+        </dependency>
     </dependencies>
 </project>

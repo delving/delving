@@ -1,0 +1,63 @@
+/*
+    Copyright (C) 2008 Charles H. Ying. All Rights Reserved.
+
+    http://www.satine.org/
+   
+    This source code is released under the BSD license.
+*/
+
+.zflow
+{
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	height: 130px; //TODO: später wieder 100
+}
+
+.zflow div.centering
+{
+/*
+    position: absolute;
+*/
+    -webkit-perspective: 600;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateZ(0px);
+}
+
+.zflow div.tray
+{
+    position: absolute;
+    left: 50%;
+    top: 50%;  
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateX(0px);
+    -webkit-transition-property: -webkit-transform;
+    -webkit-transition-duration: 0.4s;
+    -webkit-transition-timing-function: ease-out;
+}
+
+.zflow div.cell
+{
+    position: absolute;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateX(0px);
+
+    -webkit-transition-property: -webkit-transform opacity;
+    -webkit-transition-duration: 0.4s;
+    -webkit-transition-timing-function: ease-out;
+}
+.zflow div.cell img { position: absolute; }
+.zflow div.cell canvas { position: absolute; }
+
+
+.zflow div.flowcaption
+{
+	font-size: 12px;
+	text-align: center;
+	height: 14px;
+	background-color: white;
+	opacity: 0.75;
+	position:relative;
+	bottom:-120px;
+	width: auto;
+}

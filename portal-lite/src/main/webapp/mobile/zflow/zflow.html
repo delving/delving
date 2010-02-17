@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes" /> 
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;" />	
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Clicks, Captions and Order</title>
+    
+    <link rel="stylesheet" type="text/css" href="zflow.css" />
+    <!-- link rel="apple-touch-icon" href="../images/WebClipIcon.png" />
+    <link rel="apple-touch-startup-image" href="../images/startup.png" / -->
+    
+    <style type="text/css">
+
+    body
+    {
+        background-color: #070035;
+        color: #FD8D29;
+        font-size: 8px;
+        margin: 0;
+        padding: 0;
+        font-family: Helvetica;
+    }
+
+    .portrait { width: 320px; height: 416px; }
+    .landscape { width: 480px; height: 270px; }
+
+	</style>
+
+    <script type="text/javascript" src="zflow.js"></script>
+    
+    <script type="text/javascript">
+
+function init()
+{
+    window.onorientationchange(null);
+    var images = Array(
+	["jimihendrix07-itn.jpg"], 
+	["magicvilla-itn.jpg"], 
+	["godheadbobdylan-itn.jpg"], 
+	["legs-itn.jpg"]);
+	
+	zflow(images, "#tray");
+}
+
+window.onorientationchange = function (event)
+{
+    if (window.orientation == 0)
+    {
+		document.getElementById("container").className="centering portrait";
+    }
+    else
+    {
+		document.getElementById("container").className="centering landscape";		
+    }
+}
+</script>
+
+</head>
+
+<body class="zflow" onload="init();">
+
+<div id="container" class="centering">
+    <div id="tray" class="tray"></div>
+</div>
+</body>
+</html>

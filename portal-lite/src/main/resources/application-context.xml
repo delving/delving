@@ -29,6 +29,7 @@
         ">
 
     <import resource="classpath:/core-application-context.xml"/>
+    <import resource="classpath:/mobile-application-context.xml"/>
 
     <!-- JSR-303 support will be detected on classpath and enabled automatically -->
     <!--<mvc:annotation-driven/>-->
