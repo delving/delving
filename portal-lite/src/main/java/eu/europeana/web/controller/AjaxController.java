@@ -23,8 +23,12 @@ package eu.europeana.web.controller;
 
 import eu.europeana.database.StaticInfoDao;
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
-import eu.europeana.database.integration.TagCount;
+import eu.europeana.database.domain.CarouselItem;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SearchTerm;
+import eu.europeana.database.domain.SocialTag;
+import eu.europeana.database.domain.User;
 import eu.europeana.query.ClickStreamLogger;
 import eu.europeana.query.DocType;
 import eu.europeana.web.util.ControllerUtil;
@@ -240,7 +244,7 @@ public class AjaxController {
         }
         ModelAndView page = ControllerUtil.createModelAndViewPage("tag-autocomplete");
         try {
-            List<TagCount> tagCountList = userDao.getSocialTagCounts(query);
+            List<UserDao.TagCount> tagCountList = userDao.getSocialTagCounts(query);
             page.addObject("tagList", tagCountList);
         }
         catch (Exception e) {

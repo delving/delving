@@ -1,8 +1,12 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
-import eu.europeana.database.integration.TagCount;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.Language;
+import eu.europeana.database.domain.Role;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SocialTag;
+import eu.europeana.database.domain.User;
 import eu.europeana.fixture.DatabaseFixture;
 import eu.europeana.query.DocType;
 import org.apache.log4j.Logger;
@@ -18,7 +22,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test the UserDao methods
@@ -99,7 +107,7 @@ public class TestUserDao {
         EuropeanaId id7 = databaseFixture.fetchEuropeanaId(europeanaIds.get(7).getId());
         assertEquals(1, id7.getSocialTags().size());
         log.info("tag=" + id7.getSocialTags().get(0).getTag());
-        List<TagCount> tagCounts = userDao.getSocialTagCounts("Number");
+        List<UserDao.TagCount> tagCounts = userDao.getSocialTagCounts("Number");
         assertEquals(1, tagCounts.size());
     }
 

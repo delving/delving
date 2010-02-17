@@ -22,8 +22,11 @@
 package eu.europeana.database.dao;
 
 import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.*;
-import eu.europeana.database.integration.TagCount;
+import eu.europeana.database.domain.EuropeanaId;
+import eu.europeana.database.domain.SavedItem;
+import eu.europeana.database.domain.SavedSearch;
+import eu.europeana.database.domain.SocialTag;
+import eu.europeana.database.domain.User;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 

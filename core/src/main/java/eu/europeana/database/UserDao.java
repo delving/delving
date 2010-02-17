@@ -25,7 +25,6 @@ import eu.europeana.database.domain.SavedItem;
 import eu.europeana.database.domain.SavedSearch;
 import eu.europeana.database.domain.SocialTag;
 import eu.europeana.database.domain.User;
-import eu.europeana.database.integration.TagCount;
 
 import java.util.List;
 
@@ -208,5 +207,33 @@ public interface UserDao {
      */
 
     User removeSavedSearch(Long savedSearchId);
+
+
+    
+    public class TagCount implements Comparable<TagCount> {
+        private String tag;
+        private Long count;
+
+        public TagCount(String tag, Long count) {
+            this.tag = tag;
+            this.count = count;
+        }
+
+        public Long getCount() {
+            return count;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+
+        public String toString() {
+            return "'"+tag+"' ("+count+")";
+        }
+
+        public int compareTo(TagCount o) {
+            return count.intValue() - o.count.intValue();
+        }
+    }
 
 }
