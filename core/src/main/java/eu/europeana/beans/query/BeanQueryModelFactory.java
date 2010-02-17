@@ -99,9 +99,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             }
         }
         else {
-            throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString());
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
         }
-
+        if (solrQuery.getQuery().trim().length() == 0) { // throw exception when no query is specified
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
+        }
         if (params.containsKey("start")) {
             try {
                 Integer start = Integer.valueOf(params.get("start")[0]);
