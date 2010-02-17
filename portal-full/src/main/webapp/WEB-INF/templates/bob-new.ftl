@@ -69,11 +69,11 @@ ${newStr}
         <#assign title><@stringLimiter "${briefDoc.getTitle()}" "80"/></#assign>
         <#if useCache="true">
             <img class="flow" src="${cacheUrl}type=${briefDoc.type}&amp;uri=${briefDoc.thumbnail}&amp;size=FULL_DOC"
-                 longdesc='full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index}&amp;pageId=yg&amp;tab=&amp;startPage=${startPage}&amp;query=${query}'
+                 longdesc='full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index?c}&amp;pageId=yg&amp;tab=&amp;startPage=${startPage}&amp;query=${query}'
                  alt="${title?html}"/>
             <#else>
                 <img class="flow" src="${briefDoc.thumbnail}"
-                     longdesc="full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index}&amp;pageId=yg&amp;startPage=${startPage}&amp;query=${query}"
+                     longdesc="full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index?c}&amp;pageId=yg&amp;startPage=${startPage}&amp;query=${query}"
                      alt="${title?html}" onerror="showDefault(this,'${briefDoc.type}');"/>
         </#if>
 
@@ -110,18 +110,18 @@ ${newStr}
     <ul>
         <#list pagination.pageLinks as link>
             <#if link.linked>
-                <li><a href="${thisPage}?query=${query}&start=${link.start}&view=${view}">${link.display}</a></li>
+                <li><a href="${thisPage}?query=${query}&start=${link.start?c}&view=${view}">${link.display}</a></li>
                 <#else>
                     <li><strong>${link.display}</strong></li>
             </#if>
         </#list>
         <#if pagination.previous>
-            <li><a href="${thisPage}?query=${query}&start=${pagination.previousPage}&view=${view}"><img
+            <li><a href="${thisPage}?query=${query}&start=${pagination.previousPage?c}&view=${view}"><img
                     src="images/arr-left.gif" hspace="5" width="9" height="7" alt="click for previous page of results"/></a>
             </li>
         </#if>
         <#if pagination.next>
-            <li><a href="${thisPage}?query=${query}&start=${pagination.nextPage}&view=${view}"><img
+            <li><a href="${thisPage}?query=${query}&start=${pagination.nextPage?c}&view=${view}"><img
                     src="images/arr-right.gif" hspace="5" width="9" height="7"
                     alt="Click here for next page of results"/></a></li>
         </#if>
