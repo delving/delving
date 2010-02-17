@@ -57,7 +57,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{europeanaProperties['debug']}")
     private String debug;
 
-    @Value("#{europeanaProperties['exception.to']}")
+    @Value("#{europeanaProperties['system.from']}")
     private String emailFrom;
 
     @Value("#{europeanaProperties['exception.to']}")
