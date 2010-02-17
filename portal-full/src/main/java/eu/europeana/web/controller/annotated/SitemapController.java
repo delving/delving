@@ -114,8 +114,6 @@ public class SitemapController {
 
     /**
      * Sitemap index entry, model for MVC.
-     *
-     * @author Borys Omelayenko
      */
     public static class SitemapIndexEntry {
 
