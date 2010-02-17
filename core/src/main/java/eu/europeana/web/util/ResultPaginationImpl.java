@@ -72,19 +72,22 @@ public class ResultPaginationImpl implements ResultPagination {
         String[] filterQueries = requestQueryString.split("&");
         StringBuilder url = new StringBuilder();
         for (String filterQuery : filterQueries) {
-            if (filterQuery.contains("TYPE:")) {
+            if (filterQuery.startsWith("qf=TYPE:")) {
                 continue;
             }
-            if (filterQuery.contains("tab")) {
+            if (filterQuery.startsWith("tab=")) {
                 continue;
             }
-            if (filterQuery.contains("view")) {
+            if (filterQuery.startsWith("view=")) {
                 continue;
             }
             url.append(filterQuery).append("&");
         }
         String urlString = url.toString().trim();
-        return urlString.substring(0, urlString.length() - 1);
+        if (urlString.endsWith("&")) {
+            urlString = urlString.substring(0, urlString.length() - 1);
+        }
+        return urlString;
     }
 
     private String createQueryForPresentation(SolrQuery solrQuery) {
