@@ -103,14 +103,24 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
 
         if (params.containsKey("start")) {
-            solrQuery.setStart(Integer.valueOf(params.get("start")[0]));
+            try {
+                Integer start = Integer.valueOf(params.get("start")[0]);
+                solrQuery.setStart(start);
+            } catch (NumberFormatException e) {
+                // if number exception is thrown take default setting 0 (hardening parameter handling)
+            }
         }
         else {
             solrQuery.setStart(0);
         }
 
         if (params.containsKey("rows")) {
-            solrQuery.setRows(Integer.valueOf(params.get("rows")[0]));
+            try {
+                Integer rows = Integer.valueOf(params.get("rows")[0]);
+                solrQuery.setRows(rows);
+            } catch (NumberFormatException e) {
+                // number exception is thrown take default setting 12 (hardening parameter handling)
+            }
         }
         solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
 
