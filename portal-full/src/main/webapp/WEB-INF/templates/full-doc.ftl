@@ -452,8 +452,14 @@
 
 <#if RequestParameters.siwa?? && RequestParameters.siwa?matches("true")>
     <#-- SIWA Europeana Connect Webservices badges -->
-    <script type="text/javascript" src="http://81.204.248.129/ec/portal/siwa.js"></script>
-    <script type="text/javascript">initServices(this.document);</script>
+    <script type="text/javascript" src="http://81.204.248.129/siwa/siwa.js"></script>
+    <script type="text/javascript">
+        var sessionVars = [];
+        <#if query??>
+            sessionVars["query"] = "${query}";
+        </#if>
+        initServices(this.document, "europeana", "", "", sessionVars);
+    </script>
 </#if>
 </div>
 <div id="ft">
