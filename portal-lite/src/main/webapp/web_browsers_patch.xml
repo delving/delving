@@ -56,6 +56,11 @@
 				<capability name="model_name" value="3.5" />
 			</group>
 		</device>
+        <device user_agent="Firefox/3.6" fall_back="firefox" id="firefox_3_6">
+			<group id="product_info">
+				<capability name="model_name" value="3.6" />
+			</group>
+		</device>
 
 
 
@@ -65,29 +70,29 @@
 				<capability name="brand_name" value="opera" />
 			</group>
 		</device>
-		
+
 		<device user_agent="Opera/7" fall_back="opera" id="opera_7">
 			<group id="product_info">
 				<capability name="model_name" value="7" />
 			</group>
 		</device>
 		<device user_agent="Opera 7" fall_back="opera_7" id="opera_7_identify_as" />
-		
+
 		<device user_agent="Opera/8" fall_back="opera" id="opera_8">
 			<group id="product_info">
 				<capability name="model_name" value="8" />
 			</group>
 		</device>
 		<device user_agent="Opera 8" fall_back="opera_8" id="opera_8_identify_as" />
-		
-				
+
+
 		<device user_agent="Opera/9" fall_back="opera" id="opera_9">
 			<group id="product_info">
 				<capability name="model_name" value="9" />
 			</group>
 		</device>
 		<device user_agent="Opera 9" fall_back="opera_9" id="opera_9_identify_as" />
-		
+
 		<device user_agent="Opera/10" fall_back="opera" id="opera_10">
 			<group id="product_info">
 				<capability name="model_name" value="10" />
@@ -113,10 +118,10 @@
 				<capability name="model_name" value="530" />
 			</group>
 		</device>
-		
-		<device user_agent="Mozilla/5.0 (Macintosh; U; Safari/525" fall_back="safari_525"  id="safari_525_mac_osx" />	
+
+		<device user_agent="Mozilla/5.0 (Macintosh; U; Safari/525" fall_back="safari_525"  id="safari_525_mac_osx" />
 		<device user_agent="Mozilla/5.0 (Windows; U; Safari/525" fall_back="safari_525"  id="safari_525_win" />
-		<device user_agent="Mozilla/5.0 (Macintosh; U; Safari/530" fall_back="safari_530"  id="safari_530_mac_osx" />	
+		<device user_agent="Mozilla/5.0 (Macintosh; U; Safari/530" fall_back="safari_530"  id="safari_530_mac_osx" />
 		<device user_agent="Mozilla/5.0 (Windows; U; Safari/530" fall_back="safari_530"  id="safari_530_win" />
 
 		<!-- Internet Explorer -->
