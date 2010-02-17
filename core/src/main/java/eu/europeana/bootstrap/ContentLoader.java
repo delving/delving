@@ -94,7 +94,7 @@ public class ContentLoader {
     }
 
     public void loadMetadata() throws IOException, InterruptedException, SolrServerException {
-        LOG.info("simultaneousJobs="+simultaneousJobs);
+        LOG.info("simultaneousJobs=" + simultaneousJobs);
         List<Job> activeJobs = new ArrayList<Job>();
         while (!jobs.isEmpty() || !activeJobs.isEmpty()) {
             while (activeJobs.size() < simultaneousJobs && !jobs.isEmpty()) {
@@ -124,40 +124,43 @@ public class ContentLoader {
     }
 
     private static boolean isSorlRunning() {
-        boolean solrAlive = false;
         try {
             SolrServer server = new CommonsHttpSolrServer("http://localhost:8983/solr/");
             SolrPingResponse response = server.ping();
-            solrAlive = response.getResponse().get("status").toString().equalsIgnoreCase("ok");
+            return response.getResponse().get("status").toString().equalsIgnoreCase("ok");
         }
-        catch (SolrServerException e) {
-            LOG.warn("Could not find external Solr Running, so we proceed to start a local Solr instance");
+        catch (Exception e) {
+            return false;
         }
-        catch (IOException e) {
-            LOG.warn("Could not find external Solr Running, so we proceed to start a local Solr instance");
-        }
-        return solrAlive;
     }
 
     public static void main(String... commandLine) throws Exception {
         if (!isSorlRunning()) {
             throw new Exception("Expected to find SOLR running.");
         }
-        ContentLoader contentLoader = new ContentLoader();
         if (commandLine.length == 0) {
-            throw new Exception("Parameters: XML input files");
-        }
-        else for (String command : commandLine) {
-            if (command.startsWith("-")) {
-                int simultaneousJobs = Integer.parseInt(command.substring(1));
-                contentLoader.setSimultaneousJobs(simultaneousJobs);
+            File file = new File("core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml");
+            if (file.exists()) {
+                throw new Exception("Parameters: XML input files, try " + file.getAbsolutePath());
             }
             else {
-                contentLoader.addMetadataFile(command);
+                throw new Exception("Parameters missing: XML input files");
             }
         }
-        LOG.info("start loading content");
-        contentLoader.loadMetadata();
-        LOG.info("finished loading content");
+        else {
+            ContentLoader contentLoader = new ContentLoader();
+            for (String command : commandLine) {
+                if (command.startsWith("-")) {
+                    int simultaneousJobs = Integer.parseInt(command.substring(1));
+                    contentLoader.setSimultaneousJobs(simultaneousJobs);
+                }
+                else {
+                    contentLoader.addMetadataFile(command);
+                }
+            }
+            LOG.info("start loading content");
+            contentLoader.loadMetadata();
+            LOG.info("finished loading content");
+        }
     }
 }
