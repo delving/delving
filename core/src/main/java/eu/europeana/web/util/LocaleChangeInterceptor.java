@@ -28,7 +28,6 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
@@ -54,8 +53,7 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws ServletException {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         Language oldLocale = ControllerUtil.getLocale(request);
         String newLocale = request.getParameter(this.paramName);
         if (newLocale != null) {

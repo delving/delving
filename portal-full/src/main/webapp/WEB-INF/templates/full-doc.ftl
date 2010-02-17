@@ -151,8 +151,8 @@
                         </script>
                         <img src="${result.fullDoc.thumbnail[0]}" alt="Image title: ${result.fullDoc.dcTitle[0]}" id="imgview" onload="checkSize(this.height);" onerror="showDefault(this,'${result.fullDoc.europeanaType}','full')"/>
                         </#if>
-                    </a>
 
+                    </a>
                 </div>
                </td>
             <td>

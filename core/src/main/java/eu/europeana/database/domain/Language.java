@@ -617,7 +617,13 @@ public enum Language {
         if (code == null) {
             return null;
         }
-        return valueOf(code.toUpperCase());
+        Language language = Language.EN;
+        try {
+            language = valueOf(code.toUpperCase());
+        } catch (IllegalArgumentException e) {
+          // swallow the exception when language cannot be found.
+        }
+        return language;
     }
 
     public static Language findByName(String name) {

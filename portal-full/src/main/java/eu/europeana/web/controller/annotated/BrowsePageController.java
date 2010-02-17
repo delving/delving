@@ -88,9 +88,12 @@ public class BrowsePageController {
                 .setQuery(query)
                 .setQueryType(QueryType.ADVANCED_QUERY.toString())
                 .setRows(20);
-        final String startParam = request.getParameter("start");
+        String startParam = request.getParameter("start");
         int startRow = 0;
         if (startParam != null) {
+            if (startParam.contains(",")) {
+                startParam = startParam.replaceAll(",", "");
+            }
             startRow = Integer.parseInt(startParam);
         }
         model.addObject("startPage", startRow);
@@ -114,9 +117,13 @@ public class BrowsePageController {
         } else {
             query = "*:*";
         }
-        String start = request.getParameter("start");
-        if (start == null || start.equalsIgnoreCase("")) {
-            start = "1";
+        String startParam = request.getParameter("startParam");
+        int start = 1;
+        if (startParam != null) {
+            if (startParam.contains(",")) {
+                startParam = startParam.replaceAll(",", "");
+            }
+            start = Integer.parseInt(startParam);
         }
         String bobQuery = request.getParameter("bq");
         if (bobQuery != null && !bobQuery.equalsIgnoreCase("")) {

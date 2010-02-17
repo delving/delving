@@ -35,7 +35,7 @@
     <div id="yui-main">
         <div class="yui-b">
 
-                <iframe src="bob.html?query=${bobQuery}&start=${start}" width="700" height="500" id="bobframe" scrolling="no" frameborder="no" name="bobframe"></iframe>
+                <iframe src="bob.html?query=${bobQuery}&start=${start?c}" width="700" height="500" id="bobframe" scrolling="no" frameborder="no" name="bobframe"></iframe>
 
                 <div id="timegrid">
                     <#assign facets = facetList/>
