@@ -136,6 +136,10 @@
         <location>/error.html</location>
     </error-page>
     <error-page>
+        <error-code>500</error-code>
+        <location>/error.html</location>
+    </error-page>
+    <error-page>
         <exception-type>org.springframework.security.web.authentication.rememberme.CookieTheftException</exception-type>
         <location>/remember-me-theft.html</location>
     </error-page>

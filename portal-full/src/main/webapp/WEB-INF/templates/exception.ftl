@@ -75,6 +75,12 @@
                             <strong>Please</strong> try another search.
                             </div>
                         <#break>
+                        <#case 'UNABLE_TO_CHANGE_LANGUAGE'>
+                               <div class="ui-widget ui-error">
+                                  We are unable to change the interface to the requested language.
+                                   <strong>Please</strong> try a language from the dropdown list.
+                               </div>
+                        <#break>
                        <#default>
                             <div class="ui-widget ui-info">
                                 Something went wrong! An email has been sent to inform our technical staff.

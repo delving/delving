@@ -35,6 +35,7 @@ public enum QueryProblem {
     MALFORMED_URL("Required parameters are missing from the request."),
     MALFORMED_QUERY("Query to Search Engine is malformed."),
     UNKNOWN("unknown"),
+    UNABLE_TO_CHANGE_LANGUAGE("We are unable to change the interface to the requested language."),
     TOKEN_EXPIRED("Europeana token has expired and is no longer valid."),
     UNKNOWN_TOKEN("Token does not exist."),
     SOLR_UNREACHABLE("Unable to reach Solr Search Engine."),
