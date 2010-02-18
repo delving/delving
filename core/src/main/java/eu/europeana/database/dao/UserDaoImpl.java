@@ -255,7 +255,7 @@ public class UserDaoImpl implements UserDao {
     @Transactional
     public List<TagCount> getSocialTagCounts(String pattern) {
         Query query = entityManager.createQuery(
-                "select new eu.europeana.database.integration.TagCount(socialTag.tag, count(socialTag.tag)) from SocialTag socialtag " +
+                "select count(socialTag.tag) from SocialTag socialtag " +
                         "where socialtag.tag like :pattern " +
                         "group by socialTag.tag"
         );
