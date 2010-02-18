@@ -7,6 +7,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 
 /**
  * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
  */
 
 public interface TokenDao extends PersistentTokenRepository {

@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
  */
 
 public class TokenDaoImpl implements TokenDao {

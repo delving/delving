@@ -6,6 +6,7 @@ import javax.persistence.Id;
 
 /**
  * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
  */
 @Entity
 public class Token {
