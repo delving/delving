@@ -77,11 +77,23 @@ Dependencies
 
 Translation issues:
 
-Keys perhaps needed to be split:
+Keys needed to be content specific:
+
+about_us-More about-how organisations can... end of line "to Europeana"
+in german that place in that context would be translated to "k&#246;nnen"
+
+about_us-More about-last bullet, start of line "The"
+in german & swedish in that context that part should be empty
+suggests a more specific key, something like #the[aboutus-moreabout-prefix to http://dev.europeana.eu/enews.php]
+
+
+
 
 properties:79 and about_us:7 uses the same key "About us"
 
 German translations
 in about_us file:  &#220;ber uns
 in properties file: Wir Ÿber uns
+
+
 
