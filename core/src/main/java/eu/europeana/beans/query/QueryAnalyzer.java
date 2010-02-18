@@ -123,8 +123,8 @@ public class QueryAnalyzer {
      *
      * This query is structured by the advanced search pane in the portal
      *
-     * @param params
-     * @return
+     * @param params request parameters
+     * @return all parameters formatted as a single Lucene Query
      */
     public String createAdvancedQuery(Map<String, String[]> params) {
         StringBuilder queryString = new StringBuilder();
@@ -136,9 +136,12 @@ public class QueryAnalyzer {
                 if (i != 1) {
                     operator = params.get("operator" + i)[0];
                 }
-                if (!facet.isEmpty() && !query.isEmpty()) {
+                if (!query.isEmpty()) {
                     if (operator != null) {
                         queryString.append(" ").append(operator).append(" ");
+                    }
+                    if (facet.isEmpty()) {
+                        facet = "text";
                     }
                     queryString.append(facet).append(":").append(query);
                 }

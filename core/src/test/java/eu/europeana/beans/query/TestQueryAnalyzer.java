@@ -31,9 +31,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Make sure the query analyzer understands the different query types
@@ -77,6 +80,39 @@ public class TestQueryAnalyzer {
     public void testIllegalSearchField() throws Exception {
         advanced("dc_title:dimitry");
         advanced("gumby:goes_bad");
+    }
+
+    @Test
+    public void testCreateAdvancedQuery() throws Exception {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("facet1", new String[]{""});
+        params.put("query1", new String[]{"treasure"});
+        params.put("operator2", new String[]{""});
+        params.put("facet2", new String[]{""});
+        params.put("query2", new String[]{""});
+        params.put("operator3", new String[]{""});
+        params.put("facet3", new String[]{""});
+        params.put("query3", new String[]{""});
+        String advancedQueryString = qa.createAdvancedQuery(params);
+        assertNotNull(advancedQueryString);
+        assertEquals("queries should be equal",
+                "text:treasure",
+                advancedQueryString);
+
+        Map<String, String[]> paramsAllFacets = new HashMap<String, String[]>();
+        paramsAllFacets.put("facet1", new String[]{"text"});
+        paramsAllFacets.put("query1", new String[]{"treasure"});
+        paramsAllFacets.put("operator2", new String[]{"OR"});
+        paramsAllFacets.put("facet2", new String[]{"title"});
+        paramsAllFacets.put("query2", new String[]{"chest"});
+        paramsAllFacets.put("operator3", new String[]{"OR"});
+        paramsAllFacets.put("facet3", new String[]{"author"});
+        paramsAllFacets.put("query3", new String[]{"max"});
+        advancedQueryString = qa.createAdvancedQuery(paramsAllFacets);
+        assertNotNull(advancedQueryString);
+        assertEquals("queries should be equal",
+                "text:treasure OR title:chest OR author:max",
+                advancedQueryString);
     }
 
     private void sanitize(String from, String to) {
