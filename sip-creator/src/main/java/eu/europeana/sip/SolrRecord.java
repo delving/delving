@@ -4,19 +4,11 @@ import eu.europeana.query.Language;
 import eu.europeana.query.RecordField;
 import eu.europeana.sip.converters.Converter;
 import eu.europeana.sip.converters.ConverterException;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Build up the contents of one record and then render it.
@@ -196,7 +188,7 @@ public class SolrRecord {
         while (entryIterator.hasNext()) {
             Entry entry = entryIterator.next();
             if (entry.getMapTo().key != recordField) continue;
-            if (!(entry.getValue().startsWith("https://") || entry.getValue().startsWith("http://"))) {
+            if (!(entry.getValue().startsWith("https://") || entry.getValue().startsWith("http://")) || entry.getValue().startsWith("mms://")) {
                 entryIterator.remove();
                 removal = true;
             }
