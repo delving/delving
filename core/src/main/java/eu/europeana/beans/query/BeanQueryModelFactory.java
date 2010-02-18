@@ -112,10 +112,6 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 // if number exception is thrown take default setting 0 (hardening parameter handling)
             }
         }
-        else {
-            solrQuery.setStart(0);
-        }
-
         if (params.containsKey("rows")) {
             try {
                 Integer rows = Integer.valueOf(params.get("rows")[0]);
@@ -424,12 +420,16 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException {
-//        if (solrQuery.getStart() < 1) {
-//            solrQuery.setStart(0);
-//            log.warn("Solr Start cannot be negative");
-//        }
+        return getSolrResponse(solrQuery, true);
+    }
+
+    private QueryResponse getSolrResponse(SolrQuery solrQuery, boolean decrementStart) throws EuropeanaQueryException {
+        if (solrQuery.getStart() != null && solrQuery.getStart() < 1) {
+            solrQuery.setStart(0);
+            log.warn("Solr Start cannot be negative");
+        }
         // solr query is 0 based
-        if (solrQuery.getStart() != null && solrQuery.getStart() > 0) {
+        if (decrementStart && solrQuery.getStart() != null && solrQuery.getStart() > 0) {
             solrQuery.setStart(solrQuery.getStart() - 1);
         }
         QueryResponse queryResponse;
@@ -455,6 +455,10 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery, Class<?> beanClass) throws EuropeanaQueryException { // add bean to ???
+        // since we make a defensive copy before the start is decremented we must do it here
+        if (solrQuery.getStart() != null && solrQuery.getStart() > 0) {
+            solrQuery.setStart(solrQuery.getStart() - 1);
+        }
         // set facets
         SolrQuery dCopy;
         if (beanClass == briefBean) {
@@ -470,7 +474,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             }
         }
         dCopy = copySolrQuery(solrQuery);
-        return getSolrResponse(dCopy);
+        return getSolrResponse(dCopy, false);
     }
 
     private SolrQuery copySolrQuery(SolrQuery solrQuery) {

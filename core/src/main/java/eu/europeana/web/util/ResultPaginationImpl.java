@@ -81,6 +81,9 @@ public class ResultPaginationImpl implements ResultPagination {
             if (filterQuery.startsWith("view=")) {
                 continue;
             }
+            if (filterQuery.startsWith("start=")) {
+                continue; // start page must be reset to eliminate paging errors
+            }
             url.append(filterQuery).append("&");
         }
         String urlString = url.toString().trim();
