@@ -8,6 +8,7 @@ import java.util.Date;
 
 /**
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 
 @Entity
@@ -56,6 +57,6 @@ public class DashboardLog implements Serializable {
     }
 
     public String toString() {
-        return who+":"+ time +":"+what;
+        return who + ":" + time + ":" + what;
     }
 }

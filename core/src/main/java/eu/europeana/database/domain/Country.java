@@ -2,6 +2,7 @@ package eu.europeana.database.domain;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  * @since Mar 16, 2009: 2:40:36 PM
  */
 public enum Country {

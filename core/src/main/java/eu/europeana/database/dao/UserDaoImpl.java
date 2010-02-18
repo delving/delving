@@ -38,6 +38,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+
+/**
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
+ */
 @SuppressWarnings("unchecked")
 public class UserDaoImpl implements UserDao {
 

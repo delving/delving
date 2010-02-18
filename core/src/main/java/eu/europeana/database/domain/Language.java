@@ -7,6 +7,8 @@ import java.util.Set;
  * All of the languages supported
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ *
  */
 
 public enum Language {

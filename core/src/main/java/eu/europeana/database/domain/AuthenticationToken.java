@@ -6,7 +6,8 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * todo: authors? was author Vitali Kiruta
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
  */
 @Entity
 public class AuthenticationToken {
@@ -15,19 +16,19 @@ public class AuthenticationToken {
     @Column(length = 64)
     private String series;
 
-    @Column(length = 64, nullable=false)
+    @Column(length = 64, nullable = false)
     private String username;
 
-    @Column(length = 64, nullable=false)
+    @Column(length = 64, nullable = false)
     private String token;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date   lastUsed;
+    private Date lastUsed;
 
     public AuthenticationToken() {
     }
-    
+
     public AuthenticationToken(PersistentRememberMeToken t) {
         setSeries(t.getSeries());
         setUsername(t.getUsername());

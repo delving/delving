@@ -2,6 +2,7 @@ package eu.europeana.database.domain;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  * @since Mar 9, 2009: 4:45:17 PM
  */
 public enum PartnerSector {
