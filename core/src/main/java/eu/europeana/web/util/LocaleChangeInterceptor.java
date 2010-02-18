@@ -59,10 +59,11 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, EuropeanaQueryException {
         Language oldLocale = ControllerUtil.getLocale(request);
         String newLocale = request.getParameter(this.paramName);
-        if (newLocale.contains("*")) {
-            throw new EuropeanaQueryException(QueryProblem.UNABLE_TO_CHANGE_LANGUAGE.toString());
-        }
         if (newLocale != null) {
+            if (newLocale.contains("*")) {
+                throw new EuropeanaQueryException(QueryProblem.UNABLE_TO_CHANGE_LANGUAGE.toString());
+            }
+            clickStreamLogger.log(request, oldLocale, ClickStreamLogger.UserAction.LANGUAGE_CHANGE);
             LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
             if (localeResolver == null) {
                 throw new IllegalStateException("No LocaleResolver found: not in a DispatcherServlet request?");
@@ -70,7 +71,6 @@ public class LocaleChangeInterceptor extends HandlerInterceptorAdapter {
             LocaleEditor localeEditor = new LocaleEditor();
             localeEditor.setAsText(newLocale);
             localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
-            clickStreamLogger.log(request, oldLocale, ClickStreamLogger.UserAction.LANGUAGE_CHANGE);
         }
         // Proceed in any case.
         return true;
