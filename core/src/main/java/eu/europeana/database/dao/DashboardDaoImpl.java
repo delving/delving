@@ -46,6 +46,7 @@ import java.util.List;
  * This class is an implementation of the DashboardDao using an injected JPA Entity Manager.
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 
 @SuppressWarnings("unchecked")
@@ -85,11 +86,9 @@ public class DashboardDaoImpl implements DashboardDao {
             public int compare(DashboardLog a, DashboardLog b) {
                 if (a.getId() > b.getId()) {
                     return 1;
-                }
-                else if (a.getId() < b.getId()) {
+                } else if (a.getId() < b.getId()) {
                     return -1;
-                }
-                else {
+                } else {
                     return 0;
                 }
             }
@@ -139,8 +138,7 @@ public class DashboardDaoImpl implements DashboardDao {
         if (collections.size() == 1) {
             collections.get(0).setFileName(collectionFileName);
             return collections.get(0);
-        }
-        else if (createIfAbsent) {
+        } else if (createIfAbsent) {
             log.info("collection not found, creating: " + collectionName);
             EuropeanaCollection collection = new EuropeanaCollection();
             collection.setName(collectionName);
@@ -149,8 +147,7 @@ public class DashboardDaoImpl implements DashboardDao {
             collection.setCollectionLastModified(new Date());
             entityManager.persist(collection);
             return collection;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -179,8 +176,7 @@ public class DashboardDaoImpl implements DashboardDao {
                 }
             }
             return entityManager.merge(collection);
-        }
-        else {
+        } else {
             entityManager.persist(collection);
             return collection;
         }
@@ -262,8 +258,7 @@ public class DashboardDaoImpl implements DashboardDao {
             detachedId.setCreated(now);
             entityManager.persist(detachedId);
             persistentId = detachedId;
-        }
-        else {
+        } else {
             log.debug("updating Id");
             persistentId.setLastModified(now);
             persistentId.getSocialTags().size();
@@ -281,8 +276,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<EuropeanaId> result = (List<EuropeanaId>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return result.get(0);
         }
     }
@@ -321,8 +315,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<IndexingQueueEntry> resultList = (List<IndexingQueueEntry>) query.getResultList();
         if (resultList.isEmpty()) {
             log.info("collection not found on indexQueue. ");
-        }
-        else {
+        } else {
             for (IndexingQueueEntry queueEntry : resultList) {
                 entityManager.remove(queueEntry);
             }
@@ -338,8 +331,7 @@ public class DashboardDaoImpl implements DashboardDao {
         List<IndexingQueueEntry> result = (List<IndexingQueueEntry>) query.getResultList();
         if (result.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             result.get(0).setUpdated(new Date());
             return result.get(0);
         }
@@ -352,8 +344,7 @@ public class DashboardDaoImpl implements DashboardDao {
         if (lastId != null) {
             query = entityManager.createQuery("select id from EuropeanaId as id where id.id > :lastId and id.collection = :collection and id.orphan = :orphan order by id.id asc");
             query.setParameter("lastId", lastId);
-        }
-        else {
+        } else {
             query = entityManager.createQuery("select id from EuropeanaId as id where id.collection = :collection and id.orphan = :orphan order by id.id asc");
         }
         query.setParameter("collection", collection.getCollection());

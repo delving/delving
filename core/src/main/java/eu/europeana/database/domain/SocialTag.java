@@ -7,6 +7,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+
+/**
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
+ */
+
 @Entity
 public class SocialTag implements Serializable {
     private static final long serialVersionUID = -3635227115883742004L;

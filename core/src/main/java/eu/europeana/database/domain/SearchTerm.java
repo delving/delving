@@ -4,6 +4,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+
+/**
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ * @author Cesare Corcordia <cesare.concordia@isti.cnr.it>
+ */
+
 @Entity
 public class SearchTerm implements Serializable {
     private static final long serialVersionUID = -7489418085843563526L;
@@ -19,7 +25,7 @@ public class SearchTerm implements Serializable {
     @Column(nullable = true, length = 256)
     private String uriQueryParameters;
 
-    @Column(length=3)
+    @Column(length = 3)
     @Enumerated(EnumType.STRING)
     private Language language;
 

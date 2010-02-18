@@ -9,6 +9,7 @@ import java.util.*;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 
 @Entity
@@ -87,8 +88,7 @@ public class User implements Serializable {
         this.email = email;
         if (password.isEmpty()) {
             this.setHashedPassword("");
-        }
-        else {
+        } else {
             this.setPassword(password); // hashing it!
         }
         this.firstName = firstName;
@@ -115,8 +115,7 @@ public class User implements Serializable {
     public void setEmail(String email) {
         if (email != null) {
             this.email = email.toLowerCase();
-        }
-        else {
+        } else {
             this.email = null;
         }
     }
@@ -171,6 +170,7 @@ public class User implements Serializable {
 //        return set;
 //    }
 //
+
     public void setLanguages(String languages) {
         this.languages = languages;
     }
@@ -291,8 +291,7 @@ public class User implements Serializable {
     public static String hashPassword(String password) {
         if (password == null || password.trim().length() == 0) {
             return "";
-        }
-        else {
+        } else {
             ShaPasswordEncoder shaPasswordEncoder = new ShaPasswordEncoder();
             return shaPasswordEncoder.encodePassword(password, null);
         }

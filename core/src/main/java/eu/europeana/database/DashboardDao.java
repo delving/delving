@@ -33,6 +33,7 @@ import java.util.List;
  * what the other DAO objects offer.
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Nicola Aloia   <nicola.aloia@isti.cnr.it>
  */
 
 public interface DashboardDao {
@@ -58,9 +59,9 @@ public interface DashboardDao {
      * Try to find the collection based on the file name, and if that doesn't work use the
      * collection name, and change the file name to the new value
      *
-     * @param collectionName the name of the collection
+     * @param collectionName     the name of the collection
      * @param collectionFileName the file name, null is allowed. todo: this attribute can be removed when collection names ALWAYS depend on file names
-     * @param createIfAbsent create the collection if it wasn't found
+     * @param createIfAbsent     create the collection if it wasn't found
      * @return a europeana collection, or perhaps null if createIfAbsent is null and it wasn't found
      */
 
@@ -102,7 +103,7 @@ public interface DashboardDao {
 
     /**
      * Prepare a collection for importing by removing any saved import error and setting the date last modified.
-     *
+     * <p/>
      * note: originally the indexing was triggered using the last modified date. is that still the case?
      *
      * @param collectionId the internal identifier
@@ -115,7 +116,7 @@ public interface DashboardDao {
      * Persist the import error that caused the termination of importing so that it can be viewed later.
      *
      * @param collectionId internal identifier
-     * @param importError the string representing the error
+     * @param importError  the string representing the error
      * @return the updated collection
      */
 
@@ -135,7 +136,7 @@ public interface DashboardDao {
 
     /**
      * Fetch the current version of the existing europeana id.  Search using uri and collection.
-     *
+     * <p/>
      * todo: is URI not sufficient? if so, the method below can be used
      *
      * @param europeanaId the id,
@@ -155,7 +156,6 @@ public interface DashboardDao {
 
     /**
      * Fetch objects from a collection
-     *
      */
 
     List<EuropeanaId> fetchCollectionObjects(EuropeanaCollection collection);
@@ -191,7 +191,7 @@ public interface DashboardDao {
     /**
      * Fetch a list of europeana ids which are in need of indexing.
      *
-     * @param maxResults how big can the list be
+     * @param maxResults         how big can the list be
      * @param indexingQueueEntry which entry are we talking about?
      * @return the list of to-index ids.
      */
@@ -219,9 +219,9 @@ public interface DashboardDao {
      * Update the status of the collection to show that another bunch of records have been indexed.  The queue is
      * polled elsewhere to show running status.
      *
-     * @param count how many records processed this time around
+     * @param count              how many records processed this time around
      * @param indexingQueueEntry which job being worked on
-     * @param lastEuropeanaId what was the last europeana id indexed
+     * @param lastEuropeanaId    what was the last europeana id indexed
      */
 
     void saveRecordsIndexed(int count, IndexingQueueEntry indexingQueueEntry, EuropeanaId lastEuropeanaId);
@@ -238,7 +238,7 @@ public interface DashboardDao {
     /**
      * Record in the audit log what the dashboard has just done, saving who did it and what they did
      *
-     * @param who the username
+     * @param who  the username
      * @param what what did they do?
      */
 
@@ -257,7 +257,7 @@ public interface DashboardDao {
     /**
      * Fetch the log entries up to the given id
      *
-     * @param topId where to end
+     * @param topId    where to end
      * @param pageSize maximum list size
      * @return the list of log entries
      */

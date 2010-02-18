@@ -8,6 +8,7 @@ import java.util.Date;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  * @since Dec 23, 2008: 1:11:50 AM
  */
 

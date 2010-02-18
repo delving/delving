@@ -16,7 +16,12 @@ import javax.persistence.Query;
 import java.util.Date;
 import java.util.List;
 
-public class TokenDaoImpl implements TokenDao{
+
+/**
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
+ */
+
+public class TokenDaoImpl implements TokenDao {
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -60,18 +65,17 @@ public class TokenDaoImpl implements TokenDao{
         query.setParameter("username", username);
         query.executeUpdate();
     }
-    
 
 
     private static final int TOKEN_LENGTH = 32;
-    private static final long MAX_TOKEN_AGE = 1000L*60*60*6;
+    private static final long MAX_TOKEN_AGE = 1000L * 60 * 60 * 6;
 
     @Transactional
     public Token createNewToken(String email) {
         //genereate unique value
         StringBuilder out = new StringBuilder(TOKEN_LENGTH);
-        for (int walk=0; walk<TOKEN_LENGTH; walk++) {
-            out.append((char)('A'+((int)(Math.random()*26))));
+        for (int walk = 0; walk < TOKEN_LENGTH; walk++) {
+            out.append((char) ('A' + ((int) (Math.random() * 26))));
         }
         String unique = out.toString();
 
@@ -115,7 +119,7 @@ public class TokenDaoImpl implements TokenDao{
 
     @Transactional
     public long countTokens() {
-        return (Long)entityManager.createQuery("select count(*) from Token").getSingleResult();
+        return (Long) entityManager.createQuery("select count(*) from Token").getSingleResult();
     }
 
     /**

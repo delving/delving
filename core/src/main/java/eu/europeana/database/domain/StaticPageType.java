@@ -2,6 +2,7 @@ package eu.europeana.database.domain;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  * @since Mar 17, 2009: 12:18:13 AM
  */
 public enum StaticPageType {
@@ -40,7 +41,7 @@ public enum StaticPageType {
                 return t;
             }
         }
-        throw new IllegalArgumentException("Did not recognize StaticPageType: ["+string+"]");
+        throw new IllegalArgumentException("Did not recognize StaticPageType: [" + string + "]");
     }
 
 }
