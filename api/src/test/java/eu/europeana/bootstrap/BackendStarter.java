@@ -24,9 +24,6 @@ package eu.europeana.bootstrap;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
-import java.io.File;
-import java.io.FileFilter;
-
 /**
  * Bootstrap the entire system, including the ApacheSolr, resolver and cache servlet
  *
@@ -36,17 +33,7 @@ import java.io.FileFilter;
 public class BackendStarter {
 
     public static void main(String... args) throws Exception {
-        String root = "./";
-        if (checkDirectory(new File("."))) {
-            root = "./";
-        }
-        else if (checkDirectory(new File("../"))) {
-            root = "../";
-        }
-        else {
-            System.out.println("This bootstrap class must be started with home directory 'europeana'");
-            System.exit(1);
-        }
+        String root = StarterUtil.getEuropeanaPath();
         System.setProperty("solr.solr.home", root + "core/src/test/solr/home");
         if (System.getProperty("solr.data.dir") == null) {
             System.setProperty("solr.data.dir", root + "core/target/solrdata");
@@ -58,26 +45,6 @@ public class BackendStarter {
         Server server = new Server(port);
         server.addHandler(new WebAppContext(root + "api/src/main/webapp", "/api"));
         server.addHandler(new WebAppContext(root + "core/src/test/solr/solr.war", "/solr"));
-//        server.addHandler(new WebAppContext(root + "core/src/test/solr/apache-solr-1.5-dev.war", "/solr"));
         server.start();
     }
-
-    private static boolean checkDirectory(File here) {
-        File[] subdirs = here.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
-        return checkFor("api", subdirs) && checkFor("core", subdirs);
-    }
-
-    private static boolean checkFor(String name, File[] subdirs) {
-        for (File subdir : subdirs) {
-            if (subdir.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

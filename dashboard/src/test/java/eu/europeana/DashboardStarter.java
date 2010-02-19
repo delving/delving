@@ -1,5 +1,6 @@
 package eu.europeana;
 
+import eu.europeana.bootstrap.StarterUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
@@ -11,18 +12,9 @@ import org.mortbay.jetty.webapp.WebAppContext;
 
 public class DashboardStarter {
 
-    public Server startServer() throws Exception {
-        return startServer(8080);
-    }
-
-    public Server startServer(int portNumber) throws Exception {
-        Server server = new Server(portNumber);
-        server.addHandler(new WebAppContext("./dashboard/target/dashboard.war", "/dashboard"));
-        server.start();
-        return server;
-    }
-
 	public static void main(String... args) throws Exception {
-		new DashboardStarter().startServer();
+        Server server = new Server(8080);
+        server.setHandler(new WebAppContext(StarterUtil.getEuropeanaPath() + "/dashboard/target/dashboard.war", "/dashboard"));
+        server.start();
 	}
 }

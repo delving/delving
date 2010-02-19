@@ -31,14 +31,13 @@ public class SolrStarter {
     private Server server;
 
     public void start() throws Exception {
-        //elevate.xml config file is not being searched for on the classpath.
-        //it needs to be in a conf dir.
-        //So we will set the solr.home property instead of
-        //relying on resources being on classpath
-        System.setProperty("solr.solr.home", "./core/src/test/solr/home");
-        System.setProperty("solr.data.dir", "./core/target/solrdata");
+        //elevate.xml config file is not being searched for on the classpath. it needs to be in a conf dir.
+        //So we will set the solr.home property instead of relying on resources being on classpath
+        String root = StarterUtil.getEuropeanaPath();
+        System.setProperty("solr.solr.home", root + "/core/src/test/solr/home");
+        System.setProperty("solr.data.dir", root + "/core/target/solrdata");
 
-        WebAppContext webAppContext = new WebAppContext("./core/src/test/solr/solr.war", "/solr");
+        WebAppContext webAppContext = new WebAppContext(root + "/core/src/test/solr/solr.war", "/solr");
         server = new Server(8983);
         server.setHandler(webAppContext);
         server.start();
