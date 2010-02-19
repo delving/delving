@@ -30,7 +30,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
  *
  * @author Christian Sadilek
  */
-public class AnnotationPortalLiteStarter {
+public class PortalLiteWithAnnotation {
 
 	// do not forget to set -Deuropeana.properties and working directory -> see readme file
     public static void main(String... args) throws Exception {

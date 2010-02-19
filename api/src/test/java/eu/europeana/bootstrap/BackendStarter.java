@@ -34,17 +34,17 @@ public class BackendStarter {
 
     public static void main(String... args) throws Exception {
         String root = StarterUtil.getEuropeanaPath();
-        System.setProperty("solr.solr.home", root + "core/src/test/solr/home");
+        System.setProperty("solr.solr.home", root + "/core/src/test/solr/home");
         if (System.getProperty("solr.data.dir") == null) {
-            System.setProperty("solr.data.dir", root + "core/target/solrdata");
+            System.setProperty("solr.data.dir", root + "/core/target/solrdata");
         }
         int port = 8983;
         if (args.length > 0) {
             port = Integer.parseInt(args[0]);
         }
         Server server = new Server(port);
-        server.addHandler(new WebAppContext(root + "api/src/main/webapp", "/api"));
-        server.addHandler(new WebAppContext(root + "core/src/test/solr/solr.war", "/solr"));
+        server.addHandler(new WebAppContext(root + "/api/src/main/webapp", "/api"));
+        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr.war", "/solr"));
         server.start();
     }
 }
