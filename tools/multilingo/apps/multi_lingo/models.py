@@ -59,6 +59,7 @@ PROP_HEADER="""#
 PROP_FNAME = 'templates/%s' % PROP_TEMPLATE
 TMP_EXT = '.tmp'
 
+"""
 class TagField(models.CharField):
     def get_prep_value(self, value):
         if value[-2:] != '_t':
@@ -132,3 +133,4 @@ class PortalPropertiesAdmin(admin.ModelAdmin):
     date_hierarchy = 'last_changed'
 
 admin.site.register(PortalProperties, PortalPropertiesAdmin)
+"""

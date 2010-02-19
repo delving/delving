@@ -112,7 +112,6 @@ def index_page(request):
 
 
 def prop_page(request, lang=''):
-
     content = langCheck(lang) # only accept supported languages
     if not (content):
         # we only accept urls with language selections, as a fallback send
