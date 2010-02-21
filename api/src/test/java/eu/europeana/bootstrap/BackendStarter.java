@@ -21,6 +21,7 @@
 
 package eu.europeana.bootstrap;
 
+import eu.europeana.core.util.StarterUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 

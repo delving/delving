@@ -21,24 +21,22 @@
 
 package eu.europeana.frontend;
 
-import java.io.IOException;
-import java.util.Date;
-
-import org.junit.Test;
-import org.mortbay.jetty.Server;
-
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-
 import eu.europeana.bootstrap.ContentLoader;
 import eu.europeana.bootstrap.PortalFullStarter;
 import eu.europeana.bootstrap.SolrStarter;
-import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.Role;
-import eu.europeana.database.domain.User;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.Role;
+import eu.europeana.core.database.domain.User;
+import org.junit.Test;
+import org.mortbay.jetty.Server;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author Borys Omelayenko

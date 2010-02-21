@@ -21,18 +21,13 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.SearchTerm;
-import eu.europeana.database.domain.SocialTag;
-import eu.europeana.database.domain.User;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.query.DocType;
-import eu.europeana.web.util.ControllerUtil;
-import eu.europeana.web.util.EmailSender;
+import eu.europeana.core.database.StaticInfoDao;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.*;
+import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
+import eu.europeana.core.util.web.EmailSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static eu.europeana.query.ClickStreamLogger.UserAction;
+import static eu.europeana.core.util.web.ClickStreamLogger.UserAction;
 
 /**
  * General Controller for all AJAX actions

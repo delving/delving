@@ -3,7 +3,7 @@ package eu.europeana.dashboard.client.dto;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This is intended to perfectly mirror eu.europeana.database.domain.CollectionState
+ * This is intended to perfectly mirror eu.europeana.core.database.domain.CollectionState
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */

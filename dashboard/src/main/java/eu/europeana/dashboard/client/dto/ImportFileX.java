@@ -109,7 +109,7 @@ public class ImportFileX implements IsSerializable {
     }
 
     /**
-     * This should be a perfect replica of eu.europeana.database.domain.ImportFileState
+     * This should be a perfect replica of eu.europeana.core.database.domain.ImportFileState
      * todo: unit test
      */
 

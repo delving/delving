@@ -21,13 +21,13 @@
 
 package eu.europeana.web.controller.annotated;
 
-import eu.europeana.beans.query.BeanQueryModelFactory;
-import eu.europeana.beans.query.BriefBeanView;
-import eu.europeana.beans.query.QueryType;
-import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.domain.StaticPageType;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.core.BeanQueryModelFactory;
+import eu.europeana.core.database.StaticInfoDao;
+import eu.europeana.core.database.domain.StaticPageType;
+import eu.europeana.core.querymodel.query.BriefBeanView;
+import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;

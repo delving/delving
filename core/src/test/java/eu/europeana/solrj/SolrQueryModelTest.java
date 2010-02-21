@@ -1,10 +1,10 @@
 package eu.europeana.solrj;
 
-import eu.europeana.beans.BriefBean;
-import eu.europeana.beans.FullBean;
-import eu.europeana.beans.query.BeanQueryModelFactory;
-import eu.europeana.beans.query.QueryType;
 import eu.europeana.bootstrap.SolrStarter;
+import eu.europeana.core.BeanQueryModelFactory;
+import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.beans.FullBean;
+import eu.europeana.core.querymodel.query.QueryType;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;

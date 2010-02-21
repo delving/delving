@@ -1,7 +1,7 @@
 package eu.europeana.dashboard.server;
 
+import eu.europeana.core.database.incoming.ImportRepository;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.incoming.ImportRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

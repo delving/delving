@@ -18,7 +18,7 @@
            <param name="ConversionPattern" value="%m%n"/>
         </layout>
     </appender>
-    <logger name="eu.europeana.web.util.ClickStreamLoggerImpl" additivity="false"> <!-- set to false in production -->
+    <logger name="eu.europeana.core.util.web.ClickStreamLoggerImpl" additivity="false"> <!-- set to false in production -->
         <level value="INFO"/>
         <appender-ref ref="clickStreamLogger"/>
     </logger>

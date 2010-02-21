@@ -43,7 +43,7 @@
 
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
-    <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
+    <bean id="localeChangeInterceptor" class="eu.europeana.core.util.web.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
         <property name="clickStreamLogger" ref="clickStreamLogger"/>
     </bean>

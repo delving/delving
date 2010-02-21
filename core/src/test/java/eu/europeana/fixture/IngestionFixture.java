@@ -20,14 +20,14 @@
  */
 package eu.europeana.fixture;
 
-import eu.europeana.beans.query.BeanQueryModelFactory;
-import eu.europeana.database.DashboardDao;
-import eu.europeana.incoming.ESEImporter;
-import eu.europeana.incoming.ESEImporterImpl;
-import eu.europeana.incoming.ImportRepository;
-import eu.europeana.incoming.ImportRepositoryImpl;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.FullDoc;
+import eu.europeana.core.BeanQueryModelFactory;
+import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.incoming.ESEImporter;
+import eu.europeana.core.database.incoming.ESEImporterImpl;
+import eu.europeana.core.database.incoming.ImportRepository;
+import eu.europeana.core.database.incoming.ImportRepositoryImpl;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.FullDoc;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;

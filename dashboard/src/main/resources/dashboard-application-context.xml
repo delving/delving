@@ -49,18 +49,18 @@
 
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <bean id="sandboxImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
+    <bean id="sandboxImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="${dashboard.sandbox.import.repository}"/>
     </bean>
 
-    <bean id="sandboxEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
+    <bean id="sandboxEseImporter" class="eu.europeana.core.database.incoming.ESEImporterImpl">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="importRepository" ref="sandboxImportRepository"/>
         <property name="solrServer" ref="solrServer"/>
         <property name="normalized" value="false"/>
     </bean>
 
-    <bean id="indexJobRunner" class="eu.europeana.incoming.IndexJobRunner">
+    <bean id="indexJobRunner" class="eu.europeana.core.database.incoming.IndexJobRunner">
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="eseImporter" ref="normalizedEseImporter"/>
     </bean>

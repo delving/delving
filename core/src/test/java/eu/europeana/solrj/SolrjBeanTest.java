@@ -1,8 +1,9 @@
 package eu.europeana.solrj;
 
-import eu.europeana.beans.BriefBean;
-import eu.europeana.beans.IdBean;
 import eu.europeana.bootstrap.SolrStarter;
+import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.beans.IdBean;
+import eu.europeana.core.querymodel.query.DocId;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -84,10 +85,10 @@ public class SolrjBeanTest {
         query.setRows(10);
         query.setFields("europeana_uri", "timestamp");
         QueryResponse response = server.query(query);
-        List<IdBean> list = response.getBeans(IdBean.class);
+        List<? extends DocId> list = response.getBeans(IdBean.class);
         Assert.assertNotNull(list);
-        for (IdBean idBean : list) {
-            log.info(String.format("bean: %s timestamp: %s", idBean.getEuropeanaUri(), idBean.getTimestamp()));
+        for (DocId docId : list) {
+            log.info(String.format("bean: %s timestamp: %s", docId.getEuropeanaUri(), docId.getTimestamp()));
         }
     }
 }

@@ -21,10 +21,10 @@
 
 package eu.europeana.dashboard.server;
 
+import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.incoming.ImportFile;
+import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.dashboard.client.dto.*;
-import eu.europeana.database.domain.*;
-import eu.europeana.incoming.ImportFile;
-import eu.europeana.query.DocType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -21,10 +21,10 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.User;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

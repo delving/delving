@@ -1,6 +1,6 @@
 package eu.europeana.solrj;
 
-import eu.europeana.beans.query.QueryType;
+import eu.europeana.core.querymodel.query.QueryType;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.junit.Test;

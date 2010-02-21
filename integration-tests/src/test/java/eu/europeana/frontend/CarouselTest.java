@@ -21,11 +21,14 @@
 
 package eu.europeana.frontend;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.WebClient;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.frontend.FrontendTestUtil.Constants;
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,34 +37,22 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlImage;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-
-import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.User;
-import eu.europeana.frontend.FrontendTestUtil.Constants;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Carousel tests.
- * 
+ *
  * @author Borys Omelayenko
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/core-application-context.xml","classpath:/test-application-context.xml"})
 public class CarouselTest {
-	
+
 	@Autowired
 	UserDao userDao;
-	
+
 	public HtmlPage navigateSearchSelect(String email, String queryString, boolean goToFullView) throws IOException {
 		WebClient webClient = FrontendTestUtil.createWebClient();
 		webClient.setAjaxController(new NicelyResynchronizingAjaxController());

@@ -22,8 +22,8 @@
 package eu.europeana.web.util;
 
 
-import eu.europeana.database.dao.TokenDaoImpl;
-import eu.europeana.database.domain.Token;
+import eu.europeana.core.database.dao.TokenDaoImpl;
+import eu.europeana.core.database.domain.Token;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

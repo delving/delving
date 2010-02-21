@@ -21,12 +21,12 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.Token;
-import eu.europeana.database.domain.User;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.web.util.EmailSender;
-import eu.europeana.web.util.TokenService;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.Token;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.EmailSender;
+import eu.europeana.core.util.web.TokenService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

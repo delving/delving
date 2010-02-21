@@ -1,31 +1,16 @@
 package eu.europeana.sip;
 
 import com.thoughtworks.xstream.XStream;
-import eu.europeana.query.Language;
+import eu.europeana.core.querymodel.query.Language;
 import eu.europeana.query.RecordField;
 import eu.europeana.sip.converters.ConverterException;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import org.apache.log4j.Appender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.log4j.*;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import java.io.*;
 import java.util.*;
 
 /**

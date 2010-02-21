@@ -1,11 +1,11 @@
 package eu.europeana.web.controller;
 
-import eu.europeana.beans.IdBean;
-import eu.europeana.beans.query.SiteMapBeanView;
-import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.domain.EuropeanaCollection;
+import eu.europeana.core.querymodel.query.DocId;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.SiteMapBeanView;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public class SiteMapController {
                 SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
                 int maxPageForCollection = siteMapBeanView.getMaxPageForCollection();
                 if (pageInt <= maxPageForCollection) {
-                    List<IdBean> list = siteMapBeanView.getIdBeans();
+                    List<? extends DocId> list = siteMapBeanView.getIdBeans();
                     mavPage.addObject("idBeanList", list);
                 }
             }

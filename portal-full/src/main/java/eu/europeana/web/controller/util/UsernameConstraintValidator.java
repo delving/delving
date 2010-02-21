@@ -21,7 +21,7 @@
 
 package eu.europeana.web.controller.util;
 
-import eu.europeana.database.UserDao;
+import eu.europeana.core.database.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;

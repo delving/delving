@@ -31,17 +31,17 @@
         <property name="hibernate.format_sql">true</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
-        <mapping class="eu.europeana.database.domain.User"/>
-        <mapping class="eu.europeana.database.domain.SocialTag"/>
-        <mapping class="eu.europeana.database.domain.SavedSearch"/>
-        <mapping class="eu.europeana.database.domain.SavedItem"/>
-        <mapping class="eu.europeana.database.domain.EuropeanaId"/>
-        <mapping class="eu.europeana.database.domain.EuropeanaCollection"/>
-        <mapping class="eu.europeana.database.domain.AuthenticationToken"/>
-        <mapping class="eu.europeana.database.domain.Token"/>
-        <mapping class="eu.europeana.database.domain.SearchTerm"/>
-        <mapping class="eu.europeana.database.domain.CarouselItem"/>
-        <mapping class="eu.europeana.database.domain.IndexingQueueEntry"/>
-        <mapping class="eu.europeana.database.domain.DashboardLog"/>
+        <mapping class="eu.europeana.core.database.domain.User"/>
+        <mapping class="eu.europeana.core.database.domain.SocialTag"/>
+        <mapping class="eu.europeana.core.database.domain.SavedSearch"/>
+        <mapping class="eu.europeana.core.database.domain.SavedItem"/>
+        <mapping class="eu.europeana.core.database.domain.EuropeanaId"/>
+        <mapping class="eu.europeana.core.database.domain.EuropeanaCollection"/>
+        <mapping class="eu.europeana.core.database.domain.AuthenticationToken"/>
+        <mapping class="eu.europeana.core.database.domain.Token"/>
+        <mapping class="eu.europeana.core.database.domain.SearchTerm"/>
+        <mapping class="eu.europeana.core.database.domain.CarouselItem"/>
+        <mapping class="eu.europeana.core.database.domain.IndexingQueueEntry"/>
+        <mapping class="eu.europeana.core.database.domain.DashboardLog"/>
     </session-factory>
 </hibernate-configuration>

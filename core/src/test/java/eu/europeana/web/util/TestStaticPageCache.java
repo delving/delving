@@ -21,7 +21,8 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.database.domain.Language;
+import eu.europeana.core.database.domain.Language;
+import eu.europeana.core.util.web.StaticPageCache;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

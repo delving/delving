@@ -1,6 +1,6 @@
 package eu.europeana.dashboard.server;
 
-import eu.europeana.incoming.ImportRepository;
+import eu.europeana.core.database.incoming.ImportRepository;
 
 /**
  * a file upload servlet for normalized files

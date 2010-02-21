@@ -21,6 +21,8 @@
 
 package eu.europeana.web.util;
 
+import eu.europeana.core.querymodel.query.SolrQueryUtil;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.junit.Assert;
@@ -70,13 +72,13 @@ public class TestControllerUtil {
                 "PROVIDER:The European Library",
                 "LANGUAGE:en"
         );
-        String[] phrased = ControllerUtil.getFilterQueriesAsPhrases(solrQuery);
+        String[] phrased = SolrQueryUtil.getFilterQueriesAsPhrases(solrQuery);
         for (String s : phrased) {
             String after = s.substring(s.indexOf(':') + 1);
             Assert.assertTrue(after.startsWith("\"") && after.endsWith("\""));
         }
         solrQuery.setFilterQueries(phrased);
-        String [] unphrased = ControllerUtil.getFilterQueriesWithoutPhrases(solrQuery);
+        String [] unphrased = SolrQueryUtil.getFilterQueriesWithoutPhrases(solrQuery);
         for (String s : unphrased) {
             String after = s.substring(s.indexOf(':') + 1);
             Assert.assertFalse(after.startsWith("\"") && after.endsWith("\""));
@@ -99,7 +101,7 @@ public class TestControllerUtil {
         for (String expect : expectFilterQueries) {
             log.info(expect);
         }
-        String[] actualFilterQueries = ControllerUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap);
+        String[] actualFilterQueries = SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap);
         log.info("actual:");
         for (String actual : actualFilterQueries) {
             log.info(actual);

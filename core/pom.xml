@@ -103,7 +103,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>eu.europeana.bootstrap.ContentLoader</mainClass>
+                            <mainClass>eu.europeana.core.database.incoming.cli.ContentLoader</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -1,9 +1,9 @@
 package eu.europeana.api.controller;
 
-import eu.europeana.cache.ItemSize;
-import eu.europeana.cache.MimeType;
-import eu.europeana.cache.ObjectCache;
-import eu.europeana.query.DocType;
+import eu.europeana.core.database.incoming.cache.ItemSize;
+import eu.europeana.core.database.incoming.cache.MimeType;
+import eu.europeana.core.database.incoming.cache.ObjectCache;
+import eu.europeana.core.querymodel.query.DocType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

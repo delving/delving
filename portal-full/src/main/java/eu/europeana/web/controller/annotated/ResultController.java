@@ -21,12 +21,12 @@
 
 package eu.europeana.web.controller.annotated;
 
-import eu.europeana.beans.query.BriefBeanView;
-import eu.europeana.beans.query.FullBeanView;
-import eu.europeana.query.ClickStreamLogger;
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryModelFactory;
-import eu.europeana.web.util.ControllerUtil;
+import eu.europeana.core.querymodel.query.BriefBeanView;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.FullBeanView;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Autowired;

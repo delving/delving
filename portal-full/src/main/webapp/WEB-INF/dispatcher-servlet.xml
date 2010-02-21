@@ -51,7 +51,7 @@
 
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
-    <bean id="localeChangeInterceptor" class="eu.europeana.web.util.LocaleChangeInterceptor">
+    <bean id="localeChangeInterceptor" class="eu.europeana.core.util.web.LocaleChangeInterceptor">
         <property name="paramName" value="lang"/>
         <property name="clickStreamLogger" ref="clickStreamLogger"/>
     </bean>
@@ -61,9 +61,9 @@
         <property name="defaultLocale" value="en"/>
     </bean>
 
-    <bean id="formatInterceptor" class="eu.europeana.web.util.FormatInterceptor"/>
+    <bean id="formatInterceptor" class="eu.europeana.core.util.web.FormatInterceptor"/>
 
-    <bean id="configInterceptor" class="eu.europeana.web.util.ConfigInterceptor"/>
+    <bean id="configInterceptor" class="eu.europeana.core.util.web.ConfigInterceptor"/>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 

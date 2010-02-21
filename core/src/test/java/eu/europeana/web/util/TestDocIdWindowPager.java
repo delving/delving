@@ -21,11 +21,14 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.database.DashboardDao;
-import eu.europeana.database.domain.EuropeanaCollection;
+import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.domain.EuropeanaCollection;
+import eu.europeana.core.database.incoming.ImportFile;
+import eu.europeana.core.querymodel.beans.IdBean;
+import eu.europeana.core.querymodel.query.DocId;
+import eu.europeana.core.querymodel.query.DocIdWindowPager;
+import eu.europeana.core.querymodel.query.DocIdWindowPagerImpl;
 import eu.europeana.fixture.IngestionFixture;
-import eu.europeana.incoming.ImportFile;
-import eu.europeana.query.DocIdWindowPager;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -61,6 +64,7 @@ public class TestDocIdWindowPager {
     private static EuropeanaCollection collection;
     private static ImportFile importFile;
     private static SolrServer solrServer; // todo
+    private Class<? extends DocId> idBean = IdBean.class;
 
     @Before
     public void init() throws Exception {
@@ -91,7 +95,7 @@ public class TestDocIdWindowPager {
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
-        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
+        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer, idBean);
         assertEquals(pager.isPrevious(), true);
         assertEquals(pager.isNext(), true);
         assertEquals(pager.getFullDocUri(), uri);
@@ -111,7 +115,7 @@ public class TestDocIdWindowPager {
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
-        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
+        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer, idBean);
         assertEquals(pager.isPrevious(), false);
         assertEquals(pager.isNext(), true);
         assertEquals(pager.getNextInt(), 2);
@@ -129,7 +133,7 @@ public class TestDocIdWindowPager {
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
-        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
+        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer, idBean);
         assertEquals(pager.isNext(), false);
         assertEquals(pager.isPrevious(), true);
         assertEquals(pager.getPreviousInt(), 13);
@@ -146,7 +150,7 @@ public class TestDocIdWindowPager {
         request.addParameter("query", "max devrient");
         request.addParameter("pageId", "brd");
         SolrQuery solrQuery = new SolrQuery();// todo
-        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
+        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer, idBean);
         assertEquals(pager.isNext(), false);
         assertEquals(pager.isPrevious(), false);
         assertEquals(pager.getDocIdWindow().getIds().size(), 0);
@@ -163,7 +167,7 @@ public class TestDocIdWindowPager {
         request.addParameter("query", "1920 max devrient");
         request.addParameter("pageId", "yg");
         SolrQuery solrQuery = new SolrQuery();// todo
-        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer);
+        DocIdWindowPager pager = DocIdWindowPagerImpl.fetchPager(request.getParameterMap(), solrQuery, solrServer, idBean);
         assertEquals(pager.getReturnToResults(), "year-grid.html?query=max+devrient&bq=1920+max+devrient&start=1&view=table&tab=null");
         assertEquals(pager.isNext(), true);
         assertEquals(pager.isPrevious(), false);

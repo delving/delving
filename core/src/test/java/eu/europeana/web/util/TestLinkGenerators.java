@@ -21,6 +21,8 @@
 
 package eu.europeana.web.util;
 
+import eu.europeana.core.querymodel.query.Breadcrumb;
+import eu.europeana.core.querymodel.query.FacetQueryLinks;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;

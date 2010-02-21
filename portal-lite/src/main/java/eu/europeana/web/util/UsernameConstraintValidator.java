@@ -21,10 +21,11 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.database.UserDao;
+import eu.europeana.core.database.UserDao;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Serve the NonexistentUser

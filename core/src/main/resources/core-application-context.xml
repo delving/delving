@@ -47,7 +47,7 @@
     <!--todo: is this bean necessary?-->
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <bean id="europeanaProperties" class="eu.europeana.query.EuropeanaProperties"/>
+    <bean id="europeanaProperties" class="eu.europeana.core.querymodel.query.EuropeanaProperties"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" ref="europeanaProperties"/>
@@ -87,19 +87,19 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean name="staticPageCache" class="eu.europeana.web.util.StaticPageCache"/>
+    <bean name="staticPageCache" class="eu.europeana.core.util.web.StaticPageCache"/>
 
-    <bean name="userDao" class="eu.europeana.database.dao.UserDaoImpl"/>
+    <bean name="userDao" class="eu.europeana.core.database.dao.UserDaoImpl"/>
 
-    <bean name="staticInfoDao" class="eu.europeana.database.dao.StaticInfoDaoImpl"/>
+    <bean name="staticInfoDao" class="eu.europeana.core.database.dao.StaticInfoDaoImpl"/>
 
-    <bean name="dashboardDao" class="eu.europeana.database.dao.DashboardDaoImpl"/>
+    <bean name="dashboardDao" class="eu.europeana.core.database.dao.DashboardDaoImpl"/>
 
-    <bean name="tokenRepositoryService" class="eu.europeana.web.util.TokenRepositoryService"/>
+    <bean name="tokenRepositoryService" class="eu.europeana.core.util.web.TokenRepositoryService"/>
 
-    <bean name="tokenDao" class="eu.europeana.database.dao.TokenDaoImpl"/>
+    <bean name="tokenDao" class="eu.europeana.core.database.dao.TokenDaoImpl"/>
 
-    <bean name="tokenService" class="eu.europeana.web.util.TokenService"/>
+    <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
 
     <bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <constructor-arg value="#{europeanaProperties['solr.baseUrl']}"/>
@@ -111,47 +111,47 @@
         <property name="maxRetries" value="#{europeanaProperties['solr.retries']}"/>
     </bean>
 
-    <bean id="annotationProcessor" class="eu.europeana.beans.annotation.AnnotationProcessorImpl">
+    <bean id="annotationProcessor" class="eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl">
         <property name="classes">
             <util:list>
-                <value type="java.lang.Class">eu.europeana.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.beans.BriefBean</value>
-                <value type="java.lang.Class">eu.europeana.beans.FullBean</value>
-                <value type="java.lang.Class">eu.europeana.beans.AllFieldBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
             </util:list>
         </property>
     </bean>
 
-    <bean id="normalizedImportRepository" class="eu.europeana.incoming.ImportRepositoryImpl">
+    <bean id="normalizedImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="#{europeanaProperties['dashboard.normalized.import.repository']}"/>
     </bean>
 
-    <bean id="normalizedEseImporter" class="eu.europeana.incoming.ESEImporterImpl">
+    <bean id="normalizedEseImporter" class="eu.europeana.core.database.incoming.ESEImporterImpl">
         <property name="importRepository" ref="normalizedImportRepository"/>
         <property name="normalized" value="true"/>
         <property name="chunkSize" value="#{europeanaProperties['solr.chunkSize']}"/>
         <property name="beanClass">
-            <value type="java.lang.Class">eu.europeana.beans.AllFieldBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
         </property>
     </bean>
 
-    <bean id="queryAnalyser" class="eu.europeana.beans.query.QueryAnalyzer">
+    <bean id="queryAnalyser" class="eu.europeana.core.querymodel.annotation.QueryAnalyzer">
         <property name="annotationProcessor" ref="annotationProcessor"/>
     </bean>
 
-    <bean id="beanQueryModelFactory" class="eu.europeana.beans.query.BeanQueryModelFactory">
+    <bean id="beanQueryModelFactory" class="eu.europeana.core.BeanQueryModelFactory">
         <property name="briefBean">
-                <value type="java.lang.Class">eu.europeana.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
         </property>
         <property name="fullBean">
-                <value type="java.lang.Class">eu.europeana.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
         </property>
         <property name="idBean">
-                <value type="java.lang.Class">eu.europeana.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
         </property>
     </bean>
 
-    <bean id="objectCache" class="eu.europeana.cache.ObjectCacheImpl">
+    <bean id="objectCache" class="eu.europeana.core.database.incoming.cache.ObjectCacheImpl">
         <property name="root" value="#{europeanaProperties['cache.cacheRoot']}"/>
     </bean>
 
@@ -159,7 +159,7 @@
         <property name="templateLoaderPath" value="WEB-INF/templates/"/>
     </bean>
 
-    <bean id="clickStreamLogger" class="eu.europeana.web.util.ClickStreamLoggerImpl"/>
+    <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="#{europeanaProperties['smtp.host']}"/>
@@ -167,39 +167,39 @@
         <property name="password" value="#{europeanaProperties['smtp.password']}"/>
     </bean>
 
-    <bean id="daoUserDetailsService" class="eu.europeana.web.util.UserDaoDetailsService">
+    <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <bean id="proposedSearchTermSampler" class="eu.europeana.web.util.ProposedSearchTermSampler">
+    <bean id="proposedSearchTermSampler" class="eu.europeana.core.util.web.ProposedSearchTermSampler">
         <property name="displayCount" value="3"/>
     </bean>
 
-    <bean id="carouselItemSampler" class="eu.europeana.web.util.CarouselItemSampler">
+    <bean id="carouselItemSampler" class="eu.europeana.core.util.web.CarouselItemSampler">
         <property name="displayCount" value="40"/>
     </bean>
 
-    <bean id="emailSenderForExceptions" class="eu.europeana.web.util.EmailSender">
+    <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/exception"/>
     </bean>
 
-    <bean id="emailSenderForRegisterNotify" class="eu.europeana.web.util.EmailSender">
+    <bean id="emailSenderForRegisterNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/register-notify"/>
     </bean>
 
-    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.web.util.EmailSender">
+    <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/password-change-notify"/>
     </bean>
 
-    <bean id="emailSenderForSendToFriend" class="eu.europeana.web.util.EmailSender">
+    <bean id="emailSenderForSendToFriend" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/to-friend"/>
     </bean>
 
-    <bean id="emailSenderForUserFeedback" class="eu.europeana.web.util.EmailSender">
+    <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback"/>
     </bean>
 
-    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.web.util.EmailSender">
+    <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback-confirmation"/>
     </bean>
 
@@ -239,16 +239,16 @@
         <property name="repeatInterval" value="600000"/>
     </bean>
 
-    <bean id="registrationEmailSender" class="eu.europeana.web.util.TokenReplyEmailSender">
+    <bean id="registrationEmailSender" class="eu.europeana.core.util.web.TokenReplyEmailSender">
         <property name="emailSenders">
             <map>
                 <entry key="register">
-                    <bean class="eu.europeana.web.util.EmailSender">
+                    <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
-                    <bean class="eu.europeana.web.util.EmailSender">
+                    <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/forgot-password"/>
                     </bean>
                 </entry>
@@ -256,7 +256,7 @@
         </property>
     </bean>
 
-    <bean id="exceptionResolver" class="eu.europeana.web.util.ExceptionResolver"/>
+    <bean id="exceptionResolver" class="eu.europeana.core.util.web.ExceptionResolver"/>
 
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider user-service-ref="daoUserDetailsService">

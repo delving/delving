@@ -1,6 +1,6 @@
 package eu.europeana;
 
-import eu.europeana.database.domain.*;
+import eu.europeana.core.database.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

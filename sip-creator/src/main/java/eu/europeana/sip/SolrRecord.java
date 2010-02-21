@@ -1,6 +1,6 @@
 package eu.europeana.sip;
 
-import eu.europeana.query.Language;
+import eu.europeana.core.querymodel.query.Language;
 import eu.europeana.query.RecordField;
 import eu.europeana.sip.converters.Converter;
 import eu.europeana.sip.converters.ConverterException;

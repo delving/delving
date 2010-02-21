@@ -5,18 +5,18 @@
 
     <persistence-unit name="europeana">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>eu.europeana.database.domain.User</class>
-        <class>eu.europeana.database.domain.SocialTag</class>
-        <class>eu.europeana.database.domain.SavedSearch</class>
-        <class>eu.europeana.database.domain.SavedItem</class>
-        <class>eu.europeana.database.domain.EuropeanaId</class>
-        <class>eu.europeana.database.domain.EuropeanaCollection</class>
-        <class>eu.europeana.database.domain.AuthenticationToken</class>
-        <class>eu.europeana.database.domain.Token</class>
-        <class>eu.europeana.database.domain.SearchTerm</class>
-        <class>eu.europeana.database.domain.CarouselItem</class>
-        <class>eu.europeana.database.domain.IndexingQueueEntry</class>
-        <class>eu.europeana.database.domain.DashboardLog</class>
+        <class>eu.europeana.core.database.domain.User</class>
+        <class>eu.europeana.core.database.domain.SocialTag</class>
+        <class>eu.europeana.core.database.domain.SavedSearch</class>
+        <class>eu.europeana.core.database.domain.SavedItem</class>
+        <class>eu.europeana.core.database.domain.EuropeanaId</class>
+        <class>eu.europeana.core.database.domain.EuropeanaCollection</class>
+        <class>eu.europeana.core.database.domain.AuthenticationToken</class>
+        <class>eu.europeana.core.database.domain.Token</class>
+        <class>eu.europeana.core.database.domain.SearchTerm</class>
+        <class>eu.europeana.core.database.domain.CarouselItem</class>
+        <class>eu.europeana.core.database.domain.IndexingQueueEntry</class>
+        <class>eu.europeana.core.database.domain.DashboardLog</class>
     </persistence-unit>
 
 </persistence>

@@ -21,8 +21,8 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.query.EuropeanaQueryException;
-import eu.europeana.query.QueryProblem;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.QueryProblem;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;

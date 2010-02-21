@@ -1,8 +1,8 @@
 package eu.europeana.dashboard.server;
 
-import eu.europeana.database.domain.ImportFileState;
-import eu.europeana.incoming.ImportFile;
-import eu.europeana.incoming.ImportRepository;
+import eu.europeana.core.database.domain.ImportFileState;
+import eu.europeana.core.database.incoming.ImportFile;
+import eu.europeana.core.database.incoming.ImportRepository;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;

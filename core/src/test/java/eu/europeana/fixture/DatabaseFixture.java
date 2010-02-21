@@ -1,7 +1,7 @@
 package eu.europeana.fixture;
 
-import eu.europeana.database.domain.*;
-import eu.europeana.query.DocType;
+import eu.europeana.core.database.domain.*;
+import eu.europeana.core.querymodel.query.DocType;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

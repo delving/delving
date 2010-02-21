@@ -68,7 +68,7 @@
 
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>
-        <filter-class>eu.europeana.web.util.Utf8OnlyFilter</filter-class>
+        <filter-class>eu.europeana.core.util.web.Utf8OnlyFilter</filter-class>
     </filter>
 
     <!--<filter>-->

@@ -21,29 +21,13 @@
 
 package eu.europeana.dashboard.server;
 
+import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.StaticInfoDao;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.incoming.ESEImporter;
 import eu.europeana.dashboard.client.DashboardService;
-import eu.europeana.dashboard.client.dto.CarouselItemX;
-import eu.europeana.dashboard.client.dto.CollectionStateX;
-import eu.europeana.dashboard.client.dto.DashboardLogX;
-import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
-import eu.europeana.dashboard.client.dto.ImportFileX;
-import eu.europeana.dashboard.client.dto.LanguageX;
-import eu.europeana.dashboard.client.dto.QueueEntryX;
-import eu.europeana.dashboard.client.dto.SavedItemX;
-import eu.europeana.dashboard.client.dto.SavedSearchX;
-import eu.europeana.dashboard.client.dto.UserX;
-import eu.europeana.database.DashboardDao;
-import eu.europeana.database.StaticInfoDao;
-import eu.europeana.database.UserDao;
-import eu.europeana.database.domain.CarouselItem;
-import eu.europeana.database.domain.DashboardLog;
-import eu.europeana.database.domain.EuropeanaCollection;
-import eu.europeana.database.domain.IndexingQueueEntry;
-import eu.europeana.database.domain.Language;
-import eu.europeana.database.domain.SavedItem;
-import eu.europeana.database.domain.SavedSearch;
-import eu.europeana.database.domain.User;
-import eu.europeana.incoming.ESEImporter;
+import eu.europeana.dashboard.client.dto.*;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 

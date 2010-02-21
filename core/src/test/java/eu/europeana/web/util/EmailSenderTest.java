@@ -21,6 +21,7 @@
 
 package eu.europeana.web.util;
 
+import eu.europeana.core.util.web.EmailSender;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
