@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.web.controller.annotated;
+package eu.europeana.web.controller;
 
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.Role;
