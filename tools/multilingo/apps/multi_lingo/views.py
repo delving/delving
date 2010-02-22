@@ -46,6 +46,8 @@ def find_templates():
     for fname in os.listdir(os.path.join(os.path.split(__file__)[0] + '/templates/pages')):
         if fname.find(HTML_EXT) < 0:
             continue
+        if fname == 'prop_file.html':
+            continue
         templates.append(fname.split(HTML_EXT)[0])
     return templates
 
