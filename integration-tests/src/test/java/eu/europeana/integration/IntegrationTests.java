@@ -22,7 +22,11 @@
 package eu.europeana.integration;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.apache.commons.fileupload.util.Streams;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -38,8 +42,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  */
 
 public class IntegrationTests {
-	
-	private static String getTestSystemUrl()  {
+
+	public static String getTestSystemUrl()  {
 		return "http://test1.europeana.sara.nl/portal/";
 	}
 
@@ -48,9 +52,20 @@ public class IntegrationTests {
 		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 		return webClient.getPage(getTestSystemUrl());
 	}
-	
+
 	public static boolean assertText(HtmlPage page, String xpath, String text) {
 		return ((HtmlElement)page.getByXPath(xpath).get(0)).asText().contains(text);
+
+	}
+
+	public static String getUrlAsString(String absoluteUrl) throws IOException {
+		URL url = new URL(absoluteUrl);
+		InputStream in = url.openStream();
+		try {
+			return Streams.asString(in);
+		} finally {
+			in.close();
+		}
 
 	}
 }
