@@ -21,10 +21,6 @@
 
 package eu.europeana.frontend;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import eu.europeana.bootstrap.PortalFullStarter;
-import eu.europeana.core.database.domain.Token;
-import eu.europeana.web.util.TokenService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +28,18 @@ import org.mortbay.jetty.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+
+import eu.europeana.bootstrap.PortalFullStarter;
+import eu.europeana.core.database.domain.Token;
+import eu.europeana.core.util.web.TokenService;
 
 /**
  * @author vitali

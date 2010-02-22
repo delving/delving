@@ -22,8 +22,6 @@
 package eu.europeana.frontend;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 /**
  * Starts test servers.
