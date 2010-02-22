@@ -30,7 +30,7 @@ process rather complicated.
 The workflow with this tool is that the webmaster works with html templates
 and then just tags his english texts as translation keys. Then translators are
 notified. When a language is completed the webmaster is notified, when all
-changes are translated the new pages are copied to the production webserver.
+changes are translated the new pages are copied to the production web server.
 
 To avoid spamming a given translation team (one or more people) can only be in
 two states "translations pending" and "all done". Only when a template change moves a language out of the "all done" state,
@@ -40,9 +40,18 @@ This tool also handles the properties files - that is separate translations used
 internally in the europeana.eu server. From a translator perspective there is
 no difference if the translation key comes from a template or from the properties file.
 
-For the webmaster the difference is that properties are handled under /admin through the
-built in admin environment of django and static pages are handled through templates
-in the multi_lingo/templates/pages
+The keys for the translations are in one of two formats:
+
+If its a phrase or longer block of text, the text itself is the key, this is the normal
+case and saves us time in that the english version of the text will automatically be
+the default if a given key isn't translated.
+
+In some cases, especially with short one-word strings, a context need to be given, then
+we use this syntax (completely random, feel free to use what suits you)
+
+#The[about_us: paragraph More about, last list item - prefix for enews.php]
+
+witch in the english case would be translated to "The"
 
 For translations we use django-rosetta (http://code.google.com/p/django-rosetta/)
 So translators should work in the /rosetta hierarchy, but normally they would get
@@ -57,43 +66,3 @@ Dependencies
 2. django-rosetta - we use 0.5.2 for the moment (included in this code-tree)
      It is slightly patched in (rosetta/views.py:translator_allowed ) to only allow a translator to handle languages
      they have permission (rosetta | translator | ...) for.
-
-===============================================================================
-
-          STATUS per 100210
-
----   Completed   ---
-* Overal structure and operation of this tool
-* Initial import of properties files
-
----   Remaining   ---
-* Mail notifications for translators
-* Initial import of template pages
-* Implementing procedure to submit content to production servers
-
-
-
-===============================================================================
-
-Translation issues:
-
-Keys needed to be content specific:
-
-about_us-More about-how organisations can... end of line "to Europeana"
-in german that place in that context would be translated to "k&#246;nnen"
-
-about_us-More about-last bullet, start of line "The"
-in german & swedish in that context that part should be empty
-suggests a more specific key, something like #the[aboutus-moreabout-prefix to http://dev.europeana.eu/enews.php]
-
-
-
-
-properties:79 and about_us:7 uses the same key "About us"
-
-German translations
-in about_us file:  &#220;ber uns
-in properties file: Wir Ÿber uns
-
-
-

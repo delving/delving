@@ -9,7 +9,7 @@ import apps.multi_lingo
 
 
 urlpatterns = patterns('',
-    (r'^$',apps.multi_lingo.views.index_page),
+    url(r'^$',apps.multi_lingo.views.index_page, name='sune'),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -34,6 +34,6 @@ if settings.DELIVER_STATIC_MEDIA:
 
 if 'rosetta' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
-        url(r'^rosetta/', include('rosetta.urls')),
+        (r'^rosetta/', include('rosetta.urls')),
     )
 
