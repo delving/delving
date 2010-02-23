@@ -7,12 +7,18 @@
   <script type="text/javascript">
     var msgRequired = "This is a required field";
   </script>
-  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/common.css"/>
-  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ui.theme.css"/>
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.3.1.min.js"></script>
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.toggleElements.pack.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/epf-common.css"/>
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.1.js"></script>
+
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.toggleElements.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.cookie.js"></script>
   <script type="text/javascript" src="{{ MEDIA_URL }}js/js_utilities.js"></script>
+  <!--[if gte IE 6]>
+  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie6.css" />
+  <![endif]-->
+  <!--[if gte IE 7]>
+  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie7.css" />
+  <![endif]-->
   {% block header_scripts %}{% comment %}
 ===============================================================================
 
@@ -33,25 +39,20 @@ title
 -------------------------------------------------------------------------------
   {% endcomment %}{% endblock %}</title>
 
-  <!--[if gte IE 6]>
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie6.css" />
-  <![endif]-->
-  <!--[if gte IE 7]>
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie7.css" />
-  <![endif]-->
 </head>
 <body id="">
 <script>
 // JavaScript Document
 function ContactMe(prefix,suffix){
-    var m =  Array(109,97,105,108,116,111,58);
-    var s = '';
-    for (var i = 0; i < m.length; i++){
-        s += String.fromCharCode(m[i]);
-    }
-    window.location.replace(s + prefix + String.fromCharCode(8*8) + suffix);
-    return false;
+	var m =  Array(109,97,105,108,116,111,58);
+	var s = '';
+	for (var i = 0; i < m.length; i++){
+		s += String.fromCharCode(m[i]);
+	}
+	window.location.replace(s + prefix + String.fromCharCode(8*8) + suffix);
+	return false;
 }
+
 </script>
 
 <div id="doc4" class="yui-t2">
