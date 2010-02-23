@@ -16,6 +16,7 @@
     {{ rosetta_i18n_app|title }} &rsaquo;
     {% blocktrans with rosetta_i18n_pofile.percent_translated|floatformat:2 as percent_translated  %}Progress: {{ percent_translated }}%{% endblocktrans %}
     {% if not rosetta_i18n_write %}<span class="alert">{% trans "File is read-only: download the file when done editing!" %}</span>{% endif %}
+    <a class="float-right" href="/admin/logout">logout</a>
 {% endblock %}
 {% block pagetitle %}{% trans "English" %} - {{rosetta_i18n_lang_name}} ({{ rosetta_i18n_pofile.percent_translated|floatformat:0 }}%){% endblock %}
 {% block main %}
