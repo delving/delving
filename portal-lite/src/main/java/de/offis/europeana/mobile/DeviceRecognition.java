@@ -40,8 +40,10 @@ public class DeviceRecognition {
 
 	private static final Logger log = Logger.getLogger(DeviceRecognition.class);
 
+	private boolean _simpleDesktopDetectionEnabled = true;
 	private WURFLManager _wurfl = null;
 	private ServletContext servletContext = null;
+	private Device _genericWebBrowser = null;
 	
 	/**
 	 * Returns the ServletContext
@@ -62,6 +64,7 @@ public class DeviceRecognition {
 			WURFLHolder wurflHolder = (WURFLHolder) this.servletContext.getAttribute("net.sourceforge.wurfl.core.WURFLHolder");
 			if (wurflHolder != null) {
 				_wurfl = wurflHolder.getWURFLManager();
+				_genericWebBrowser = wurflHolder.getWURFLUtils().getDeviceById("generic_web_browser");
 			}
 		}
 	}
@@ -81,7 +84,15 @@ public class DeviceRecognition {
 		String result = template;
 		if (template != null) {
 				if (_wurfl != null) {
-					Device device = _wurfl.getDeviceForRequest(request);
+					String userAgent = request.getHeader("User-Agent");
+					log.info("UserAgent: "+userAgent);
+					Device device;
+					if (_simpleDesktopDetectionEnabled && 
+							SimpleDesktopUserAgentMatcher.isDesktopBrowser(userAgent)) {
+						device = _genericWebBrowser;
+					} else {
+						device = _wurfl.getDeviceForRequest(userAgent);
+					}
 					if (device != null && "true".equals(device.getCapability("is_wireless_device"))) { //desktop browsers will see the desired page, this is for mobile only
 						//The iphone templates are already available:
 						if (device.getUserAgent().toLowerCase().indexOf("safari") > 0){
