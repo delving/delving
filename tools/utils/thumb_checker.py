@@ -300,7 +300,7 @@ class Collection(object):
         lines = fp.readlines()
         fp.close()
         urllist = []
-        for line_lf in lines[:12]:
+        for line_lf in lines:#[:12]:
             line = line_lf.strip()
             if not line or line[0]=='#':
                 continue
