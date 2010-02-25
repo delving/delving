@@ -98,8 +98,8 @@ PROVIDER_NAME = 'prov_name'
 ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
+INTERVALL_PROGRES = 5
 INTERVALL_REPORT = 120
-INTERVALL_PROGRES = 15
 MAX_NO_OF_TIMEOUTS = 10
 MAX_NO_OF_WARNINGS = 250
 MAX_NO_THREADS = 500
@@ -122,6 +122,7 @@ class Collection(object):
         self.aboort_reason = '' # if set this is why collection was aborted (human readable)
         self.time_started = time.time()
         self.timeout_counter = 0  # number of timeouts
+        self.is_completed = False
         self.bind_to_provider() # for report grouping etc
 
     def check_item(self):
@@ -174,6 +175,16 @@ class Collection(object):
         self.thread = thr
 
 
+    def items_done(self):
+        return self.item_count - self.items_remaining()
+
+
+    def items_remaining(self):
+        return len(self.items)
+
+
+    def items_verified(self):
+        return self.items_done()
 
 
     def bad_items_count(self):
@@ -191,7 +202,6 @@ class Collection(object):
         lst.sort()
         return lst
 
-
     #  -----------   internals   ---------------
     def add_bad_item(self, complaint, url):
         if not self.bad_items.has_key(complaint):
@@ -207,6 +217,7 @@ class Collection(object):
 
     def file_is_completed(self):
         "Doing final cleanup when processing is done."
+        self.is_completed = True
         return False
 
     #
@@ -326,37 +337,35 @@ class VerifyProvider(object):
     #  Progress display
     #
     def show_progress(self):
+        remaining = 0
+        eta_max = 0
         providers = all_providers.keys()
         providers.sort()
         print
         for provider in providers:
+            collecions = all_providers[provider].keys()
+            collecions.sort()
+            for collection in collecions:
+                col = all_providers[provider][collection]
+                if col.is_completed:
+                    continue
+                perc_done = 100 * float(col.items_done()) / col.item_count
+                remaining += len(col.items)
+                eta = self.eta_calculate(time.time() - col.time_started, perc_done)
+                eta_num = self.numeric_eta(eta)
+                if eta_num > eta_max:
+                    eta_max = eta_num
+                    s_eta_max = eta
 
-        keys = self.in_progress.keys()
-        keys.sort()
-        remaining = 0
-        eta_max = 0
-        for key in keys:
-            try:
-                q = self.in_progress[key]
-            except:
-                # propably just completed in other thread
-                print 'skipping terminated thread in report', key
-                continue
-            perc_done = 100 * float(q[ITM_DONE]) / q[ITM_COUNT]
-            remaining += (q[ITM_COUNT] - q[ITM_DONE])
-            eta = self.eta_calculate(time.time()-q[ITM_START], perc_done)
-            eta_num = self.numeric_eta(eta)
-            if eta_num > eta_max:
-                eta_max = eta_num
-                s_eta_max = eta
+                msg = '%25.25s %i/%i (%.2f%%)  \teta: %s' % (col.qname,
+                                                             col.items_done(),
+                                                             col.item_count,
+                                                             perc_done, eta)
 
-            msg = '%25.25s %i/%i (%.2f%%)  \teta: %s' % (key, q[ITM_DONE], q[ITM_COUNT],
-                                               perc_done, eta)
-
-            if q[ITM_BAD]:
-                p = 100 * q[ITM_BAD]/float(q[ITM_DONE])
-                msg += ' - Bad items: %i (%.2f%%)' % (q[ITM_BAD],p)
-            self.log(msg, 2)
+                if col.bad_items_count():
+                    p = 100 * col.bad_items_count() / float(col.items_done())
+                    msg += ' - Bad items: %i (%.2f%%)' % (col.bad_items_count(), p)
+                self.log(msg, 2)
         if threading.activeCount() > 1:
             print '==== threadcount %i \twaiting collections %i \tcurrently pending files to check %i eta: %s' % (threading.activeCount() - 1,
                                                                                                                   len(self.q_waiting),
