@@ -84,7 +84,7 @@ import socket
 import urllib2
 import urlparse
 import threading
-import subprocess
+
 
 
 img = 'http://europeana.eu/portal/images/think_culture_logo_top_5.jpg'
@@ -105,8 +105,11 @@ URL_TIMEOUT = 10
 INTERVALL_PROGRES = 5
 INTERVALL_REPORT = 29
 
-MAX_NO_OF_TIMEOUTS = 10
-MAX_NO_THREADS = 1
+MAX_NO_THREADS = 50
+
+ABORT_LIMIT_TIMEOUTS = 50
+ABORT_LIMIT_URLERROR = 50
+
 
 REPORT_FILE = '/tmp/thumb_checker_report.txt'
 REPORT_BAD_ITEMS = '/tmp/thumb_checker_bad_items.log'
@@ -131,6 +134,7 @@ class Collection(object):
         self.bad_items = {} # key is complaint, value is list of urls
         self.aboort_reason = '' # if set this is why collection was aborted (human readable)
         self.timeout_counter = 0  # number of timeouts
+        self.url_error = 0
         self.is_completed = False
         self._thread = None
         self.mime_ok = ['audio/mpeg',
@@ -152,8 +156,6 @@ class Collection(object):
 
     def check_item(self):
         "Do the next item, if result is false, this collection is completed."
-        if not self._thread:
-            pass
         if self.items:
             url = self.items.pop()
         else:
@@ -174,24 +176,28 @@ class Collection(object):
             b = True
             if str(e.reason) == 'timed out':
                 reason = 'timed out'
+                self.timeout_counter += 1
+                if self.timeout_counter >= ABORT_LIMIT_TIMEOUTS:
+                    b = self.file_is_completed('too many timeouts')
             else:
                 reason = 'URLError %s' % str(e.reason)
-                self.aboort_reason = reason
-                b = self.file_is_completed()
+                self.url_error += 1
+                if self.url_error >= ABORT_LIMIT_URLERROR:
+                    b = self.file_is_completed('too many urlerrors')
             self.add_bad_item(reason, url)
             return b
 
         if itm.code != 200:
             self.add_bad_item('HTML status: %i' % itm.code, url)
             return True
-        content_t = itm.headers['content-type'] #.split(';')[0]
+        content_t = itm.headers['content-type']#.split(';')[0]
         if content_t in (self.mime_ok):
             self.items_verified += 1
         else:
             if content_t in self.mime_not_good:
                 self.add_bad_item(content_t, url)
             else:
-                if self.odd_mime_is_valid_file(url, content_t):
+                if self.odd_mime_is_valid_file(itm, content_t):
                     self.mime_ok.append(content_t)
                     self.items_verified += 1
                 else:
@@ -248,30 +254,34 @@ class Collection(object):
         all_providers[self.provider][self.collection] = self
 
 
-    def file_is_completed(self):
+    def file_is_completed(self, reason=''):
         "Doing final cleanup when processing is done."
+        if reason:
+            self.aboort_reason = reason
         self.is_completed = True
         return False
 
-    def odd_mime_is_valid_file(self, url, content_t):
+    def odd_mime_is_valid_file(self, itm, content_t):
         #url = '/Users/jaclu/Documents/ablm/reserakning.pdf'
         lock_collections.acquire()
         self.log('???  %s Checking strange mimetype: %s' % (self.collection, content_t), 7)
         if content_t.split(';')[0] in self.mime_ok:
             # only check when base mime is valid, but broken webserver gives
             # multiple fields as content type
-            excode = 1
-            #fp = open('/dev/null','w')
-            #excode = subprocess.call(['identify', url],
-            #                         stdout=fp,
-            #                         stderr=fp,)
+            excode = True
+            #img_data = itm.read()
+            #im = Image.fromstring('rw',len(img_data),img_data)
+            ##fp = open('/dev/null','w')
+            ##excode = subprocess.call(['identify', url],
+            ##                         stdout=fp,
+            ##                         stderr=fp,)
         else:
             excode = 1
         if excode:
-            self.log('!!!  %s invalid_filetype: %s' % (self.collection, url), 7)
+            self.log('!!!  %s invalid_filetype: %s' % (self.collection, itm.url), 6)
             b = False
         else:
-            self.log('     %s seems to be a acceptable filetype: %s' % (self.collection, url), 7)
+            self.log('     %s seems to be a acceptable filetype: %s' % (self.collection, itm.url), 6)
             b = True
         lock_collections.release()
         return b
@@ -359,6 +369,7 @@ class VerifyProvider(object):
             if t1 + INTERVALL_REPORT < time.time():
                 self.create_report(to_file=True)
                 t1 = time.time()
+            time.sleep(1)
             self.start_free_hosts()
 
     #
@@ -434,6 +445,7 @@ class VerifyProvider(object):
                                                                                                                   remaining,
                                                                                                                   s_eta_max)
         self.time_progess = time.time()
+
 
     def eta_calculate(self, elapsed_time, perc_done):
         if perc_done == 0:
@@ -572,7 +584,7 @@ class VerifyProvider(object):
             i += 1
             if blimited and i > MAX_NO_THREADS:
                 break
-            if threading.activeCount() > MAX_NO_THREADS:
+            if len(self.running_threads) > MAX_NO_THREADS:
                 break
             if not self.is_host_name_used(host_name):
                 self.q_waiting.remove((host_name, fname))
@@ -613,9 +625,21 @@ class VerifyProvider(object):
             thr = self.running_threads[host_name]['thread']
             if not thr.isAlive():
                 if not col.is_completed:
-                    print '***  %s thread done, but not collection' % col.collection
+                    self.log('***  %s thread done, but not collection (by host_name)' % col.collection, -1)
                     pass
                 del self.running_threads[host_name]
+
+        providers = all_providers.keys()
+        providers.sort()
+        for provider in providers:
+            collecions = all_providers[provider].keys()
+            collecions.sort()
+            for collection in collecions:
+                col = all_providers[provider][collection]
+                if col._thread and (not col._thread.isAlive()):
+                    if not col.is_completed:
+                        self.log('***  %s thread done, but not collection (by collection)' % col.collection, -1)
+                        col.is_completed = True
 
         i2 = self.no_not_completed()
         if i1 != i2:
