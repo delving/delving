@@ -83,6 +83,8 @@ import socket
 import urllib2
 import urlparse
 import threading
+import subprocess
+
 
 img = 'http://europeana.eu/portal/images/think_culture_logo_top_5.jpg'
 ss = 'http://alma.ablm.se/w2ko2k.tgsz'
@@ -99,7 +101,8 @@ ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
 INTERVALL_PROGRES = 5
-INTERVALL_REPORT = 120
+INTERVALL_REPORT = 60
+INTERVALL_THREAD_CHECK = 12
 MAX_NO_OF_TIMEOUTS = 10
 MAX_NO_OF_WARNINGS = 250
 MAX_NO_THREADS = 500
@@ -115,19 +118,34 @@ class Collection(object):
         self.qname = os.path.split(fname)[1].split('_urls')[0] # do we need to keep qname??
         self.provider = self.qname[:3]
         self.collection = self.qname[:5]
-        self.items = self.generate_urllist() # still unprocessed items
-        self.item_count = len(self.items) # number of items
-        self.item_verified = 0 # items verified to exist and of reasonable mime type
+        self.unique_urls = {}
+        self.items_verified = 0 # items verified to exist and of reasonable mime type
         self.bad_items = {} # key is complaint, value is list of urls
         self.aboort_reason = '' # if set this is why collection was aborted (human readable)
-        self.time_started = time.time()
         self.timeout_counter = 0  # number of timeouts
         self.is_completed = False
+        self.mime_ok = ['audio/mpeg',
+                        'image/gif',
+                        'image/jpg',
+                        'image/jpeg',
+                        'image/png',
+                        'image/tiff',
+                        'video/mpeg',
+                        'video/x-ms-wmv',
+                        'application/pdf',
+                        ]
+        self.mime_not_good = ['text/html',] # mime types tested to be bad
+        self.time_started = time.time()
+        self.items = self.generate_urllist() # still unprocessed items
+        self.item_count = len(self.items) # number of items
         self.bind_to_provider() # for report grouping etc
 
     def check_item(self):
         "Do the next item, if result is false, this collection is completed."
-        url = self.items.pop()
+        if self.items:
+            url = self.items.pop()
+        else:
+            url = ''
         if not url:
             return self.file_is_completed()
         try:
@@ -155,18 +173,18 @@ class Collection(object):
             self.add_bad_item('HTML status: %i' % itm.code, url)
             return True
         content_t = itm.headers['content-type'] #.split(';')[0]
-        if content_t not in ('audio/mpeg',
-                             'image/gif',
-                             'image/jpg',
-                             'image/jpeg',
-                             'image/png',
-                             'image/tiff',
-                             'video/mpeg',
-                             'video/x-ms-wmv',
-                             'application/pdf',):
-            self.add_bad_item(content_t, url)
+        if content_t in (self.mime_ok):
+            self.items_verified += 1
         else:
-            self.item_verified += 1
+            if content_t in self.mime_not_good:
+                self.add_bad_item(content_t, url)
+            else:
+                if self.odd_mime_is_valid_file(url, content_t):
+                    self.mime_ok.append(content_t)
+                    self.items_verified += 1
+                else:
+                    self.mime_not_good.append(content_t)
+                    self.add_bad_item(content_t, url)
         return True
 
 
@@ -220,6 +238,25 @@ class Collection(object):
         self.is_completed = True
         return False
 
+    def odd_mime_is_valid_file(self, url, content_t):
+        #url = '/Users/jaclu/Documents/ablm/reserakning.pdf'
+        print '+++ Checking strange mimetype:', content_t
+        if content_t.split(';')[0] in self.mime_ok:
+            # only check when base mime is valid, but broken webserver gives
+            # multiple fields as content type
+            fp = open('/dev/null','w')
+            excode = subprocess.call(['identify', url],
+                                     stdout=fp,
+                                     stderr=fp,)
+        else:
+            excode = 1
+        if excode:
+            print "###  %s  does not seem to be a valid filetype" % content_t
+            b = False
+        else:
+            print '+++  %s  seems to be a acceptable filetype' % content_t
+            b = True
+        return b
     #
     #  Parse file, extract all urls
     #
@@ -228,13 +265,20 @@ class Collection(object):
         lines = fp.readlines()
         fp.close()
         urllist = []
-        for line_lf in lines:
+        for line_lf in lines[:12]:
             line = line_lf.strip()
             if not line or line[0]=='#':
                 continue
             line.split('wget')
             url = line.split('wget ')[1].split('-O')[0].strip()
-            urllist.append(url)
+            if url not in self.unique_urls.keys():
+                self.unique_urls[url] = 0
+                urllist.append(url)
+            self.unique_urls[url] += 1
+            for key in self.unique_urls.keys():
+                if self.unique_urls[key] > 1:
+                    self.add_bad_item('same url used for %s items' % self.unique_urls[key],
+                                      key)
         return urllist
 
 
@@ -251,7 +295,7 @@ class VerifyProvider(object):
         self.reports = {}
         self.is_running = False
         self.q_waiting = []
-        self.running_threads = {} # all running checks, key is hostname
+        self.running_threads = {}
 
     def run(self, param):
         if self.is_running:
@@ -262,7 +306,7 @@ class VerifyProvider(object):
             self.do_dir(param)
         else:
             self.do_file(param, show_progress=True)
-        self.create_report()
+        self.create_report(to_file=False)
         self.create_report(to_file=True)
         self.is_running = False
 
@@ -280,25 +324,25 @@ class VerifyProvider(object):
             server_id = self.get_server_id(os.path.join(ddir, fname))
             self.q_waiting.append((server_id, os.path.join(ddir,fname)))
         self.start_free_hosts()
-        t0 = t1 = time.time()
-        while threading.activeCount() > 1:
-            if t0 + INTERVALL_REPORT < time.time():
-                self.create_report(to_file=True)
+        t0 = t1 = t2 = time.time()
+        while threading.activeCount() > 1 or self.q_waiting:
+            if t0 + INTERVALL_PROGRES < time.time():
+                self.show_progress()
                 t0 = time.time()
-            time.sleep(1)
-            if t1 + INTERVALL_PROGRES < time.time():
-                self.display_progress()
+            if t1 + INTERVALL_REPORT < time.time():
+                self.create_report(to_file=True)
                 t1 = time.time()
+            if t2 + INTERVALL_THREAD_CHECK < time.time():
+                self.threads_cleanup()
+                t2 = time.time()
             self.start_free_hosts()
-            if threading.activeCount() == 1:
-                pass
 
     #
     #  Check all the items from one file (collection)
     #
     def do_file(self, fname, show_progress=False):
         col = Collection(fname)
-        self.log('Starting processing of %s' % col.qname, 2)
+        self.log('>>>  Starting: %s' % col.qname, 2)
         t0 = t1 = time.time()
         while True:
             if show_progress:
@@ -311,11 +355,8 @@ class VerifyProvider(object):
             if not col.check_item():
                 break
             pass
+        self.log('<<<  Completed: %s' % col.qname, 2)
         return
-
-    def NOT_file_is_completed(self, qname):
-        self.add_report(qname,self.in_progress[qname])
-        del self.in_progress[qname]
 
 
 
@@ -441,10 +482,10 @@ class VerifyProvider(object):
             prov_item_bad = 0      # summary for provider
             for collection in collecions:
                 col = all_providers[provider][collection]
-                if col.item_verified < col.item_count:
-                    s = 'items: %i - verified: %i' % (col.item_count, col.item_verified)
+                if col.items_verified < col.item_count:
+                    s = 'items: %i - verified: %i' % (col.item_count, col.items_verified)
                 else:
-                    s = 'items: %i' % col.item_verified
+                    s = 'items: %i' % col.items_verified
                 msg = '%s \t%s' % (col.qname, s)
                 if col.timeout_counter:
                     msg += '\ttimeouts: %i\t<===' % col.timeout_counter
@@ -456,14 +497,14 @@ class VerifyProvider(object):
                     msg += '  %s  <===== Aborted' % col.aboort_reason
                 self.report_print(msg)
                 prov_item_count += col.item_count
-                prov_item_verified += col.item_verified
+                prov_item_verified += col.items_verified
                 prov_item_bad += bad_count
 
                 problems = col.bad_items_summary()
                 if problems:
                     bfound_bad_items = True
                     if to_file:
-                        fp = open(REPORT_BAD_ITEMS, 'w+')
+                        fp = open(REPORT_BAD_ITEMS, 'a+')
                         fp.write('============   Problems in %s   ============\n' % collection)
                     for reason, count in problems:
                         msg = '  %s - %i times' % (reason, count)
@@ -479,6 +520,8 @@ class VerifyProvider(object):
             if prov_item_bad:
                 msg += ' \tBAD ITEMS: %i (%.1f%%)' % (prov_item_bad,
                                                       100 * prov_item_bad/float(prov_item_count))
+            if not prov_item_verified:
+                msg += ' \t<-- no items!'
             self.report_print(msg)
             self.report_print('\n')
             self.report_print('-' * 80)
@@ -520,54 +563,51 @@ class VerifyProvider(object):
             if threading.activeCount() > MAX_NO_THREADS:
                 return
             # we are working on a copy, so ok to modify self.q_waiting
-            if not host_name:
-                qname = self.create_qname(fname)
-                self.add_report(qname,self.struct_collection(qname))
+            col = Collection(fname)
+            if not self.is_host_name_used(host_name):
                 self.q_waiting.remove((host_name, fname))
-            elif not self.is_host_name_used(host_name):
-                self.q_waiting.remove((host_name, fname))
-                self.queue_add(host_name, fname)
+                if not host_name:
+                    print '=== Skipping empty collection:', fname
+                    col.is_completed = True
+                    continue
+                #Add this collection to a separate thread and start it
+                if self.is_host_name_used(host_name):
+                    print '*** Serious error, attempt to run towards occupied host'
+                    print host_name, fname
+                    sys.exit(1)
+
+                time.sleep(0.1)
+                t = threading.Thread(target=self.run_thread,name=fname,args=(host_name,fname,))
+                self.running_threads[host_name] = {'thread': t,
+                                                   'collection': col, # for easy access when detecting
+                                                                      # abandoned threads
+                                                   }
+                col.set_thread(t)
+                t.start()
         return
 
     def is_host_name_used(self, host_name):
         return host_name in self.running_threads.keys()
 
-    def queue_add(self, host_name, fname):
-        "Add this collection to a separate thread and start it."
-        if self.is_host_name_used(host_name):
-            print '*** Serious error, attempt to run towards occupied host'
-            print host_name, fname
-            sys.exit(1)
-
-        time.sleep(0.1)
-        self.running_threads[host_name] = {
-            'thread':threading.Thread(target=self.run_thread,name=fname,args=(host_name,fname,))
-        }
-        self.running_threads[host_name]['thread'].start()
 
     def run_thread(self, host_name, fname):
-        #print '++++ starting thread for', host_name
+        self.log('++++ starting thread for: %s' % host_name, 9)
         self.do_file(fname)
         time.sleep(0.1)
-        #print '---- terminating thread for', host_name
+        self.log('---- terminating thread for: %s' % host_name, 9)
         del self.running_threads[host_name]
 
+    def threads_cleanup(self):
+        for host_name in self.running_threads.keys()[:]:
+            col = self.running_threads[host_name]['collection']
+            #t = self.running_threads[host_name]['thread']
+            if col.is_completed or (not col.thread.isAlive()):
+                col.is_completed = True
+                del self.running_threads[host_name]
+        pass
     #
     #   Generic things
     #
-    def struct_collection(self, qname, itm_count=0):
-        return {ITM_COUNT: itm_count,
-                ITM_DONE:0,
-                ITM_START: time.time(),
-                ITM_OK: 0,
-                ITM_BAD: 0,
-                PROVIDER_NAME: qname,
-                ABORT_REASON:'',
-                ITM_BAD_TYPES:{},
-                TIMEOUTS: 0,
-                }
-
-
     def log(self,msg,lvl=2):
         if lvl > self.debug_lvl:
             return
@@ -591,5 +631,5 @@ if len(sys.argv) > 2:
 
 print 'thumb_checker - version', _version
 
-vp = VerifyProvider()
+vp = VerifyProvider(debug_lvl=9)
 vp.run(p)
