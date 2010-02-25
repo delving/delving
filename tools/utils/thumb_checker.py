@@ -100,15 +100,18 @@ PROVIDER_NAME = 'prov_name'
 ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
-INTERVALL_PROGRES = 5
-INTERVALL_REPORT = 60
-INTERVALL_THREAD_CHECK = 12
+
+INTERVALL_PROGRES = 15
+INTERVALL_REPORT = 29
+INTERVALL_THREAD_CHECK = 30
+
 MAX_NO_OF_TIMEOUTS = 10
-MAX_NO_OF_WARNINGS = 250
-MAX_NO_THREADS = 500
+MAX_NO_THREADS = 40
 
 REPORT_FILE = '/tmp/thumb_checker_report.txt'
 REPORT_BAD_ITEMS = '/tmp/thumb_checker_bad_items.log'
+
+WARNING_SAME_URL_PREFIX = 'same url used for'
 
 all_providers = {}
 
@@ -124,6 +127,7 @@ class Collection(object):
         self.aboort_reason = '' # if set this is why collection was aborted (human readable)
         self.timeout_counter = 0  # number of timeouts
         self.is_completed = False
+        self._thread = None
         self.mime_ok = ['audio/mpeg',
                         'image/gif',
                         'image/jpg',
@@ -139,6 +143,7 @@ class Collection(object):
         self.items = self.generate_urllist() # still unprocessed items
         self.item_count = len(self.items) # number of items
         self.bind_to_provider() # for report grouping etc
+
 
     def check_item(self):
         "Do the next item, if result is false, this collection is completed."
@@ -190,8 +195,11 @@ class Collection(object):
 
     def set_thread(self, thr):
         "save a ref to the thread that is running this if threaded."
-        self.thread = thr
+        self._thread = thr
 
+
+    def get_thread(self):
+        return self._thread
 
     def items_done(self):
         return self.item_count - self.items_remaining()
@@ -225,7 +233,7 @@ class Collection(object):
         if not self.bad_items.has_key(complaint):
             self.bad_items[complaint] = []
         self.bad_items[complaint].append(url)
-        print '%s - %s' % (complaint, url)
+        #print '%s - %s' % (complaint, url)
 
     def bind_to_provider(self):
         if not self.provider in all_providers.keys():
@@ -275,10 +283,10 @@ class Collection(object):
                 self.unique_urls[url] = 0
                 urllist.append(url)
             self.unique_urls[url] += 1
-            for key in self.unique_urls.keys():
-                if self.unique_urls[key] > 1:
-                    self.add_bad_item('same url used for %s items' % self.unique_urls[key],
-                                      key)
+        for key in self.unique_urls.keys():
+            if self.unique_urls[key] > 1:
+                self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, self.unique_urls[key]),
+                                  key)
         return urllist
 
 
@@ -324,25 +332,24 @@ class VerifyProvider(object):
             server_id = self.get_server_id(os.path.join(ddir, fname))
             self.q_waiting.append((server_id, os.path.join(ddir,fname)))
         self.start_free_hosts()
-        t0 = t1 = t2 = time.time()
+        t0 = t1 = time.time()
         while threading.activeCount() > 1 or self.q_waiting:
             if t0 + INTERVALL_PROGRES < time.time():
+                self.threads_cleanup()
                 self.show_progress()
                 t0 = time.time()
             if t1 + INTERVALL_REPORT < time.time():
                 self.create_report(to_file=True)
                 t1 = time.time()
-            if t2 + INTERVALL_THREAD_CHECK < time.time():
-                self.threads_cleanup()
-                t2 = time.time()
             self.start_free_hosts()
 
     #
     #  Check all the items from one file (collection)
     #
-    def do_file(self, fname, show_progress=False):
-        col = Collection(fname)
-        self.log('>>>  Starting: %s' % col.qname, 2)
+    def do_file(self, fname, show_progress=False, collection=None):
+        if not collection: # is set when running as thread
+            collection = Collection(fname)
+        self.log('>>>  Starting: %s' % collection.qname, 2)
         t0 = t1 = time.time()
         while True:
             if show_progress:
@@ -352,12 +359,11 @@ class VerifyProvider(object):
                 if t1 + INTERVALL_REPORT < time.time():
                     self.create_report(to_file=True)
                     t1 = time.time()
-            if not col.check_item():
+            if not collection.check_item():
                 break
             pass
-        self.log('<<<  Completed: %s' % col.qname, 2)
+        self.log('<<<  Completed: %s' % collection.qname, 2)
         return
-
 
 
     def get_server_id(self, fname):
@@ -371,7 +377,6 @@ class VerifyProvider(object):
                 hostname = urlparse.urlsplit(url).hostname
                 break
         return hostname
-
 
 
     #
@@ -445,6 +450,9 @@ class VerifyProvider(object):
         return (ih,im,iis)
 
 
+    #
+    #   Report generation
+    #
     def add_report(self, qname, q):
         provider = qname[:3]
         collection = qname[:5]
@@ -453,9 +461,6 @@ class VerifyProvider(object):
         self.reports[provider][collection] = q
 
 
-    #
-    #   Report generation
-    #
     def create_report(self, to_file=False):
         if to_file:
             self.report_fp = open(REPORT_FILE, 'w')
@@ -507,7 +512,10 @@ class VerifyProvider(object):
                         fp = open(REPORT_BAD_ITEMS, 'a+')
                         fp.write('============   Problems in %s   ============\n' % collection)
                     for reason, count in problems:
-                        msg = '  %s - %i times' % (reason, count)
+                        if WARNING_SAME_URL_PREFIX in reason:
+                            msg = '  ' + reason
+                        else:
+                            msg = '  %s - %i times' % (reason, count)
                         self.report_print(msg)
                         if to_file:
                             fp.write('-------   %s   -------\n' % reason)
@@ -533,22 +541,6 @@ class VerifyProvider(object):
     def report_print(self, msg):
         self.report_fp.write('%s\n' % msg)
         self.report_fp.flush()
-
-
-
-    def report_log(self, qname, msg):
-        collection = qname[:5]
-        if not collection in self.extra_msgs.keys():
-            self.extra_msgs[collection] = {}
-        if not msg in self.extra_msgs[collection].keys():
-            self.extra_msgs[collection][msg] = 0
-            self.log('** %s %s' % (qname, msg),1)
-        self.extra_msgs[collection][msg] += 1
-        if self.extra_msgs[collection][msg] > MAX_NO_OF_WARNINGS:
-            r = False
-        else:
-            r = True
-        return r
 
 
     def parse_report_name(self,fname):
@@ -591,20 +583,48 @@ class VerifyProvider(object):
 
 
     def run_thread(self, host_name, fname):
-        self.log('++++ starting thread for: %s' % host_name, 9)
-        self.do_file(fname)
+        col = self.running_threads[host_name]['collection']
+        self.log('++++ starting thread for: %s - %s' % (host_name, col.qname), 9)
+        self.do_file(fname,collection=col)
         time.sleep(0.1)
-        self.log('---- terminating thread for: %s' % host_name, 9)
-        del self.running_threads[host_name]
+        self.log('---- terminating thread for: %s - %s' % (host_name, col.qname), 9)
+        jkljlj del self.running_threads[host_name]
 
     def threads_cleanup(self):
-        for host_name in self.running_threads.keys()[:]:
-            col = self.running_threads[host_name]['collection']
-            #t = self.running_threads[host_name]['thread']
-            if col.is_completed or (not col.thread.isAlive()):
-                col.is_completed = True
-                del self.running_threads[host_name]
-        pass
+        i1 = self.no_not_completed()
+        providers = all_providers.keys()
+        providers.sort()
+        for provider in providers:
+            collecions = all_providers[provider].keys()
+            collecions.sort()
+            for collection in collecions:
+                col = all_providers[provider][collection]
+                if not col.is_completed:
+                    t = col.get_thread()
+                    if t:
+                        if not t.isAlive():
+                            col.is_completed = True
+                            #if host_name in self.running_threads.key
+                            #del self.running_threads[host_name]
+                    else:
+                        col.is_completed = True
+        i2 = self.no_not_completed()
+        if i1 != i2:
+            self.log('#### thread cleaning, before: %i   after: %i' % (i1, i2),1)
+        return
+
+    def no_not_completed(self):
+        i = 0
+        providers = all_providers.keys()
+        providers.sort()
+        for provider in providers:
+            collecions = all_providers[provider].keys()
+            collecions.sort()
+            for collection in collecions:
+                col = all_providers[provider][collection]
+                if not col.is_completed:
+                    i += 1
+        return i
     #
     #   Generic things
     #
