@@ -48,7 +48,7 @@
  100223 jaclu  Initial release
  100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.1.2'
+_version = '0.1.3'
 
 """
 collections that was disconnected
@@ -103,10 +103,10 @@ ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
 
-INTERVALL_PROGRES = 2
+INTERVALL_PROGRES = 15
 INTERVALL_REPORT = 60
 
-MAX_NO_THREADS = 50
+MAX_NO_THREADS = 20
 
 ABORT_LIMIT_TIMEOUTS = 50
 ABORT_LIMIT_URLERROR = 50
@@ -137,6 +137,7 @@ class Collection(object):
         self.url_error = 0
         self.is_completed = False
         self._thread = None
+        self._is_initialized = False
         self.mime_ok = ['audio/mpeg',
                         'image/gif',
                         'image/jpg',
@@ -149,18 +150,25 @@ class Collection(object):
                         ]
         self.mime_not_good = ['text/html',] # mime types tested to be bad
         self.time_started = time.time()
-        self.log('+    %s Creting Collection obj' % self.qname, 5)
-        self.items = self.generate_urllist() # still unprocessed items
-        self.item_count = len(self.items) # number of items
+        self.items = []     # will be set in _initialize()
+        self.item_count = 0 # will be set in _initialize()
         self.bind_to_provider() # for report grouping etc
-        if self.time_started + 3 < time.time():
-            self.log('++   %s Collection obj Created' % self.qname, 1)
         return
 
+
+    def _initialize(self):
+        self.log('+    %s initializing Collection obj' % self.qname, 5)
+        self.items = self.generate_urllist()
+        self.item_count = len(self.items)
+        if self.time_started + 3 < time.time():
+            self.log('-   %s Collection obj initialized' % self.qname, 1)
+        self._is_initialized = True
 
 
     def check_item(self):
         "Do the next item, if result is false, this collection is completed."
+        if not self._is_initialized:
+            self._initialize()
         if self.items:
             url = self.items.pop()
         else:
@@ -295,7 +303,11 @@ class Collection(object):
     def log(self,msg,lvl=2):
         if self.debug_lvl < lvl:
             return
+        lock_collections.acquire()
         print msg
+        lock_collections.release()
+
+
     #
     #  Parse file, extract all urls
     #
@@ -307,7 +319,7 @@ class Collection(object):
         dup_urls = {}
         t0 = time.time()
         counted = old_counted = 0
-        for line_lf in lines[:250]:
+        for line_lf in lines: #[:250]:
             line = line_lf[:-1]
             if not line or line[0]=='#':
                 continue
@@ -317,10 +329,13 @@ class Collection(object):
             else:
                 dup_urls[url] = dup_urls.get(url,0) + 1
             counted +=1
-            if t0 + INTERVALL_PROGRES < time.time():
-                msg = 'reading file %s - %i / %i done (rate %i)' % (self.fname, counted, len(lines), counted - old_counted)
+            if t0 + INTERVALL_PROGRES  < time.time():
+                msg = '.. reading file %s - %i / %i done (rate %i)' % (self.qname, counted, len(lines), counted - old_counted)
                 if dup_urls:
-                    msg + ' - %i dupes' % dup_urls
+                    i = 0
+                    for k in dup_urls.keys():
+                        i += dup_urls[k]
+                    msg + ' - %i dupes' % i
                 self.log(msg, 2)
                 old_counted = counted
                 t0 = time.time()
@@ -366,11 +381,13 @@ class VerifyProvider(object):
     def do_dir(self, ddir):
         files = os.listdir(ddir)
         self.q_waiting = []
+        self.log('++   file list parsing',1)
         for fname in files:
             if os.path.isdir(fname):
                 continue # skip subdirs
             host_name = self.get_server_hostname(os.path.join(ddir, fname))
             self.q_waiting.append((host_name, os.path.join(ddir,fname)))
+        self.log('--   file list completed',1)
         t0 = t1 = time.time()
         self.start_free_hosts(True)
         while threading.activeCount() > 1 or self.q_waiting:
@@ -426,7 +443,7 @@ class VerifyProvider(object):
         eta_max = 0
         providers = all_providers.keys()
         providers.sort()
-        print
+        lmsg = ['\n']
         for provider in providers:
             collecions = all_providers[provider].keys()
             collecions.sort()
@@ -434,7 +451,7 @@ class VerifyProvider(object):
                 col = all_providers[provider][collection]
                 if col.is_completed:
                     continue
-                perc_done = 100 * float(col.items_done()) / col.item_count
+                perc_done = 100 * float(col.items_done()) / (col.item_count + 0.01)
                 remaining += len(col.items)
                 eta = self.eta_calculate(time.time() - col.time_started, perc_done)
                 eta_num = self.numeric_eta(eta)
@@ -450,12 +467,15 @@ class VerifyProvider(object):
                 if col.bad_items_count():
                     p = min(100,100 * col.bad_items_count() / float(col.bad_items_count()))
                     msg += ' - Bad items: %i (%.2f%%)' % (col.bad_items_count(), p)
-                self.log(msg, 2)
+                lmsg.append(msg)
         if threading.activeCount() > 1:
-            print '==== threadcount %i \twaiting collections %i \tcurrently pending files to check %i eta: %s' % (threading.activeCount() - 1,
-                                                                                                                  len(self.q_waiting),
-                                                                                                                  remaining,
-                                                                                                                  s_eta_max)
+            lmsg.append('==== threads %i \tinitializing %i \twaiting  %i \tcurrently pending files to check %i eta: %s' % (
+                threading.activeCount() - 1,
+                self.cols_in_init_phase(),
+                len(self.q_waiting),
+                remaining,
+                s_eta_max))
+        self.log('\n'.join(lmsg), 2)
         self.time_progess = time.time()
 
 
@@ -604,32 +624,32 @@ class VerifyProvider(object):
                 col = Collection(fname, host_name, self.debug_lvl)
                 if not host_name:
                     self.log('---  %s Skipping empty collection' % col.collection, 9)
-                    col.is_completed = True
+                    col.is_completed = col._is_initialized = True
                     continue
                 #Add this collection to a separate thread and start it
-                if self.is_host_name_used(host_name):
-                    print '*** Serious error, attempt to run towards occupied host'
-                    print host_name, fname
-                    sys.exit(1)
-
+                #if self.is_host_name_used(host_name):
+                #    print '*** Serious error, attempt to run towards occupied host'
+                #    print host_name, fname
+                #    sys.exit(1)
                 time.sleep(0.1)
-                t = threading.Thread(target=self.run_thread,name=col.collection,args=(col,))
-                self.log('++   %s Thread created' % col.collection, 9)
+                t = threading.Thread(target=self.run_thread,name=fname,args=(col,))
+                col.set_thread(t)
                 self.running_threads[host_name] = {'thread': t,
                                                    'collection': col, # for easy access when detecting
                                                                       # abandoned threads
                                                    }
-                col.set_thread(t)
+                self.log('++   %s Thread created' % os.path.basename(fname), 9)
                 t.start()
         return
+
+    def run_thread(self, col):
+        self.log('+++  %s starting thread' % col.collection, 9)
+        self.do_file(col)
+
 
     def is_host_name_used(self, host_name):
         return host_name in self.running_threads.keys()
 
-
-    def run_thread(self, collection):
-        self.log('+++  %s starting thread' % collection.collection, 9)
-        self.do_file(collection)
 
     def threads_cleanup(self):
         i1 = self.no_not_completed()
@@ -653,6 +673,7 @@ class VerifyProvider(object):
                     if not col.is_completed:
                         self.log('***  %s thread done, but not collection (by collection)' % col.collection, -1)
                         col.is_completed = True
+                        col.col._is_initialized = True
 
         i2 = self.no_not_completed()
         if i1 != i2:
@@ -674,10 +695,22 @@ class VerifyProvider(object):
     #
     #   Generic things
     #
+    def cols_in_init_phase(self):
+        count = 0
+        for provider in all_providers.keys():
+            for collection in all_providers[provider].keys():
+                col = all_providers[provider][collection]
+                if not col._is_initialized:
+                    count += 1
+        return count
+
+
     def log(self,msg,lvl=2):
         if self.debug_lvl < lvl:
             return
+        lock_collections.acquire()
         print msg
+        lock_collections.release()
 
 
 try:
@@ -696,5 +729,5 @@ if len(sys.argv) > 2:
 
 print 'thumb_checker - version', _version
 
-vp = VerifyProvider(debug_lvl=9)
+vp = VerifyProvider(debug_lvl=5)
 vp.run(p)
