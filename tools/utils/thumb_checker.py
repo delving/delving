@@ -48,7 +48,7 @@
  100223 jaclu  Initial release
  100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.1.7'
+_version = '0.1.9'
 
 """
 collections that was disconnected
@@ -101,7 +101,7 @@ URL_TIMEOUT = 10
 INTERVALL_PROGRES = 30
 INTERVALL_REPORT = 60
 
-MAX_NO_THREADS = 50
+MAX_NO_THREADS = 60
 
 ABORT_LIMIT_TIMEOUTS = 50
 ABORT_LIMIT_URLERROR = 50
@@ -342,7 +342,7 @@ class Collection(object):
                 t0 = time.time()
                 self.item_count = len(d_urls)
         for key in dup_urls.keys():
-            self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, dup_urls[key]), key)
+            self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, dup_urls[key] + 1), key)
         return d_urls.keys()
 
 
@@ -467,7 +467,7 @@ class VerifyProvider(object):
 
                 if col.bad_items_count():
                     p = min(100,100 * col.bad_items_count() / float(col.bad_items_count() + col.items_verified))
-                    msg += ' - Bad items: %i (%.2f%%)' % (col.bad_items_count(), p)
+                    msg += ' - Bad items: %i (%.0f%%)' % (col.bad_items_count(), p)
                 lmsg.append(msg)
         if threading.activeCount() > 1:
             remaining, eta_max = self.stats_all_cols()
@@ -515,6 +515,9 @@ class VerifyProvider(object):
         bfound_bad_items = False
         providers = all_providers.keys()
         providers.sort()
+        glob_item_count = 0
+        glob_item_verified = 0
+        glob_item_bad = 0
         for provider in providers:
             collecions = all_providers[provider].keys()
             collecions.sort()
@@ -560,7 +563,7 @@ class VerifyProvider(object):
                     if to_file:
                         fp.close()
 
-            msg = '%s \titems:%i verified: %i' % (provider, prov_item_count, prov_item_verified)
+            msg = '%s \titems: %i \tverified: %i' % (provider, prov_item_count, prov_item_verified)
             if prov_item_bad:
                 p = min(100,100 * prov_item_bad / float(prov_item_bad + prov_item_verified))
                 #p = 100 * prov_item_bad/float(prov_item_count)
@@ -571,15 +574,28 @@ class VerifyProvider(object):
             self.report_print('')
             self.report_print('-' * 80)
             self.report_print('')
+            glob_item_count += prov_item_count
+            glob_item_verified += prov_item_verified
+            glob_item_bad += prov_item_bad
+
+        msg = 'Total \titems: %i \tverified: %i' % (glob_item_count, glob_item_verified)
+        if glob_item_bad:
+            p = min(100,100 * glob_item_bad / float(glob_item_bad + glob_item_verified))
+            msg += ' \tBAD ITEMS: %i (%.1f%%)' % (glob_item_bad, p)
+        if not glob_item_verified:
+            msg += ' \t<-- no items!'
+        self.report_print(msg)
+        self.report_print('')
 
         if threading.activeCount() > 1:
             remaining, eta_max = self.stats_all_cols()
-            self.report_print('==== threads %i   initializing %i   waiting %i   currently pending files  %i   eta: %s' % (
+            self.report_print('\n\n==== threads %i   initializing %i   waiting %i   currently pending files  %i   eta: %s' % (
                 threading.activeCount() - 1,
                 self.cols_in_init_phase(),
                 len(self.q_waiting),
                 remaining,
                 eta_max))
+            self.report_print('')
         if to_file:
             self.report_fp.close()
         return
