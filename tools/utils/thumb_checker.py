@@ -48,7 +48,7 @@
  100223 jaclu  Initial release
  100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.1.3'
+_version = '0.1.4'
 
 """
 collections that was disconnected
@@ -103,7 +103,7 @@ ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
 
-INTERVALL_PROGRES = 15
+INTERVALL_PROGRES = 30
 INTERVALL_REPORT = 60
 
 MAX_NO_THREADS = 20
@@ -199,6 +199,8 @@ class Collection(object):
                     b = self.file_is_completed('too many urlerrors')
             self.add_bad_item(reason, url)
             return b
+        except e:
+            return self.file_is_completed('Unhandled error: %s' % str(e))
 
         if itm.code != 200:
             self.add_bad_item('HTML status: %i' % itm.code, url)
@@ -336,9 +338,10 @@ class Collection(object):
                     for k in dup_urls.keys():
                         i += dup_urls[k]
                     msg + ' - %i dupes' % i
-                self.log(msg, 2)
+                self.log(msg, 3)
                 old_counted = counted
                 t0 = time.time()
+                self.item_count = len(urllist)
         for key in dup_urls.keys():
             self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, dup_urls[key]), key)
         return urllist
@@ -439,8 +442,6 @@ class VerifyProvider(object):
     #  Progress display
     #
     def show_progress(self):
-        remaining = 0
-        eta_max = 0
         providers = all_providers.keys()
         providers.sort()
         lmsg = ['\n']
@@ -451,16 +452,16 @@ class VerifyProvider(object):
                 col = all_providers[provider][collection]
                 if col.is_completed:
                     continue
-                perc_done = 100 * float(col.items_done()) / (col.item_count + 0.01)
-                remaining += len(col.items)
-                eta = self.eta_calculate(time.time() - col.time_started, perc_done)
-                eta_num = self.numeric_eta(eta)
-                if eta_num > eta_max:
-                    eta_max = eta_num
-                    s_eta_max = eta
-
-                msg = '%25.25s %i/%i (%.2f%%)  \teta: %s' % (col.qname,
-                                                             col.items_done(),
+                if not col._is_initialized:
+                    items_done = 0
+                    perc_done = 0.0
+                    eta = 'Initializing...' # not initialized yet...
+                else:
+                    items_done = col.items_done()
+                    perc_done = 100 * float(col.items_done()) / (col.item_count + 0.01)
+                    eta = 'eta: %s' % self.eta_calculate(time.time() - col.time_started, perc_done)
+                msg = '%25.25s %i/%i (%.2f%%)  \t%s' % (col.qname,
+                                                             items_done,
                                                              col.item_count,
                                                              perc_done, eta)
 
@@ -469,45 +470,15 @@ class VerifyProvider(object):
                     msg += ' - Bad items: %i (%.2f%%)' % (col.bad_items_count(), p)
                 lmsg.append(msg)
         if threading.activeCount() > 1:
-            lmsg.append('==== threads %i \tinitializing %i \twaiting  %i \tcurrently pending files to check %i eta: %s' % (
+            remaining, eta_max = self.stats_all_cols()
+            lmsg.append('==== threads %i   initializing %i   waiting %i   currently pending files  %i   eta: %s' % (
                 threading.activeCount() - 1,
                 self.cols_in_init_phase(),
                 len(self.q_waiting),
                 remaining,
-                s_eta_max))
+                eta_max))
         self.log('\n'.join(lmsg), 2)
         self.time_progess = time.time()
-
-
-    def eta_calculate(self, elapsed_time, perc_done):
-        if perc_done == 0:
-            perc_done = 0.001
-        eta = elapsed_time / float(perc_done/100)
-        h = 0
-        while eta > 3600:
-            h += 1
-            eta -= 3600
-        m = 0
-        while eta > 60:
-            m += 1
-            eta -= 60
-        if h:
-            s = '%i:' % h
-        else:
-            s = '0:'
-        if m:
-            s += '%02i' % m
-        else:
-            s += '00'
-        s += ':%02i' % eta
-        return s
-
-    def numeric_eta(self, eta):
-        h,m,s = eta.split(':')
-        ih = int(h)
-        im = int(m)
-        iis = int(s)
-        return (ih,im,iis)
 
 
     #
@@ -595,6 +566,15 @@ class VerifyProvider(object):
             self.report_print('\n')
             self.report_print('-' * 80)
             self.report_print('\n')
+
+        if threading.activeCount() > 1:
+            remaining, eta_max = self.stats_all_cols()
+            self.report_print('==== threads %i   initializing %i   waiting %i   currently pending files  %i   eta: %s' % (
+                threading.activeCount() - 1,
+                self.cols_in_init_phase(),
+                len(self.q_waiting),
+                remaining,
+                eta_max))
         if to_file:
             self.report_fp.close()
         return
@@ -695,6 +675,56 @@ class VerifyProvider(object):
     #
     #   Generic things
     #
+    def eta_calculate(self, elapsed_time, perc_done):
+        if perc_done == 0:
+            perc_done = 0.001
+        eta = elapsed_time / float(perc_done/100)
+        h = 0
+        while eta > 3600:
+            h += 1
+            eta -= 3600
+        m = 0
+        while eta > 60:
+            m += 1
+            eta -= 60
+        if h:
+            s = '%i:' % h
+        else:
+            s = '0:'
+        if m:
+            s += '%02i' % m
+        else:
+            s += '00'
+        s += ':%02i' % eta
+        return s
+
+
+    def numeric_eta(self, eta):
+        h,m,s = eta.split(':')
+        ih = int(h)
+        im = int(m)
+        iis = int(s)
+        return (ih,im,iis)
+
+
+    def stats_all_cols(self):
+        remaining = 0
+        eta_max = 0
+        for provider in all_providers.keys():
+            for collection in all_providers[provider].keys():
+                col = all_providers[provider][collection]
+                if not col._is_initialized or col.is_completed:
+                    continue
+                remaining += len(col.items)
+                perc_done = 100 * float(col.items_done()) / (col.item_count + 0.01)
+                eta = self.eta_calculate(time.time() - col.time_started, perc_done)
+                eta_num = self.numeric_eta(eta)
+                if eta_num > eta_max:
+                    eta_max = eta_num
+                    s_eta_max = eta
+        return remaining, s_eta_max
+
+
     def cols_in_init_phase(self):
         count = 0
         for provider in all_providers.keys():
