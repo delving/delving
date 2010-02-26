@@ -500,7 +500,6 @@
         <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
         <europeana.portal.version>0.6</europeana.portal.version>
         <europeana.api.version>0.1</europeana.api.version>
-        <europeana.portal.version>0.6</europeana.portal.version>
         <europeana.dashboard.version>0.3</europeana.dashboard.version>
 
         <jdkLevel>1.6</jdkLevel>

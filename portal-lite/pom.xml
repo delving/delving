@@ -100,16 +100,21 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty</artifactId>
-            <scope>test</scope>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>eu.europeana</groupId>
+			<artifactId>core</artifactId>
+			<version>${europeana.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jsp-2.1</artifactId>
