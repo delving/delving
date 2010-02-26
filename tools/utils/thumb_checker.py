@@ -48,7 +48,7 @@
  100223 jaclu  Initial release
  100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.1.1'
+_version = '0.1.2'
 
 """
 collections that was disconnected
@@ -103,7 +103,7 @@ ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
 
-INTERVALL_PROGRES = 30
+INTERVALL_PROGRES = 2
 INTERVALL_REPORT = 60
 
 MAX_NO_THREADS = 50
@@ -307,7 +307,7 @@ class Collection(object):
         dup_urls = {}
         t0 = time.time()
         counted = old_counted = 0
-        for line_lf in lines:# lines:#[:12]:
+        for line_lf in lines[:250]:
             line = line_lf[:-1]
             if not line or line[0]=='#':
                 continue
@@ -318,7 +318,10 @@ class Collection(object):
                 dup_urls[url] = dup_urls.get(url,0) + 1
             counted +=1
             if t0 + INTERVALL_PROGRES < time.time():
-                self.log('reading file %s - %i / %i done (rate %i)' % (self.fname, counted, len(lines), counted - old_counted), 2)
+                msg = 'reading file %s - %i / %i done (rate %i)' % (self.fname, counted, len(lines), counted - old_counted)
+                if dup_urls:
+                    msg + ' - %i dupes' % dup_urls
+                self.log(msg, 2)
                 old_counted = counted
                 t0 = time.time()
         for key in dup_urls.keys():
@@ -445,7 +448,7 @@ class VerifyProvider(object):
                                                              perc_done, eta)
 
                 if col.bad_items_count():
-                    p = 100 * col.bad_items_count() / float(col.items_done())
+                    p = min(100,100 * col.bad_items_count() / float(col.bad_items_count()))
                     msg += ' - Bad items: %i (%.2f%%)' % (col.bad_items_count(), p)
                 self.log(msg, 2)
         if threading.activeCount() > 1:
@@ -533,8 +536,8 @@ class VerifyProvider(object):
                     msg += '\ttimeouts: %i\t<===' % col.timeout_counter
                 bad_count = col.bad_items_count()
                 if bad_count:
-                    msg += '\tBAD ITEMS: %i (%.1f%%)' % (bad_count,
-                                                          100 * bad_count/float(col.item_count))
+                    p = min(100,100 * bad_count / float(col.item_count))
+                    msg += '\tBAD ITEMS: %i (%.1f%%)' % (bad_count, p)
                 if col.aboort_reason:
                     msg += '  %s  <===== Aborted' % col.aboort_reason
                 self.report_print(msg)
@@ -563,8 +566,9 @@ class VerifyProvider(object):
 
             msg = '%s \titems:%i verified: %i' % (provider, prov_item_count, prov_item_verified)
             if prov_item_bad:
-                msg += ' \tBAD ITEMS: %i (%.1f%%)' % (prov_item_bad,
-                                                      100 * prov_item_bad/float(prov_item_count))
+                p = min(100,100 * prov_item_bad / float(prov_item_count))
+                #p = 100 * prov_item_bad/float(prov_item_count)
+                msg += ' \tBAD ITEMS: %i (%.1f%%)' % (prov_item_bad, p)
             if not prov_item_verified:
                 msg += ' \t<-- no items!'
             self.report_print(msg)
