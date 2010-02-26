@@ -46,8 +46,9 @@
 
  History:
  100223 jaclu  Initial release
+ 100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.0.2'
+_version = '0.1.0'
 
 """
 collections that was disconnected
@@ -102,8 +103,8 @@ ABORT_REASON = 'abort_reason'
 
 URL_TIMEOUT = 10
 
-INTERVALL_PROGRES = 5
-INTERVALL_REPORT = 29
+INTERVALL_PROGRES = 30
+INTERVALL_REPORT = 60
 
 MAX_NO_THREADS = 50
 
@@ -129,7 +130,6 @@ class Collection(object):
         self.qname = os.path.split(fname)[1].split('_urls')[0] # do we need to keep qname??
         self.provider = self.qname[:3]
         self.collection = self.qname[:5]
-        self.unique_urls = {}
         self.items_verified = 0 # items verified to exist and of reasonable mime type
         self.bad_items = {} # key is complaint, value is list of urls
         self.aboort_reason = '' # if set this is why collection was aborted (human readable)
@@ -149,9 +149,14 @@ class Collection(object):
                         ]
         self.mime_not_good = ['text/html',] # mime types tested to be bad
         self.time_started = time.time()
+        self.log('+    %s Creting Collection obj' % self.collection, 8)
         self.items = self.generate_urllist() # still unprocessed items
         self.item_count = len(self.items) # number of items
         self.bind_to_provider() # for report grouping etc
+        if self.time_started + 3 < time.time():
+            self.log('++   %s Collection obj Created' % self.collection, 1)
+        return
+
 
 
     def check_item(self):
@@ -288,9 +293,8 @@ class Collection(object):
 
 
     def log(self,msg,lvl=2):
-        if lvl > self.debug_lvl:
+        if self.debug_lvl < lvl:
             return
-
         print msg
     #
     #  Parse file, extract all urls
@@ -300,20 +304,25 @@ class Collection(object):
         lines = fp.readlines()
         fp.close()
         urllist = []
-        for line_lf in lines:#[:12]:
-            line = line_lf.strip()
+        dup_urls = {}
+        t0 = time.time()
+        counted = old_counted = 0
+        for line_lf in lines:# lines:#[:12]:
+            line = line_lf[:-1]
             if not line or line[0]=='#':
                 continue
-            line.split('wget')
             url = line.split('wget ')[1].split('-O')[0].strip()
-            if url not in self.unique_urls.keys():
-                self.unique_urls[url] = 0
+            if url not in urllist:
                 urllist.append(url)
-            self.unique_urls[url] += 1
-        for key in self.unique_urls.keys():
-            if self.unique_urls[key] > 1:
-                self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, self.unique_urls[key]),
-                                  key)
+            else:
+                dup_urls[url] = dup_urls.get(url,0) + 1
+            counted +=1
+            if t0 + INTERVALL_PROGRES < time.time():
+                self.log('reading file %s - %i / %i done (rate %i)' % (self.fname, counted, len(lines), counted - old_counted), 2)
+                old_counted = counted
+                t0 = time.time()
+        for key in dup_urls.keys():
+            self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, dup_urls[key]), key)
         return urllist
 
 
@@ -376,7 +385,7 @@ class VerifyProvider(object):
     #  Check all the items from one file (collection)
     #
     def do_file(self, collection, show_progress=False):
-        self.log('>>>  %s processing starting' % collection.collection, 8)
+        self.log('>>>  %s processing starting' % collection.collection, 5)
         t0 = t1 = time.time()
         while True:
             if show_progress:
@@ -389,7 +398,7 @@ class VerifyProvider(object):
             if not collection.check_item():
                 break
             pass
-        self.log('<<<  %s processing completed' % collection.collection, 8)
+        self.log('<<<  %s processing completed' % collection.collection, 5)
         return
 
 
@@ -582,7 +591,7 @@ class VerifyProvider(object):
         i = 0
         for host_name, fname in self.q_waiting:
             i += 1
-            if blimited and i > MAX_NO_THREADS:
+            if blimited and i > 10:
                 break
             if len(self.running_threads) > MAX_NO_THREADS:
                 break
@@ -662,9 +671,8 @@ class VerifyProvider(object):
     #   Generic things
     #
     def log(self,msg,lvl=2):
-        if lvl > self.debug_lvl:
+        if self.debug_lvl < lvl:
             return
-
         print msg
 
 
@@ -684,5 +692,5 @@ if len(sys.argv) > 2:
 
 print 'thumb_checker - version', _version
 
-vp = VerifyProvider(debug_lvl=5)
+vp = VerifyProvider(debug_lvl=9)
 vp.run(p)
