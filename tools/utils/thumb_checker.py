@@ -42,13 +42,13 @@
  mockflow
 
 
- Version see: _version below
+ Version see _version below
 
  History:
  100223 jaclu  Initial release
  100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.1.4'
+_version = '0.1.7'
 
 """
 collections that was disconnected
@@ -81,15 +81,10 @@ collections that was disconnected
 import os
 import sys
 import time
-import socket
 import urllib2
 import urlparse
 import threading
 
-
-
-img = 'http://europeana.eu/portal/images/think_culture_logo_top_5.jpg'
-ss = 'http://alma.ablm.se/w2ko2k.tgsz'
 
 ITM_START = 'itm_start'
 ITM_COUNT = 'itm_count'
@@ -106,7 +101,7 @@ URL_TIMEOUT = 10
 INTERVALL_PROGRES = 30
 INTERVALL_REPORT = 60
 
-MAX_NO_THREADS = 20
+MAX_NO_THREADS = 50
 
 ABORT_LIMIT_TIMEOUTS = 50
 ABORT_LIMIT_URLERROR = 50
@@ -161,7 +156,7 @@ class Collection(object):
         self.items = self.generate_urllist()
         self.item_count = len(self.items)
         if self.time_started + 3 < time.time():
-            self.log('-   %s Collection obj initialized' % self.qname, 1)
+            self.log('-    %s Collection obj initialized' % self.qname, 1)
         self._is_initialized = True
 
 
@@ -199,13 +194,17 @@ class Collection(object):
                     b = self.file_is_completed('too many urlerrors')
             self.add_bad_item(reason, url)
             return b
-        except e:
-            return self.file_is_completed('Unhandled error: %s' % str(e))
+        except:
+            return self.file_is_completed('Unhandled error: %s')
 
         if itm.code != 200:
             self.add_bad_item('HTML status: %i' % itm.code, url)
             return True
-        content_t = itm.headers['content-type']#.split(';')[0]
+        try:
+            content_t = itm.headers['content-type']#.split(';')[0]
+        except:
+            self.add_bad_item('Failed to parse mime-type',url)
+            return True
         if content_t in (self.mime_ok):
             self.items_verified += 1
         else:
@@ -314,22 +313,22 @@ class Collection(object):
     #  Parse file, extract all urls
     #
     def generate_urllist(self):
-        fp = open(self.fname)
+        fp = open(self.fname, 'r')
         lines = fp.readlines()
         fp.close()
-        urllist = []
         dup_urls = {}
         t0 = time.time()
         counted = old_counted = 0
+        d_urls = {}
         for line_lf in lines: #[:250]:
             line = line_lf[:-1]
-            if not line or line[0]=='#':
+            if not line or '#' in line:
                 continue
             url = line.split('wget ')[1].split('-O')[0].strip()
-            if url not in urllist:
-                urllist.append(url)
-            else:
+            if d_urls.has_key(url):
                 dup_urls[url] = dup_urls.get(url,0) + 1
+            else:
+                d_urls[url] = None
             counted +=1
             if t0 + INTERVALL_PROGRES  < time.time():
                 msg = '.. reading file %s - %i / %i done (rate %i)' % (self.qname, counted, len(lines), counted - old_counted)
@@ -341,10 +340,10 @@ class Collection(object):
                 self.log(msg, 3)
                 old_counted = counted
                 t0 = time.time()
-                self.item_count = len(urllist)
+                self.item_count = len(d_urls)
         for key in dup_urls.keys():
             self.add_bad_item('%s %s items' % (WARNING_SAME_URL_PREFIX, dup_urls[key]), key)
-        return urllist
+        return d_urls.keys()
 
 
 
@@ -361,6 +360,7 @@ class VerifyProvider(object):
         self.is_running = False
         self.q_waiting = []
         self.running_threads = {}
+        self.time_started = time.ctime()
 
     def run(self, param):
         if self.is_running:
@@ -416,7 +416,7 @@ class VerifyProvider(object):
                     self.show_progress()
                     t0 = time.time()
                 if t1 + INTERVALL_REPORT < time.time():
-                    self.create_report(to_file=True)
+                    self.create_report(to_file=True, ongoing=True)
                     t1 = time.time()
             if not collection.check_item():
                 break
@@ -466,7 +466,7 @@ class VerifyProvider(object):
                                                              perc_done, eta)
 
                 if col.bad_items_count():
-                    p = min(100,100 * col.bad_items_count() / float(col.bad_items_count()))
+                    p = min(100,100 * col.bad_items_count() / float(col.bad_items_count() + col.items_verified))
                     msg += ' - Bad items: %i (%.2f%%)' % (col.bad_items_count(), p)
                 lmsg.append(msg)
         if threading.activeCount() > 1:
@@ -492,7 +492,7 @@ class VerifyProvider(object):
         self.reports[provider][collection] = q
 
 
-    def create_report(self, to_file=False):
+    def create_report(self, to_file=False, ongoing=False):
         if to_file:
             self.report_fp = open(REPORT_FILE, 'w')
             if REPORT_BAD_ITEMS:
@@ -505,8 +505,13 @@ class VerifyProvider(object):
             self.report_fp = sys.stdout
         self.report_print('\n')
         self.report_print('=' * 80)
-        self.report_print('\n\tAvailability of thumbnail items on servers\n')
-        self.report_print('')
+        self.report_print('\n\tAvailability of thumbnail items on Europeana providers')
+        self.report_print(  '\t------------------------------------------------------')
+        self.report_print('\tProcess started : %s' % self.time_started)
+        self.report_print('\tReport generated: %s' % time.ctime())
+        if ongoing:
+            self.report_print('\tprocess still running!')
+        self.report_print('\n')
         bfound_bad_items = False
         providers = all_providers.keys()
         providers.sort()
@@ -527,7 +532,7 @@ class VerifyProvider(object):
                     msg += '\ttimeouts: %i\t<===' % col.timeout_counter
                 bad_count = col.bad_items_count()
                 if bad_count:
-                    p = min(100,100 * bad_count / float(col.item_count))
+                    p = min(100,100 * bad_count / float(bad_count + col.items_verified))
                     msg += '\tBAD ITEMS: %i (%.1f%%)' % (bad_count, p)
                 if col.aboort_reason:
                     msg += '  %s  <===== Aborted' % col.aboort_reason
@@ -557,15 +562,15 @@ class VerifyProvider(object):
 
             msg = '%s \titems:%i verified: %i' % (provider, prov_item_count, prov_item_verified)
             if prov_item_bad:
-                p = min(100,100 * prov_item_bad / float(prov_item_count))
+                p = min(100,100 * prov_item_bad / float(prov_item_bad + prov_item_verified))
                 #p = 100 * prov_item_bad/float(prov_item_count)
                 msg += ' \tBAD ITEMS: %i (%.1f%%)' % (prov_item_bad, p)
             if not prov_item_verified:
                 msg += ' \t<-- no items!'
             self.report_print(msg)
-            self.report_print('\n')
+            self.report_print('')
             self.report_print('-' * 80)
-            self.report_print('\n')
+            self.report_print('')
 
         if threading.activeCount() > 1:
             remaining, eta_max = self.stats_all_cols()
