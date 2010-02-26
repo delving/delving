@@ -35,13 +35,82 @@
 	</parent>
 
 	<modules>
-        <module>core</module>
+		<module>core</module>
 		<module>api</module>
 		<module>portal-lite</module>
 		<module>portal-full</module>
 		<module>dashboard</module>
 		<module>sip-creator</module>
-        <module>integration-tests</module>
+		<module>integration-tests</module>
 	</modules>
+
+	<!-- Multimodule checkstyle config -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.5</version>
+				<dependencies>
+					<dependency>
+						<groupId>eu.europeana</groupId>
+						<artifactId>core</artifactId>
+						<version>${europeana.core.version}</version>
+					</dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>api</artifactId>
+                        <version>${europeana.api.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>portal-full</artifactId>
+                        <version>${europeana.portal.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>portal-lite</artifactId>
+                        <version>${europeana.portal.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>sip-creator</artifactId>
+                        <version>${europeana.sip-creator.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>dashboard</artifactId>
+                        <version>${europeana.dashboard.version}</version>
+                    </dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <generateReports>true</generateReports>
+                </configuration>
+            </plugin>
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+            </plugin>           
+        </plugins>
+    </reporting>
 
 </project>

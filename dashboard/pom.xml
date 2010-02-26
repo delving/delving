@@ -31,7 +31,7 @@
     <artifactId>dashboard</artifactId>
     <packaging>war</packaging>
     <name>Europeana Dashboard</name>
-    <version>0.3</version>
+    <version>${europeana.dashboard.version}</version>
     <organization>
         <name>Europeana Foundation</name>
         <url>http://www.europeana.eu</url>

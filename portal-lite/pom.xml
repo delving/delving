@@ -102,11 +102,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
