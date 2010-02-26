@@ -48,7 +48,7 @@
  100223 jaclu  Initial release
  100226 jaclu  Second rev - v0.1.0, improved reporting
 """
-_version = '0.1.0'
+_version = '0.1.1'
 
 """
 collections that was disconnected
