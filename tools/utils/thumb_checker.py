@@ -149,12 +149,12 @@ class Collection(object):
                         ]
         self.mime_not_good = ['text/html',] # mime types tested to be bad
         self.time_started = time.time()
-        self.log('+    %s Creting Collection obj' % self.collection, 8)
+        self.log('+    %s Creting Collection obj' % self.qname, 5)
         self.items = self.generate_urllist() # still unprocessed items
         self.item_count = len(self.items) # number of items
         self.bind_to_provider() # for report grouping etc
         if self.time_started + 3 < time.time():
-            self.log('++   %s Collection obj Created' % self.collection, 1)
+            self.log('++   %s Collection obj Created' % self.qname, 1)
         return
 
 
