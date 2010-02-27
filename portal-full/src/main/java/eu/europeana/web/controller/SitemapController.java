@@ -27,6 +27,7 @@ import eu.europeana.core.querymodel.query.DocId;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.querymodel.query.SiteMapBeanView;
+import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -67,7 +68,11 @@ public class SitemapController {
     @Autowired
     DashboardDao dashboardDao;
 
+    @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
 //    @RequestMapping("/sitemap.xml")
+
     public ModelAndView handleSitemap(
             @RequestParam(value = "collection", required = false) String collection,
             @RequestParam(value = "page", required = false) String page,
@@ -111,10 +116,11 @@ public class SitemapController {
                 }
             }
         }
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
         return mavPage;
     }
 
-     /**
+    /**
      * This is a test method to determine the load crawl bots put on the system and to see how a test collection
      * "tel-treasures" is discoverable via the web search engine
      *
@@ -123,7 +129,9 @@ public class SitemapController {
      * @param request
      * @return ModelAndView
      * @throws org.apache.solr.client.solrj.SolrServerException
+     *
      * @throws eu.europeana.core.querymodel.query.EuropeanaQueryException
+     *
      */
     @RequestMapping("/sitemap.xml")
     public ModelAndView handleTestSitemap(
@@ -171,6 +179,7 @@ public class SitemapController {
                 }
             }
         }
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
         return mavPage;
     }
 

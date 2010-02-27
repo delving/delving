@@ -33,6 +33,7 @@ import org.joda.time.DateTime;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());
 
     @Override
-    public void log(HttpServletRequest request, UserAction action, ModelAndView model) {
+    public void logUserAction(HttpServletRequest request, UserAction action, ModelAndView model) {
         log.info(
                 MessageFormat.format(
                         "[action={0}, view={1}, {2}]",
@@ -59,7 +60,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
      */
 
     @Override
-    public void log(HttpServletRequest request, UserAction action) {
+    public void logUserAction(HttpServletRequest request, UserAction action) {
         log.info(
                 MessageFormat.format(
                         "[action={0}, {1}]",
@@ -67,14 +68,15 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     }
 
     @Override
-    public void log(HttpServletRequest request, UserAction action, String logString) {
+    public void logCustomUserAction(HttpServletRequest request, UserAction action, String logString) {
         log.info(
                 MessageFormat.format(
                         "[action={0}, {2}, {1}]",
                         action, printLogAffix(request), logString));
     }
 
-    public void log(HttpServletRequest request, StaticPageType pageType) {
+    @Override
+    public void logStaticPageView(HttpServletRequest request, StaticPageType pageType) {
         log.info(
                 MessageFormat.format(
                         "[action={0}, view={1}, {2}]",
@@ -82,7 +84,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     }
 
     @Override
-    public void log(HttpServletRequest request, Language oldLocale, UserAction languageChange) {
+    public void logLanguageChange(HttpServletRequest request, Language oldLocale, UserAction languageChange) {
         log.info(
                 MessageFormat.format(
                         "[action={0}, oldLang={1}, {2}]",
@@ -90,8 +92,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     }
 
     @Override
-    public void log(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView model) {
-        ClickStreamLogger.LogTypeId logTypeId;
+    public void logBriefResultView(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView page) {
         String query = briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery(); //
         String queryConstraints = "";
         if (solrQuery.getFilterQueries() != null) {
@@ -112,21 +113,21 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 MessageFormat.format(
                         "[action={0}, view={1}, query={2}, queryType={7}, queryConstraints=\"{3}\", page={4}, " +
                                 "numFound={5}, langFacet={8}, countryFacet={9}, {6}]",
-                        UserAction.BRIEF_RESULT, model.getViewName(), query,
+                        UserAction.BRIEF_RESULT, page.getViewName(), query,
                         queryConstraints, pageNr, nrResults, printLogAffix(request), solrQuery.getQueryType(),
                         languageFacets, countryFacet));
     }
 
     @Override
-    public void log(HttpServletRequest request, FullBeanView fullResultView, ModelAndView model, String europeanaUri) {
-        // todo implement this
-
+    public void logFullResultView(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri) {
         String originalQuery = "";
         String startPage = "";
         try {
             DocIdWindowPager idWindowPager = fullResultView.getDocIdWindowPager();
             originalQuery = idWindowPager.getQuery();
             startPage = idWindowPager.getStartPage();
+        } catch (UnsupportedEncodingException e) {
+            // todo decide what to do with this error
         } catch (Exception e) {
             // todo decide what to do with this error
         }
@@ -137,7 +138,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                         startPage, originalQuery));
     }
 
-    private String printLogAffix(HttpServletRequest request) {
+    private static String printLogAffix(HttpServletRequest request) {
         DateTime date = new DateTime();
         String ip = request.getRemoteAddr();
         String reqUrl = getRequestUrl(request);
@@ -150,18 +151,20 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             userId = "";
         }
         String language = ControllerUtil.getLocale(request).toString();
+        String userAgent = request.getHeader("User-Agent");
+        String referer = request.getHeader("referer");
         return MessageFormat.format(
-                "userId={0}, lang={1}, req={4}, date={2}, ip={3}",
-                userId, language, date, ip, reqUrl);
+                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}",
+                userId, language, date, ip, reqUrl, userAgent, referer);
     }
 
-    private String getRequestUrl(HttpServletRequest request) {
+    private static String getRequestUrl(HttpServletRequest request) {
         String base = ControllerUtil.getFullServletUrl(request);
         String queryStringParameters = request.getQueryString();
         Map postParameters = request.getParameterMap();
         StringBuilder out = new StringBuilder();
-        String queryString;
         out.append(base);
+        String queryString;
         if (queryStringParameters != null) {
             out.append("?").append(queryStringParameters);
             queryString = out.toString();

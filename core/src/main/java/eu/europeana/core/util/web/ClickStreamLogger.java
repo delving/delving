@@ -95,6 +95,7 @@ public interface ClickStreamLogger {
         TAG_GRID,
         YEAR_GRID,
         BROWSE_BOB,
+        SITE_MAP_XML,
 
         // ajax related actions
         SAVE_ITEM,
