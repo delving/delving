@@ -61,19 +61,19 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface ClickStreamLogger {
 
-    void log(HttpServletRequest request, UserAction action, ModelAndView model);
+    void logUserAction(HttpServletRequest request, UserAction action);
 
-    void log(HttpServletRequest request, UserAction action);
+    void logUserAction(HttpServletRequest request, UserAction action, ModelAndView model);
 
-    void log(HttpServletRequest request, StaticPageType pageType);
+    void logCustomUserAction(HttpServletRequest request, UserAction action, String logString);
 
-    void log(HttpServletRequest request, Language oldLocale, UserAction languageChange);
+    void logStaticPageView(HttpServletRequest request, StaticPageType pageType);
 
-    void log(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView page);
+    void logLanguageChange(HttpServletRequest request, Language oldLocale, UserAction languageChange);
 
-    void log(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri) throws Exception;
+    void logBriefResultView(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView page);
 
-    void log(HttpServletRequest request, UserAction action, String logString);
+    void logFullResultView(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri);
 
     /**
      * Enum for different user actions that can be logged.
@@ -110,6 +110,9 @@ public interface ClickStreamLogger {
         REMOVE_SEARCH_TERM,
         SEND_EMAIL_TO_FRIEND,
         TAG_AUTOCOMPLETE,
+
+        // navigation related actions
+        DIRECT_LINK,
 
         // user management related actions
         REGISTER,
