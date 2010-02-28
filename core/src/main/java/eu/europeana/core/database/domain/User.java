@@ -313,6 +313,7 @@ public class User implements Serializable {
             return list;
         }
 
+        @Override
         public int compareTo(SocialTagList other) {
             return other.list.size() - list.size();
         }

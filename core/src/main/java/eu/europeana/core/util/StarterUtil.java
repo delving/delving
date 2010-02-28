@@ -103,6 +103,7 @@ public class StarterUtil {
 
     private static boolean checkFor(File here, String... subDirectories) {
         File[] subdirs = here.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File file) {
                 return file.isDirectory();
             }

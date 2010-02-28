@@ -38,9 +38,11 @@ public class UsernameConstraintValidator implements ConstraintValidator<Username
     @Autowired
     private UserDao userDao;
 
+    @Override
     public void initialize(UsernameConstraint usernameConstraint) {
     }
 
+    @Override
     public boolean isValid(String userName, ConstraintValidatorContext context) {
         for (int i = 0; i < userName.length(); i++) {
             char c = userName.charAt(i);

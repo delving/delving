@@ -23,6 +23,7 @@ import java.util.List;
 public abstract class FileUploadServlet extends HttpServlet implements Servlet {
     private Logger log = Logger.getLogger(getClass());
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/plain");
         FileItem uploadItem = getFileItem(request);

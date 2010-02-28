@@ -66,7 +66,7 @@ public class ResultPaginationImpl implements ResultPagination {
         presentationQuery.typeQuery = removePresentationFilters(requestQueryString);
     }
 
-    private String removePresentationFilters(String requestQueryString) {
+    private static String removePresentationFilters(String requestQueryString) {
         String[] filterQueries = requestQueryString.split("&");
         StringBuilder url = new StringBuilder();
         for (String filterQuery : filterQueries) {
@@ -91,7 +91,7 @@ public class ResultPaginationImpl implements ResultPagination {
         return urlString;
     }
 
-    private String createQueryForPresentation(SolrQuery solrQuery) {
+    private static String createQueryForPresentation(SolrQuery solrQuery) {
         StringBuilder queryString = new StringBuilder();
         queryString.append("query").append("=").append(encode(solrQuery.getQuery()));
         String[] facetQueries = SolrQueryUtil.getFilterQueriesWithoutPhrases(solrQuery);

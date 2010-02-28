@@ -29,6 +29,7 @@ public class VerifyDialog extends DialogBox {
         this.setText(caption);
         this.setWidget(createDialogWidget());
         closeButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event)  {
                 VerifyDialog.this.hide();
                 if (action != null && yesCheckBox.getValue()) {

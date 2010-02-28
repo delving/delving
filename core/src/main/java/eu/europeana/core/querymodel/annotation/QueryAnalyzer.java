@@ -25,6 +25,7 @@ import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import eu.europeana.core.querymodel.query.QueryType;
 
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,7 +35,6 @@ import java.util.TreeSet;
  * - " AND ", " OR ", " NOT " (both uppercase)
  * - a fielded query (detected by the use of a : seperating field and query), e.g. title:"something
  * - a word or phrase prefixed by + or -
- * - todo: find out if dismax (simple query) handles phrase queries
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -78,7 +78,7 @@ public class QueryAnalyzer {
         return QueryType.SIMPLE_QUERY;
     }
 
-    public String sanitize(String query) {
+    public static String sanitize(String query) {
         String[] terms = query.split("\\s+");
         StringBuilder out = new StringBuilder();
         for (String term : terms) {
@@ -126,24 +126,29 @@ public class QueryAnalyzer {
      * @param params request parameters
      * @return all parameters formatted as a single Lucene Query
      */
-    public String createAdvancedQuery(Map<String, String[]> params) {
+
+    public static String createAdvancedQuery(Map<String, String[]> params) {
         StringBuilder queryString = new StringBuilder();
         for (int i = 1; i < 4; i++) {
-            if (params.containsKey("query" + i) && params.containsKey("facet" + i)) {
-                String facet = params.get("facet" + i)[0];
-                String query = params.get("query" + i)[0];
+            if (params.containsKey(MessageFormat.format("query{0}", i)) && params.containsKey(MessageFormat.format("facet{0}", i))) {
+                String facetDefault = "text";
+                String facet = params.get(MessageFormat.format("facet{0}", i))[0];
+                String query = params.get(MessageFormat.format("query{0}", i))[0];
                 String operator = null;
                 if (i != 1) {
-                    operator = params.get("operator" + i)[0];
+                    operator = params.get(MessageFormat.format("operator{0}", i))[0];
                 }
                 if (!query.isEmpty()) {
                     if (operator != null) {
                         queryString.append(" ").append(operator).append(" ");
                     }
-                    if (facet.isEmpty()) {
-                        facet = "text";
+                    if (!facet.isEmpty()) {
+                        queryString.append(facet);
                     }
-                    queryString.append(facet).append(":").append(query);
+                    else {
+                        queryString.append("text");
+                    }
+                    queryString.append(":").append(query);
                 }
             }
         }

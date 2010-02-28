@@ -71,7 +71,7 @@ public class StaticPageController {
         if (pageValue != null) {
             pageModel.addObject("pageValue", pageValue);
         }
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ pageName);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ pageName);
         return pageModel;
     }
 
@@ -82,7 +82,7 @@ public class StaticPageController {
     @RequestMapping("/advancedsearch.html")
     public ModelAndView AdvancedSearchHandler(HttpServletRequest request) throws Exception {
         StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
-        clickStreamLogger.log(request, pageType);
+        clickStreamLogger.logStaticPageView(request, pageType);
         return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 
@@ -94,14 +94,14 @@ public class StaticPageController {
     @RequestMapping("/error.html")
     public ModelAndView ErrorPageHandler(HttpServletRequest request) throws Exception {
         StaticPageType pageType = StaticPageType.ERROR;
-        clickStreamLogger.log(request, pageType);
+        clickStreamLogger.logStaticPageView(request, pageType);
         return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 
     @RequestMapping("/sitemap.html")
     public ModelAndView siteMapHandler(HttpServletRequest request) throws Exception {
         StaticPageType pageType = StaticPageType.SITEMAP;
-        clickStreamLogger.log(request, pageType);
+        clickStreamLogger.logStaticPageView(request, pageType);
         return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 

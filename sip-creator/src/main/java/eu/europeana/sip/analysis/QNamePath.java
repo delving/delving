@@ -1,7 +1,6 @@
 package eu.europeana.sip.analysis;
 
 import javax.xml.namespace.QName;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Stack;
@@ -51,6 +50,7 @@ public class QNamePath implements Comparable<QNamePath>, Serializable {
 //        return us.equals(them);
 //    }
 
+    @Override
     public int compareTo(QNamePath path) {
         Iterator<QName> walkUs = stack.iterator();
         Iterator<QName> walkThem = path.stack.iterator();

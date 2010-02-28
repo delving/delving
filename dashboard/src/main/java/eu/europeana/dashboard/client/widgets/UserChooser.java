@@ -37,11 +37,12 @@ public class UserChooser extends DashboardWidget {
         return selectedUser;
     }
 
+    @Override
     protected Widget createWidget() {
         HorizontalPanel panel = new HorizontalPanel();
         suggestBox = new SuggestBox(new UserOracle());
         suggestBox.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
-        	
+
         	@Override
             public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
                 UserSuggestion suggestion = (UserSuggestion)event.getSelectedItem();
@@ -69,10 +70,12 @@ public class UserChooser extends DashboardWidget {
             this.user = user;
         }
 
+        @Override
         public String getDisplayString() {
             return user.getUserName()+" <"+user.getEmail()+">";
         }
 
+        @Override
         public String getReplacementString() {
             return getDisplayString();
         }
@@ -92,6 +95,7 @@ public class UserChooser extends DashboardWidget {
                     busy = false;
                     super.onFailure(caught);
                 }
+                @Override
                 public void onSuccess(List<UserX> result) {
                     List<UserSuggestion> suggestions = new ArrayList<UserSuggestion>();
                     for (UserX user : result) {

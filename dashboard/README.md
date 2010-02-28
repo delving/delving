@@ -1,9 +1,23 @@
+Title:			Readme Dashboard Module  
+Subtitle:		The dashboard is used to Adminstrate the Europeana Framework  
+Author:			Sjoerd Siebinga  
+Affiliation:	Open Europeana  
+Date:			January 30, 2010  
+Copyright:		2010 Open Europeana
+				This work is licensed under a Creative Commons License.  
+				http://creativecommons.org/licenses/by-sa/2.5/
+Keywords:		
+
+# Readme Dashboard Module #
+
+
+<!--
 Development start-up on IntelliJ
 
 1. Modify your role
 
  - Launch portal on http://localhost:8983/portal/ and create an account for yourself
- - In InteeliJ open the Data Sources tab to your right
+ - In IntelliJ open the Data Sources tab to your right
  - add data source
    URL: jdbc:postgresql:europeana
    user: europeana
@@ -46,5 +60,23 @@ Development start-up on IntelliJ
  You should eb able to come back to portal http://localhost:8983/portal, to search for
  *:*
  and see some results (in fact, see all records from the test dataset).
+-->
 
+## Software License ##
 
+Licensed under the EUPL, Version 1.0 or as soon they
+will be approved by the European Commission - subsequent
+versions of the EUPL (the "Licence");
+you may not use this work except in compliance with the
+Licence.
+You may obtain a copy of the Licence at:
+
+http://ec.europa.eu/idabc/eupl
+
+Unless required by applicable law or agreed to in
+writing, software distributed under the Licence is
+distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+express or implied.
+See the Licence for the specific language governing
+permissions and limitations under the Licence.

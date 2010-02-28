@@ -2,12 +2,9 @@ package eu.europeana.sip.analysis;
 
 import eu.europeana.query.RecordField;
 import eu.europeana.sip.transform.Transform;
-import javax.swing.*;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -36,6 +33,7 @@ public class TransformPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.add(new JLabel("Choose transform:", JLabel.RIGHT), BorderLayout.WEST);
         transformBox.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent itemEvent) {
                 setTransform();
             }

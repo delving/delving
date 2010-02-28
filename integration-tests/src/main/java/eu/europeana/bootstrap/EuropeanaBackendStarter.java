@@ -61,6 +61,7 @@ public class EuropeanaBackendStarter {
 
     private static boolean checkDirectory(File here) {
         File[] subdirs = here.listFiles(new FileFilter() {
+            @Override
             public boolean accept(File file) {
                 return file.isDirectory();
             }

@@ -11,12 +11,13 @@ import java.io.IOException;
 /**
  * Make sure all returns are UTF8
  *
- * todo: authors?
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 public class Utf8OnlyFilter extends OncePerRequestFilter {
     private static final String UTF8 = "UTF-8";
 
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.setContentType("text/html; charset=" + UTF8);
         request.setCharacterEncoding(UTF8);

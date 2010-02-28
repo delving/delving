@@ -6,24 +6,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.HorizontalSplitPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A simplified way of importing collections for sandbox testing
@@ -49,6 +39,7 @@ public class SandboxWidget extends DashboardWidget {
         super(world);
         collectionListWidget = new CollectionListWidget(world);
         collectionListWidget.setClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent widget) {
                 browseDataSets.setValue(true);
                 showFilteredCollections();
@@ -88,6 +79,7 @@ public class SandboxWidget extends DashboardWidget {
         rightPanel.add(collectionWidget.getWidget());
     }
 
+    @Override
     protected Widget createWidget() {
         HorizontalSplitPanel split = new HorizontalSplitPanel();
         split.setSplitPosition("30%");
@@ -97,6 +89,7 @@ public class SandboxWidget extends DashboardWidget {
         split.setWidth("100%");
         newDataSet.setEnabled(false);
         world.service().fetchCollections(world.user().getProviderId(), new Reply<List<EuropeanaCollectionX>>() {
+            @Override
             public void onSuccess(List<EuropeanaCollectionX> result) {
                 collectionListWidget.setCollections(result);
                 newDataSet.setEnabled(true);
@@ -111,18 +104,21 @@ public class SandboxWidget extends DashboardWidget {
     private Widget createLeftWidget() {
         newDataSet = new RadioButton(ACTION_GROUP, world.messages().newDataSet());
         newDataSet.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent widget) {
                 showNewCollection(collectionListWidget.getCollectionCount()+1);
             }
         });
         showDataSet = new RadioButton(ACTION_GROUP, world.messages().showDataSet());
         showDataSet.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent widget) {
                 showSelectedCollection();
             }
         });
         selectedCollectionBox = new SuggestBox(collectionListWidget.getSuggestOracle());
         selectedCollectionBox.addSelectionHandler(new SelectionHandler<SuggestOracle.Suggestion>(){
+            @Override
             public void onSelection(SelectionEvent<SuggestOracle.Suggestion> event) {
                 showDataSet.setValue(true);
                 CollectionListWidget.CollectionSuggestion suggestion = (CollectionListWidget.CollectionSuggestion) event.getSelectedItem();
@@ -137,6 +133,7 @@ public class SandboxWidget extends DashboardWidget {
         showDataSetPanel.add(selectedCollectionBox);
         browseDataSets = new RadioButton(ACTION_GROUP, world.messages().browseDataSets());
         browseDataSets.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent widget) {
                 showFilteredCollections();
             }
@@ -160,8 +157,10 @@ public class SandboxWidget extends DashboardWidget {
     }
 
     private class QueuePoller extends Timer {
+        @Override
         public void run() {
             world.service().fetchQueueEntries(new Reply<List<QueueEntryX>>() {
+                @Override
                 public void onSuccess(List<QueueEntryX> result) {
                     Set<String> collectionsTouched = new HashSet<String>();
                     for (QueueEntryX entry : result) {
@@ -176,6 +175,7 @@ public class SandboxWidget extends DashboardWidget {
                         if (!collectionsTouched.contains(entry.getKey())) {
                             final CollectionWidget collectionWidget = entry.getValue();
                             world.service().fetchCollection(entry.getKey(), null, false, new Reply<EuropeanaCollectionX>() {
+                                @Override
                                 public void onSuccess(EuropeanaCollectionX result) {
                                     collectionWidget.setCollection(result);
                                 }
@@ -189,6 +189,7 @@ public class SandboxWidget extends DashboardWidget {
     }
 
     private class CollectionListener implements CollectionHolder.CollectionAddListener {
+        @Override
         public void addCollection(EuropeanaCollectionX collection) {
             collectionListWidget.addCollection(collection);
             selectedCollection = collection;

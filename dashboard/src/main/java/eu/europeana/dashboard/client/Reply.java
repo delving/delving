@@ -16,6 +16,7 @@ public abstract class Reply<T> implements AsyncCallback<T> {
         Reply.handler = handler;
     }
 
+    @Override
     public void onFailure(Throwable caught) {
         handler.onFailure(caught);
     }

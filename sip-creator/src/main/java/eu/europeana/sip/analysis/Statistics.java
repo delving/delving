@@ -2,11 +2,7 @@ package eu.europeana.sip.analysis;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Maintain a map of strings and counters
@@ -80,6 +76,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         return path + " (" + total + ") "+ (unique ? "unique" : "non-unique");
     }
 
+    @Override
     public int compareTo(Statistics statistics) {
         return path.compareTo(statistics.path);
     }
@@ -103,19 +100,23 @@ public class Statistics implements Comparable<Statistics>, Serializable {
             count++;
         }
 
+        @Override
         public String getValue() {
             return value;
         }
 
+        @Override
         public int getCount() {
             return count;
         }
 
+        @Override
         public String getPercentage() {
             double percent = (double)count / total;
             return PERCENT.format(percent);
         }
 
+        @Override
         public int compareTo(CounterImpl counter) {
             return counter.count - count;
         }

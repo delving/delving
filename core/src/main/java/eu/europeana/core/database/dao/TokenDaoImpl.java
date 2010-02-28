@@ -29,12 +29,14 @@ public class TokenDaoImpl implements TokenDao {
     @PersistenceContext
     protected EntityManager entityManager;
 
+    @Override
     @Transactional
     public void createNewToken(PersistentRememberMeToken persistentRememberMeToken) {
         AuthenticationToken token = new AuthenticationToken(persistentRememberMeToken);
         entityManager.persist(token);
     }
 
+    @Override
     @Transactional
     public void updateToken(String series, String tokenValue, Date lastUsed) {
         AuthenticationToken token = entityManager.find(AuthenticationToken.class, series);
@@ -42,6 +44,7 @@ public class TokenDaoImpl implements TokenDao {
         token.setLastUsed(lastUsed);
     }
 
+    @Override
     @Transactional
     public PersistentRememberMeToken getTokenForSeries(String series) {
         Query query = entityManager.createQuery("select t from AuthenticationToken as t where t.series = :series");
@@ -60,6 +63,7 @@ public class TokenDaoImpl implements TokenDao {
         }
     }
 
+    @Override
     @Transactional
     public void removeUserTokens(String username) {
         Query query = entityManager.createQuery("delete from AuthenticationToken where username = :username");
@@ -71,6 +75,7 @@ public class TokenDaoImpl implements TokenDao {
     private static final int TOKEN_LENGTH = 32;
     private static final long MAX_TOKEN_AGE = 1000L * 60 * 60 * 6;
 
+    @Override
     @Transactional
     public Token createNewToken(String email) {
         //genereate unique value
@@ -91,6 +96,7 @@ public class TokenDaoImpl implements TokenDao {
         return token;
     }
 
+    @Override
     @Transactional
     public void removeToken(Token token) {
         Query query = entityManager.createQuery("delete from Token where token = :token");
@@ -98,6 +104,7 @@ public class TokenDaoImpl implements TokenDao {
         query.executeUpdate();
     }
 
+    @Override
     @Transactional
     public Token getToken(String token) throws EuropeanaQueryException {
         if (token == null) {
@@ -118,6 +125,7 @@ public class TokenDaoImpl implements TokenDao {
         return t;
     }
 
+    @Override
     @Transactional
     public long countTokens() {
         return (Long) entityManager.createQuery("select count(*) from Token").getSingleResult();
@@ -126,6 +134,7 @@ public class TokenDaoImpl implements TokenDao {
     /**
      * This method is intended to be used by unit tests
      */
+    @Override
     @Transactional
     public Token getTokenByEmail(String email) {
         Query q = entityManager.createQuery("select t from Token as t where email = :email");
@@ -137,6 +146,7 @@ public class TokenDaoImpl implements TokenDao {
         return (Token) tokens.get(0);
     }
 
+    @Override
     public boolean isOlderThan(Token token, long time) {
         return (System.currentTimeMillis() - token.getCreated()) > time;
     }

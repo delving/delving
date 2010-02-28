@@ -1,11 +1,6 @@
 package eu.europeana.sip.generator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -156,8 +151,8 @@ public class ProfileGenerator {
                 outputFileName = inputFile.toString().replace("_mapping.txt", "") + "_profile.xml";
             }
             FileWriter writer = new FileWriter(outputFileName);
-            String thisLine;
             writer.append(createHeader(inputFile.getName()));
+            String thisLine;
             while ((thisLine = in.readLine()) != null) {
                 lines++;
                 if (lines > NUMBER_OF_HEADER_LINES && !thisLine.matches("^$")) {

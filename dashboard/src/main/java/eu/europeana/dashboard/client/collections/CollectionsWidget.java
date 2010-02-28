@@ -26,14 +26,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.CollectionHolder;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
@@ -42,12 +35,7 @@ import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.ImportFileX;
 import eu.europeana.dashboard.client.dto.QueueEntryX;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A widget to handle collections
@@ -67,11 +55,13 @@ public class CollectionsWidget extends DashboardWidget {
         super(world);
     }
 
+    @Override
     protected Widget createWidget() {
         mainPanel.setSpacing(10);
         mainPanel.setWidth("100%");
         mainPanel.add(new HTML(world.messages().loadingCollections()));
         world.service().fetchCollections(new Reply<List<EuropeanaCollectionX>>() {
+            @Override
             public void onSuccess(List<EuropeanaCollectionX> result) {
                 collectionsArrived(result);
                 queuePoller.schedule(STATUS_CHECK_DELAY);
@@ -89,6 +79,7 @@ public class CollectionsWidget extends DashboardWidget {
         p.add(createStateSelectorPanel());
         mainPanel.add(p);
         world.service().fetchImportFiles(true, new Reply<List<ImportFileX>>() {
+            @Override
             public void onSuccess(List<ImportFileX> result) {
                 for (ImportFileX file : result) {
                     setImportFile(file);
@@ -110,6 +101,7 @@ public class CollectionsWidget extends DashboardWidget {
         }
         Button select = new Button(world.messages().select());
         select.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event)  {
                 int collectionIndex = collectionStateBox.getSelectedIndex();
                 int fileStateIndex = fileStateBox.getSelectedIndex();
@@ -133,10 +125,12 @@ public class CollectionsWidget extends DashboardWidget {
     private Widget createFileUploadPanel() {
         FileUploadPanel panel = new FileUploadPanel(world);
         panel.setNotifier(new FileUploadPanel.Status() {
+            @Override
             public void uploadStarted(String fileName) {
                 setImportFileName(fileName);
             }
 
+            @Override
             public void uploadEnded(String fileName) {
                 waitForFile(fileName);
             }
@@ -157,6 +151,7 @@ public class CollectionsWidget extends DashboardWidget {
         else {
             collection = createNewCollection(importFile);
             world.service().updateCollection(collection, new Reply<EuropeanaCollectionX>() {
+                @Override
                 public void onSuccess(EuropeanaCollectionX result) {
                     addCollectionPanel(result);
                 }
@@ -189,6 +184,7 @@ public class CollectionsWidget extends DashboardWidget {
             if (cp == null) {
                 collection = createNewCollection(importFile);
                 world.service().updateCollection(collection, new Reply<EuropeanaCollectionX>() {
+                    @Override
                     public void onSuccess(EuropeanaCollectionX collectionX) {
                         addCollectionPanel(collectionX);
                     }
@@ -201,8 +197,7 @@ public class CollectionsWidget extends DashboardWidget {
     }
 
     private EuropeanaCollectionX createNewCollection(ImportFileX importFile) {
-        EuropeanaCollectionX collection;
-        collection = new EuropeanaCollectionX();
+        EuropeanaCollectionX collection = new EuropeanaCollectionX();
         collection.setName(importFile.deriveCollectionName());
         collection.setFileName(importFile.getFileName());
         collection.setDescription(importFile.getFileName());
@@ -216,6 +211,7 @@ public class CollectionsWidget extends DashboardWidget {
     private Widget createCollectionSuggestBox() {
         final SuggestBox box = new SuggestBox(collectionList.getSuggestOracle());
         box.addSelectionHandler (new SelectionHandler<SuggestOracle.Suggestion>() {
+            @Override
             public void onSelection (SelectionEvent<SuggestOracle.Suggestion> event) {
                 CollectionList.Suggestion suggestion = (CollectionList.Suggestion) event.getSelectedItem();
                 addCollectionPanel(suggestion.getCollection());
@@ -237,12 +233,14 @@ public class CollectionsWidget extends DashboardWidget {
         collectionList.updateCollection(collection);
         mainPanel.add(collectionPanel.getWidget());
         collectionPanel.addCollectionUpdateListener(new CollectionHolder.CollectionUpdateListener() {
+            @Override
             public void collectionUpdated(EuropeanaCollectionX collection) {
                 collectionList.updateCollection(collection);
             }
         });
         if (collection.getFileState() != ImportFileX.State.NONEXISTENT) {
             world.service().checkImportFileStatus(collection.getFileName(), true, new Reply<ImportFileX>() {
+                @Override
                 public void onSuccess(ImportFileX result) {
                     collectionPanel.setImportFile(result);
                 }
@@ -252,6 +250,7 @@ public class CollectionsWidget extends DashboardWidget {
     }
 
     private class CollectionClose implements CollectionPanel.CloseNotifier {
+        @Override
         public void close(EuropeanaCollectionX collection) {
             CollectionPanel collectionPanel = collectionPanels.get(collection.getName());
             collectionPanel.getWidget().removeFromParent();
@@ -261,8 +260,10 @@ public class CollectionsWidget extends DashboardWidget {
     }
 
     private class QueuePoller extends Timer {
+        @Override
         public void run() {
             world.service().fetchQueueEntries(new Reply<List<QueueEntryX>>() {
+                @Override
                 public void onSuccess(List<QueueEntryX> result) {
                     Set<String> collectionsTouched = new HashSet<String>();
                     for (QueueEntryX entry : result) {
@@ -277,6 +278,7 @@ public class CollectionsWidget extends DashboardWidget {
                         if (!collectionsTouched.contains(entry.getKey())) {
                             final CollectionPanel collectionPanel = entry.getValue();
                             world.service().fetchCollection(entry.getKey(), null, false, new Reply<EuropeanaCollectionX>() {
+                                @Override
                                 public void onSuccess(EuropeanaCollectionX result) {
                                     if (result != null) {
                                         collectionPanel.setCollection(result);

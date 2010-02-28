@@ -33,9 +33,11 @@ public class ImportFileWidget extends DashboardWidget {
         this.panel.setSpacing(15);
         fileUploadWidget = new FileUploadWidget(world);
         fileUploadWidget.setNotifier(new FileUploadWidget.Status() {
+            @Override
             public void uploadStarted(String fileName) {
                 ImportFileWidget.this.collectionHolder.setImportFileName(fileName);
             }
+            @Override
             public void uploadEnded() {
                 checkTransitionFromState(ImportFileX.State.NONEXISTENT);
             }
@@ -46,6 +48,7 @@ public class ImportFileWidget extends DashboardWidget {
         refreshPanel();
     }
 
+    @Override
     public Widget createWidget() {
         return panel;
     }
@@ -68,6 +71,7 @@ public class ImportFileWidget extends DashboardWidget {
                 case UPLOADED:
                     panel.add(new HTML(theFileIs+world.messages().uploaded()));
                     world.service().commenceValidate(collectionHolder.getImportFile(), collectionHolder.getCollection().getId(), new Reply<ImportFileX>() {
+                        @Override
                         public void onSuccess(ImportFileX result) {
                             collectionHolder.setImportFile(result);
                             refreshPanel();
@@ -81,6 +85,7 @@ public class ImportFileWidget extends DashboardWidget {
                 case VALIDATED:
                     panel.add(new HTML(theFileIs+world.messages().validated()));
                     world.service().commenceImport(collectionHolder.getImportFile(), collectionHolder.getCollection().getId(), false, new Reply<ImportFileX>() {
+                        @Override
                         public void onSuccess(ImportFileX result) {
                             collectionHolder.setImportFile(result);
                             refreshPanel();
@@ -91,8 +96,10 @@ public class ImportFileWidget extends DashboardWidget {
                     panel.add(new HTML(theFileIs+world.messages().importing()));
                     Button cancelImport = new Button(world.messages().abortImport());
                     cancelImport.addClickHandler(new ClickHandler() {
+                        @Override
                         public void onClick(ClickEvent sender) {
                             world.service().abortImport(collectionHolder.getImportFile(), false, new Reply<ImportFileX>() {
+                                @Override
                                 public void onSuccess(ImportFileX result) {
                                     collectionHolder.setImportFile(result);
                                     refreshPanel();
@@ -116,6 +123,7 @@ public class ImportFileWidget extends DashboardWidget {
                     String error = collectionHolder.getCollection().getImportError();
                     if (error == null) {
                         world.service().fetchCollection(collectionHolder.getCollection().getName(), collectionHolder.getImportFile().getFileName(), false, new Reply<EuropeanaCollectionX>() {
+                            @Override
                             public void onSuccess(EuropeanaCollectionX result) {
                                 collectionHolder.setCollection(result);
                                 refreshPanel();
@@ -144,6 +152,7 @@ public class ImportFileWidget extends DashboardWidget {
 
     private void checkStatus() {
         world.service().checkImportFileStatus(collectionHolder.getCollection().getFileName(), false, new Reply<ImportFileX>() {
+            @Override
             public void onSuccess(ImportFileX importFile) {
                 if (importFile != null) {
                     collectionHolder.setImportFile(importFile);
@@ -181,9 +190,11 @@ public class ImportFileWidget extends DashboardWidget {
             return this.currentState == currentState;
         }
 
+        @Override
         public void run() {
             GWT.log("checking for " + collectionHolder.getCollection().getFileName(), null);
             world.service().checkImportFileStatus(collectionHolder.getCollection().getFileName(), false, new Reply<ImportFileX>() {
+                @Override
                 public void onSuccess(ImportFileX result) {
                     if (result != null) {
                         collectionHolder.setImportFile(result);

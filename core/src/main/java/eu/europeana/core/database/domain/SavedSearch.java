@@ -92,7 +92,7 @@ public class SavedSearch implements Serializable {
     }
 
     public Boolean hasSearchTerm() {
-        return searchTerm == null ? false : true;
+        return searchTerm != null;
     }
 
     public SearchTerm createSearchTerm() {

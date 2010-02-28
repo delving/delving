@@ -12,20 +12,24 @@ import java.util.regex.Pattern;
 public enum Transform implements FieldTransform {
 
     NONE(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[0];
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             return string;
         }
     }),
 
     DELIMITED(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Delimiter"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             String[] parts = string.split(parameters[0]);
             StringBuilder whole = new StringBuilder();
@@ -42,10 +46,12 @@ public enum Transform implements FieldTransform {
     }),
 
     SURROUND(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Prefix", "Suffix"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             return parameters[0] + string + parameters[1];
         }
@@ -53,10 +59,12 @@ public enum Transform implements FieldTransform {
 
 
     SURROUND_DELIMITED(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Prefix", "Suffix", "Delimiter"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             String[] parts = string.split(parameters[2]);
             StringBuilder whole = new StringBuilder();
@@ -73,10 +81,12 @@ public enum Transform implements FieldTransform {
     }),
 
     SURROUND_FIRST_DELIMITED(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Prefix", "Suffix", "Delimiter"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             String[] parts = string.split(parameters[2]);
             return parameters[0] + parts[0] + parameters[1];
@@ -84,10 +94,12 @@ public enum Transform implements FieldTransform {
     }),
 
     SURROUND_REPLACE(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Prefix", "Suffix", "From", "To"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             string = parameters[0] + string + parameters[1];
             return string.replace(parameters[2], parameters[3]);
@@ -95,10 +107,12 @@ public enum Transform implements FieldTransform {
     }),
 
     SURROUND_SELECT_DELIMITED(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Prefix", "Suffix", "Delimiter", "Selector"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             String[] parts = string.split(parameters[2]);
             for (String part : parts) {
@@ -111,10 +125,12 @@ public enum Transform implements FieldTransform {
     }),
 
     SURROUND_SELECT_DELIMITED_DEFAULT(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Prefix", "Suffix", "Delimiter", "Selector", "Default Value"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             String[] parts = string.split(parameters[2]);
             for (String part : parts) {
@@ -127,10 +143,12 @@ public enum Transform implements FieldTransform {
     }),
 
     REPLACE(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"From", "To"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             return string.replace(parameters[0], parameters[1]);
         }
@@ -138,10 +156,12 @@ public enum Transform implements FieldTransform {
 
 
     SELECT_IF_CONTAINS(new FieldTransform() {
+        @Override
         public String[] parameterNames() {
             return new String[]{"Selector"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             if (string.contains(parameters[0])) {
                 return string;
@@ -155,10 +175,12 @@ public enum Transform implements FieldTransform {
     EXTRACT_YEAR(new FieldTransform() {
         private final Pattern PATTERN = Pattern.compile("\\d{4}");
 
+        @Override
         public String[] parameterNames() {
             return new String[]{"Selector"};
         }
 
+        @Override
         public String transform(String string, String[] parameters) throws TransformException {
             Matcher matcher = PATTERN.matcher(string);
             if (matcher.find()) {
@@ -168,17 +190,19 @@ public enum Transform implements FieldTransform {
         }
     });
 
-    
+
     private FieldTransform fieldTransform;
 
     Transform(FieldTransform fieldTransform) {
         this.fieldTransform = fieldTransform;
     }
 
+    @Override
     public String[] parameterNames() {
         return fieldTransform.parameterNames();
     }
 
+    @Override
     public String transform(String string, String[] parameters) throws TransformException {
         return fieldTransform.transform(string, parameters);
     }

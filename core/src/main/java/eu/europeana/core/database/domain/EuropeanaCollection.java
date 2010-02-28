@@ -47,15 +47,15 @@ public class EuropeanaCollection implements Serializable {
     @Lob
     private String description;
 
+    @Column(length = 256)
+    private String fileName;
+
     @Column(length = 60)
     private String fileUserName;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date collectionLastModified;
-
-    @Column(length = 256)
-    private String fileName;
 
     @Column(length = 25)
     @Enumerated(EnumType.STRING)
@@ -67,9 +67,6 @@ public class EuropeanaCollection implements Serializable {
 
     @Column
     private Integer totalRecords;
-
-    @Column
-    private Integer totalObjects;
 
     @Column
     private Integer totalOrphans;
@@ -151,15 +148,6 @@ public class EuropeanaCollection implements Serializable {
 
     public void setTotalRecords(Integer totalRecords) {
         this.totalRecords = totalRecords;
-    }
-
-    public Integer getTotalObjects() {
-        if (totalObjects == null) totalObjects = 0;
-        return totalObjects;
-    }
-
-    public void setTotalObjects(Integer totalObjects) {
-        this.totalObjects = totalObjects;
     }
 
     public Integer getTotalOrphans() {

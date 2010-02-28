@@ -171,7 +171,8 @@ public class ControllerUtil {
     public static String formatParameterMapAsQueryString(Map parameterMap) {
         StringBuilder output = new StringBuilder();
         output.append("?");
-        for (Iterator iterator1 = parameterMap.entrySet().iterator(); iterator1.hasNext();) {
+        Iterator iterator1 = parameterMap.entrySet().iterator();
+        while (iterator1.hasNext()) {
             Map.Entry<String, String> entry = (Map.Entry<String, String>) iterator1.next();
             output.append(MessageFormat.format("{0}={1}", entry.getKey(), entry.getValue()));
             if (iterator1.hasNext()) {

@@ -131,10 +131,12 @@ public class ESEImporterImpl implements ESEImporter {
         this.normalized = normalized;
     }
 
+    @Override
     public ImportRepository getImportRepository() {
         return importRepository;
     }
 
+    @Override
     public ImportFile commenceValidate(ImportFile importFile, Long collectionId) {
         importFile = importRepository.transition(importFile, ImportFileState.VALIDATING);
         if (importFile != null) {
@@ -151,6 +153,7 @@ public class ESEImporterImpl implements ESEImporter {
         return null;
     }
 
+    @Override
     public ImportFile commenceImport(ImportFile importFile, Long collectionId) {
         ImportFile importingFile = importRepository.transition(importFile, ImportFileState.IMPORTING);
         if (importingFile != null) {
@@ -167,6 +170,7 @@ public class ESEImporterImpl implements ESEImporter {
         return null;
     }
 
+    @Override
     public ImportFile abortImport(ImportFile importingFile) {
         for (Processor processor : processors) {
             if (processor.getFile().equals(importingFile)) {
@@ -176,6 +180,7 @@ public class ESEImporterImpl implements ESEImporter {
         return importingFile;
     }
 
+    @Override
     public List<ImportFile> getActiveImports() {
         List<ImportFile> active = new ArrayList<ImportFile>();
         for (Processor processor : processors) {
@@ -200,6 +205,7 @@ public class ESEImporterImpl implements ESEImporter {
             this.collection = collection;
         }
 
+        @Override
         public void start() {
             if (this.thread == null) {
                 this.thread = new Thread(this);
@@ -211,6 +217,7 @@ public class ESEImporterImpl implements ESEImporter {
             }
         }
 
+        @Override
         public ImportFile stop() {
             if (thread != null) {
                 Thread threadToJoin = thread;
@@ -225,6 +232,7 @@ public class ESEImporterImpl implements ESEImporter {
             return importFile;
         }
 
+        @Override
         public void run() {
             log.info("Importing " + importFile);
             try {
@@ -431,6 +439,7 @@ public class ESEImporterImpl implements ESEImporter {
 //            return null;
 //        }
 
+        @Override
         public ImportFile getFile() {
             return importFile;
         }
@@ -447,6 +456,7 @@ public class ESEImporterImpl implements ESEImporter {
             this.collectionId = collectionId;
         }
 
+        @Override
         public void run() {
             log.info("Validating " + importFile);
             try {
@@ -504,10 +514,12 @@ public class ESEImporterImpl implements ESEImporter {
             }
         }
 
+        @Override
         public ImportFile getFile() {
             return importFile;
         }
 
+        @Override
         public void start() {
             if (this.thread == null) {
                 this.thread = new Thread(this);
@@ -519,6 +531,7 @@ public class ESEImporterImpl implements ESEImporter {
             }
         }
 
+        @Override
         public ImportFile stop() {
             if (thread != null) {
                 Thread threadToJoin = thread;
@@ -536,10 +549,12 @@ public class ESEImporterImpl implements ESEImporter {
         private class ErrorHandler extends DefaultHandler {
             private List<Throwable> exceptions = new ArrayList<Throwable>();
 
+            @Override
             public void error(SAXParseException parseException) throws SAXException {
                 exceptions.add(parseException);
             }
 
+            @Override
             public void fatalError(SAXParseException parseException) throws SAXException {
                 exceptions.add(parseException);
             }
@@ -583,7 +598,7 @@ public class ESEImporterImpl implements ESEImporter {
         }
     }
 
-    private String exceptionToErrorString(ImportException exception) {
+    private static String exceptionToErrorString(ImportException exception) {
         StringBuilder out = new StringBuilder();
         out.append(exception.getMessage());
         Throwable cause = exception.getCause();

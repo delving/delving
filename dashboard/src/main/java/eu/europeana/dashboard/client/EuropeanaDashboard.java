@@ -31,6 +31,7 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
     /**
      * This is the entry point method.
      */
+    @Override
     public void onModuleLoad() {
         Reply.setHandler(handler);
         service = GWT.create(DashboardService.class);
@@ -136,11 +137,13 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
         format.setColSpan(3, 0, 2);
         Button login = new Button(messages.login());
         login.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                 authenticate();
             }
         });
         password.addKeyPressHandler(new KeyPressHandler() {
+            @Override
             public void onKeyPress(KeyPressEvent event) {
                 if (event.getCharCode() == KeyCodes.KEY_ENTER) {
                     authenticate();
@@ -178,6 +181,7 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
     private void authenticate() {
         message.setText(messages.authenticating());
         service.login(email.getText(), password.getText(), new Reply<UserX>() {
+            @Override
             public void onSuccess(UserX userLoggedIn) {
                 user = userLoggedIn;
                 if (user != null) {
@@ -200,22 +204,27 @@ public class EuropeanaDashboard implements EntryPoint, DashboardWidget.World {
         });
     }
 
+    @Override
     public UserX user() {
         return user;
     }
 
+    @Override
     public DashboardMessages messages() {
         return messages;
     }
 
+    @Override
     public DashboardServiceAsync service() {
         return service;
     }
 
     private class Handler implements Reply.FailureHandler {
+        @Override
         public void onFailure(Throwable caught) {
             errorLabel.setText(messages.serverProblem());
             Timer timer = new Timer() {
+                @Override
                 public void run() {
                     errorLabel.setText("");
                 }

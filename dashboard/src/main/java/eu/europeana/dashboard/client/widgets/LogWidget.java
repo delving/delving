@@ -25,6 +25,7 @@ public class LogWidget extends DashboardWidget {
         super(world);
     }
 
+    @Override
     protected Widget createWidget() {
         grid.setBorderWidth(1);
         DecoratorPanel dp = new DecoratorPanel();
@@ -36,6 +37,7 @@ public class LogWidget extends DashboardWidget {
     private void refresh() {
         if (topId != null) {
             world.service().fetchLogEntriesFrom(topId, PAGE_SIZE, new Reply<List<DashboardLogX>>() {
+                @Override
                 public void onSuccess(List<DashboardLogX> result) {
                     populateGrid(result);
                 }
@@ -46,6 +48,7 @@ public class LogWidget extends DashboardWidget {
                 bottomId = Long.MAX_VALUE;
             }
             world.service().fetchLogEntriesTo(bottomId, PAGE_SIZE, new Reply<List<DashboardLogX>>() {
+                @Override
                 public void onSuccess(List<DashboardLogX> result) {
                     populateGrid(result);
                 }
@@ -81,6 +84,7 @@ public class LogWidget extends DashboardWidget {
         grid.setWidth("900px");
         final Button up = new Button(world.messages().olderEntries());
         up.addClickHandler(new ClickHandler() {
+                        @Override
                         public void onClick(ClickEvent sender) {
                 bottomId = topId;
                 topId = null;
@@ -89,6 +93,7 @@ public class LogWidget extends DashboardWidget {
         });
         final Button down = new Button(world.messages().newerEntries());
         down.addClickHandler(new ClickHandler() {
+                        @Override
                         public void onClick(ClickEvent sender) {
                 topId = bottomId;
                 bottomId = null;

@@ -26,7 +26,7 @@ public class Histogram {
         int fib = 1;
         while (tenths >= fib && which < countArray.length - 1) {
             int save = fib;
-            fib = fib + prev;
+            fib += prev;
             prev = save;
             which++;
         }
@@ -39,7 +39,7 @@ public class Histogram {
         int fib = 1;
         for (int count : countArray) {
             int save = fib;
-            fib = fib + prev;
+            fib += prev;
             prev = save;
             out.append('\t');
             out.append(MILLIS_FORMAT.format(fib * STEP_MILLIS)).append(": ");

@@ -234,6 +234,7 @@ public interface UserDao {
             return "'" + tag + "' (" + count + ")";
         }
 
+        @Override
         public int compareTo(TagCount o) {
             return count.intValue() - o.count.intValue();
         }

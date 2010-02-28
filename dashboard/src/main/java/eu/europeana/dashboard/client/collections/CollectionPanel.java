@@ -38,24 +38,29 @@ public class CollectionPanel extends DashboardWidget {
         this.collectionRecords = new HTML(world.messages().collectionRecords(collection.getTotalRecords()));
         this.closeNotifier = closeNotifier;
         holder.addListener(new CollectionHolder.CollectionUpdateListener() {
+            @Override
             public void collectionUpdated(EuropeanaCollectionX collection) {
                 refreshCollectionRecords();
             }
         });
     }
 
+    @Override
     public Widget createWidget() {
         HTML close = new HTML(world.messages().close());
         close.setStyleName("collectionClose");
         close.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                 closeNotifier.close(holder.getCollection());
             }
         });
         Button recount = new Button(world.messages().recount());
         recount.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                 world.service().updateCollectionCounters(holder.getCollection(), new Reply<EuropeanaCollectionX>() {
+                    @Override
                     public void onSuccess(EuropeanaCollectionX result) {
                         setCollection(result);
                     }

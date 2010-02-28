@@ -73,6 +73,7 @@ public class CollectionWidget extends DashboardWidget {
         }
     }
 
+    @Override
     public Widget createWidget() {
         VerticalPanel panel = new VerticalPanel();
         panel.setSpacing(4);
@@ -122,6 +123,7 @@ public class CollectionWidget extends DashboardWidget {
         descriptionArea.setWidth("100%");
         descriptionArea.setText(holder.getCollection().getDescription());
         descriptionArea.addKeyUpHandler(new KeyUpHandler() {
+            @Override
             public void onKeyUp(KeyUpEvent event) {
                 submit.setEnabled(descriptionEdited());
             }
@@ -131,6 +133,7 @@ public class CollectionWidget extends DashboardWidget {
         submit = new Button(world.messages().submit());
         submit.setEnabled(false);
         submit.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event)  {
                 if (descriptionEdited()) {
                     holder.getCollection().setDescription(descriptionArea.getText().trim());
@@ -138,6 +141,7 @@ public class CollectionWidget extends DashboardWidget {
                 descriptionEdited(); // descriptions are the same again, so return to normal color
                 submit.setEnabled(false);
                 world.service().updateCollection(holder.getCollection(), new Reply<EuropeanaCollectionX>() {
+                    @Override
                     public void onSuccess(EuropeanaCollectionX collectionX) {
                         holder.setCollection(collectionX);
                     }

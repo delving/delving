@@ -87,7 +87,6 @@ public class AjaxController {
     }
 
     private Boolean processAjaxRemoveRequest(HttpServletRequest request) throws Exception {
-        User user;
         String className = request.getParameter("className");
         String idString = request.getParameter("id");
         if (className == null || idString == null) {
@@ -95,26 +94,27 @@ public class AjaxController {
         }
         Long id = Long.valueOf(idString);
 
+        User user;
         switch (findModifiable(className)) {
             case CAROUSEL_ITEM:
                 user = staticInfoDao.removeCarouselItemFromSavedItem(id);
-                clickStreamLogger.log(request, UserAction.REMOVE_CAROUSEL_ITEM);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
                 user = userDao.removeSavedItem(id);
-                clickStreamLogger.log(request, UserAction.REMOVE_SAVED_ITEM);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
                 break;
             case SAVED_SEARCH:
                 user = userDao.removeSavedSearch(id);
-                clickStreamLogger.log(request, UserAction.REMOVE_SAVED_SEARCH);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
                 break;
             case SEARCH_TERM:
                 user = staticInfoDao.removeSearchTerm(id);
-                clickStreamLogger.log(request, UserAction.REMOVE_SEARCH_TERM);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 user = userDao.removeSocialTag(id);
-                clickStreamLogger.log(request, UserAction.REMOVE_SOCIAL_TAG);
+                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -152,7 +152,7 @@ public class AjaxController {
                 if (carouselItem == null) {
                     return false;
                 }
-                clickStreamLogger.log(request, UserAction.SAVE_CAROUSEL_ITEM);
+                clickStreamLogger.logUserAction(request, UserAction.SAVE_CAROUSEL_ITEM);
                 break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
@@ -162,7 +162,7 @@ public class AjaxController {
                 savedItem.setLanguage(ControllerUtil.getLocale(request));
                 savedItem.setEuropeanaObject(getStringParameter("europeanaObject", request));
                 user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", request));
-                clickStreamLogger.log(request, UserAction.SAVE_ITEM);
+                clickStreamLogger.logUserAction(request, UserAction.SAVE_ITEM);
                 break;
             case SAVED_SEARCH:
                 SavedSearch savedSearch = new SavedSearch();
@@ -170,14 +170,14 @@ public class AjaxController {
                 savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", request), "utf-8"));
                 savedSearch.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSavedSearch(user, savedSearch);
-                clickStreamLogger.log(request, UserAction.SAVE_SEARCH);
+                clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
                 break;
             case SEARCH_TERM:
                 SearchTerm searchTerm = staticInfoDao.addSearchTerm(Long.valueOf(idString));
                 if (searchTerm == null) {
                     return false;
                 }
-                clickStreamLogger.log(request, UserAction.SAVE_SEARCH_TERM);
+                clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
@@ -189,7 +189,7 @@ public class AjaxController {
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
-                clickStreamLogger.log(request, UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
+                clickStreamLogger.logCustomUserAction(request, UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -225,7 +225,7 @@ public class AjaxController {
         model.put("email", emailAddress);
         String subject = "A link from Europeana"; // replace with injection later
         friendEmailSender.sendEmail(emailAddress, user.getEmail(), subject, model);
-        clickStreamLogger.log(request, UserAction.SEND_EMAIL_TO_FRIEND);
+        clickStreamLogger.logUserAction(request, UserAction.SEND_EMAIL_TO_FRIEND);
         return true;
     }
 
@@ -245,7 +245,7 @@ public class AjaxController {
         catch (Exception e) {
             handleAjaxException(e, response, request);
         }
-        clickStreamLogger.log(request, UserAction.TAG_AUTOCOMPLETE);
+        clickStreamLogger.logUserAction(request, UserAction.TAG_AUTOCOMPLETE);
         return page;
     }
 
@@ -254,11 +254,11 @@ public class AjaxController {
         success = false;
         response.setStatus(400);
         exceptionString = getStackTrace(e);
-        clickStreamLogger.log(request, UserAction.AJAX_ERROR);
+        clickStreamLogger.logUserAction(request, UserAction.AJAX_ERROR);
         log.warn("Problem handling AJAX request", e);
     }
 
-    private ModelAndView createResponsePage(boolean debug, boolean success, String exceptionString, HttpServletResponse response) {
+    private static ModelAndView createResponsePage(boolean debug, boolean success, String exceptionString, HttpServletResponse response) {
         ModelAndView page = ControllerUtil.createModelAndViewPage("ajax");
         response.setContentType("text/xml");  // todo: viewResolver should set content type
         page.addObject("success", String.valueOf(success));
@@ -267,7 +267,7 @@ public class AjaxController {
         return page;
     }
 
-    private Modifiable findModifiable(String className) {
+    private static Modifiable findModifiable(String className) {
         for (Modifiable modifiable : Modifiable.values()) {
             if (modifiable.matches(className)) {
                 return modifiable;
@@ -296,7 +296,7 @@ public class AjaxController {
     }
 
 
-    protected String getStringParameter(String parameterName, HttpServletRequest request) {
+    protected static String getStringParameter(String parameterName, HttpServletRequest request) {
         String stringValue = request.getParameter(parameterName);
         if (stringValue == null) {
             throw new IllegalArgumentException("Missing parameter: " + parameterName);
@@ -305,7 +305,7 @@ public class AjaxController {
         return stringValue;
     }
 
-    private String getStackTrace(Exception exception) {
+    private static String getStackTrace(Exception exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);

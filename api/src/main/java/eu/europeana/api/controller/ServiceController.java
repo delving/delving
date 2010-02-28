@@ -133,7 +133,7 @@ public class ServiceController {
         return true;
     }
 
-    private void report(HttpServletResponse response, String message) throws IOException {
+    private static void report(HttpServletResponse response, String message) throws IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println("<html><head><title>Resolver</title></head><body><h2>");

@@ -77,10 +77,6 @@ public class IndexingQueueEntry {
         return totalRecords;
     }
 
-    public boolean isCache() {
-        return false;
-    }
-
     public void setTotalRecords(Integer totalRecords) {
         this.totalRecords = totalRecords;
     }

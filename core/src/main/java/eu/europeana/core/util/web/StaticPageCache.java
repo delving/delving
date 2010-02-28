@@ -51,8 +51,8 @@ public class StaticPageCache {
         String fileName = pageName+"_"+language.getCode();
         Page page = pageMap().get(fileName);
         if (page == null) {
-            fileName = pageName + "_" + Language.EN.getCode();
-            page = pageMap().get(fileName);
+            String defautFileName = pageName + "_" + Language.EN.getCode();
+            page = pageMap().get(defautFileName);
             if (page == null) {
                 return null;
             }

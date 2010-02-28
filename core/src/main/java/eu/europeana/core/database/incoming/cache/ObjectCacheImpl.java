@@ -98,8 +98,9 @@ public class ObjectCacheImpl implements ObjectCache {
         File cacheRoot = getCacheRoot(root, itemSize, hash);
         File[] files = cacheRoot.listFiles(new FileFilter() { // todo: can we avoid listing and go directly?
 
-            public boolean accept(File file) {
-                return file.getName().startsWith(hash);
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().startsWith(hash);
             }
         });
         if (files.length == 0) {
@@ -111,9 +112,9 @@ public class ObjectCacheImpl implements ObjectCache {
     }
 
     @Override
-    public MimeType getMimeType(File file) {
-        int dot = file.getName().lastIndexOf(".");
-        String extension = file.getName().substring(dot);
+    public MimeType getMimeType(File cachedFile) {
+        int dot = cachedFile.getName().lastIndexOf(".");
+        String extension = cachedFile.getName().substring(dot);
         MimeType mt = extensionMap.get(extension);
         if (mt == null) {
             return MimeType.ERROR;
@@ -140,7 +141,7 @@ public class ObjectCacheImpl implements ObjectCache {
         return cacheRoot;
     }
 
-    private String getDirectory(String hash) {
+    private static String getDirectory(String hash) {
         return hash.substring(0, 2) + File.separator + hash.substring(2, 4);
     }
 
@@ -166,7 +167,7 @@ public class ObjectCacheImpl implements ObjectCache {
         return new String(hex);
     }
 
-    private int createCacheDirectories(File root) throws IOException {
+    private static int createCacheDirectories(File root) throws IOException {
         int count = 0;
         for (ItemSize itemSize : ItemSize.values()) {
             for (String dirA : HEX) {
@@ -174,7 +175,7 @@ public class ObjectCacheImpl implements ObjectCache {
                     for (String dirC : HEX) {
                         for (String dirD : HEX) {
                             String directoryString = String.format("%s%s%s%s%s", dirA, dirB, File.separator, dirC, dirD);
-                            FileUtils.forceMkdir(new File(root, itemSize + File.separator + directoryString));
+                            FileUtils.forceMkdir(new File(root, String.format("%s%s%s", itemSize, File.separator, directoryString)));
                             count++;
                         }
                     }

@@ -32,7 +32,7 @@ public class FacetQueryLinks {
         this.type = facetField.getName();
         if (facetField.getValueCount() > 0) {
             for (FacetField.Count count : facetField.getValues()) {
-                if (temporarilyPreventYear0000(this.type, count.getName())) {
+                if (isTemporarilyPreventYear0000(this.type, count.getName())) {
                     continue;
                 }
                 boolean remove = false;
@@ -42,7 +42,7 @@ public class FacetQueryLinks {
                         int colon = facetTerm.indexOf(":");
                         String facetName = facetTerm.substring(0, colon);
                         String facetValue = facetTerm.substring(colon + 1);
-                        if (temporarilyPreventYear0000(facetName, facetValue)) {
+                        if (isTemporarilyPreventYear0000(facetName, facetValue)) {
                             continue;
                         }
                         if (facetName.equalsIgnoreCase(facetField.getName())) {
@@ -66,7 +66,10 @@ public class FacetQueryLinks {
                 }
                 else {
                     if (!remove) {
-                        url.append(FACET_PROMPT).append(count.getFacetField().getName() + ":" + count.getName());
+                        url.append(FACET_PROMPT);
+                        url.append(count.getFacetField().getName());
+                        url.append(":");
+                        url.append(count.getName());
                     }
                     links.add(new FacetCountLink(count, url.toString(), remove));
                 }
@@ -83,7 +86,7 @@ public class FacetQueryLinks {
      * @return true if it matches
      */
 
-    private boolean temporarilyPreventYear0000(String facetName, String facetValue) {
+    private static boolean isTemporarilyPreventYear0000(String facetName, String facetValue) {
         return "YEAR".equals(facetName) && "0000".equals(facetValue);
     }
 

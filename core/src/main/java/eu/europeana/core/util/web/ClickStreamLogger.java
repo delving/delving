@@ -62,17 +62,11 @@ import javax.servlet.http.HttpServletRequest;
 public interface ClickStreamLogger {
 
     void logUserAction(HttpServletRequest request, UserAction action);
-
     void logUserAction(HttpServletRequest request, UserAction action, ModelAndView model);
-
     void logCustomUserAction(HttpServletRequest request, UserAction action, String logString);
-
     void logStaticPageView(HttpServletRequest request, StaticPageType pageType);
-
     void logLanguageChange(HttpServletRequest request, Language oldLocale, UserAction languageChange);
-
     void logBriefResultView(HttpServletRequest request, BriefBeanView briefBeanView, SolrQuery solrQuery, ModelAndView page);
-
     void logFullResultView(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri);
 
     /**

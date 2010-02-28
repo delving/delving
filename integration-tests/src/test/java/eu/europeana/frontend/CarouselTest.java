@@ -21,11 +21,15 @@
 
 package eu.europeana.frontend;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.*;
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.frontend.FrontendTestUtil.Constants;
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +38,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlImage;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.SavedItem;
-import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.User;
-import eu.europeana.frontend.FrontendTestUtil.Constants;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Carousel tests.
@@ -101,17 +93,16 @@ public class CarouselTest {
 		/*
         User (editor) adding a carousel item
 		 */
-		HtmlInput inputElement;
-		HtmlPage savedItemsPage = createTestFixtureOne(
+        HtmlPage savedItemsPage = createTestFixtureOne(
 				"bible",
 				"saveToMyEuropeana",
 				"savedItemsCount",
 				Constants.CAROUSEL_STYLE,
 				true);
-		inputElement = (HtmlInput) getFirstElementOfClass(
-				savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE),
-				Constants.CAROUSEL_STYLE);
-		// check fixture at front end
+        HtmlInput inputElement = (HtmlInput) getFirstElementOfClass(
+                savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE),
+                Constants.CAROUSEL_STYLE);
+        // check fixture at front end
 		Assert.assertNotNull(inputElement);
 		Assert.assertFalse(inputElement.isChecked());
 		Assert.assertFalse("lock", inputElement.isDisabled());
@@ -232,20 +223,18 @@ public class CarouselTest {
 		/*
         User (editor) adding a carousel item
 		 */
-		HtmlInput inputElement;
-		HtmlPage savedItemsPage;
-		// create test fixture  via front end
+        // create test fixture  via front end
 		HtmlPage fullViewPage = navigateSearchSelect(Constants.USER_SIMPLE, "bible", true);
 		// add to carousel
 		HtmlAnchor carouselBible = (HtmlAnchor) fullViewPage.getElementById("saveToMyEuropeana");
 		carouselBible.click();
 
 		HtmlAnchor savedItemsA = (HtmlAnchor) fullViewPage.getElementById("savedItemsCount");
-		savedItemsPage = savedItemsA.click();
-		inputElement = (HtmlInput) getFirstElementOfClass(
-				savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE),
-				Constants.CAROUSEL_STYLE);
-		Assert.assertNull(inputElement);
+        HtmlPage savedItemsPage = savedItemsA.click();
+        HtmlInput inputElement = (HtmlInput) getFirstElementOfClass(
+                savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE),
+                Constants.CAROUSEL_STYLE);
+        Assert.assertNull(inputElement);
 		// earlier i believed we should get disabled checkbox - Borys 09.07.28
 		//		Assert.assertNotNull("Expected to find (disabled) checkbox", inputElement);
 		//		Assert.assertTrue("Expected to find _disabled_ checkbox", inputElement.isDisabled());
@@ -260,20 +249,17 @@ public class CarouselTest {
 			boolean showFullView)
 	throws IOException {
 
-		HtmlInput inputElement;
-		HtmlPage savedItemsPage;
-
-		HtmlPage fullViewPage = navigateSearchSelect(Constants.USER_1, queryString, showFullView);
+        HtmlPage fullViewPage = navigateSearchSelect(Constants.USER_1, queryString, showFullView);
 
 		// save query
 		fullViewPage.getElementById(saveElementId).click();
 
 		// check no pacta items are there
-		savedItemsPage = ((HtmlAnchor) fullViewPage.getElementById(countElementId)).click();
-		//System.out.println(savedItemsPage.asXml());
-		inputElement = (HtmlInput) getFirstElementOfClass(
-				savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE), checkboxStyle);
-		Assert.assertNotNull(inputElement);
+        HtmlPage savedItemsPage = ((HtmlAnchor) fullViewPage.getElementById(countElementId)).click();
+        //System.out.println(savedItemsPage.asXml());
+        HtmlInput inputElement = (HtmlInput) getFirstElementOfClass(
+                savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE), checkboxStyle);
+        Assert.assertNotNull(inputElement);
 		Assert.assertFalse(inputElement.isChecked());
 		Assert.assertFalse("lock", inputElement.isDisabled());
 
@@ -290,18 +276,17 @@ public class CarouselTest {
 		/*
         User (editor) adding a query
 		 */
-		HtmlInput inputElement;
-		HtmlPage savedItemsPage = createTestFixtureOne(
+        HtmlPage savedItemsPage = createTestFixtureOne(
 				"calendar",
 				"saveQuery",
 				"savedSearchesCount",
 				Constants.PACTA_STYLE,
 				false);
 
-		inputElement = (HtmlInput) getFirstElementOfClass(
-				savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE), Constants.PACTA_STYLE);
+        HtmlInput inputElement = (HtmlInput) getFirstElementOfClass(
+                savedItemsPage.getElementsByTagName(Constants.CAROUSEL_EL_TYPE), Constants.PACTA_STYLE);
 
-		// check fixture at front end
+        // check fixture at front end
 		Assert.assertNotNull(inputElement);
 		Assert.assertFalse(inputElement.isChecked());
 		Assert.assertFalse("lock", inputElement.isDisabled());

@@ -65,6 +65,7 @@ public class SavedSearchChooser extends DashboardWidget {
         }
     }
 
+    @Override
     protected Widget createWidget() {
         HorizontalPanel panel = new HorizontalPanel();
         listBox = new ListBox();
@@ -74,8 +75,10 @@ public class SavedSearchChooser extends DashboardWidget {
         panel.setSpacing(6);
         UserChooser userChooser = new UserChooser(world);
         userChooser.setListener(new UserChooser.Listener() {
+            @Override
             public void userSelected(UserX user) {
                 world.service().fetchSavedSearches(user, new Reply<List<SavedSearchX>>() {
+                    @Override
                     public void onSuccess(List<SavedSearchX> result) {
                         setSearches(result);
                     }
@@ -84,6 +87,7 @@ public class SavedSearchChooser extends DashboardWidget {
         });
         panel.add(userChooser.getWidget());
         listBox.addChangeHandler(new ChangeHandler(){
+            @Override
             public void onChange(ChangeEvent sender) {
                 int select = listBox.getSelectedIndex();
                 selectButton.setEnabled(select > 0);
@@ -91,6 +95,7 @@ public class SavedSearchChooser extends DashboardWidget {
         });
         panel.add(listBox);
         selectButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event)  {
                 int index = listBox.getSelectedIndex()-1;
                 owner.selectSearch(searches.get(index));

@@ -45,15 +45,15 @@ public class SiteMapController {
             @RequestParam(value = "page", required = false) String page,
             HttpServletRequest request
     ) throws Exception {
-        ModelAndView mavPage;
         String fullDocPageString = "full-doc.html";
         String baseUrl = fullViewUrl;
         if (baseUrl.endsWith(fullDocPageString)) {
             baseUrl = baseUrl.substring(0, fullViewUrl.length() - fullDocPageString.length());
         }
+        ModelAndView mavPage;
         if (collection == null) {
             List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
-            List<EuropeanaCollection> europeanaCollections = dashboardDao.fetchCollections();
+            List<EuropeanaCollection> europeanaCollections = dashboardDao.fetchEnabledCollections();
             for (EuropeanaCollection europeanaCollection : europeanaCollections) {
                 for (int i = 0; i <= europeanaCollection.getTotalRecords() / MAX_RECORDS_PER_SITEMAP_FILE; i++) {
                     // add each page of a collection to the index.

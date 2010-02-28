@@ -7,11 +7,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.io.File;
 import java.util.List;
 
@@ -49,6 +45,7 @@ public class AnalyzerGUI extends JFrame {
         statisticsJTree.setCellRenderer(new CellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
             public void valueChanged(TreeSelectionEvent event) {
                 TreePath path = event.getPath();
                 MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
@@ -69,6 +66,7 @@ public class AnalyzerGUI extends JFrame {
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
         fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
+            @Override
             public void select(File file) {
                 fileMenu.setEnabled(false);
                 analyze(file);
@@ -98,14 +96,17 @@ public class AnalyzerGUI extends JFrame {
         File statisticsFile = createStatisticsFile(file);
         if (statisticsFile.exists()) {
             FileHandler.loadStatistics(statisticsFile, new FileHandler.LoadListener() {
+                @Override
                 public void success(List<Statistics> list) {
                     title.setText("Document Structure of \""+file.getName()+"\"");
                     setMappingTree(MappingTree.create(list, file.getName()));
                 }
+                @Override
                 public void failure(Exception exception) {
                     title.setText("Document Structure");
                     // TODO: implement!
                 }
+                @Override
                 public void finished() {
                     fileMenu.setEnabled(true);
                 }
@@ -113,14 +114,17 @@ public class AnalyzerGUI extends JFrame {
         }
         else {
             FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE, new FileHandler.LoadListener() {
+                @Override
                 public void success(List<Statistics> list) {
                     title.setText("Document Structure of \""+file.getName()+"\"");
                     setMappingTree(MappingTree.create(list, file.getName()));
                 }
+                @Override
                 public void failure(Exception exception) {
                     title.setText("Document Structure");
                     // TODO: implement!
                 }
+                @Override
                 public void finished() {
                     fileMenu.setEnabled(true);
                 }
@@ -135,6 +139,7 @@ public class AnalyzerGUI extends JFrame {
     private class CellRenderer extends DefaultTreeCellRenderer {
         private Font normalFont, thickFont;
 
+        @Override
         public Component getTreeCellRendererComponent(JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3) {
             MappingTree.Node node = (MappingTree.Node) o;
             JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);

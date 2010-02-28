@@ -33,6 +33,7 @@ public class FileUploadWidget extends DashboardWidget {
         this.notifier = onSubmitComplete;
     }
 
+    @Override
     protected Widget createWidget() {
         fileUpload.setName("uploadFile");
         fileUpload.setWidth("300");
@@ -41,6 +42,7 @@ public class FileUploadWidget extends DashboardWidget {
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
         form.addSubmitHandler(new FormPanel.SubmitHandler() {
+            @Override
             public void onSubmit(FormPanel.SubmitEvent event) {
                 if (fileUpload.getFilename().length() == 0) {
                     Window.alert(world.messages().fileUploadNoFile());
@@ -64,6 +66,7 @@ public class FileUploadWidget extends DashboardWidget {
         fileUpload.setWidth("100%");
         submitButton = new Button(world.messages().fileUpload());
         submitButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent widget) {
                 form.submit();
             }

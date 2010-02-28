@@ -37,6 +37,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -116,7 +117,7 @@ public class ContentLoader {
                     LOG.info(String.format("Busy importing %s", job.collection));
                 }
             }
-            LOG.info("jobs=" + jobs.size() + ", importingJobs=" + activeJobs.size());
+            LOG.info(MessageFormat.format("jobs={0}, importingJobs={1}", jobs.size(), activeJobs.size()));
         }
         LOG.info("Finished importing, committing Solr");
         eseImporter.commit();

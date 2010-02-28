@@ -26,8 +26,10 @@ public class SearchTermWidget extends DashboardWidget {
         super(world);
     }
 
+    @Override
     protected Widget createWidget() {
         tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
+            @Override
             public void onSelection(SelectionEvent<TreeItem> item) {
             }
 
@@ -38,6 +40,7 @@ public class SearchTermWidget extends DashboardWidget {
                         final LanguageX language = ((LanguageLabel) widget).getLanguage();
                         if (item.getChildCount() == 1) {
                             world.service().fetchSearchTerms(language.getCode(), new Reply<List<String>>() {
+                                @Override
                                 public void onSuccess(List<String> result) {
                                     TreeItem moreItem = item.getChild(0);
                                     moreItem.remove();
@@ -54,6 +57,7 @@ public class SearchTermWidget extends DashboardWidget {
             }
         });
         world.service().fetchLanguages(new Reply<List<LanguageX>>() {
+            @Override
             public void onSuccess(List<LanguageX> result) {
                 for (LanguageX language : result) {
                     TreeItem languageTreeItem = tree.addItem(new LanguageLabel(language));
@@ -90,8 +94,10 @@ public class SearchTermWidget extends DashboardWidget {
             HTML remove = new HTML("x");
             remove.setStyleName("actionLink");
             remove.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event)  {
                     world.service().removeSearchTerm(language.getCode(), term, new Reply<Boolean>() {
+                        @Override
                         public void onSuccess(Boolean result) {
                             treeItem.remove();
                         }
@@ -121,6 +127,7 @@ public class SearchTermWidget extends DashboardWidget {
             option = new HTML(world.messages().more());
             prompt = new HTML(world.messages().addSearchTermFor(languageTreeItem.getText()) + "  ");
             submitButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                     final String queryString = queryStringBox.getText();
                     if (queryString.length() > 0) {
@@ -134,6 +141,7 @@ public class SearchTermWidget extends DashboardWidget {
             textBoxPanel.add(submitButton);
             option.setStyleName("actionLink");
             option.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                     prepareForInput();
                 }
@@ -163,16 +171,19 @@ public class SearchTermWidget extends DashboardWidget {
             this.add(option);
         }
 
+        @Override
         public boolean avoidSearch(SavedSearchX savedSearch) {
             return !savedSearch.getLanguage().equals(language);
         }
 
+        @Override
         public void selectSearch(final SavedSearchX savedSearch) {
             addSerchTerm(savedSearch.getLanguage(), savedSearch.getQueryString());
         }
 
         public void addSerchTerm(final LanguageX language, final String queryString) {
             world.service().addSearchTerm(language.getCode(), queryString, new Reply<Boolean>() {
+                @Override
                 public void onSuccess(Boolean result) {
                     languageTreeItem.removeItem(panelTreeItem);
                     revertToLink();

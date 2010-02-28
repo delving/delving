@@ -48,6 +48,7 @@ public class DataTransfer {
                 collection.getFileState().toString(),
                 collection.getCollectionState().toString(),
                 collection.getTotalRecords(),
+                collection.getTotalOrphans(),
                 collection.getImportError()
         );
     }
@@ -61,6 +62,9 @@ public class DataTransfer {
         collection.setFileUserName(collectionX.getFileUserName());
         collection.setFileState(ImportFileState.valueOf(collectionX.getFileState().toString()));
         collection.setCollectionState(CollectionState.valueOf(collectionX.getCollectionState().toString()));
+        collection.setTotalRecords(collectionX.getTotalRecords());
+        collection.setTotalOrphans(collectionX.getTotalOrphans());
+        collection.setImportError(collectionX.getImportError());
         return collection;
     }
 

@@ -23,6 +23,7 @@ public class VerifyDialog extends DialogBox {
         this.setAnimationEnabled(true);
         this.setWidget(createDialogWidget());
         closeButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event)  {
                 VerifyDialog.this.hide();
                 if (action != null && certainty.getValue()) {

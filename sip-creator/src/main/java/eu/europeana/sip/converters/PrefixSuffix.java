@@ -13,6 +13,7 @@ public class PrefixSuffix implements Converter {
         this.suffix = suffix;
     }
 
+    @Override
     public String convertValue(String value) {
         return prefix+value+suffix;
     }

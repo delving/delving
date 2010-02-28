@@ -188,11 +188,6 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException {
-        return null;  //TODO: implement this
-    }
-
-    @Override
     public List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
         SolrQuery solrQuery = createFromQueryParams(params);
         Integer start = solrQuery.getStart();
@@ -211,20 +206,20 @@ public class BeanQueryModelFactory implements QueryModelFactory {
      * Get records from Sorl for a particular collection for the siteMap.
      *
      * @param europeanaCollectionName the europeana collectionName as stored in the EuropeanaCollection Domain object
-     * @param rowsToBeReturned number of rows to be returned from Solr
+     * @param rowsReturned number of rows to be returned from Solr
      * @param pageNumber which page of the sitemap per collection will be returned.
      * @return list of IdBeans
      * @throws EuropeanaQueryException
      * @throws SolrServerException
      */
     @Override
-    public SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsToBeReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException  {
+    public SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException  {
         SolrQuery solrQuery = new SolrQuery("europeana_collectionName:"+europeanaCollectionName);
-        solrQuery.setRows(rowsToBeReturned);
+        solrQuery.setRows(rowsReturned);
         solrQuery.setFields("europeana_uri", "timestamp");
-        solrQuery.setStart(pageNumber * rowsToBeReturned);
+        solrQuery.setStart(pageNumber * rowsReturned);
         QueryResponse queryResponse = solrServer.query(solrQuery);
-        return new SiteMapBeanViewImpl(europeanaCollectionName, queryResponse, rowsToBeReturned);
+        return new SiteMapBeanViewImpl(europeanaCollectionName, queryResponse, rowsReturned);
     }
 
     public class SiteMapBeanViewImpl implements SiteMapBeanView {
@@ -269,7 +264,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private Map<String, String> facetLogs;
         private BriefDoc matchDoc;
 
-        @SuppressWarnings("unchecked")
+//        @SuppressWarnings("unchecked")
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean));
@@ -340,7 +335,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
     }
 
-    List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList) {
+    static List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList) {
         Integer start = solrQuery.getStart();
         int index = start == null ? 1 : start + 1;
         for (BriefDoc briefDoc : briefDocList) {
@@ -442,7 +437,6 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setStart(solrQuery.getStart() - 1);
         }
         // set facets
-        SolrQuery dCopy;
         if (beanClass == briefBean) {
             solrQuery.setFacet(true);
             solrQuery.setFacetMinCount(1);
@@ -455,7 +449,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }
         }
-        dCopy = copySolrQuery(solrQuery);
+        SolrQuery dCopy = copySolrQuery(solrQuery);
         return getSolrResponse(dCopy, false);
     }
 
@@ -477,7 +471,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         return dCopy;
     }
 
-    private ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) {
+    private static ResultPagination createPagination(QueryResponse response, SolrQuery query, String requestQueryString) {
         int numFound = (int) response.getResults().getNumFound();
         return new ResultPaginationImpl(query, numFound, requestQueryString);
     }

@@ -56,6 +56,7 @@ public class UserDaoDetailsService implements UserDetailsService {
         void setUser(User user);
     }
 
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException, DataAccessException {
         try {
             User user = userDao.fetchUserByEmail(email);
@@ -123,38 +124,47 @@ public class UserDaoDetailsService implements UserDetailsService {
             authorities.add(new DaoGrantedAuthority(role));
         }
 
+        @Override
         public User getUser() {
             return user;
         }
 
+        @Override
         public void setUser(User user) {
             this.user = user;
         }
 
+        @Override
         public Collection<GrantedAuthority> getAuthorities() {
             return authorities;
         }
 
+        @Override
         public String getPassword() {
             return user.getHashedPassword();
         }
 
+        @Override
         public String getUsername() {
             return user.getEmail();
         }
 
+        @Override
         public boolean isAccountNonExpired() {
             return true;
         }
 
+        @Override
         public boolean isAccountNonLocked() {
             return true;
         }
 
+        @Override
         public boolean isCredentialsNonExpired() {
             return true;
         }
 
+        @Override
         public boolean isEnabled() {
             return user.isEnabled();
         }
@@ -172,6 +182,7 @@ public class UserDaoDetailsService implements UserDetailsService {
             this.role = role;
         }
 
+        @Override
         public String getAuthority() {
             return role.toString();
         }

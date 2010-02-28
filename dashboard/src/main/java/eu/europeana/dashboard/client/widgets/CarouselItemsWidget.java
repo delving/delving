@@ -30,10 +30,12 @@ public class CarouselItemsWidget extends DashboardWidget {
         super(world);
     }
 
+    @Override
     protected Widget createWidget() {
         panel.setWidth("100%");
         panel.add(new SavedItemChooser(world, new SavedItemChooserOwner()).createWidget());
         world.service().fetchCacheUrl(new Reply<String>() {
+            @Override
             public void onSuccess(String result) {
                 cacheUrl = result;
                 refreshGrid();
@@ -44,6 +46,7 @@ public class CarouselItemsWidget extends DashboardWidget {
 
     private void refreshGrid() {
         world.service().fetchCarouselItems(new Reply<List<CarouselItemX>>() {
+            @Override
             public void onSuccess(List<CarouselItemX> items) {
                 carouselItems = items;
                 if (grid != null) {
@@ -71,6 +74,7 @@ public class CarouselItemsWidget extends DashboardWidget {
     }
 
     private class SavedItemChooserOwner implements SavedItemChooser.Owner {
+        @Override
         public boolean avoidItem(SavedItemX savedItem) {
             if (carouselItems != null) {
                 for (CarouselItemX item : carouselItems) {
@@ -82,8 +86,10 @@ public class CarouselItemsWidget extends DashboardWidget {
             return false;
         }
 
+        @Override
         public void selectItem(final SavedItemX savedItem) {
             world.service().createCarouselItem(savedItem, new Reply<CarouselItemX>() {
+                @Override
                 public void onSuccess(CarouselItemX result) {
                     if (result == null) {
                         Window.alert(world.messages().uriNotFound(savedItem.getUri()));
@@ -104,6 +110,7 @@ public class CarouselItemsWidget extends DashboardWidget {
             this.item = item;
         }
 
+        @Override
         public void onClick(ClickEvent sender) {
             popup.setPopupPosition(((Widget)sender.getSource()).getAbsoluteLeft() + OFFSET, ((Widget)sender.getSource()).getAbsoluteTop() + 2 * OFFSET);
             Grid grid = new Grid(6, 2);
@@ -120,6 +127,7 @@ public class CarouselItemsWidget extends DashboardWidget {
             grid.setHTML(4, 1, item.getLanguage());
             grid.setHTML(5, 1, item.getType().toString());
             grid.addClickHandler(new ClickHandler() {
+                @Override
                 public void onClick(ClickEvent event) {
                     HTMLTable.Cell cell= ((Grid)event.getSource()).getCellForEvent(event);
                     if (cell != null){
@@ -133,8 +141,10 @@ public class CarouselItemsWidget extends DashboardWidget {
             p.add(grid);
             Button delete = new Button(world.messages().deleteThisItem());
             delete.addClickHandler(new ClickHandler() {
+               @Override
                public void onClick(ClickEvent sender) {
                     world.service().removeCarouselItem(item, new Reply<Boolean>() {
+                        @Override
                         public void onSuccess(Boolean result) {
                             if (result) {
                                 popup.hide();

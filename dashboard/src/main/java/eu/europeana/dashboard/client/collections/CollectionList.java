@@ -100,10 +100,12 @@ public class CollectionList {
             return collection;
         }
 
+        @Override
         public String getDisplayString() {
             return collection.getName();
         }
 
+        @Override
         public String getReplacementString() {
             return collection.getName();
         }

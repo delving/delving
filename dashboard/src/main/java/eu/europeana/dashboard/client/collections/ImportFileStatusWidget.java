@@ -32,12 +32,14 @@ public class ImportFileStatusWidget extends DashboardWidget {
         this.panel.setSpacing(6);
         refreshPanel();
         holder.addListener(new CollectionHolder.CollectionUpdateListener() {
+            @Override
             public void collectionUpdated(EuropeanaCollectionX collection) {
                 refreshPanel();
             }
         });
     }
 
+    @Override
     public Widget createWidget() {
         return panel;
     }
@@ -63,8 +65,10 @@ public class ImportFileStatusWidget extends DashboardWidget {
                     panel.add(new HTML(world.messages().uploaded()));
                     Button commenceImport = new Button(world.messages().commenceImport());
                     commenceImport.addClickHandler(new ClickHandler() {
+                        @Override
                         public void onClick(ClickEvent sender) {
                             world.service().commenceImport(importFile, holder.getCollection().getId(), true, new Reply<ImportFileX>() {
+                                @Override
                                 public void onSuccess(ImportFileX result) {
                                     holder.setImportFile(result);
                                 }
@@ -77,8 +81,10 @@ public class ImportFileStatusWidget extends DashboardWidget {
                     panel.add(new HTML(world.messages().importing()));
                     Button cancelImport = new Button(world.messages().abortImport());
                     cancelImport.addClickHandler(new ClickHandler() {
+                        @Override
                         public void onClick(ClickEvent sender) {
                             world.service().abortImport(importFile, true, new Reply<ImportFileX>() {
+                                @Override
                                 public void onSuccess(ImportFileX result) {
                                     holder.setImportFile(result);
                                 }
@@ -129,9 +135,11 @@ public class ImportFileStatusWidget extends DashboardWidget {
             return this.currentState == currentState;
         }
 
+        @Override
         public void run() {
             GWT.log("checking for " + holder.getCollection().getFileName(), null);
             world.service().checkImportFileStatus(holder.getCollection().getFileName(), true, new Reply<ImportFileX>() {
+                @Override
                 public void onSuccess(ImportFileX result) {
                     if (result != null) {
                         holder.setImportFile(result);

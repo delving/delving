@@ -3,10 +3,10 @@ package eu.europeana.sip.analysis;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileReader;
@@ -39,8 +39,10 @@ public class FileMenu extends JMenu {
         loadRecentFiles();
     }
 
+    @Override
     public void setEnabled(final boolean enabled) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 loadFile.setEnabled(enabled);
                 for (Action action : recentFileActions.values()) {
@@ -61,9 +63,11 @@ public class FileMenu extends JMenu {
         private LoadNewFileAction() {
             super("Load");
             chooser.setFileFilter(new FileFilter() {
+                @Override
                 public boolean accept(File file) {
                     return file.getName().endsWith(".xml");
                 }
+                @Override
                 public String getDescription() {
                     return "XML Files";
                 }
@@ -71,6 +75,7 @@ public class FileMenu extends JMenu {
             chooser.setMultiSelectionEnabled(false);
         }
 
+        @Override
         public void actionPerformed(ActionEvent actionEvent) {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
@@ -96,6 +101,7 @@ public class FileMenu extends JMenu {
             this.file = file;
         }
 
+        @Override
         public void actionPerformed(ActionEvent actionEvent) {
             selectListener.select(file);
         }
@@ -107,6 +113,7 @@ public class FileMenu extends JMenu {
     }
 
     private class RecentFileLoader implements Runnable {
+        @Override
         public void run() {
             try {
                 if (!RECENT_FILES_FILE.exists()) {
@@ -122,6 +129,7 @@ public class FileMenu extends JMenu {
                     final Action action = new LoadRecentFileAction(file);
                     recentFileActions.put(file.getAbsolutePath(), action);
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             recentFilesMenu.add(action);
                         }
@@ -141,6 +149,7 @@ public class FileMenu extends JMenu {
     }
 
     private class RecentFileSaver implements Runnable {
+        @Override
         public void run() {
             try {
                 FileWriter fileWriter = new FileWriter(RECENT_FILES_FILE);

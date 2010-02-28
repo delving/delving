@@ -69,9 +69,10 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         this.emailSender = emailSender;
     }
 
+    @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
-        QueryProblem queryProblem = QueryProblem.NONE;
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        QueryProblem queryProblem = QueryProblem.NONE;
         if (exception instanceof EuropeanaQueryException) {
             queryProblem = ((EuropeanaQueryException) exception).getFetchProblem();
         }
@@ -98,7 +99,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
             }
         }
         String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.EXCEPTION_CAUGHT, errorMessage);
         ModelAndView mav = new ModelAndView("exception");
         mav.addObject("debug", debugMode);
         mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
@@ -109,7 +110,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         return mav;
     }
 
-    private String getStackTrace(Exception exception) {
+    private static String getStackTrace(Exception exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         exception.printStackTrace(printWriter);

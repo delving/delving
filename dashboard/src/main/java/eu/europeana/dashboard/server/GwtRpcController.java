@@ -20,6 +20,7 @@ public class GwtRpcController extends RemoteServiceServlet implements Controller
     private RemoteService remoteService;
     private Class remoteServiceClass;
 
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         UserCookie.set(request.getParameter("cookie"));
         super.doPost(request, response);
@@ -43,6 +44,7 @@ public class GwtRpcController extends RemoteServiceServlet implements Controller
         return servletContext;
     }
 
+    @Override
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
     }

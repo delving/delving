@@ -146,6 +146,7 @@
         <module>portal-full</module>
         <module>dashboard</module>
         <module>sip-creator</module>
+        <module>integration-tests</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
@@ -496,7 +497,7 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.core.version>1.11</europeana.core.version>
+        <europeana.core.version>1.12</europeana.core.version>
         <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
         <europeana.portal.version>0.6</europeana.portal.version>
         <europeana.api.version>0.1</europeana.api.version>

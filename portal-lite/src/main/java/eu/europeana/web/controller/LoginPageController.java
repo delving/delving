@@ -115,8 +115,8 @@ public class LoginPageController {
             }
         }
 
-        boolean register = true;
         page.addObject("errorMessage", "1".equals(request.getParameter("error")) ? "Invalid Credentials" : null); //TODO i18n
+        boolean register = true;
         page.addObject("register", register);
         page.addObject("email", email);
         page.addObject("success", success);
@@ -126,7 +126,7 @@ public class LoginPageController {
         page.addObject("failureExists", failureExists);
         page.addObject("failureForgotFormat", failureForgotFormat);
         page.addObject("failureForgotDoesntExist", failureForgotDoesntExist);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.LOGIN, page);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGIN, page);
         return page;
     }
 

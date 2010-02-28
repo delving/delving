@@ -342,6 +342,7 @@ public class SolrRecord {
     }
 
     private static class ConcatenateOrderComparator implements Comparator<Entry> {
+        @Override
         public int compare(Entry entry0, Entry entry1) {
             return getOrder(entry0) - getOrder(entry1);
         }

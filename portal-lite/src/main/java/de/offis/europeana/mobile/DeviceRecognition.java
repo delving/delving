@@ -80,7 +80,7 @@ public class DeviceRecognition {
 	 * @param template The template that shall be used
 	 * @return Best suited template for mobile device
 	 */
-	public String GetDeviceTemplate(HttpServletRequest request, String template) {
+	public String getDeviceTemplate(HttpServletRequest request, String template) {
 		String result = template;
 		if (template != null) {
 				if (_wurfl != null) {

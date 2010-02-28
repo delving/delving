@@ -43,7 +43,7 @@ public class SolrQueryUtil {
             if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
                 facetValue = facetValue.substring(1, facetValue.length() - 1);
             }
-            nonPhraseFilterQueries.add(facetName+":"+facetValue);
+            nonPhraseFilterQueries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
         }
         return nonPhraseFilterQueries.toArray(new String[nonPhraseFilterQueries.size()]);
     }
@@ -96,7 +96,7 @@ public class SolrQueryUtil {
                 orStatement.append(")");
                 facetValue = orStatement.toString();
             }
-            queries.add(facetName+":"+facetValue);
+            queries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
         }
         return queries.toArray(new String[queries.size()]);
     }

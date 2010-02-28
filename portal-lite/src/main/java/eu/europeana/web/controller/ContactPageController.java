@@ -99,7 +99,7 @@ public class ContactPageController {
     @RequestMapping(method = RequestMethod.POST)
     protected String handlePost(@ModelAttribute("command") @Valid ContactForm form, BindingResult result, HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
+            clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND_FAILURE);
         }
         else {
             Map<String, Object> model = new TreeMap<String, Object>();
@@ -108,9 +108,9 @@ public class ContactPageController {
             userFeedbackSender.sendEmail(feedbackTo, feedbackFrom, "User Feedback", model);
             userFeedbackConfirmSender.sendEmail(form.getEmail(), feedbackFrom, "User Feedback", model);
             form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
+            clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
         }
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.CONTACT_PAGE);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CONTACT_PAGE);
         return "contact";
     }
 
@@ -153,10 +153,12 @@ public class ContactPageController {
 
     public class ContactFormValidator implements Validator {
 
+        @Override
         public boolean supports(Class aClass) {
             return ContactForm.class.equals(aClass);
         }
 
+        @Override
         public void validate(Object o, Errors errors) {
             ContactForm form = (ContactForm) o;
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "email.required", "Email is required");

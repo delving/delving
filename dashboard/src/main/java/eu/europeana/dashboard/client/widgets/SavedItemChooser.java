@@ -61,6 +61,7 @@ public class SavedItemChooser extends DashboardWidget {
         }
     }
 
+    @Override
     protected Widget createWidget() {
         HorizontalPanel panel = new HorizontalPanel();
         listBox = new ListBox();
@@ -70,8 +71,10 @@ public class SavedItemChooser extends DashboardWidget {
         panel.setSpacing(6);
         UserChooser userChooser = new UserChooser(world);
         userChooser.setListener(new UserChooser.Listener() {
+            @Override
             public void userSelected(UserX user) {
                 world.service().fetchSavedItems(user.getId(), new Reply<List<SavedItemX>>() {
+                    @Override
                     public void onSuccess(List<SavedItemX> result) {
                         setItems(result);
                     }
@@ -80,6 +83,7 @@ public class SavedItemChooser extends DashboardWidget {
         });
         panel.add(userChooser.getWidget());
         listBox.addChangeHandler(new ChangeHandler() {
+            @Override
             public void onChange(ChangeEvent sender) {
                 int select = listBox.getSelectedIndex();
                 selectButton.setEnabled(select > 0);
@@ -87,6 +91,7 @@ public class SavedItemChooser extends DashboardWidget {
         });
         panel.add(listBox);
         selectButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent sender) {
                 int index = listBox.getSelectedIndex()-1;
                 owner.selectItem(items.get(index));

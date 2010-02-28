@@ -48,6 +48,7 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     protected EntityManager entityManager;
 
+    @Override
     @Transactional
     public User fetchUserByEmail(String email) {
         Query query = entityManager.createQuery("select u from User as u where u.email = :email");
@@ -64,6 +65,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
     @Transactional
     public User addUser(User user) {
         logger.info("adding user " + user.getFirstName());
@@ -71,6 +73,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public void removeUser(User user) {
         user = entityManager.merge(user);
@@ -81,6 +84,7 @@ public class UserDaoImpl implements UserDao {
         entityManager.remove(user);
     }
 
+    @Override
     @Transactional
     public User updateUser(User fresh) {
         if (fresh.getId() != null) {
@@ -100,6 +104,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
     @Transactional
     public User addSavedSearch(User user, SavedSearch savedSearch) {
         savedSearch.setDateSaved(new Date());
@@ -109,6 +114,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public List<SavedSearch> fetchSavedSearches(User user) {
         user = entityManager.find(User.class, user.getId());
@@ -116,6 +122,7 @@ public class UserDaoImpl implements UserDao {
         return user.getSavedSearches();
     }
 
+    @Override
     @Transactional
     public User authenticateUser(String email, String password) {
         if (email == null || password == null) {
@@ -136,6 +143,7 @@ public class UserDaoImpl implements UserDao {
         return null;
     }
 
+    @Override
     @Transactional
     public List<SavedItem> fetchSavedItems(Long userId) {
         User user = entityManager.find(User.class, userId);
@@ -143,6 +151,7 @@ public class UserDaoImpl implements UserDao {
         return user.getSavedItems();
     }
 
+    @Override
     @Transactional
     public SavedItem fetchSavedItemById(Long id) {
         if (id == null) {
@@ -159,11 +168,13 @@ public class UserDaoImpl implements UserDao {
         return entityManager.find(User.class, userId).getSavedSearches();
     }
 
+    @Override
     @Transactional
     public SavedSearch fetchSavedSearchById(Long savedSearchId) {
         return entityManager.find(SavedSearch.class, savedSearchId);
     }
 
+    @Override
     @Transactional
     public User addSavedItem(User user, SavedItem savedItem, String europeanaUri) {
         EuropeanaId europeanaId = fetchEuropeanaId(europeanaUri);
@@ -178,6 +189,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public User addSocialTag(User user, SocialTag socialTag) {
         user = entityManager.merge(user);
@@ -192,6 +204,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public boolean userNameExists(String userName) {
         Query query = entityManager.createQuery("select u from User as u where u.userName = :userName");
@@ -205,6 +218,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
     @Transactional
     public User removeSocialTag(Long socialTagId) {
         SocialTag socialTag = entityManager.find(SocialTag.class, socialTagId);
@@ -217,6 +231,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public User removeSavedItem(Long savedItemId) {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
@@ -226,6 +241,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public User removeSavedSearch(Long savedSearchId) {
         SavedSearch savedSearch = entityManager.find(SavedSearch.class, savedSearchId);
@@ -235,6 +251,7 @@ public class UserDaoImpl implements UserDao {
         return user;
     }
 
+    @Override
     @Transactional
     public List<User> fetchUsers(String pattern) {
         Query query = entityManager.createQuery(
@@ -254,6 +271,7 @@ public class UserDaoImpl implements UserDao {
     }
 
 
+    @Override
     @Transactional
     public List<TagCount> getSocialTagCounts(String pattern) {
         Query query = entityManager.createQuery(

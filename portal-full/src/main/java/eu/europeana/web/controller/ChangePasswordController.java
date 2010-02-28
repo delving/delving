@@ -85,12 +85,12 @@ public class ChangePasswordController {
                                HttpServletRequest request) throws Exception {
         Token token = tokenService.getToken(tokenKey);
         if (token == null) {
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.ERROR_TOKEN_EXPIRED);
+            clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.ERROR_TOKEN_EXPIRED);
             return "token-expired";
         }
         form.setToken(token.getToken());
         form.setEmail(token.getEmail());
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_SUCCES);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_SUCCES);
         return "change-password";
     }
 
@@ -100,20 +100,20 @@ public class ChangePasswordController {
                           HttpServletRequest request) throws Exception {
         if (result.hasErrors()) {
             log.info("The change password form has errors");
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_FAILURE);
+            clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.CHANGE_PASSWORD_FAILURE);
             return "change-password";
         }
         Token token = tokenService.getToken(form.getToken()); //token is validated in handleRequestInternal
         User user = userDao.fetchUserByEmail(token.getEmail()); //don't use email from the form. use token.
         if (user == null) {
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
+            clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             throw new RuntimeException("Expected to find user for "+token.getEmail());
         }
         user.setPassword(form.getPassword());
         tokenService.removeToken(token); //remove token. it can not be used any more.
         userDao.updateUser(user); //now update the user
         sendNotificationEmail(user);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "change-password-success";
     }
 
@@ -169,10 +169,12 @@ public class ChangePasswordController {
 
     public class ChangePasswordFormValidator implements Validator {
 
+        @Override
         public boolean supports(Class aClass) {
             return ChangePasswordForm.class.equals(aClass);
         }
 
+        @Override
         public void validate(Object o, Errors errors) {
             ChangePasswordForm form = (ChangePasswordForm) o;
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "password.required", "Password is required");

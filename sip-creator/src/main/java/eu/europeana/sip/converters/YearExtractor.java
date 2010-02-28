@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 public class YearExtractor implements Converter {
     private static final Pattern PATTERN = Pattern.compile("\\d{4}");
 
+    @Override
     public String convertValue(String value) {
         Matcher matcher = PATTERN.matcher(value);
         if (matcher.find()) {

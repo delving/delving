@@ -1,13 +1,10 @@
 package eu.europeana.sip;
 
-import javax.swing.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -48,6 +45,7 @@ public class NormalizerGUI extends JFrame {
 
     private void wireUp() {
         debugLevel.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 switch (e.getStateChange()) {
                     case ItemEvent.DESELECTED:
@@ -60,6 +58,7 @@ public class NormalizerGUI extends JFrame {
             }
         });
         normalize.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 File file = (File) list.getSelectedValue();
                 if (file != null) {
@@ -70,9 +69,11 @@ public class NormalizerGUI extends JFrame {
                         normalizer = new Normalizer(file, destinationRoot, false);
                         normalizer.setFinalAct(finalAct);
                         normalizer.setProgress(new Normalizer.Progress() {
+                            @Override
                             public void message(final String message) {
                                 try {
                                     SwingUtilities.invokeAndWait(new Runnable() {
+                                        @Override
                                         public void run() {
                                             progressLabel.setText(message);
                                             memoryLabel.setText(
@@ -85,6 +86,7 @@ public class NormalizerGUI extends JFrame {
                                     e.printStackTrace();
                                 }
                             }
+                            @Override
                             public void recordsProcessed(final int count) {
                                 message("Records Processed: " + count);
                             }
@@ -102,6 +104,7 @@ public class NormalizerGUI extends JFrame {
             }
         });
         abort.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (normalizer != null) {
                     normalizer.abort();
@@ -139,16 +142,19 @@ public class NormalizerGUI extends JFrame {
             list = Normalizer.getSourcesWithProfiles(sourceRoot);
         }
 
+        @Override
         public int getSize() {
             return list.size();
         }
 
+        @Override
         public Object getElementAt(int index) {
             return list.get(index);
         }
     }
 
     private static class CellRenderer extends DefaultListCellRenderer {
+        @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             File file = (File) value;
             return super.getListCellRendererComponent(list, file.getName(), index, isSelected, cellHasFocus);
@@ -156,6 +162,7 @@ public class NormalizerGUI extends JFrame {
     }
 
     private Runnable finalAct = new Runnable() {
+        @Override
         public void run() {
             normalize.setEnabled(true);
             abort.setEnabled(false);

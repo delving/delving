@@ -30,12 +30,14 @@ public class CollectionStatusWidget extends DashboardWidget {
         panel.setSpacing(6);
         refreshPanel();
         holder.addListener(new CollectionHolder.CollectionUpdateListener() {
+            @Override
             public void collectionUpdated(EuropeanaCollectionX collection) {
                 refreshPanel();
             }
         });
     }
 
+    @Override
     protected Widget createWidget() {
         return panel;
     }
@@ -59,6 +61,7 @@ public class CollectionStatusWidget extends DashboardWidget {
                 panel.add(new HTML(setIs + world.messages().disabled()));
                 final Button enable = new Button(world.messages().commenceIndexing());
                 enable.addClickHandler(new ClickHandler() {
+                    @Override
                     public void onClick(ClickEvent sender) {
                         askSetState(CollectionStateX.QUEUED, world.messages().areYouSureCollection(world.messages().indexAndEnable()));
                     }
@@ -77,6 +80,7 @@ public class CollectionStatusWidget extends DashboardWidget {
                 panel.add(new HTML(setIs + " " + world.messages().enabled()));
                 final Button disable = new Button(world.messages().disable());
                 disable.addClickHandler(new ClickHandler() {
+                    @Override
                     public void onClick(ClickEvent sender) {
                         askSetState(CollectionStateX.DISABLED, world.messages().areYouSureCollection(world.messages().disable()));
                     }
@@ -91,6 +95,7 @@ public class CollectionStatusWidget extends DashboardWidget {
     private Widget createAbortLink(final CollectionStateX abortedCollectionState, final String process) {
         final Button abort = new Button(world.messages().abort());
         abort.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent sender) {
                 askSetState(abortedCollectionState, world.messages().areYouSureAbort(process));
             }
@@ -106,6 +111,7 @@ public class CollectionStatusWidget extends DashboardWidget {
         );
         verifyDialog.ask(
                 new Runnable() {
+                    @Override
                     public void run() {
                         holder.setCollectionState(toCollectionState);
                     }

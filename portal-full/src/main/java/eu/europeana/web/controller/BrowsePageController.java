@@ -102,7 +102,7 @@ public class BrowsePageController {
         model.addObject("query", query);
         model.addObject("docList", resultView.getBriefDocs());
         model.addObject("pagination", resultView.getPagination());
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.BROWSE_BOB, model);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.BROWSE_BOB, model);
         return model;
     }
 
@@ -142,7 +142,7 @@ public class BrowsePageController {
         final QueryResponse response = beanQueryModelFactory.getSolrResponse(solrQuery);
         final List<FacetField> list = response.getFacetFields();
         model.addObject("facetList", list);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.YEAR_GRID, model);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.YEAR_GRID, model);
         return model;
     }
 }

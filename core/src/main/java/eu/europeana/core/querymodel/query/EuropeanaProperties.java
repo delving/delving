@@ -24,6 +24,7 @@ package eu.europeana.core.querymodel.query;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.Properties;
 
 /**
@@ -88,7 +89,7 @@ public class EuropeanaProperties extends Properties {
         for (String expect : EXPECT) {
             String value = getProperty(expect);
             if (value == null) {
-                log.warn("Missing property '" + expect + "'");
+                log.warn(MessageFormat.format("Missing property ''{0}''", expect));
                 complete = false;
             }
         }

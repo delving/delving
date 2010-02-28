@@ -1,10 +1,6 @@
 package eu.europeana.sip;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.thoughtworks.xstream.annotations.*;
 import com.thoughtworks.xstream.converters.enums.EnumConverter;
 import eu.europeana.query.RecordField;
 import eu.europeana.sip.converters.Converter;
@@ -110,6 +106,7 @@ public class Profile {
         @XStreamImplicit
         public List<MapTo> mapTo;
 
+        @Override
         public int compareTo(FieldMapping o) {
             return from.compareTo(o.from);
         }

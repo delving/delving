@@ -41,6 +41,7 @@ public class EuropeanaCollectionX implements IsSerializable {
     private ImportFileX.State fileState = ImportFileX.State.NONEXISTENT;
     private CollectionStateX collectionState = CollectionStateX.EMPTY;
     private int totalRecords;
+    private int totalOrphans;
     private String importError;
 
     public EuropeanaCollectionX() {
@@ -50,7 +51,7 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.name = name;
     }
 
-    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, ImportFileX.State fileState, CollectionStateX collectionState, int totalRecords, String importError) {
+    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, ImportFileX.State fileState, CollectionStateX collectionState, int totalRecords, int totalOrphans, String importError) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -61,9 +62,10 @@ public class EuropeanaCollectionX implements IsSerializable {
         this.collectionState = collectionState;
         this.totalRecords = totalRecords;
         this.importError = importError;
+        this.totalOrphans = totalOrphans;
     }
 
-    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, String fileState, String collectionState, int totalRecords, String importError) {
+    public EuropeanaCollectionX(Long id, String name, String description, String fileName, Date collectionLastModified, String fileUserName, String fileState, String collectionState, int totalRecords, int totalOrphans, String importError) {
         this(
                 id,
                 name,
@@ -74,6 +76,7 @@ public class EuropeanaCollectionX implements IsSerializable {
                 ImportFileX.State.valueOf(fileState),
                 CollectionStateX.valueOf(collectionState),
                 totalRecords,
+                totalOrphans,
                 importError
         );
     }
@@ -140,6 +143,10 @@ public class EuropeanaCollectionX implements IsSerializable {
 
     public int getTotalRecords() {
         return totalRecords;
+    }
+
+    public int getTotalOrphans() {
+        return totalOrphans;
     }
 
     public String getImportError() {

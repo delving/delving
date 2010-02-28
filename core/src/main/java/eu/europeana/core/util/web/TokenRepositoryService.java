@@ -22,12 +22,14 @@ public class TokenRepositoryService implements PersistentTokenRepository {
     @PersistenceContext
     protected EntityManager entityManager;
 
+    @Override
     @Transactional
     public void createNewToken(PersistentRememberMeToken persistentRememberMeToken) {
         AuthenticationToken token = new AuthenticationToken(persistentRememberMeToken);
         entityManager.persist(token);
     }
 
+    @Override
     @Transactional
     public void updateToken(String series, String tokenValue, Date lastUsed) {
         AuthenticationToken token = entityManager.find(AuthenticationToken.class, series);
@@ -35,6 +37,7 @@ public class TokenRepositoryService implements PersistentTokenRepository {
         token.setLastUsed(lastUsed);
     }
 
+    @Override
     @Transactional
     public PersistentRememberMeToken getTokenForSeries(String series) {
         Query query = entityManager.createQuery("select t from AuthenticationToken as t where t.series = :series");
@@ -53,6 +56,7 @@ public class TokenRepositoryService implements PersistentTokenRepository {
         }
     }
 
+    @Override
     @Transactional
     public void removeUserTokens(String username) {
         Query query = entityManager.createQuery("delete from AuthenticationToken where username = :username");

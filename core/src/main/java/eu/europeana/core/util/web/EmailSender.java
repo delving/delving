@@ -21,6 +21,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -48,6 +49,7 @@ public class EmailSender {
 
     public void sendEmail(final String toEmail, final String fromEmail, final String subject, final Map<String, Object> model) throws IOException, TemplateException {
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
+            @Override
             public void prepare(MimeMessage mimeMessage) throws MessagingException, IOException {
                 mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
                 mimeMessage.setFrom(new InternetAddress(fromEmail));
@@ -66,18 +68,22 @@ public class EmailSender {
                     throw new MailPreparationException("Can't generate text subscription mail", e);
                 }
                 textPart.setDataHandler(new DataHandler(new DataSource() {
+                    @Override
                     public InputStream getInputStream() throws IOException {
                         return new ByteArrayInputStream(textWriter.toString().getBytes("utf-8"));
                     }
 
+                    @Override
                     public OutputStream getOutputStream() throws IOException {
                         throw new IOException("Read-only data");
                     }
 
+                    @Override
                     public String getContentType() {
                         return "text/plain";
                     }
 
+                    @Override
                     public String getName() {
                         return "main";
                     }
@@ -96,18 +102,22 @@ public class EmailSender {
                     throw new MailPreparationException("Can't generate HTML subscription mail", e);
                 }
                 htmlPage.setDataHandler(new DataHandler(new DataSource() {
+                    @Override
                     public InputStream getInputStream() throws IOException {
                         return new ByteArrayInputStream(htmlWriter.toString().getBytes("utf-8"));
                     }
 
+                    @Override
                     public OutputStream getOutputStream() throws IOException {
                         throw new IOException("Read-only data");
                     }
 
+                    @Override
                     public String getContentType() {
                         return "text/html";
                     }
 
+                    @Override
                     public String getName() {
                         return "main";
                     }
@@ -128,7 +138,7 @@ public class EmailSender {
             log.error("to: "+toEmail);
             log.error("subject: "+subject);
             for (Map.Entry<String, Object> entry : model.entrySet()) {
-                log.error(entry.getKey()+" = "+entry.getValue());
+                log.error(MessageFormat.format("{0} = {1}", entry.getKey(), entry.getValue()));
             }
             throw new IOException("Unable to send email", e);
         }
@@ -206,7 +216,7 @@ return out.toString();
         return getTemplate(fileName, new InputStreamReader(getClass().getResourceAsStream(fileName)));
     }
 
-    private Template getTemplate(String name, Reader reader) throws IOException {
+    private static Template getTemplate(String name, Reader reader) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setObjectWrapper(new DefaultObjectWrapper());
         return new Template(name, reader, configuration);

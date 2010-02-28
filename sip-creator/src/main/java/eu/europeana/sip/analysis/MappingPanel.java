@@ -3,6 +3,7 @@ package eu.europeana.sip.analysis;
 import eu.europeana.query.RecordField;
 import eu.europeana.sip.transform.Transform;
 import eu.europeana.sip.transform.TransformException;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -11,12 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -105,6 +101,7 @@ public class MappingPanel extends JPanel {
         statsTable.getTableHeader().setReorderingAllowed(false);
         statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         statsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(ListSelectionEvent listSelectionEvent) {
                 updateTransformedField();
             }
@@ -131,9 +128,11 @@ public class MappingPanel extends JPanel {
     private Component createESEListPanel() {
         JScrollPane scroll = new JScrollPane(eseList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         addMappingButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 RecordField recordField = (RecordField) eseList.getSelectedValue();
                 TransformPanel.Listener listener = new TransformPanel.Listener() {
+                    @Override
                     public void transformSelected(Transform transform, String[] fieldValues) {
                         selectedTransform = transform;
                         selectedFieldValues = fieldValues;
@@ -195,6 +194,7 @@ public class MappingPanel extends JPanel {
             this.counterList = counterList;
         }
 
+        @Override
         public int getRowCount() {
             if (counterList == null) {
                 return 0;
@@ -202,10 +202,12 @@ public class MappingPanel extends JPanel {
             return counterList.size();
         }
 
+        @Override
         public int getColumnCount() {
             return 3;
         }
 
+        @Override
         public Object getValueAt(int row, int col) {
             Statistics.Counter counter = counterList.get(row);
             switch (col) {

@@ -13,6 +13,7 @@ public class SelectIfContains implements Converter {
         this.selector = selector;
     }
 
+    @Override
     public String convertValue(String value) throws ConverterException {
         if (value.contains(selector)) {
             return value;

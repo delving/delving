@@ -1,17 +1,9 @@
 package eu.europeana.sip.analysis;
 
-import javax.swing.*;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javax.swing.*;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -24,7 +16,7 @@ public class FileHandler {
     private static final Logger logger = Logger.getLogger(FileHandler.class);
 
     public interface LoadListener {
-        
+
         void success(List<Statistics> list);
 
         void failure(Exception exception);
@@ -51,11 +43,13 @@ public class FileHandler {
             this.loadListener = loadListener;
         }
 
+        @Override
         public void run() {
             try {
                 logger.info("Loading statistics from [" + file.getAbsolutePath() + "]");
                 final List<Statistics> statisticsList = loadStatisticsList(file);
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         loadListener.success(statisticsList);
                     }
@@ -64,6 +58,7 @@ public class FileHandler {
             catch (final Exception e) {
                 file.delete();
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         loadListener.failure(e);
                     }
@@ -71,6 +66,7 @@ public class FileHandler {
             }
             finally {
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         loadListener.finished();
                     }
@@ -105,6 +101,7 @@ public class FileHandler {
             this.counterListSize = counterListSize;
         }
 
+        @Override
         public void run() {
             try {
                 logger.info("Gathering statistics from [" + file.getAbsolutePath() + "]");
@@ -115,6 +112,7 @@ public class FileHandler {
                 saveStatisticsList(statisticsList, statisticsFile);
                 logger.info("Saved statistics to [" + statisticsFile.getAbsolutePath() + "]");
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         loadListener.success(statisticsList);
                     }
@@ -122,6 +120,7 @@ public class FileHandler {
             }
             catch (final Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         loadListener.failure(e);
                     }
@@ -129,6 +128,7 @@ public class FileHandler {
             }
             finally {
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         loadListener.finished();
                     }

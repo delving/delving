@@ -48,8 +48,6 @@ public interface QueryModelFactory {
 
     FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException;
 
-    GridBrowseBeanView getGridBrowseResultView(SolrQuery solrQuery) throws EuropeanaQueryException;
-
     List<?> getDocIdList(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException;
 
     QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException;

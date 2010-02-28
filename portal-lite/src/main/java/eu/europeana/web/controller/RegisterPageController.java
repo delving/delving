@@ -90,7 +90,7 @@ public class RegisterPageController {
         Token token = tokenService.getToken(tokenKey);
         regForm.setToken(token.getToken());
         regForm.setEmail(token.getEmail());
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER);
         return "register";
     }
 
@@ -98,7 +98,7 @@ public class RegisterPageController {
     protected String formSubmit(@Valid @ModelAttribute("command") RegistrationForm regForm, BindingResult result, HttpServletRequest request) throws EuropeanaQueryException {
         if (result.hasErrors()) {
             log.info("The registration form has errors");
-            clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
+            clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_FAILURE);
             return "register";
         }
         Token token = tokenService.getToken(regForm.getToken()); //the token was validated in handleRequestInternal
@@ -112,7 +112,7 @@ public class RegisterPageController {
         tokenService.removeToken(token);    //remove token. it can not be used any more.
         userDao.addUser(user);  //finally save the user.
         sendNotificationEmail(user);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_SUCCESS);
         return "register-success";
     }
 
@@ -186,10 +186,12 @@ public class RegisterPageController {
 
     public class RegistrationFormValidator implements Validator {
 
+        @Override
         public boolean supports(Class aClass) {
             return RegistrationForm.class.equals(aClass);
         }
 
+        @Override
         public void validate(Object o, Errors errors) {
             RegistrationForm form = (RegistrationForm) o;
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "username.required", "Username is required");

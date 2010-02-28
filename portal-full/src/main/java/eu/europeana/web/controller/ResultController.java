@@ -83,7 +83,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        clickStreamLogger.log(request, fullResultView, page, fullResultView.getFullDoc().getId());
+        clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }
 
@@ -113,7 +113,7 @@ public class ResultController {
         page.addObject("pagination", briefBeanView.getPagination());
         page.addObject("queryToSave", briefBeanView.getPagination().getPresentationQuery().getQueryToSave());
         page.addObject("servletUrl", ControllerUtil.getServletUrl(request));
-        clickStreamLogger.log(request, briefBeanView, solrQuery, page);
+        clickStreamLogger.logBriefResultView(request, briefBeanView, solrQuery, page);
         return page;
     }
 
@@ -145,7 +145,7 @@ public class ResultController {
             throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
         }
         String logString = MessageFormat.format("outlink={0}, provider={2}, europeana_id={1}", redirect, europeanaId, provider);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REDIRECT_OUTLINK, logString);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.REDIRECT_OUTLINK, logString);
         return ControllerUtil.createModelAndViewPage("redirect:" + redirect);
     }
 }

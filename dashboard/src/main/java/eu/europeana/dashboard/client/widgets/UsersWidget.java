@@ -2,17 +2,7 @@ package eu.europeana.dashboard.client.widgets;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.RoleX;
@@ -49,6 +39,7 @@ public class UsersWidget extends DashboardWidget {
         super(world);
     }
 
+    @Override
     protected Widget createWidget() {
         verifyDialog = new VerifyDialog(world.messages());
         VerticalPanel vp = new VerticalPanel();
@@ -76,7 +67,7 @@ public class UsersWidget extends DashboardWidget {
     private Widget createUserChooser() {
         userChooser = new UserChooser(world);
         userChooser.setListener(new UserChooser.Listener() {
-        	
+
         	@Override
             public void userSelected(UserX user) {
                 setUser(user);
@@ -88,6 +79,7 @@ public class UsersWidget extends DashboardWidget {
     private Widget createNewUserButton() {
         newUserButton.setWidth("100%");
         newUserButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                 UserX user = new UserX();
                 user.setRole(RoleX.ROLE_USER);
@@ -113,11 +105,14 @@ public class UsersWidget extends DashboardWidget {
     private Widget createSubmitButton() {
         submitButton.setWidth("100%");
         submitButton.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent event) {
                 if (deleteBox.getValue()) {
                     verifyDialog.ask(submitButton, world.messages().deleteCaption(), world.messages().deleteThisUserQuestion(), new Runnable() {
+                        @Override
                         public void run() {
                             world.service().removeUser(userChooser.getSelectedUser(), new Reply<Void>() {
+                                @Override
                                 public void onSuccess(Void result) {
                                     setUser(null);
                                 }
@@ -128,6 +123,7 @@ public class UsersWidget extends DashboardWidget {
                 else {
                     transferFieldsToUser();
                     world.service().updateUser(user, new Reply<UserX>() {
+                        @Override
                         public void onSuccess(UserX user) {
                             setUser(null);
                         }

@@ -60,6 +60,7 @@ public class CollectionListWidget extends DashboardWidget {
         this.clickHandler= clickHandler;
     }
 
+    @Override
     protected Widget createWidget() {
         StackPanel stack = new StackPanel();
         VerticalPanel panel = new VerticalPanel();
@@ -88,6 +89,7 @@ public class CollectionListWidget extends DashboardWidget {
         HTML selectAll = new HTML(world.messages().selectAll());
         selectAll.setStyleName("actionLink");
         selectAll.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent sender) {
                 setAllChecked(true);
             }
@@ -96,6 +98,7 @@ public class CollectionListWidget extends DashboardWidget {
         HTML selectNone = new HTML(world.messages().selectNone());
         selectNone.setStyleName("actionLink");
         selectNone.addClickHandler(new ClickHandler() {
+            @Override
             public void onClick(ClickEvent sender) {
                 setAllChecked(false);
             }
@@ -178,10 +181,12 @@ public class CollectionListWidget extends DashboardWidget {
             return collection;
         }
 
+        @Override
         public String getDisplayString() {
             return collection.getName();
         }
 
+        @Override
         public String getReplacementString() {
             return collection.getName();
         }

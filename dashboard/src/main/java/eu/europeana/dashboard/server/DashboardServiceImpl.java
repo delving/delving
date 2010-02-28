@@ -78,6 +78,7 @@ public class DashboardServiceImpl implements DashboardService {
         this.solrServer = solrServer;
     }
 
+    @Override
     public UserX login(String email, String password) {
         User user = userDao.authenticateUser(email, password);
         if (user != null && user.isEnabled()) {
@@ -96,6 +97,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
     }
 
+    @Override
     public List<EuropeanaCollectionX> fetchCollections() {
         List<EuropeanaCollection> collectionList = dashboardDao.fetchCollections();
         List<EuropeanaCollectionX> collections = new ArrayList<EuropeanaCollectionX>();
@@ -105,6 +107,7 @@ public class DashboardServiceImpl implements DashboardService {
         return collections;
     }
 
+    @Override
     public List<EuropeanaCollectionX> fetchCollections(String prefix) {
         List<EuropeanaCollection> collectionList = dashboardDao.fetchCollections(prefix);
         List<EuropeanaCollectionX> collections = new ArrayList<EuropeanaCollectionX>();
@@ -114,6 +117,7 @@ public class DashboardServiceImpl implements DashboardService {
         return collections;
     }
 
+    @Override
     public EuropeanaCollectionX fetchCollection(String collectionName, String fileName, boolean create) {
         EuropeanaCollection collection = dashboardDao.fetchCollection(collectionName, fileName, create);
         if (collection == null) {
@@ -124,6 +128,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
     }
 
+    @Override
     public EuropeanaCollectionX updateCollection(EuropeanaCollectionX collectionX) {
         String cookie = UserCookie.get();
         if (cookie == null) throw new RuntimeException("Expected cookie!");
@@ -139,6 +144,7 @@ public class DashboardServiceImpl implements DashboardService {
         return DataTransfer.convert(collection);
     }
 
+    @Override
     public List<QueueEntryX> fetchQueueEntries() {
         List<IndexingQueueEntry> fetchedEntries = dashboardDao.fetchQueueEntries();
         List<QueueEntryX> entries = new ArrayList<QueueEntryX>();
@@ -153,11 +159,13 @@ public class DashboardServiceImpl implements DashboardService {
         return entries;
     }
 
+    @Override
     public EuropeanaCollectionX updateCollectionCounters(EuropeanaCollectionX collection) {
         audit("update collection counters: " + collection);
         return DataTransfer.convert(dashboardDao.updateCollectionCounters(collection.getId()));
     }
 
+    @Override
     public List<UserX> fetchUsers(String pattern) {
         List<UserX> users = new ArrayList<UserX>();
         List<User> userList = userDao.fetchUsers(pattern);
@@ -167,10 +175,12 @@ public class DashboardServiceImpl implements DashboardService {
         return users;
     }
 
+    @Override
     public UserX updateUser(UserX user) {
         return DataTransfer.convert(userDao.updateUser(DataTransfer.convert(user)));
     }
 
+    @Override
     public List<SavedItemX> fetchSavedItems(Long userId) {
         List<SavedItem> savedItems = userDao.fetchSavedItems(userId);
         List<SavedItemX> items = new ArrayList<SavedItemX>();
@@ -181,30 +191,36 @@ public class DashboardServiceImpl implements DashboardService {
         return items;
     }
 
+    @Override
     public void removeUser(UserX user) {
         audit("remove user " + user.getUserName());
         userDao.removeUser(DataTransfer.convert(user));
     }
 
+    @Override
     public List<ImportFileX> fetchImportFiles(boolean normalized) {
         return DataTransfer.convert(importer(normalized).getImportRepository().getAllFiles());
     }
 
+    @Override
     public ImportFileX commenceValidate(ImportFileX importFile, Long collectionId) {
         audit("commence validate " + importFile.getFileName());
         return DataTransfer.convert(importer(false).commenceValidate(DataTransfer.convert(importFile), collectionId));
     }
 
+    @Override
     public ImportFileX commenceImport(ImportFileX importFile, Long collectionId, boolean normalized) {
         audit("commence import " + importFile.getFileName());
         return DataTransfer.convert(importer(normalized).commenceImport(DataTransfer.convert(importFile), collectionId));
     }
 
+    @Override
     public ImportFileX abortImport(ImportFileX importFile, boolean normalized) {
         audit("abort import of " + importFile.getFileName());
         return DataTransfer.convert(importer(normalized).abortImport(DataTransfer.convert(importFile)));
     }
 
+    @Override
     public ImportFileX checkImportFileStatus(String fileName, boolean normalized) {
         return DataTransfer.convert(importer(normalized).getImportRepository().checkStatus(fileName));
     }
@@ -213,6 +229,7 @@ public class DashboardServiceImpl implements DashboardService {
         return normalized ? normalizedImporter : sandboxImporter;
     }
 
+    @Override
     public List<LanguageX> fetchLanguages() {
         List<LanguageX> languages = new ArrayList<LanguageX>(Language.values().length);
         for (Language active : Language.values()) {
@@ -222,10 +239,12 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
 
+    @Override
     public String fetchCacheUrl() {
         return cacheUrl;
     }
 
+    @Override
     public List<CarouselItemX> fetchCarouselItems() {
         List<CarouselItemX> items = new ArrayList<CarouselItemX>();
         for (CarouselItem item : staticInfoDao.fetchCarouselItems()) {
@@ -234,6 +253,7 @@ public class DashboardServiceImpl implements DashboardService {
         return items;
     }
 
+    @Override
     public CarouselItemX createCarouselItem(SavedItemX savedItemX) {
         String europeanaUri = savedItemX.getUri();
         audit("create carousel item: " + europeanaUri);
@@ -244,25 +264,30 @@ public class DashboardServiceImpl implements DashboardService {
         return DataTransfer.convert(item);
     }
 
+    @Override
     public boolean removeCarouselItem(CarouselItemX item) {
         audit("remove carousel item: " + item.getEuropeanaUri());
         return staticInfoDao.removeCarouselItem(item.getId());
     }
 
+    @Override
     public boolean addSearchTerm(String language, String term) {
         audit("add search term: " + language + "/" + term);
         return staticInfoDao.addSearchTerm(Language.findByCode(language), term);
     }
 
+    @Override
     public List<String> fetchSearchTerms(String language) {
         return staticInfoDao.fetchSearchTerms(Language.findByCode(language));
     }
 
+    @Override
     public boolean removeSearchTerm(String language, String term) {
         audit("remove search term: " + language + "/" + term);
         return staticInfoDao.removeSearchTerm(Language.findByCode(language), term);
     }
 
+    @Override
     public void disableAllCollections() {
         List<EuropeanaCollection> collections = dashboardDao.disableAllCollections();
         for (EuropeanaCollection collection : collections) {
@@ -270,11 +295,13 @@ public class DashboardServiceImpl implements DashboardService {
         }
     }
 
+    @Override
     public void enableAllCollections() {
         disableAllCollections();
         dashboardDao.enableAllCollections();
     }
 
+    @Override
     public List<SavedSearchX> fetchSavedSearches(UserX user) {
         List<SavedSearch> savedSearches = userDao.fetchSavedSearches(DataTransfer.convert(user));
         List<SavedSearchX> result = new ArrayList<SavedSearchX>();
@@ -284,6 +311,7 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
+    @Override
     public List<DashboardLogX> fetchLogEntriesFrom(Long topId, int pageSize) {
         List<DashboardLogX> result = new ArrayList<DashboardLogX>();
         for (DashboardLog log : dashboardDao.fetchLogEntriesFrom(topId, pageSize)) {
@@ -292,6 +320,7 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
+    @Override
     public List<DashboardLogX> fetchLogEntriesTo(Long bottomId, int pageSize) {
         List<DashboardLogX> result = new ArrayList<DashboardLogX>();
         for (DashboardLog log : dashboardDao.fetchLogEntriesTo(bottomId, pageSize)) {

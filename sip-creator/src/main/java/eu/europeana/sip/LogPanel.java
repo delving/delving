@@ -1,13 +1,13 @@
 package eu.europeana.sip;
 
-import javax.swing.*;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,10 +59,12 @@ public class LogPanel extends JPanel {
             }
         }
 
+        @Override
         public boolean requiresLayout() {
             return true;
         }
 
+        @Override
         public void close() {
             SwingUtilities.invokeLater(textAreaAppender);
             textAreaAppender = new TextAreaAppender();
@@ -76,6 +78,7 @@ public class LogPanel extends JPanel {
             messages.add(message);
         }
 
+        @Override
         public void run() {
             if (logCount++ >= MAX_LOG_LINES) {
                 String text = logTextArea.getText();

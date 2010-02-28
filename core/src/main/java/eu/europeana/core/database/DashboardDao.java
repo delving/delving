@@ -264,4 +264,6 @@ public interface DashboardDao {
 
     List<DashboardLog> fetchLogEntriesTo(Long topId, int pageSize);
 
+    List<EuropeanaCollection> fetchEnabledCollections();
+    
 }

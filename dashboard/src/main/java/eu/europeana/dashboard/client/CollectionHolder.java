@@ -54,6 +54,7 @@ public class CollectionHolder {
     public void setImportFile(ImportFileX importFile) {
         this.importFile = importFile;
         service.fetchCollection(collection.getName(), importFile.getFileName() , false, new Reply<EuropeanaCollectionX>() {
+            @Override
             public void onSuccess(EuropeanaCollectionX result) {
                 setCollection(result);
             }
@@ -80,6 +81,7 @@ public class CollectionHolder {
 
     private void updateCollection() {
         service.updateCollection(collection, new Reply<EuropeanaCollectionX>() {
+            @Override
             public void onSuccess(EuropeanaCollectionX collectionX) {
                 setCollection(collectionX);
             }

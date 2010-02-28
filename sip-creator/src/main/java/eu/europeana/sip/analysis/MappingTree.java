@@ -1,19 +1,14 @@
 package eu.europeana.sip.analysis;
 
 import eu.europeana.sip.schema.SourceSelection;
+
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.namespace.QName;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * A tree representing the statistics gathered
@@ -69,20 +64,24 @@ public class MappingTree implements Serializable {
             this.statistics = statistics;
         }
 
+        @Override
         public Statistics getStatistics() {
             return statistics;
         }
 
+        @Override
         public SourceSelection getDomain() {
             return sourceSelection;
         }
 
+        @Override
         public TreePath getTreePath() {
             List<QNameNode> list = new ArrayList<QNameNode>();
             compilePathList(list);
             return new TreePath(list.toArray());
         }
 
+        @Override
         public Iterable<? extends Node> getChildNodes() {
             return children;
         }
@@ -98,31 +97,38 @@ public class MappingTree implements Serializable {
             children.add(child);
         }
 
+        @Override
         public TreeNode getChildAt(int index) {
             return children.get(index);
         }
 
+        @Override
         public int getChildCount() {
             return children.size();
         }
 
+        @Override
         public TreeNode getParent() {
             return parent;
         }
 
+        @Override
         public int getIndex(TreeNode treeNode) {
             QNameNode qNameNode = (QNameNode)treeNode;
             return children.indexOf(qNameNode);
         }
 
+        @Override
         public boolean getAllowsChildren() {
             return !children.isEmpty();
         }
 
+        @Override
         public boolean isLeaf() {
             return statistics != null;
         }
 
+        @Override
         public Enumeration children() {
             return new Vector<QNameNode>(children).elements();
         }

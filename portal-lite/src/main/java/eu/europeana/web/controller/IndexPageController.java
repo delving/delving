@@ -58,7 +58,7 @@ public class IndexPageController {
         Language language = ControllerUtil.getLocale(request);
         page.addObject("proposedSearchTerms", proposedSearchTermSampler.pickRandomItems(language));
         page.addObject("carouselItems", carouselItemSampler.pickShuffledRandomItems());
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.INDEXPAGE, page);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.INDEXPAGE, page);
         return page;
     }
 

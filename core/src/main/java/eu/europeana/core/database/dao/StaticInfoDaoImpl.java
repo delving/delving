@@ -43,6 +43,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     @PersistenceContext
     protected EntityManager entityManager;
 
+    @Override
     @Transactional
     public User removeCarouselItemFromSavedItem(Long savedItemId) {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
@@ -52,6 +53,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return savedItem.getUser();
     }
 
+    @Override
     @Transactional
     public Boolean removeCarouselItem(Long carouselItemId) {
         CarouselItem carouselItem = entityManager.getReference(CarouselItem.class, carouselItemId);
@@ -66,6 +68,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return true;
     }
 
+    @Override
     @Transactional
     public User removeSearchTerm(Long savedSearchId) {
         SavedSearch savedSearch = entityManager.find(SavedSearch.class, savedSearchId);
@@ -75,6 +78,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return savedSearch.getUser();
     }
 
+    @Override
     @Transactional
     public SearchTerm addSearchTerm(Long savedSearchId) {
         SavedSearch savedSearch = entityManager.getReference(SavedSearch.class, savedSearchId);
@@ -86,6 +90,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return searchTerm;
     }
 
+    @Override
     @Transactional
     public boolean addSearchTerm(Language language, String term) {
         SearchTerm searchTerm = new SearchTerm();
@@ -96,6 +101,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return true; // maybe check for existence first?
     }
 
+    @Override
     @Transactional
     public boolean addSearchTerm(SavedSearch savedSearch) {
         SearchTerm searchTerm = savedSearch.createSearchTerm();
@@ -103,6 +109,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return true;
     }
 
+    @Override
     @Transactional
     public boolean removeSearchTerm(Language language, String term) {
         // todo remove back reference to saved item
@@ -116,6 +123,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return success;
     }
 
+    @Override
     @Transactional
     @SuppressWarnings("unchecked")
     public List<String> fetchSearchTerms(Language language) {
@@ -124,6 +132,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return (List<String>) query.getResultList();
     }
 
+    @Override
     @Transactional
     @SuppressWarnings("unchecked")
     public List<CarouselItem> fetchCarouselItems() {
@@ -140,6 +149,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return results;
     }
 
+    @Override
     @Transactional
     public CarouselItem createCarouselItem(Long savedItemId) {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
@@ -160,6 +170,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         return carouselItem;
     }
 
+    @Override
     @Transactional
     public void removeFromCarousel(SavedItem savedItem) {
         CarouselItem carouselItem = savedItem.getCarouselItem();
@@ -172,6 +183,7 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
         }
     }
 
+    @Override
     @Transactional
     @SuppressWarnings("unchecked")
     public List<SearchTerm> getAllSearchTerms() {

@@ -26,10 +26,12 @@ public class ImportRepositoryImpl implements ImportRepository {
         }
     }
 
+    @Override
     public File createFile(ImportFile importFile) {
         return new File(new File(root, importFile.getState().toString().toLowerCase()), importFile.getFileName());
     }
 
+    @Override
     public ImportFile createForUpload(String fileName) {
         log.info("creating "+fileName);
         Folder folder = get(fileName);
@@ -40,10 +42,12 @@ public class ImportRepositoryImpl implements ImportRepository {
         return get(ImportFileState.UPLOADING).createImportFile(fileName, false);
     }
 
+    @Override
     public List<String> getFiles(ImportFileState state) {
         return get(state).getFileNames();
     }
 
+    @Override
     public List<ImportFile> getAllFiles() {
         List<ImportFile> all = new ArrayList<ImportFile>();
         for (Folder folder: folders) {
@@ -54,10 +58,12 @@ public class ImportRepositoryImpl implements ImportRepository {
         return all;
     }
 
+    @Override
     public ImportFile transition(ImportFile importFile, ImportFileState to) {
         return get(importFile.getState()).move(importFile.getFileName(), get(to));
     }
 
+    @Override
     public ImportFile checkStatus(String fileName) {
         for (Folder folder : folders) {
             if (folder.containsFile(fileName)) {
@@ -67,6 +73,7 @@ public class ImportRepositoryImpl implements ImportRepository {
         return null;
     }
 
+    @Override
     public ImportFile copyToUploaded(File file) throws IOException {
         String fileName = file.getName();
         Folder folder = get(fileName);
@@ -120,6 +127,7 @@ public class ImportRepositoryImpl implements ImportRepository {
         synchronized List<String> getFileNames() {
             List<String> fileNameList = new ArrayList<String>();
             File[] importCandidates = directory.listFiles(new FileFilter() {
+                @Override
                 public boolean accept(File file) {
                     return file.isFile() && ImportFile.isCorrectSuffix(file.getName());
                 }

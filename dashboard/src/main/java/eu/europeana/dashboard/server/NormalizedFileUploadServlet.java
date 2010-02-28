@@ -11,6 +11,7 @@ import eu.europeana.core.database.incoming.ImportRepository;
 public class NormalizedFileUploadServlet extends FileUploadServlet {
     private static final long serialVersionUID = -7966505842467718930L;
 
+    @Override
     protected ImportRepository getRepository() {
         return HostedModeServiceLoader.getNormalizedImportRepository();
     }

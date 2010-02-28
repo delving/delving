@@ -82,10 +82,8 @@ public class Normalizer implements Runnable {
         /*
         Checks on loading
          */
-        for (Iterator<Profile.Source> sourceIt = profile.sources.iterator(); sourceIt.hasNext(); ) {
-            Profile.Source source = sourceIt.next();
-            for (Iterator<Profile.FieldMapping> fieldIt = source.fieldMappings.iterator(); fieldIt.hasNext(); ) {
-                Profile.FieldMapping fl = fieldIt.next();
+        for (Profile.Source source : profile.sources) {
+            for (Profile.FieldMapping fl : source.fieldMappings) {
                 if (fl.from == null)
                     // todo: give deprecation warning first
 //                    log.warn("'<field-mapping key=\"\"/>' is no longer allowed. Please change it to '<field-mapping from=\"\"/>' " +
@@ -114,6 +112,7 @@ public class Normalizer implements Runnable {
         this.finalAct = runnable;
     }
 
+    @Override
     public void run() {
         try {
             for (Profile.Source source : profile.sources) {
@@ -140,9 +139,7 @@ public class Normalizer implements Runnable {
         File outputFile = new File(outputDirectory, source.file);
         int recordsProcessed = 0;
         int recordsNormalized = 0;
-        SolrRecord record = null;
         Stack<TextValue> textValues = new Stack<TextValue>();
-        String path = "";
         XMLStreamReader2 input = null;
         Appender fileAppender = null;
         XMLStreamWriter output = null;
@@ -154,6 +151,8 @@ public class Normalizer implements Runnable {
             Logger.getRootLogger().addAppender(fileAppender);
             output = createStreamWriter(outputFile);
             int depth = 0;
+            SolrRecord record = null;
+            String path = "";
             while (running) {
                 switch (input.getEventType()) {
                     case XMLStreamConstants.START_DOCUMENT:
@@ -172,10 +171,10 @@ public class Normalizer implements Runnable {
                             }
                         }
                         if (record != null) {
-                            SolrField field = null;
                             appendChar(textValues, ' ');
                             Profile.FieldMapping elementFieldMapping = fieldMappings.get(path);
                             QName tagName = input.getName();
+                            SolrField field = null;
                             if (elementFieldMapping != null) {
                                 field = new SolrField(tagName, elementFieldMapping);
                             }
@@ -523,10 +522,12 @@ public class Normalizer implements Runnable {
             this.name = name;
         }
 
+        @Override
         public void message(String message) {
             System.out.println(name+": "+message);
         }
 
+        @Override
         public void recordsProcessed(int count) {
             System.out.println(name+": processed "+count);
             try {

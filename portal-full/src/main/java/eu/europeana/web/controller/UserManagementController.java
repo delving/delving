@@ -52,25 +52,25 @@ public class UserManagementController {
         if (user != null) {
             ControllerUtil.setUser(userDao.updateUser(user));
         }
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.MY_EUROPEANA);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.MY_EUROPEANA);
         return page;
     }
 
     @RequestMapping("/logout-success.html")
     public ModelAndView logoutSuccessHandler(HttpServletRequest request) throws Exception {
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.LOGOUT);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGOUT);
         return ControllerUtil.createModelAndViewPage("redirect:/index.html");
     }
 
     @RequestMapping("/remember-me-theft.html")
     public ModelAndView cookieTheftHandler(HttpServletRequest request) throws Exception {
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.LOGOUT_COOKIE_THEFT);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGOUT_COOKIE_THEFT);
         return ControllerUtil.createModelAndViewPage("redirect:/login.html");
     }
 
     @RequestMapping("/logout.html")
     public ModelAndView logoutHandler(HttpServletRequest request) throws Exception {
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.LOGOUT);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGOUT);
         return ControllerUtil.createModelAndViewPage("logout");
     }
 
@@ -89,7 +89,7 @@ public class UserManagementController {
             throw new IllegalArgumentException("Expected to find '" + SECURE + "' in the request URL");
         }
         String redirect = url.substring(0, securePos) + url.substring(securePos + SECURE.length());
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.REDIRECT_TO_SECURE, "redirect="+redirect);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.REDIRECT_TO_SECURE, "redirect="+redirect);
         return ControllerUtil.createModelAndViewPage("redirect:" + redirect);
     }
 }

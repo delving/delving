@@ -42,6 +42,7 @@ public class SourceSelection implements Comparable<SourceSelection> {
     @XStreamImplicit
     public List<DestinationMapping> destinationMapping;
 
+    @Override
     public int compareTo(SourceSelection o) {
         return from.compareTo(o.from);
     }

@@ -207,7 +207,7 @@ public interface DashboardMessages extends Messages {
 
     String logTab();
 
-    String GodTab();
+    String godTab();
 
     String disableAll();
 

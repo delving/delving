@@ -119,7 +119,7 @@ public class LoginPageController {
         page.addObject("failureExists", failureExists);
         page.addObject("failureForgotFormat", failureForgotFormat);
         page.addObject("failureForgotDoesntExist", failureForgotDoesntExist);
-        clickStreamLogger.log(request, ClickStreamLogger.UserAction.LOGIN, page);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGIN, page);
         return page;
     }
 
