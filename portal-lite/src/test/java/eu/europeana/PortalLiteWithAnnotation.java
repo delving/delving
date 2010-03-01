@@ -38,7 +38,7 @@ public class PortalLiteWithAnnotation {
     public static void main(String... args) throws Exception {
     	System.setProperty("hibernate.bytecode.provider", "javassist");
         
-    	new SolrStarter().start();
+    	//new SolrStarter().start();
     	
     	String aitRoot = StarterUtil.getAITPath();
         Server server = new Server(8080);
