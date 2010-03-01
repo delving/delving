@@ -21,9 +21,11 @@
 
 package eu.europeana;
 
-import eu.europeana.core.util.StarterUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
+
+import eu.europeana.bootstrap.SolrStarter;
+import eu.europeana.core.util.StarterUtil;
 
 /**
  * Bootstrap the backend and portal lite including the annotation services
@@ -35,7 +37,10 @@ public class PortalLiteWithAnnotation {
 	// do not forget to set -Deuropeana.properties and working directory -> see readme file
     public static void main(String... args) throws Exception {
     	System.setProperty("hibernate.bytecode.provider", "javassist");
-        String aitRoot = StarterUtil.getAITPath();
+        
+    	new SolrStarter().start();
+    	
+    	String aitRoot = StarterUtil.getAITPath();
         Server server = new Server(8080);
         server.addHandler(new WebAppContext(StarterUtil.getEuropeanaPath() + "/portal-lite/src/main/webapp", "/portal"));
         server.addHandler(new WebAppContext(aitRoot + "/annotation-middleware/target/annotation-middleware.war", "/annotation-middleware"));
