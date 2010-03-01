@@ -24,7 +24,6 @@ package eu.europeana;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
-import eu.europeana.bootstrap.SolrStarter;
 import eu.europeana.core.util.StarterUtil;
 
 /**
