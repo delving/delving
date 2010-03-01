@@ -31,7 +31,6 @@ public interface DocIdWindowPager {
 
     String getTab();
 
-    @Override
     String toString();
 
     String getStartPage();
