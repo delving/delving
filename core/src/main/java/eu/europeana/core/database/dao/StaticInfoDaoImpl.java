@@ -22,7 +22,13 @@
 package eu.europeana.core.database.dao;
 
 import eu.europeana.core.database.StaticInfoDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.Language;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.core.database.domain.User;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +54,10 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
     public User removeCarouselItemFromSavedItem(Long savedItemId) {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
         CarouselItem carouselItem = savedItem.getCarouselItem();
-        savedItem.setCarouselItem(null);
-        entityManager.remove(carouselItem);
+        if (carouselItem != null) {
+            savedItem.setCarouselItem(null);
+            entityManager.remove(carouselItem);
+        }
         return savedItem.getUser();
     }
 
@@ -61,9 +69,13 @@ public class StaticInfoDaoImpl implements StaticInfoDao {
             throw new IllegalArgumentException("Unable to find saved item: " + carouselItemId);
         }
         SavedItem savedItem = carouselItem.getSavedItem();
-        savedItem.setCarouselItem(null);
+        if (savedItem != null) {
+            savedItem.setCarouselItem(null);
+        }
         EuropeanaId europeanaId = carouselItem.getEuropeanaId();
-        europeanaId.getCarouselItems().remove(carouselItem);
+        if (europeanaId != null) {
+            europeanaId.getCarouselItems().remove(carouselItem);
+        }
         entityManager.remove(carouselItem);
         return true;
     }
