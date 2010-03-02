@@ -93,3 +93,9 @@ static.page.path = portal-lite/src/test/staticpages/
 #
 message.resource=file:portal-lite/src/main/message_keys/messages
 message.cache.seconds=60
+
+#
+# Where the image annotation tool can be found. If this property is set a
+# link will be created in the actions sidebar of the full-doc view.
+#
+#image.annotation.tool.base.url=../image-annotation-frontend/annotate.jsp

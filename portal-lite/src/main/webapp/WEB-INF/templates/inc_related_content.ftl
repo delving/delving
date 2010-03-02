@@ -1,7 +1,5 @@
         <h5><@spring.message 'RelatedContent_t' />:</h5>
 
-
-
                 <table summary="related items" id="tbl-related-items" width="100%">
                     <#assign max=3/><!-- max shown in list -->
                     <#list result.relatedItems as doc>
@@ -51,13 +49,20 @@
             <#--</div>-->
 
             <h5><@spring.message 'Actions_t' />:</h5>
-            <#if user??>
-
+            <#if user??>				
 
                 <p class="linetop">
                     <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToMyEuropeana_t' /></a>
                     <div id="msg-save-item" class="msg-hide"></div>
                 </p>
+                
+                <#if result.fullDoc.europeanaType == "IMAGE">		            
+                	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+	                    <p class="linetop">	                	
+		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>              
+		                </p>
+	                </#if>
+                </#if>
 
             <h6><@spring.message 'AddATag_t' /></h6>
 

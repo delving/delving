@@ -21,23 +21,26 @@
 
 package eu.europeana.web.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.FullBeanView;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
-import java.util.Map;
 
 /**
  * Annotation-based handling of result pages
@@ -54,7 +57,10 @@ public class ResultController {
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-
+       
+    @Value("#{europeanaProperties['image.annotation.tool.base.url']}")
+    private String imageAnnotationToolBaseUrl;
+    
     @RequestMapping("/full-doc.html")
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocHtml(
@@ -80,6 +86,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
+        page.addObject("imageAnnotationToolBaseUrl",imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }
