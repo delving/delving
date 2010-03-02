@@ -21,10 +21,29 @@
 
 package eu.europeana.dashboard.server;
 
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.CollectionState;
+import eu.europeana.core.database.domain.Country;
+import eu.europeana.core.database.domain.DashboardLog;
+import eu.europeana.core.database.domain.EuropeanaCollection;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.ImportFileState;
+import eu.europeana.core.database.domain.Language;
+import eu.europeana.core.database.domain.Role;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.incoming.ImportFile;
 import eu.europeana.core.querymodel.query.DocType;
-import eu.europeana.dashboard.client.dto.*;
+import eu.europeana.dashboard.client.dto.CarouselItemX;
+import eu.europeana.dashboard.client.dto.CountryX;
+import eu.europeana.dashboard.client.dto.DashboardLogX;
+import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
+import eu.europeana.dashboard.client.dto.EuropeanaIdX;
+import eu.europeana.dashboard.client.dto.ImportFileX;
+import eu.europeana.dashboard.client.dto.LanguageX;
+import eu.europeana.dashboard.client.dto.RoleX;
+import eu.europeana.dashboard.client.dto.SavedSearchX;
+import eu.europeana.dashboard.client.dto.UserX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +57,9 @@ import java.util.List;
 public class DataTransfer {
 
     public static EuropeanaCollectionX convert(EuropeanaCollection collection) {
+        if (collection == null) {
+            return null;
+        }
         return new EuropeanaCollectionX(
                 collection.getId(),
                 collection.getName(),
@@ -54,6 +76,9 @@ public class DataTransfer {
     }
 
     public static EuropeanaCollection convert(EuropeanaCollectionX collectionX) {
+        if (collectionX == null) {
+            return null;
+        }
         EuropeanaCollection collection = new EuropeanaCollection(collectionX.getId());
         collection.setName(collectionX.getName());
         collection.setDescription(collectionX.getDescription());
@@ -69,6 +94,9 @@ public class DataTransfer {
     }
 
     public static CarouselItemX convert(CarouselItem item) {
+        if (item == null) {
+            return null;
+        }
         String typeString = (item.getType() == null) ? DocType.UNKNOWN.toString() : item.getType().toString();
         return new CarouselItemX(
                 item.getId(),
@@ -83,27 +111,36 @@ public class DataTransfer {
         );
     }
 
-    public static EuropeanaIdX convert(EuropeanaId id) {
+    public static EuropeanaIdX convert(EuropeanaId europeanaId) {
+        if (europeanaId == null) {
+            return null;
+        }
         return new EuropeanaIdX(
-                id.getId(),
-                id.getTimesViewed(),
-                id.getCreated(),
-                id.getLastViewed(),
-                id.getLastModified(),
-                id.getEuropeanaUri(),
-                id.getBoostFactor()
+                europeanaId.getId(),
+                europeanaId.getTimesViewed(),
+                europeanaId.getCreated(),
+                europeanaId.getLastViewed(),
+                europeanaId.getLastModified(),
+                europeanaId.getEuropeanaUri(),
+                europeanaId.getBoostFactor()
         );
     }
 
-    public static SavedSearchX convert(SavedSearch s) {
+    public static SavedSearchX convert(SavedSearch savedSearch) {
+        if (savedSearch == null) {
+            return null;
+        }
         return new SavedSearchX(
-                s.getId(),
-                s.getQueryString(),
-                convert(s.getLanguage())
+                savedSearch.getId(),
+                savedSearch.getQueryString(),
+                convert(savedSearch.getLanguage())
         );
     }
 
     public static LanguageX convert(Language language) {
+        if (language == null) {
+            return null;
+        }
         return new LanguageX(
                 language.getCode(),
                 language.getName()
@@ -111,10 +148,16 @@ public class DataTransfer {
     }
 
     public static CountryX convert(Country country) {
+        if (country == null) {
+            return null;
+        }
         return new CountryX(country.toString(), country.getEnglishName());
     }
 
     public static UserX convert(User user) {
+        if (user == null) {
+            return null;
+        }
         return new UserX(
                 user.getId(),
                 user.getUserName(),
@@ -133,6 +176,9 @@ public class DataTransfer {
     }
 
     public static User convert(UserX userX) {
+        if (userX == null) {
+            return null;
+        }
         return new User(
                 userX.getId(),
                 userX.getUserName(),
@@ -149,16 +195,22 @@ public class DataTransfer {
         );
     }
 
-    public static DashboardLogX convert(DashboardLog log) {
+    public static DashboardLogX convert(DashboardLog dashboardLog) {
+        if (dashboardLog == null) {
+            return null;
+        }
         return new DashboardLogX(
-                log.getId(),
-                log.getWho(),
-                log.getTime(),
-                log.getWhat()
+                dashboardLog.getId(),
+                dashboardLog.getWho(),
+                dashboardLog.getTime(),
+                dashboardLog.getWhat()
         );
     }
 
     public static ImportFileX convert(ImportFile importFile) {
+        if (importFile == null) {
+            return null;
+        }
         return new ImportFileX(
                 importFile.getFileName(),
                 ImportFileX.State.valueOf(importFile.getState().toString()),
@@ -166,11 +218,14 @@ public class DataTransfer {
         );
     }
 
-    public static ImportFile convert(ImportFileX importFile) {
+    public static ImportFile convert(ImportFileX importFileX) {
+        if (importFileX == null) {
+            return null;
+        }
         return new ImportFile(
-                importFile.getFileName(),
-                ImportFileState.valueOf(importFile.getState().toString()),
-                importFile.getLastModified()
+                importFileX.getFileName(),
+                ImportFileState.valueOf(importFileX.getState().toString()),
+                importFileX.getLastModified()
         );
     }
 
