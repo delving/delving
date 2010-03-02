@@ -23,7 +23,11 @@ package eu.europeana.core.querymodel.query;
 
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Properties;
 
@@ -54,15 +58,6 @@ public class EuropeanaProperties extends Properties {
                     log.info("Found env property 'EUROPEANA_PROPERTIES', resolved to " + new File(europeanaProperties).getCanonicalPath());
                 }
                 inputStream = getInputFromFile(europeanaProperties);
-            }
-            if (inputStream == null) {
-                log.warn("No 'europeana.properties' found in system properties or environment, checking for legacy 'europeana.config'.");
-                inputStream = getInputFromFile(System.getProperty("europeana.config"));
-            }
-            if (inputStream == null) {
-                log.warn("No 'europeana.properties', checking for (test) resource.");
-                inputStream = getClass().getResourceAsStream("/europeana-test.properties");
-                log.info("Test 'europeana.properties' being used");
             }
         }
         catch (Exception e) {
