@@ -23,7 +23,12 @@ package eu.europeana.web.controller;
 
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
@@ -40,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLDecoder;
+import java.sql.BatchUpdateException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -154,18 +160,18 @@ public class AjaxController {
                 break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
-                savedItem.setTitle(getStringParameter("title", request));
-                savedItem.setAuthor(getStringParameter("author", request));
-                savedItem.setDocType(DocType.valueOf(getStringParameter("docType", request)));
+                savedItem.setTitle(getStringParameter("title", 120, request));
+                savedItem.setAuthor(getStringParameter("author", 80, request));
+                savedItem.setDocType(DocType.valueOf(getStringParameter("docType", 30, request)));
                 savedItem.setLanguage(ControllerUtil.getLocale(request));
-                savedItem.setEuropeanaObject(getStringParameter("europeanaObject", request));
-                user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", request));
+                savedItem.setEuropeanaObject(getStringParameter("europeanaObject", 256, request));
+                user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", 256, request));
                 clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SAVE_ITEM);
                 break;
             case SAVED_SEARCH:
                 SavedSearch savedSearch = new SavedSearch();
-                savedSearch.setQuery(getStringParameter("query", request));
-                savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", request), "utf-8"));
+                savedSearch.setQuery(getStringParameter("query", 200, request));
+                savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", 200, request), "utf-8"));
                 savedSearch.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSavedSearch(user, savedSearch);
                 clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SAVE_SEARCH);
@@ -178,15 +184,15 @@ public class AjaxController {
                 break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
-                String tagValue = getStringParameter("tag", request);
+                String tagValue = getStringParameter("tag", 60, request);
                 socialTag.setTag(tagValue);
-                socialTag.setEuropeanaUri(getStringParameter("europeanaUri", request));
-                socialTag.setDocType(DocType.valueOf(getStringParameter("docType", request)));
-                socialTag.setEuropeanaObject(getStringParameter("europeanaObject", request));
-                socialTag.setTitle(getStringParameter("title", request));
+                socialTag.setEuropeanaUri(getStringParameter("europeanaUri", 256, request));
+                socialTag.setDocType(DocType.valueOf(getStringParameter("docType", 30, request)));
+                socialTag.setEuropeanaObject(getStringParameter("europeanaObject", 256, request));
+                socialTag.setTitle(getStringParameter("title", 120, request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
-                clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
+                clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG, "tag=" + tagValue);
                 break;
             default:
                 throw new IllegalArgumentException("Unhandled removable");
@@ -210,11 +216,11 @@ public class AjaxController {
     }
 
     private boolean processSendToAFriendHandler(HttpServletRequest request) throws Exception {
-        String emailAddress = getStringParameter("email", request);
+        String emailAddress = getStringParameter("email", 256, request);
         if (!ControllerUtil.validEmailAddress(emailAddress)) {
             throw new IllegalArgumentException("Email address invalid: [" + emailAddress + "]");
         }
-        String uri = getStringParameter("uri", request);
+        String uri = getStringParameter("uri", 256, request);
         User user = ControllerUtil.getUser();
         Map<String, Object> model = new TreeMap<String, Object>();
         model.put("user", user);
@@ -227,6 +233,7 @@ public class AjaxController {
     }
 
     // currently not used. todo: maybe remove later
+
     @RequestMapping("/tag-autocomplete.ajax")
     public ModelAndView handleTagAutoCompleteRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("xml"); // todo: viewResolver should set content type
@@ -293,18 +300,29 @@ public class AjaxController {
     }
 
 
-    protected static String getStringParameter(String parameterName, HttpServletRequest request) {
+    protected static String getStringParameter(String parameterName, int maximumLength, HttpServletRequest request) {
         String stringValue = request.getParameter(parameterName);
         if (stringValue == null) {
             throw new IllegalArgumentException("Missing parameter: " + parameterName);
+        }
+        if (stringValue.length() >= maximumLength) {
+            stringValue = stringValue.substring(0, maximumLength);
         }
         stringValue = stringValue.trim();
         return stringValue;
     }
 
-    private static String getStackTrace(Exception exception) {
+    private String getStackTrace(Exception exception) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
+        for (Throwable e = exception.getCause(); e != null; e = e.getCause()) {
+            if (e instanceof BatchUpdateException) {
+                BatchUpdateException bue = (BatchUpdateException) e;
+                Exception next = bue.getNextException();
+                log.warn("Next exception in batch", next);
+                next.printStackTrace(printWriter);
+            }
+        }
         exception.printStackTrace(printWriter);
         return stringWriter.toString();
     }
