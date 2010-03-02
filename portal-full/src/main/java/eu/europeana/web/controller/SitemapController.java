@@ -71,8 +71,7 @@ public class SitemapController {
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
-//    @RequestMapping("/sitemap.xml")
-
+    @RequestMapping("/europeana-sitemap.xml")
     public ModelAndView handleSitemap(
             @RequestParam(value = "collection", required = false) String collection,
             @RequestParam(value = "page", required = false) String page,
@@ -93,7 +92,7 @@ public class SitemapController {
                     // add each page of a collection to the index.
                     entries.add(
                             new SitemapIndexEntry(
-                                    StringEscapeUtils.escapeXml(String.format("%ssitemap.xml?collection=%s&page=%d", baseUrl, europeanaCollection.getName(), i)),
+                                    StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?collection=%s&page=%d", baseUrl, europeanaCollection.getName(), i)),
                                     europeanaCollection.getCollectionLastModified()));
                 }
             }
@@ -133,7 +132,7 @@ public class SitemapController {
      * @throws eu.europeana.core.querymodel.query.EuropeanaQueryException
      *
      */
-    @RequestMapping("/sitemap.xml")
+    //@RequestMapping("/sitemap.xml")
     public ModelAndView handleTestSitemap(
             @RequestParam(value = "collection", required = false) String collection,
             @RequestParam(value = "page", required = false) String page,
