@@ -23,7 +23,16 @@ package eu.europeana.core.database.domain;
 
 import org.hibernate.annotations.Index;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -40,28 +49,28 @@ public class EuropeanaCollection implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(length = 256, unique = true)
+    @Column(length = FieldSize.COLLECTION_NAME, unique = true)
     @Index(name = "collectionnameindex")
     private String name;
 
     @Lob
     private String description;
 
-    @Column(length = 256)
+    @Column(length = FieldSize.FILE_NAME)
     private String fileName;
 
-    @Column(length = 60)
+    @Column(length = FieldSize.FILE_USER_NAME)
     private String fileUserName;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date collectionLastModified;
 
-    @Column(length = 25)
+    @Column(length = FieldSize.COLLECTION_STATE_ENUM)
     @Enumerated(EnumType.STRING)
     private ImportFileState fileState = ImportFileState.NONEXISTENT;
 
-    @Column(length = 25)
+    @Column(length = FieldSize.COLLECTION_STATE_ENUM)
     @Enumerated(EnumType.STRING)
     private CollectionState collectionState = CollectionState.EMPTY;
 

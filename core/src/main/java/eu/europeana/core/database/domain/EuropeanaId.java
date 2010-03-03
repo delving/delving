@@ -23,7 +23,17 @@ package eu.europeana.core.database.domain;
 
 import org.hibernate.annotations.Index;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +76,7 @@ public class EuropeanaId implements Serializable {
     @Index(name = "lastmodified_index")
     private Date lastModified;
 
-    @Column(length = 256, unique = true)
+    @Column(length = FieldSize.EUROPEANA_URI, unique = true)
     @Index(name = "europeanauri_index")
     private String europeanaUri;
 

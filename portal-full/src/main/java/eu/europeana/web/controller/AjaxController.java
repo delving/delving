@@ -24,6 +24,7 @@ package eu.europeana.web.controller;
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.FieldSize;
 import eu.europeana.core.database.domain.SavedItem;
 import eu.europeana.core.database.domain.SavedSearch;
 import eu.europeana.core.database.domain.SearchTerm;
@@ -160,18 +161,18 @@ public class AjaxController {
                 break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
-                savedItem.setTitle(getStringParameter("title", 120, request));
-                savedItem.setAuthor(getStringParameter("author", 80, request));
-                savedItem.setDocType(DocType.valueOf(getStringParameter("docType", 30, request)));
+                savedItem.setTitle(getStringParameter("title", FieldSize.TITLE, request));
+                savedItem.setAuthor(getStringParameter("author", FieldSize.AUTHOR, request));
+                savedItem.setDocType(DocType.valueOf(getStringParameter("docType", FieldSize.DOCTYPE, request)));
                 savedItem.setLanguage(ControllerUtil.getLocale(request));
-                savedItem.setEuropeanaObject(getStringParameter("europeanaObject", 256, request));
-                user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", 256, request));
+                savedItem.setEuropeanaObject(getStringParameter("europeanaObject", FieldSize.EUROPEANA_OBJECT, request));
+                user = userDao.addSavedItem(user, savedItem, getStringParameter("europeanaUri", FieldSize.EUROPEANA_URI, request));
                 clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SAVE_ITEM);
                 break;
             case SAVED_SEARCH:
                 SavedSearch savedSearch = new SavedSearch();
-                savedSearch.setQuery(getStringParameter("query", 200, request));
-                savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", 200, request), "utf-8"));
+                savedSearch.setQuery(getStringParameter("query", FieldSize.QUERY, request));
+                savedSearch.setQueryString(URLDecoder.decode(getStringParameter("queryString", FieldSize.QUERY_STRING, request), "utf-8"));
                 savedSearch.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSavedSearch(user, savedSearch);
                 clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SAVE_SEARCH);
@@ -184,12 +185,12 @@ public class AjaxController {
                 break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
-                String tagValue = getStringParameter("tag", 60, request);
+                String tagValue = getStringParameter("tag", FieldSize.TAG, request);
                 socialTag.setTag(tagValue);
-                socialTag.setEuropeanaUri(getStringParameter("europeanaUri", 256, request));
-                socialTag.setDocType(DocType.valueOf(getStringParameter("docType", 30, request)));
-                socialTag.setEuropeanaObject(getStringParameter("europeanaObject", 256, request));
-                socialTag.setTitle(getStringParameter("title", 120, request));
+                socialTag.setEuropeanaUri(getStringParameter("europeanaUri", FieldSize.EUROPEANA_URI, request));
+                socialTag.setDocType(DocType.valueOf(getStringParameter("docType", FieldSize.DOCTYPE, request)));
+                socialTag.setEuropeanaObject(getStringParameter("europeanaObject", FieldSize.EUROPEANA_OBJECT, request));
+                socialTag.setTitle(getStringParameter("title", FieldSize.TITLE, request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
                 clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.SAVE_SOCIAL_TAG, "tag=" + tagValue);

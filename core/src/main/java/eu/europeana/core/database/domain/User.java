@@ -1,11 +1,50 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ * Licensed under the EUPL, Version 1.1 or - as soon they
+ * will be approved by the European Commission - subsequent
+ * versions of the EUPL (the "Licence");
+ * you may not use this work except in compliance with the
+ * Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the Licence is
+ * distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied.
+ * See the Licence for the specific language governing
+ * permissions and limitations under the Licence.
+ */
+
 package eu.europeana.core.database.domain;
 
 import org.hibernate.annotations.Index;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -23,30 +62,30 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(length = 100, unique = true, nullable = false)
+    @Column(length = FieldSize.PERSONAL_FIELD, unique = true, nullable = false)
     @Index(name = "email_index")
     private String email;
 
-    @Column(length = 64)
+    @Column(length = FieldSize.PASSWORD)
     private String password;
 
     @Column(length = USER_NAME_LENGTH)
     @Index(name = "username_index")
     private String userName;
 
-    @Column(length = 100)
+    @Column(length = FieldSize.PERSONAL_FIELD)
     private String firstName;
 
-    @Column(length = 100)
+    @Column(length = FieldSize.PERSONAL_FIELD)
     private String lastName;
 
-    @Column(length = 30)
+    @Column(length = FieldSize.LANGUAGE_LIST)
     private String languages;
 
-    @Column(length = 30)
+    @Column(length = FieldSize.IDENTIFIER)
     private String projectId;
 
-    @Column(length = 30)
+    @Column(length = FieldSize.IDENTIFIER)
     private String providerId;
 
     @Column
