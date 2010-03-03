@@ -26,11 +26,15 @@
 
 import os
 
+import settings as sett2
+
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+
+from rosetta.poutil import find_pos
 
 
 
@@ -128,4 +132,14 @@ def prop_page(request, lang=''):
 
     return render_to_response(PROP_TEMPLATE,
                               context_instance=RequestContext(request))
+
+#===============================
+
+
+from django.core.management import execute_manager
+
+def reload_templates(request):
+    execute_manager(sett2, argv=['foo','makemessages', 'help'])
+    a=find_pos('de')
+    pass
 

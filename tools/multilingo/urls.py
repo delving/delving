@@ -9,13 +9,16 @@ import apps.multi_lingo
 
 
 urlpatterns = patterns('',
-    url(r'^$',apps.multi_lingo.views.index_page, name='sune'),
+    url(r'^$',apps.multi_lingo.views.index_page),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    url(r'^reload_templates/', apps.multi_lingo.views.reload_templates,
+        name='reload-templates'),
 )
 
 urlpatterns += apps.multi_lingo.utils.urls()
