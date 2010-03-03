@@ -9,47 +9,53 @@ from django.db import models
 # Create your models here.
 
 ITEM_STATES = (
-    (0, 'retrieval'),
-    (1, 'identification'),
-    (2, 'full-doc'),
-    (3, 'brief-doc'),
-    (4, 'completed'),
-    (5, 'aborted'),
-    )
-
-ITEM_STATUS = (
     (0, 'pending'),
-    (1, 'completed'),
-    (2, 'aborted'),
+    (1, 'aborted'),
+    (2, 'retrieval'),
+    (3, 'no response'),
+    (4, 'identification'),
+    (5, 'completed'),
+    (6, 'failed'), # failure in identification of item
+    #(5, 'full-doc'),
+    #(6, 'brief-doc'),
     )
 
 ITEM_TYPES = (
     (0, 'Unknown'),
     (1, 'image'),
     (2, 'PDF'),
+    (3, 'movie'),
+    (4, 'audio'),
     )
 
 
 class CacheItem(models.Model):
     request = models.ForeignKey(Request)
     source = modles.ForeignKey(CacheSource)
-    url = models.URLField('source url',  #help_text='This is the'
-                           )
-    fname = models.TextField('hashed url')
+    uri_id = models.URLField('Europeana uri')
+    uri_obj = models.URLField('obj uri')  #help_text='This is the')
+    fname = models.TextField('url hash')
+    cont_hash = models.TextField('content hash')
     state = models.IntegerField(choices=ITEM_STATES)
-    status =models.IntegerField(choices=ITEM_STATES)
-    i_type = models.IntegerField(choices=ITEM_TYPES)
+    i_type = models.IntegerField(choices=ITEM_TYPES) # kind of item
     checked_date = models.DateTimeField() # last time item was verified
 
 class Request(models.Model):
+    """
+    A Request is typically a ingestion file
+    """
     name = models.CharField()
     req_time = models.DateTimeField()
 
 
 class CacheSource(models.Model):
+    """
+    Identifies one server providing thumnail resources to Europeana, to avoid
+    the risk that we hammer the same server with multiple requests
+    """
     name = models.CharField()
     #
     # a complete walkthrough of this source will be evenly spread over this
     # amaount of days
     #
-    traversaltime = models.IntegerField()
+    traversaltime = models.IntegerField('How often in days can we rechek things from this server.')
