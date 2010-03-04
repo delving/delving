@@ -44,3 +44,26 @@ New filecache solution for Europeana, early stages of design.
 * on indexing, remove now obsolete items (perhaps let orphan traversal take
   care of it on next walkthrough instead of dedicated removal)
 
+
+=====================================
+
+ Some extra hints for downloading the source xml files to your laptop/otherwise
+ bw/storage limited device
+
+=====================================
+
+Here is a rsync command that only downloads the relevant .tgz files
+replace the source url depending on from where you retrieve the ingestion files
+(something like 500MB instead of 161GB)
+
+rsync --delete-excluded \
+      --include=*.xml.gz \
+      --include=*/  \
+      --exclude=* \
+      --prune-empty-dirs \
+      --bwlimit=250 \   # Or whatever other bw limit you prefer...
+      -avP jacwork-vpn:proj/europeana/ingestion/trunk .
+
+After this run the utils/expand_source_gzips with the topdir for the above download
+and it will unpack all .tgz files in place, so that you then can use theese files
+for creating your database

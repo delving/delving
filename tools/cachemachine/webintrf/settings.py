@@ -1,5 +1,7 @@
 # Django settings for cachemachine project.
 
+from local_settings import *
+
 #local_settings.py DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
@@ -77,4 +79,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    'apps.cache_machine',
 )
