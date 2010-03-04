@@ -53,11 +53,14 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
@@ -299,12 +302,11 @@ public class ESEImporterImpl implements ESEImporter {
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
             BufferedWriter fetchScript = new BufferedWriter(new FileWriter(objectCache.getFetchScriptFile(collection)));
-            fetchScript.write(objectCache.createFetchScriptHeader());
-            fetchScript.write("\n");
+            fetchScript.write(objectCache.createFetchScriptBegin(collection.getName()));
             EuropeanaId europeanaId = null;
             int recordCount = 0;
             int objectCount = 0;
-            long time = System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
             SolrInputDocument solrInputDocument = null;
             while (thread != null) {
                 switch (xml.getEventType()) {
@@ -327,8 +329,6 @@ public class ESEImporterImpl implements ESEImporter {
                             }
                             else if (field.isEuropeanaObject()) {
                                 objectCount++;
-                                fetchScript.write(objectCache.createFetchCommand(europeanaId.getEuropeanaUri(), text));
-                                fetchScript.write("\n");
                             }
                             else if (field.isEuropeanaType()) {
                                 DocType.get(text); // checking if it matches one of them
@@ -348,7 +348,7 @@ public class ESEImporterImpl implements ESEImporter {
                     case XMLStreamConstants.END_ELEMENT:
                         if (isRecordElement(xml) && europeanaId != null) {
                             if (recordCount > 0 && recordCount % 500 == 0) {
-                                log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time)));
+                                log.info(String.format("imported %d records in %s", recordCount, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - startTime)));
                             }
                             recordCount++;
                             if (normalized) {
@@ -361,6 +361,10 @@ public class ESEImporterImpl implements ESEImporter {
                                     throw new ImportException("Sandbox Record must not have a field designated as europeana uri", recordCount);
                                 }
                                 europeanaId.setEuropeanaUri(String.format("%s%s/%s", RESOLVABLE_URI, collection.getName(), COUNT_FORMAT.format(recordCount)));
+                            }
+                            for (Object object : solrInputDocument.getFieldValues("europeana_object")) {
+                                String url = (String) object;
+                                fetchScript.write(objectCache.createFetchScriptItem(collection.getName(), europeanaId.getEuropeanaUri(), url));
                             }
                             recordList.add(solrInputDocument);
                             dashboardDao.saveEuropeanaId(europeanaId);
@@ -384,14 +388,10 @@ public class ESEImporterImpl implements ESEImporter {
             if (!recordList.isEmpty()) {
                 indexRecordList();
             }
-            String elapsedTime = DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - time);
-            Date now = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss");
-            String footerStats = "\n# collection: " + collection.getName() + " imported and indexed at " + formatter.format(now) +
-                    "\n# Processed " + recordCount + " records and " + objectCount + " cacheable objects in " + elapsedTime +
-                    "\n # index errors " + indexErrorCount;
-            log.info(footerStats);
-            fetchScript.write(footerStats);
+            long elapsedMillis = System.currentTimeMillis() - startTime;
+            String scriptEnd = objectCache.createFetchScriptEnd(collection.getName(), recordCount, objectCount, elapsedMillis, indexErrorCount);
+            fetchScript.write(scriptEnd);
+            log.info(scriptEnd);
             inputStream.close();
             fetchScript.close();
         }

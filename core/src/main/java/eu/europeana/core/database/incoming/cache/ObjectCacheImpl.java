@@ -23,6 +23,7 @@ package eu.europeana.core.database.incoming.cache;
 
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +45,7 @@ import java.util.Map;
  */
 
 public class ObjectCacheImpl implements ObjectCache {
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss");
     private static final String[] HEX = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"};
     private final MessageDigest digest;
     private final Logger log = Logger.getLogger(getClass());
@@ -77,19 +81,49 @@ public class ObjectCacheImpl implements ObjectCache {
 
     @Override
     public File getFetchScriptFile(EuropeanaCollection collection) {
-        return new File(root, collection.getName() + "_urls.sh");
+        return new File(root, collection.getName() + ".sh");
     }
 
     @Override
-    public String createFetchScriptHeader() {
-        return "#!/usr/bin/env sh";
+    public String createFetchScriptBegin(String collectionName) {
+        StringBuilder out = new StringBuilder();
+        out.append("#!/usr/bin/env sh\n");
+        out.append("\n");
+        out.append("# Running this script file should fetch the original digital objects\n");
+        out.append("# and place them in the " + ItemSize.ORIGINAL + " directory\n");
+        out.append("\n");
+        out.append("# First remove output from any previous run\n");
+        out.append("rm ").append(collectionName).append(".txt\n");
+        out.append("\n");
+        out.append("# Then fetch the names and log them\n");
+        out.append("\n");
+        return out.toString();
     }
 
     @Override
-    public String createFetchCommand(String europeanaUri, String objectUri) {
+    public String createFetchScriptEnd(String collectionName, int recordCount, int objectCount, long elapsedMillis, int indexErrorCount) {
+        String durationString = DurationFormatUtils.formatDurationHMS(elapsedMillis);
+        StringBuilder out = new StringBuilder();
+        out.append("\n");
+        out.append("# Collection: ").append(collectionName);
+        out.append(", imported and indexed at ").append(DATE_FORMAT.format(new Date())).append('\n');
+        out.append("# Processed ").append(recordCount).append(" records and ");
+        out.append(objectCount).append(" cacheable objects in ").append(durationString).append('\n');
+        out.append("# with ").append(indexErrorCount).append(" index errors.").append('\n');
+        return out.toString();
+    }
+
+    @Override
+    public String createFetchScriptItem(String collectionName, String europeanaUri, String objectUri) {
         String cacheString = createHash(objectUri);
-//        String cacheDirectory = root + File.separator + ItemSize.ORIGINAL + File.separator + getDirectory(cacheString);
-        return String.format("%s :: %s :: %s", europeanaUri, objectUri, cacheString);
+        String directoryString = getDirectory(cacheString);
+        String cacheDirectory = ItemSize.ORIGINAL + File.separator + directoryString;
+        String outputFile = cacheDirectory + File.separator + cacheString;
+        StringBuilder out = new StringBuilder();
+        out.append("wget -q -O ").append(root).append(File.separator).append(outputFile).append(' ').append(objectUri).append('\n');
+        out.append("echo \"").append(europeanaUri).append("\" \"").append(objectUri).append("\" \"").append(outputFile).append("\" $? >> ").append(collectionName).append(".txt\n");
+        out.append("echo \"").append(objectUri).append("\"\n");
+        return out.toString();
     }
 
     @Override

@@ -43,22 +43,38 @@ public interface ObjectCache {
     File getFetchScriptFile(EuropeanaCollection collection);
 
     /**
-     * Get the first line of the script file
-     * @return a string to put at the top of the file
+     * Get the first part of the script file
+     *
+     * @param collectionName which collection
+     * @return a string to put at the beginning of the file
      */
 
-    String createFetchScriptHeader();
+    String createFetchScriptBegin(String collectionName);
+
+    /**
+     * Create the last piece of text for in the script file, reporting some things
+     *
+     * @param collectionName which collection is this
+     * @param recordCount how many records
+     * @param objectCount how many europeana objects
+     * @param elapsedMillis how long did indexing take
+     * @param indexErrorCount how many errors
+     * @return some text for at the end of the script file
+     */
+
+    String createFetchScriptEnd(String collectionName, int recordCount, int objectCount, long elapsedMillis, int indexErrorCount);
 
     /**
      * Create a fetch instruction which will pick up the object at the given URI and
      * store it in the proper part of the cache directory structure.
      *
-     * @param europeanaUri
-     * @param objectUri
-     * @return fetch instruction for CacheMachine
+     * @param collectionName which collection was it
+     * @param europeanaUri the main URI to which the object is attached
+     * @param objectUri the object URI   @return fetch instruction for CacheMachine
+     * @return the string to add
      */
 
-    String createFetchCommand(String europeanaUri, String objectUri);
+    String createFetchScriptItem(String collectionName, String europeanaUri, String objectUri);
 
     /**
      * Get a file object which will lead to the proper cached file
