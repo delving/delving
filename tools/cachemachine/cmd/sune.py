@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import xml.parsers.expat
-
+#import xml.dom.minidom
 
 import settings
 from utils import glob_consts
@@ -14,14 +14,14 @@ def cachemachine_starter(pm):
     pm.pid = pid
     pm.save()
 
-    while True:
-        req_pending = Request.objects.filter(sstate=glob_consts.ST_PENDING)
-        if req_pending:
-            r = req_pending[0]
-            handle_pending_request(r)
-        else:
-            print 'Nothing to do'
-        time.sleep(5)
+    #while True:
+    req_pending = Request.objects.filter(sstate=glob_consts.ST_PENDING)
+    if req_pending:
+        r = req_pending[0]
+        handle_pending_request(r)
+    else:
+        print 'Nothing to do'
+    #time.sleep(5)
 
 
 
@@ -50,8 +50,6 @@ def handle_pending_request(r):
     r.save()
 
 def is_valid_file(r):
-    #d = xml.dom.minidom.parse(fname)
-    #doc = d.childNodes[0]
     x = RequestParseXML(r,debug_lvl=4)
     x.run()
     return True
@@ -65,6 +63,44 @@ class XmlRecord(object):
         s = 'uri: %s\nisShownBy: %s\nisShownAt: %s' % (self.uri, self.isShownBy,
                                                        self.isShownAt)
         return s
+
+
+
+class RequestParseXML2(object):
+
+    def __init__(self, request, debug_lvl=2):
+        self.request = request
+        self.debug_lvl = debug_lvl
+        self.fname = os.path.join(glob_consts.REQUEST_UPLOAD_PATH,
+                                  settings.MEDIA_ROOT,
+                                  self.request.fpath.name)
+
+        self.items_in_file = -1
+        self.record_count = 0
+        self.record = None # current record
+
+        self.progress_intervall = 100
+        self.last_progress = 0
+
+
+    def run(self):
+        self.log('Parsing xml file for records:%s' % self.fname)
+        d = xml.dom.minidom.parse(self.fname)
+        self.log('xml parsing completed')
+        doc = d.childNodes[0]
+        self.items_in_file = len(doc.childNodes)
+        for record in doc.childNodes:
+            pass
+
+
+
+    def log(self, msg, lvl=2, add_lf=True):
+        if self.debug_lvl < lvl:
+            return
+        if add_lf:
+            msg += '\n'
+        sys.stdout.write(msg)
+        sys.stdout.flush()
 
 
 class RequestParseXML(object):

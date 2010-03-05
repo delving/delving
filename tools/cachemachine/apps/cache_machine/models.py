@@ -59,10 +59,10 @@ class CacheItem(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     checked_date = models.DateTimeField(null=True, editable=False) # last time item was verified
 
-    def save(self, force_insert=False, force_update=False, using=None):
+    def save(self, force_insert=False, force_update=False):
         if self.sstate == glob_consts.ST_INITIALIZING:
             self.do_initialize()
-        super(CacheItem, self).save(force_insert,force_update, using)
+        super(CacheItem, self).save(force_insert,force_update)
 
     def do_initialize(self):
         if not self.uri_id:
@@ -132,6 +132,11 @@ class ProcessMonitoring(models.Model):
     start_time = models.DateTimeField(auto_now_add=True, editable=False)
 
 
+if 1:
+    r = Request.objects.filter(collection='03907')
+    if r:
+        r[0].sstate=10
+        r[0].save()
 
 if 0: # some test code
     r = Request()
