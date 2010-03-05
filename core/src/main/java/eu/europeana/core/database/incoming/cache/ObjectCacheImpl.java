@@ -117,12 +117,27 @@ public class ObjectCacheImpl implements ObjectCache {
     public String createFetchScriptItem(String collectionName, String europeanaUri, String objectUri) {
         String cacheString = createHash(objectUri);
         String directoryString = getDirectory(cacheString);
-        String cacheDirectory = ItemSize.ORIGINAL + File.separator + directoryString;
-        String outputFile = cacheDirectory + File.separator + cacheString;
+        String filePath = File.separator + directoryString + File.separator + cacheString;
         StringBuilder out = new StringBuilder();
-        out.append("wget -q -O ").append(root).append(File.separator).append(outputFile).append(' ').append(objectUri).append('\n');
-        out.append("echo \"").append(europeanaUri).append("\" \"").append(objectUri).append("\" \"").append(outputFile).append("\" $? >> ").append(collectionName).append(".txt\n");
+        // the wget
+        out.append("wget -q -O ")
+                .append(root).append(File.separator).append(ItemSize.ORIGINAL).append(filePath)
+                .append(' ')
+                .append(objectUri).append('\n');
+        out.append("echo \"").append(europeanaUri).append("\" \"").append(objectUri).append("\" \"").append(filePath).append("\" $? >> ").append(collectionName).append(".txt\n");
         out.append("echo \"").append(objectUri).append("\"\n");
+        out.append("echo \"").append(ItemSize.ORIGINAL).append(filePath).append("\"\n");
+        // then the convert to full doc
+        out.append("convert  ")
+                .append(root).append(File.separator).append(ItemSize.ORIGINAL).append(filePath).append(" -thumbnail \"200x>\" ")
+                .append(root).append(File.separator).append(ItemSize.FULL_DOC).append(filePath).append('\n');
+        out.append("echo \"").append(ItemSize.FULL_DOC).append(filePath).append("\"\n");
+        // then reduce again to brief doc
+        out.append("convert  ")
+                .append(root).append(File.separator).append(ItemSize.FULL_DOC).append(filePath).append(" -thumbnail \"x110\" ")
+                .append(root).append(File.separator).append(ItemSize.BRIEF_DOC).append(filePath).append('\n');
+        out.append("echo \"").append(ItemSize.BRIEF_DOC).append(filePath).append("\"\n");
+        out.append('\n');
         return out.toString();
     }
 
