@@ -82,7 +82,6 @@ class BaseXMLParser(object):
                                   settings.MEDIA_ROOT,
                                   self.request.fpath.name)
 
-        self.items_in_file = -1
         self.record_count = 0
         self.record = None # current record
         self.progress_intervall = 100
@@ -129,14 +128,14 @@ class RequestParseXML(BaseXMLParser):
 
 
     def run(self):
-        self.log('Parsing xml file for records:%s' % self.fname)
+        self.log('Parsing xml file for records:%s' % self.fname, 1)
         f = open(self.fname)
         #try:
         self.parser.ParseFile(f)
         #except:
         #    pass
         f.close()
-        self.log('xml parsing completed')
+        self.log('xml parsing completed - found %i items' % self.record_count, 1)
 
 
     def start_element(self, name, attrs):
