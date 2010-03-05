@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import xml.parsers.expat
-#import xml.dom.minidom
+import xml.dom.minidom
 
 import settings
 from utils import glob_consts
@@ -22,7 +22,6 @@ def cachemachine_starter(pm):
     else:
         print 'Nothing to do'
     #time.sleep(5)
-
 
 
 
@@ -49,25 +48,33 @@ def handle_pending_request(r):
     r.sstate = glob_consts.ST_COMPLETED
     r.save()
 
+
 def is_valid_file(r):
     x = RequestParseXML(r,debug_lvl=4)
     x.run()
     return True
 
+
+
 class XmlRecord(object):
-    uri = ''
-    isShownBy = ''
-    isShownAt = ''
+    """
+    Container for the data we gather for each "record" xml-node
+    """
+    def __init__(self):
+        self.uri = []
+        self.isShownBy = []
+        self.isShownAt = []
 
     def __str__(self):
-        s = 'uri: %s\nisShownBy: %s\nisShownAt: %s' % (self.uri, self.isShownBy,
-                                                       self.isShownAt)
+        uri = ''.join(self.uri)
+        isShownBy = ''.join(self.isShownBy)
+        isShownAt = ''.join(self.isShownAt)
+        s = 'uri: %s\nisShownBy: %s\nisShownAt: %s' % (uri, isShownBy, isShownAt)
         return s
 
 
 
-class RequestParseXML2(object):
-
+class BaseXMLParser(object):
     def __init__(self, request, debug_lvl=2):
         self.request = request
         self.debug_lvl = debug_lvl
@@ -78,19 +85,8 @@ class RequestParseXML2(object):
         self.items_in_file = -1
         self.record_count = 0
         self.record = None # current record
-
         self.progress_intervall = 100
         self.last_progress = 0
-
-
-    def run(self):
-        self.log('Parsing xml file for records:%s' % self.fname)
-        d = xml.dom.minidom.parse(self.fname)
-        self.log('xml parsing completed')
-        doc = d.childNodes[0]
-        self.items_in_file = len(doc.childNodes)
-        for record in doc.childNodes:
-            pass
 
 
 
@@ -102,27 +98,34 @@ class RequestParseXML2(object):
         sys.stdout.write(msg)
         sys.stdout.flush()
 
+    def check_record(self):
+        self.record_count += 1
+        if self.record_count > self.last_progress + self.progress_intervall:
+            self.log('.', 1, add_lf=False)
+            self.last_progress = self.record_count
+        rec = self.record
+        self.record = None
+        if not (rec.uri and rec.isShownAt):
+            self.log('missing data in record %i [%s]' % (self.record_count, rec),1)
+        q = CacheItem.objects.filter(uri_obj=''.join(rec.isShownAt))
+        if q:
+            self.request.cache_items.add(q[0])
+        else:
+            self.request.cache_items.create(uri_id=''.join(rec.uri),
+                                            uri_obj=''.join(rec.isShownAt))
+        return
 
-class RequestParseXML(object):
+
+class RequestParseXML(BaseXMLParser):
 
     def __init__(self, request, debug_lvl=2):
-        self.request = request
-        self.debug_lvl = debug_lvl
-        self.fname = os.path.join(glob_consts.REQUEST_UPLOAD_PATH,
-                                  settings.MEDIA_ROOT,
-                                  self.request.fpath.name)
-
+        super(RequestParseXML, self).__init__(request, debug_lvl)
         self.parser = xml.parsers.expat.ParserCreate()
         self.parser.StartElementHandler = self.start_element
         self.parser.EndElementHandler = self.end_element
         self.parser.CharacterDataHandler = self.char_data
 
-        self.elements = [] # stack for current element
-        self.record_count = 0
-        self.record = None # current record
-
-        self.progress_intervall = 100
-        self.last_progress = 0
+        self.elements = []
 
 
     def run(self):
@@ -136,61 +139,56 @@ class RequestParseXML(object):
         self.log('xml parsing completed')
 
 
-    def check_record(self):
-        if self.record_count > self.last_progress + self.progress_intervall:
-            self.log('.', 1, add_lf=False)
-            self.last_progress = self.record_count
-        rec = self.record
-        self.record = None
-        #if self.record_count > 10:
-        #    raise 'ss', 'rrrr'
-        if not (rec.uri and rec.isShownAt):
-            self.log('missing data in record %i [%s]' % (self.record_count, rec),1)
-        q = CacheItem.objects.filter(uri_obj=rec.isShownAt)
-        if q:
-            self.request.cache_items.add(q[0])
-        else:
-            self.request.cache_items.create(uri_id=rec.uri, uri_obj=rec.isShownAt)
-        return
-
-
-
-
-
     def start_element(self, name, attrs):
-        self.log('Start element: %s %s' % (name, attrs), 5)
+        #self.log('Start element: %s %s' % (name, attrs), 5)
         self.elements.append(name)
         if name == 'record':
             self.record = XmlRecord()
         return
 
+
     def end_element(self, name):
-        self.log('End element: %s' % name, 5)
+        #self.log('End element: %s' % name, 5)
         if name == 'record':
-            self.record_count += 1
             self.check_record()
-        if name != self.elements[-1]:
-            pass
         self.elements.pop()
 
+
     def char_data(self, data):
-        if data.strip():
-            self.log('Character data: %s' % repr(data), 6)
+        #if data.strip(): self.log('Character data: %s' % repr(data), 6)
         name = self.elements[-1]
         if name == 'europeana:uri':
-            #if data == 'http://www.europeana.eu/resolve/record/06602/584643974D52FF7656F5630ADA373D4D96D454C4':
-            #    pass
-            self.record.uri += data
+            self.record.uri.append(data)
         elif name == 'europeana:isShownBy':
-            self.record.isShownBy += data
+            self.record.isShownBy.append(data)
         elif name == 'europeana:isShownAt':
-            self.record.isShownAt += data
+            self.record.isShownAt.append(data)
         return
 
-    def log(self, msg, lvl=2, add_lf=True):
-        if self.debug_lvl < lvl:
-            return
-        if add_lf:
-            msg += '\n'
-        sys.stdout.write(msg)
-        sys.stdout.flush()
+
+class RequestParseXML2(BaseXMLParser):
+    """
+    Runs out of memory on the enourmus xml files used here...
+    """
+
+    def run(self):
+        self.log('Parsing xml file for records:%s' % self.fname)
+        t = time.time()
+        d = xml.dom.minidom.parse(self.fname)
+        records = d.childNodes[0].getElementsByTagName('record')
+        t = int(time.time() - t)
+        self.log('xml parsing complete after %i sec, now iterating over %i records' % (t, len(records)))
+        for record in records:
+            self.record = XmlRecord()
+            self.record.uri = record.getElementsByTagName('europeana:uri')[0].firstChild.nodeValue
+            try:
+                self.record.isShownBy = record.getElementsByTagName('europeana:isShownBy')[0].firstChild.nodeValue
+            except:
+                pass
+            try:
+                self.record.isShownAt = record.getElementsByTagName('europeana:isShownAt')[0].firstChild.nodeValue
+            except:
+                pass
+            self.check_record()
+        self.log('all records processed')
+

@@ -132,7 +132,7 @@ class ProcessMonitoring(models.Model):
     start_time = models.DateTimeField(auto_now_add=True, editable=False)
 
 
-if 1:
+if 0: # some testcode
     r = Request.objects.filter(collection='03907')
     if r:
         r[0].sstate=10
