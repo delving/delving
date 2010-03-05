@@ -140,6 +140,7 @@ public class EuropeanaProperties extends Properties {
             "debug",
             "static.page.path",
             "message.resource",
-            "message.cache.seconds"
+            "message.cache.seconds",
+            "log4j.xml"
     };
 }

@@ -95,6 +95,11 @@ message.resource=file:portal-lite/src/main/message_keys/messages
 message.cache.seconds=60
 
 #
+# Where the log4j.xml is that is to be used for logging configuration.
+#
+log4j.xml=/tmp/log4j.xml
+
+#
 # Where the image annotation tool can be found. If this property is set a
 # link will be created in the actions sidebar of the full-doc view.
 #
