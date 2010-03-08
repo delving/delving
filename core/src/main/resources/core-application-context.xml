@@ -165,13 +165,6 @@
         <property name="host" value="#{europeanaProperties['smtp.host']}"/>
         <property name="username" value="#{europeanaProperties['smtp.username']}"/>
         <property name="password" value="#{europeanaProperties['smtp.password']}"/>
-<property name="javaMailProperties">
-<props>
-<prop key="mail.smtp.port">587</prop>
-<prop key="mail.smtp.auth">true</prop>
-<prop key="mail.smtp.starttls.enable">true</prop>
-</props>
-</property>
     </bean>
 
     <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
