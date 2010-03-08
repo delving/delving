@@ -227,8 +227,9 @@ public class AjaxController {
         model.put("user", user);
         model.put("uri", uri);
         model.put("email", emailAddress);
-        String subject = "A link from Europeana"; // replace with injection later
-        friendEmailSender.sendEmail(emailAddress, user.getEmail(), subject, model);
+        model.put(EmailSender.TO_EMAIL, emailAddress);
+        model.put(EmailSender.FROM_EMAIL, user.getEmail());
+        friendEmailSender.sendEmail(model);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SEND_EMAIL_TO_FRIEND);
         return true;
     }

@@ -23,7 +23,12 @@ package eu.europeana.web.controller;
 
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
@@ -223,8 +228,9 @@ public class AjaxController {
         model.put("user", user);
         model.put("uri", uri);
         model.put("email", emailAddress);
-        String subject = "A link from Europeana"; // replace with injection later
-        friendEmailSender.sendEmail(emailAddress, user.getEmail(), subject, model);
+        model.put(EmailSender.TO_EMAIL, emailAddress);
+        model.put(EmailSender.FROM_EMAIL, user.getEmail());
+        friendEmailSender.sendEmail(model);
         clickStreamLogger.logUserAction(request, UserAction.SEND_EMAIL_TO_FRIEND);
         return true;
     }

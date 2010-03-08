@@ -32,14 +32,17 @@ import eu.europeana.core.util.web.TokenService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -58,12 +61,6 @@ import java.util.TreeMap;
 @RequestMapping("/register.html")
 public class RegisterPageController {
     private Logger log = Logger.getLogger(getClass());
-
-    @Value("#{europeanaProperties['register.to']}")
-    private String registerTo;
-
-    @Value("#{europeanaProperties['system.from']}")
-    private String systemFrom;
 
     @Autowired
     private UserDao userDao;
@@ -120,10 +117,10 @@ public class RegisterPageController {
         try {
             Map<String, Object> model = new TreeMap<String, Object>();
             model.put("user", user);
-            notifyEmailSender.sendEmail(registerTo, systemFrom, "Somebody Registerd", model);
+            notifyEmailSender.sendEmail(model);
         }
         catch (Exception e) {
-            log.warn("Unable to send email to " + registerTo, e);
+            log.warn("Unable to send email to " + notifyEmailSender.getToEmail(), e);
         }
     }
 

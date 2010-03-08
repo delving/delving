@@ -56,18 +56,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{europeanaProperties['debug']}")
     private String debug;
 
-    @Value("#{europeanaProperties['system.from']}")
-    private String emailFrom;
-
-    @Value("#{europeanaProperties['exception.to']}")
-    private String targetEmailAddress;
-
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-
-    public void setEmailSender(EmailSender emailSender) {
-        this.emailSender = emailSender;
-    }
 
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object, Exception exception) {
@@ -85,17 +75,16 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("request", ControllerUtil.formatFullRequestUrl(request));
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", cacheUrl);
-                String subject = queryProblem.getFragment();
+                model.put(EmailSender.SUBJECT, queryProblem.getFragment());
                 if (!debugMode) { // don't send email in debugMode
-                    emailSender.sendEmail(targetEmailAddress, emailFrom, subject, model);
+                    emailSender.sendEmail(model);
                 }
                 else {
-                    log.error(subject);
                     log.error(stackTrace);
                 }
             }
             catch (Exception e) {
-                log.warn("Unable to send email to " + targetEmailAddress, e);
+                log.warn("Unable to send email to "+emailSender.getToEmail(), e);
             }
         }
         String errorMessage = MessageFormat.format("errorMessage={0}", queryProblem.toString());

@@ -93,12 +93,10 @@ public class EmailSenderTest {
         model.put("user", USER_NAME);
         sender.setMailSender(new TestMailSender());
         sender.setTemplate("tmpl");
-        sender.sendEmail(
-                "dummy@dummy.never-be-a-tld",
-                "dummy@dummy.never-be-a-tld",
-                "test email, you should never see it",
-                model);
-
+        sender.setToEmail("dummy@dummy.never-be-a-tld");
+        sender.setFromEmail("dummy@dummy.never-be-a-tld");
+        sender.setSubject("test email, you should never see it");
+        sender.sendEmail(model);
     }
 
 }

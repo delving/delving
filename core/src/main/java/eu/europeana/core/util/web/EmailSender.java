@@ -20,7 +20,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -32,11 +38,14 @@ import java.util.Map;
  */
 
 public class EmailSender {
+    public static final String FROM_EMAIL = "#fromEmail#";
+    public static final String TO_EMAIL = "#toEmail#";
+    public static final String SUBJECT = "#subject#";
     private static final String TEMPLATE_NAME_AFFIX_TEXT = ".txt.ftl";
     private static final String TEMPLATE_NAME_AFFIX_HTML = ".html.ftl";
     private Logger log = Logger.getLogger(getClass());
     private JavaMailSender mailSender;
-    private String template;
+    private String fixedFromEmail, fixedToEmail, fixedSubject, template;
 
     @Autowired
     public void setMailSender(JavaMailSender mailSender) {
@@ -47,7 +56,35 @@ public class EmailSender {
         this.template = templateName;
     }
 
-    public void sendEmail(final String toEmail, final String fromEmail, final String subject, final Map<String, Object> model) throws IOException, TemplateException {
+    public void setFromEmail(String fromEmail) {
+        this.fixedFromEmail = fromEmail;
+    }
+
+    public void setToEmail(String toEmail) {
+        this.fixedToEmail = toEmail;
+    }
+
+    public void setSubject(String subject) {
+        this.fixedSubject = subject;
+    }
+
+    public String getFromEmail() {
+        return fixedFromEmail;
+    }
+
+    public String getToEmail() {
+        return fixedToEmail;
+    }
+
+    public String getSubject() {
+        return fixedSubject;
+    }
+
+    public void sendEmail(final Map<String, Object> model) throws IOException, TemplateException {
+        final String toEmail = this.fixedToEmail != null ? this.fixedToEmail : (String) model.get(TO_EMAIL);
+        final String fromEmail = this.fixedFromEmail != null ? this.fixedFromEmail : (String) model.get(FROM_EMAIL);
+        final String subject = this.fixedSubject != null ? this.fixedSubject : (String) model.get(SUBJECT);
+
         MimeMessagePreparator preparator = new MimeMessagePreparator() {
             @Override
             public void prepare(MimeMessage mimeMessage) throws MessagingException, IOException {
@@ -142,75 +179,7 @@ public class EmailSender {
             }
             throw new IOException("Unable to send email", e);
         }
-        /*
-           Multipart mp = new MimeMultipart("alternative");
-
-           // plain text email
-           Template templateText = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
-           BodyPart textPart = new MimeBodyPart();
-           textPart.setDataHandler(new DataHandler(new DataSource() {
-               public InputStream getInputStream() throws IOException {
-                   return new StringBufferInputStream(textWriter.toString());
-               }
-               public OutputStream getOutputStream() throws IOException {
-                   throw new IOException("Read-only data");
-               }
-               public String getContentType() {
-                   return "text/plain";
-               }
-               public String getName() {
-                   return "main";
-               }
-           }));
-
-           mp.addBodyPart(textPart);
-
-           // html email
-           try {
-               Template templateHtml = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
-               Multipart htmlContent = new MimeMultipart("related");
-               BodyPart htmlPage = new MimeBodyPart();
-               htmlPage.setDataHandler(new DataHandler(new DataSource() {
-                   public InputStream getInputStream() throws IOException {
-                       return new StringBufferInputStream(htmlWriter.toString());
-                   }
-                   public OutputStream getOutputStream() throws IOException {
-                       throw new IOException("Read-only data");
-                   }
-                   public String getContentType() {
-                       return "text/html";
-                   }
-                   public String getName() {
-                       return "main";
-                   }
-               }));
-               htmlContent.addBodyPart(htmlPage);
-               BodyPart htmlPart = new MimeBodyPart();
-               htmlPart.setContent(htmlContent);
-               mp.addBodyPart(htmlPart);
-           } catch (Exception e) {
-               // TODO: log if no html template found
-           }
-
-           mimeMessage.setContent(mp);
-
-
-           SimpleMailMessage message = new SimpleMailMessage();
-           message.setSubject(subject);
-           message.setFrom(fromEmail);
-           message.setTo(toEmail);
-           String emailText = createEmailText(model);
-           message.setText(emailText);
-           mailSender.send(message);
-        */
     }
-    /*
-private String createEmailText(Map<String,Object> model) throws IOException, TemplateException {
-StringWriter out = new StringWriter();
-template.process(model, out);
-return out.toString();
-}
-    */
 
     protected Template getResourceTemplate(String fileName) throws IOException {
         return getTemplate(fileName, new InputStreamReader(getClass().getResourceAsStream(fileName)));
@@ -221,4 +190,67 @@ return out.toString();
         configuration.setObjectWrapper(new DefaultObjectWrapper());
         return new Template(name, reader, configuration);
     }
+
+    /*
+       Multipart mp = new MimeMultipart("alternative");
+
+       // plain text email
+       Template templateText = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
+       BodyPart textPart = new MimeBodyPart();
+       textPart.setDataHandler(new DataHandler(new DataSource() {
+           public InputStream getInputStream() throws IOException {
+               return new StringBufferInputStream(textWriter.toString());
+           }
+           public OutputStream getOutputStream() throws IOException {
+               throw new IOException("Read-only data");
+           }
+           public String getContentType() {
+               return "text/plain";
+           }
+           public String getName() {
+               return "main";
+           }
+       }));
+
+       mp.addBodyPart(textPart);
+
+       // html email
+       try {
+           Template templateHtml = getResourceTemplate(template + TEMPLATE_NAME_AFFIX_TEXT);
+           Multipart htmlContent = new MimeMultipart("related");
+           BodyPart htmlPage = new MimeBodyPart();
+           htmlPage.setDataHandler(new DataHandler(new DataSource() {
+               public InputStream getInputStream() throws IOException {
+                   return new StringBufferInputStream(htmlWriter.toString());
+               }
+               public OutputStream getOutputStream() throws IOException {
+                   throw new IOException("Read-only data");
+               }
+               public String getContentType() {
+                   return "text/html";
+               }
+               public String getName() {
+                   return "main";
+               }
+           }));
+           htmlContent.addBodyPart(htmlPage);
+           BodyPart htmlPart = new MimeBodyPart();
+           htmlPart.setContent(htmlContent);
+           mp.addBodyPart(htmlPart);
+       } catch (Exception e) {
+           // TODO: log if no html template found
+       }
+
+       mimeMessage.setContent(mp);
+
+
+       SimpleMailMessage message = new SimpleMailMessage();
+       message.setSubject(subject);
+       message.setFrom(fromEmail);
+       message.setTo(toEmail);
+       String emailText = createEmailText(model);
+       message.setText(emailText);
+       mailSender.send(message);
+    */
+
 }

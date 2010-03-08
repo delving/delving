@@ -3,7 +3,6 @@ package eu.europeana.core.util.web;
 import eu.europeana.core.database.domain.Token;
 import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,11 +15,7 @@ import java.util.TreeMap;
  */
 
 public class TokenReplyEmailSender {
-    public static final String TOKEN_PARAMETER="token";
     private Map<String,EmailSender> emailSenders;
-
-    @Value("#{europeanaProperties['system.from']}")
-    private String from;
 
     @Autowired
     private TokenService tokenService;
@@ -29,15 +24,16 @@ public class TokenReplyEmailSender {
         this.emailSenders = emailSenders;
     }
 
-    public String sendEmail(String emailAddress, String url, String subject, String action) throws IOException, TemplateException {
+    public String sendEmail(String emailAddress, String url, String action) throws IOException, TemplateException {
         Token token = tokenService.createNewToken(emailAddress);
         Map<String,Object> model = new TreeMap<String,Object>();
         model.put("url", url + "?token=" + token.getToken());
+        model.put(EmailSender.TO_EMAIL, emailAddress);
         EmailSender sender = emailSenders.get(action);
         if (sender == null) {
             throw new IllegalArgumentException("No email sender for action ["+action+"]!");
         }
-        sender.sendEmail(emailAddress, from, subject, model);
+        sender.sendEmail(model);
         return token.getToken();
     }
 }

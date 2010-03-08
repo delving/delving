@@ -27,7 +27,6 @@ import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -63,18 +62,8 @@ public class ContactPageController {
     @Qualifier("emailSenderForUserFeedbackConfirmation")
     private EmailSender userFeedbackConfirmSender;
 
-    @Value("#{europeanaProperties['feedback.to']}")
-    private String feedbackTo;
-
-    @Value("#{europeanaProperties['feedback.from']}")
-    private String feedbackFrom;
-
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-
-    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
-        this.clickStreamLogger = clickStreamLogger;
-    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -105,8 +94,9 @@ public class ContactPageController {
             Map<String, Object> model = new TreeMap<String, Object>();
             model.put("email", form.getEmail());
             model.put("feedback", form.getFeedbackText());
-            userFeedbackSender.sendEmail(feedbackTo, feedbackFrom, "User Feedback", model);
-            userFeedbackConfirmSender.sendEmail(form.getEmail(), feedbackFrom, "User Feedback", model);
+            userFeedbackSender.sendEmail(model);
+            model.put(EmailSender.TO_EMAIL, form.getEmail());
+            userFeedbackConfirmSender.sendEmail(model);
             form.setSubmitMessage("Your feedback was successfully sent. Thank you!");
             clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FEEDBACK_SEND);
         }

@@ -54,10 +54,6 @@ public class LoginPageController {
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
-    public void setClickStreamLogger(ClickStreamLogger clickStreamLogger) {
-        this.clickStreamLogger = clickStreamLogger;
-    }
-
     @RequestMapping("/login.html")
     public ModelAndView handle(
             HttpServletRequest request,
@@ -89,7 +85,7 @@ public class LoginPageController {
                 }
                 else {
                     registerUri = registerUri.substring(0, lastSlash + 1) + "register.html";
-                    tokenReplyEmailSender.sendEmail(email, registerUri, "My Europeana email confirmation", "register");
+                    tokenReplyEmailSender.sendEmail(email, registerUri, "register");
                     success = true;
                 }
             }
@@ -104,7 +100,7 @@ public class LoginPageController {
                 }
                 else {
                     registerUri = registerUri.substring(0, lastSlash + 1) + "change-password.html";
-                    tokenReplyEmailSender.sendEmail(email, registerUri, "My Europeana reset password", "forgotPassword");
+                    tokenReplyEmailSender.sendEmail(email, registerUri, "forgotPassword");
                     forgotSuccess = true;
                 }
             }
@@ -133,13 +129,4 @@ public class LoginPageController {
     private boolean emailExists(String email) {
         return userDao.fetchUserByEmail(email) != null;
     }
-
-    public void setRegistrationEmailSender(TokenReplyEmailSender tokenReplyEmailSender) {
-        this.tokenReplyEmailSender = tokenReplyEmailSender;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
 }

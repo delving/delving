@@ -165,6 +165,13 @@
         <property name="host" value="#{europeanaProperties['smtp.host']}"/>
         <property name="username" value="#{europeanaProperties['smtp.username']}"/>
         <property name="password" value="#{europeanaProperties['smtp.password']}"/>
+<property name="javaMailProperties">
+<props>
+<prop key="mail.smtp.port">587</prop>
+<prop key="mail.smtp.auth">true</prop>
+<prop key="mail.smtp.starttls.enable">true</prop>
+</props>
+</property>
     </bean>
 
     <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
@@ -181,26 +188,41 @@
 
     <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/exception"/>
+        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+        <property name="toEmail" value="#{europeanaProperties['exception.to']}"/>
     </bean>
 
     <bean id="emailSenderForRegisterNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/register-notify"/>
+        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+        <property name="toEmail" value="#{europeanaProperties['register.to']}"/>
+        <property name="subject" value="Someone registered just now"/>
     </bean>
 
     <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/password-change-notify"/>
+        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+        <property name="toEmail" value="#{europeanaProperties['admin.to']}"/>
+        <property name="subject" value="Password has been changed"/>
     </bean>
 
     <bean id="emailSenderForSendToFriend" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/to-friend"/>
+        <property name="subject" value="A link from Europeana"/>
+        <!--todo: this should be multilingual-->
     </bean>
 
     <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback"/>
+        <property name="fromEmail" value="#{europeanaProperties['feedback.from']}"/>
+        <property name="toEmail" value="#{europeanaProperties['feedback.to']}"/>
+        <property name="subject" value="User Feedback"/>
     </bean>
 
     <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback-confirmation"/>
+        <property name="fromEmail" value="#{europeanaProperties['feedback.from']}"/>
+        <property name="subject" value="User Feedback"/>
     </bean>
 
     <bean id="proposedSearchTermRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
@@ -245,11 +267,15 @@
                 <entry key="register">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/confirmation"/>
+                        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+                        <property name="subject" value="My Europeana email confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/forgot-password"/>
+                        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+                        <property name="subject" value="My Europeana reset password"/>
                     </bean>
                 </entry>
             </map>
