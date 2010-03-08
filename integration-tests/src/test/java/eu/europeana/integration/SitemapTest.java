@@ -45,7 +45,7 @@ public class SitemapTest {
 	@Test
 	public void testSitemapIndex() throws IOException {
 
-		URL indexUrl = new URL(IntegrationTests.getTestSystemUrl() + "sitemap.xml");
+		URL indexUrl = new URL(IntegrationTests.getTestSystemUrl() + "europeana-sitemap.xml");
 		InputStream indexStream =  indexUrl.openStream();
 
 		// iterate links to ensure that they are alive
@@ -80,5 +80,27 @@ public class SitemapTest {
 
 		// something in
 		Assert.assertTrue("No sitemap pages!", linkCount > 3);
+	}
+
+	@Test
+	public void testBuildNumber() throws IOException {
+
+		URL indexUrl = new URL(IntegrationTests.getTestSystemUrl() + "build.txt");
+		InputStream indexStream =  indexUrl.openStream();
+
+		// iterate links to ensure that they are alive
+		int linkCount = 0;
+		try {
+			String line;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(indexStream, "UTF-8"));
+			while ((line = reader.readLine()) != null) {
+				linkCount ++;
+			}
+		} finally {
+			indexStream.close();
+		}
+
+		// something in
+		Assert.assertTrue("No build.txt", linkCount > 0);
 	}
 }
