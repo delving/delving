@@ -14,7 +14,7 @@
                     <#else>
                       ["${doc.thumbnail}", 
 					</#if>
-                    "full-doc.html?query=&start=1&uri=${doc.id}",
+                    "full-doc.html?uri=${doc.id}",
                     <#assign title = ""/>
                     <#if doc.title??>
                       <#assign title = doc.title />

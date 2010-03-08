@@ -18,7 +18,7 @@
 		</fieldset>
     </form>
 </div>
-                                   
+
 <div id="content">
 	<ul class="pageitem">
 		<li class="textbox" id="welcome">
@@ -26,29 +26,29 @@
 			<strong><@spring.message 'ThisIsEuropeana_t' />...</strong> 
 			<@spring.message 'APlaceToShareIdeas_t' />		
 		</li>
-		
+
 		<#-- Flow container -->
 		<li class="textbox" id="myFlow">
-			<div class="zflow">			
-				<div id="container" class="centering">					
-				    <div id="tray" class="tray"></div>				    					    				
+			<div class="zflow">
+				<div id="container" class="centering">
+				    <div id="tray" class="tray"></div>
 				</div>
-				<div id="flowcaption" class="flowcaption"></div>				     
-	    	</div>	    	
+				<div id="flowcaption" class="flowcaption"></div>
+	    	</div>
 		</li>
-		
+
 		<li class="menu"><a href="new-content.html">
 			<span class="name"><@spring.message 'NewContent_t' /></span><span class="arrow"></span></a>
 		</li>
 		
 		 <li class="select">
 		 	<#include "../../language_select.ftl" >
-	        <span class="arrow"></span> 
+	        <span class="arrow"></span>
 	     </li>
 	</ul>
 </div>
 
+<#include "../inc_footer.ftl"/>
 
-<#include "inc_footer.ftl"/>
 </#compress>
 

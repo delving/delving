@@ -1,9 +1,12 @@
 <#import "/spring.ftl" as spring />
 <#assign pageId = "sp"/>
 <#assign thisPage = "static-page.html"/>
-<#include "inc_header.ftl"/>
-    <div id="leftnav"><a href="index.html"><img alt="home" src="mobile/iwebkit/images/home.png"/></a></div>
+<#include "../inc_header.ftl"/>
+
+<div id="logo">
+	<a href="index.html"><img src="mobile/images/logo_slogan.png" alt="Logo"/></a>
 </div>
+
 <script>
 // JavaScript Document
 function ContactMe(prefix,suffix){

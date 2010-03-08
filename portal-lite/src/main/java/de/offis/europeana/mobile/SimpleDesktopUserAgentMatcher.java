@@ -44,7 +44,12 @@ public class SimpleDesktopUserAgentMatcher {
 		if (userAgent != null) {
 			if (UserAgentUtils.isMobileBrowser(userAgent))
 				return false;
-			if (userAgent.contains("Firefox") && 
+            if (userAgent.contains("HTC") || // HTC; horrible user agents, especially with Opera
+                    userAgent.contains("PPC") || // PowerPC; not always mobile, but we'll kick it out of SimpleDesktop and match it in the WURFL DB
+                    userAgent.contains("Nintendo")) { // too hard to distinguish from Opera
+                return false;
+            }
+			if (userAgent.contains("Firefox") &&
 					!userAgent.contains("Tablet"))
 				return true;
 			if (UserAgentUtils.isDesktopBrowser(userAgent))

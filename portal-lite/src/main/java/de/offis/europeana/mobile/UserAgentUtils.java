@@ -38,7 +38,7 @@ public class UserAgentUtils {
 			"symbian", "midp", "j2me", "mobile", "wireless", "palm", "phone",
 			"pocket pc", "pocketpc", "netfront", "bolt", "iris", "brew",
 			"openwave", "windows ce", "wap2.", "android", "opera mini",
-			"opera mobi", "maemo", "fennec", "blazer" };
+			"opera mobi", "maemo", "fennec", "blazer", "vodafone" };
 	private static String[] DESKTOP_BROWSERS = new String[] { "slcc1",
 			".net clr", "trident/4", "media center pc", "funwebproducts",
 			"macintosh", "wow64", "aol 9.", "america online browser",

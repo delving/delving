@@ -35,6 +35,7 @@
 			<img src="${result.fullDoc.thumbnails[0]}"
 				alt="Image title: ${result.fullDoc.dcTitle[0]}"
                 class="detailview"
+                id="imgview"
                 onload="checkSize(this.height);"
                 onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}')"
                 alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"/>
@@ -108,7 +109,7 @@
 		</li>
 	</#if>
                         
-    <#-- currently: faked geo data! TODO: change when geo data is available -->                    
+    <#-- currently: fake geo data! TODO: change when geo data is available -->                    
     <li class="textbox">
     	<a href="http://maps.google.com/maps/ms?f=q&hl=fr&geocode=&ie=UTF8&msa=0&msid=106431329189139452431.000458c25e140ead6df80&ll=43.313438,3.417091&spn=0.084934,0.22316&z=13">
         	<img src="mobile/iwebkit/thumbs/maps.png" />

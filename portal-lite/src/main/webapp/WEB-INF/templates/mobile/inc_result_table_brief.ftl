@@ -17,7 +17,7 @@
 <#macro show_result_table seq>
 
 <#list seq as cell>
-<li class="withimage" >
+<li class="withimage">
 	<a id="${cell.type}_gradientitem" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
 
 	<#if useCache="true">
@@ -71,6 +71,7 @@
 
 <#-- image only display -->
 <#macro show_result_flow seq>
+<li class="imageonly">
  <div id="imagelist">
    <#list seq as briefDoc>
 		<a class="imageresult" id="${briefDoc.type}item" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${briefDoc.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${briefDoc.id}&amp;view=${view}&amp;pageId=brd">
@@ -82,6 +83,7 @@
 		</a>
   </#list>
  </div>
+ </li>
 </#macro>
 
 </#compress>

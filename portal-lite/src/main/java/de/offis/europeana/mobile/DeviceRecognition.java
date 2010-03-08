@@ -70,7 +70,8 @@ public class DeviceRecognition {
 	}
 
 	/**
-	 * Returns a template for the current device, best suited for its capabilities. 
+	 * Returns an object that contains a template name
+     * for the current device, best suited for its capabilities.
 	 * e.g. if template is 'index_orig' and the device's screen is 320x480, 
 	 * the returned String is 'mobile\320x480\index_orig' > the template is chosen 
 	 * from the mobile\320x480 subdirectory of the template path
@@ -78,9 +79,9 @@ public class DeviceRecognition {
 	 * 
 	 * @param request The request, used to determine the device
 	 * @param template The template that shall be used
-	 * @return Best suited template for mobile device
+	 * @return DeviceRecognitionResult that contains the screen width & height and the appropriate template name
 	 */
-	public String getDeviceTemplate(HttpServletRequest request, String template) {
+	public DeviceRecognitionResult getDeviceInformation(HttpServletRequest request, String template) {
 		String result = template;
 		if (template != null) {
 				if (_wurfl != null) {
@@ -94,19 +95,43 @@ public class DeviceRecognition {
 						device = _wurfl.getDeviceForRequest(userAgent);
 					}
 					if (device != null && "true".equals(device.getCapability("is_wireless_device"))) { //desktop browsers will see the desired page, this is for mobile only
-						//The iphone templates are already available:
-						if (device.getUserAgent().toLowerCase().indexOf("safari") > 0){
-							result = "mobile/iphone/"+template;
-						} else {
-							//TODO: this redirects any mobile browser to a placeholder page, needs to be changed as soon as the appropriate templates are available
-							result = "mobile/320x480/index_orig";
-						}
-						log.info("template and subfolder after mobile device recognition: " + result);
+                        String tmp = device.getCapability("resolution_width");
+                        int height, width;
+                        width = Integer.parseInt(tmp);
+                        tmp = device.getCapability("resolution_height");
+                        height = Integer.parseInt(tmp);
 
+                        String model_name =  device.getCapability("model_name");
+                        String mobile_browser = device.getCapability("mobile_browser");
+                        String device_os = device.getCapability("device_os");
+                        String pointing_method = device.getCapability("pointing_method");
+
+                        Boolean show_iphone_version = false;
+
+                        //Identify devices that are capable to display the iphone templates
+						if ("touchscreen".equalsIgnoreCase(pointing_method)){
+                            if ("Safari".equalsIgnoreCase(mobile_browser) &&
+                                    ("iPhone".equals(model_name) || "iPod Touch".equals(model_name))) { //maybe the iPad can be added here in the future
+                                show_iphone_version = true;
+                            } else if ("Android".equalsIgnoreCase(device_os) && "Android Webkit".equalsIgnoreCase(mobile_browser)) {
+                                show_iphone_version = true;
+                            }
+                        }
+                        if (show_iphone_version) {
+                            result = "mobile/iphone/"+template;
+						} else {
+							log.info("width: "+width+" height: "+height+" device: "+device.getId());
+                            //devices with a screen larger than 800x600 should be able to handle the desktop version of the portal
+                            if ((width <600 && height < 800) || (width == 600 && height < 800 || (width <600 && height == 800))) {
+                                   result = "mobile/generic/"+template;
+                            }
+						}
+                        log.info("template and subfolder after mobile device recognition: " + result);
+                        return new DeviceRecognitionResult(result, width, height);
 					}
 				}
 		}
-		return result;
+		return null;
 	}
 
 }

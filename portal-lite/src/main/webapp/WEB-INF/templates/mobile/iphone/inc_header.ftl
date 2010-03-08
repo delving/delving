@@ -27,7 +27,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <#-- favicon_red.ico is also available -->
-    <!-- todo: iphone-ized icon einbauen -->
     <link rel="shortcut icon" href="/portal/favicon_red.ico"/>
 <#assign useJawr = false/>
     <!--- make sure to enable/disable (comment-out) the appropriate JAWR servlets in the web.xml -->
@@ -53,8 +52,8 @@
                     <script type="text/javascript" src="js/js_utilities.js"></script>
                     <#break/>
                 <#case "bd">
-                <#-- needed for image placeholder: showDefaultSmall(...) TODO: was changed to results.js -->
-                    <script type="text/javascript" src="js/briefDoc.js"></script>
+                <#-- needed for image placeholder: showDefaultSmall(...) -->
+                    <script type="text/javascript" src="js/results.js"></script>
                     <#break/>
             </#switch>
         </#if>
@@ -104,9 +103,8 @@
 
 <#if pageId??>
     <#if pageId == "bd"> <#-- on the result page we use the title bar to switch between display modes: no caption in the title bar-->
-    <div id="topbar">
-
-        <#else>
+        <div id="topbar">
+    <#else>
         <div id="topbar">
             <div id="title">Europeana</div>
     </#if>
