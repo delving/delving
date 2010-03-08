@@ -7,6 +7,8 @@
 
 import socket
 import urlparse
+import threading
+
 
 from django.core import exceptions
 from django.db import models
@@ -18,6 +20,41 @@ from utils import glob_consts
 from utils.gen_utils import dict_2_django_choice
 
 
+
+"""
+
+This system uses separate subprocesses and threads to do most of the actual
+work on managing cache items. In order to avoid collitions we have a global lock
+that makes sure that only one process can attempt to change ownership of a task
+"""
+db_procs_lock = threading.Lock() # Global lock for processes taking/releasing tasks
+
+def set_process_ownership(pid, # pid of requestor
+                          req_state,
+                          module):
+    """
+    To avoid the race condition where proc a is starting and wants to take care
+    of retrieving a image, then before it has locked that image to itself another
+    process/thread also want to get to the same, they must tell us what they belive
+    is the previous state.
+
+    ------   Time 0 both want access, changing state 10 => 20   -----
+
+    A  [pidof A]   20        Item state: 10
+    B  [pidof B]   20        Item PID:   None
+
+
+    -------   Time 1 A has aquired a lock and now B gets a go   -------
+
+    A already done   Item state: 20
+    B [pidof B 20    Item PID:   [pidof A]
+
+    Since B realisez That pidof A is currently "owning" the item it double checks
+    if there is a [pidof A], if it is it just fails. If the process has disapeared
+    without releasing the lock (flagged by an item pid) a system error is logged
+    also
+    """
+    return False
 
 
 class CacheSource(models.Model):
@@ -91,6 +128,7 @@ databrowse.site.register(CacheItem)
 class Request(models.Model):
     """
     A Request is typically a ingestion file
+
     """
     provider = models.CharField(max_length=3,editable=False)
     collection = models.CharField(max_length=5,editable=False)
