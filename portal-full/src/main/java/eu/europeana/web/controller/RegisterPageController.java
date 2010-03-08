@@ -40,7 +40,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -236,6 +240,9 @@ public class RegisterPageController {
         }
 
         private boolean validUserName(String userName) {
+            if (userName == null) {
+                return false;
+            }
             //may only contain alphanumeric, spaces and underscore.
             for (int i = 0; i < userName.length(); i++) {
                 char c = userName.charAt(i);
