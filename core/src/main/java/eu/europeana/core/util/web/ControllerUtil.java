@@ -156,6 +156,7 @@ public class ControllerUtil {
     /*
     * Format full requested uri from HttpServletRequest
     */
+    @SuppressWarnings("unchecked")
     public static String formatFullRequestUrl(HttpServletRequest request) {
         StringBuffer requestURL = request.getRequestURL();
         if (request.getQueryString() != null) {
@@ -167,14 +168,18 @@ public class ControllerUtil {
         return requestURL.toString();
     }
 
-    @SuppressWarnings({"unchecked"})
-    public static String formatParameterMapAsQueryString(Map parameterMap) {
+    public static String formatParameterMapAsQueryString(Map<String, String[]> parameterMap) {
         StringBuilder output = new StringBuilder();
         output.append("?");
-        Iterator iterator1 = parameterMap.entrySet().iterator();
+        Iterator<Map.Entry<String, String[]>> iterator1 = parameterMap.entrySet().iterator();
         while (iterator1.hasNext()) {
-            Map.Entry<String, String> entry = (Map.Entry<String, String>) iterator1.next();
-            output.append(MessageFormat.format("{0}={1}", entry.getKey(), entry.getValue()));
+            Map.Entry<String, String[]> entry = iterator1.next();
+            if (entry.getValue().length > 0) {
+                output.append(MessageFormat.format("{0}={1}", entry.getKey(), entry.getValue()[0]));
+            }
+            else {
+                output.append(MessageFormat.format("{0}={1}", entry.getKey(), ""));
+            }
             if (iterator1.hasNext()) {
                 output.append("&");
             }

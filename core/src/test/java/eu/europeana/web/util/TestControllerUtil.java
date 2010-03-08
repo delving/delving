@@ -55,14 +55,13 @@ public class TestControllerUtil {
 
     @Test
     public void testFormatParameterMapAsQueryString() throws Exception {
-        Map<String, String> mockParameterMap = new HashMap<String, String>();
-        mockParameterMap.put("query", "sjoerd");
-        mockParameterMap.put("id", "007");
-        mockParameterMap.put("className", "SavedSearch");
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setParameter("query", "sjoerd");
+        request.setParameter("id", "007");
+        request.setParameter("className", "SavedSearch");
         Assert.assertEquals("The formatted string should be the same",
-                "?id=007&query=sjoerd&className=SavedSearch",
-                ControllerUtil.formatParameterMapAsQueryString(mockParameterMap));
-
+                "?query=sjoerd&id=007&className=SavedSearch",
+                ControllerUtil.formatParameterMapAsQueryString(request.getParameterMap()));
     }
 
     @Test
