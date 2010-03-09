@@ -3,11 +3,15 @@
 * Traverse by file to check for match in db - finding orphan files
 * Traverse by CacheItem to check filesystem - missing files
 * Traverse by CacheItem to verify existance of item
+
+oldsyntax
+/3first/4: HASHNAME_BRIEF_DOC.jpg
+                   _FULL_DOC.jpg
+
 """
 
 import socket
 import urlparse
-import threading
 
 
 from django.core import exceptions
@@ -21,40 +25,6 @@ from utils.gen_utils import dict_2_django_choice
 
 
 
-"""
-
-This system uses separate subprocesses and threads to do most of the actual
-work on managing cache items. In order to avoid collitions we have a global lock
-that makes sure that only one process can attempt to change ownership of a task
-"""
-db_procs_lock = threading.Lock() # Global lock for processes taking/releasing tasks
-
-def set_process_ownership(pid, # pid of requestor
-                          req_state,
-                          module):
-    """
-    To avoid the race condition where proc a is starting and wants to take care
-    of retrieving a image, then before it has locked that image to itself another
-    process/thread also want to get to the same, they must tell us what they belive
-    is the previous state.
-
-    ------   Time 0 both want access, changing state 10 => 20   -----
-
-    A  [pidof A]   20        Item state: 10
-    B  [pidof B]   20        Item PID:   None
-
-
-    -------   Time 1 A has aquired a lock and now B gets a go   -------
-
-    A already done   Item state: 20
-    B [pidof B 20    Item PID:   [pidof A]
-
-    Since B realisez That pidof A is currently "owning" the item it double checks
-    if there is a [pidof A], if it is it just fails. If the process has disapeared
-    without releasing the lock (flagged by an item pid) a system error is logged
-    also
-    """
-    return False
 
 
 class CacheSource(models.Model):
@@ -72,6 +42,10 @@ class CacheSource(models.Model):
                                         )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     checked_date = models.DateTimeField(auto_now=True, editable=False) # last time item was verified
+    pid = models.IntegerField(default=0) # what process 'owns' this item
+    sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.ITEM_STATES),
+                                 default = glob_consts.ST_IDLE,
+                                 editable=False)
 
 #admin.site.register(CacheSource)
 
@@ -87,6 +61,7 @@ class CacheItem(models.Model):
 
     fname = models.TextField('url hash')
     cont_hash = models.TextField('content hash')
+    pid = models.IntegerField(default=0) # what process 'owns' this item
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.ITEM_STATES),
                                  default = glob_consts.ST_INITIALIZING,
                                  editable=False)
@@ -96,10 +71,10 @@ class CacheItem(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     checked_date = models.DateTimeField(null=True, editable=False) # last time item was verified
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, *args, **kwargs):
         if self.sstate == glob_consts.ST_INITIALIZING:
             self.do_initialize()
-        super(CacheItem, self).save(force_insert,force_update)
+        super(CacheItem, self).save(*args, **kwargs)
 
     def do_initialize(self):
         if not self.uri_id:
@@ -120,6 +95,7 @@ class CacheItem(models.Model):
         self.source = cs
 
         self.sstate = glob_consts.ST_PENDING
+
 
 #admin.site.register(CacheItem)
 databrowse.site.register(CacheItem)
@@ -145,18 +121,20 @@ class Request(models.Model):
     def __unicode__(self):
         return self.fname
 
-    def save(self):
-        super(Request, self).save()
+    def save(self, *args, **kwargs):
+        super(Request, self).save(*args, **kwargs)
         if self.sstate == glob_consts.ST_INITIALIZING:
             self.fname = self.fpath.name.split('/')[-1]
             self.provider = self.fname[:3]
             self.collection = self.fname[:5]
             self.sstate = glob_consts.ST_PENDING
-            super(Request, self).save()
+            super(Request, self).save(*args, **kwargs)
         return
 
 admin.site.register(Request)
 databrowse.site.register(Request)
+
+
 
 
 

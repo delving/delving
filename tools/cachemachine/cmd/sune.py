@@ -1,12 +1,18 @@
+"""
+God do I need to name this module to something meaningfull :)
+"""
+
 import os
 import sys
 import time
+from django.core import exceptions
 import xml.parsers.expat
 import xml.dom.minidom
 
 import settings
 from utils import glob_consts
-from apps.cache_machine.models import Request, CacheItem
+from utils.proc_ctrl import set_process_ownership, clear_dead_procs
+from apps.cache_machine.models import Request, CacheItem, CacheSource
 
 
 def cachemachine_starter(pm):
@@ -14,15 +20,16 @@ def cachemachine_starter(pm):
     pm.pid = pid
     pm.save()
 
-    #while True:
-    req_pending = Request.objects.filter(sstate=glob_consts.ST_PENDING)
-    if req_pending:
-        r = req_pending[0]
-        handle_pending_request(r)
-    else:
-        print 'Nothing to do'
-    #time.sleep(5)
-
+    while 1:
+        q_rec_pending = Request.objects.filter(sstate=glob_consts.ST_PENDING)
+        if q_rec_pending:
+            r = q_rec_pending[0]
+            handle_pending_request(r)
+        foo()
+        pass
+        #time.sleep(5)
+    pm.pid = 0
+    pm.save()
 
 
 def handle_pending_request(r):
@@ -112,6 +119,9 @@ class BaseXMLParser(object):
         else:
             self.request.cache_items.create(uri_id=''.join(rec.uri),
                                             uri_obj=''.join(rec.isShownAt))
+
+        if self.record_count > 100:
+            raise exceptions.ValidationError('devel temp done')
         return
 
 
@@ -130,10 +140,10 @@ class RequestParseXML(BaseXMLParser):
     def run(self):
         self.log('Parsing xml file for records:%s' % self.fname, 1)
         f = open(self.fname)
-        #try:
-        self.parser.ParseFile(f)
-        #except:
-        #    pass
+        try:
+            self.parser.ParseFile(f)
+        except:
+            pass
         f.close()
         self.log('xml parsing completed - found %i items' % self.record_count, 1)
 
@@ -191,3 +201,38 @@ class RequestParseXML2(BaseXMLParser):
             self.check_record()
         self.log('all records processed')
 
+
+
+from django.db.models import Avg, Max, Min, Count
+
+def foo():
+    qcs = CacheSource.objects.filter(pid=0)
+    if not qcs:
+        "TODO: if all are occupied a check if any proc are dead should be done"
+        clear_dead_procs(glob_consts.LCK_CACHESOURCE, glob_consts.ST_IDLE)
+        return # All CacheSources are occupied
+
+    for cs in qcs:
+        q = CacheItem.objects.filter(source=cs,
+                                     sstate=glob_consts.ST_PENDING,
+                                     request__sstate=glob_consts.ST_COMPLETED)
+        if len(q):
+            break # pick first cachesource with pending cacheitems
+        pass
+    if not q:
+        return # Found no cacheitems to process
+
+    pid = os.getpid()
+    set_process_ownership(glob_consts.LCK_CACHESOURCE,
+                          cs.pk,
+                          glob_consts.CSS_RETRIEVING,
+                          pid)
+    for ci in q:
+        s = r.annotate('cache_items')
+        #l = r.cache_items.filter(sstate=glob_consts.ST_PENDING)
+        #for ii in l:
+        pass
+    set_process_ownership(glob_consts.LCK_CACHESOURCE,
+                          cs.pk,
+                          glob_consts.ST_IDLE,
+                          0)

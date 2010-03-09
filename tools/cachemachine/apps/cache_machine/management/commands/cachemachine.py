@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from utils import glob_consts
-        from apps.cache_machine.models import ProcessMonitoring
+        from apps.cache_machine.models import ProcessMonitoring, Request
         import cmd.sune
 
         if args:
@@ -25,14 +25,24 @@ class Command(BaseCommand):
         already_running = ProcessMonitoring.objects.filter(role=glob_consts.PMR_REQ_HANDLER)
 
         if 1:#options['force_remove']:
-            #if not len(already_running):
-            #    raise CommandError('Attempt to force remove, but no process is logged')
-            print 'Removing pointer to running process.'
-            print '  Make sure you dont have one running!!'
-            already_running.delete()
-            print '  Succeeded to remove process from database.'
+            if len(already_running):
+                print 'Removing pointer to running process.'
+                print '  Make sure you dont have one running!!'
+                already_running.delete()
+                print '  Succeeded to remove process from database.'
+            else:
+                pass
+                #raise CommandError('Attempt to force remove, but no process is logged')
             #sys.exit()
 
+
+        if 1:
+            #q=Request.objects.all().delete()
+            r = Request(provider='035', collection='03506',
+                        fname='03506_L_FR_NatLib_gallica_periodiques_fascicules_dc.xml',
+                        fpath='requests_new/03506_L_FR_NatLib_gallica_periodiques_fascicules_dc.xml',
+                        sstate=glob_consts.ST_PENDING)
+            r.save()
         if len(already_running):
             pm = already_running[0]
             raise CommandError('Already running as pid: %i' % pm.pid)
