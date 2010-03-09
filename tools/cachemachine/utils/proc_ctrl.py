@@ -55,6 +55,7 @@ class ProcessOwnership(object):
         item.sstate = self.state
         item.save()
         self.release_it()
+        return item
 
     def clear_dead_procs(self):
         for item in self.m.objects.filter(pid__gt=0):
@@ -127,7 +128,8 @@ def set_process_ownership(lock_name,
 
     #if not locks.has_key(lock_name):
     #    raise ProcControlError('Invalid lock reference: %s' % lock)
-    ProcessOwnership(lock_name, state).set_ownership(pk, pid)
+    po = ProcessOwnership(lock_name, state)
+    return po.set_ownership(pk, pid)
 
 def clear_dead_procs(lock_name, reset_state):
     ProcessOwnership(lock_name, reset_state,abort_on_running=False).clear_dead_procs()

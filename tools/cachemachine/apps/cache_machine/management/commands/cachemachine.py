@@ -38,9 +38,9 @@ class Command(BaseCommand):
 
         if 1:
             #q=Request.objects.all().delete()
-            r = Request(provider='035', collection='03506',
-                        fname='03506_L_FR_NatLib_gallica_periodiques_fascicules_dc.xml',
-                        fpath='requests_new/03506_L_FR_NatLib_gallica_periodiques_fascicules_dc.xml',
+            r = Request(provider='039', collection='03907',
+                        fname='03907_Ag_FR_MCC_archim.xml',
+                        fpath='requests_new/03907_Ag_FR_MCC_archim.xml',
                         sstate=glob_consts.ST_PENDING)
             r.save()
         if len(already_running):
@@ -48,7 +48,6 @@ class Command(BaseCommand):
             raise CommandError('Already running as pid: %i' % pm.pid)
         p = ProcessMonitoring(role=glob_consts.PMR_REQ_HANDLER,
                               sstate=glob_consts.ST_INITIALIZING,
-                              pid=-1 # means not yet specified
                               )
         p.save()
         cmd.sune.cachemachine_starter(p)

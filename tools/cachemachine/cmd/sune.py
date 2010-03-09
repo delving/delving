@@ -33,6 +33,7 @@ def cachemachine_starter(pm):
 
 
 def handle_pending_request(r):
+    pid = os.getpid()
     r.sstate = glob_consts.RS_PRE_PARSING
     r.save()
     if r.cache_items.all():
@@ -45,15 +46,17 @@ def handle_pending_request(r):
         print '\twas previously parsed to some extent, we will reparse it now'
         print '\tnothing seriously broken, will just take som extra time...'
         r.cache_items = []
-    r.sstate = glob_consts.ST_PARSING
+    r.sstate = glob_consts.ST_PARSING # since we own the r we can change it at will...
     r.save()
-    if not is_valid_file(r):
+    if is_valid_file(r):
+        ret = True
+        r.sstate = glob_consts.ST_COMPLETED
+    else:
         r.sstate = glob_consts.ST_FAILED
         r.message = 'File was not of correct format.'
-        r.save()
-        return
-    r.sstate = glob_consts.ST_COMPLETED
+        ret = False
     r.save()
+    return ret
 
 
 def is_valid_file(r):
@@ -212,8 +215,8 @@ def foo():
         clear_dead_procs(glob_consts.LCK_CACHESOURCE, glob_consts.ST_IDLE)
         return # All CacheSources are occupied
 
-    for cs in qcs:
-        q = CacheItem.objects.filter(source=cs,
+    for cache_source in qcs:
+        q = CacheItem.objects.filter(source=cache_source,
                                      sstate=glob_consts.ST_PENDING,
                                      request__sstate=glob_consts.ST_COMPLETED)
         if len(q):
@@ -224,15 +227,27 @@ def foo():
 
     pid = os.getpid()
     set_process_ownership(glob_consts.LCK_CACHESOURCE,
-                          cs.pk,
+                          cache_source.pk,
                           glob_consts.CSS_RETRIEVING,
                           pid)
-    for ci in q:
+    for cache_item in q:
+        # Get file
+        excode = subprocess.call( 'wget %s -O --output-document=' % cache_item.uri_obj, shell=True)
+        if excode:
+            print
+            print '***   Aborting create_po_file() due to error!'
+            sys.exit(1)
+        return
+
+        # Calc checksum
+        # Store orig
+        # store large
+        # store small
         s = r.annotate('cache_items')
         #l = r.cache_items.filter(sstate=glob_consts.ST_PENDING)
         #for ii in l:
         pass
     set_process_ownership(glob_consts.LCK_CACHESOURCE,
-                          cs.pk,
+                          cache_source.pk,
                           glob_consts.ST_IDLE,
                           0)

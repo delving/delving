@@ -143,7 +143,7 @@ class ProcessMonitoring(models.Model):
     Keeping track of various external processes working towards the database
     """
     role = models.IntegerField(choices=dict_2_django_choice(glob_consts.PROC_ROLES))
-    pid = models.IntegerField()
+    pid = models.IntegerField(default=0)
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.PM_STATES))
     start_time = models.DateTimeField(auto_now_add=True, editable=False)
 

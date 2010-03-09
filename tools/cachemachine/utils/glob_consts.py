@@ -45,10 +45,9 @@ CACHESOURCE_STATES = {
 
 REQUEST_STATES = {
     ST_INITIALIZING: 'inializing',
-    ST_PENDING: 'pending',
+    ST_PENDING: 'pending',  # Created not handled yet
     RS_PRE_PARSING: 'pre parsing',
     ST_PARSING: 'parsing',  # Creating related image items
-    RS_IMG_CHECKS: 'img_checks', # One or more images needs checking
     ST_COMPLETED: 'completed',  # everything done for the moment
     ST_ABORTED: 'aborted',
     ST_FAILED: 'failed', # failure in identification of item
