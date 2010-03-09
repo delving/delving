@@ -365,6 +365,7 @@ public class ESEImporterImpl implements ESEImporter {
                             for (Object object : solrInputDocument.getFieldValues("europeana_object")) {
                                 String url = (String) object;
                                 fetchScript.write(objectCache.createFetchScriptItem(collection.getName(), europeanaId.getEuropeanaUri(), url));
+                                fetchScript.flush();
                             }
                             recordList.add(solrInputDocument);
                             dashboardDao.saveEuropeanaId(europeanaId);
