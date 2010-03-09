@@ -30,11 +30,13 @@ public class DeviceRecognitionResult {
     private final String _templateName;
     private final int _deviceScreenWidth;
     private final int _deviceScreenHeight;
+    private final Boolean _coverflowEnabled;
 
-    public DeviceRecognitionResult(String templateName, int deviceScreenWidth, int deviceScreenHeight) {
+    public DeviceRecognitionResult(String templateName, int deviceScreenWidth, int deviceScreenHeight, Boolean coverflowEnabled) {
         _templateName = templateName;
         _deviceScreenWidth = deviceScreenWidth;
         _deviceScreenHeight = deviceScreenHeight;
+        _coverflowEnabled = coverflowEnabled;
     }
 
     /**
@@ -52,5 +54,9 @@ public class DeviceRecognitionResult {
 
     public int GetDeviceScreenHeight() {
         return _deviceScreenHeight;
+    }
+
+    public Boolean GetCoverflowEnabled(){
+        return _coverflowEnabled;
     }
 }

@@ -24,18 +24,24 @@
 		<li class="textbox" id="welcome">
 			<img src="mobile/images/logo_connect.png" alt="Logo"/>
 			<strong><@spring.message 'ThisIsEuropeana_t' />...</strong> 
-			<@spring.message 'APlaceToShareIdeas_t' />		
+			<@spring.message 'APlaceToShareIdeas_t' />
 		</li>
 
-		<#-- Flow container -->
-		<li class="textbox" id="myFlow">
-			<div class="zflow">
-				<div id="container" class="centering">
-				    <div id="tray" class="tray"></div>
-				</div>
-				<div id="flowcaption" class="flowcaption"></div>
-	    	</div>
-		</li>
+		<#if coverflow_enabled?? && coverflow_enabled=true>
+            <#-- Flow container -->
+		    <li class="textbox" id="myFlow">
+                <div class="zflow">
+				    <div id="container" class="centering">
+				        <div id="tray" class="tray"></div>
+				    </div>
+				    <div id="flowcaption" class="flowcaption"></div>
+	    	    </div>
+	    	</li>
+	    <#else>
+	        <li class="textbox" id="treasures">
+	            <@treasures />
+	        </li>
+        </#if>
 
 		<li class="menu"><a href="new-content.html">
 			<span class="name"><@spring.message 'NewContent_t' /></span><span class="arrow"></span></a>

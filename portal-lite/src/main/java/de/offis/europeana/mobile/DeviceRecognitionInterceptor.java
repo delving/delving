@@ -58,6 +58,7 @@ public class DeviceRecognitionInterceptor extends HandlerInterceptorAdapter {
                     modelAndView.setViewName(deviceRecognitionResult.GetTemplateName());
                     modelAndView.addObject("device_screen_width", deviceRecognitionResult.GetDeviceScreenWidth());
                     modelAndView.addObject("device_screen_height", deviceRecognitionResult.GetDeviceScreenHeight());
+                    modelAndView.addObject("coverflow_enabled", deviceRecognitionResult.GetCoverflowEnabled());
                 }
 			}
 		}

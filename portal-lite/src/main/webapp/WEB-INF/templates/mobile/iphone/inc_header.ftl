@@ -66,7 +66,9 @@
     <#case "index.html">
         <#assign pageId = "in"/>
         <#assign bodyId = "home"/>
-        <#include "../inc_flow.ftl">
+        <#if coverflow_enabled?? && coverflow_enabled=true>
+            <#include "../inc_flow.ftl">
+        </#if>
         <title>Europeana - Homepage</title>
         <#break>
     <#case "brief-doc.html">
@@ -89,8 +91,12 @@
 <#if pageId??>
     <#switch pageId>
         <#case "in">
-        <body onload="initflow();">
-            <#break/>
+            <#if coverflow_enabled?? && coverflow_enabled=true>
+                <body onload="initflow();">
+            <#else>
+                <body>
+            </#if>
+        <#break/>
         <#case "bd">
         <#case "fd">
         <body class="list">

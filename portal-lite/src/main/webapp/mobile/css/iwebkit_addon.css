@@ -14,16 +14,15 @@
 	margin-bottom: 1px;
 }
 
+#treasures {
+    text-align: center;
+}
+
 /* Language select fix */
 body #content .pageitem .select p {
 	margin-top: 12px;
 	margin-left: -2px; 
 }
-
-/* TODO: evtl. nicht mehr benötigt */
-/*#title img {
-	margin-top: 6px;
-}*/
 
 /* result display */
 body.list {
@@ -34,7 +33,7 @@ body.list li.withimage {
 	height: 55px !important;
 }
 
-body.list li.withimage img {
+body.list li.withimage img, #treasures img {
 	max-height: 55px;
 	max-width: 85px;
 	width: auto;

@@ -105,19 +105,24 @@ public class DeviceRecognition {
                         String mobile_browser = device.getCapability("mobile_browser");
                         String device_os = device.getCapability("device_os");
                         String pointing_method = device.getCapability("pointing_method");
+                        String device_os_version = device.getCapability("device_os_version");
 
-                        Boolean show_iphone_version = false;
+                        Boolean show_iphone_templates = false;
+                        Boolean enableCoverflow = false;
 
                         //Identify devices that are capable to display the iphone templates
 						if ("touchscreen".equalsIgnoreCase(pointing_method)){
                             if ("Safari".equalsIgnoreCase(mobile_browser) &&
                                     ("iPhone".equals(model_name) || "iPod Touch".equals(model_name))) { //maybe the iPad can be added here in the future
-                                show_iphone_version = true;
+                                show_iphone_templates = true;
+                                enableCoverflow = true;
                             } else if ("Android".equalsIgnoreCase(device_os) && "Android Webkit".equalsIgnoreCase(mobile_browser)) {
-                                show_iphone_version = true;
+                                show_iphone_templates = true;
+                                //only android devices >= 2.0 support the css needed for the coverflow
+                                enableCoverflow = (device_os_version != null && Double.parseDouble(device_os_version) >= 2);
                             }
                         }
-                        if (show_iphone_version) {
+                        if (show_iphone_templates) {
                             result = "mobile/iphone/"+template;
 						} else {
 							log.info("width: "+width+" height: "+height+" device: "+device.getId());
@@ -127,7 +132,7 @@ public class DeviceRecognition {
                             }
 						}
                         log.info("template and subfolder after mobile device recognition: " + result);
-                        return new DeviceRecognitionResult(result, width, height);
+                        return new DeviceRecognitionResult(result, width, height, enableCoverflow);
 					}
 				}
 		}
