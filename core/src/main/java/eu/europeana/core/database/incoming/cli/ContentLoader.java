@@ -51,9 +51,9 @@ import java.util.List;
 
 public class ContentLoader {
     private static final Logger LOG = Logger.getLogger(ContentLoader.class);
-    private final ESEImporter eseImporter;
-    private final DashboardDao dashboardDao;
-    private final ImportRepository repository;
+    private ESEImporter eseImporter;
+    private DashboardDao dashboardDao;
+    private ImportRepository repository;
     private List<Job> jobs = new ArrayList<Job>();
     private int simultaneousJobs = 5;
 
@@ -71,7 +71,11 @@ public class ContentLoader {
         }
     }
 
-    public ContentLoader() {
+    public void init() throws ClassNotFoundException {
+//        for (String path : System.getProperty("java.class.path").split(":")) {
+//            LOG.info("Path: "+path);
+//        }
+        Class.forName("org.springframework.security.web.FilterChainProxy");
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                 "/core-application-context.xml"
         });
@@ -106,7 +110,7 @@ public class ContentLoader {
                 LOG.info(String.format("Importing commenced for %s", importFile));
                 activeJobs.add(job);
             }
-            Thread.sleep(1000);
+            Thread.sleep(10000);
             Iterator<Job> importingJobsWalk = activeJobs.iterator();
             while (importingJobsWalk.hasNext()) {
                 Job job = importingJobsWalk.next();
@@ -114,7 +118,7 @@ public class ContentLoader {
                     importingJobsWalk.remove();
                 }
                 else {
-                    LOG.info(String.format("Busy importing %s", job.collection));
+                    LOG.debug(String.format("Busy importing %s", job.collection));
                 }
             }
             LOG.info(MessageFormat.format("jobs={0}, importingJobs={1}", jobs.size(), activeJobs.size()));
@@ -159,6 +163,7 @@ public class ContentLoader {
                     contentLoader.addMetadataFile(command);
                 }
             }
+            contentLoader.init();
             LOG.info("start loading content");
             contentLoader.loadMetadata();
             LOG.info("finished loading content");

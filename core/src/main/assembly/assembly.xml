@@ -28,7 +28,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.build.outputDirectory}</directory>
-            <outputDirectory></outputDirectory>
+            <outputDirectory/>
         </fileSet>
         <fileSet>
             <directory>src/main/assembly/META-INF</directory>

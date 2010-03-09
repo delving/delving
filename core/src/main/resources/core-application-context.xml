@@ -44,9 +44,6 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <!--todo: is this bean necessary?-->
-    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
-
     <bean id="europeanaProperties" class="eu.europeana.core.querymodel.query.EuropeanaProperties"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
