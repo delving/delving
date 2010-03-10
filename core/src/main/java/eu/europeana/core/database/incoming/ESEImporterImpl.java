@@ -61,6 +61,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
@@ -362,10 +363,16 @@ public class ESEImporterImpl implements ESEImporter {
                                 }
                                 europeanaId.setEuropeanaUri(String.format("%s%s/%s", RESOLVABLE_URI, collection.getName(), COUNT_FORMAT.format(recordCount)));
                             }
-                            for (Object object : solrInputDocument.getFieldValues("europeana_object")) {
-                                String url = (String) object;
-                                fetchScript.write(objectCache.createFetchScriptItem(collection.getName(), europeanaId.getEuropeanaUri(), url));
-                                fetchScript.flush();
+                            Collection<Object> objectUrls = solrInputDocument.getFieldValues("europeana_object");
+                            if (objectUrls != null) {
+                                for (Object object : objectUrls) {
+                                    String url = (String) object;
+                                    fetchScript.write(objectCache.createFetchScriptItem(collection.getName(), europeanaId.getEuropeanaUri(), url));
+                                    fetchScript.flush();
+                                }
+                            }
+                            else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
+                                log.warn("No object urls for "+europeanaId.getEuropeanaUri());
                             }
                             recordList.add(solrInputDocument);
                             dashboardDao.saveEuropeanaId(europeanaId);

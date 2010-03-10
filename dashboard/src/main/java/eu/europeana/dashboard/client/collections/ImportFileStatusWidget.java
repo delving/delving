@@ -1,6 +1,5 @@
 package eu.europeana.dashboard.client.collections;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -137,14 +136,12 @@ public class ImportFileStatusWidget extends DashboardWidget {
 
         @Override
         public void run() {
-            GWT.log("checking for " + holder.getCollection().getFileName(), null);
             world.service().checkImportFileStatus(holder.getCollection().getFileName(), true, new Reply<ImportFileX>() {
                 @Override
                 public void onSuccess(ImportFileX result) {
                     if (result != null) {
                         holder.setImportFile(result);
                         if (result.getState() == currentState) {
-                            GWT.log("waiting for " + holder.getCollection().getName() + " from " + currentState, null);
                             StatusCheckTimer.this.schedule(STATUS_CHECK_DELAY);
                         }
                         else {
@@ -152,11 +149,9 @@ public class ImportFileStatusWidget extends DashboardWidget {
                         }
                     }
                     else if (currentState == ImportFileX.State.NONEXISTENT) {
-                        GWT.log("waiting for " + holder.getCollection().getName() + " from " + currentState, null);
                         StatusCheckTimer.this.schedule(STATUS_CHECK_DELAY);
                     }
                     else {
-                        GWT.log("no import file named " + holder.getCollection().getFileName(), null);
                         holder.clearImportFile();
                         statusCheckTimer = null;
                     }

@@ -154,6 +154,6 @@ public class EuropeanaCollectionX implements IsSerializable {
     }
 
     public String toString() {
-        return "Collection("+name+")";
+        return "Collection("+name+"/"+collectionState+","+fileName+"/"+fileState+")";
     }
 }

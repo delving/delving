@@ -1,5 +1,6 @@
 package eu.europeana.dashboard.client;
 
+import com.google.gwt.core.client.GWT;
 import eu.europeana.dashboard.client.dto.CollectionStateX;
 import eu.europeana.dashboard.client.dto.EuropeanaCollectionX;
 import eu.europeana.dashboard.client.dto.ImportFileX;
@@ -42,7 +43,7 @@ public class CollectionHolder {
             collectionAddListener.addCollection(collection);
         }
         this.collection = collection;
-        for (CollectionUpdateListener listener: listeners) {
+        for (CollectionUpdateListener listener : listeners) {
             listener.collectionUpdated(collection);
         }
     }
@@ -51,12 +52,16 @@ public class CollectionHolder {
         return importFile;
     }
 
-    public void setImportFile(ImportFileX importFile) {
+    public void setImportFile(final ImportFileX importFile) {
         this.importFile = importFile;
-        service.fetchCollection(collection.getName(), importFile.getFileName() , false, new Reply<EuropeanaCollectionX>() {
+        service.fetchCollection(collection.getName(), importFile.getFileName(), false, new Reply<EuropeanaCollectionX>() {
             @Override
             public void onSuccess(EuropeanaCollectionX result) {
-                setCollection(result);
+                GWT.log("CollectionHolder: fetchCollection success " + result, null);
+                result.setFileState(importFile.getState());
+                result.setFileName(importFile.getFileName());
+                collection = result;
+                updateCollection();
             }
         });
     }
