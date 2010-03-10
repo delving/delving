@@ -33,8 +33,7 @@ class ProcControlError(Exception):
     pass
 
 class ProcessOwnership(object):
-    def __init__(self, lock_name, state,
-                 abort_on_running=True):
+    def __init__(self, lock_name, state):
         if lock_name == LCK_ITEM:
             self.m = CacheItem
         elif lock_name == LCK_CACHESOURCE:
@@ -43,13 +42,12 @@ class ProcessOwnership(object):
             raise ProcControlError('No such lockeable object: %s' % lock_name)
 
         self.state = state
-        self.abort_on_running = abort_on_running
 
 
-    def set_ownership(self, pk, pid):
+    def set_ownership(self, pk, pid, abort_on_running=True):
         self._lock_it()
         item = self.m.objects.get(pk=pk)
-        if item.pid:
+        if item.pid and abort_on_running:
             self.do_abort_if_running()
         item.pid = pid
         item.sstate = self.state
@@ -58,12 +56,16 @@ class ProcessOwnership(object):
         return item
 
     def clear_dead_procs(self):
+        "returns number of items that where cleared."
+        r = 0
         for item in self.m.objects.filter(pid__gt=0):
             if self.is_pid_running(item.pid):
                 raise ProcControlError('Attempt to clear a living process on %s, item: %s' % (lock_name,item.pk))
             else:
-                self.set_ownership(item.pk, 0)
+                self.set_ownership(item.pk, 0, abort_on_running=False)
+                r += 1
             pass
+        return r
 
     def is_pid_running(self, pid):
         if os.system('ps ax | grep %i | grep -v grep' % pid):
@@ -74,8 +76,6 @@ class ProcessOwnership(object):
 
 
     def do_abort_if_running(self):
-        if not self.abort_on_running:
-            return
         self.release_it()
         msg = 'lock: %s item_id: %s owned by' % (lock_name, item.pk)
         if ceck_pid_alive(item.pid):
@@ -132,5 +132,6 @@ def set_process_ownership(lock_name,
     return po.set_ownership(pk, pid)
 
 def clear_dead_procs(lock_name, reset_state):
-    ProcessOwnership(lock_name, reset_state,abort_on_running=False).clear_dead_procs()
+    po = ProcessOwnership(lock_name, reset_state)
+    return po.clear_dead_procs()
 

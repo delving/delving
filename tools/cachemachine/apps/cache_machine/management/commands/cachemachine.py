@@ -38,9 +38,9 @@ class Command(BaseCommand):
 
         if 1:
             #q=Request.objects.all().delete()
-            r = Request(provider='039', collection='03907',
-                        fname='03907_Ag_FR_MCC_archim.xml',
-                        fpath='requests_new/03907_Ag_FR_MCC_archim.xml',
+            r = Request(provider='003', collection='00301',
+                        fname='00301_L_NO_NatLib_DigCol_tel_dc.xml',
+                        fpath='requests_new/00301_L_NO_NatLib_DigCol_tel_dc.xml',
                         sstate=glob_consts.ST_PENDING)
             r.save()
         if len(already_running):

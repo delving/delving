@@ -24,6 +24,17 @@ from utils import glob_consts
 from utils.gen_utils import dict_2_django_choice
 
 
+class MessageModel(object):
+    # Dont forget to add this line to the class:
+    #message = models.TextField(default='', editable=False)
+
+    def set_msg(self, msg, append=True):
+        "Normaly appends msg."
+        if append:
+            msg = '\n'.join(self.message, msg)
+        self.message = msg
+        self.save()
+
 
 
 
@@ -50,7 +61,7 @@ class CacheSource(models.Model):
 #admin.site.register(CacheSource)
 
 
-class CacheItem(models.Model):
+class CacheItem(models.Model, MessageModel):
     """
     A CacheItem is basically a thumbnail that one or more sources have requested
     """
@@ -70,6 +81,7 @@ class CacheItem(models.Model):
                                  editable=False)
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     checked_date = models.DateTimeField(null=True, editable=False) # last time item was verified
+    message = models.TextField(default='', editable=False)
 
     def save(self, *args, **kwargs):
         if self.sstate == glob_consts.ST_INITIALIZING:
@@ -97,11 +109,12 @@ class CacheItem(models.Model):
         self.sstate = glob_consts.ST_PENDING
 
 
+
 #admin.site.register(CacheItem)
 databrowse.site.register(CacheItem)
 
 
-class Request(models.Model):
+class Request(models.Model, MessageModel):
     """
     A Request is typically a ingestion file
 
@@ -115,8 +128,8 @@ class Request(models.Model):
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.REQUEST_STATES),
                                 default = glob_consts.ST_INITIALIZING,
                                 editable=False)
-    message = models.TextField(default='', editable=False)
     cache_items = models.ManyToManyField(CacheItem, editable=False)
+    message = models.TextField(default='', editable=False)
 
     def __unicode__(self):
         return self.fname
