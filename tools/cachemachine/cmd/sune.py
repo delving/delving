@@ -22,10 +22,10 @@ def cachemachine_starter(pm):
 
     #while 1:
     q_rec_pending = Request.objects.filter(sstate=glob_consts.ST_PENDING)
-    if q_rec_pending:
+    if 0:#q_rec_pending:
         r = q_rec_pending[0] # do first pending on this run
         handle_pending_request(r)
-    #ImgRetrieval(debug_lvl=9).run()
+    ImgRetrieval(debug_lvl=9).run()
     #print 'waiting...'
     #time.sleep(30)
 
@@ -60,8 +60,9 @@ def handle_pending_request(r):
     return ret
 
 
-def is_valid_file(r):
-    x = RequestParseXML(r,debug_lvl=4)
+def is_valid_file(request):
+    #x = RequestParseXML(request, debug_lvl=4)
+    x = WgetFileParser(request, debug_lvl=4)
     x.run()
     return True
 
@@ -122,6 +123,9 @@ class BaseXMLParser(object):
             self.log('-', 1, add_lf=False)
             self.records_bad += 1
             return
+        self.ingest_item(rec)
+
+    def ingest_item(self, rec):
         q = CacheItem.objects.filter(uri_obj=''.join(rec.oobject))
         if q:
             # cache_item already exists, just link it to this request
@@ -137,6 +141,34 @@ class BaseXMLParser(object):
         #if self.record_count > 3:
         #    raise exceptions.ValidationError('devel temp done')
         return
+
+
+class RequestParseXML2(BaseXMLParser):
+    """
+    Runs out of memory on the enourmus xml files used here...
+    """
+
+    def run(self):
+        self.log('Parsing xml file for records: %s' % self.fname)
+        t = time.time()
+        d = xml.dom.minidom.parse(self.fname)
+        records = d.childNodes[0].getElementsByTagName('record')
+        t = int(time.time() - t)
+        self.log('xml parsing complete after %i sec, now iterating over %i records' % (t, len(records)))
+        for record in records:
+            self.record = XmlRecord()
+            self.record.uri = record.getElementsByTagName('europeana:uri')[0].firstChild.nodeValue
+            try:
+                self.record.isShownBy = record.getElementsByTagName('europeana:isShownBy')[0].firstChild.nodeValue
+            except:
+                pass
+            try:
+                self.record.isShownAt = record.getElementsByTagName('europeana:isShownAt')[0].firstChild.nodeValue
+            except:
+                pass
+            self.check_record()
+        self.log('all records processed')
+
 
 
 class RequestParseXML(BaseXMLParser):
@@ -195,33 +227,29 @@ class RequestParseXML(BaseXMLParser):
         return
 
 
-class RequestParseXML2(BaseXMLParser):
+
+class WgetFileParser(RequestParseXML):
     """
-    Runs out of memory on the enourmus xml files used here...
+    Quick and dirty alternative to just create a wget file
+    and bypass database
     """
 
     def run(self):
-        self.log('Parsing xml file for records: %s' % self.fname)
-        t = time.time()
-        d = xml.dom.minidom.parse(self.fname)
-        records = d.childNodes[0].getElementsByTagName('record')
-        t = int(time.time() - t)
-        self.log('xml parsing complete after %i sec, now iterating over %i records' % (t, len(records)))
-        for record in records:
-            self.record = XmlRecord()
-            self.record.uri = record.getElementsByTagName('europeana:uri')[0].firstChild.nodeValue
-            try:
-                self.record.isShownBy = record.getElementsByTagName('europeana:isShownBy')[0].firstChild.nodeValue
-            except:
-                pass
-            try:
-                self.record.isShownAt = record.getElementsByTagName('europeana:isShownAt')[0].firstChild.nodeValue
-            except:
-                pass
-            self.check_record()
-        self.log('all records processed')
+        base_name = os.path.splitext(os.path.basename(self.fname))[0]
+        fname = os.path.join(settings.MEDIA_ROOT, 'wget-files', base_name)
+        self.fp_wget_file = open(fname,'w')
+        self.fp_wget_file.write('#!/bin/sh\n')
 
+        super(WgetFileParser, self).run()
 
+        self.fp_wget_file.close()
+
+    def ingest_item(self, rec):
+        #wget -c http://www.theeuropeanlibrary.org/portal/images/treasures/hy10.jpg -O /tmp/europeana-cache/ORIGINAL/E5/A6/E5A68260A4BCEFF341E5B0138B3D2599E72DB6FD1D8F6D1AE23747F9119C4420.original
+
+        lst = ['wget "%s"' % rec.oobject]
+        #lst.append('-O %s'
+        pass
 
 from django.db.models import Avg, Max, Min, Count
 
