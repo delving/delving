@@ -26,9 +26,6 @@ class Command(BaseCommand):
         from apps.cache_machine.models import ProcessMonitoring, Request
         import cmd.sune
 
-        if args:
-            raise CommandError('Usage is cachemachine %s' % self.args)
-
         already_running = ProcessMonitoring.objects.filter(role=glob_consts.PMR_REQ_HANDLER)
 
         if options['create-dirs']:
@@ -49,11 +46,32 @@ class Command(BaseCommand):
 
         if options['test-request']:
             #q=Request.objects.all().delete()
-            r = Request(provider='098', collection='09804',
-                        fname='09804_Ag_EU_Bernstein_WZMA.xml',
-                        fpath='requests_new/09804_Ag_EU_Bernstein_WZMA.xml',
+            if not args:
+                print 'xml file is needed as additional param!'
+                sys.exit(1)
+            fpath = args[0]
+            xml_file = os.path.basename(fpath)
+            collection = xml_file[:5]
+            try:
+                int(collection)
+            except:
+                print 'Seems to be a missnamed xmlfile'
+                sys.exit(1)
+            provider = collection[:3]
+            r = Request(provider=provider, collection=collection,
+                        fname=xml_file,
+                        fpath=fpath,
                         sstate=glob_consts.ST_PENDING)
             r.save()
+            p = ProcessMonitoring(role=glob_consts.PMR_REQ_HANDLER,
+                                  sstate=glob_consts.ST_INITIALIZING,
+                                  )
+            p.save()
+            cmd.sune.cachemachine_starter(p, single_request=True)
+            sys.exit(0)
+        if args:
+            raise CommandError('Usage is cachemachine %s' % self.args)
+
         if len(already_running):
             pm = already_running[0]
             raise CommandError('Already running as pid: %i' % pm.pid)

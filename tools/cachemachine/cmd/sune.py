@@ -16,7 +16,9 @@ from apps.cache_machine.models import Request, CacheItem, CacheSource
 from utils import glob_consts
 from utils.imgretrieval import ImgRetrieval
 
-def cachemachine_starter(pm):
+
+
+def cachemachine_starter(pm, single_request=False):
     pid = os.getpid()
     pm.pid = pid
     pm.save()
@@ -26,7 +28,8 @@ def cachemachine_starter(pm):
     if q_rec_pending:
         r = q_rec_pending[0] # do first pending on this run
         handle_pending_request(r)
-    ImgRetrieval(debug_lvl=9).run()
+    if not single_request:
+        ImgRetrieval(debug_lvl=9).run()
     #print 'waiting...'
     #time.sleep(30)
 
@@ -62,8 +65,8 @@ def handle_pending_request(r):
 
 
 def is_valid_file(request):
-    x = RequestParseXML(request, debug_lvl=4)
-    #x = WgetFileParser(request, debug_lvl=4)
+    #x = RequestParseXML(request, debug_lvl=4)
+    x = WgetFileParser(request, debug_lvl=4)
     x.run()
     return True
 
@@ -232,42 +235,66 @@ class RequestParseXML(BaseXMLParser):
 
 
 import hashlib
+import tempfile
 
 class WgetFileParser(RequestParseXML):
     """
     Quick and dirty alternative to just create a wget file
     and bypass database
     """
+    ALL_ITEMS = '!#HEPP#!'
+    WGET_ECHO_INTERVAL = 50
+
 
     def run(self):
         self.create_dirs()
         base_name = os.path.splitext(os.path.basename(self.fname))[0]
-        fname = os.path.join(settings.MEDIA_ROOT, 'wget-files', base_name)
-        self.fp_wget_file = open(fname,'w')
+        self.wget_file = os.path.join(settings.MEDIA_ROOT, 'wget-files', base_name)
+        self.fp_wget_file = open(self.wget_file, 'w')
         self.fp_wget_file.write('#!/bin/sh\n')
+        self.fp_wget_file.write('echo "will show progress every %i items"\n' % self.WGET_ECHO_INTERVAL)
+        self.last_wget_echo = 0
 
         super(WgetFileParser, self).run()
 
         self.fp_wget_file.close()
+        self.post_process()
 
     def ingest_item(self, rec):
         #wget -c http://www.theeuropeanlibrary.org/portal/images/treasures/hy10.jpg -O /tmp/europeana-cache/ORIGINAL/E5/A6/E5A68260A4BCEFF341E5B0138B3D2599E72DB6FD1D8F6D1AE23747F9119C4420.original
+        url = ''.join(rec.oobject)
+        url_hash = hashlib.sha256(url).hexdigest().upper()
+        prefix = url_hash[:3]
+        base_name = url_hash[3:]
+        org_name = '%s/%s.original' % (prefix, base_name)
+        cmd = 'wget -c -q "%s" -O %s' % (url, org_name)
+        self.fp_wget_file.write('%s\n' % cmd)
 
-        uri_obj = ''.join(rec.oobject)
-        lst = ['wget -q "%s"' % uri_obj]
-        url_hash = hashlib.sha256(uri_obj).hexdigest().upper()
-        fname='%s/%s' % (url_hash[:3], url_hash[3:])
-        lst.append('-O %s' % fname)
+        if self.record_count >= self.last_wget_echo + self.WGET_ECHO_INTERVAL:
+            self.last_wget_echo = self.record_count
+            self.fp_wget_file.write('echo "%i / %s"\n' % (self.record_count, self.ALL_ITEMS))
 
-        #lst.append('-O %s'
-        self.fp_wget_file.write(' '.join(lst) + '\n')
-        self.fp_wget_file.close()
+    def post_process(self):
+        fd_tmp, fname_tmp = tempfile.mkstemp(dir=settings.MEDIA_ROOT)
+        f_in = open(self.wget_file, 'r')
+        for line in f_in.readlines():
+            l2 = line.replace(self.ALL_ITEMS, str(self.record_count))
+            os.write(fd_tmp, l2)
+        f_in.close()
+        os.close(fd_tmp)
+        os.rename(fname_tmp, self.wget_file)
+
 
     def create_dirs(self):
         base_path = os.path.join(settings.MEDIA_ROOT,
                                  settings.DIR_ORIGINAL)
         if not os.path.exists(base_path):
             os.makedirs(base_path)
+
+        wget_path = os.path.join(settings.MEDIA_ROOT,
+                                 settings.DIR_WGET_FILES)
+        if not os.path.exists(wget_path):
+            os.makedirs(wget_path)
 
         hexdigits = '0123456789ABCDEF'
         for c1 in hexdigits:

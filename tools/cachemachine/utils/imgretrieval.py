@@ -1,3 +1,7 @@
+"""
+ wget file 100 imgs - 54s
+ db                   74s
+"""
 import os
 import io
 import sys
@@ -133,6 +137,7 @@ class ImgRetrieval(object):
                 if not b:
                     break # abort as soon as one step gives a failure
             items_done += 1
+
             if self.items_bad > 150 and not self.items_good:
                 cache_item.request_set.set_msg('Too many bad items %i of %i checked' % (self.items_bad, self.items_good))
                 self.request_aborted = True
@@ -146,6 +151,9 @@ class ImgRetrieval(object):
             # all steps have succeeded, mark item as completed and release it
             cache_item.pid = 0
             cache_item.save()
+
+            if items_done > 99:
+                return True # timing test
         return True
 
     def thing_set_state(self, thing, sstate):
@@ -258,6 +266,9 @@ class ImgRetrieval(object):
                 img_type = output
             if img_type not in VALID_IMG_TYPES:
                 msg = 'Bad image type: %s' % img_type
+            else:
+                # was an ok image, store item type!
+                cache_item.i_type = glob_consts.IT_IMAGE
         else:
             msg = 'identify failed: %s' % retcode
         if msg:
