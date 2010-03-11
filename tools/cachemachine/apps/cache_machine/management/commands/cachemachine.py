@@ -36,7 +36,7 @@ class Command(BaseCommand):
             #sys.exit()
 
 
-        if 1:
+        if 0:
             #q=Request.objects.all().delete()
             r = Request(provider='094', collection='09407',
                         fname='09407_Ag_ES_ELocal.xml',
