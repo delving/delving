@@ -17,6 +17,8 @@ class Command(BaseCommand):
             help='Creates all the hexdirs for output.'),
         make_option('--test-request', action='store_true', dest='test-request', default=False,
             help='Debugging, create a test request.'),
+        make_option('--thumbnails', action='store_true', dest='thumbnails', default=False,
+            help='Generate all thumbnails.'),
     )
     help = "Handles requests and maintains the cache."
     args = ''#[--daemon]'
@@ -25,13 +27,21 @@ class Command(BaseCommand):
         from utils import glob_consts
         from apps.cache_machine.models import ProcessMonitoring, Request
         import cmd.sune
+        import cmd.thumbnailer
 
         already_running = ProcessMonitoring.objects.filter(role=glob_consts.PMR_REQ_HANDLER)
 
         if options['create-dirs']:
             self.create_old_hex_dirs(os.path.join(settings.MEDIA_ROOT,
                                                   settings.DIR_ORIGINAL))
+            self.create_old_hex_dirs(os.path.join(settings.MEDIA_ROOT,
+                                                  settings.DIR_FULL_DOC))
             sys.exit(0)
+
+        if options['thumbnails']:
+            cmd.thumbnailer.run()
+            sys.exit(0)
+
         if 1:#options['force_remove']:
             if len(already_running):
                 print 'Removing pointer to running process.'
@@ -80,6 +90,7 @@ class Command(BaseCommand):
                               )
         p.save()
         cmd.sune.cachemachine_starter(p)
+
 
 
     def create_old_hex_dirs(self, base_dir):
