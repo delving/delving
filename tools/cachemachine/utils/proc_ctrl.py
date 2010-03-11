@@ -48,7 +48,7 @@ class ProcessOwnership(object):
         self._lock_it()
         item = self.m.objects.get(pk=pk)
         if item.pid and abort_on_running:
-            self.do_abort_if_running()
+            self.do_abort_if_running(item)
         item.pid = pid
         item.sstate = self.state
         item.save()
@@ -75,10 +75,10 @@ class ProcessOwnership(object):
         return b
 
 
-    def do_abort_if_running(self):
+    def do_abort_if_running(self, item):
         self.release_it()
-        msg = 'lock: %s item_id: %s owned by' % (lock_name, item.pk)
-        if ceck_pid_alive(item.pid):
+        msg = '%s id: %s owned by' % (str(item), item.pk)
+        if self.is_pid_running(item.pid):
             raise ProcControlError(msg + 'running proc %s' % item.pid)
         else:
             locks[lock_name].release()

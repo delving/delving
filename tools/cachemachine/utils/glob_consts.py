@@ -12,13 +12,15 @@ ST_PARSING = 20
 ST_IDLE = 30
 ST_COMPLETED = 40
 ST_ABORTED = 90
-ST_FAILED = 91
-ST_TIMEOUT = 92
+ST_ERROR = 91
+ST_FAILED = 92
+ST_TIMEOUT = 93
 
 # Table specific states, allways > 99
 
 # CSS  = CacheSourceState
 CSS_RETRIEVING = 100
+CSS_ERROR = 101
 
 # RS_ = RequestState
 RS_PRE_PARSING = 200
@@ -29,7 +31,11 @@ RS_INV_INP_FILE = 210
 IS_NO_RESPONSE = 300
 IS_NO_URI = 301
 IS_HTTP_ERROR = 302
+IS_HTML_ERROR = 303
+IS_URL_ERROR = 304
+IS_MIME_TYPE_ERROR = 305
 IS_DOWNLOAD_FAILED = 310
+IS_INVALID_DATA = 315
 IS_IDENTIFICATION = 320
 
 # IT_ = ItemType
@@ -43,7 +49,7 @@ IT_AUDIO = 1005
 CACHESOURCE_STATES = {
     ST_IDLE: 'idle',
     CSS_RETRIEVING: 'retrieving',
-
+    CSS_ERROR: 'error',
 }
 
 REQUEST_STATES = {
@@ -65,12 +71,17 @@ ITEM_STATES = {
     ST_RETRIEVED: 'retrieved',
     ST_COMPLETED: 'completed',
     ST_ABORTED: 'aborted',
+    ST_ERROR: 'error', # other error see message for details
     ST_TIMEOUT: 'timeout',
     ST_FAILED: 'failed', # failure in identification of item
     IS_NO_RESPONSE: 'no response',
     IS_NO_URI: 'no uri',
     IS_HTTP_ERROR: 'http error',
+    IS_HTML_ERROR: 'html error',
+    IS_URL_ERROR: 'url error',
+    IS_MIME_TYPE_ERROR: 'mime type error',
     IS_DOWNLOAD_FAILED: 'download failed',
+    IS_INVALID_DATA: 'invalid data',
     IS_IDENTIFICATION: 'identification',
 }
 

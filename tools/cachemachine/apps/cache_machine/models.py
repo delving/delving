@@ -31,7 +31,7 @@ class MessageModel(object):
     def set_msg(self, msg, append=True):
         "Normaly appends msg."
         if append:
-            msg = '\n'.join(self.message, msg)
+            msg = '\n'.join([self.message, msg]).strip()
         self.message = msg
         self.save()
 
@@ -71,7 +71,7 @@ class CacheItem(models.Model, MessageModel):
     source = models.ForeignKey(CacheSource)
 
     fname = models.TextField('url hash')
-    cont_hash = models.TextField('content hash')
+    content_hash = models.TextField('content hash')
     pid = models.IntegerField(default=0) # what process 'owns' this item
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.ITEM_STATES),
                                  default = glob_consts.ST_INITIALIZING,
@@ -90,20 +90,17 @@ class CacheItem(models.Model, MessageModel):
 
     def do_initialize(self):
         if not self.uri_id:
-            raise exceptions.ValidationError('Europeana uri missing')
+            raise exceptions.ValidationError('%s id:%i  Europeana uri missing' % (self, self.id))
         if not self.uri_obj:
-            raise exceptions.ValidationError('obj uri missing')
-
-        if not urlparse.urlparse(self.uri_obj)[1]:
-            pass
+            raise exceptions.ValidationError('%s id:%i  obj uri missing' % (self, self.id))
         s = urlparse.urlparse(self.uri_obj)[1]
         fqdn = socket.getfqdn(socket.gethostbyname(s))
-        sources = CacheSource.objects.filter(fqdn=fqdn)
-        if not sources:
+        q_sources = CacheSource.objects.filter(fqdn=fqdn)
+        if not q_sources:
             cs = CacheSource(fqdn=fqdn)
             cs.save()
         else:
-            cs = sources[0]
+            cs = q_sources[0]
         self.source = cs
 
         self.sstate = glob_consts.ST_PENDING
