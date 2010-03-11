@@ -96,6 +96,7 @@ class BaseXMLParser(object):
                                   self.request.fpath.name)
 
         self.record_count = 0
+        self.records_bad = 0
         self.record = None # current record
         self.progress_intervall = 100
         self.last_progress = 0
@@ -116,8 +117,10 @@ class BaseXMLParser(object):
         rec = self.record
         self.record = None
         if not (rec.uri and rec.oobject):
-            self.log('missing data in record %i' % self.record_count)
-            self.log('%s' % rec)
+            self.log('missing data in record %i' % self.record_count, 8)
+            self.log('%s' % rec, 8)
+            self.log('-', 1, add_lf=False)
+            self.records_bad += 1
             return
         q = CacheItem.objects.filter(uri_obj=''.join(rec.oobject))
         if q:
@@ -129,6 +132,7 @@ class BaseXMLParser(object):
                                                 uri_obj=''.join(rec.oobject))
             except Exception, e:
                 self.log('Failed to create cache item; %s' % e)
+                self.records_bad += 1
 
         #if self.record_count > 3:
         #    raise exceptions.ValidationError('devel temp done')
@@ -155,7 +159,11 @@ class RequestParseXML(BaseXMLParser):
         except Exception, e:
             self.log('Parsing error; %s' % e)
         f.close()
-        self.log('xml parsing completed - found %i items' % self.record_count, 1)
+        good_items = self.record_count - self.records_bad
+        msg = 'xml parsing completed - added items: %i' % good_items
+        if self.records_bad:
+            msg += '\tbad items: %i' % self.records_bad
+        self.log(msg, 1)
 
 
     def start_element(self, name, attrs):
