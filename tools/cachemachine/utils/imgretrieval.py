@@ -1,5 +1,6 @@
 import os
 import io
+import sys
 import time
 import urllib2
 import hashlib
@@ -16,6 +17,7 @@ from utils import glob_consts
 
 WGET_TIMEOUT = 10
 INTERVALL_PROGRES = 5
+STORE_CHECKSUM = False # if CacheItems should store content checksum in content_hash
 
 VALID_IMG_TYPES = ['jpeg',
                    'tif',
@@ -134,16 +136,14 @@ class ImgRetrieval(object):
             if self.items_bad > 150 and not self.items_good:
                 cache_item.request_set.set_msg('Too many bad items %i of %i checked' % (self.items_bad, self.items_good))
                 self.request_aborted = True
-            if not b:
+            if b:
+                self.items_good += 1
+                cache_item.sstate = glob_consts.ST_COMPLETED
+            else:
                 self.items_bad += 1
-                cache_item.pid = 0
                 # sstate and message should have been set by the individual checks
-                cache_item.save()
-                continue # try next cache_item
-            self.items_good += 1
 
             # all steps have succeeded, mark item as completed and release it
-            cache_item.sstate = glob_consts.ST_COMPLETED
             cache_item.pid = 0
             cache_item.save()
         return True
@@ -223,18 +223,19 @@ class ImgRetrieval(object):
 
         """
         url_hash = hashlib.sha256(cache_item.uri_obj).hexdigest().upper()
-        cache_item.fname='%s/%s' % (url_hash[:3], url_hash[3:])
+        cache_item.fname = '%s/%s' % (url_hash[:3], url_hash[3:])
         return True
 
 
     def get_file(self, cache_item):
         # Get file
-        cmd = 'wget "%s" --timeout=%i --output-document=-' % (cache_item.uri_obj,
-                                                              WGET_TIMEOUT)
+        #cache_item.uri_obj = 'http://prensahistorica.mcu.es/es/catalogo_imagenes/imagen_id.cmd?idImagen=10426212&formato=jpg&altoMaximo=200&anchoMaximo=125'
+        cmd = 'wget "%s" --timeout=%i --output-document=%s' % (cache_item.uri_obj,
+                                                               WGET_TIMEOUT,
+                                                               self.temp_fname)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, close_fds=True)
         retcode = p.wait()
-        data = p.stdout.read()
         if retcode:
             msg = 'wget errcode: %s' % retcode
             self.log(msg + '\t' + cache_item.uri_obj)
@@ -242,11 +243,6 @@ class ImgRetrieval(object):
             self.thing_set_state(cache_item, glob_consts.IS_DOWNLOAD_FAILED)
             cache_item.set_msg(msg)
             return False
-
-        # temporary store file, later will be moved to final destination
-        fp = open(self.temp_fname, 'wb')
-        fp.write(data)
-        fp.close()
 
         # Verify its an ok file
         p2 = subprocess.Popen('identify %s' % self.temp_fname, shell=True,
@@ -278,14 +274,17 @@ class ImgRetrieval(object):
 
 
         # Calc checksum
-        cache_item.content_hash = hashlib.sha256(data).hexdigest()
-        cache_item.save()
+        if STORE_CHECKSUM:
+            fp = open(self.temp_fname, 'r')
+            data = fp.read()
+            fp.close()
+            cache_item.content_hash = hashlib.sha256(data).hexdigest()
+            #cache_item.save()
 
         # Store orig
         org_fname = os.path.join(settings.MEDIA_ROOT,
                                  settings.DIR_ORIGINAL,
                                  cache_item.fname + '.original')
-        self.create_needed_subdirs(org_fname)
         os.rename(self.temp_fname, org_fname)
         return True
 

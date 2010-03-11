@@ -26,7 +26,7 @@ def cachemachine_starter(pm):
     if q_rec_pending:
         r = q_rec_pending[0] # do first pending on this run
         handle_pending_request(r)
-    #ImgRetrieval(debug_lvl=9).run()
+    ImgRetrieval(debug_lvl=9).run()
     #print 'waiting...'
     #time.sleep(30)
 
