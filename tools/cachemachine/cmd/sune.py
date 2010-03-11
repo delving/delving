@@ -4,6 +4,7 @@ God do I need to name this module to something meaningfull :)
 
 import os
 import sys
+import string
 
 import time
 from django.core import exceptions
@@ -22,10 +23,10 @@ def cachemachine_starter(pm):
 
     #while 1:
     q_rec_pending = Request.objects.filter(sstate=glob_consts.ST_PENDING)
-    if 0:#q_rec_pending:
+    if q_rec_pending:
         r = q_rec_pending[0] # do first pending on this run
         handle_pending_request(r)
-    ImgRetrieval(debug_lvl=9).run()
+    #ImgRetrieval(debug_lvl=9).run()
     #print 'waiting...'
     #time.sleep(30)
 
@@ -61,8 +62,8 @@ def handle_pending_request(r):
 
 
 def is_valid_file(request):
-    #x = RequestParseXML(request, debug_lvl=4)
-    x = WgetFileParser(request, debug_lvl=4)
+    x = RequestParseXML(request, debug_lvl=4)
+    #x = WgetFileParser(request, debug_lvl=4)
     x.run()
     return True
 
@@ -228,6 +229,10 @@ class RequestParseXML(BaseXMLParser):
 
 
 
+
+
+import hashlib
+
 class WgetFileParser(RequestParseXML):
     """
     Quick and dirty alternative to just create a wget file
@@ -235,6 +240,7 @@ class WgetFileParser(RequestParseXML):
     """
 
     def run(self):
+        self.create_dirs()
         base_name = os.path.splitext(os.path.basename(self.fname))[0]
         fname = os.path.join(settings.MEDIA_ROOT, 'wget-files', base_name)
         self.fp_wget_file = open(fname,'w')
@@ -247,10 +253,28 @@ class WgetFileParser(RequestParseXML):
     def ingest_item(self, rec):
         #wget -c http://www.theeuropeanlibrary.org/portal/images/treasures/hy10.jpg -O /tmp/europeana-cache/ORIGINAL/E5/A6/E5A68260A4BCEFF341E5B0138B3D2599E72DB6FD1D8F6D1AE23747F9119C4420.original
 
-        lst = ['wget "%s"' % rec.oobject]
-        #lst.append('-O %s'
-        pass
+        uri_obj = ''.join(rec.oobject)
+        lst = ['wget -q "%s"' % uri_obj]
+        url_hash = hashlib.sha256(uri_obj).hexdigest().upper()
+        fname='%s/%s' % (url_hash[:3], url_hash[3:])
+        lst.append('-O %s' % fname)
 
-from django.db.models import Avg, Max, Min, Count
+        #lst.append('-O %s'
+        self.fp_wget_file.write(' '.join(lst) + '\n')
+        self.fp_wget_file.close()
+
+    def create_dirs(self):
+        base_path = os.path.join(settings.MEDIA_ROOT,
+                                 settings.DIR_ORIGINAL)
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+
+        hexdigits = '0123456789ABCDEF'
+        for c1 in hexdigits:
+            for c2 in hexdigits:
+                for c3 in hexdigits:
+                    ddir = os.path.join(base_path, c1 + c2 + c3)
+                    if not os.path.exists(ddir):
+                        os.mkdir(ddir)
 
 

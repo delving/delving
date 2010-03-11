@@ -18,6 +18,7 @@ WGET_TIMEOUT = 10
 INTERVALL_PROGRES = 5
 
 VALID_IMG_TYPES = ['jpeg',
+                   'tif',
                    ]
 
 
@@ -221,7 +222,7 @@ class ImgRetrieval(object):
         _FULL_DOC.jpg
 
         """
-        url_hash = hashlib.sha256(cache_item.uri_obj).hexdigest()
+        url_hash = hashlib.sha256(cache_item.uri_obj).hexdigest().upper()
         cache_item.fname='%s/%s' % (url_hash[:3], url_hash[3:])
         return True
 
