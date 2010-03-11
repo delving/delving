@@ -34,6 +34,7 @@ class Command(BaseCommand):
         if options['create-dirs']:
             self.create_old_hex_dirs(os.path.join(settings.MEDIA_ROOT,
                                                   settings.DIR_ORIGINAL))
+            sys.exit(0)
         if 1:#options['force_remove']:
             if len(already_running):
                 print 'Removing pointer to running process.'
