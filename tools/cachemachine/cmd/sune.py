@@ -1,4 +1,27 @@
 """
+ Copyright 2010 EDL FOUNDATION
+
+ Licensed under the EUPL, Version 1.1 or as soon they
+ will be approved by the European Commission - subsequent
+ versions of the EUPL (the "Licence");
+ you may not use this work except in compliance with the
+ Licence.
+ You may obtain a copy of the Licence at:
+
+ http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in
+ writing, software distributed under the Licence is
+ distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ express or implied.
+ See the Licence for the specific language governing
+ permissions and limitations under the Licence.
+
+
+ Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
+
+
 God do I need to name this module to something meaningfull :)
 """
 
@@ -28,8 +51,8 @@ def cachemachine_starter(pm, single_request=False):
     if q_rec_pending:
         r = q_rec_pending[0] # do first pending on this run
         handle_pending_request(r)
-    if not single_request:
-        ImgRetrieval(debug_lvl=9).run()
+    #if not single_request:
+    #    ImgRetrieval(debug_lvl=9).run()
     #print 'waiting...'
     #time.sleep(30)
 
@@ -83,11 +106,11 @@ class XmlRecord(object):
         self.oobject = []
 
     def __str__(self):
-        uri = ''.join(self.uri)
-        isShownBy = ''.join(self.isShownBy)
-        isShownAt = ''.join(self.isShownAt)
-        oobject = ''.join(self.oobject)
-        s = 'uri: %s\n\tisShownBy: %s\n\tisShownAt: %s\n\tobject: %s' % (uri, isShownBy, isShownAt, oobject)
+        uri = u''.join(self.uri)
+        isShownBy = u''.join(self.isShownBy)
+        isShownAt = u''.join(self.isShownAt)
+        oobject = u''.join(self.oobject)
+        s = u'uri: %s\n\tisShownBy: %s\n\tisShownAt: %s\n\tobject: %s' % (uri, isShownBy, isShownAt, oobject)
         return s
 
 
@@ -128,6 +151,7 @@ class BaseXMLParser(object):
             self.records_bad += 1
             return
         self.ingest_item(rec)
+        return
 
     def ingest_item(self, rec):
         q = CacheItem.objects.filter(uri_obj=''.join(rec.oobject))
@@ -144,7 +168,7 @@ class BaseXMLParser(object):
 
         #if self.record_count > 3:
         #    raise exceptions.ValidationError('devel temp done')
-        return
+        return True
 
 
 class RequestParseXML2(BaseXMLParser):
@@ -193,10 +217,13 @@ class RequestParseXML(BaseXMLParser):
         try:
             self.parser.ParseFile(f)
         except Exception, e:
-            self.log('Parsing error; %s' % e)
+            self.log('XML Parsser detected an unhandled error')
+            self.log('\taborting processing')
+            self.log(str(e))
         f.close()
         good_items = self.record_count - self.records_bad
-        msg = 'xml parsing completed - added items: %i' % good_items
+        self.log('\nxml parsing complete - %s' % self.fname)
+        msg = '\tadded items: %i' % good_items
         if self.records_bad:
             msg += '\tbad items: %i' % self.records_bad
         self.log(msg, 1)
@@ -262,8 +289,14 @@ class WgetFileParser(RequestParseXML):
 
     def ingest_item(self, rec):
         #wget -c http://www.theeuropeanlibrary.org/portal/images/treasures/hy10.jpg -O /tmp/europeana-cache/ORIGINAL/E5/A6/E5A68260A4BCEFF341E5B0138B3D2599E72DB6FD1D8F6D1AE23747F9119C4420.original
-        url = ''.join(rec.oobject)
-        url_hash = hashlib.sha256(url).hexdigest().upper()
+        url = u''.join(rec.oobject)
+        try:
+            url_hash = hashlib.sha256(url).hexdigest().upper()
+        except Exception, e:
+            print str(e)
+            print u'Problematic url %s' % url
+            self.records_bad += 1
+            return # propably ad
         prefix = url_hash[:3]
         base_name = url_hash[3:]
         org_name = '%s/%s.original' % (prefix, base_name)

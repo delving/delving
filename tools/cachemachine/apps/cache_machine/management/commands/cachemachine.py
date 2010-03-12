@@ -1,3 +1,27 @@
+"""
+ Copyright 2010 EDL FOUNDATION
+
+ Licensed under the EUPL, Version 1.1 or as soon they
+ will be approved by the European Commission - subsequent
+ versions of the EUPL (the "Licence");
+ you may not use this work except in compliance with the
+ Licence.
+ You may obtain a copy of the Licence at:
+
+ http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in
+ writing, software distributed under the Licence is
+ distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ express or implied.
+ See the Licence for the specific language governing
+ permissions and limitations under the Licence.
+
+
+ Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
+
+"""
 import os
 import sys
 
@@ -20,7 +44,20 @@ class Command(BaseCommand):
         make_option('--thumbnails', action='store_true', dest='thumbnails', default=False,
             help='Generate all thumbnails.'),
     )
-    help = "Handles requests and maintains the cache."
+    help = """Handles requests and maintains the cache.
+    If runs as is goes into automatic mode, when new requests are detected,
+    all the items in that request are processed.
+
+    Some extra modes, they will terminate when they are done.
+
+    --create-dirs
+       Populates the system with all the needed subdir trees
+
+    --thumbnails
+        Traverses the ORIGINAL tree, and generates ore fulldoc and thumbnails
+        for each item found
+
+    """
     args = ''#[--daemon]'
 
     def handle(self, *args, **options):
@@ -31,16 +68,23 @@ class Command(BaseCommand):
 
         already_running = ProcessMonitoring.objects.filter(role=glob_consts.PMR_REQ_HANDLER)
 
+        #
+        # Single run options, will terminate after completion
+        #
         if options['create-dirs']:
             self.create_old_hex_dirs(os.path.join(settings.MEDIA_ROOT,
                                                   settings.DIR_ORIGINAL))
             self.create_old_hex_dirs(os.path.join(settings.MEDIA_ROOT,
                                                   settings.DIR_FULL_DOC))
+            self.create_old_hex_dirs(os.path.join(settings.MEDIA_ROOT,
+                                                  settings.DIR_BRIEF_DOC))
             sys.exit(0)
 
         if options['thumbnails']:
             cmd.thumbnailer.run()
             sys.exit(0)
+
+
 
         if 1:#options['force_remove']:
             if len(already_running):

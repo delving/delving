@@ -84,3 +84,11 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'apps.cache_machine',
 )
+
+
+# will be stored under MEDIA_ROOT
+DIR_ORIGINAL = 'ORIGINAL'
+DIR_FULL_DOC = 'FULL_DOC'
+DIR_BRIEF_DOC = 'BRIEF_DOC'
+DIR_BAD_ORIGINAL = 'BAD_ORIGINAL'
+DIR_WGET_FILES = 'wget-files'
