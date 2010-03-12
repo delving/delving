@@ -52,6 +52,8 @@ def run():
         if dirpath == base_dir:
             continue
         sub_dir = os.path.split(dirpath)[1]
+        if sub_dir < '85D':
+            continue
         if t0 + INTERVALL_PROGRES  < time.time():
             print sub_dir
             t0 = time.time()
