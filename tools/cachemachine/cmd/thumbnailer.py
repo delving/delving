@@ -42,6 +42,9 @@ import settings
 INTERVALL_PROGRES = 10
 IMG_CMD = 'mogrify'
 
+error_count = 0
+
+
 def run():
     base_dir = os.path.join(settings.MEDIA_ROOT, settings.DIR_ORIGINAL)
     t0 = time.time()
@@ -49,14 +52,14 @@ def run():
         if dirpath == base_dir:
             continue
         sub_dir = os.path.split(dirpath)[1]
-        if sub_dir < '85D':
-            continue
         if t0 + INTERVALL_PROGRES  < time.time():
             print sub_dir
             t0 = time.time()
         if filenames:
             create_imgs(dirpath, sub_dir)
         pass
+    if error_count:
+        print 'Detected %i errors processing the tree' % error_count
     return
 
 
@@ -75,6 +78,8 @@ def create_imgs(dir_path, sub_dir):
     if retcode:
         err_msg = p.stderr.read()
         print '*** Error'
+        global error_count
+        error_count += 1
         print err_msg
         if 0: #not parse_error(err_msg): Skip analyse for the moment...
             sys.exit(1)
@@ -99,6 +104,8 @@ def create_imgs(dir_path, sub_dir):
     if retcode:
         err_msg = p.stderr.read()
         print '*** Error'
+        global error_count
+        error_count += 1
         print err_msg
         if 0: #not parse_error(err_msg): Skip analyse for the moment...
             sys.exit(1)
