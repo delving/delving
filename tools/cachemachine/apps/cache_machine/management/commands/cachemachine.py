@@ -81,7 +81,7 @@ class Command(BaseCommand):
             sys.exit(0)
 
         if options['thumbnails']:
-            cmd.thumbnailer.run()
+            cmd.thumbnailer.GenerateThumbnails().run()
             sys.exit(0)
 
 
