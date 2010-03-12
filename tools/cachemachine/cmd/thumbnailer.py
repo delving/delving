@@ -43,26 +43,82 @@ INTERVALL_PROGRES = 10
 IMG_CMD = 'mogrify'
 
 error_count = 0
+t0 = time.time()
 
 
 def run():
     base_dir = os.path.join(settings.MEDIA_ROOT, settings.DIR_ORIGINAL)
-    t0 = time.time()
     for dirpath, dirnames, filenames in os.walk(base_dir):
         if dirpath == base_dir:
             continue
         sub_dir = os.path.split(dirpath)[1]
-        if sub_dir < '85D':
-            continue
-        if t0 + INTERVALL_PROGRES  < time.time():
-            print sub_dir
-            t0 = time.time()
-        if filenames:
-            create_imgs(dirpath, sub_dir)
+        #if sub_dir < '85D':
+        #    continue
+        if 0: # do a dir at a time
+            if filenames:
+                create_imgs(dirpath, sub_dir)
+        if 1: # do one file at a time
+            for filename in filenames:
+                if os.path.splitext(filename)[1] == '.original':
+                    create_one_image(dirpath, sub_dir, filename)
         pass
     if error_count:
         print 'Detected %i errors processing the tree' % error_count
     return
+
+
+def create_one_image(dir_path, sub_dir, filename):
+    global t0
+    global error_count
+    if t0 + INTERVALL_PROGRES  < time.time():
+        msg = sub_dir
+        if error_count:
+            msg += '\terrors found %i' % error_count
+        print msg
+        t0 = time.time()
+    #
+    #  FULL_DOC
+    #
+    dest_full = os.path.join(settings.MEDIA_ROOT, settings.DIR_FULL_DOC, sub_dir)
+    cmd = ['%s -path %s' % (IMG_CMD, dest_full)]
+    cmd.append('-format jpg')
+    cmd.append('-define jpeg:size=260x200')
+    cmd.append('-thumbnail 200x %s' % os.path.join(dir_path, filename))
+    p = subprocess.Popen(' '.join(cmd), shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE, close_fds=True)
+    retcode = p.wait()
+    if retcode:
+        error_count += 1
+        print '*** Error'
+        err_msg = p.stderr.read()
+        print err_msg
+        return # wont be able to do a BRIEF_DOC if FULL_DOC failed
+
+    #
+    # BRIEF_DOC
+    #
+    """
+    mogrify -path BRIEF_DOC/subdir1/subdir2
+        -format jpg
+        -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
+
+    """
+    dest_brief = os.path.join(settings.MEDIA_ROOT, settings.DIR_BRIEF_DOC, sub_dir)
+    cmd = ['%s -path %s' % (IMG_CMD, dest_brief)]
+    cmd.append('-format jpg')
+    fname_brief = os.path.join(dest_full, os.path.splitext(filename)[0]) + '.jpg'
+    cmd.append('-thumbnail x110 %s' % fname_brief)
+    p = subprocess.Popen(' '.join(cmd), shell=True, stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE, close_fds=True)
+    retcode = p.wait()
+    if retcode:
+        error_count += 1
+        print '*** Error'
+        err_msg = p.stderr.read()
+        print err_msg
+        #parse_error(err_msg): Skip analyse for the moment...
+    return
+
 
 
 def create_imgs(dir_path, sub_dir):
