@@ -3,15 +3,37 @@ package eu.europeana.sip;
 import com.thoughtworks.xstream.XStream;
 import eu.europeana.core.querymodel.query.Language;
 import eu.europeana.query.RecordField;
-import eu.europeana.sip.converters.ConverterException;
-import org.apache.log4j.*;
+import org.apache.log4j.Appender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.*;
-import java.io.*;
-import java.util.*;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -239,16 +261,16 @@ public class Normalizer implements Runnable {
                             }
                         }
                         if (record != null && separator.equals(tagName)) {
-                            try {
+//                            try {
                                 record.doConversions();
-                            }
-                            catch (ConverterException e) {
-                                log.warn("Unable to convert", e);
-                                if (log.isDebugEnabled()) log.debug(record);
-                                counters.converterProblem();
-                                record = null;
-                                break;
-                            }
+//                            }
+//                            catch (ConverterException e) {
+//                                log.warn("Unable to convert", e);
+//                                if (log.isDebugEnabled()) log.debug(record);
+//                                counters.converterProblem();
+//                                record = null;
+//                                break;
+//                            }
                             record.removeEmpty();
                             boolean hasObject = record.hasField(RecordField.EUROPEANA_OBJECT);
                             if (!hasObject) {
@@ -440,7 +462,7 @@ public class Normalizer implements Runnable {
 //        return filterMatch;
 //    }
 //
-    private void validateRecord(SolrRecord record) throws ConverterException {
+    private void validateRecord(SolrRecord record) {
         validateField(record, RecordField.EUROPEANA_TYPE); // already been checked, this is double-check
         validateField(record, RecordField.EUROPEANA_LANGUAGE); // already been checked, this is double-check
         validateField(record, RecordField.EUROPEANA_COUNTRY);
@@ -457,7 +479,7 @@ public class Normalizer implements Runnable {
         }
     }
 
-    private void validateField(SolrRecord record, RecordField field) throws ConverterException {
+    private void validateField(SolrRecord record, RecordField field) {
         if (!record.hasField(field)) {
             throw new RuntimeException("Missing " + field);
         }

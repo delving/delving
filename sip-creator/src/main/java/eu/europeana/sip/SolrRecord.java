@@ -2,13 +2,19 @@ package eu.europeana.sip;
 
 import eu.europeana.core.querymodel.query.Language;
 import eu.europeana.query.RecordField;
-import eu.europeana.sip.converters.Converter;
-import eu.europeana.sip.converters.ConverterException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Build up the contents of one record and then render it.
@@ -34,7 +40,7 @@ public class SolrRecord {
         this.collectionId = collectionid;
     }
 
-    public void render(XMLStreamWriter writer, boolean writeSolr) throws XMLStreamException, ConverterException {
+    public void render(XMLStreamWriter writer, boolean writeSolr) throws XMLStreamException {
         writer.writeCharacters("\t");
         if (!writeSolr) {
             writer.writeStartElement("record");
@@ -51,21 +57,21 @@ public class SolrRecord {
         writer.writeCharacters("\n");
     }
 
-    public void doConversions() throws ConverterException {
+    public void doConversions() {
         for (SolrField field : fields) {
             convertValues(field);
         }
     }
 
-    public void convertValues(SolrField field) throws ConverterException {
+    public void convertValues(SolrField field) {
         String originalValue = field.getValue().toString();
         if (field.getFieldMapping().mapTo != null) {
             for (Profile.MapTo mapTo : field.getFieldMapping().mapTo) {
-                Converter fieldConverter = mapTo.getConverter();
+//                Converter fieldConverter = mapTo.getConverter();
                 String value = originalValue;
-                if (fieldConverter != null) {
-                    value = fieldConverter.convertValue(value);
-                }
+//                if (fieldConverter != null) {
+//                    value = fieldConverter.convertValue(value);
+//                }
                 if (value.indexOf('|') >= 0) {
                     String[] multiple = value.split("\\|");
                     for (String part : multiple) {
@@ -151,7 +157,7 @@ public class SolrRecord {
         writer.writeCharacters("\n");
     }
 
-    public String getFirstValue(RecordField recordField) throws ConverterException {
+    public String getFirstValue(RecordField recordField){
         for (Entry entry : entries) {
             if (entry.getMapTo().key == recordField) {
                 return entry.getValue();
@@ -160,7 +166,7 @@ public class SolrRecord {
         return null;
     }
 
-    public void setValue(RecordField recordField, String value) throws ConverterException {
+    public void setValue(RecordField recordField, String value){
         for (Entry entry : entries) {
             if (entry.getMapTo().key == recordField) {
                 entry.setValue(value);
@@ -168,7 +174,7 @@ public class SolrRecord {
         }
     }
 
-    public boolean hasField(RecordField recordField) throws ConverterException {
+    public boolean hasField(RecordField recordField){
         return getFirstValue(recordField) != null;
     }
 

@@ -1,11 +1,12 @@
 package eu.europeana.sip;
 
-import com.thoughtworks.xstream.annotations.*;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamConverter;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.converters.enums.EnumConverter;
 import eu.europeana.query.RecordField;
-import eu.europeana.sip.converters.Converter;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,38 +136,38 @@ public class Profile {
         @XStreamAsAttribute
         String concatenateSuffix;
 
-        @XStreamOmitField
-        Converter converterInstance;
-
-        Converter getConverter() {
-            if (converter != null && converterInstance == null) {
-                try {
-                    String [] constructParts = parseConverterString(converter);
-                    Class<?> clazz = Class.forName("eu.europeana.sip.converters."+constructParts[0]);
-                    if (!Converter.class.isAssignableFrom(clazz)) {
-                        throw new RuntimeException("Class '"+clazz.getName()+"' must implement SolrField.Converter");
-                    }
-                    String [] params = new String[constructParts.length-1];
-                    Class<?> [] paramTypes = new Class<?>[params.length];
-                    for (int walk=0; walk<params.length; walk++) {
-                        paramTypes[walk] = String.class;
-                        String trimmed = constructParts[walk+1].trim();
-                        if (trimmed.length() == 0) {
-                            params[walk] = trimmed;
-                        }
-                        else {
-                            params[walk] = constructParts[walk+1];
-                        }
-                    }
-                    Constructor constructor = clazz.getConstructor(paramTypes);
-                    converterInstance = (Converter) constructor.newInstance((Object[])params);
-                }
-                catch (Exception e) {
-                    throw new IllegalArgumentException("Problem loading converter",e);
-                }
-            }
-            return converterInstance;
-        }
+//        @XStreamOmitField
+//        Converter converterInstance;
+//
+//        Converter getConverter() {
+//            if (converter != null && converterInstance == null) {
+//                try {
+//                    String [] constructParts = parseConverterString(converter);
+//                    Class<?> clazz = Class.forName("eu.europeana.sip.converters."+constructParts[0]);
+//                    if (!Converter.class.isAssignableFrom(clazz)) {
+//                        throw new RuntimeException("Class '"+clazz.getName()+"' must implement SolrField.Converter");
+//                    }
+//                    String [] params = new String[constructParts.length-1];
+//                    Class<?> [] paramTypes = new Class<?>[params.length];
+//                    for (int walk=0; walk<params.length; walk++) {
+//                        paramTypes[walk] = String.class;
+//                        String trimmed = constructParts[walk+1].trim();
+//                        if (trimmed.length() == 0) {
+//                            params[walk] = trimmed;
+//                        }
+//                        else {
+//                            params[walk] = constructParts[walk+1];
+//                        }
+//                    }
+//                    Constructor constructor = clazz.getConstructor(paramTypes);
+//                    converterInstance = (Converter) constructor.newInstance((Object[])params);
+//                }
+//                catch (Exception e) {
+//                    throw new IllegalArgumentException("Problem loading converter",e);
+//                }
+//            }
+//            return converterInstance;
+//        }
 
         public String toString() {
             return key.toString();
