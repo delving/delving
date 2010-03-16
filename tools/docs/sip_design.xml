@@ -71,7 +71,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="309" y="10" name="Provider">
+<table x="352" y="3" name="Provider">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -132,7 +132,7 @@
 </key>
 <comment>All the meta data ascociated with one ele</comment>
 </table>
-<table x="490" y="14" name="Aggregator">
+<table x="692" y="7" name="Aggregator">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -190,7 +190,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="183" y="67" name="Request">
+<table x="216" y="25" name="Request">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -253,17 +253,21 @@
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="MdRecord" row="id" />
 </row>
-<row name="various enrichment fields" null="1" autoincrement="0">
+<row name="data_blob" null="1" autoincrement="0">
 <datatype>XML</datatype>
 <default>NULL</default></row>
-<row name="link" null="1" autoincrement="0">
+<row name="facet_id" null="1" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>NULL</default></row>
-<row name="value" null="1" autoincrement="0">
+<row name="facet_link" null="1" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>NULL</default></row>
-<row name="type" null="1" autoincrement="0">
+<row name="facet_type" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
+<default>NULL</default><comment>person/place...</comment>
+</row>
+<row name="facet_value" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
 <default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
