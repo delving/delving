@@ -37,7 +37,7 @@
 		<type label="Inet Host Addr" length="0" sql="INET" quote="'"/>
 		<type label="Inet CIDR Addr" length="0" sql="CIDR" quote="'"/>
 	</group>
-</datatypes><table x="487" y="119" name="Uris">
+</datatypes><table x="467" y="137" name="Uris">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -45,7 +45,7 @@
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="MdRecord" row="id" />
 </row>
-<row name="state_uri" null="0" autoincrement="0">
+<row name="status" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <row name="uri_source" null="1" autoincrement="0">
@@ -57,6 +57,9 @@
 <default>NULL</default><relation table="ProcessMonitoring" row="pid" />
 <comment>process owning this item</comment>
 </row>
+<row name="element" null="0" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>'NULL'</default></row>
 <row name="url" null="0" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>'NULL'</default><comment>url to be checked</comment>
@@ -71,7 +74,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="352" y="3" name="Provider">
+<table x="328" y="24" name="Provider">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -96,16 +99,16 @@
 <part>aggregator_id</part>
 </key>
 </table>
-<table x="300" y="301" name="MdRecord">
+<table x="47" y="371" name="MdRecord">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="state_rec" null="0" autoincrement="0">
+<row name="status_md_record" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="state_enrichements" null="1" autoincrement="0">
+<row name="status_enrichements" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
-<default>NULL</default><comment>typically not started/in progress/done</comment>
+<default>NULL</default><comment>not started/in progress/done</comment>
 </row>
 <row name="pid" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -118,14 +121,20 @@
 <row name="content_hash" null="0" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>'NULL'</default></row>
+<row name="uniqueness_hash" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
 <row name="date_created" null="0" autoincrement="0">
 <datatype>TIME WITH TIMEZONE</datatype>
 <default>'NULL'</default></row>
-<row name="date_lastcheck" null="1" autoincrement="0">
+<row name="date_last_modified" null="1" autoincrement="0">
 <datatype>TIME WITH TIMEZONE</datatype>
 <default>NULL</default></row>
 <row name="user_contrib?" null="1" autoincrement="0">
 <datatype>TEXT</datatype>
+<default>NULL</default></row>
+<row name="all the ese+ fields..." null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
@@ -165,6 +174,14 @@
 <row name="collection_name" null="1" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>NULL</default></row>
+<row name="ds_type" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<comment>vocabulary or meta data</comment>
+</row>
+<row name="data_format" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><comment>ese/../../</comment>
+</row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
@@ -190,7 +207,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="216" y="25" name="Request">
+<table x="186" y="25" name="Request">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -198,28 +215,31 @@
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="Dataset" row="id" />
 </row>
-<row name="state_req" null="1" autoincrement="0">
+<row name="status" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <row name="file_name" null="0" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>'NULL'</default><comment>file containing the request</comment>
 </row>
-<row name="date_recieved" null="0" autoincrement="0">
+<row name="date_request" null="0" autoincrement="0">
 <datatype>TIME WITH TIMEZONE</datatype>
 <default>'NULL'</default></row>
+<row name="production_ready" null="0" autoincrement="0">
+<datatype>BOOLEAN</datatype>
+<default>'False'</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
 </table>
-<table x="634" y="338" name="ProcessMonitoring">
+<table x="673" y="458" name="ProcessMonitoring">
 <row name="pid" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <row name="role" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="state_role" null="1" autoincrement="0">
+<row name="status" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <row name="time_started" null="0" autoincrement="0">
@@ -229,7 +249,7 @@
 <part>pid</part>
 </key>
 </table>
-<table x="8" y="208" name="Request_MdRecord">
+<table x="8" y="263" name="Request_MdRecord">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -245,7 +265,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="66" y="332" name="Enrichment">
+<table x="304" y="389" name="Enrichment">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -273,7 +293,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="544" y="470" name="MdRecordErrors">
+<table x="471" y="541" name="MdRecordErrors">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -284,7 +304,7 @@
 <row name="exit_code" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="process_name" null="1" autoincrement="0">
+<row name="task_name" null="1" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>NULL</default><comment>the thing that had this error</comment>
 </row>
