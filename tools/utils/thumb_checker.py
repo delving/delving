@@ -509,8 +509,11 @@ class VerifyProvider(object):
         self.report_print(  '\t------------------------------------------------------')
         self.report_print('\tProcess started : %s' % self.time_started)
         self.report_print('\tReport generated: %s' % time.ctime())
+        self.report_print('')
+        self.report_print('\tDetails on bad items logged in: %s' % REPORT_BAD_ITEMS)
+        self.report_print('')
         if ongoing:
-            self.report_print('\tprocess still running!')
+            self.report_print('\t*****   process still running!   *****')
         self.report_print('\n')
         bfound_bad_items = False
         providers = all_providers.keys()
@@ -552,7 +555,7 @@ class VerifyProvider(object):
                         fp.write('============   Problems in %s   ============\n' % collection)
                     for reason, count in problems:
                         if WARNING_SAME_URL_PREFIX in reason:
-                            msg = '  ' + reason
+                            msg = '  %s * %i' % (reason, count)
                         else:
                             msg = '  %s - %i times' % (reason, count)
                         self.report_print(msg)
@@ -780,5 +783,5 @@ if len(sys.argv) > 2:
 
 print 'thumb_checker - version', _version
 
-vp = VerifyProvider(debug_lvl=5)
+vp = VerifyProvider(debug_lvl=9)
 vp.run(p)
