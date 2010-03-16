@@ -96,13 +96,17 @@
 <part>aggregator_id</part>
 </key>
 </table>
-<table x="335" y="286" name="MdRecord">
+<table x="300" y="301" name="MdRecord">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <row name="state_rec" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
+<row name="state_enrichements" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><comment>typically not started/in progress/done</comment>
+</row>
 <row name="pid" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="ProcessMonitoring" row="pid" />
@@ -114,10 +118,6 @@
 <row name="content_hash" null="0" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>'NULL'</default></row>
-<row name="err_msg" null="1" autoincrement="0">
-<datatype>TEXT</datatype>
-<default>NULL</default><comment>If any error try to give the error message here</comment>
-</row>
 <row name="date_created" null="0" autoincrement="0">
 <datatype>TIME WITH TIMEZONE</datatype>
 <default>'NULL'</default></row>
@@ -212,7 +212,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="618" y="409" name="ProcessMonitoring">
+<table x="634" y="338" name="ProcessMonitoring">
 <row name="pid" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -222,7 +222,7 @@
 <row name="state_role" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="time_startet" null="0" autoincrement="0">
+<row name="time_started" null="0" autoincrement="0">
 <datatype>TIME WITH TIMEZONE</datatype>
 <default>'NULL'</default></row>
 <key type="PRIMARY" name="">
@@ -272,5 +272,31 @@
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
+</table>
+<table x="544" y="470" name="MdRecordErrors">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="md_record" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="MdRecord" row="id" />
+</row>
+<row name="exit_code" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="process_name" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default><comment>the thing that had this error</comment>
+</row>
+<row name="message" null="1" autoincrement="0">
+<datatype>TEXT</datatype>
+<default>NULL</default></row>
+<row name="timestamp" null="1" autoincrement="0">
+<datatype>TIMESTAMP WITH TIMEZONE</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Here we store exit code and message for failures</comment>
 </table>
 </sql>
