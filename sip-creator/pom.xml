@@ -8,13 +8,13 @@
     <version>${europeana.sip-creator.version}</version>
     <inceptionYear>2008</inceptionYear>
 
-  <parent>
-    <groupId>eu.europeana</groupId>
-    <artifactId>europeana</artifactId>
-    <version>1</version>
-  </parent>
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
 
-   <developers>
+    <developers>
         <developer>
             <name>Sjoerd Siebinga</name>
             <email>sjoerd.siebinga@gmail.com</email>
@@ -66,6 +66,11 @@
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
             <version>${europeana.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>1.7.1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
