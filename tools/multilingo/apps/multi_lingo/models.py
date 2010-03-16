@@ -27,7 +27,6 @@ import os
 import shutil
 import time
 import codecs
-from subprocess import Popen
 
 from django.db import models
 from django.contrib import admin
