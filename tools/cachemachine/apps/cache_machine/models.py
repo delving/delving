@@ -30,6 +30,21 @@ oldsyntax
 /3first/4: HASHNAME_BRIEF_DOC.jpg
                    _FULL_DOC.jpg
 
+MR_REC
+CRM
+
+Requests
+Aggregator
+Provider
+DataSet
+
+Content Servers
+
+MD_REQ - request
+URI - status
+Contserv - URI
+
+
 """
 
 import socket
@@ -93,6 +108,7 @@ class CacheItem(models.Model, MessageModel):
     source = models.ForeignKey(CacheSource)
 
     fname = models.TextField('url hash')
+
     content_hash = models.TextField('content hash')
     pid = models.IntegerField(default=0) # what process 'owns' this item
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.ITEM_STATES),
@@ -129,8 +145,10 @@ class CacheItem(models.Model, MessageModel):
 
 
 
-#admin.site.register(CacheItem)
+
+admin.site.register(CacheItem)
 databrowse.site.register(CacheItem)
+
 
 
 class Request(models.Model, MessageModel):

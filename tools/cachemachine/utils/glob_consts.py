@@ -89,7 +89,7 @@ REQUEST_STATES = {
 }
 
 
-ITEM_STATES = {
+ITEM_STATES = { # MdRec with new naming
     ST_INITIALIZING: 'inializing',
     ST_PENDING: 'pending',
     ST_PARSING: 'parsing',
