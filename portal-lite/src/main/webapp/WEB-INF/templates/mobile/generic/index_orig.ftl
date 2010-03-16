@@ -6,7 +6,13 @@
 
 <center>
 <div id="logo">
-	<a href="index.html"><img src="mobile/images/logo_slogan.png" alt="Logo"/></a>
+	<a href="index.html">
+	   <#if device_screen_width?? && 320 <= device_screen_width >
+	        <img src="mobile/images/logo_slogan.png" alt="Logo"/>
+	    <#else>
+	        <img src="mobile/images/logo_connect.png" alt="Logo"/>
+	    </#if>
+	</a>
 </div>
 <div id="language_select">
     <#include "../../language_select.ftl">

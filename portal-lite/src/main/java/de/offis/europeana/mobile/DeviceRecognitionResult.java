@@ -31,12 +31,14 @@ public class DeviceRecognitionResult {
     private final int _deviceScreenWidth;
     private final int _deviceScreenHeight;
     private final Boolean _coverflowEnabled;
+    private final Boolean _isIEMobile;
 
-    public DeviceRecognitionResult(String templateName, int deviceScreenWidth, int deviceScreenHeight, Boolean coverflowEnabled) {
+    public DeviceRecognitionResult(String templateName, int deviceScreenWidth, int deviceScreenHeight, Boolean coverflowEnabled, Boolean isIEMobile) {
         _templateName = templateName;
         _deviceScreenWidth = deviceScreenWidth;
         _deviceScreenHeight = deviceScreenHeight;
         _coverflowEnabled = coverflowEnabled;
+        _isIEMobile = isIEMobile;
     }
 
     /**
@@ -58,5 +60,9 @@ public class DeviceRecognitionResult {
 
     public Boolean GetCoverflowEnabled(){
         return _coverflowEnabled;
+    }
+
+    public Boolean GetIsIEMobile(){
+        return _isIEMobile;
     }
 }

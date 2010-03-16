@@ -39,19 +39,24 @@
                 <#case "in">
                 <#-- js_utilities needed for language selection -->
                     <script type="text/javascript" src="js/js_utilities.js"></script>
-                    <#break/>
+                <#break/>
                 <#case "bd">
                 <#-- needed for image placeholder: showDefaultSmall(...) -->
                     <script type="text/javascript" src="js/results.js"></script>
-                    <#break/>
+                <#break/>
             </#switch>
         </#if>
-    <link rel="stylesheet" type="text/css" href="mobile/css/mobile.css"/>        
+        <#if is_IEMobile?? && is_IEMobile = true>
+            <script type="text/javascript" src="mobile/js/mobile.js"></script>
+        </#if>
+
+    <link rel="stylesheet" type="text/css" href="mobile/css/mobile.css"/>
 </#if>
 <#if device_screen_width??>
-     <#--<meta name="MobileOptimized" content="${device_screen_width}">-->
      <#if device_screen_height??>
          <meta name="viewport" content="width=${device_screen_width}, height=${device_screen_height}, user-scalable=no, initial-scale=1.0" />
+     <#else>
+        <meta name="MobileOptimized" content="${device_screen_width}">
      </#if>
 </#if>
 

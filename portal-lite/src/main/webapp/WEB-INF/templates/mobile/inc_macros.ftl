@@ -71,9 +71,13 @@
                 <#assign doc = carouselItem.doc/>
                 <a href="full-doc.html?uri=${doc.id}">
 				<#if useCache="true">
-                    <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&size=BRIEF_DOC&type=${doc.type}" />
+                    <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&size=BRIEF_DOC&type=${doc.type}"
+                        <#if is_IEMobile?? && is_IEMobile = true>
+                            onload="resizeIEMobile(this,80,113)" 
+                        </#if>
+                    />
                 <#else>
-                    <img src="${doc.thumbnail}" />
+                    <img src="${doc.thumbnail}"/>
 				</#if>
                 </a>
 <#--                <#assign title = ""/>
@@ -108,7 +112,7 @@
             	<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
             		class="pagination">${link.display?c}</a>
 		<#else>
-        		<a class="pagination" id="pagination-current">${link.display?c}</a>
+        		<span class="pagination" id="pagination-current">${link.display?c}</span>
 		</#if>
 	</#list>
 

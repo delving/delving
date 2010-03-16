@@ -6,18 +6,20 @@
 
 <ul class="autolist">
 	<li class="title">
-		<#assign tl = "">
-        <#if !model.fullDoc.dcTitle[0]?matches(" ")>
-            <#assign tl= result.fullDoc.dcTitle[0]>
-        <#elseif !model.fullDoc.dcTermsAlternative[0]?matches(" ")>
-            <#assign tl=result.fullDoc.dcTermsAlternative[0]>
-        <#else>
-            <#assign tl = result.fullDoc.dcDescription[0] />
-            <#if tl?length &gt; 50>
-                <#assign tl = result.fullDoc.dcDescription[0]?substring(0, 50) + "..."/>
-        	</#if>
-        </#if>
-        <@stringLimiter "${tl}" "150"/>
+	    <div id="resultinformation_title">
+		    <#assign tl = "">
+            <#if !model.fullDoc.dcTitle[0]?matches(" ")>
+                <#assign tl= result.fullDoc.dcTitle[0]>
+            <#elseif !model.fullDoc.dcTermsAlternative[0]?matches(" ")>
+                <#assign tl=result.fullDoc.dcTermsAlternative[0]>
+            <#else>
+                <#assign tl = result.fullDoc.dcDescription[0] />
+                <#if tl?length &gt; 50>
+                    <#assign tl = result.fullDoc.dcDescription[0]?substring(0, 50) + "..."/>
+        	    </#if>
+            </#if>
+            <@stringLimiter "${tl}" "150"/>
+        </div>
     </li>
     <li class="textbox" id="detailviewbox">
 		<#if useCache="true">
@@ -125,7 +127,7 @@
 		<#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
         	<#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
 		</#if>
-        <a href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+        <a class="originalcontext" href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
 			target="_blank"
 			alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
 			title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>">

@@ -41,43 +41,39 @@ body.list li.withimage img, #treasures img {
 }
 
 #TEXTitem {
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(248, 100, 234)
-		), to(rgb(171, 8, 150) ) );
+    background: url("../images/grad-page-large.gif") left top no-repeat !important
 }
 
 #IMAGEitem {
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(255, 196, 0)
-		), to(rgb(252, 150, 28) ) );
+    background: url("../images/grad-image-large.gif") left top no-repeat !important
 }
 
 #VIDEOitem {
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(239, 21, 103)
-		), to(rgb(239, 24, 53) ) );
+    background: url("../images/grad-video-large.gif") left top no-repeat !important
 }
 
 #SOUNDitem {
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(59, 235, 213)
-		), to(rgb(0, 186, 167) ) );
+    background: url("../images/grad-sound-large.gif") left top no-repeat !important
 }
 
 #TEXT_gradientitem {
-	background: url("../images/grad-page.gif") left top no-repeat !important
-		;
+	background: url("../images/grad-page.gif") left top no-repeat !important;
 }
 
 #IMAGE_gradientitem {
-	background: url("../images/grad-image.gif") left top no-repeat
-		!important;
+	background: url("../images/grad-image.gif") left top no-repeat !important;
 }
 
 #VIDEO_gradientitem {
-	background: url("../images/grad-video.gif") left top no-repeat
-		!important;
+	background: url("../images/grad-video.gif") left top no-repeat !important;
 }
 
 #SOUND_gradientitem {
-	background: url("../images/grad-sound.gif") left top no-repeat
-		!important;
+	background: url("../images/grad-sound.gif") left top no-repeat !important;
+}
+
+.imageonly #imagelist .imageresult {
+    background-repeat: repeat-x !important;
 }
 
 body.list div#content li {
@@ -89,8 +85,11 @@ body.list div#content li.textonly a {
 	font-size: 14px;
 	height: auto;
 	padding-top: 2px;
-	padding-left: 5px;
+	padding-left: 15px;
 	padding-bottom: 2px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 body.list li.withimage .comment {
@@ -101,6 +100,7 @@ body.list div#content li a span.name {
 	font-size: 16px;
 	margin-top: 0px;
 	margin-left: 75px;
+	margin-right: 20px;
 	max-width: 68% !important;
 }
 
@@ -162,7 +162,7 @@ body.list li.withimage .arrow {
 		color-stop(0.97, rgb(109, 132, 162) ), to(rgb(45, 54, 66) ) );
 }
 
-#resultnavigation a { 
+#resultnavigation a, #resultnavigation #pagination-current {
 	-webkit-border-image: url(../images/navstripe.png) 0 5 0 5 stretch
 		stretch;
 	border-width: 0px 5px;
@@ -230,8 +230,26 @@ body.list ul img {
 	height: auto;
 }
 
+/* trims long titles */
+#resultinformation_title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 20px;
+}
+
 body.list ul li a .maplink {
 	margin-left: 25px;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.list ul li a.originalcontext {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-left: -20px;
 }
 
 /* result titlebar: switching between mixed, text-only, image-only display mode */
@@ -256,8 +274,8 @@ body.list ul li a .maplink {
 	padding-left: 4px;
 	padding-top: 2px;
 	z-index: 3;
-	-webkit-border-top-left-radius: 16px;
-	-webkit-border-bottom-left-radius: 16px;
+	-webkit-border-top-left-radius: 6px;
+	-webkit-border-bottom-left-radius: 6px;
 	-webkit-border-top-right-radius: 6px;
 	-webkit-border-bottom-right-radius: 6px;
 	-webkit-border-image: url("../iwebkit/images/navbutton.png") 0 5 0 5

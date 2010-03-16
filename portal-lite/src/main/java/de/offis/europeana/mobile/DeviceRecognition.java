@@ -109,6 +109,7 @@ public class DeviceRecognition {
 
                         Boolean show_iphone_templates = false;
                         Boolean enableCoverflow = false;
+                        Boolean isIEMobile = false;
 
                         //Identify devices that are capable to display the iphone templates
 						if ("touchscreen".equalsIgnoreCase(pointing_method)){
@@ -120,19 +121,23 @@ public class DeviceRecognition {
                                 show_iphone_templates = true;
                                 //only android devices >= 2.0 support the css needed for the coverflow
                                 enableCoverflow = (device_os_version != null && Double.parseDouble(device_os_version) >= 2);
+                            } else if ("webOS".equalsIgnoreCase(device_os)) { //catch modern palm devices (pre/pixi)
+                                show_iphone_templates = true;
+                                enableCoverflow = false;
                             }
                         }
                         if (show_iphone_templates) {
                             result = "mobile/iphone/"+template;
 						} else {
-							log.info("width: "+width+" height: "+height+" device: "+device.getId());
+							log.info("width: "+width+" height: "+height+" device: "+device.getId()+" mobile_browser: "+mobile_browser);
                             //devices with a screen larger than 800x600 should be able to handle the desktop version of the portal
                             if ((width <600 && height < 800) || (width == 600 && height < 800 || (width <600 && height == 800))) {
-                                   result = "mobile/generic/"+template;
+                                result = "mobile/generic/"+template;
+                                isIEMobile = ("IEMobile".equalsIgnoreCase(mobile_browser) || "Microsoft Mobile Explorer".equalsIgnoreCase(mobile_browser));
                             }
 						}
                         log.info("template and subfolder after mobile device recognition: " + result);
-                        return new DeviceRecognitionResult(result, width, height, enableCoverflow);
+                        return new DeviceRecognitionResult(result, width, height, enableCoverflow, isIEMobile);
 					}
 				}
 		}
