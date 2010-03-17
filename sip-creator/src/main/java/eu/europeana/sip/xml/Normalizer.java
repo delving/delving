@@ -1,9 +1,10 @@
 package eu.europeana.sip.xml;
 
 import com.thoughtworks.xstream.XStream;
+import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
+import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.core.querymodel.query.Language;
 import eu.europeana.sip.reference.Profile;
-import eu.europeana.sip.reference.RecordField;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
@@ -52,15 +53,17 @@ public class Normalizer implements Runnable {
     private Set<String> missingTypeMappings = new TreeSet<String>();
     private Set<String> missingLanguageMappings = new TreeSet<String>();
     private File inputDirectory, outputDirectory;
+    private List<EuropeanaField> europeanaFields;
     private boolean writeSolr;
     private Runnable finalAct;
     private Progress progress;
     private boolean running = true;
 
-    public Normalizer(File inputDirectory, File outputDirectory, boolean writeSolr) throws IOException {
+    public Normalizer(AnnotationProcessor annotationProcessor, File inputDirectory, File outputDirectory, boolean writeSolr) throws IOException {
         this.inputDirectory = inputDirectory;
         this.outputDirectory = outputDirectory;
         this.writeSolr = writeSolr;
+        this.europeanaFields = new ArrayList<EuropeanaField>(annotationProcessor.getSolrFields());
         this.log = Logger.getLogger(inputDirectory.getName());
         XStream stream = new XStream();
         stream.processAnnotations(Profile.class);
@@ -183,7 +186,14 @@ public class Normalizer implements Runnable {
                         depth++;
                         path += "/" + input.getPrefixedName();
                         if (separator.equals(input.getName()) && (source.recordSeparatorDepth == 0 || depth == source.recordSeparatorDepth)) {
-                            record = new MetadataRecord(typeMap, missingTypeMappings, languageMap, missingLanguageMappings, source.collectionId);
+                            record = new MetadataRecord(
+                                    europeanaFields,
+                                    typeMap,
+                                    missingTypeMappings,
+                                    languageMap,
+                                    missingLanguageMappings,
+                                    source.collectionId
+                            );
                             recordsProcessed++;
                             if (recordsProcessed % 100 == 0) {
                                 if (progress != null) {
@@ -271,84 +281,85 @@ public class Normalizer implements Runnable {
 //                                break;
 //                            }
                             record.removeEmpty();
-                            boolean hasObject = record.hasField(RecordField.EUROPEANA_OBJECT);
-                            if (!hasObject) {
-                                counters.withoutEuropeanaObject();
-                                log.warn("Record has no " + RecordField.EUROPEANA_OBJECT);
-                                if (log.isDebugEnabled()) log.debug(record);
-                                if (profile.discardWithoutObject) {
-                                    counters.discardedWithoutEuropeanaObject();
-                                    record = null;
-                                    break;
-                                }
-                            }
-                            boolean hasIsShownValue = record.hasField(RecordField.EUROPEANA_IS_SHOWN_AT) || record.hasField(RecordField.EUROPEANA_IS_SHOWN_BY);
-                            if (!hasIsShownValue) {
-                                counters.noIsShownValue();
-                                log.warn("Record has no " + RecordField.EUROPEANA_IS_SHOWN_AT + " or " + RecordField.EUROPEANA_IS_SHOWN_BY);
-                                if (log.isDebugEnabled()) log.debug(record);
-                                record = null;
-                                break;
-                            }
-                            record.putValue(new Profile.MapTo(RecordField.EUROPEANA_HAS_OBJECT), String.valueOf(hasObject));
+//                            boolean hasObject = record.hasField(RecordField.EUROPEANA_OBJECT);
+//                            if (!hasObject) {
+//                                counters.withoutEuropeanaObject();
+//                                log.warn("Record has no " + RecordField.EUROPEANA_OBJECT);
+//                                if (log.isDebugEnabled()) log.debug(record);
+//                                if (profile.discardWithoutObject) {
+//                                    counters.discardedWithoutEuropeanaObject();
+//                                    record = null;
+//                                    break;
+//                                }
+//                            }
+//                            boolean hasIsShownValue = record.hasField(RecordField.EUROPEANA_IS_SHOWN_AT) || record.hasField(RecordField.EUROPEANA_IS_SHOWN_BY);
+//                            if (!hasIsShownValue) {
+//                                counters.noIsShownValue();
+//                                log.warn("Record has no " + RecordField.EUROPEANA_IS_SHOWN_AT + " or " + RecordField.EUROPEANA_IS_SHOWN_BY);
+//                                if (log.isDebugEnabled()) log.debug(record);
+//                                record = null;
+//                                break;
+//                            }
+//                            record.putValue(new Profile.MapTo(RecordField.EUROPEANA_HAS_OBJECT), String.valueOf(hasObject));
                             record.chooseFirstOrLast();
-                            if (source.additions != null) {
-                                appendAdditions(source, record);
-                            }
-                            if (!record.hasField(RecordField.EUROPEANA_TYPE)) {
-                                counters.unknownEuropeanaType();
-                                log.warn("Record has no " + RecordField.EUROPEANA_TYPE + ", discarding");
-                                if (log.isDebugEnabled()) log.debug(record);
-                                record = null;
-                                break;
-                            }
-                            if (!record.hasField(RecordField.EUROPEANA_LANGUAGE)) {
-                                counters.missingLanguage();
-                                log.warn("Record has no " + RecordField.EUROPEANA_LANGUAGE + ", discarding");
-                                record = null;
-                                break;
-                            }
-                            String europeanaUri = record.getFirstValue(RecordField.EUROPEANA_URI);
-                            if (europeanaUri == null) {
-                                counters.missingEuropeanaUri();
-                                log.info("Missing Europeana URI");
-                                if (log.isDebugEnabled()) log.debug(record);
-                                record = null;
-                                break;
-                            }
-                            if (europeanaUriSet.contains(europeanaUri)) {
-                                if (profile.duplicatesAllowed) {
-                                    log.warn("Duplicate Europeana URI: " + europeanaUri);
-                                    if (!profile.renderDuplicates) {
-                                        counters.duplicateUriDiscarded();
-                                        log.warn("Discarding record with original duplicate URI: " + europeanaUri);
-                                        if (log.isDebugEnabled()) log.debug(record);
-                                        record = null;
-                                        break;
-                                    }
-                                    else {
-                                        counters.duplicateUriAllowed();
-                                    }
-                                }
-                                else {
-                                    throw new XMLStreamException("Duplicate EuropeanaURI: [" + europeanaUri + "]");
-                                }
-                            }
-                            europeanaUriSet.add(europeanaUri);
-                            validateRecord(record);
+//                            if (source.additions != null) {
+//                                appendAdditions(source, record);
+//                            }
+//                            if (!record.hasField(RecordField.EUROPEANA_TYPE)) {
+//                                counters.unknownEuropeanaType();
+//                                log.warn("Record has no " + RecordField.EUROPEANA_TYPE + ", discarding");
+//                                if (log.isDebugEnabled()) log.debug(record);
+//                                record = null;
+//                                break;
+//                            }
+//                            if (!record.hasField(RecordField.EUROPEANA_LANGUAGE)) {
+//                                counters.missingLanguage();
+//                                log.warn("Record has no " + RecordField.EUROPEANA_LANGUAGE + ", discarding");
+//                                record = null;
+//                                break;
+//                            }
+//                            String europeanaUri = record.getFirstValue(RecordField.EUROPEANA_URI);
+//                            if (europeanaUri == null) {
+//                                counters.missingEuropeanaUri();
+//                                log.info("Missing Europeana URI");
+//                                if (log.isDebugEnabled()) log.debug(record);
+//                                record = null;
+//                                break;
+//                            }
+//                            if (europeanaUriSet.contains(europeanaUri)) {
+//                                if (profile.duplicatesAllowed) {
+//                                    log.warn("Duplicate Europeana URI: " + europeanaUri);
+//                                    if (!profile.renderDuplicates) {
+//                                        counters.duplicateUriDiscarded();
+//                                        log.warn("Discarding record with original duplicate URI: " + europeanaUri);
+//                                        if (log.isDebugEnabled()) log.debug(record);
+//                                        record = null;
+//                                        break;
+//                                    }
+//                                    else {
+//                                        counters.duplicateUriAllowed();
+//                                    }
+//                                }
+//                                else {
+//                                    throw new XMLStreamException("Duplicate EuropeanaURI: [" + europeanaUri + "]");
+//                                }
+//                            }
+//                            String europeanaUri = record.getFirstValue(RecordField.EUROPEANA_URI);
+//                            europeanaUriSet.add(europeanaUri);
+//                            validateRecord(record);
                             recordsNormalized++;
-                            record.concatenateDuplicates();
+//                            record.concatenateDuplicates();
                             record.removeDuplicates();
                             record.removeEmpty();
-                            if (record.removeIfNotURL(RecordField.EUROPEANA_IS_SHOWN_AT)) {
-                                log.warn(RecordField.EUROPEANA_IS_SHOWN_AT+" was not a URL");
-                            }
-                            if (record.removeIfNotURL(RecordField.EUROPEANA_IS_SHOWN_BY)) {
-                                log.warn(RecordField.EUROPEANA_IS_SHOWN_BY+" was not a URL");
-                            }
-                            if (record.removeIfNotURL(RecordField.EUROPEANA_OBJECT)) {
-                                log.warn(RecordField.EUROPEANA_OBJECT+" was not a URL");
-                            }
+//                            if (record.removeIfNotURL(RecordField.EUROPEANA_IS_SHOWN_AT)) {
+//                                log.warn(RecordField.EUROPEANA_IS_SHOWN_AT+" was not a URL");
+//                            }
+//                            if (record.removeIfNotURL(RecordField.EUROPEANA_IS_SHOWN_BY)) {
+//                                log.warn(RecordField.EUROPEANA_IS_SHOWN_BY+" was not a URL");
+//                            }
+//                            if (record.removeIfNotURL(RecordField.EUROPEANA_OBJECT)) {
+//                                log.warn(RecordField.EUROPEANA_OBJECT+" was not a URL");
+//                            }
                             record.render(output, writeSolr);
                             record = null;
                         }
@@ -411,20 +422,20 @@ public class Normalizer implements Runnable {
         }
     }
 
-    private void appendAdditions(Profile.Source source, MetadataRecord record) {
-        for (Profile.RecordAddition addition : source.additions) {
-            boolean found = record.containsRecordField(addition.key);
-            if (found) {
-                if (!addition.ifMissing) {
-                    if (log.isDebugEnabled()) log.debug(record);
-                    throw new RuntimeException("Addition " + addition.key + " conflicts with existing field unless 'ifMissing' flag in profile is set to 'true'");
-                }
-            }
-            else {
-                record.putValue(new Profile.MapTo(addition.key), addition.value);
-            }
-        }
-    }
+//    private void appendAdditions(Profile.Source source, MetadataRecord record) {
+//        for (Profile.RecordAddition addition : source.additions) {
+//            boolean found = record.containsRecordField(addition.key);
+//            if (found) {
+//                if (!addition.ifMissing) {
+//                    if (log.isDebugEnabled()) log.debug(record);
+//                    throw new RuntimeException("Addition " + addition.key + " conflicts with existing field unless 'ifMissing' flag in profile is set to 'true'");
+//                }
+//            }
+//            else {
+//                record.putValue(new Profile.MapTo(addition.key), addition.value);
+//            }
+//        }
+//    }
 
     private class TextValue {
         private QName tagName;
@@ -461,28 +472,28 @@ public class Normalizer implements Runnable {
 //        return filterMatch;
 //    }
 //
-    private void validateRecord(MetadataRecord record) {
-        validateField(record, RecordField.EUROPEANA_TYPE); // already been checked, this is double-check
-        validateField(record, RecordField.EUROPEANA_LANGUAGE); // already been checked, this is double-check
-        validateField(record, RecordField.EUROPEANA_COUNTRY);
-        validateField(record, RecordField.EUROPEANA_PROVIDER);
-        List<MetadataRecord.Entry> yearEntries = record.getEntries(RecordField.EUROPEANA_YEAR);
-        for (MetadataRecord.Entry entry : yearEntries) {
-            String europeanaYear = entry.getValue();
-            if ("0000".equals(europeanaYear)) {
-                record.removeEntry(entry);
-                log.warn("Record had unparseable year. Removed field");
-                if (log.isDebugEnabled()) log.debug(record);
-                counters.unparseableYear();
-            }
-        }
-    }
-
-    private void validateField(MetadataRecord record, RecordField field) {
-        if (!record.hasField(field)) {
-            throw new RuntimeException("Missing " + field);
-        }
-    }
+//    private void validateRecord(MetadataRecord record) {
+//        validateField(record, RecordField.EUROPEANA_TYPE); // already been checked, this is double-check
+//        validateField(record, RecordField.EUROPEANA_LANGUAGE); // already been checked, this is double-check
+//        validateField(record, RecordField.EUROPEANA_COUNTRY);
+//        validateField(record, RecordField.EUROPEANA_PROVIDER);
+//        List<MetadataRecord.Entry> yearEntries = record.getEntries(RecordField.EUROPEANA_YEAR);
+//        for (MetadataRecord.Entry entry : yearEntries) {
+//            String europeanaYear = entry.getValue();
+//            if ("0000".equals(europeanaYear)) {
+//                record.removeEntry(entry);
+//                log.warn("Record had unparseable year. Removed field");
+//                if (log.isDebugEnabled()) log.debug(record);
+//                counters.unparseableYear();
+//            }
+//        }
+//    }
+//
+//    private void validateField(MetadataRecord record, RecordField field) {
+//        if (!record.hasField(field)) {
+//            throw new RuntimeException("Missing " + field);
+//        }
+//    }
 
     private XMLStreamWriter createStreamWriter(File outputFile) throws FileNotFoundException, UnsupportedEncodingException, XMLStreamException {
         PrintWriter out = new PrintWriter(outputFile, "UTF-8");

@@ -1,15 +1,12 @@
 package eu.europeana.sip.xml;
 
-import eu.europeana.core.querymodel.query.Language;
+import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.reference.Profile;
-import eu.europeana.sip.reference.RecordField;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -24,8 +21,8 @@ import java.util.TreeMap;
  */
 
 public class MetadataRecord {
-    private static final ConcatenateOrderComparator CONCATENATE_ORDER_COMPARATOR = new ConcatenateOrderComparator();
     private Map<String, String> typeMapping;
+    private List<EuropeanaField> europeanaFields;
     private Set<String> missingTypeMappings;
     private Map<String, String> languageMapping;
     private Set<String> missingLanguageMappings;
@@ -33,7 +30,8 @@ public class MetadataRecord {
     private List<MetadataField> fields = new ArrayList<MetadataField>();
     private List<Entry> entries = new ArrayList<Entry>();
 
-    public MetadataRecord(Map<String, String> typeMapping, Set<String> missingTypeMappings, Map<String, String> languageMapping, Set<String> missingLanguageMappings, String collectionid) {
+    public MetadataRecord(List<EuropeanaField> europeanaFields, Map<String, String> typeMapping, Set<String> missingTypeMappings, Map<String, String> languageMapping, Set<String> missingLanguageMappings, String collectionid) {
+        this.europeanaFields = europeanaFields;
         this.typeMapping = typeMapping;
         this.missingTypeMappings = missingTypeMappings;
         this.languageMapping = languageMapping;
@@ -60,88 +58,85 @@ public class MetadataRecord {
 
     public void doConversions() {
         for (MetadataField field : fields) {
-            convertValues(field);
+//            convertValues(field); todo: groovy!  (somehow)
         }
     }
 
-    public void convertValues(MetadataField field) {
-        String originalValue = field.getValue().toString();
-        if (field.getFieldMapping().mapTo != null) {
-            for (Profile.MapTo mapTo : field.getFieldMapping().mapTo) {
+//    public void convertValues(MetadataField field) {
+//        String originalValue = field.getValue().toString();
+//        if (field.getFieldMapping().mapTo != null) {
+//            for (Profile.MapTo mapTo : field.getFieldMapping().mapTo) {
 //                Converter fieldConverter = mapTo.getConverter();
-                String value = originalValue;
+//                String value = originalValue;
 //                if (fieldConverter != null) {
 //                    value = fieldConverter.convertValue(value);
 //                }
-                if (value.indexOf('|') >= 0) {
-                    String[] multiple = value.split("\\|");
-                    for (String part : multiple) {
-                        putMappedValue(mapTo, part, field.getLanguage());
-                    }
-                }
-                else {
-                    putMappedValue(mapTo, value, field.getLanguage());
-                }
+//                if (value.indexOf('|') >= 0) {
+//                    String[] multiple = value.split("\\|");
+//                    for (String part : multiple) {
+//                        putMappedValue(mapTo, part, field.getLanguage());
+//                    }
+//                }
+//                else {
+//                    putMappedValue(mapTo, value, field.getLanguage());
+//                }
+//            }
+//        }
+//    }
+
+    private void putMappedValue(EuropeanaField europeanaField, String value, String language) {
+        if (europeanaField.isEuropeanaUri()) {
+            putValue(europeanaField, EuropeanaUriHasher.createEuropeanaUri(collectionId, value), language);
+        }
+        else if (europeanaField.isEuropeanaType()) {
+            if (typeMapping.containsKey(value)) {
+                value = typeMapping.get(value);
+                putValue(europeanaField, value, language);
+            }
+            else {
+                missingTypeMappings.add(value);
             }
         }
-    }
-
-    private void putMappedValue(Profile.MapTo mapTo, String value, String language) {
-        switch (mapTo.key) {
-            case EUROPEANA_TYPE:
-                if (typeMapping.containsKey(value)) {
-                    value = typeMapping.get(value);
-                    putValue(mapTo, value, language);
-                }
-                else {
-                    missingTypeMappings.add(value);
-                }
-                break;
-            // dc_language should remain as is.
-            case EUROPEANA_LANGUAGE:
-                String mappedLanguage = languageMapping.get(value.toLowerCase());
-                if (mappedLanguage != null) {
-                    putValue(mapTo, mappedLanguage, language);
-                }
-                else {
-                    Language languageObject = Language.get(value.toLowerCase(), false);
-                    if (languageObject != null) {
-                        putValue(mapTo, languageObject.getCode(), null);
-                    }
-                    else {
-                        missingLanguageMappings.add(value);
-                    }
-                }
-                break;
-            case EUROPEANA_URI:
-                putValue(mapTo, EuropeanaUriHasher.createEuropeanaUri(collectionId, value), language);
-                break;
-            default:
-                putValue(mapTo, value, language);
-                break;
+//        else if (EUROPEANA_LANGUAGE???) {
+//            String mappedLanguage = languageMapping.get(value.toLowerCase());
+//            if (mappedLanguage != null) {
+//                putValue(mapTo, mappedLanguage, language);
+//            }
+//            else {
+//                Language languageObject = Language.get(value.toLowerCase(), false);
+//                if (languageObject != null) {
+//                    putValue(mapTo, languageObject.getCode(), null);
+//                }
+//                else {
+//                    missingLanguageMappings.add(value);
+//                }
+//            }
+//        }
+        else {
+            putValue(europeanaField, value, language);
         }
     }
 
-    private void putValue(Profile.MapTo mapTo, String value, String language) {
-        entries.add(new Entry(mapTo, value, language));
+    private void putValue(EuropeanaField europeanaField, String value, String language) {
+        entries.add(new Entry(europeanaField, value, language));
     }
 
-    public void putValue(Profile.MapTo mapTo, String value) {
-        putValue(mapTo, value, null);
+    public void putValue(EuropeanaField europeanaField, String value) {
+        putValue(europeanaField, value, null);
     }
 
     private void writeEntry(XMLStreamWriter writer, Entry entry, Boolean writeSolr) throws XMLStreamException {
-        QName qname = QNameBuilder.createQName(entry.getMapTo().key.toString());
+        QName qname = QNameBuilder.createQName(entry.getMapToKey());
         writer.writeCharacters("\t\t");
         if (writeSolr) {
             writer.writeStartElement("field");
-            for (RecordField field : RecordField.values()) {
-                if (field.getPrefix().equals(qname.getPrefix()) && field.getLocalName().equals(qname.getLocalPart())) {
-                    if (field.getFacetType() != null) {
-                        writer.writeAttribute("name", field.getFacetType().toString());
+            for (EuropeanaField europeanaField : europeanaFields) {
+                if (europeanaField.getPrefix().equals(qname.getPrefix()) && europeanaField.getName().equals(qname.getLocalPart())) {
+                    if (europeanaField.isFacet()) {
+                        writer.writeAttribute("name", europeanaField.getFacetName());
                     }
                     else {
-                        writer.writeAttribute("name", field.toFieldNameString());
+                        writer.writeAttribute("name", europeanaField.getFieldNameString());
                     }
                     break;
                 }
@@ -158,25 +153,25 @@ public class MetadataRecord {
         writer.writeCharacters("\n");
     }
 
-    public String getFirstValue(RecordField recordField){
+    public String getFirstValue(EuropeanaField europeanaField){
         for (Entry entry : entries) {
-            if (entry.getMapTo().key == recordField) {
+            if (entry.getMapToKey().equals(europeanaField.getFieldNameString())) {
                 return entry.getValue();
             }
         }
         return null;
     }
 
-    public void setValue(RecordField recordField, String value){
+    public void setValue(EuropeanaField europeanaField, String value){
         for (Entry entry : entries) {
-            if (entry.getMapTo().key == recordField) {
+            if (entry.getMapToKey().equals(europeanaField.getFieldNameString())) {
                 entry.setValue(value);
             }
         }
     }
 
-    public boolean hasField(RecordField recordField){
-        return getFirstValue(recordField) != null;
+    public boolean hasField(EuropeanaField europeanaField){
+        return getFirstValue(europeanaField) != null;
     }
 
     public void removeEmpty() {
@@ -189,12 +184,12 @@ public class MetadataRecord {
         }
     }
 
-    public boolean removeIfNotURL(RecordField recordField) {
+    public boolean removeIfNotURL(EuropeanaField europeanaField) {
         boolean removal = false;
         Iterator<Entry> entryIterator = entries.iterator();
         while (entryIterator.hasNext()) {
             Entry entry = entryIterator.next();
-            if (entry.getMapTo().key != recordField) continue;
+            if (!entry.getMapToKey().equals(europeanaField.getFieldNameString())) continue;
             if (!(entry.getValue().startsWith("https://") || entry.getValue().startsWith("http://")) || entry.getValue().startsWith("mms://")) {
                 entryIterator.remove();
                 removal = true;
@@ -208,7 +203,7 @@ public class MetadataRecord {
         Iterator<Entry> entryIterator = entries.iterator();
         while (entryIterator.hasNext()) {
             Entry entry = entryIterator.next();
-            String entryString = entry.getMapTo().key + "|" + entry.getValue();
+            String entryString = entry.getMapToKey() + "|" + entry.getValue();
             if (set.contains(entryString)) {
                 entryIterator.remove();
             }
@@ -244,45 +239,45 @@ public class MetadataRecord {
         }
     }
 
-    public void concatenateDuplicates() {
-        Map<RecordField, List<Entry>> duplicateMap = new TreeMap<RecordField, List<Entry>>();
-        Iterator<Entry> iterator = entries.iterator();
-        while (iterator.hasNext()) { // remove lists
-            Entry entry = iterator.next();
-            if (entry.getMapTo().order > 0) {
-                List<Entry> duplicates = duplicateMap.get(entry.getMapTo().key);
-                if (duplicates == null) {
-                    duplicateMap.put(entry.getMapTo().key, duplicates = new ArrayList<Entry>());
-                }
-                duplicates.add(entry);
-                iterator.remove();
-            }
-        }
-        if (!duplicateMap.isEmpty()) {
-            for (List<Entry> duplicates : duplicateMap.values()) {
-                Collections.sort(duplicates, CONCATENATE_ORDER_COMPARATOR);
-                StringBuilder concat = new StringBuilder();
-                int countdown = duplicates.size();
-                for (Entry entry : duplicates) {
-                    concat.append(entry.getValue());
-                    if (--countdown > 0) {
-                        String concatenateSuffix = entry.getMapTo().concatenateSuffix;
-                        if (concatenateSuffix == null) {
-                            concatenateSuffix = " ";
-                        }
-                        concat.append(concatenateSuffix);
-                    }
-                }
-                entries.add(new Entry(duplicates.get(0).mapTo, concat.toString(), duplicates.get(0).language));
-            }
-        }
-    }
+//    public void concatenateDuplicates() { todo: revive this
+//        Map<EuropeanaField, List<Entry>> duplicateMap = new TreeMap<EuropeanaField, List<Entry>>();
+//        Iterator<Entry> iterator = entries.iterator();
+//        while (iterator.hasNext()) { // remove lists
+//            Entry entry = iterator.next();
+//            if (entry.getMapToOrder() > 0) {
+//                List<Entry> duplicates = duplicateMap.get(entry.getMapToKey());
+//                if (duplicates == null) {
+//                    duplicateMap.put(entry.getMapTo().key, duplicates = new ArrayList<Entry>());
+//                }
+//                duplicates.add(entry);
+//                iterator.remove();
+//            }
+//        }
+//        if (!duplicateMap.isEmpty()) {
+//            for (List<Entry> duplicates : duplicateMap.values()) {
+//                Collections.sort(duplicates, CONCATENATE_ORDER_COMPARATOR);
+//                StringBuilder concat = new StringBuilder();
+//                int countdown = duplicates.size();
+//                for (Entry entry : duplicates) {
+//                    concat.append(entry.getValue());
+//                    if (--countdown > 0) {
+//                        String concatenateSuffix = entry.getMapTo().concatenateSuffix;
+//                        if (concatenateSuffix == null) {
+//                            concatenateSuffix = " ";
+//                        }
+//                        concat.append(concatenateSuffix);
+//                    }
+//                }
+//                entries.add(new Entry(duplicates.get(0).mapTo, concat.toString(), duplicates.get(0).language));
+//            }
+//        }
+//    }
 
     public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("record{\n");
         for (Entry entry : entries) {
-            out.append('\t').append(entry.getMapTo().key).append(" ==> [").append(entry.getValue()).append("]\n");
+            out.append('\t').append(entry.getMapToKey()).append(" ==> [").append(entry.getValue()).append("]\n");
         }
         out.append("}\n");
         return out.toString();
@@ -293,19 +288,19 @@ public class MetadataRecord {
         return field;
     }
 
-    public boolean containsRecordField(RecordField recordField) {
+    public boolean containsRecordField(EuropeanaField europeanaField) {
         for (Entry entry : entries) {
-            if (entry.getMapTo().key == recordField) {
+            if (entry.isForField(europeanaField)) {
                 return true;
             }
         }
         return false;
     }
 
-    public List<Entry> getEntries(RecordField recordField) {
+    public List<Entry> getEntries(EuropeanaField europeanaField) {
         List<Entry> entries = new ArrayList<Entry>();
         for (Entry entry : entries) {
-            if (entry.getMapTo().key == recordField) {
+            if (entry.isForField(europeanaField)) {
                 entries.add(entry);
             }
         }
@@ -317,12 +312,12 @@ public class MetadataRecord {
     }
 
     public static class Entry {
-        private Profile.MapTo mapTo;
+        private EuropeanaField europeanaField;
         private String value;
         private String language;
 
-        public Entry(Profile.MapTo mapTo, String value, String language) {
-            this.mapTo = mapTo;
+        public Entry(EuropeanaField europeanaField, String value, String language) {
+            this.europeanaField = europeanaField;
             this.value = value;
             this.language = language;
         }
@@ -331,8 +326,16 @@ public class MetadataRecord {
             return value;
         }
 
-        public Profile.MapTo getMapTo() {
-            return mapTo;
+        public boolean isForField(EuropeanaField europeanaField) {
+            return europeanaField == this.europeanaField; // any better comparison?  they're the same instances from annot proc
+        }
+
+        public String getMapToKey() {
+            return europeanaField.getFieldNameString(); // todo: correct?
+        }
+
+        public EuropeanaField getEuropeanaField() {
+            return europeanaField;
         }
 
         public void setValue(String value) {
@@ -344,19 +347,19 @@ public class MetadataRecord {
         }
 
         public String toString() {
-            return mapTo.key + " => " + value;
+            return europeanaField.getFieldNameString() + " => " + value;
         }
     }
 
-    private static class ConcatenateOrderComparator implements Comparator<Entry> {
-        @Override
-        public int compare(Entry entry0, Entry entry1) {
-            return getOrder(entry0) - getOrder(entry1);
-        }
-
-        private int getOrder(Entry entry) {
-            return entry.getMapTo().order;
-        }
-    }
+//    private static class ConcatenateOrderComparator implements Comparator<Entry> {
+//        @Override
+//        public int compare(Entry entry0, Entry entry1) {
+//            return getOrder(entry0) - getOrder(entry1);
+//        }
+//
+//        private int getOrder(Entry entry) {
+//            return entry.getMapToOrder();
+//        }
+//    }
 
 }
