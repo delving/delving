@@ -8,6 +8,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
@@ -15,14 +17,16 @@ import java.util.List;
  * A Graphical interface for analysis
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Serkan Demirel <serkan.demirel@kb.nl>
  */
 
 public class AnalyzerGUI extends JFrame {
     private static final int COUNTER_LIST_SIZE = 100;
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private MappingPanel mappingPanel = new MappingPanel();
-    private JLabel title = new JLabel("Document Structure",JLabel.CENTER);
+    private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
     private FileMenu fileMenu;
+    private JDialog jDialog;
 
     public AnalyzerGUI() {
         super("Europeana Analyzer");
@@ -92,23 +96,53 @@ public class AnalyzerGUI extends JFrame {
         }
     }
 
+    private void showLoadProgress() {
+        jDialog = new JDialog(this, "Loading", false);
+        jDialog.setLocationRelativeTo(this);
+        JButton jButton = new JButton("Cancel");
+        jButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        // TODO: cancel loading action
+                    }
+                }
+        );
+        jDialog.setLayout(new GridLayout(2, 0));
+        jDialog.add(new JLabel("Please wait while loading"));
+        jDialog.add(jButton);
+        jDialog.pack();
+        jDialog.setVisible(true);
+    }
+
+    private void hideLoadProgress() {
+        jDialog.dispose();
+    }
+
+
     private void analyze(final File file) {
         File statisticsFile = createStatisticsFile(file);
+        showLoadProgress();
         if (statisticsFile.exists()) {
             FileHandler.loadStatistics(statisticsFile, new FileHandler.LoadListener() {
                 @Override
                 public void success(List<Statistics> list) {
                     title.setText("Document Structure of \""+file.getName()+"\"");
                     setMappingTree(MappingTree.create(list, file.getName()));
+                    hideLoadProgress();
                 }
+
                 @Override
                 public void failure(Exception exception) {
                     title.setText("Document Structure");
                     // TODO: implement!
+                    hideLoadProgress();
                 }
+
                 @Override
                 public void finished() {
                     fileMenu.setEnabled(true);
+                    hideLoadProgress();
                 }
             });
         }
@@ -118,15 +152,20 @@ public class AnalyzerGUI extends JFrame {
                 public void success(List<Statistics> list) {
                     title.setText("Document Structure of \""+file.getName()+"\"");
                     setMappingTree(MappingTree.create(list, file.getName()));
+                    hideLoadProgress();
                 }
+
                 @Override
                 public void failure(Exception exception) {
                     title.setText("Document Structure");
                     // TODO: implement!
+                    hideLoadProgress();
                 }
+
                 @Override
                 public void finished() {
                     fileMenu.setEnabled(true);
+                    hideLoadProgress();
                 }
             });
         }
