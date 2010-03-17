@@ -4,14 +4,8 @@ import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -25,8 +19,8 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class NormalizerGUI extends JFrame {
-    private static final long MEGABYTE = 1024L*1024L;
+public class NormalizerGUI extends JPanel {
+    private static final long MEGABYTE = 1024L * 1024L;
     private JButton normalize = new JButton("Normalize");
     private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
     private JLabel progressLabel = new JLabel("Make your choice", JLabel.CENTER);
@@ -37,16 +31,16 @@ public class NormalizerGUI extends JFrame {
     private File destinationRoot;
     private Normalizer normalizer;
 
-    private NormalizerGUI(File sourceRoot, File destinationRoot) {
-        super("Europeana Normalizer");
+    public NormalizerGUI(File sourceRoot, File destinationRoot) {
         this.destinationRoot = destinationRoot;
 //        list = new JList(new ProfileListModel(sourceRoot));
         Logger.getRootLogger().addAppender(logPanel.createAppender(Normalizer.LOG_LAYOUT));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getContentPane().add(createWest(), BorderLayout.WEST);
-        getContentPane().add(logPanel, BorderLayout.CENTER);
+        add(createWest(), BorderLayout.WEST);
+        add(logPanel, BorderLayout.CENTER);
         wireUp();
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        setSize(1200, 800);
+        setPreferredSize(new Dimension(1200, 800));
     }
 
     private void wireUp() {
@@ -178,7 +172,7 @@ public class NormalizerGUI extends JFrame {
         }
     };
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {                  
         Logger.getRootLogger().setLevel(Level.INFO);
         String fromDir = ".";
         if (args.length > 0) {

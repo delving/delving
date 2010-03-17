@@ -7,24 +7,14 @@ import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +26,7 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class AnalyzerGUI extends JFrame {  // todo: make it a panel
+public class AnalyzerGUI extends JPanel {
     private static final int COUNTER_LIST_SIZE = 100;
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private MappingPanel mappingPanel;
@@ -45,17 +35,16 @@ public class AnalyzerGUI extends JFrame {  // todo: make it a panel
     private ProgressDialog progressDialog;
 
     public AnalyzerGUI(/*AnnotationProcessor annotationProcessor*/) {
-        super("Europeana Analyzer");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setJMenuBar(createMenuBar());
         this.mappingPanel = new MappingPanel(createAnnotationProcessor(AllFieldBean.class));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createAnalysisPanel());
         split.setRightComponent(mappingPanel);
-//        split.setDividerLocation(0.4);
-        getContentPane().add(split, BorderLayout.CENTER);
+
+        split.setDividerLocation(0.4);
+        split.setSize(1280, 800);
+        add(split, BorderLayout.CENTER);
+        setPreferredSize(new Dimension(1200, 800));
 //        setSize(Toolkit.getDefaultToolkit().getScreenSize());
-        setSize(1200, 800);
     }
 
     private Component createAnalysisPanel() {
@@ -114,7 +103,8 @@ public class AnalyzerGUI extends JFrame {  // todo: make it a panel
     }
 
     private void showLoadProgress() {
-        progressDialog = new ProgressDialog(this, "Analyzing file");
+        // TODO: invoke on top
+//        progressDialog = new ProgressDialog(this, "Analyzing file");
     }
 
     private void hideLoadProgress() {

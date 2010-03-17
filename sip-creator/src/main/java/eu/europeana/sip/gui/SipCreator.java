@@ -4,9 +4,7 @@ import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
 import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,12 @@ public class SipCreator extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setJMenuBar(createMenuBar());
         JTabbedPane tabs = new JTabbedPane();
-
+        // todo: clean up
+        final File sourceRoot = new File(".");
+        final File destinationRoot = new File(".");
+        NormalizerGUI normalizerGUI = new NormalizerGUI(sourceRoot, destinationRoot);
+        tabs.addTab("Analyzer", new AnalyzerGUI());
+        tabs.addTab("Normalizer", normalizerGUI);
         // todo: tabs
         // tab for analyzer
         //    (pass in createAnnotationProcessor with this beanClass)
