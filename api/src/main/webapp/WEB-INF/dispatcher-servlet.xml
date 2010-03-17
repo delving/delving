@@ -41,6 +41,15 @@
         <property name="requestContextAttribute" value="requestContext"/>
     </bean>
 
+    <bean id="viewXmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="suffix" value=".xml.ftl"/>
+        <property name="contentType" value="text/xml; charset=utf-8"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeRequestAttributes" value="false"/>
+        <property name="requestContextAttribute" value="requestContext"/>
+    </bean>
+    
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
     <bean id="localeChangeInterceptor" class="eu.europeana.core.util.web.LocaleChangeInterceptor">

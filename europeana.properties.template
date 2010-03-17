@@ -31,6 +31,8 @@ db.password    = culture
 #
 # solr connection settings
 solr.baseUrl = http://localhost:8983/solr
+solr.selectUrl = http://localhost:8983/solr
+solr.updateUrl = http://localhost:8983/solr
 solr.chunkSize = 1000
 solr.timeout = 60000
 solr.retries = 1
