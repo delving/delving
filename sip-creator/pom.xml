@@ -45,7 +45,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>eu.europeana.sip.NormalizerGUI</mainClass>
+                            <mainClass>eu.europeana.sip.gui.NormalizerGUI</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

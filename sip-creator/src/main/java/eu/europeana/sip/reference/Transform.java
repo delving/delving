@@ -1,4 +1,4 @@
-package eu.europeana.sip.transform;
+package eu.europeana.sip.reference;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
+@Deprecated
 public enum Transform implements FieldTransform {
 
     NONE(new FieldTransform() {

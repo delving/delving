@@ -1,8 +1,10 @@
-package eu.europeana.sip.transform;
+package eu.europeana.sip.reference;
 
 /**
  * Something went wrong during conversion
  */
+
+@Deprecated
 public class TransformException extends Exception {
 
     public TransformException(Throwable cause) {

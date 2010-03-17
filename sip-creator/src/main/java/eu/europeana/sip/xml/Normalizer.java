@@ -1,12 +1,12 @@
-package eu.europeana.sip;
+package eu.europeana.sip.xml;
 
 import com.thoughtworks.xstream.XStream;
 import eu.europeana.core.querymodel.query.Language;
-import eu.europeana.query.RecordField;
+import eu.europeana.sip.reference.Profile;
+import eu.europeana.sip.reference.RecordField;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.codehaus.stax2.XMLInputFactory2;
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -173,7 +172,7 @@ public class Normalizer implements Runnable {
             Logger.getRootLogger().addAppender(fileAppender);
             output = createStreamWriter(outputFile);
             int depth = 0;
-            SolrRecord record = null;
+            MetadataRecord record = null;
             String path = "";
             while (running) {
                 switch (input.getEventType()) {
@@ -184,7 +183,7 @@ public class Normalizer implements Runnable {
                         depth++;
                         path += "/" + input.getPrefixedName();
                         if (separator.equals(input.getName()) && (source.recordSeparatorDepth == 0 || depth == source.recordSeparatorDepth)) {
-                            record = new SolrRecord(typeMap, missingTypeMappings, languageMap, missingLanguageMappings, source.collectionId);
+                            record = new MetadataRecord(typeMap, missingTypeMappings, languageMap, missingLanguageMappings, source.collectionId);
                             recordsProcessed++;
                             if (recordsProcessed % 100 == 0) {
                                 if (progress != null) {
@@ -196,9 +195,9 @@ public class Normalizer implements Runnable {
                             appendChar(textValues, ' ');
                             Profile.FieldMapping elementFieldMapping = fieldMappings.get(path);
                             QName tagName = input.getName();
-                            SolrField field = null;
+                            MetadataField field = null;
                             if (elementFieldMapping != null) {
-                                field = new SolrField(tagName, elementFieldMapping);
+                                field = new MetadataField(tagName, elementFieldMapping);
                             }
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 String attribute = (input.getAttributePrefix(walk) != null) ? input.getAttributePrefix(walk)+":"+input.getAttributeLocalName(walk): input.getAttributeLocalName(walk);
@@ -226,7 +225,7 @@ public class Normalizer implements Runnable {
 //                                if (field != null && "xml:lang".equals(attribute)) {
 //                                    field.setLanguage(attributeValue);
 //                                }
-                                record.add(new SolrField(input.getAttributeName(walk), attributeFieldMapping)).getValue().append(input.getAttributeValue(walk));
+                                record.add(new MetadataField(input.getAttributeName(walk), attributeFieldMapping)).getValue().append(input.getAttributeValue(walk));
                             }
                             if (field != null) {
                                 textValues.push(new TextValue(tagName,record.add(field).getValue()));
@@ -412,7 +411,7 @@ public class Normalizer implements Runnable {
         }
     }
 
-    private void appendAdditions(Profile.Source source, SolrRecord record) {
+    private void appendAdditions(Profile.Source source, MetadataRecord record) {
         for (Profile.RecordAddition addition : source.additions) {
             boolean found = record.containsRecordField(addition.key);
             if (found) {
@@ -462,13 +461,13 @@ public class Normalizer implements Runnable {
 //        return filterMatch;
 //    }
 //
-    private void validateRecord(SolrRecord record) {
+    private void validateRecord(MetadataRecord record) {
         validateField(record, RecordField.EUROPEANA_TYPE); // already been checked, this is double-check
         validateField(record, RecordField.EUROPEANA_LANGUAGE); // already been checked, this is double-check
         validateField(record, RecordField.EUROPEANA_COUNTRY);
         validateField(record, RecordField.EUROPEANA_PROVIDER);
-        List<SolrRecord.Entry> yearEntries = record.getEntries(RecordField.EUROPEANA_YEAR);
-        for (SolrRecord.Entry entry : yearEntries) {
+        List<MetadataRecord.Entry> yearEntries = record.getEntries(RecordField.EUROPEANA_YEAR);
+        for (MetadataRecord.Entry entry : yearEntries) {
             String europeanaYear = entry.getValue();
             if ("0000".equals(europeanaYear)) {
                 record.removeEntry(entry);
@@ -479,7 +478,7 @@ public class Normalizer implements Runnable {
         }
     }
 
-    private void validateField(SolrRecord record, RecordField field) {
+    private void validateField(MetadataRecord record, RecordField field) {
         if (!record.hasField(field)) {
             throw new RuntimeException("Missing " + field);
         }
@@ -525,6 +524,7 @@ public class Normalizer implements Runnable {
         return "Parse(" + profile.name + ")";
     }
 
+    @Deprecated
     public static List<File> getSourcesWithProfiles(File sourceRoot) {
         List<File> list = new ArrayList<File>();
         for (File directory : sourceRoot.listFiles()) {
@@ -561,80 +561,80 @@ public class Normalizer implements Runnable {
         }
     }
 
-    public static void main(String... args) throws Exception {
-        if (args.length < 2) {
-            System.out.println("Usage: <source> <destination> [... source numbers ...]");
-            return;
-        }
-        Logger.getRootLogger().setLevel(Level.INFO);
-        String fromDir = ".";
-        if (args.length > 0) {
-            fromDir = args[0];
-        }
-        File sourceRoot = new File(fromDir);
-        String toDir = ".";
-        if (args.length > 1) {
-            toDir = args[1];
-        }
-        File destinationRoot = new File(toDir);
-        List<File> sources = getSourcesWithProfiles(sourceRoot);
-        Map<String, File> sourceMap = new TreeMap<String, File>();
-        for (File source : sources) {
-            String name = source.getName();
-            int underscore = name.indexOf("_");
-            if (underscore < 0) {
-                throw new Exception("Collection without a number! "+name);
-            }
-            String number = name.substring(0, underscore);
-            sourceMap.put(number, source);
-        }
-        if (args.length == 2) {
-            System.out.println("Usage: <source> <destination> [... source numbers ...]");
-            System.out.println("Choose from the Sources: ");
-            for (Map.Entry<String,File> entry : sourceMap.entrySet()) {
-                System.out.println("    "+entry.getKey()+") "+entry.getValue().getName());
-            }
-        }
-        else {
-            List<Normalizer> normalizers = new ArrayList<Normalizer>();
-            if (args.length == 3 && "*".equals(args[2])) {
-                for (File sourceDirectory : sourceMap.values()) {
-                    try {
-                        Normalizer normalizer = new Normalizer(sourceDirectory, destinationRoot, false);
-                        normalizers.add(normalizer);
-                    }
-                    catch (IOException e) {
-                        System.out.println(e.toString());
-                    }
-                }
-            }
-            else {
-                for (int walk=2; walk<args.length; walk++) {
-                    File sourceDirectory = sourceMap.get(args[walk]);
-                    if (sourceDirectory == null) {
-                        System.out.println("Didn't recognize ["+args[walk]+"]");
-                        System.out.println("It must be one of these: ");
-                        for (Map.Entry<String,File> entry : sourceMap.entrySet()) {
-                            System.out.println("    "+entry.getKey()+") "+entry.getValue().getName());
-                        }
-                        return;
-                    }
-                    try {
-                        Normalizer normalizer = new Normalizer(sourceDirectory, destinationRoot, false);
-                        normalizers.add(normalizer);
-                    }
-                    catch (IOException e) {
-                        System.out.println(e.toString());
-                    }
-                }
-            }
-            for (Normalizer normalizer : normalizers) {
-                Thread thread = new Thread(normalizer);
-                thread.setName(normalizer.toString());
-                System.out.println("Starting thread "+thread.getName());
-                normalizer.setProgress(new PrintProgress(thread.getName()));
-                thread.start();
-            }
-        }
-    }
+//    public static void main(String... args) throws Exception {
+//        if (args.length < 2) {
+//            System.out.println("Usage: <source> <destination> [... source numbers ...]");
+//            return;
+//        }
+//        Logger.getRootLogger().setLevel(Level.INFO);
+//        String fromDir = ".";
+//        if (args.length > 0) {
+//            fromDir = args[0];
+//        }
+//        File sourceRoot = new File(fromDir);
+//        String toDir = ".";
+//        if (args.length > 1) {
+//            toDir = args[1];
+//        }
+//        File destinationRoot = new File(toDir);
+//        List<File> sources = getSourcesWithProfiles(sourceRoot);
+//        Map<String, File> sourceMap = new TreeMap<String, File>();
+//        for (File source : sources) {
+//            String name = source.getName();
+//            int underscore = name.indexOf("_");
+//            if (underscore < 0) {
+//                throw new Exception("Collection without a number! "+name);
+//            }
+//            String number = name.substring(0, underscore);
+//            sourceMap.put(number, source);
+//        }
+//        if (args.length == 2) {
+//            System.out.println("Usage: <source> <destination> [... source numbers ...]");
+//            System.out.println("Choose from the Sources: ");
+//            for (Map.Entry<String,File> entry : sourceMap.entrySet()) {
+//                System.out.println("    "+entry.getKey()+") "+entry.getValue().getName());
+//            }
+//        }
+//        else {
+//            List<Normalizer> normalizers = new ArrayList<Normalizer>();
+//            if (args.length == 3 && "*".equals(args[2])) {
+//                for (File sourceDirectory : sourceMap.values()) {
+//                    try {
+//                        Normalizer normalizer = new Normalizer(sourceDirectory, destinationRoot, false);
+//                        normalizers.add(normalizer);
+//                    }
+//                    catch (IOException e) {
+//                        System.out.println(e.toString());
+//                    }
+//                }
+//            }
+//            else {
+//                for (int walk=2; walk<args.length; walk++) {
+//                    File sourceDirectory = sourceMap.get(args[walk]);
+//                    if (sourceDirectory == null) {
+//                        System.out.println("Didn't recognize ["+args[walk]+"]");
+//                        System.out.println("It must be one of these: ");
+//                        for (Map.Entry<String,File> entry : sourceMap.entrySet()) {
+//                            System.out.println("    "+entry.getKey()+") "+entry.getValue().getName());
+//                        }
+//                        return;
+//                    }
+//                    try {
+//                        Normalizer normalizer = new Normalizer(sourceDirectory, destinationRoot, false);
+//                        normalizers.add(normalizer);
+//                    }
+//                    catch (IOException e) {
+//                        System.out.println(e.toString());
+//                    }
+//                }
+//            }
+//            for (Normalizer normalizer : normalizers) {
+//                Thread thread = new Thread(normalizer);
+//                thread.setName(normalizer.toString());
+//                System.out.println("Starting thread "+thread.getName());
+//                normalizer.setProgress(new PrintProgress(thread.getName()));
+//                thread.start();
+//            }
+//        }
+//    }
 }

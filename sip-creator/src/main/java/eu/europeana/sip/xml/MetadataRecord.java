@@ -1,7 +1,8 @@
-package eu.europeana.sip;
+package eu.europeana.sip.xml;
 
 import eu.europeana.core.querymodel.query.Language;
-import eu.europeana.query.RecordField;
+import eu.europeana.sip.reference.Profile;
+import eu.europeana.sip.reference.RecordField;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -22,17 +23,17 @@ import java.util.TreeMap;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class SolrRecord {
+public class MetadataRecord {
     private static final ConcatenateOrderComparator CONCATENATE_ORDER_COMPARATOR = new ConcatenateOrderComparator();
     private Map<String, String> typeMapping;
     private Set<String> missingTypeMappings;
     private Map<String, String> languageMapping;
     private Set<String> missingLanguageMappings;
     private String collectionId;
-    private List<SolrField> fields = new ArrayList<SolrField>();
+    private List<MetadataField> fields = new ArrayList<MetadataField>();
     private List<Entry> entries = new ArrayList<Entry>();
 
-    public SolrRecord(Map<String, String> typeMapping, Set<String> missingTypeMappings, Map<String, String> languageMapping, Set<String> missingLanguageMappings, String collectionid) {
+    public MetadataRecord(Map<String, String> typeMapping, Set<String> missingTypeMappings, Map<String, String> languageMapping, Set<String> missingLanguageMappings, String collectionid) {
         this.typeMapping = typeMapping;
         this.missingTypeMappings = missingTypeMappings;
         this.languageMapping = languageMapping;
@@ -58,12 +59,12 @@ public class SolrRecord {
     }
 
     public void doConversions() {
-        for (SolrField field : fields) {
+        for (MetadataField field : fields) {
             convertValues(field);
         }
     }
 
-    public void convertValues(SolrField field) {
+    public void convertValues(MetadataField field) {
         String originalValue = field.getValue().toString();
         if (field.getFieldMapping().mapTo != null) {
             for (Profile.MapTo mapTo : field.getFieldMapping().mapTo) {
@@ -218,22 +219,22 @@ public class SolrRecord {
     }
 
     public void chooseFirstOrLast() {
-        Map<Profile.FieldMapping, List<SolrField>> duplicateMap = new TreeMap<Profile.FieldMapping, List<SolrField>>();
-        Iterator<SolrField> iterator = fields.iterator();
+        Map<Profile.FieldMapping, List<MetadataField>> duplicateMap = new TreeMap<Profile.FieldMapping, List<MetadataField>>();
+        Iterator<MetadataField> iterator = fields.iterator();
         while (iterator.hasNext()) { // remove lists
-            SolrField field = iterator.next();
+            MetadataField field = iterator.next();
             if (field.hasFieldMapping()) {
                 if (field.isChooseFirst() || field.isChooseLast()) {
-                    List<SolrField> duplicates = duplicateMap.get(field.getFieldMapping());
+                    List<MetadataField> duplicates = duplicateMap.get(field.getFieldMapping());
                     if (duplicates == null) {
-                        duplicateMap.put(field.getFieldMapping(), duplicates = new ArrayList<SolrField>());
+                        duplicateMap.put(field.getFieldMapping(), duplicates = new ArrayList<MetadataField>());
                     }
                     duplicates.add(field);
                     iterator.remove();
                 }
             }
         }
-        for (Map.Entry<Profile.FieldMapping, List<SolrField>> entry : duplicateMap.entrySet()) { // add members of lists
+        for (Map.Entry<Profile.FieldMapping, List<MetadataField>> entry : duplicateMap.entrySet()) { // add members of lists
             if (entry.getKey().chooseFirst) {
                 fields.add(entry.getValue().get(0));
             }
@@ -287,7 +288,7 @@ public class SolrRecord {
         return out.toString();
     }
 
-    public SolrField add(SolrField field) {
+    public MetadataField add(MetadataField field) {
         fields.add(field);
         return field;
     }

@@ -1,8 +1,9 @@
-package eu.europeana.sip;
+package eu.europeana.sip.xml;
 
-import eu.europeana.query.RecordField;
+import eu.europeana.sip.reference.Profile;
+import eu.europeana.sip.reference.RecordField;
+
 import javax.xml.namespace.QName;
-
 import java.util.ArrayList;
 
 /**
@@ -11,13 +12,13 @@ import java.util.ArrayList;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class SolrField {
+public class MetadataField {
     private QName qname;
     private String language;
     private Profile.FieldMapping fieldMapping;
     private StringBuilder value = new StringBuilder();
 
-    public SolrField(String key, RecordField mapToKey, String mapToValue) {
+    public MetadataField(String key, RecordField mapToKey, String mapToValue) {
         this.qname = QNameBuilder.createQName(key);
         fieldMapping = new Profile.FieldMapping();
         fieldMapping.mapTo = new ArrayList<Profile.MapTo>();
@@ -27,21 +28,21 @@ public class SolrField {
         value.append(mapToValue);
     }
 
-    public SolrField(String key) {
+    public MetadataField(String key) {
         this.qname = QNameBuilder.createQName(key);
     }
 
-    public SolrField(QName qname, Profile.FieldMapping fieldMapping) {
+    public MetadataField(QName qname, Profile.FieldMapping fieldMapping) {
         this.qname = qname;
         this.fieldMapping = fieldMapping;
     }
 
-    public SolrField(SolrField solrField) {
-        this.qname = solrField.getQName();
+    public MetadataField(MetadataField metadataField) {
+        this.qname = metadataField.getQName();
         fieldMapping = new Profile.FieldMapping();
         fieldMapping.mapTo = new ArrayList<Profile.MapTo>();
         Profile.MapTo mt = new Profile.MapTo();
-        mt.key = solrField.getKey(0);
+        mt.key = metadataField.getKey(0);
         fieldMapping.mapTo.add(mt);
     }
 
@@ -101,8 +102,8 @@ public class SolrField {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SolrField solrField = (SolrField) o;
-        return qname.equals(solrField.qname);
+        MetadataField metadataField = (MetadataField) o;
+        return qname.equals(metadataField.qname);
     }
 
     public int hashCode() {

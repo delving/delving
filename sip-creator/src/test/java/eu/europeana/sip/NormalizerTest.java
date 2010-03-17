@@ -1,5 +1,6 @@
 package eu.europeana.sip;
 
+import eu.europeana.sip.xml.Normalizer;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;

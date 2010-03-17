@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.query;
+package eu.europeana.sip.reference;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>

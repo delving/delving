@@ -1,4 +1,4 @@
-package eu.europeana.sip;
+package eu.europeana.sip.xml;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>

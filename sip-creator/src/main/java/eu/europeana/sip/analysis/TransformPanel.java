@@ -1,10 +1,19 @@
 package eu.europeana.sip.analysis;
 
-import eu.europeana.query.RecordField;
-import eu.europeana.sip.transform.Transform;
+import eu.europeana.sip.reference.RecordField;
+import eu.europeana.sip.reference.Transform;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;

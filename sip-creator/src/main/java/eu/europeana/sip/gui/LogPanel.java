@@ -1,4 +1,4 @@
-package eu.europeana.sip;
+package eu.europeana.sip.gui;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
@@ -6,8 +6,11 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 

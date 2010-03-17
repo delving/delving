@@ -4,8 +4,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.converters.enums.EnumConverter;
-import eu.europeana.query.RecordField;
-import eu.europeana.sip.transform.Transform;
+import eu.europeana.sip.reference.RecordField;
+import eu.europeana.sip.reference.Transform;
 
 /**
  * Map to the range from the domain containing this range

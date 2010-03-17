@@ -1,4 +1,4 @@
-package eu.europeana.sip;
+package eu.europeana.sip.xml;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

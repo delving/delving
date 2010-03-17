@@ -1,11 +1,10 @@
-package eu.europeana.sip;
+package eu.europeana.sip.reference;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.converters.enums.EnumConverter;
-import eu.europeana.query.RecordField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 @XStreamAlias("profile")
 public class Profile {
 
@@ -63,18 +63,22 @@ public class Profile {
     @XStreamAlias("type-mapping")
     public static class TypeMapping {
         @XStreamAsAttribute
+        public
         String type;
 
         @XStreamImplicit
+        public
         List<String> from;
     }
 
     @XStreamAlias("language-mapping")
     public static class LanguageMapping {
         @XStreamAsAttribute
+        public
         String code;
 
         @XStreamImplicit
+        public
         List<String> from;
     }
 
@@ -93,15 +97,19 @@ public class Profile {
         public String from;
 
         @XStreamAsAttribute
+        public
         String acceptField;
 
         @XStreamAsAttribute
+        public
         String discardRecord;
 
         @XStreamAsAttribute
+        public
         boolean chooseFirst;
 
         @XStreamAsAttribute
+        public
         boolean chooseLast;
 
         @XStreamImplicit
@@ -125,15 +133,18 @@ public class Profile {
 
         @XStreamAsAttribute
         @XStreamConverter(EnumConverter.class)
+        public
         RecordField key;
 
         @XStreamAsAttribute
         String converter;
 
         @XStreamAsAttribute
+        public
         int order;
 
         @XStreamAsAttribute
+        public
         String concatenateSuffix;
 
 //        @XStreamOmitField
@@ -145,7 +156,7 @@ public class Profile {
 //                    String [] constructParts = parseConverterString(converter);
 //                    Class<?> clazz = Class.forName("eu.europeana.sip.converters."+constructParts[0]);
 //                    if (!Converter.class.isAssignableFrom(clazz)) {
-//                        throw new RuntimeException("Class '"+clazz.getName()+"' must implement SolrField.Converter");
+//                        throw new RuntimeException("Class '"+clazz.getName()+"' must implement MetadataField.Converter");
 //                    }
 //                    String [] params = new String[constructParts.length-1];
 //                    Class<?> [] paramTypes = new Class<?>[params.length];
@@ -178,12 +189,15 @@ public class Profile {
     public static class RecordAddition {
         @XStreamAsAttribute
         @XStreamConverter(EnumConverter.class)
+        public
         RecordField key;
 
         @XStreamAsAttribute
+        public
         String value;
 
         @XStreamAsAttribute
+        public
         boolean ifMissing;
     }
 
