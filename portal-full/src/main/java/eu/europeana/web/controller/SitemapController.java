@@ -23,15 +23,15 @@ package eu.europeana.web.controller;
 
 import eu.europeana.core.database.DashboardDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
-import eu.europeana.core.querymodel.query.DocId;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
-import eu.europeana.core.querymodel.query.SiteMapBeanView;
+import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -85,18 +85,18 @@ public class SitemapController {
         ModelAndView mavPage;
         if (collection == null) {
             List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
-            // todo maybe this query must be cached because it might be too heavy a query on the database
-            List<EuropeanaCollection> europeanaCollections = dashboardDao.fetchEnabledCollections();
-            for (EuropeanaCollection europeanaCollection : europeanaCollections) {
-                for (int i = 0; i <= europeanaCollection.getTotalRecords() / MAX_RECORDS_PER_SITEMAP_FILE; i++) {
-                    // add each page of a collection to the index.
+            for (FacetField.Count facetField : getCollections()) {
+                double numberOfPages = (double) facetField.getCount() / MAX_RECORDS_PER_SITEMAP_FILE;
+                int pageCounter = 0;
+                do {
                     entries.add(
                             new SitemapIndexEntry(
-                                    StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?collection=%s&page=%d", baseUrl, europeanaCollection.getName(), i)),
-                                    europeanaCollection.getCollectionLastModified()));
+                                    StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?collection=%s&page=%d", baseUrl, facetField.getName(), pageCounter)),
+                                    new Date())); //todo: add more relevant date later
+                    pageCounter++;
                 }
+                while (pageCounter < numberOfPages);
             }
-
             mavPage = ControllerUtil.createModelAndViewPage("sitemap-index");
             mavPage.addObject("entries", entries);
         }
@@ -117,6 +117,27 @@ public class SitemapController {
         }
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
         return mavPage;
+    }
+
+    private List<FacetField.Count> getCollections () throws EuropeanaQueryException {
+        SolrQuery solrQuery = new SolrQuery()
+                .setQuery("*:*")
+                .setRows(0)
+                .setFacet(true)
+                .addFacetField("europeana_collectionName")
+                .setFacetMinCount(1)
+                .setQueryType(QueryType.ADVANCED_QUERY.toString());
+        final QueryResponse response = beanQueryModelFactory.getSolrResponse(solrQuery);
+        List<FacetField.Count> facetFieldCount = null;
+        for (FacetField facetField : response.getFacetFields()) {
+            if (facetField.getName().equalsIgnoreCase("europeana_collectionName")) {
+                facetFieldCount = facetField.getValues();
+            }
+        }
+        if (facetFieldCount == null || facetFieldCount.size() == 0) {
+            facetFieldCount = new ArrayList<FacetField.Count>();
+        }
+        return facetFieldCount;
     }
 
     /**
