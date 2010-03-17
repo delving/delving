@@ -36,7 +36,7 @@ public class AnalysisParser {
         XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(name, inputStream);
         StringBuilder text = new StringBuilder();
         long count = 0;
-        while (true) {
+        while (analysisListener.running()) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
                     logger.info("Starting document");
@@ -119,6 +119,9 @@ public class AnalysisParser {
     }
 
     public interface Listener {
+
+        boolean running();
+
         /**
          * The process has finished
          */

@@ -1,5 +1,7 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.xml.AnalysisParser;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,9 +12,10 @@ import java.awt.event.ActionListener;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class ProgressDialog extends JDialog {
+public class ProgressDialog extends JDialog implements AnalysisParser.Listener {
 
     private final JLabel caption = new JLabel();
+    private boolean running = true;
 
     public ProgressDialog(Frame parent, String title) {
         super(parent, title);
@@ -27,8 +30,7 @@ public class ProgressDialog extends JDialog {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent actionEvent) {
-                        // TODO: cancel loading action
-                        System.out.printf("Cancel pressed%n");
+                        running = false;
                     }
                 }
         );
@@ -43,8 +45,18 @@ public class ProgressDialog extends JDialog {
         caption.setText(message);
     }
 
-    interface Listener {
-        public void cancel();
+    @Override
+    public boolean running() {
+        return running;
     }
 
+    @Override
+    public void finished() {
+        this.dispose();
+    }
+
+    @Override
+    public void updateProgressValue(String progressValue) {
+        setMessage(String.format("Processed %s elements", progressValue));
+    }
 }

@@ -5,7 +5,6 @@ import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
-import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.FileHandler;
 
 import javax.swing.*;
@@ -139,17 +138,8 @@ public class AnalyzerGUI extends JFrame {
                             hideLoadProgress();
                         }
                     },
-                    new AnalysisParser.Listener() {
-                        @Override
-                        public void finished() {
-                            hideLoadProgress();
-                        }
-
-                        @Override
-                        public void updateProgressValue(String progressValue) {
-                            progressDialog.setMessage(String.format("Processed %s elements", progressValue));
-                        }
-                    });
+                    progressDialog
+            );
         }
         else {
             FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE,
@@ -174,17 +164,8 @@ public class AnalyzerGUI extends JFrame {
                             hideLoadProgress();
                         }
                     },
-                    new AnalysisParser.Listener() {
-                        @Override
-                        public void finished() {
-                            hideLoadProgress();
-                        }
-
-                        @Override
-                        public void updateProgressValue(String progressValue) {
-                            progressDialog.setMessage(String.format("Processed %s elements", progressValue));
-                        }
-                    });
+                    progressDialog
+            );
         }
     }
 
