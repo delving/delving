@@ -3,8 +3,16 @@ package eu.europeana.sip.xml;
 import eu.europeana.sip.mapping.Statistics;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.io.*;
+import javax.swing.SwingUtilities;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 /**
@@ -26,6 +34,16 @@ public class FileHandler {
         void finished();
     }
 
+    public static void getStatistics(File file, LoadListener loadListener) {
+        File statisticsFile = createStatisticsFile(file);
+        if (statisticsFile.exists()) {
+            loadStatistics(file, loadListener);
+        }
+        else {
+//            compileStatistics();
+        }
+    }
+
     public static void loadStatistics(File file, LoadListener loadListener) {
         Thread thread = new Thread(new StatisticsLoader(file, loadListener));
         thread.start();
@@ -44,6 +62,15 @@ public class FileHandler {
     public static void compileStatistics(File file, File statisticsFile, int counterListSize, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
         Thread thread = new Thread(new AnalysisRunner(file, statisticsFile, loadListener, counterListSize, analysisListener));
         thread.start();
+    }
+
+
+    private static File createStatisticsFile(File file) {
+        return new File(file.getParentFile(), file.getName() + ".statistics");
+    }
+
+    private static File createMappingFile(File file) { // todo: writing and reading of this
+        return new File(file.getParentFile(), file.getName() + ".mapping");
     }
 
     private static class StatisticsLoader implements Runnable {

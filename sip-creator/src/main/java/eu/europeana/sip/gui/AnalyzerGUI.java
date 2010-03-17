@@ -7,14 +7,24 @@ import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +36,7 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class AnalyzerGUI extends JFrame {
+public class AnalyzerGUI extends JFrame {  // todo: make it a panel
     private static final int COUNTER_LIST_SIZE = 100;
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private MappingPanel mappingPanel;
@@ -34,7 +44,7 @@ public class AnalyzerGUI extends JFrame {
     private FileMenu fileMenu;
     private ProgressDialog progressDialog;
 
-    public AnalyzerGUI() {
+    public AnalyzerGUI(/*AnnotationProcessor annotationProcessor*/) {
         super("Europeana Analyzer");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setJMenuBar(createMenuBar());
@@ -74,7 +84,7 @@ public class AnalyzerGUI extends JFrame {
         return p;
     }
 
-    private JMenuBar createMenuBar() {
+    private JMenuBar createMenuBar() { // todo: remove
         JMenuBar bar = new JMenuBar();
         fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
