@@ -1,12 +1,16 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
+import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.reference.RecordField;
 import eu.europeana.sip.reference.Transform;
 import eu.europeana.sip.reference.TransformException;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -30,6 +34,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +48,8 @@ public class MappingPanel extends JPanel {
     private static final String TABS = "TABS";
     private static final String SELECT_INSTRUCTION = "Select an entry above";
     private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(15,15,15,15);
-    private JList eseList = new JList(RecordField.values());
+    private AnnotationProcessor annotationProcessor;
+    private JList europeanaFieldList;
     private DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
     private JTable statsTable;
     private JLabel mappingTitle = new JLabel("Mapping", JLabel.CENTER);
@@ -56,8 +62,11 @@ public class MappingPanel extends JPanel {
     private JTextField transformedField = new JTextField(SELECT_INSTRUCTION);
     private MappingTree.Node node;
 
-    public MappingPanel() {
+    public MappingPanel(AnnotationProcessor annotationProcessor) {
         super(new GridLayout(0,1));
+        this.annotationProcessor = annotationProcessor;
+        this.europeanaFieldList = new JList(new FieldListModel());
+        this.europeanaFieldList.setCellRenderer(new EuropeanaFieldCellRenderer());
         mappingTitle.setFont(new Font("Serif", Font.BOLD, 22));
         tableColumnModel.addColumn(new TableColumn(0, 70));
         tableColumnModel.getColumn(0).setHeaderValue("Percent");
@@ -71,7 +80,7 @@ public class MappingPanel extends JPanel {
         statsTable = new JTable(new CounterTableModel(null), tableColumnModel);
         add(createTopPanel());
         add(createBottomPanel());
-        eseList.setEnabled(false);
+        europeanaFieldList.setEnabled(false);
         addMappingButton.setEnabled(false);
     }
 
@@ -82,7 +91,7 @@ public class MappingPanel extends JPanel {
             statsTitle.setText("Statistics for \""+node.getStatistics().getPath().getLastNodeString()+"\"");
             statsTable.setModel(new CounterTableModel(node.getStatistics().getCounters()));
             statsTable.setColumnModel(tableColumnModel);
-            eseList.setEnabled(true);
+            europeanaFieldList.setEnabled(true);
             addMappingButton.setEnabled(true);
         }
         else {
@@ -90,7 +99,7 @@ public class MappingPanel extends JPanel {
             statsTitle.setText("Statistics");
             statsTable.setModel(new CounterTableModel(null));
             statsTable.setColumnModel(tableColumnModel);
-            eseList.setEnabled(false);
+            europeanaFieldList.setEnabled(false);
             addMappingButton.setEnabled(false);
         }
     }
@@ -141,11 +150,11 @@ public class MappingPanel extends JPanel {
     }
 
     private Component createESEListPanel() {
-        JScrollPane scroll = new JScrollPane(eseList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scroll = new JScrollPane(europeanaFieldList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         addMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                RecordField recordField = (RecordField) eseList.getSelectedValue();
+                RecordField recordField = (RecordField) europeanaFieldList.getSelectedValue();
                 TransformPanel.Listener listener = new TransformPanel.Listener() {
                     @Override
                     public void transformSelected(Transform transform, String[] fieldValues) {
@@ -200,6 +209,29 @@ public class MappingPanel extends JPanel {
         mapToPanel.add(mapToTabbedPane, TABS);
         p.add(mapToPanel, BorderLayout.CENTER);
         return p;
+    }
+
+    private class FieldListModel extends AbstractListModel {
+        private static final long serialVersionUID = 939393939;
+        private List<EuropeanaField> list = new ArrayList<EuropeanaField>(annotationProcessor.getSolrFields());
+
+        @Override
+        public int getSize() {
+            return list.size();
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            return list.get(index);
+        }
+    }
+
+    private static class EuropeanaFieldCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            EuropeanaField europeanaField = (EuropeanaField) value;
+            return super.getListCellRendererComponent(list, europeanaField.getName(), index, isSelected, cellHasFocus);
+        }
     }
 
     private static class CounterTableModel extends AbstractTableModel {

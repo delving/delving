@@ -8,8 +8,6 @@ import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -27,37 +25,32 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Graphical interface for analysis
+ * The main GUI class for the sip creator
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  * @author Serkan Demirel <serkan.demirel@kb.nl>
  */
 
-public class AnalyzerGUI extends JFrame {
+public class SipCreator extends JFrame {
     private static final int COUNTER_LIST_SIZE = 100;
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private MappingPanel mappingPanel;
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
     private FileMenu fileMenu;
-    private JDialog jDialog;
 
-    public AnalyzerGUI() {
-        super("Europeana Analyzer");
+    public SipCreator(Class<?> beanClass) {
+        super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.mappingPanel = new MappingPanel(createAnnotationProcessor(beanClass));
         setJMenuBar(createMenuBar());
-        this.mappingPanel = new MappingPanel(createAnnotationProcessor(AllFieldBean.class));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createAnalysisPanel());
         split.setRightComponent(mappingPanel);
-//        split.setDividerLocation(0.4);
         getContentPane().add(split, BorderLayout.CENTER);
 //        setSize(Toolkit.getDefaultToolkit().getScreenSize());
         setSize(1200, 800);
@@ -118,53 +111,33 @@ public class AnalyzerGUI extends JFrame {
         }
     }
 
-    private void showLoadProgress() {
-        jDialog = new JDialog(this, "Loading", false);
-        jDialog.setLocationRelativeTo(this);
-        JButton jButton = new JButton("Cancel");
-        jButton.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        // TODO: cancel loading action
-                    }
-                }
-        );
-        jDialog.setLayout(new GridLayout(2, 0));
-        jDialog.add(new JLabel("Please wait while loading"));
-        jDialog.add(jButton);
-        jDialog.pack();
-        jDialog.setVisible(true);
+    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(beanClass);
+        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
+        annotationProcessor.setClasses(classes);
+        return annotationProcessor;
     }
-
-    private void hideLoadProgress() {
-        jDialog.dispose();
-    }
-
 
     private void analyze(final File file) {
         File statisticsFile = createStatisticsFile(file);
-        showLoadProgress();
         if (statisticsFile.exists()) {
             FileHandler.loadStatistics(statisticsFile, new FileHandler.LoadListener() {
                 @Override
                 public void success(List<Statistics> list) {
                     title.setText("Document Structure of \""+file.getName()+"\"");
                     setMappingTree(MappingTree.create(list, file.getName()));
-                    hideLoadProgress();
                 }
 
                 @Override
                 public void failure(Exception exception) {
                     title.setText("Document Structure");
                     // TODO: implement!
-                    hideLoadProgress();
                 }
 
                 @Override
                 public void finished() {
                     fileMenu.setEnabled(true);
-                    hideLoadProgress();
                 }
             });
         }
@@ -174,20 +147,17 @@ public class AnalyzerGUI extends JFrame {
                 public void success(List<Statistics> list) {
                     title.setText("Document Structure of \""+file.getName()+"\"");
                     setMappingTree(MappingTree.create(list, file.getName()));
-                    hideLoadProgress();
                 }
 
                 @Override
                 public void failure(Exception exception) {
                     title.setText("Document Structure");
                     // TODO: implement!
-                    hideLoadProgress();
                 }
 
                 @Override
                 public void finished() {
                     fileMenu.setEnabled(true);
-                    hideLoadProgress();
                 }
             });
         }
@@ -195,14 +165,6 @@ public class AnalyzerGUI extends JFrame {
 
     private File createStatisticsFile(File file) {
         return new File(file.getParentFile(), file.getName() + ".statistics");
-    }
-
-    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(beanClass);
-        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-        annotationProcessor.setClasses(classes);
-        return annotationProcessor;
     }
 
     private class CellRenderer extends DefaultTreeCellRenderer {
@@ -232,7 +194,7 @@ public class AnalyzerGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        AnalyzerGUI analyzerGUI = new AnalyzerGUI();
-        analyzerGUI.setVisible(true);
+        SipCreator sipCreator = new SipCreator(AllFieldBean.class);
+        sipCreator.setVisible(true);
     }
 }
