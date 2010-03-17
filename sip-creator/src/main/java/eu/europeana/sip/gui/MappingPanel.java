@@ -230,7 +230,7 @@ public class MappingPanel extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             EuropeanaField europeanaField = (EuropeanaField) value;
-            return super.getListCellRendererComponent(list, europeanaField.getName(), index, isSelected, cellHasFocus);
+            return super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
         }
     }
 

@@ -59,7 +59,7 @@ public class SipCreator extends JFrame {
     private Component createAnalysisPanel() {
         JPanel p = new JPanel(new BorderLayout(10,10));
         p.setBorder(BorderFactory.createEmptyBorder(15,15,15,0));
-        title.setFont(new Font("Serif", Font.BOLD, 22));
+        title.setFont(new Font("Serif", Font.BOLD, 12));
         p.add(title, BorderLayout.NORTH);
         statisticsJTree.setCellRenderer(new CellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -165,6 +165,10 @@ public class SipCreator extends JFrame {
 
     private File createStatisticsFile(File file) {
         return new File(file.getParentFile(), file.getName() + ".statistics");
+    }
+
+    private File createMappingFile(File file) { // todo: writing and reading of this
+        return new File(file.getParentFile(), file.getName() + ".mapping");
     }
 
     private class CellRenderer extends DefaultTreeCellRenderer {
