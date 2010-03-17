@@ -1,5 +1,6 @@
-package eu.europeana.sip.analysis;
+package eu.europeana.sip.mapping;
 
+import eu.europeana.sip.xml.AnalysisParser;
 import org.junit.Test;
 
 /**

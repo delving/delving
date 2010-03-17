@@ -1,9 +1,18 @@
-package eu.europeana.sip.analysis;
+package eu.europeana.sip.xml;
 
+import eu.europeana.sip.analysis.Statistics;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.io.*;
+import javax.swing.SwingUtilities;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 /**
