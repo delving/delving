@@ -5,31 +5,17 @@ import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
+import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +24,7 @@ import java.util.List;
  * A Graphical interface for analysis
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
- * @author Serkan Demirel <serkan.demirel@kb.nl>
+ * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
 public class AnalyzerGUI extends JFrame {
@@ -47,7 +33,7 @@ public class AnalyzerGUI extends JFrame {
     private MappingPanel mappingPanel;
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
     private FileMenu fileMenu;
-    private JDialog jDialog;
+    private ProgressDialog progressDialog;
 
     public AnalyzerGUI() {
         super("Europeana Analyzer");
@@ -64,8 +50,8 @@ public class AnalyzerGUI extends JFrame {
     }
 
     private Component createAnalysisPanel() {
-        JPanel p = new JPanel(new BorderLayout(10,10));
-        p.setBorder(BorderFactory.createEmptyBorder(15,15,15,0));
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 0));
         title.setFont(new Font("Serif", Font.BOLD, 22));
         p.add(title, BorderLayout.NORTH);
         statisticsJTree.setCellRenderer(new CellRenderer());
@@ -105,7 +91,7 @@ public class AnalyzerGUI extends JFrame {
     private void setMappingTree(MappingTree mappingTree) {
         TreeModel treeModel = mappingTree.createTreeModel();
         statisticsJTree.setModel(treeModel);
-        expandEmptyNodes((MappingTree.Node)treeModel.getRoot());
+        expandEmptyNodes((MappingTree.Node) treeModel.getRoot());
     }
 
     private void expandEmptyNodes(MappingTree.Node node) {
@@ -119,26 +105,11 @@ public class AnalyzerGUI extends JFrame {
     }
 
     private void showLoadProgress() {
-        jDialog = new JDialog(this, "Loading", false);
-        jDialog.setLocationRelativeTo(this);
-        JButton jButton = new JButton("Cancel");
-        jButton.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent actionEvent) {
-                        // TODO: cancel loading action
-                    }
-                }
-        );
-        jDialog.setLayout(new GridLayout(2, 0));
-        jDialog.add(new JLabel("Please wait while loading"));
-        jDialog.add(jButton);
-        jDialog.pack();
-        jDialog.setVisible(true);
+        progressDialog = new ProgressDialog(this, "Analyzing file");
     }
 
     private void hideLoadProgress() {
-        jDialog.dispose();
+        progressDialog.dispose();
     }
 
 
@@ -146,50 +117,74 @@ public class AnalyzerGUI extends JFrame {
         File statisticsFile = createStatisticsFile(file);
         showLoadProgress();
         if (statisticsFile.exists()) {
-            FileHandler.loadStatistics(statisticsFile, new FileHandler.LoadListener() {
-                @Override
-                public void success(List<Statistics> list) {
-                    title.setText("Document Structure of \""+file.getName()+"\"");
-                    setMappingTree(MappingTree.create(list, file.getName()));
-                    hideLoadProgress();
-                }
+            FileHandler.loadStatistics(statisticsFile,
+                    new FileHandler.LoadListener() {
+                        @Override
+                        public void success(List<Statistics> list) {
+                            title.setText("Document Structure of \"" + file.getName() + "\"");
+                            setMappingTree(MappingTree.create(list, file.getName()));
+                            hideLoadProgress();
+                        }
 
-                @Override
-                public void failure(Exception exception) {
-                    title.setText("Document Structure");
-                    // TODO: implement!
-                    hideLoadProgress();
-                }
+                        @Override
+                        public void failure(Exception exception) {
+                            title.setText("Document Structure");
+                            // TODO: implement!
+                            hideLoadProgress();
+                        }
 
-                @Override
-                public void finished() {
-                    fileMenu.setEnabled(true);
-                    hideLoadProgress();
-                }
-            });
+                        @Override
+                        public void finished() {
+                            fileMenu.setEnabled(true);
+                            hideLoadProgress();
+                        }
+                    },
+                    new AnalysisParser.Listener() {
+                        @Override
+                        public void finished() {
+                            hideLoadProgress();
+                        }
+
+                        @Override
+                        public void updateProgressValue(String progressValue) {
+                            progressDialog.setMessage(String.format("Processed %s elements", progressValue));
+                        }
+                    });
         }
         else {
-            FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE, new FileHandler.LoadListener() {
-                @Override
-                public void success(List<Statistics> list) {
-                    title.setText("Document Structure of \""+file.getName()+"\"");
-                    setMappingTree(MappingTree.create(list, file.getName()));
-                    hideLoadProgress();
-                }
+            FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE,
+                    new FileHandler.LoadListener() {
+                        @Override
+                        public void success(List<Statistics> list) {
+                            title.setText("Document Structure of \"" + file.getName() + "\"");
+                            setMappingTree(MappingTree.create(list, file.getName()));
+                            hideLoadProgress();
+                        }
 
-                @Override
-                public void failure(Exception exception) {
-                    title.setText("Document Structure");
-                    // TODO: implement!
-                    hideLoadProgress();
-                }
+                        @Override
+                        public void failure(Exception exception) {
+                            title.setText("Document Structure");
+                            // TODO: implement!
+                            hideLoadProgress();
+                        }
 
-                @Override
-                public void finished() {
-                    fileMenu.setEnabled(true);
-                    hideLoadProgress();
-                }
-            });
+                        @Override
+                        public void finished() {
+                            fileMenu.setEnabled(true);
+                            hideLoadProgress();
+                        }
+                    },
+                    new AnalysisParser.Listener() {
+                        @Override
+                        public void finished() {
+                            hideLoadProgress();
+                        }
+
+                        @Override
+                        public void updateProgressValue(String progressValue) {
+                            progressDialog.setMessage(String.format("Processed %s elements", progressValue));
+                        }
+                    });
         }
     }
 

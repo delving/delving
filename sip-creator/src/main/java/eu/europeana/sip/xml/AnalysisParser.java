@@ -12,22 +12,20 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Analyze xml input and compile statistics.
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
 public class AnalysisParser {
     private Logger logger = Logger.getLogger(getClass());
     private QNamePath path = new QNamePath();
     private Map<QNamePath, Statistics> statisticsMap = new TreeMap<QNamePath, Statistics>();
+    private Listener analysisListener;
 
     public void parseFile(String name, InputStream inputStream) throws XMLStreamException, FileNotFoundException {
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
@@ -45,7 +43,10 @@ public class AnalysisParser {
                     break;
                 case XMLEvent.START_ELEMENT:
                     if (++count % 100000 == 0) {
-                        logger.info("Processed "+count+" elements");
+                        logger.info("Processed " + count + " elements");
+                        if (null != analysisListener) {
+                            analysisListener.updateProgressValue("" + count);
+                        }
                     }
                     path.push(input.getName());
                     if (input.getAttributeCount() > 0) {
@@ -70,6 +71,9 @@ public class AnalysisParser {
                     break;
                 case XMLEvent.END_DOCUMENT: {
                     logger.info("Ending document");
+                    if (null != analysisListener) {
+                        analysisListener.finished();
+                    }
                     break;
                 }
             }
@@ -108,5 +112,23 @@ public class AnalysisParser {
             statisticsMap.put(key, statistics = new Statistics(key));
         }
         statistics.recordValue(value);
+    }
+
+    public void setAnalysisListener(Listener analysisListener) {
+        this.analysisListener = analysisListener;
+    }
+
+    public interface Listener {
+        /**
+         * The process has finished
+         */
+        void finished();
+
+        /**
+         * A new progress value
+         *
+         * @param progressValue value of the progress
+         */
+        void updateProgressValue(String progressValue);
     }
 }

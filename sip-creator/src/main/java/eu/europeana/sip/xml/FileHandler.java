@@ -3,22 +3,15 @@ package eu.europeana.sip.xml;
 import eu.europeana.sip.mapping.Statistics;
 import org.apache.log4j.Logger;
 
-import javax.swing.SwingUtilities;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javax.swing.*;
+import java.io.*;
 import java.util.List;
 
 /**
  * Load and save statistics and report back
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
 public class FileHandler {
@@ -43,13 +36,30 @@ public class FileHandler {
         thread.start();
     }
 
+    public static void loadStatistics(File file, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
+        Thread thread = new Thread(new StatisticsLoader(file, loadListener, analysisListener));
+        thread.start();
+    }
+
+    public static void compileStatistics(File file, File statisticsFile, int counterListSize, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
+        Thread thread = new Thread(new AnalysisRunner(file, statisticsFile, loadListener, counterListSize, analysisListener));
+        thread.start();
+    }
+
     private static class StatisticsLoader implements Runnable {
         private File file;
         private LoadListener loadListener;
+        private AnalysisParser.Listener analysisListener;
 
         private StatisticsLoader(File file, LoadListener loadListener) {
             this.file = file;
             this.loadListener = loadListener;
+        }
+
+        private StatisticsLoader(File file, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
+            this.file = file;
+            this.loadListener = loadListener;
+            this.analysisListener = analysisListener;
         }
 
         @Override
@@ -108,6 +118,14 @@ public class FileHandler {
             this.statisticsFile = statisticsFile;
             this.loadListener = loadListener;
             this.counterListSize = counterListSize;
+        }
+
+        private AnalysisRunner(File file, File statisticsFile, LoadListener loadListener, int counterListSize,  AnalysisParser.Listener analysisListener) {
+            this.file = file;
+            this.statisticsFile = statisticsFile;
+            this.counterListSize = counterListSize;
+            this.loadListener = loadListener;
+            parser.setAnalysisListener(analysisListener);
         }
 
         @Override
