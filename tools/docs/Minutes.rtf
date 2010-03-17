@@ -1,0 +1,61 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww17540\viewh10980\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 === Aproach\
+\
+* distributed but shared database\
+	Postgresql\
+	\
+* Repox creates Requests and new MdRecords, SIP removes them when obsoleted\
+\
+* Repox saves the harvested files and keep a ref to the file in Request for safekeeping\
+ \'a0should in the november release be stored in svn\
+ \'a0[prefix]/03906_Ag_FR_MCC_arts_decoratifs-yymmdd-hhmmss.xml\
+ \'a0 \'a0 ask ingestion and use their naming convention, giving it a iso timestamp as sufix for versioning\
+ \'a0 \'a0 file is normally created by repox when a request is created\
+ \'a0 \'a0 and removed by sip when a request is deleted\
+\
+* Repox provides functionality to manage "users" ie aggregator, provider and dataset\
+\
+\
+=== \'a0Goals\
+\
+=== \'a0April\
+both system operational, talking directly to DBMS\
+\
+=== \'a0November\
+create a DBManager wrapping dbms functionalities and providing API\
+\
+ENUMS\
+\
+\
+---Request states\
+under construction - [r] repox is creating a new request\
+import completed - [r] repox ready, sip can take control when ready\
+aborted \'a0- [rs] something went wrong\
+sip processing - [s] sip has found the request repox may not any more delete the request\
+completed - [s] all records for this request completed\
+ready for production - [s] _allways_ a human decission!\
+\
+--MdRecord states (not a true statemachine idle-procesing can be entered several times)\
+created - [r] the record is created but not yet processed in any way\
+idle - nobody is touching it, waiting for more checks\
+processing - a checker is working on this record\
+problematic - something went wrong, human intervention might save the record\
+broken - record is invalid, some check decided this ese is not acceptable\
+verified - all checks succeeded, could be sent to production\
+change enrichement state to a boolean enrichment_check_done\
+\
+ -- uri state \'a0(a uri record is created by a thread and end as completed or failed)\
+ created - (1) the record is just created not processed\
+ uri verified - (2) the uri responds and returns an OK\
+ object downloaded - (3) \
+ full_doc generated - (4)\
+ brief_doc generated - (5)\
+ completed - (6)\
+ failed - (7) something went wrong, see err_msg for details in this msg also should be logged what step failed\
+\
+}
