@@ -1,8 +1,12 @@
-package eu.europeana.sip.analysis;
+package eu.europeana.sip.mapping;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Maintain a map of strings and counters

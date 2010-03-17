@@ -1,7 +1,7 @@
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.analysis.QNamePath;
-import eu.europeana.sip.analysis.Statistics;
+import eu.europeana.sip.mapping.QNamePath;
+import eu.europeana.sip.mapping.Statistics;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;

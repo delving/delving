@@ -1,7 +1,7 @@
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.analysis.MappingTree;
-import eu.europeana.sip.analysis.Statistics;
+import eu.europeana.sip.mapping.MappingTree;
+import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.reference.RecordField;
 import eu.europeana.sip.reference.Transform;
 import eu.europeana.sip.reference.TransformException;

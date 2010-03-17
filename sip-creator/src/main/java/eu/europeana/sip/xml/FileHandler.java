@@ -1,6 +1,6 @@
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.analysis.Statistics;
+import eu.europeana.sip.mapping.Statistics;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;

@@ -1,4 +1,4 @@
-package eu.europeana.sip.analysis;
+package eu.europeana.sip.mapping;
 
 import javax.xml.namespace.QName;
 import java.io.Serializable;
