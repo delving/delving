@@ -21,11 +21,12 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.DashboardDao;
-import eu.europeana.core.database.domain.EuropeanaCollection;
-import eu.europeana.core.querymodel.query.*;
-import eu.europeana.core.util.web.ClickStreamLogger;
-import eu.europeana.core.util.web.ControllerUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -39,10 +40,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import eu.europeana.core.database.domain.EuropeanaCollection;
+import eu.europeana.core.querymodel.query.DocId;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.querymodel.query.SiteMapBeanView;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
 
 
 /**
@@ -64,9 +69,6 @@ public class SitemapController {
 
     @Autowired
     private QueryModelFactory beanQueryModelFactory;
-
-    @Autowired
-    DashboardDao dashboardDao;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
