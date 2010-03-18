@@ -7,14 +7,22 @@ import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +43,7 @@ public class AnalyzerPanel extends JPanel {
     private ProgressDialog progressDialog;
 
     public AnalyzerPanel(/*AnnotationProcessor annotationProcessor*/) {
+        super(new BorderLayout());
         this.mappingPanel = new MappingPanel(createAnnotationProcessor(AllFieldBean.class));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createAnalysisPanel());
@@ -43,8 +52,6 @@ public class AnalyzerPanel extends JPanel {
         split.setDividerLocation(0.4);
         split.setSize(1280, 800);
         add(split, BorderLayout.CENTER);
-        setPreferredSize(new Dimension(1200, 800));
-//        setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 
     private Component createAnalysisPanel() {

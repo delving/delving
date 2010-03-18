@@ -4,8 +4,12 @@ import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -31,15 +35,13 @@ public class NormalizerPanel extends JPanel {
     private Normalizer normalizer;
 
     public NormalizerPanel(File sourceRoot, File destinationRoot) {
+        super(new BorderLayout());
         File destinationRoot1 = destinationRoot;
 //        list = new JList(new ProfileListModel(sourceRoot));
         Logger.getRootLogger().addAppender(logPanel.createAppender(Normalizer.LOG_LAYOUT));
         add(createWest(), BorderLayout.WEST);
         add(logPanel, BorderLayout.CENTER);
         wireUp();
-        setSize(Toolkit.getDefaultToolkit().getScreenSize());
-        setSize(1200, 800);
-        setPreferredSize(new Dimension(1200, 800));
     }
 
     private void wireUp() {
