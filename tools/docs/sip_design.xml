@@ -99,7 +99,7 @@
 <part>aggregator_id</part>
 </key>
 </table>
-<table x="47" y="371" name="MdRecord">
+<table x="44" y="572" name="MdRecord">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -176,7 +176,7 @@
 <default>NULL</default></row>
 <row name="ds_type" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
-<comment>vocabulary or meta data</comment>
+<comment>vocabulary or meta data enum - vocabulary of people</comment>
 </row>
 <row name="data_format" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -207,7 +207,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="186" y="25" name="Request">
+<table x="267" y="267" name="Request">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -232,7 +232,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="673" y="458" name="ProcessMonitoring">
+<table x="861" y="312" name="ProcessMonitoring">
 <row name="pid" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -265,35 +265,35 @@
 <part>id</part>
 </key>
 </table>
-<table x="304" y="389" name="Enrichment">
+<table x="425" y="660" name="Alignment">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="md_record" null="1" autoincrement="0">
+<row name="md_recorda" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="MdRecord" row="id" />
+<comment>double link between md_records</comment>
+</row>
+<row name="md_recordb" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="MdRecord" row="id" />
 </row>
-<row name="data_blob" null="1" autoincrement="0">
-<datatype>XML</datatype>
-<default>NULL</default></row>
-<row name="facet_id" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
-<default>NULL</default></row>
 <row name="facet_link" null="1" autoincrement="0">
 <datatype>VARCHAR</datatype>
 <default>NULL</default></row>
-<row name="facet_type" null="1" autoincrement="0">
+<row name="facet_rel_type" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default><comment>person/place...</comment>
 </row>
-<row name="facet_value" null="1" autoincrement="0">
-<datatype>VARCHAR</datatype>
+<row name="traceability fields..." null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
 <default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>
+<comment>Using solar indexes to check name, place,etc</comment>
 </table>
-<table x="471" y="541" name="MdRecordErrors">
+<table x="1105" y="469" name="MdRecordErrors">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -318,5 +318,26 @@
 <part>id</part>
 </key>
 <comment>Here we store exit code and message for failures</comment>
+</table>
+<table x="660" y="580" name="Labels">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="md_record" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="MdRecord" row="id" />
+</row>
+<row name="label" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="language" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="housekeepingfields..." null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
 </table>
 </sql>
