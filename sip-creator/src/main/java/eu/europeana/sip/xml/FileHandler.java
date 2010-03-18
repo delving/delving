@@ -25,7 +25,7 @@ import java.util.List;
 public class FileHandler {
     private static final Logger logger = Logger.getLogger(FileHandler.class);
 
-    public interface LoadListener {
+    public interface Listener {
 
         void success(List<Statistics> list);
 
@@ -34,33 +34,33 @@ public class FileHandler {
         void finished();
     }
 
-    public static void getStatistics(File file, LoadListener loadListener) {
+    public static void getStatistics(File file, Listener listener) {
         File statisticsFile = createStatisticsFile(file);
         if (statisticsFile.exists()) {
-            loadStatistics(file, loadListener);
+            loadStatistics(file, listener);
         }
         else {
 //            compileStatistics();
         }
     }
 
-    public static void loadStatistics(File file, LoadListener loadListener) {
-        Thread thread = new Thread(new StatisticsLoader(file, loadListener));
+    public static void loadStatistics(File file, Listener listener) {
+        Thread thread = new Thread(new StatisticsLoader(file, listener));
         thread.start();
     }
 
-    public static void compileStatistics(File file, File statisticsFile, int counterListSize, LoadListener loadListener) {
-        Thread thread = new Thread(new AnalysisRunner(file, statisticsFile, loadListener, counterListSize));
+    public static void compileStatistics(File file, File statisticsFile, int counterListSize, Listener listener) {
+        Thread thread = new Thread(new AnalysisRunner(file, statisticsFile, listener, counterListSize));
         thread.start();
     }
 
-    public static void loadStatistics(File file, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
-        Thread thread = new Thread(new StatisticsLoader(file, loadListener, analysisListener));
+    public static void loadStatistics(File file, Listener listener, AnalysisParser.Listener analysisListener) {
+        Thread thread = new Thread(new StatisticsLoader(file, listener, analysisListener));
         thread.start();
     }
 
-    public static void compileStatistics(File file, File statisticsFile, int counterListSize, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
-        Thread thread = new Thread(new AnalysisRunner(file, statisticsFile, loadListener, counterListSize, analysisListener));
+    public static void compileStatistics(File file, File statisticsFile, int counterListSize, Listener listener, AnalysisParser.Listener analysisListener) {
+        Thread thread = new Thread(new AnalysisRunner(file, statisticsFile, listener, counterListSize, analysisListener));
         thread.start();
     }
 
@@ -75,17 +75,17 @@ public class FileHandler {
 
     private static class StatisticsLoader implements Runnable {
         private File file;
-        private LoadListener loadListener;
+        private Listener listener;
         private AnalysisParser.Listener analysisListener;
 
-        private StatisticsLoader(File file, LoadListener loadListener) {
+        private StatisticsLoader(File file, Listener listener) {
             this.file = file;
-            this.loadListener = loadListener;
+            this.listener = listener;
         }
 
-        private StatisticsLoader(File file, LoadListener loadListener, AnalysisParser.Listener analysisListener) {
+        private StatisticsLoader(File file, Listener listener, AnalysisParser.Listener analysisListener) {
             this.file = file;
-            this.loadListener = loadListener;
+            this.listener = listener;
             this.analysisListener = analysisListener;
         }
 
@@ -97,7 +97,7 @@ public class FileHandler {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadListener.success(statisticsList);
+                        listener.success(statisticsList);
                     }
                 });
             }
@@ -106,7 +106,7 @@ public class FileHandler {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadListener.failure(e);
+                        listener.failure(e);
                     }
                 });
             }
@@ -114,7 +114,7 @@ public class FileHandler {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadListener.finished();
+                        listener.finished();
                     }
                 });
             }
@@ -137,21 +137,21 @@ public class FileHandler {
     private static class AnalysisRunner implements Runnable {
         private AnalysisParser parser = new AnalysisParser();
         private File file, statisticsFile;
-        private LoadListener loadListener;
+        private Listener listener;
         private int counterListSize;
 
-        private AnalysisRunner(File file, File statisticsFile, LoadListener loadListener, int counterListSize) {
+        private AnalysisRunner(File file, File statisticsFile, Listener listener, int counterListSize) {
             this.file = file;
             this.statisticsFile = statisticsFile;
-            this.loadListener = loadListener;
+            this.listener = listener;
             this.counterListSize = counterListSize;
         }
 
-        private AnalysisRunner(File file, File statisticsFile, LoadListener loadListener, int counterListSize,  AnalysisParser.Listener analysisListener) {
+        private AnalysisRunner(File file, File statisticsFile, Listener listener, int counterListSize,  AnalysisParser.Listener analysisListener) {
             this.file = file;
             this.statisticsFile = statisticsFile;
             this.counterListSize = counterListSize;
-            this.loadListener = loadListener;
+            this.listener = listener;
             parser.setAnalysisListener(analysisListener);
         }
 
@@ -168,7 +168,7 @@ public class FileHandler {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadListener.success(statisticsList);
+                        listener.success(statisticsList);
                     }
                 });
             }
@@ -176,7 +176,7 @@ public class FileHandler {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadListener.failure(e);
+                        listener.failure(e);
                     }
                 });
             }
@@ -184,7 +184,7 @@ public class FileHandler {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadListener.finished();
+                        listener.finished();
                     }
                 });
             }

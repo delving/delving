@@ -108,58 +108,35 @@ public class AnalyzerPanel extends JPanel {
     public void analyze(final File file) {
         File statisticsFile = createStatisticsFile(file);
         showLoadProgress();
+
+        FileHandler.Listener listener = new FileHandler.Listener() {
+            @Override
+            public void success(List<Statistics> list) {
+                title.setText("Document Structure of \"" + file.getName() + "\"");
+                setMappingTree(MappingTree.create(list, file.getName()));
+                hideLoadProgress();
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                title.setText("Document Structure");
+                // TODO: implement!
+                hideLoadProgress();
+            }
+
+            @Override
+            public void finished() {
+                // todo: fileMenu has moved to SipCreatorGUI
+                fileMenu.setEnabled(true);
+                hideLoadProgress();
+            }
+        };
+
         if (statisticsFile.exists()) {
-            FileHandler.loadStatistics(statisticsFile,
-                    // todo: create single method
-                    new FileHandler.LoadListener() {
-                        @Override
-                        public void success(List<Statistics> list) {
-                            title.setText("Document Structure of \"" + file.getName() + "\"");
-                            setMappingTree(MappingTree.create(list, file.getName()));
-                            hideLoadProgress();
-                        }
-
-                        @Override
-                        public void failure(Exception exception) {
-                            title.setText("Document Structure");
-                            // TODO: implement!
-                            hideLoadProgress();
-                        }
-
-                        @Override
-                        public void finished() {
-                            // todo: fileMenu has moved to SipCreatorGUI
-                            fileMenu.setEnabled(true);
-                            hideLoadProgress();
-                        }
-                    },
-                    progressDialog
-            );
-        } else {
-            FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE,
-                    new FileHandler.LoadListener() {
-                        @Override
-                        public void success(List<Statistics> list) {
-                            title.setText("Document Structure of \"" + file.getName() + "\"");
-                            setMappingTree(MappingTree.create(list, file.getName()));
-                            hideLoadProgress();
-                        }
-
-                        @Override
-                        public void failure(Exception exception) {
-                            title.setText("Document Structure");
-                            // TODO: implement!
-                            hideLoadProgress();
-                        }
-
-                        @Override
-                        public void finished() {
-                            fileMenu.setEnabled(true);
-                            hideLoadProgress();
-                        }
-                    },
-                    progressDialog
-            );
+            FileHandler.loadStatistics(statisticsFile, listener, progressDialog);
+        }
+        else {
+            FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE, listener, progressDialog);
         }
     }
 
