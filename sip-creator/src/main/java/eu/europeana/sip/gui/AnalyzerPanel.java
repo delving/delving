@@ -1,8 +1,6 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
-import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
-import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
@@ -24,7 +22,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,13 +39,12 @@ public class AnalyzerPanel extends JPanel {
     private FileMenu fileMenu;
     private ProgressDialog progressDialog;
 
-    public AnalyzerPanel(/*AnnotationProcessor annotationProcessor*/) {
+    public AnalyzerPanel(AnnotationProcessor annotationProcessor) {
         super(new BorderLayout());
-        this.mappingPanel = new MappingPanel(createAnnotationProcessor(AllFieldBean.class));
+        this.mappingPanel = new MappingPanel(annotationProcessor);
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createAnalysisPanel());
         split.setRightComponent(mappingPanel);
-
         split.setDividerLocation(0.4);
         split.setSize(1280, 800);
         add(split, BorderLayout.CENTER);
@@ -149,14 +145,6 @@ public class AnalyzerPanel extends JPanel {
 
     private File createStatisticsFile(File file) {
         return new File(file.getParentFile(), file.getName() + ".statistics");
-    }
-
-    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(beanClass);
-        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-        annotationProcessor.setClasses(classes);
-        return annotationProcessor;
     }
 
     private class CellRenderer extends DefaultTreeCellRenderer {

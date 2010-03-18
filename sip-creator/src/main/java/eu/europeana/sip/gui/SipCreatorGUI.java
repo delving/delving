@@ -4,7 +4,9 @@ import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
 import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JTabbedPane;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +28,11 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar jMenuBar = createMenuBar();
         setJMenuBar(jMenuBar);
         JTabbedPane tabs = new JTabbedPane();
-        analyzerPanel = new AnalyzerPanel();
+        analyzerPanel = new AnalyzerPanel(createAnnotationProcessor(AllFieldBean.class));
         analyzerPanel.setProgressDialog(new ProgressDialog(this, "Analyzing file"));
         analyzerPanel.setFileMenu(fileMenu);
         tabs.addTab("Analyzer", analyzerPanel);
         tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
-        // todo: tabs
-        //    (pass in createAnnotationProcessor with this beanClass)
         getContentPane().add(tabs);
         setSize(1200, 800);
     }
