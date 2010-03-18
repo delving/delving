@@ -3,6 +3,7 @@ package eu.europeana.sip.gui;
 import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.reference.Transform;
+import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -10,6 +11,8 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Handle the choices for converter, and allow for filling in parameters
@@ -48,8 +51,9 @@ public class TransformPanel extends JPanel {
         compileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent a) {
+                Binding binding = new Binding(retrieveVariables());
                 try {
-                    new GroovyShell().evaluate(groovyArea.getText());
+                    new GroovyShell(binding).evaluate(groovyArea.getText());
                 }
                 catch (CompilationFailedException e) {
                     LOG.error(e.getMessage(), e);
@@ -61,6 +65,12 @@ public class TransformPanel extends JPanel {
             //formCards.add(panel, transform.toString());
         }
         setTransform();
+    }
+
+    public Map<String, String> retrieveVariables() {
+        Map<String, String> map = new HashMap<String, String>();
+        // todo: retrieve variables
+        return map;
     }
 
     public interface Listener {
