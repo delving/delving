@@ -39,7 +39,7 @@ import subprocess
 import settings
 
 
-INTERVALL_PROGRES = 10
+INTERVALL_PROGRES = 60
 IMG_CMD = 'mogrify'
 
 

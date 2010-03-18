@@ -26,7 +26,6 @@
  db                   74s
 """
 import os
-import io
 import sys
 import time
 import urllib2
