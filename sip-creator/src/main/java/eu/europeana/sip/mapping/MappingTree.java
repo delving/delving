@@ -1,7 +1,5 @@
 package eu.europeana.sip.mapping;
 
-import eu.europeana.sip.schema.SourceSelection;
-
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
@@ -27,7 +25,6 @@ public class MappingTree implements Serializable {
 
     public interface Node {
         Statistics getStatistics();
-        SourceSelection getDomain();
         TreePath getTreePath();
         Iterable<? extends Node> getChildNodes();
     }
@@ -47,7 +44,6 @@ public class MappingTree implements Serializable {
         private String tag;
         private QName name;
         private Statistics statistics;
-        private SourceSelection sourceSelection;
 
         private QNameNode(String tag) {
             this.tag = tag;
@@ -62,7 +58,6 @@ public class MappingTree implements Serializable {
             this.parent = parent;
             this.statistics = statistics;
             this.name = statistics.getPath().peek();
-            this.sourceSelection = new SourceSelection(statistics.getPath().toString());
         }
 
         public void setStatistics(Statistics statistics) {
@@ -72,11 +67,6 @@ public class MappingTree implements Serializable {
         @Override
         public Statistics getStatistics() {
             return statistics;
-        }
-
-        @Override
-        public SourceSelection getDomain() {
-            return sourceSelection;
         }
 
         @Override

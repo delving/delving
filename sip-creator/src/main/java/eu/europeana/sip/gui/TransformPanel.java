@@ -1,7 +1,7 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.mapping.MappingTree;
-import eu.europeana.sip.reference.RecordField;
 import eu.europeana.sip.reference.Transform;
 
 import javax.swing.BorderFactory;
@@ -28,16 +28,16 @@ import java.awt.event.KeyEvent;
 
 public class TransformPanel extends JPanel {
     private MappingTree.Node node;
-    private RecordField recordField;
+    private EuropeanaField europeanaField;
     private Listener listener;
     private JComboBox transformBox = new JComboBox(Transform.values());
     private JPanel formCards = new JPanel(new CardLayout());
     private FormPanel[] form = new FormPanel[Transform.values().length];
 
-    public TransformPanel(MappingTree.Node node, RecordField recordField, Listener listener) {
+    public TransformPanel(MappingTree.Node node, EuropeanaField europeanaField, Listener listener) {
         super(new BorderLayout());
         this.node = node;
-        this.recordField = recordField;
+        this.europeanaField = europeanaField;
         this.listener = listener;
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JPanel p = new JPanel(new BorderLayout());
