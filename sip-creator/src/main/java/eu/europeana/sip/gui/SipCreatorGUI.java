@@ -28,9 +28,9 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar jMenuBar = createMenuBar();
         setJMenuBar(jMenuBar);
         JTabbedPane tabs = new JTabbedPane();
-        analyzerPanel = new AnalyzerPanel(createAnnotationProcessor(AllFieldBean.class));
+        analyzerPanel = new AnalyzerPanel(createAnnotationProcessor(beanClass));
         analyzerPanel.setProgressDialog(new ProgressDialog(this, "Analyzing file"));
-        analyzerPanel.setFileMenu(fileMenu);
+        analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
         tabs.addTab("Analyzer", analyzerPanel);
         tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
         getContentPane().add(tabs);
@@ -42,7 +42,6 @@ public class SipCreatorGUI extends JFrame {
         fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
             public void select(File file) {
-                fileMenu.setEnabled(false);
                 analyzerPanel.analyze(file);
             }
         });

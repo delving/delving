@@ -35,6 +35,10 @@ public class FileMenu extends JMenu {
     private JMenu recentFilesMenu = new JMenu("Recent Files");
     private SelectListener selectListener;
 
+    public interface Enablement {
+        void enable(boolean enabled);
+    }
+
     public FileMenu(Component parent, SelectListener selectListener) {
         super("File");
         this.parent = parent;
@@ -44,17 +48,21 @@ public class FileMenu extends JMenu {
         loadRecentFiles();
     }
 
-    @Override
-    public void setEnabled(final boolean enabled) {
-        SwingUtilities.invokeLater(new Runnable() {
+    public Enablement getEnablement() {
+        return new Enablement() {
             @Override
-            public void run() {
-                loadFile.setEnabled(enabled);
-                for (Action action : recentFileActions.values()) {
-                    action.setEnabled(enabled);
-                }
+            public void enable(final boolean enabled) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadFile.setEnabled(enabled);
+                        for (Action action : recentFileActions.values()) {
+                            action.setEnabled(enabled);
+                        }
+                    }
+                });
             }
-        });
+        };
     }
 
     public interface SelectListener {

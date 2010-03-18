@@ -36,7 +36,7 @@ public class AnalyzerPanel extends JPanel {
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private MappingPanel mappingPanel;
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
-    private FileMenu fileMenu;
+    private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
 
     public AnalyzerPanel(AnnotationProcessor annotationProcessor) {
@@ -91,47 +91,43 @@ public class AnalyzerPanel extends JPanel {
         }
     }
 
-    public void setFileMenu(FileMenu fileMenu) {
-        this.fileMenu = fileMenu;
+    public void setFileMenuEnablement(FileMenu.Enablement fileMenuEnablement) {
+        this.fileMenuEnablement = fileMenuEnablement;
     }
 
     public void setProgressDialog(ProgressDialog progressDialog) {
         this.progressDialog = progressDialog;
     }
 
-    private void showLoadProgress() {
+    private void loadStarted() {
+        fileMenuEnablement.enable(false);
         progressDialog.setVisible(true);
     }
 
-    private void hideLoadProgress() {
+    private void loadFinished() {
+        fileMenuEnablement.enable(true);
         progressDialog.dispose();
     }
 
-
     public void analyze(final File file) {
         File statisticsFile = createStatisticsFile(file);
-        showLoadProgress();
-
+        loadStarted();
         FileHandler.Listener listener = new FileHandler.Listener() {
             @Override
             public void success(List<Statistics> list) {
-                title.setText("Document Structure of \"" + file.getName() + "\"");
                 setMappingTree(MappingTree.create(list, file.getName()));
-                hideLoadProgress();
+                loadFinished();
             }
 
             @Override
             public void failure(Exception exception) {
-                title.setText("Document Structure");
-                // TODO: implement!
-                hideLoadProgress();
+                // todo: use JOptionPane or something else to show failure to user
+                loadFinished();
             }
 
             @Override
             public void finished() {
-                // todo: fileMenu has moved to SipCreatorGUI
-                fileMenu.setEnabled(true);
-                hideLoadProgress();
+                loadFinished();
             }
         };
 
