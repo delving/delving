@@ -3,22 +3,13 @@ package eu.europeana.sip.gui;
 import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.reference.Transform;
+import groovy.lang.GroovyShell;
+import org.apache.log4j.Logger;
+import org.codehaus.groovy.control.CompilationFailedException;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
  * Handle the choices for converter, and allow for filling in parameters
@@ -27,12 +18,12 @@ import java.awt.event.KeyEvent;
  */
 
 public class TransformPanel extends JPanel {
+    private final Logger LOG = Logger.getLogger(TransformPanel.class);
     private MappingTree.Node node;
     private EuropeanaField europeanaField;
     private Listener listener;
     private JComboBox transformBox = new JComboBox(Transform.values());
-    private JPanel formCards = new JPanel(new CardLayout());
-    private FormPanel[] form = new FormPanel[Transform.values().length];
+    private JTextArea groovyArea = new JTextArea();
 
     public TransformPanel(MappingTree.Node node, EuropeanaField europeanaField, Listener listener) {
         super(new BorderLayout());
@@ -50,30 +41,43 @@ public class TransformPanel extends JPanel {
         });
         p.add(transformBox, BorderLayout.CENTER);
         add(p, BorderLayout.NORTH);
-        formCards.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        add(formCards, BorderLayout.CENTER);
+        groovyArea.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        add(groovyArea, BorderLayout.CENTER);
+        JButton compileButton = new JButton("Compile");
+        add(compileButton, BorderLayout.SOUTH);
+        compileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent a) {
+                try {
+                    new GroovyShell().evaluate(groovyArea.getText());
+                }
+                catch (CompilationFailedException e) {
+                    LOG.error(e.getMessage(), e);
+                }
+            }
+        });
         for (Transform transform : Transform.values()) {
-            JPanel panel = form[transform.ordinal()] = new FormPanel(transform);
-            formCards.add(panel, transform.toString());
+            //JPanel panel = form[transform.ordinal()] = new FormPanel(transform);
+            //formCards.add(panel, transform.toString());
         }
         setTransform();
     }
 
     public interface Listener {
-        void transformSelected(Transform transform, String [] fieldValues);
+        void transformSelected(Transform transform, String[] fieldValues);
     }
 
     private void setTransform() {
         Transform transform = (Transform) transformBox.getModel().getSelectedItem();
         setTransform(transform);
-        listener.transformSelected(transform, form[transform.ordinal()].getValues());
+        //listener.transformSelected(transform, form[transform.ordinal()].getValues());
     }
 
     private void setTransform(Transform transform) {
         if (transform == null) {
             return;
         }
-        ((CardLayout) formCards.getLayout()).show(formCards, transform.toString());
+        //((CardLayout) formCards.getLayout()).show(formCards, transform.toString());
     }
 
     private class FormPanel extends JPanel {
@@ -105,7 +109,7 @@ public class TransformPanel extends JPanel {
 
 
         public String[] getValues() {
-            String [] values = new String [fields.length];
+            String[] values = new String[fields.length];
             int count = 0;
             for (JTextField field : fields) {
                 values[count++] = field.getText();
@@ -115,6 +119,7 @@ public class TransformPanel extends JPanel {
     }
 
     /* Used by makeCompactGrid. */
+
     private static SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
         SpringLayout layout = (SpringLayout) parent.getLayout();
         Component c = parent.getComponent(row * cols + col);
