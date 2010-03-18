@@ -52,7 +52,7 @@ public class DeviceRecognitionInterceptor extends HandlerInterceptorAdapter {
 		super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
 		if (deviceRecognition != null) {
 			String currentViewName = modelAndView.getViewName();
-			if (currentViewName != null) {
+			if (currentViewName != null && !currentViewName.startsWith("redirect:")) {
                 DeviceRecognitionResult deviceRecognitionResult = deviceRecognition.getDeviceInformation(httpServletRequest, currentViewName);
                 if (deviceRecognitionResult != null) {
                     modelAndView.setViewName(deviceRecognitionResult.GetTemplateName());
