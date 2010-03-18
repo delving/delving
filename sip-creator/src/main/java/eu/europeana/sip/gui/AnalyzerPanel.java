@@ -26,7 +26,7 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class AnalyzerGUI extends JPanel {
+public class AnalyzerPanel extends JPanel {
     private static final int COUNTER_LIST_SIZE = 100;
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private MappingPanel mappingPanel;
@@ -34,7 +34,7 @@ public class AnalyzerGUI extends JPanel {
     private FileMenu fileMenu;
     private ProgressDialog progressDialog;
 
-    public AnalyzerGUI(/*AnnotationProcessor annotationProcessor*/) {
+    public AnalyzerPanel(/*AnnotationProcessor annotationProcessor*/) {
         this.mappingPanel = new MappingPanel(createAnnotationProcessor(AllFieldBean.class));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createAnalysisPanel());
@@ -61,8 +61,7 @@ public class AnalyzerGUI extends JPanel {
                 MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
                 if (node.getStatistics() != null) {
                     mappingPanel.setNode(node);
-                }
-                else {
+                } else {
                     mappingPanel.setNode(null);
                 }
             }
@@ -73,7 +72,7 @@ public class AnalyzerGUI extends JPanel {
         return p;
     }
 
-    private JMenuBar createMenuBar() { // todo: remove
+    private JMenuBar createMenuBar() { // todo: remove since it's being part of SipCreatorGUI
         JMenuBar bar = new JMenuBar();
         fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
@@ -102,9 +101,12 @@ public class AnalyzerGUI extends JPanel {
         }
     }
 
+    public void setProgressDialog(ProgressDialog progressDialog) {
+        this.progressDialog = progressDialog;
+    }
+
     private void showLoadProgress() {
-        // TODO: invoke on top
-//        progressDialog = new ProgressDialog(this, "Analyzing file");
+        progressDialog.setVisible(true);
     }
 
     private void hideLoadProgress() {
@@ -112,11 +114,12 @@ public class AnalyzerGUI extends JPanel {
     }
 
 
-    private void analyze(final File file) {
+    public void analyze(final File file) {
         File statisticsFile = createStatisticsFile(file);
         showLoadProgress();
         if (statisticsFile.exists()) {
             FileHandler.loadStatistics(statisticsFile,
+                    // todo: create single method
                     new FileHandler.LoadListener() {
                         @Override
                         public void success(List<Statistics> list) {
@@ -134,14 +137,14 @@ public class AnalyzerGUI extends JPanel {
 
                         @Override
                         public void finished() {
+                            // todo: fileMenu has moved to SipCreatorGUI
                             fileMenu.setEnabled(true);
                             hideLoadProgress();
                         }
                     },
                     progressDialog
             );
-        }
-        else {
+        } else {
             FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE,
                     new FileHandler.LoadListener() {
                         @Override
@@ -205,10 +208,5 @@ public class AnalyzerGUI extends JPanel {
             }
             return thickFont;
         }
-    }
-
-    public static void main(String[] args) {
-        AnalyzerGUI analyzerGUI = new AnalyzerGUI();
-        analyzerGUI.setVisible(true);
     }
 }

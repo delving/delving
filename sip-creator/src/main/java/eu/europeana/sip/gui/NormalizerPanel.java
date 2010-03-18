@@ -19,7 +19,7 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class NormalizerGUI extends JPanel {
+public class NormalizerPanel extends JPanel {
     private static final long MEGABYTE = 1024L * 1024L;
     private JButton normalize = new JButton("Normalize");
     private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
@@ -28,11 +28,10 @@ public class NormalizerGUI extends JPanel {
     private JButton abort = new JButton("Abort");
     private LogPanel logPanel = new LogPanel();
 //    private JList list;
-    private File destinationRoot;
     private Normalizer normalizer;
 
-    public NormalizerGUI(File sourceRoot, File destinationRoot) {
-        this.destinationRoot = destinationRoot;
+    public NormalizerPanel(File sourceRoot, File destinationRoot) {
+        File destinationRoot1 = destinationRoot;
 //        list = new JList(new ProfileListModel(sourceRoot));
         Logger.getRootLogger().addAppender(logPanel.createAppender(Normalizer.LOG_LAYOUT));
         add(createWest(), BorderLayout.WEST);
@@ -172,19 +171,4 @@ public class NormalizerGUI extends JPanel {
         }
     };
 
-    public static void main(String[] args) throws Exception {                  
-        Logger.getRootLogger().setLevel(Level.INFO);
-        String fromDir = ".";
-        if (args.length > 0) {
-            fromDir = args[0];
-        }
-        String toDir = ".";
-        if (args.length > 1) {
-            toDir = args[1];
-        }
-        final File sourceRoot = new File(fromDir);
-        final File destinationRoot = new File(toDir);
-        NormalizerGUI normalizerGUI = new NormalizerGUI(sourceRoot, destinationRoot);
-        normalizerGUI.setVisible(true);
-    }
 }

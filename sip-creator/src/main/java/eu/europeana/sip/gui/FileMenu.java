@@ -24,6 +24,7 @@ import java.util.TreeMap;
  * The menu for handling files
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
 public class FileMenu extends JMenu {

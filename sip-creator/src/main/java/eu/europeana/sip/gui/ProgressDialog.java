@@ -38,7 +38,6 @@ public class ProgressDialog extends JDialog implements AnalysisParser.Listener {
         this.add(caption);
         this.add(jButton);
         this.pack();
-        this.setVisible(true);
     }
 
     public void setMessage(String message) {

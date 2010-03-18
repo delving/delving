@@ -13,27 +13,23 @@ import java.util.List;
  * The main GUI class for the sip creator
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
- * @author Serkan Demirel <serkan.demirel@kb.nl>
  */
 
-public class SipCreator extends JFrame {
+public class SipCreatorGUI extends JFrame {
     private FileMenu fileMenu;
+    private AnalyzerPanel analyzerPanel;
 
-    public SipCreator(Class<?> beanClass) {
+    public SipCreatorGUI(Class<?> beanClass) {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setJMenuBar(createMenuBar());
         JTabbedPane tabs = new JTabbedPane();
-        // todo: clean up
-        final File sourceRoot = new File(".");
-        final File destinationRoot = new File(".");
-        NormalizerGUI normalizerGUI = new NormalizerGUI(sourceRoot, destinationRoot);
-        tabs.addTab("Analyzer", new AnalyzerGUI());
-        tabs.addTab("Normalizer", normalizerGUI);
+        analyzerPanel = new AnalyzerPanel();
+        analyzerPanel.setProgressDialog(new ProgressDialog(this, "Analyzing file"));
+        tabs.addTab("Analyzer", analyzerPanel);
+        tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
         // todo: tabs
-        // tab for analyzer
         //    (pass in createAnnotationProcessor with this beanClass)
-        // tab for normalizer
         getContentPane().add(tabs);
         setSize(1200, 800);
     }
@@ -44,7 +40,7 @@ public class SipCreator extends JFrame {
             @Override
             public void select(File file) {
                 fileMenu.setEnabled(false);
-//                todo: trigger analyze(file);
+                analyzerPanel.analyze(file);
             }
         });
         bar.add(fileMenu);
@@ -60,7 +56,7 @@ public class SipCreator extends JFrame {
     }
 
     public static void main(String[] args) {
-        SipCreator sipCreator = new SipCreator(AllFieldBean.class);
-        sipCreator.setVisible(true);
+        SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(AllFieldBean.class);
+        sipCreatorGUI.setVisible(true);
     }
 }
