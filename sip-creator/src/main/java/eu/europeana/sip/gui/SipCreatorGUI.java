@@ -13,6 +13,7 @@ import java.util.List;
  * The main GUI class for the sip creator
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
 public class SipCreatorGUI extends JFrame {
@@ -22,10 +23,12 @@ public class SipCreatorGUI extends JFrame {
     public SipCreatorGUI(Class<?> beanClass) {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setJMenuBar(createMenuBar());
+        JMenuBar jMenuBar = createMenuBar();
+        setJMenuBar(jMenuBar);
         JTabbedPane tabs = new JTabbedPane();
         analyzerPanel = new AnalyzerPanel();
         analyzerPanel.setProgressDialog(new ProgressDialog(this, "Analyzing file"));
+        analyzerPanel.setFileMenu(fileMenu);
         tabs.addTab("Analyzer", analyzerPanel);
         tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
         // todo: tabs

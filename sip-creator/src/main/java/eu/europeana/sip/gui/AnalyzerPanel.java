@@ -72,19 +72,6 @@ public class AnalyzerPanel extends JPanel {
         return p;
     }
 
-    private JMenuBar createMenuBar() { // todo: remove since it's being part of SipCreatorGUI
-        JMenuBar bar = new JMenuBar();
-        fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
-            @Override
-            public void select(File file) {
-                fileMenu.setEnabled(false);
-                analyze(file);
-            }
-        });
-        bar.add(fileMenu);
-        return bar;
-    }
-
     private void setMappingTree(MappingTree mappingTree) {
         TreeModel treeModel = mappingTree.createTreeModel();
         statisticsJTree.setModel(treeModel);
@@ -99,6 +86,10 @@ public class AnalyzerPanel extends JPanel {
         for (MappingTree.Node childNode : node.getChildNodes()) {
             expandEmptyNodes(childNode);
         }
+    }
+
+    public void setFileMenu(FileMenu fileMenu) {
+        this.fileMenu = fileMenu;
     }
 
     public void setProgressDialog(ProgressDialog progressDialog) {
