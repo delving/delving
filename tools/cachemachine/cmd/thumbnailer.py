@@ -33,6 +33,7 @@
 """
 
 import os
+import sys
 import time
 import subprocess
 
@@ -41,6 +42,7 @@ import settings
 
 INTERVALL_PROGRES = 60
 IMG_CMD = 'mogrify'
+REPOSITORY = 'repository'
 
 
 
@@ -48,6 +50,45 @@ class GenerateThumbnails(object):
     def __init__(self):
         self.error_count = 0
         self.t0 = time.time()
+        self.file_count = 0
+
+
+
+    def fix_names(self):
+        """
+        FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.BRIEF_DOC.jpg
+        FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.FULL_DOC.jpg
+        """
+        self.move_one_tree(settings.DIR_FULL_DOC)
+        self.move_one_tree(settings.DIR_BRIEF_DOC)
+
+
+    def move_one_tree(self, file_group):
+        base_dir = os.path.join(settings.MEDIA_ROOT, file_group)
+        for dirpath, dirnames, filenames in os.walk(base_dir):
+            if dirpath == base_dir:
+                continue
+            if self.t0 + INTERVALL_PROGRES  < time.time():
+                # Show progress
+                msg = '%s/%s - moved files: %i' % (file_group, sub_dir, self.file_count)
+                print msg
+                self.t0 = time.time()
+            sub_dir = os.path.split(dirpath)[1]
+            dest_dir = os.path.join(settings.MEDIA_ROOT, REPOSITORY, sub_dir)
+            os.mkdir(dest_dir)
+            for filename in filenames:
+                fname_dest = '%s/%s.%s.jpg' % (dest_dir,os.path.splitext(filename)[0],file_group)
+                fname_src = '%s/%s' % (dirpath, filename)
+                print 'would have moved %s to %s' % (fname_src, fname_dest)
+                #os.rename(fname_src, fname_dest)
+                self.file_count += 1
+                sys.exit(1)
+
+
+
+
+
+
 
     def run(self):
         base_dir = os.path.join(settings.MEDIA_ROOT, settings.DIR_ORIGINAL)
@@ -68,7 +109,6 @@ class GenerateThumbnails(object):
         if error_count:
             print 'Detected %i errors processing the tree' % error_count
         return
-
 
     def create_one_image(self, dir_path, sub_dir, filename):
         if self.t0 + INTERVALL_PROGRES  < time.time():
