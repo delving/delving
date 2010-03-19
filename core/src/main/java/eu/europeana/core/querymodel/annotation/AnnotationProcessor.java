@@ -61,6 +61,14 @@ public interface AnnotationProcessor {
     Set<? extends EuropeanaField> getSolrFields();
 
     /**
+     * Return a collection of mappable fields
+     *
+     * @return the fields which are mappable
+     */
+
+    Set<? extends EuropeanaField> getMappableFields();
+
+    /**
      * Get an array of all solr field names which can be passed easily
      * to the QueryAnalyser to validate the fielded query strings.
      *

@@ -59,6 +59,14 @@ public interface EuropeanaField {
     boolean isFacet();
 
     /**
+     * Reveal whether the field is mappable
+     *
+     * @return true if it is
+     */
+    
+    boolean isMappable();
+
+    /**
      * When this is a facet field, reveal its name
      * @return the name of the facet
      */

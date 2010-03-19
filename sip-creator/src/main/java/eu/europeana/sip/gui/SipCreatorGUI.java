@@ -25,15 +25,14 @@ public class SipCreatorGUI extends JFrame {
     public SipCreatorGUI(Class<?> beanClass) {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JMenuBar jMenuBar = createMenuBar();
-        setJMenuBar(jMenuBar);
         JTabbedPane tabs = new JTabbedPane();
         analyzerPanel = new AnalyzerPanel(createAnnotationProcessor(beanClass));
         analyzerPanel.setProgressDialog(new ProgressDialog(this, "Analyzing file"));
-        analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
         tabs.addTab("Analyzer", analyzerPanel);
         tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
         getContentPane().add(tabs);
+        setJMenuBar(createMenuBar());
+        analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
         setSize(1200, 800);
     }
 

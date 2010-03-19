@@ -25,7 +25,12 @@ import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Interpret the annotations in the beans which define the search model, and
@@ -39,6 +44,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     private Logger log = Logger.getLogger(getClass());
     private Set<EuropeanaFieldImpl> facetFields = new HashSet<EuropeanaFieldImpl>();
     private Set<EuropeanaFieldImpl> solrFields = new HashSet<EuropeanaFieldImpl>();
+    private Set<EuropeanaFieldImpl> mappableFields = new HashSet<EuropeanaFieldImpl>();
     private String [] facetFieldStrings;
     private List<String> solrFieldList;
     private Map<Class<?>, EuropeanaBean> beanMap = new HashMap<Class<?>, EuropeanaBean>();
@@ -64,6 +70,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     @Override
     public Set<? extends EuropeanaField> getSolrFields() {
         return solrFields;
+    }
+
+    @Override
+    public Set<? extends EuropeanaField> getMappableFields() {
+        return mappableFields;
     }
 
     @Override
@@ -114,6 +125,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                         if (europeanaField.isFacet()) {
                             facetFields.add(europeanaField);
                             facetMap.put(europeanaField.getFacetName(), europeanaField.getFacetPrefix());
+                        }
+                        if (europeanaField.isMappable()) {
+                            mappableFields.add(europeanaField);
                         }
                         solrFields.add(europeanaField);
                         europeanaBean.addField(europeanaField);
@@ -266,6 +280,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         @Override
         public boolean isFacet() {
             return europeanaAnnotation.facet();
+        }
+
+        @Override
+        public boolean isMappable() {
+            return europeanaAnnotation.mappable();
         }
 
         @Override

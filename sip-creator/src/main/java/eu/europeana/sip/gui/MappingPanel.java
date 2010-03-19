@@ -34,6 +34,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -212,7 +214,17 @@ public class MappingPanel extends JPanel {
 
     private class FieldListModel extends AbstractListModel {
         private static final long serialVersionUID = 939393939;
-        private List<EuropeanaField> list = new ArrayList<EuropeanaField>(annotationProcessor.getSolrFields());
+        private List<EuropeanaField> list;
+
+        private FieldListModel() {
+            this.list = new ArrayList<EuropeanaField>(annotationProcessor.getMappableFields());
+            Collections.sort(list, new Comparator<EuropeanaField>() {
+                @Override
+                public int compare(EuropeanaField field0, EuropeanaField field1) {
+                    return field0.getFieldNameString().compareTo(field1.getFieldNameString());
+                }
+            });
+        }
 
         @Override
         public int getSize() {
