@@ -6,9 +6,10 @@ import eu.europeana.sip.reference.Transform;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import org.apache.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
@@ -21,12 +22,25 @@ import java.util.Map;
  */
 
 public class TransformPanel extends JPanel {
+    private final static int VALIDATION_DELAY = 500;
     private final Logger LOG = Logger.getLogger(TransformPanel.class);
     private MappingTree.Node node;
     private EuropeanaField europeanaField;
     private Listener listener;
     private JComboBox transformBox = new JComboBox(Transform.values());
-    private JTextArea groovyArea = new JTextArea();
+    private final JTextArea groovyEditor = createGroovyEditor();
+    private JLabel validationStatus = new JLabel();
+    private Binding binding = new Binding(retrieveVariables());
+    private Timer timer =
+            new Timer(VALIDATION_DELAY,
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            validationStatus.setText(String.format("Syntax = %s%n", validateGroovyCode(binding, groovyEditor.getText()) ? "OK" : "ERROR"));
+                            timer.stop();
+                        }
+                    }
+            );
 
     public TransformPanel(MappingTree.Node node, EuropeanaField europeanaField, Listener listener) {
         super(new BorderLayout());
@@ -44,20 +58,14 @@ public class TransformPanel extends JPanel {
         });
         p.add(transformBox, BorderLayout.CENTER);
         add(p, BorderLayout.NORTH);
-        groovyArea.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        add(groovyArea, BorderLayout.CENTER);
+        add(groovyEditor, BorderLayout.CENTER);
         JButton compileButton = new JButton("Compile");
         add(compileButton, BorderLayout.SOUTH);
+        add(validationStatus, BorderLayout.NORTH);
         compileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent a) {
-                Binding binding = new Binding(retrieveVariables());
-                try {
-                    new GroovyShell(binding).evaluate(groovyArea.getText());
-                }
-                catch (CompilationFailedException e) {
-                    LOG.error(e.getMessage(), e);
-                }
+                validateGroovyCode(binding, groovyEditor.getText());
             }
         });
         for (Transform transform : Transform.values()) {
@@ -66,6 +74,40 @@ public class TransformPanel extends JPanel {
         }
         setTransform();
     }
+
+    private boolean validateGroovyCode(Binding binding, String code) {
+        try {
+            new GroovyShell(binding).evaluate(code);
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    private JTextArea createGroovyEditor() {
+        final JTextArea groovyEditor = new JTextArea();
+        groovyEditor.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        groovyEditor.getDocument().addDocumentListener(
+                new DocumentListener() {
+                    @Override
+                    public void insertUpdate(DocumentEvent e) {
+                        timer.restart();
+                    }
+
+                    @Override
+                    public void removeUpdate(DocumentEvent e) {
+                        timer.restart();
+                    }
+
+                    @Override
+                    public void changedUpdate(DocumentEvent e) {
+                    }
+                }
+        );
+        return groovyEditor;
+    }
+
 
     public Map<String, String> retrieveVariables() {
         Map<String, String> map = new HashMap<String, String>();
