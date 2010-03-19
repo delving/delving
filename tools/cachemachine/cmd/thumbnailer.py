@@ -75,7 +75,8 @@ class GenerateThumbnails(object):
                 self.t0 = time.time()
             sub_dir = os.path.split(dirpath)[1]
             dest_dir = os.path.join(settings.MEDIA_ROOT, REPOSITORY, sub_dir)
-            os.mkdir(dest_dir)
+            if not os.path.exists(dest_dir):
+                os.mkdir(dest_dir)
             for filename in filenames:
                 fname_dest = '%s/%s.%s.jpg' % (dest_dir,os.path.splitext(filename)[0],file_group)
                 fname_src = '%s/%s' % (dirpath, filename)
