@@ -108,4 +108,30 @@ public @interface Europeana {
      */
 
     boolean type() default false;
+
+    /**
+     * Is this field mappable (Source Field to Europeana Field). The are quite a few fields that are created through
+     * Solr copyfields and are therefore not directly mappable during the mapping face.
+     *
+     * Note: CopyFields can never be mappable
+     *
+     * @return true if it is
+     */
+    boolean mappable() default false;
+
+    /**
+     * There are some fields that are added by the Europeana System during the IngestionPhase based on meta-information
+     * provided with the DataSet during submission.
+     *
+     * These fields are therefore unmappable and must be kept separated during ESE validation and only used during ESE+
+     * validation.
+     *
+     * When EDM is adopted as the internal datamodel the same will apply. These fields need to be kept separate during
+     * initial import validation and only be validated during the validation of the Archival Information Packages.
+     *
+     *
+     * @return true if it is
+     */
+
+    boolean importAddition() default false;
 }

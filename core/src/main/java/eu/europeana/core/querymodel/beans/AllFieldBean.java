@@ -53,7 +53,7 @@ public class AllFieldBean extends FullBean {
     String[] subject;
 
 
-    @Europeana(fullDoc = false)
+    @Europeana(fullDoc = false, mappable = true)
     @Solr(namespace = "europeana", name = "unstored", stored = false)
     @Field("europeana_unstored")
     String[] europeanaUnstored;
