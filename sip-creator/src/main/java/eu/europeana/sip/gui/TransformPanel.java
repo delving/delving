@@ -3,17 +3,13 @@ package eu.europeana.sip.gui;
 import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.reference.Transform;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Handle the choices for converter, and allow for filling in parameters
@@ -22,25 +18,11 @@ import java.util.Map;
  */
 
 public class TransformPanel extends JPanel {
-    private final static int VALIDATION_DELAY = 500;
-    private final Logger LOG = Logger.getLogger(TransformPanel.class);
     private MappingTree.Node node;
     private EuropeanaField europeanaField;
     private Listener listener;
     private JComboBox transformBox = new JComboBox(Transform.values());
-    private final JTextArea groovyEditor = createGroovyEditor();
     private JLabel validationStatus = new JLabel();
-    private Binding binding = new Binding(retrieveVariables());
-    private Timer timer =
-            new Timer(VALIDATION_DELAY,
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            validationStatus.setText(String.format("Syntax = %s%n", validateGroovyCode(binding, groovyEditor.getText()) ? "OK" : "ERROR"));
-                            timer.stop();
-                        }
-                    }
-            );
 
     public TransformPanel(MappingTree.Node node, EuropeanaField europeanaField, Listener listener) {
         super(new BorderLayout());
@@ -58,61 +40,26 @@ public class TransformPanel extends JPanel {
         });
         p.add(transformBox, BorderLayout.CENTER);
         add(p, BorderLayout.NORTH);
+        final GroovyEditor groovyEditor = new GroovyEditor(
+                new GroovyEditor.Listener() {
+                    @Override
+                    public void update(boolean result) {
+                        if (result) {
+                            validationStatus.setText("Syntax is OK");
+                        }
+                        else {
+                            validationStatus.setText("Syntax contains errors");
+                        }
+                    }
+                }
+        );
         add(new JScrollPane(groovyEditor), BorderLayout.CENTER);
-        JButton compileButton = new JButton("Compile");
-        add(compileButton, BorderLayout.SOUTH);
         add(validationStatus, BorderLayout.NORTH);
-        compileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent a) {
-                validateGroovyCode(binding, groovyEditor.getText());
-            }
-        });
         for (Transform transform : Transform.values()) {
             //JPanel panel = form[transform.ordinal()] = new FormPanel(transform);
             //formCards.add(panel, transform.toString());
         }
         setTransform();
-    }
-
-    private boolean validateGroovyCode(Binding binding, String code) {
-        try {
-            new GroovyShell(binding).evaluate(code);
-            return true;
-        }
-        catch (Exception e) {
-            return false;
-        }
-    }
-
-    private JTextArea createGroovyEditor() {
-        final JTextArea groovyEditor = new JTextArea();
-        groovyEditor.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        groovyEditor.getDocument().addDocumentListener(
-                new DocumentListener() {
-                    @Override
-                    public void insertUpdate(DocumentEvent e) {
-                        timer.restart();
-                    }
-
-                    @Override
-                    public void removeUpdate(DocumentEvent e) {
-                        timer.restart();
-                    }
-
-                    @Override
-                    public void changedUpdate(DocumentEvent e) {
-                    }
-                }
-        );
-        return groovyEditor;
-    }
-
-
-    public Map<String, String> retrieveVariables() {
-        Map<String, String> map = new HashMap<String, String>();
-        // todo: retrieve variables
-        return map;
     }
 
     public interface Listener {
