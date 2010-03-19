@@ -78,12 +78,12 @@ class GenerateThumbnails(object):
             if not os.path.exists(dest_dir):
                 os.mkdir(dest_dir)
             for filename in filenames:
-                fname_dest = '%s/%s.%s.jpg' % (dest_dir,os.path.splitext(filename)[0],file_group)
                 fname_src = '%s/%s' % (dirpath, filename)
-                print 'would have moved %s to %s' % (fname_src, fname_dest)
-                #os.rename(fname_src, fname_dest)
+                fname_dest = '%s/%s.%s.jpg' % (dest_dir,os.path.splitext(filename)[0],file_group)
+                os.rename(fname_src, fname_dest)
                 self.file_count += 1
-                sys.exit(1)
+                #print 'would have moved %s to %s' % (fname_src, fname_dest)
+                #sys.exit(1)
 
 
 
