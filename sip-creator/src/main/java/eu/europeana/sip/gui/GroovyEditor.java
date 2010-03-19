@@ -2,12 +2,17 @@ package eu.europeana.sip.gui;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import groovy.xml.MarkupBuilder;
+import groovy.xml.NamespaceBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.StringWriter;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -19,7 +24,9 @@ public class GroovyEditor extends JTextArea {
     public final static int VALIDATION_DELAY = 500;
 
     private Listener listener;
-    private Binding binding;
+    private Map<String, Object> map = new TreeMap<String, Object>();
+    private Binding binding = new Binding(map);
+
     private Timer timer =
             new Timer(VALIDATION_DELAY,
                     new ActionListener() {
@@ -51,7 +58,18 @@ public class GroovyEditor extends JTextArea {
         this.binding = binding;
     }
 
+    private void createDefaultBinding() {
+        StringWriter out = new StringWriter();
+        MarkupBuilder builder = new MarkupBuilder(out);
+        NamespaceBuilder xmlns = new NamespaceBuilder(builder);
+        map.put("builder", builder);
+        map.put("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
+        map.put("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
+        map.put("europeaa", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
+    }
+
     private void init() {
+        createDefaultBinding();
         this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         this.getDocument().addDocumentListener(
                 new DocumentListener() {
@@ -74,12 +92,7 @@ public class GroovyEditor extends JTextArea {
 
     public boolean validateGroovyCode(Binding binding, String code) {
         try {
-            if (null != binding) {
-                new GroovyShell(binding).evaluate(code);
-            }
-            else {
-                new GroovyShell().evaluate(code);
-            }
+            new GroovyShell(binding).evaluate(code);
             return true;
         }
         catch (Exception e) {
