@@ -2,17 +2,16 @@ package eu.europeana.sip.gui;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
-import groovy.xml.MarkupBuilder;
-import groovy.xml.NamespaceBuilder;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.StringWriter;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.Writer;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -20,32 +19,26 @@ import java.util.TreeMap;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 public class GroovyEditor extends JTextArea {
-
     public final static int VALIDATION_DELAY = 500;
-
     private Listener listener;
-    private Map<String, Object> map = new TreeMap<String, Object>();
-    private Binding binding = new Binding(map);
-
+    private BindingSource bindingSource;
     private Timer timer =
             new Timer(VALIDATION_DELAY,
                     new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            if (validateGroovyCode(binding, getText())) {
-                                listener.update(true);
-                            }
-                            else {
-                                listener.update(false);
-                            }
-
+                            listener.update(executeGroovyCode());
                             timer.stop();
                         }
                     }
             );
 
     public interface Listener {
-        void update(boolean result);
+        void update(String result);
+    }
+
+    public interface BindingSource {
+        Binding createBinding(Writer writer);
     }
 
     public GroovyEditor(Listener listener) {
@@ -53,23 +46,16 @@ public class GroovyEditor extends JTextArea {
         this.listener = listener;
     }
 
-    public GroovyEditor(Listener listener, Binding binding) {
+    public GroovyEditor(Listener listener, BindingSource bindingSource) {
         this(listener);
-        this.binding = binding;
+        this.bindingSource = bindingSource;
     }
 
-    private void createDefaultBinding() {
-        StringWriter out = new StringWriter();
-        MarkupBuilder builder = new MarkupBuilder(out);
-        NamespaceBuilder xmlns = new NamespaceBuilder(builder);
-        map.put("builder", builder);
-        map.put("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
-        map.put("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
-        map.put("europeaa", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
+    public void triggerExecution() {
+        timer.restart();
     }
 
     private void init() {
-        createDefaultBinding();
         this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         this.getDocument().addDocumentListener(
                 new DocumentListener() {
@@ -90,29 +76,20 @@ public class GroovyEditor extends JTextArea {
         );
     }
 
-    public boolean validateGroovyCode(Binding binding, String code) {
+    private String executeGroovyCode() {
         try {
-            new GroovyShell(binding).evaluate(code);
-            return true;
+            StringWriter writer = new StringWriter();
+            GroovyShell shell = new GroovyShell(bindingSource.createBinding(writer));
+            shell.evaluate(getText());
+            return writer.toString();
         }
         catch (Exception e) {
-            return false;
+            return e.toString();
         }
-    }
-
-    public Binding getBinding() {
-        return binding;
-    }
-
-    public void setBinding(Binding binding) {
-        this.binding = binding;
     }
 
     @Override
     public String toString() {
-        return "GroovyEditor{" +
-                ", binding=" + binding +
-                ", timer=" + timer +
-                '}';
+        return "GroovyEditor";
     }
 }

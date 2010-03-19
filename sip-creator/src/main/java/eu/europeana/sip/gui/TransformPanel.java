@@ -4,8 +4,17 @@ import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.reference.Transform;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -43,13 +52,8 @@ public class TransformPanel extends JPanel {
         final GroovyEditor groovyEditor = new GroovyEditor(
                 new GroovyEditor.Listener() {
                     @Override
-                    public void update(boolean result) {
-                        if (result) {
-                            validationStatus.setText("Syntax is OK");
-                        }
-                        else {
-                            validationStatus.setText("Syntax contains errors");
-                        }
+                    public void update(String result) {
+                        validationStatus.setText(result);
                     }
                 }
         );
