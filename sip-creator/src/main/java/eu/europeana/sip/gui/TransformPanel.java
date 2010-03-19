@@ -58,7 +58,7 @@ public class TransformPanel extends JPanel {
         });
         p.add(transformBox, BorderLayout.CENTER);
         add(p, BorderLayout.NORTH);
-        add(groovyEditor, BorderLayout.CENTER);
+        add(new JScrollPane(groovyEditor), BorderLayout.CENTER);
         JButton compileButton = new JButton("Compile");
         add(compileButton, BorderLayout.SOUTH);
         add(validationStatus, BorderLayout.NORTH);
