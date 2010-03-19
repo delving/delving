@@ -5,6 +5,7 @@ import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
 import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.core.querymodel.query.Language;
 import eu.europeana.sip.reference.Profile;
+import groovy.util.Node;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
@@ -175,25 +176,24 @@ public class Normalizer implements Runnable {
             Logger.getRootLogger().addAppender(fileAppender);
             output = createStreamWriter(outputFile);
             int depth = 0;
-            MetadataRecord record = null;
+            Node record = null;
             String path = "";
             while (running) {
                 switch (input.getEventType()) {
                     case XMLStreamConstants.START_DOCUMENT:
-                        startDocument(output, writeSolr);
                         break;
                     case XMLStreamConstants.START_ELEMENT:
                         depth++;
                         path += "/" + input.getPrefixedName();
                         if (separator.equals(input.getName()) && (source.recordSeparatorDepth == 0 || depth == source.recordSeparatorDepth)) {
-                            record = new MetadataRecord(
-                                    europeanaFields,
-                                    typeMap,
-                                    missingTypeMappings,
-                                    languageMap,
-                                    missingLanguageMappings,
-                                    source.collectionId
-                            );
+//                            record = new MetadataRecord(
+//                                    europeanaFields,
+//                                    typeMap,
+//                                    missingTypeMappings,
+//                                    languageMap,
+//                                    missingLanguageMappings,
+//                                    source.collectionId
+//                            );
                             recordsProcessed++;
                             if (recordsProcessed % 100 == 0) {
                                 if (progress != null) {
@@ -205,10 +205,10 @@ public class Normalizer implements Runnable {
                             appendChar(textValues, ' ');
                             Profile.FieldMapping elementFieldMapping = fieldMappings.get(path);
                             QName tagName = input.getName();
-                            MetadataField field = null;
-                            if (elementFieldMapping != null) {
-                                field = new MetadataField(tagName, elementFieldMapping);
-                            }
+//                            MetadataField field = null;
+//                            if (elementFieldMapping != null) {
+//                                field = new MetadataField(tagName, elementFieldMapping);
+//                            }
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 String attribute = (input.getAttributePrefix(walk) != null) ? input.getAttributePrefix(walk)+":"+input.getAttributeLocalName(walk): input.getAttributeLocalName(walk);
                                 String attributePath = path + "@" + attribute;
@@ -227,7 +227,7 @@ public class Normalizer implements Runnable {
                                 if (attributeFieldMapping.acceptField != null) {
                                     if (!attributeValue.equals(attributeFieldMapping.acceptField)) {
                                         log.debug("discarding field due to "+attributePath+" being unequal to "+attributeFieldMapping.acceptField);
-                                        field = null;
+//                                        field = null;
                                         continue;
                                     }
                                 }
@@ -235,12 +235,12 @@ public class Normalizer implements Runnable {
 //                                if (field != null && "xml:lang".equals(attribute)) {
 //                                    field.setLanguage(attributeValue);
 //                                }
-                                record.add(new MetadataField(input.getAttributeName(walk), attributeFieldMapping)).getValue().append(input.getAttributeValue(walk));
+//                                record.add(new MetadataField(input.getAttributeName(walk), attributeFieldMapping)).getValue().append(input.getAttributeValue(walk));
                             }
-                            if (field != null) {
-                                textValues.push(new TextValue(tagName,record.add(field).getValue()));
-                                log.info("push: "+tagName);
-                            }
+//                            if (field != null) {
+//                                textValues.push(new TextValue(tagName,record.add(field).getValue()));
+//                                log.info("push: "+tagName);
+//                            }
                         }
                         break;
                     case XMLStreamConstants.CHARACTERS:
@@ -271,7 +271,7 @@ public class Normalizer implements Runnable {
                         }
                         if (record != null && separator.equals(tagName)) {
 //                            try {
-                                record.doConversions();
+//                                record.doConversions();
 //                            }
 //                            catch (ConverterException e) {
 //                                log.warn("Unable to convert", e);
@@ -280,7 +280,7 @@ public class Normalizer implements Runnable {
 //                                record = null;
 //                                break;
 //                            }
-                            record.removeEmpty();
+//                            record.removeEmpty();
 //                            boolean hasObject = record.hasField(RecordField.EUROPEANA_OBJECT);
 //                            if (!hasObject) {
 //                                counters.withoutEuropeanaObject();
@@ -301,7 +301,7 @@ public class Normalizer implements Runnable {
 //                                break;
 //                            }
 //                            record.putValue(new Profile.MapTo(RecordField.EUROPEANA_HAS_OBJECT), String.valueOf(hasObject));
-                            record.chooseFirstOrLast();
+//                            record.chooseFirstOrLast();
 //                            if (source.additions != null) {
 //                                appendAdditions(source, record);
 //                            }
@@ -349,8 +349,8 @@ public class Normalizer implements Runnable {
 //                            validateRecord(record);
                             recordsNormalized++;
 //                            record.concatenateDuplicates();
-                            record.removeDuplicates();
-                            record.removeEmpty();
+//                            record.removeDuplicates();
+//                            record.removeEmpty();
 //                            if (record.removeIfNotURL(RecordField.EUROPEANA_IS_SHOWN_AT)) {
 //                                log.warn(RecordField.EUROPEANA_IS_SHOWN_AT+" was not a URL");
 //                            }
@@ -360,7 +360,7 @@ public class Normalizer implements Runnable {
 //                            if (record.removeIfNotURL(RecordField.EUROPEANA_OBJECT)) {
 //                                log.warn(RecordField.EUROPEANA_OBJECT+" was not a URL");
 //                            }
-                            record.render(output, writeSolr);
+//                            record.render(output, writeSolr);
                             record = null;
                         }
                         break;
@@ -406,6 +406,13 @@ public class Normalizer implements Runnable {
             fileAppender.close();
         }
     }
+
+    /**
+     * Append a character to all of the text values in the stack
+     *
+     * @param textValues the current stack
+     * @param ch the character to add
+     */
 
     private void appendChar(Stack<TextValue> textValues, char ch) {
         for (TextValue fieldValue : textValues) {
@@ -513,22 +520,6 @@ public class Normalizer implements Runnable {
         xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
         xmlif.configureForSpeed();
         return xmlif;
-    }
-
-    private void startDocument(XMLStreamWriter writer, boolean writeSolr) throws XMLStreamException {
-        log.info("Start Document.");
-        writer.writeStartDocument();
-        writer.writeCharacters("\n");
-        if (!writeSolr) {
-            writer.writeStartElement("metadata");
-            for (String[] pair : QNameBuilder.PREFIX) {
-                writer.writeNamespace(pair[0], pair[1]);
-            }
-        }
-        else {
-            writer.writeStartElement("save");
-        }
-        writer.writeCharacters("\n");
     }
 
     public String toString() {

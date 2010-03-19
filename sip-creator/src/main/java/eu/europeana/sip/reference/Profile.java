@@ -2,9 +2,7 @@ package eu.europeana.sip.reference;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.converters.enums.EnumConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,14 +125,14 @@ public class Profile {
         public MapTo() {
         }
 
-        public MapTo(RecordField key) {
-            this.key = key;
-        }
+//        public MapTo(RecordField key) {
+//            this.key = key;
+//        }
 
-        @XStreamAsAttribute
-        @XStreamConverter(EnumConverter.class)
-        public
-        RecordField key;
+//        @XStreamAsAttribute
+//        @XStreamConverter(EnumConverter.class)
+//        public
+//        RecordField key;
 
         @XStreamAsAttribute
         String converter;
@@ -180,17 +178,17 @@ public class Profile {
 //            return converterInstance;
 //        }
 
-        public String toString() {
-            return key.toString();
-        }
+//        public String toString() {
+//            return key.toString();
+//        }
     }
 
     @XStreamAlias("addition")
     public static class RecordAddition {
-        @XStreamAsAttribute
-        @XStreamConverter(EnumConverter.class)
-        public
-        RecordField key;
+//        @XStreamAsAttribute
+//        @XStreamConverter(EnumConverter.class)
+//        public
+//        RecordField key;
 
         @XStreamAsAttribute
         public
