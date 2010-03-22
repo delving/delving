@@ -89,6 +89,7 @@ public class GroovyEditor extends JTextArea {
             StringWriter writer = new StringWriter();
             GroovyShell shell = new GroovyShell(bindingSource.createBinding(writer));
             shell.evaluate(getText());
+            groovyPersistor.save(new StringBuffer(getText()));
             return writer.toString();
         }
         catch (Exception e) {
