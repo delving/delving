@@ -1,11 +1,28 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
+
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
+
+
+#viewtest starts
+from django.views.generic import list_detail
+from mysite.books.models import Publisher
+
+publisher_info = {
+    "queryset" : Publisher.objects.all(),
+}
+#viewtest ends
+
+
 import apps.multi_lingo
+
+
+
 
 
 urlpatterns = patterns('',
@@ -19,6 +36,11 @@ urlpatterns = patterns('',
 
     url(r'^reload_templates/', apps.multi_lingo.views.reload_templates,
         name='reload-templates'),
+
+    #viewtest starts
+    (r'^publishers/$', list_detail.object_list, publisher_info)
+    #viewtest ends
+
 )
 
 urlpatterns += apps.multi_lingo.utils.urls()
