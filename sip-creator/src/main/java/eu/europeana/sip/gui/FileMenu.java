@@ -3,18 +3,18 @@ package eu.europeana.sip.gui;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import eu.europeana.sip.io.GroovyPersistor;
+import eu.europeana.sip.io.GroovyPersistorImpl;
+import org.apache.log4j.Logger;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +28,14 @@ import java.util.TreeMap;
  */
 
 public class FileMenu extends JMenu {
+
+    private final static Logger LOG = Logger.getLogger(FileMenu.class.getName());
+
     private static final File RECENT_FILES_FILE = new File("RecentFiles.xml");
     private Component parent;
     private Action loadFile = new LoadNewFileAction();
-    private Map<String, Action> recentFileActions = new TreeMap<String,Action>();
+    private Action saveFile = new SaveFileAction();
+    private Map<String, Action> recentFileActions = new TreeMap<String, Action>();
     private JMenu recentFilesMenu = new JMenu("Recent Files");
     private SelectListener selectListener;
 
@@ -45,6 +49,7 @@ public class FileMenu extends JMenu {
         this.selectListener = selectListener;
         this.add(loadFile);
         this.add(recentFilesMenu);
+        this.add(saveFile);
         loadRecentFiles();
     }
 
@@ -69,7 +74,32 @@ public class FileMenu extends JMenu {
         void select(File file);
     }
 
+    private class SaveFileAction extends AbstractAction {
+
+        // todo: serialVersionUID ?
+        private GroovyPersistor groovyPersistor = new GroovyPersistorImpl(new File("ESEMapping.mapping"));
+
+        public SaveFileAction() {
+            super("Save");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if ("save".equalsIgnoreCase(e.getActionCommand())) {
+                try {
+                    // todo: retrieve snippet
+                    // todo: also put in separate thread
+                    groovyPersistor.save(new StringBuffer("snippet"));
+                }
+                catch (IOException e1) {
+                    LOG.error("Error saving snippet to file", e1);
+                }
+            }
+        }
+    }
+
     private class LoadNewFileAction extends AbstractAction {
+
         private static final long serialVersionUID = -6398521298905842613L;
         private JFileChooser chooser = new JFileChooser("XML File");
 
@@ -80,6 +110,7 @@ public class FileMenu extends JMenu {
                 public boolean accept(File file) {
                     return file.getName().endsWith(".xml");
                 }
+
                 @Override
                 public String getDescription() {
                     return "XML Files";
@@ -110,7 +141,7 @@ public class FileMenu extends JMenu {
         private File file;
 
         private LoadRecentFileAction(File file) {
-            super("Load "+file.getName());
+            super("Load " + file.getName());
             this.file = file;
         }
 
