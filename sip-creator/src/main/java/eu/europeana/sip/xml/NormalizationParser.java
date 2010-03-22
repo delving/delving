@@ -84,9 +84,10 @@ public class NormalizationParser implements Iterable<Node> {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (input.getName().equals(recordRoot)) {
+                        withinRecord = false;
                         finishedRecord = true;
                     }
-                    else {
+                    if (withinRecord) {
                         Node node = nodeStack.pop();
                         if (value.length() > 0) {
                             node.setValue(value.toString());

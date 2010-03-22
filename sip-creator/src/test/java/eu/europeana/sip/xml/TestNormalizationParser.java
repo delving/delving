@@ -1,5 +1,6 @@
 package eu.europeana.sip.xml;
 
+import eu.europeana.core.util.StarterUtil;
 import groovy.util.Node;
 import org.junit.Test;
 
@@ -12,6 +13,8 @@ import java.util.List;
 /**
  * Make sure the parser is working nicely
  *
+ * todo: there are no assertions so this isn't really a legitimate test
+ *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
@@ -19,7 +22,7 @@ public class TestNormalizationParser {
 
     @Test
     public void iterate() throws FileNotFoundException, XMLStreamException {
-        FileInputStream in = new FileInputStream("/Users/fluxe/europeana/trunk/core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml");
+        FileInputStream in = new FileInputStream(StarterUtil.getEuropeanaPath()+"/core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml");
         QName recordRoot = QNameBuilder.createQName("record");
         NormalizationParser parser = new NormalizationParser(in, recordRoot);
         for (Node node : parser) {
