@@ -1,15 +1,16 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.io.GroovyPersistor;
+import eu.europeana.sip.io.GroovyPersistorImpl;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
-import javax.swing.BorderFactory;
-import javax.swing.JTextArea;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -19,7 +20,11 @@ import java.io.Writer;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 public class GroovyEditor extends JTextArea {
+
     public final static int VALIDATION_DELAY = 500;
+
+    private static final String DEFAULT_FILE_NAME = "File.mapping";
+    private GroovyPersistor groovyPersistor;
     private Listener listener;
     private BindingSource bindingSource;
     private Timer timer =
@@ -56,6 +61,9 @@ public class GroovyEditor extends JTextArea {
     }
 
     private void init() {
+        // todo: retrieve working directory
+        File mappingFile = new File(DEFAULT_FILE_NAME);
+        groovyPersistor = new GroovyPersistorImpl(mappingFile);
         this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         this.getDocument().addDocumentListener(
                 new DocumentListener() {

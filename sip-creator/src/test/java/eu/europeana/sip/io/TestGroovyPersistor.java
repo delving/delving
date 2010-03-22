@@ -14,7 +14,7 @@ import java.io.IOException;
 public class TestGroovyPersistor {
 
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
-    private final String GROOVY_SNIPPET = "println(\"aap\");";
+    private final String GROOVY_SNIPPET = "println(\"this is a groovy test\");";
     private final static String GROOVY_MAPPING_FILE = "File.mapping";
     private File mappingFile;
     private GroovyPersistor groovyPersistor;
