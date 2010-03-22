@@ -31,7 +31,7 @@ import java.util.Iterator;
  */
 public class GroovyEditorGUI extends JFrame {
 
-    private static final String DEFAULT_INPUT_FILE = "/Users/fluxe/europeana/trunk/core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml"; // todo: replace
+    private static final String DEFAULT_INPUT_FILE = "core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml"; // todo: replace
     private GroovyEditor groovyEditor;
     private JTextArea outputTextArea = new JTextArea();
     private NormalizationParser normalizationParser;
