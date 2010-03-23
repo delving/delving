@@ -150,6 +150,7 @@
 
     <bean id="objectCache" class="eu.europeana.core.database.incoming.cache.ObjectCacheImpl">
         <property name="root" value="#{europeanaProperties['cache.cacheRoot']}"/>
+        <property name="fetchOriginal" value="false"/>
     </bean>
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">

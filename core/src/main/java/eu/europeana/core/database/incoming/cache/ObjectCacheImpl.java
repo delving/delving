@@ -60,6 +60,7 @@ public class ObjectCacheImpl implements ObjectCache {
     private final MessageDigest digest;
     private final Logger log = Logger.getLogger(getClass());
     private HttpClient httpClient;
+    private boolean fetchOriginal;
 
     private enum Style {
         FUTURE,
@@ -105,6 +106,10 @@ public class ObjectCacheImpl implements ObjectCache {
         }
     }
 
+    public void setFetchOriginal(boolean fetchOriginal) {
+        this.fetchOriginal = fetchOriginal;
+    }
+
     @Override
     public File getFetchScriptFile(EuropeanaCollection collection) {
         return new File(root, collection.getName() + ".txt");
@@ -133,16 +138,17 @@ public class ObjectCacheImpl implements ObjectCache {
         String hash = createHash(objectUri);
         String directoryString = getDirectory(hash, ItemSize.ORIGINAL);
         File originalFile = new File(root, directoryString + SLASH + hash);
-        String cleanURI = sanitizeURI(objectUri);
-        GetMethod getMethod = createGetMethod(cleanURI);
-        MimeType mimeType = fetch(originalFile, getMethod);
-        File mimeTypedOriginalFile = new File(originalFile.getParent(), hash + mimeType.getExtension());
-        if (!originalFile.renameTo(mimeTypedOriginalFile)) {
-            log.warn("Unable to rename file to " + mimeTypedOriginalFile.getAbsolutePath());
-            mimeType = null;
+        if (fetchOriginal) {
+            String cleanURI = sanitizeURI(objectUri);
+            GetMethod getMethod = createGetMethod(cleanURI);
+            MimeType mimeType = fetch(originalFile, getMethod);
+            File mimeTypedOriginalFile = new File(originalFile.getParent(), hash + mimeType.getExtension());
+            if (!originalFile.renameTo(mimeTypedOriginalFile)) {
+                log.warn("Unable to rename file to " + mimeTypedOriginalFile.getAbsolutePath());
+            }
+            log.info("Successfully cached: " + mimeTypedOriginalFile.getAbsolutePath());
         }
-        log.info("Successfully cached: " + mimeTypedOriginalFile.getAbsolutePath());
-        return europeanaUri + ":" + objectUri + ":" + mimeTypedOriginalFile.getAbsolutePath() + ":" + mimeType + '\n';
+        return europeanaUri + ":" + objectUri + ":" + originalFile.getAbsolutePath() + '\n';
     }
 
     @Override
