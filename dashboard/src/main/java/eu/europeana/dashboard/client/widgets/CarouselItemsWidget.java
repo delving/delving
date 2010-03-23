@@ -3,8 +3,15 @@ package eu.europeana.dashboard.client.widgets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DecoratedPopupPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import eu.europeana.dashboard.client.DashboardWidget;
 import eu.europeana.dashboard.client.Reply;
 import eu.europeana.dashboard.client.dto.CarouselItemX;
@@ -103,8 +110,15 @@ public class CarouselItemsWidget extends DashboardWidget {
     }
 
     private class PopupClickListener implements ClickHandler {
+        private static final int DELAY = 4000;
         private static final int OFFSET = 30;
         private CarouselItemX item;
+        private Timer timer = new Timer() {
+            @Override
+            public void run() {
+                popup.hide();
+            }
+        };
 
         private PopupClickListener(CarouselItemX item) {
             this.item = item;
@@ -112,6 +126,9 @@ public class CarouselItemsWidget extends DashboardWidget {
 
         @Override
         public void onClick(ClickEvent sender) {
+            if (popup.isShowing()) {
+                popup.hide();
+            }
             popup.setPopupPosition(((Widget)sender.getSource()).getAbsoluteLeft() + OFFSET, ((Widget)sender.getSource()).getAbsoluteTop() + 2 * OFFSET);
             Grid grid = new Grid(6, 2);
             grid.setHTML(0, 0, world.messages().title());
@@ -126,16 +143,6 @@ public class CarouselItemsWidget extends DashboardWidget {
             grid.setHTML(3, 1, item.getProvider());
             grid.setHTML(4, 1, item.getLanguage());
             grid.setHTML(5, 1, item.getType().toString());
-            grid.addClickHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    HTMLTable.Cell cell= ((Grid)event.getSource()).getCellForEvent(event);
-                    if (cell != null){
-                        // todo ???
-                    }
-                    popup.hide();         // inside the if block ??
-                }
-            });
             VerticalPanel p = new VerticalPanel();
             p.setWidth("100%");
             p.add(grid);
@@ -148,6 +155,7 @@ public class CarouselItemsWidget extends DashboardWidget {
                         public void onSuccess(Boolean result) {
                             if (result) {
                                 popup.hide();
+                                timer.cancel();
                                 refreshGrid();
                             }
                         }
@@ -158,6 +166,7 @@ public class CarouselItemsWidget extends DashboardWidget {
             p.add(delete);
             popup.setWidget(p);
             popup.show();
+            timer.schedule(DELAY);
         }
 
     }
