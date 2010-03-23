@@ -117,6 +117,14 @@ public class GroovyEditor extends JTextArea {
     public void setMappingFile(File mappingFile) {
         this.mappingFile = mappingFile;
         ((GroovyPersistorImpl) groovyPersistor).setMappingFile(mappingFile);
+        if(mappingFile.exists()) {
+            try {
+                setText(groovyPersistor.read(mappingFile));
+            }
+            catch (IOException e) {
+                e.printStackTrace();  // todo: handle catch
+            }
+        }
     }
 
     @Override

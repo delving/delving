@@ -47,7 +47,7 @@ public class GroovyEditorGUI extends JFrame {
         fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
             public void select(File file) {
-                mappingFile = new File(file.getParent() + "/Groovy.mapping");
+                mappingFile = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(".")) + ".mapping");
                 groovyEditor.setMappingFile(mappingFile);
             }
         });
