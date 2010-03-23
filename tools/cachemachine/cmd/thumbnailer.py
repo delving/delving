@@ -36,8 +36,56 @@ import os
 import sys
 import time
 import subprocess
+import exceptions
+
 
 import settings
+
+
+"""
+=====================================
+
+Module specific settings, should be set in the global local_settings.py
+
+"""
+
+"""
+ Url structure for generated thumbnails, can be one of
+
+ 1 = - old style (pre 0.6)
+
+        item with sha256 FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51
+
+        would be saved as
+        FE21/CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.FULL_DOC.jpg
+        FE21/CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.BRIEF_DOC.jpg
+
+ 2 = current style
+        item with sha256 FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51
+
+        would be saved as
+        FULL_DOC/FE/21/FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.jpg
+        BRIEF_DOC/FE/21/FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.jpg
+
+"""
+try:
+    URL_STRUCTURE = settings.THUMBNAILS_STRUCTURE
+except:
+    URL_STRUCTURE = 2
+if not URL_STRUCTURE in (1,2):
+    raise exceptions.NotImplementedError('invalid THUMBNAILS_STRUCTURE')
+
+"""
+Normaly we would generate thumbs on dir level, when run on os x - at least my system
+mogrify dies a terrible death if any of the "images" happens to be a wordfile or
+similar, hanging, when process is killed the rest of that dir is not processed
+In that case iteration on file level is better - slower but only the bad image is lost
+since it couldnt be generated anyway no actual data is lost.
+"""
+try:
+    ITERATE_ON_DIR = settings.THHUMBNAIL_PER_DIRECTORY
+except:
+    ITERATE_ON_DIR = True
 
 
 INTERVALL_PROGRES = 60
@@ -99,7 +147,8 @@ class GenerateThumbnails(object):
             sub_dir = os.path.split(dirpath)[1]
             #if sub_dir < '85D':
             #    continue
-            if 0: # do a dir at a time
+            if ITERATE_ON_DIR:
+                # do a dir at a time
                 if filenames:
                     self.create_imgs(dirpath, sub_dir)
             else: # do one file at a time
@@ -112,6 +161,8 @@ class GenerateThumbnails(object):
         return
 
     def create_one_image(self, dir_path, sub_dir, filename):
+        if 1:
+            raise exceptions.NotImplementedError('check this code!')
         if self.t0 + INTERVALL_PROGRES  < time.time():
             # Show progress
             msg = sub_dir
@@ -168,7 +219,13 @@ class GenerateThumbnails(object):
         #
         #  FULL_DOC
         #
-        dest_full = os.path.join(settings.MEDIA_ROOT, settings.DIR_FULL_DOC, sub_dir)
+        if 1:
+            raise exceptions.NotImplementedError('check this code!')
+        if URL_STRUCTURE == 1:
+            dest_full = os.path.join(settings.MEDIA_ROOT, settings.DIR_FULL_DOC, sub_dir)
+        else:
+            dest_full = os.path.join(settings.MEDIA_ROOT, settings.DIR_FULL_DOC, sub_dir)
+
         cmd = ['%s -path %s' % (IMG_CMD, dest_full)]
         cmd.append('-format jpg')
         cmd.append('-define jpeg:size=260x200')
