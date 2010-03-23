@@ -69,8 +69,11 @@ public class GroovyEditor extends JTextArea {
     }
 
     private void init() {
+        if (null == mappingFile) {
+            mappingFile = new File("Groovy.mapping");
+        }
         groovyPersistor = new GroovyPersistorImpl(mappingFile);
-        if(mappingFile.exists()) {
+        if (mappingFile.exists()) {
             try {
                 this.setText(groovyPersistor.read(mappingFile));
             }
@@ -109,6 +112,11 @@ public class GroovyEditor extends JTextArea {
         catch (Exception e) {
             return e.toString();
         }
+    }
+
+    public void setMappingFile(File mappingFile) {
+        this.mappingFile = mappingFile;
+        ((GroovyPersistorImpl) groovyPersistor).setMappingFile(mappingFile);
     }
 
     @Override

@@ -21,6 +21,7 @@ public class GroovyPersistorImpl implements GroovyPersistor, Executor {
 
     public GroovyPersistorImpl(File mappingFile) {
         this.mappingFile = mappingFile;
+        LOG.info(String.format("Mapping file %s%n", mappingFile));
     }
 
     @Override
@@ -59,12 +60,9 @@ public class GroovyPersistorImpl implements GroovyPersistor, Executor {
         // todo: this process should be able to run in a separate process
     }
 
-    public File getMappingFile() {
-        return mappingFile;
-    }
-
     public void setMappingFile(File mappingFile) {
         this.mappingFile = mappingFile;
+        LOG.info(String.format("Updated mapping file to %s%n", mappingFile));
     }
 
     public String toString() {
