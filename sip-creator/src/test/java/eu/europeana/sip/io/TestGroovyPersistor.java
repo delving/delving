@@ -15,32 +15,41 @@ public class TestGroovyPersistor {
 
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
     private final String GROOVY_SNIPPET = "println(\"this is a groovy test\");";
-    private final static String GROOVY_MAPPING_FILE = "File.mapping";
+    private final static String GROOVY_MAPPING_FILE = "Groovy.mapping";
     private File mappingFile;
-    private GroovyPersistor groovyPersistor;
+    private GroovyService groovyService;
 
     @Before
     public void setUp() {
         mappingFile = new File(GROOVY_MAPPING_FILE);
-        groovyPersistor = new GroovyPersistorImpl(mappingFile);
+        groovyService = new GroovyService(mappingFile);
     }
 
     @Test
     public void testSave() throws IOException {
-        groovyPersistor.save(new StringBuffer(GROOVY_SNIPPET));
+        new Thread(groovyService.new Persist(GROOVY_SNIPPET)).start();
         LOG.info(String.format("Writing to %s; %s [%d bytes written]%n", mappingFile, GROOVY_SNIPPET, GROOVY_SNIPPET.length()));
     }
 
 
     @Test
     public void readSnippet() throws IOException {
-        String result = groovyPersistor.read();
-        Assert.assertTrue(GROOVY_SNIPPET.equals(result));
-        LOG.info(String.format("Reading from %s; %s [%d bytes read]%n", mappingFile, result, result.length()));
+        new Thread(
+                groovyService.new Load(
+                        new GroovyService.LoadListener() {
+                            @Override
+                            public void loadComplete(String groovySnippet) {
+                                Assert.assertTrue(GROOVY_SNIPPET.equals(groovySnippet));
+                                LOG.info(String.format("Reading from %s; %s [%d bytes read]%n", mappingFile, groovySnippet, groovySnippet.length()));
+                            }
+                        }
+                )
+        ).start();
     }
 
     @Test
-    public void tearDown() {
+    public void tearDown
+            () {
         if (mappingFile.delete()) {
             LOG.info("File deleted ...");
         }

@@ -1,7 +1,6 @@
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.GroovyPersistor;
-import eu.europeana.sip.io.GroovyPersistorImpl;
+import eu.europeana.sip.io.GroovyService;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
@@ -11,10 +10,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,13 +20,13 @@ import java.util.concurrent.Executors;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class GroovyEditor extends JTextArea implements Executor {
+public class GroovyEditor extends JTextArea {
 
     public final static int VALIDATION_DELAY = 500;
 
     private ExecutorService threadPool = Executors.newCachedThreadPool();
     private File mappingFile;
-    private GroovyPersistor groovyPersistor;
+    private GroovyService groovyService;
     private Listener listener;
     private BindingSource bindingSource;
     private Timer timer =
@@ -42,11 +39,6 @@ public class GroovyEditor extends JTextArea implements Executor {
                         }
                     }
             );
-
-    @Override
-    public void execute(Runnable command) {
-        // todo: implement
-    }
 
     public interface Listener {
         void update(String result);
@@ -81,14 +73,16 @@ public class GroovyEditor extends JTextArea implements Executor {
         if (null == mappingFile) {
             mappingFile = new File("Groovy.mapping");
         }
-        groovyPersistor = new GroovyPersistorImpl(mappingFile);
+        groovyService = new GroovyService(mappingFile);
         if (mappingFile.exists()) {
-            try {
-                this.setText(groovyPersistor.read(mappingFile));
-            }
-            catch (IOException e) {
-                e.printStackTrace();  // todo: handle catch
-            }
+            groovyService.new Load(
+                    new GroovyService.LoadListener() {
+                        @Override
+                        public void loadComplete(String groovySnippet) {
+                            setText(groovySnippet);
+                        }
+                    }
+            );
         }
         this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         this.getDocument().addDocumentListener(
@@ -115,7 +109,7 @@ public class GroovyEditor extends JTextArea implements Executor {
             StringWriter writer = new StringWriter();
             GroovyShell shell = new GroovyShell(bindingSource.createBinding(writer));
             shell.evaluate(getText());
-            threadPool.execute(new FileSaver());
+            threadPool.execute(groovyService.new Persist(getText()));
             return writer.toString();
         }
         catch (Exception e) {
@@ -125,33 +119,16 @@ public class GroovyEditor extends JTextArea implements Executor {
 
     public void setMappingFile(File mappingFile) {
         this.mappingFile = mappingFile;
-        ((GroovyPersistorImpl) groovyPersistor).setMappingFile(mappingFile);
+        groovyService.setMappingFile(mappingFile);
         if (mappingFile.exists()) {
-            threadPool.execute(new FileLoader());
-        }
-    }
-
-    private class FileLoader implements Runnable {
-        @Override
-        public void run() {
-            try {
-                setText(groovyPersistor.read(mappingFile));
-            }
-            catch (IOException e) {
-                e.printStackTrace();  // todo: handle catch
-            }
-        }
-    }
-
-    private class FileSaver implements Runnable {
-        @Override
-        public void run() {
-            try {
-                groovyPersistor.save(new StringBuffer(getText()));
-            }
-            catch (IOException e) {
-                e.printStackTrace();  // todo: handle catch
-            }
+            threadPool.execute(groovyService.new Load(
+                    new GroovyService.LoadListener() {
+                        @Override
+                        public void loadComplete(String groovySnippet) {
+                            setText(groovySnippet);
+                        }
+                    }
+            ));
         }
     }
 
