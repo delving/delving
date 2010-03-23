@@ -28,6 +28,7 @@ public class GroovyPersistorImpl implements GroovyPersistor {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         LOG.debug(String.format("Writing to %s; %s [%d bytes written]%n", file, groovySnippet, groovySnippet.length()));
         fileOutputStream.write(groovySnippet.toString().getBytes(), 0, groovySnippet.length());
+        fileOutputStream.close();
     }
 
     @Override
@@ -46,6 +47,7 @@ public class GroovyPersistorImpl implements GroovyPersistor {
             result.append((char) count);
         }
         LOG.debug(String.format("Reading from %s; %s [%d bytes read]%n", file, result, result.length()));
+        fileInputStream.close();
         return result.toString();
     }
 
