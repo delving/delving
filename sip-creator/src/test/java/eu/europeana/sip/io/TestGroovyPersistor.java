@@ -27,24 +27,21 @@ public class TestGroovyPersistor {
 
     @Test
     public void testSave() throws IOException {
-        new Thread(groovyService.new Persist(GROOVY_SNIPPET)).start();
+        groovyService.save(mappingFile, GROOVY_SNIPPET);
         LOG.info(String.format("Writing to %s; %s [%d bytes written]%n", mappingFile, GROOVY_SNIPPET, GROOVY_SNIPPET.length()));
     }
 
-
     @Test
     public void readSnippet() throws IOException {
-        new Thread(
-                groovyService.new Load(
-                        new GroovyService.LoadListener() {
-                            @Override
-                            public void loadComplete(String groovySnippet) {
-                                Assert.assertTrue(GROOVY_SNIPPET.equals(groovySnippet));
-                                LOG.info(String.format("Reading from %s; %s [%d bytes read]%n", mappingFile, groovySnippet, groovySnippet.length()));
-                            }
-                        }
-                )
-        ).start();
+        groovyService.read(mappingFile,
+                new GroovyService.LoadListener() {
+                    @Override
+                    public void loadComplete(String groovySnippet) {
+                        Assert.assertTrue(GROOVY_SNIPPET.equals(groovySnippet));
+                        LOG.info(String.format("Reading from %s; %s [%d bytes read]%n", mappingFile, groovySnippet, groovySnippet.length()));
+                    }
+                }
+        );
     }
 
     @Test

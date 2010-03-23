@@ -2,7 +2,7 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -10,10 +10,9 @@ import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -23,22 +22,31 @@ import java.util.concurrent.Executors;
 public class GroovyEditor extends JTextArea {
 
     public final static int VALIDATION_DELAY = 500;
+    private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
 
-    private ExecutorService threadPool = Executors.newCachedThreadPool();
     private File mappingFile;
     private GroovyService groovyService;
     private Listener listener;
     private BindingSource bindingSource;
+
     private Timer timer =
             new Timer(VALIDATION_DELAY,
                     new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            listener.update(executeGroovyCode());
+                            executeGroovyCode();
                             timer.stop();
                         }
                     }
             );
+
+    private GroovyService.LoadListener loadListener =
+            new GroovyService.LoadListener() {
+                @Override
+                public void loadComplete(String groovySnippet) {
+                    setText(groovySnippet);
+                }
+            };
 
     public interface Listener {
         void update(String result);
@@ -75,14 +83,12 @@ public class GroovyEditor extends JTextArea {
         }
         groovyService = new GroovyService(mappingFile);
         if (mappingFile.exists()) {
-            groovyService.new Load(
-                    new GroovyService.LoadListener() {
-                        @Override
-                        public void loadComplete(String groovySnippet) {
-                            setText(groovySnippet);
-                        }
-                    }
-            );
+            try {
+                groovyService.read(mappingFile, loadListener);
+            }
+            catch (IOException e) {
+                LOG.error("Error reading snippet", e);
+            }
         }
         this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         this.getDocument().addDocumentListener(
@@ -104,16 +110,28 @@ public class GroovyEditor extends JTextArea {
         );
     }
 
-    private String executeGroovyCode() {
+    private void executeGroovyCode() {
         try {
-            StringWriter writer = new StringWriter();
-            GroovyShell shell = new GroovyShell(bindingSource.createBinding(writer));
-            shell.evaluate(getText());
-            threadPool.execute(groovyService.new Persist(getText()));
-            return writer.toString();
+            final StringWriter writer = new StringWriter();
+            groovyService.compile(
+                    getText(),
+                    bindingSource.createBinding(writer),
+                    new GroovyService.CompileListener() {
+                        @Override
+                        public void compilationResult(String result) {
+                            try {
+                                groovyService.save(mappingFile, getText());
+                            }
+                            catch (IOException e) {
+                                LOG.error("Error saving snippet", e);
+                            }
+                            listener.update(result);
+                        }
+                    }
+            );
         }
         catch (Exception e) {
-            return e.toString();
+            LOG.error("Error executing code", e);
         }
     }
 
@@ -121,14 +139,12 @@ public class GroovyEditor extends JTextArea {
         this.mappingFile = mappingFile;
         groovyService.setMappingFile(mappingFile);
         if (mappingFile.exists()) {
-            threadPool.execute(groovyService.new Load(
-                    new GroovyService.LoadListener() {
-                        @Override
-                        public void loadComplete(String groovySnippet) {
-                            setText(groovySnippet);
-                        }
-                    }
-            ));
+            try {
+                groovyService.read(mappingFile, loadListener);
+            }
+            catch (IOException e) {
+                LOG.error("Error reading snippet", e);
+            }
         }
     }
 
