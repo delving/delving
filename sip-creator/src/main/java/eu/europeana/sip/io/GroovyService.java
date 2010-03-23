@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,6 +24,7 @@ public class GroovyService {
     private final ExecutorService threadPool = Executors.newSingleThreadExecutor();
 
     private File mappingFile;
+    private BindingSource bindingSource;
 
     public interface LoadListener {
         void loadComplete(String groovySnippet);
@@ -31,13 +34,18 @@ public class GroovyService {
         void compilationResult(String result);
     }
 
-    public GroovyService(File mappingFile) {
+    public interface BindingSource {
+        Binding createBinding(Writer writer);
+    }
+
+    public GroovyService(File mappingFile, BindingSource bindingSource) {
         this.mappingFile = mappingFile;
+        this.bindingSource = bindingSource;
         LOG.debug(String.format("Mapping file %s%n", mappingFile));
     }
 
-    public void compile(String groovySnippet, Binding binding, CompileListener compileListener) throws Exception {
-        threadPool.execute(new GroovyCompiler(groovySnippet, binding, compileListener));
+    public void compile(String groovySnippet, CompileListener compileListener) throws Exception {
+        threadPool.execute(new GroovyCompiler(groovySnippet, compileListener));
     }
 
     public void save(File file, String groovySnippet) throws IOException {
@@ -109,24 +117,22 @@ public class GroovyService {
     }
 
     private class GroovyCompiler implements Runnable {
-
+        private StringWriter writer = new StringWriter();
         private CompileListener compileListener;
         private String groovySnippet;
-        private Binding binding;
 
-        public GroovyCompiler(String groovySnippet, Binding binding, CompileListener compileListener) {
+        public GroovyCompiler(String groovySnippet, CompileListener compileListener) {
             this.groovySnippet = groovySnippet;
-            this.binding = binding;
             this.compileListener = compileListener;
         }
 
         @Override
         public void run() {
 
-            String result;
             try {
-                result = (String) new GroovyShell(binding).evaluate(groovySnippet);
-                compileListener.compilationResult(result);
+                Binding binding = bindingSource.createBinding(writer);
+                new GroovyShell(binding).evaluate(groovySnippet);
+                compileListener.compilationResult(writer.toString());
             }
             catch (Exception e) {
                 LOG.error("Error compiling snippet", e);

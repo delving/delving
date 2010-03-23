@@ -1,5 +1,6 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.io.GroovyService;
 import eu.europeana.sip.xml.NormalizationParser;
 import eu.europeana.sip.xml.QNameBuilder;
 import groovy.lang.Binding;
@@ -119,7 +120,7 @@ public class GroovyEditorGUI extends JFrame {
         record = nodeIterator.next();
     }
 
-    private class Source implements GroovyEditor.BindingSource {
+    private class Source implements GroovyService.BindingSource {
 
         @Override
         public Binding createBinding(Writer writer) {

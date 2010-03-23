@@ -22,7 +22,7 @@ public class TestGroovyPersistor {
     @Before
     public void setUp() {
         mappingFile = new File(GROOVY_MAPPING_FILE);
-        groovyService = new GroovyService(mappingFile);
+        groovyService = new GroovyService(mappingFile, null);
     }
 
     @Test

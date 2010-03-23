@@ -1,18 +1,17 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
-import groovy.lang.Binding;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -27,7 +26,7 @@ public class GroovyEditor extends JTextArea {
     private File mappingFile;
     private GroovyService groovyService;
     private Listener listener;
-    private BindingSource bindingSource;
+    private GroovyService.BindingSource bindingSource;
 
     private Timer timer =
             new Timer(VALIDATION_DELAY,
@@ -52,25 +51,16 @@ public class GroovyEditor extends JTextArea {
         void update(String result);
     }
 
-    public interface BindingSource {
-        Binding createBinding(Writer writer);
-    }
-
     public GroovyEditor(Listener listener) {
         this.listener = listener;
         init();
     }
 
-    public GroovyEditor(Listener listener, File mappingFile) {
+    public GroovyEditor(Listener listener, GroovyService.BindingSource bindingSource, File mappingFile) {
         this.listener = listener;
-        this.mappingFile = mappingFile;
-        init();
-    }
-
-    public GroovyEditor(Listener listener, BindingSource bindingSource, File mappingFile) {
-        this(listener, mappingFile);
         this.bindingSource = bindingSource;
         this.mappingFile = mappingFile;
+        init();
     }
 
     public void triggerExecution() {
@@ -81,7 +71,7 @@ public class GroovyEditor extends JTextArea {
         if (null == mappingFile) {
             mappingFile = new File("Groovy.mapping");
         }
-        groovyService = new GroovyService(mappingFile);
+        groovyService = new GroovyService(mappingFile, bindingSource);
         if (mappingFile.exists()) {
             try {
                 groovyService.read(mappingFile, loadListener);
@@ -112,10 +102,8 @@ public class GroovyEditor extends JTextArea {
 
     private void executeGroovyCode() {
         try {
-            final StringWriter writer = new StringWriter();
             groovyService.compile(
                     getText(),
-                    bindingSource.createBinding(writer),
                     new GroovyService.CompileListener() {
                         @Override
                         public void compilationResult(String result) {
@@ -125,7 +113,7 @@ public class GroovyEditor extends JTextArea {
                             catch (IOException e) {
                                 LOG.error("Error saving snippet", e);
                             }
-                            listener.update(writer.toString());
+                            listener.update(result);
                         }
                     }
             );
