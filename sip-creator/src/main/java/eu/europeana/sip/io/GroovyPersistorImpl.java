@@ -6,14 +6,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.Executor;
 
 /**
  * Implementation of GroovyPersistor
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class GroovyPersistorImpl implements GroovyPersistor, Executor {
+public class GroovyPersistorImpl implements GroovyPersistor {
 
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
 
@@ -53,11 +52,6 @@ public class GroovyPersistorImpl implements GroovyPersistor, Executor {
     @Override
     public String read() throws IOException {
         return read(mappingFile);
-    }
-
-    @Override
-    public void execute(Runnable command) {
-        // todo: this process should be able to run in a separate process
     }
 
     public void setMappingFile(File mappingFile) {

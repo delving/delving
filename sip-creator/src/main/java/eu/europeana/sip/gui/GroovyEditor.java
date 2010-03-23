@@ -14,16 +14,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class GroovyEditor extends JTextArea {
+public class GroovyEditor extends JTextArea implements Executor {
 
     public final static int VALIDATION_DELAY = 500;
 
+    private ExecutorService threadPool = Executors.newCachedThreadPool();
     private File mappingFile;
     private GroovyPersistor groovyPersistor;
     private Listener listener;
@@ -38,6 +42,11 @@ public class GroovyEditor extends JTextArea {
                         }
                     }
             );
+
+    @Override
+    public void execute(Runnable command) {
+        // todo: implement
+    }
 
     public interface Listener {
         void update(String result);
@@ -106,7 +115,7 @@ public class GroovyEditor extends JTextArea {
             StringWriter writer = new StringWriter();
             GroovyShell shell = new GroovyShell(bindingSource.createBinding(writer));
             shell.evaluate(getText());
-            groovyPersistor.save(new StringBuffer(getText()));
+            threadPool.execute(new FileSaver());
             return writer.toString();
         }
         catch (Exception e) {
@@ -117,9 +126,28 @@ public class GroovyEditor extends JTextArea {
     public void setMappingFile(File mappingFile) {
         this.mappingFile = mappingFile;
         ((GroovyPersistorImpl) groovyPersistor).setMappingFile(mappingFile);
-        if(mappingFile.exists()) {
+        if (mappingFile.exists()) {
+            threadPool.execute(new FileLoader());
+        }
+    }
+
+    private class FileLoader implements Runnable {
+        @Override
+        public void run() {
             try {
                 setText(groovyPersistor.read(mappingFile));
+            }
+            catch (IOException e) {
+                e.printStackTrace();  // todo: handle catch
+            }
+        }
+    }
+
+    private class FileSaver implements Runnable {
+        @Override
+        public void run() {
+            try {
+                groovyPersistor.save(new StringBuffer(getText()));
             }
             catch (IOException e) {
                 e.printStackTrace();  // todo: handle catch
