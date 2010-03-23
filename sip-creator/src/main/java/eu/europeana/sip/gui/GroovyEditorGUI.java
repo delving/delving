@@ -126,8 +126,8 @@ public class GroovyEditorGUI extends JFrame {
             MarkupBuilder builder = new MarkupBuilder(writer);
             NamespaceBuilder xmlns = new NamespaceBuilder(builder);
             Binding binding = new Binding();
-            binding.setVariable("in", record);
-            binding.setVariable("out", builder);
+            binding.setVariable("input", record);
+            binding.setVariable("output", builder);
             binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
             binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
             binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
