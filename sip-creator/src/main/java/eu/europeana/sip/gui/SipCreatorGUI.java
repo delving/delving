@@ -19,7 +19,6 @@ import java.util.List;
 public class SipCreatorGUI extends JFrame {
     private FileMenu fileMenu;
     private AnalyzerPanel analyzerPanel;
-    private File workingDirectory;
 
     public SipCreatorGUI(Class<?> beanClass) {
         super("Europeana Ingestion SIP Creator");
@@ -41,7 +40,6 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void select(File file) {
                 analyzerPanel.analyze(file);
-                workingDirectory = new File(file.getParent());
             }
         });
         bar.add(fileMenu);

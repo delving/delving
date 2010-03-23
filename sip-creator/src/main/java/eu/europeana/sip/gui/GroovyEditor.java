@@ -125,7 +125,7 @@ public class GroovyEditor extends JTextArea {
                             catch (IOException e) {
                                 LOG.error("Error saving snippet", e);
                             }
-                            listener.update(result);
+                            listener.update(writer.toString());
                         }
                     }
             );
