@@ -32,6 +32,8 @@ public class GroovyPersistorImpl implements GroovyPersistor, Executor {
 
     @Override
     public void save(StringBuffer groovySnippet) throws IOException {
+        mappingFile = new File(mappingFile.getPath());
+        LOG.info("Saving to file " + mappingFile);
         save(mappingFile, groovySnippet);
     }
 
@@ -57,7 +59,14 @@ public class GroovyPersistorImpl implements GroovyPersistor, Executor {
         // todo: this process should be able to run in a separate process
     }
 
-    @Override
+    public File getMappingFile() {
+        return mappingFile;
+    }
+
+    public void setMappingFile(File mappingFile) {
+        this.mappingFile = mappingFile;
+    }
+
     public String toString() {
         return "GroovyPersistorImpl{" +
                 "mappingFile=" + mappingFile +

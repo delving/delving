@@ -11,6 +11,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -23,7 +24,7 @@ public class GroovyEditor extends JTextArea {
 
     public final static int VALIDATION_DELAY = 500;
 
-    private static final String DEFAULT_FILE_NAME = "File.mapping";
+    private File mappingFile;
     private GroovyPersistor groovyPersistor;
     private Listener listener;
     private BindingSource bindingSource;
@@ -47,13 +48,20 @@ public class GroovyEditor extends JTextArea {
     }
 
     public GroovyEditor(Listener listener) {
-        init();
         this.listener = listener;
+        init();
     }
 
-    public GroovyEditor(Listener listener, BindingSource bindingSource) {
-        this(listener);
+    public GroovyEditor(Listener listener, File mappingFile) {
+        this.listener = listener;
+        this.mappingFile = mappingFile;
+        init();
+    }
+
+    public GroovyEditor(Listener listener, BindingSource bindingSource, File mappingFile) {
+        this(listener, mappingFile);
         this.bindingSource = bindingSource;
+        this.mappingFile = mappingFile;
     }
 
     public void triggerExecution() {
@@ -61,9 +69,15 @@ public class GroovyEditor extends JTextArea {
     }
 
     private void init() {
-        // todo: retrieve working directory
-        File mappingFile = new File(DEFAULT_FILE_NAME);
         groovyPersistor = new GroovyPersistorImpl(mappingFile);
+        if(mappingFile.exists()) {
+            try {
+                this.setText(groovyPersistor.read(mappingFile));
+            }
+            catch (IOException e) {
+                e.printStackTrace();  // todo: handle catch
+            }
+        }
         this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         this.getDocument().addDocumentListener(
                 new DocumentListener() {

@@ -7,23 +7,13 @@ import groovy.util.Node;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.Writer;
+import java.io.*;
 import java.util.Iterator;
 
 /**
@@ -37,6 +27,8 @@ public class GroovyEditorGUI extends JFrame {
     private NormalizationParser normalizationParser;
     private Node record;
     private Iterator<Node> nodeIterator;
+    private FileMenu fileMenu;
+    private File mappingFile;
 
     public GroovyEditorGUI(File inputFile) throws FileNotFoundException, XMLStreamException {
         super("Standalone Groovy editor");
@@ -46,6 +38,20 @@ public class GroovyEditorGUI extends JFrame {
         nodeIterator = normalizationParser.iterator();
         nextRecord();
         setSize(1200, 900);
+        setJMenuBar(createMenuBar());
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    private JMenuBar createMenuBar() {
+        JMenuBar bar = new JMenuBar();
+        fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
+            @Override
+            public void select(File file) {
+                mappingFile = new File(file.getParent() + "/Groovy.mapping");
+            }
+        });
+        bar.add(fileMenu);
+        return bar;
     }
 
     private JComponent createMainPanel() {
@@ -69,6 +75,14 @@ public class GroovyEditorGUI extends JFrame {
 
     private JComponent createSplitPane() {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        if (null == mappingFile) {
+            try {
+                mappingFile = new File("Groovy.mapping").getCanonicalFile();
+            }
+            catch (IOException e) {
+                e.printStackTrace();  // todo: handle catch
+            }
+        }
         groovyEditor = new GroovyEditor(
                 new GroovyEditor.Listener() {
                     @Override
@@ -76,7 +90,8 @@ public class GroovyEditorGUI extends JFrame {
                         outputTextArea.setText(result);
                     }
                 },
-                new Source()
+                new Source(),
+                mappingFile
         );
         JScrollPane scroll;
         split.setTopComponent(scroll = new JScrollPane(groovyEditor));

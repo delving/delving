@@ -4,9 +4,7 @@ import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
 import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.List;
 public class SipCreatorGUI extends JFrame {
     private FileMenu fileMenu;
     private AnalyzerPanel analyzerPanel;
+    private File workingDirectory;
 
     public SipCreatorGUI(Class<?> beanClass) {
         super("Europeana Ingestion SIP Creator");
@@ -42,6 +41,7 @@ public class SipCreatorGUI extends JFrame {
             @Override
             public void select(File file) {
                 analyzerPanel.analyze(file);
+                workingDirectory = new File(file.getParent());
             }
         });
         bar.add(fileMenu);

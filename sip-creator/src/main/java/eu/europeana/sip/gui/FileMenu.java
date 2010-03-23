@@ -3,8 +3,6 @@ package eu.europeana.sip.gui;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import eu.europeana.sip.io.GroovyPersistor;
-import eu.europeana.sip.io.GroovyPersistorImpl;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -14,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +31,6 @@ public class FileMenu extends JMenu {
     private static final File RECENT_FILES_FILE = new File("RecentFiles.xml");
     private Component parent;
     private Action loadFile = new LoadNewFileAction();
-    private Action saveFile = new SaveFileAction();
     private Map<String, Action> recentFileActions = new TreeMap<String, Action>();
     private JMenu recentFilesMenu = new JMenu("Recent Files");
     private SelectListener selectListener;
@@ -49,7 +45,6 @@ public class FileMenu extends JMenu {
         this.selectListener = selectListener;
         this.add(loadFile);
         this.add(recentFilesMenu);
-        this.add(saveFile);
         loadRecentFiles();
     }
 
@@ -72,30 +67,6 @@ public class FileMenu extends JMenu {
 
     public interface SelectListener {
         void select(File file);
-    }
-
-    private class SaveFileAction extends AbstractAction {
-
-        // todo: serialVersionUID ?
-        private GroovyPersistor groovyPersistor = new GroovyPersistorImpl(new File("ESEMapping.mapping"));
-
-        public SaveFileAction() {
-            super("Save");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if ("save".equalsIgnoreCase(e.getActionCommand())) {
-                try {
-                    // todo: retrieve snippet
-                    // todo: also put in separate thread
-                    groovyPersistor.save(new StringBuffer("snippet"));
-                }
-                catch (IOException e1) {
-                    LOG.error("Error saving snippet to file", e1);
-                }
-            }
-        }
     }
 
     private class LoadNewFileAction extends AbstractAction {
