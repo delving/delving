@@ -7,13 +7,25 @@ import groovy.util.Node;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Iterator;
 
 /**
@@ -114,8 +126,8 @@ public class GroovyEditorGUI extends JFrame {
             MarkupBuilder builder = new MarkupBuilder(writer);
             NamespaceBuilder xmlns = new NamespaceBuilder(builder);
             Binding binding = new Binding();
-            binding.setVariable("record", record);
-            binding.setVariable("builder", builder);
+            binding.setVariable("in", record);
+            binding.setVariable("out", builder);
             binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
             binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
             binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));

@@ -62,7 +62,8 @@ public class NormalizationParser implements Iterable<Node> {
                         else {
                             parent = nodeStack.peek();
                         }
-                        Node node = new Node(parent, input.getPrefix()+"_"+input.getLocalName());
+                        String nodeName = input.getName().equals(recordRoot) ? "in" : input.getPrefix()+"_"+input.getLocalName();
+                        Node node = new Node(parent, nodeName);
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
