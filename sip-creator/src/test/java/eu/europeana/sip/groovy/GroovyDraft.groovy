@@ -15,24 +15,24 @@ class GroovyDraft {
 	}
 
 	def String toString() {
-		return "GroovyDraft [description: ${description}]";
+		return "original toString() GroovyDraft [description: ${description}]";
 	}
 
 	def String tellName() {
-		return "original method";
+		return "original tellName()";
 	}
 
-	static main(args) {
+	def static void main(args) {
 		def gd = new GroovyDraft("this is a draft");
 		println "Before overriding toString() : ${gd}";
 		println "Before overriding tellName() : ${gd.tellName()}";
 		// override
 		gd.metaClass.toString = {
-			return "bla";
+			return "This is the overriden toString()";
 		}
 		// override 
 		gd.metaClass.tellName = {
-			return "serkan";
+			return "This is the overriden tellName()";
 		}
 		println "After overriding toString() - implicit call to toString() ${gd}";
 		println "After overriding tellName() ${gd.tellName()}";
