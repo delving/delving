@@ -2,12 +2,17 @@ package eu.europeana.sip.io;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import groovy.lang.MissingPropertyException;
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
+import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
+import org.codehaus.groovy.syntax.SyntaxException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.concurrent.ExecutorService;
@@ -128,14 +133,28 @@ public class GroovyService {
 
         @Override
         public void run() {
-
             try {
                 Binding binding = bindingSource.createBinding(writer);
                 new GroovyShell(binding).evaluate(groovySnippet);
                 compileListener.compilationResult(writer.toString());
             }
+            catch (MissingPropertyException e) {
+                compileListener.compilationResult("Missing Property: "+e.getProperty());
+            }
+            catch (MultipleCompilationErrorsException e) {
+                StringBuilder out = new StringBuilder();
+                for (Object o : e.getErrorCollector().getErrors()) {
+                    SyntaxErrorMessage message = (SyntaxErrorMessage)o;
+                    SyntaxException se = message.getCause();
+                    out.append(String.format("Line %d Column %d: %s\n", se.getLine(), se.getStartColumn(), se.getOriginalMessage()));
+                }
+                compileListener.compilationResult(out.toString());
+            }
             catch (Exception e) {
-                LOG.error("Error compiling snippet", e);
+                LOG.error("Uncaught exception", e);
+                StringWriter writer = new StringWriter();
+                e.printStackTrace(new PrintWriter(writer));
+                compileListener.compilationResult(writer.toString());
             }
         }
     }

@@ -3,19 +3,21 @@ package eu.europeana.sip.gui;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * The menu for handling files
@@ -25,13 +27,10 @@ import java.util.TreeMap;
  */
 
 public class FileMenu extends JMenu {
-
-    private final static Logger LOG = Logger.getLogger(FileMenu.class.getName());
-
     private static final File RECENT_FILES_FILE = new File("RecentFiles.xml");
     private Component parent;
     private Action loadFile = new LoadNewFileAction();
-    private Map<String, Action> recentFileActions = new TreeMap<String, Action>();
+    private RecentFiles recentFiles;
     private JMenu recentFilesMenu = new JMenu("Recent Files");
     private SelectListener selectListener;
 
@@ -45,7 +44,8 @@ public class FileMenu extends JMenu {
         this.selectListener = selectListener;
         this.add(loadFile);
         this.add(recentFilesMenu);
-        loadRecentFiles();
+        Thread thread = new Thread(new RecentFileLoader());
+        thread.start();
     }
 
     public Enablement getEnablement() {
@@ -56,9 +56,7 @@ public class FileMenu extends JMenu {
                     @Override
                     public void run() {
                         loadFile.setEnabled(enabled);
-                        for (Action action : recentFileActions.values()) {
-                            action.setEnabled(enabled);
-                        }
+                        recentFilesMenu.setEnabled(enabled);
                     }
                 });
             }
@@ -95,66 +93,47 @@ public class FileMenu extends JMenu {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                selectListener.select(file);
-                if (!recentFileActions.containsKey(file.getAbsolutePath())) {
-                    final Action action = new LoadRecentFileAction(file);
-                    recentFileActions.put(file.getAbsolutePath(), action);
-                    recentFilesMenu.add(action);
-                    Thread thread = new Thread(new RecentFileSaver());
-                    thread.start();
-                }
+                select(file.getAbsolutePath());
             }
         }
     }
 
     private class LoadRecentFileAction extends AbstractAction {
         private static final long serialVersionUID = -2107471072903742141L;
-        private File file;
+        private String fileName;
 
-        private LoadRecentFileAction(File file) {
-            super("Load " + file.getName());
-            this.file = file;
+        private LoadRecentFileAction(String fileName) {
+            super("Load " + fileName);
+            this.fileName = fileName;
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            selectListener.select(file);
+            select(fileName);
         }
-    }
-
-    private void loadRecentFiles() {
-        Thread thread = new Thread(new RecentFileLoader());
-        thread.start();
     }
 
     private class RecentFileLoader implements Runnable {
         @Override
         public void run() {
             try {
-                if (!RECENT_FILES_FILE.exists()) {
-                    return;
+                if (RECENT_FILES_FILE.exists()) {
+                    FileReader fileReader = new FileReader(RECENT_FILES_FILE);
+                    XStream stream = new XStream();
+                    stream.processAnnotations(RecentFiles.class);
+                    recentFiles = (RecentFiles) stream.fromXML(fileReader);
                 }
-                FileReader fileReader = new FileReader(RECENT_FILES_FILE);
-                XStream stream = new XStream();
-                stream.processAnnotations(RecentFiles.class);
-                RecentFiles recentFiles = (RecentFiles) stream.fromXML(fileReader);
-                File firstRecentFile = null;
-                for (String fileName : recentFiles.files) {
-                    File file = new File(fileName);
-                    final Action action = new LoadRecentFileAction(file);
-                    recentFileActions.put(file.getAbsolutePath(), action);
+                if (recentFiles == null) {
+                    recentFiles = new RecentFiles();
+                    recentFiles.files = new ArrayList<String>();
+                }
+                if (!recentFiles.files.isEmpty()) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            recentFilesMenu.add(action);
+                            select(recentFiles.files.get(0));
                         }
                     });
-                    if (firstRecentFile == null) {
-                        firstRecentFile = file;
-                    }
-                }
-                if (firstRecentFile != null) {
-                    selectListener.select(firstRecentFile);
                 }
             }
             catch (Exception e) {
@@ -170,11 +149,6 @@ public class FileMenu extends JMenu {
                 FileWriter fileWriter = new FileWriter(RECENT_FILES_FILE);
                 XStream stream = new XStream();
                 stream.processAnnotations(RecentFiles.class);
-                RecentFiles recentFiles = new RecentFiles();
-                recentFiles.files = new ArrayList<String>();
-                for (String fileName : recentFileActions.keySet()) {
-                    recentFiles.files.add(fileName);
-                }
                 stream.toXML(recentFiles, fileWriter);
                 fileWriter.close();
             }
@@ -184,9 +158,38 @@ public class FileMenu extends JMenu {
         }
     }
 
+    private void moveRecentFilesToMenu() {
+        recentFilesMenu.removeAll();
+        for (String fileName : recentFiles.files) {
+            recentFilesMenu.add(new LoadRecentFileAction(fileName));
+        }
+    }
+
+    private void select(String absolutePath) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Expected event thread");
+        }
+        recentFiles.add(absolutePath);
+        moveRecentFilesToMenu();
+        Thread thread = new Thread(new RecentFileSaver());
+        thread.start();
+        selectListener.select(new File(absolutePath));
+    }
+
     @XStreamAlias("recent-files")
     private static class RecentFiles {
         @XStreamImplicit
         List<String> files;
+
+        void add(String fileName) {
+            Iterator<String> walk = files.iterator();
+            while (walk.hasNext()) {
+                String existing = walk.next();
+                if (existing.equals(fileName)) {
+                    walk.remove();
+                }
+            }
+            files.add(0, fileName);
+        }
     }
 }

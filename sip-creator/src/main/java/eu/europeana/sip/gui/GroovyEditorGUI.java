@@ -60,6 +60,7 @@ public class GroovyEditorGUI extends JFrame {
         fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
             public void select(File file) {
+                GroovyEditorGUI.this.setTitle("Metadata: "+file.getAbsolutePath());
                 mappingFile = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(".")) + ".mapping");
                 groovyEditor.setMappingFile(mappingFile);
             }
