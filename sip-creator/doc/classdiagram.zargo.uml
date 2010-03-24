@@ -58,7 +58,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Mar 24 10:57:04 CET 2010'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Mar 24 11:10:14 CET 2010'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.30(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -424,7 +424,8 @@
               </UML:Association.connection>
             </UML:Association>
             <UML:Association xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000E4A'
-              name = '' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
+              name = 'edit generated groovy snippets' isSpecification = 'false' isRoot = 'false'
+              isLeaf = 'false' isAbstract = 'false'>
               <UML:Association.connection>
                 <UML:AssociationEnd xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000E4B'
                   visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
@@ -3359,8 +3360,8 @@
                         classname="org.argouml.uml.diagram.ui.PathItemPlacement"
                         figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
                         ownerhref="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000E4A"
-                        angle="270.0"
-                        offset="25" />
+                        angle="290.99999999999994"
+                        offset="124" />
       <argouml:pathitem figname="Fig24.2"
                         classname="org.argouml.uml.diagram.ui.PathItemPlacement"
                         figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
