@@ -31,7 +31,7 @@ from django.db import models
 #from django.contrib import admin
 #from django.contrib import databrowse
 
-from utils import glob_consts
+#from utils import glob_consts
 from utils.gen_utils import dict_2_django_choice
 
 

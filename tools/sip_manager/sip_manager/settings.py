@@ -1,6 +1,8 @@
+from local_settings import *
+
 # Django settings for sip_web project.
 
-DEBUG = True
+#local_settings DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -9,23 +11,23 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+#local_settings DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#local_settings DATABASE_NAME = ''             # Or path to database file if using sqlite3.
+#local_settings DATABASE_USER = ''             # Not used with sqlite3.
+#local_settings DATABASE_PASSWORD = ''         # Not used with sqlite3.
+#local_settings DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+#local_settings DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/Amsterdam'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-uk'
 
 SITE_ID = 1
 
@@ -48,7 +50,7 @@ MEDIA_URL = ''
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '%yh05u$3*@-2s*-qyney-()d4r7n_+*99j8_*aza_jwbuxv6)%'
+#local_settings SECRET_KEY = '%yh05u$3*@-2s*-qyney-()d4r7n_+*99j8_*aza_jwbuxv6)%'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -63,7 +65,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'sip_web.urls'
+ROOT_URLCONF = 'sip_manager.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -76,4 +78,12 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.admin',
+
+    'apps.base_item',
+    'apps.dummy_ingester',
+    #'apps.cache_machine',
+    #'apps.plug_uris',
+    #'apps.process_monitor',
 )
+

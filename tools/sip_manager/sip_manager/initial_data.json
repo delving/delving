@@ -1,0 +1,29 @@
+[
+  {
+    "model": "dummy_ingester.aggregator",
+    "pk": 1,
+    "fields": {
+      "Name": "Athena",
+      "Home_page": "http://athena.eu/"
+    }
+  },
+  {
+    "model": "dummy_ingester.provider",
+    "pk": 1,
+    "fields": {
+      "Name": "Musee Du Louvre",
+      "Aggregator_id": "1",
+      "Home_page": "http://www.louvre.fr/"
+    }
+  },
+  {
+    "model": "dummy_ingester.dataset",
+    "pk": 1,
+    "fields": {
+      "Provider_id": "1",
+      "Name": "Musee Du Louvre",
+      "Language": "Fr",
+      "Collection_name": "Atlas: Database of exhibits"
+    }
+  }
+]
