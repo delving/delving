@@ -30,7 +30,7 @@ class GroovyDraft {
 		gd.metaClass.toString = {
 			return "bla";
 		}
-		// append
+		// override 
 		gd.metaClass.tellName = {
 			return "serkan";
 		}
