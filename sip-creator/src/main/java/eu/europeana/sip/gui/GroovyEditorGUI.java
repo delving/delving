@@ -1,10 +1,10 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
+import eu.europeana.sip.xml.GroovyNode;
 import eu.europeana.sip.xml.NormalizationParser;
 import eu.europeana.sip.xml.QNameBuilder;
 import groovy.lang.Binding;
-import groovy.util.Node;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
 
@@ -38,8 +38,8 @@ public class GroovyEditorGUI extends JFrame {
     private GroovyEditor groovyEditor;
     private JTextArea outputTextArea = new JTextArea();
     private NormalizationParser normalizationParser;
-    private Node record;
-    private Iterator<Node> nodeIterator;
+    private GroovyNode record;
+    private Iterator<GroovyNode> nodeIterator;
     private FileMenu fileMenu;
     private File mappingFile;
 

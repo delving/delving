@@ -1,6 +1,5 @@
 package eu.europeana.sip.xml;
 
-import groovy.util.Node;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -21,7 +20,7 @@ import java.util.Stack;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class NormalizationParser implements Iterable<Node> {
+public class NormalizationParser implements Iterable<GroovyNode> {
     private Logger logger = Logger.getLogger(getClass());
     private InputStream inputStream;
     private XMLStreamReader2 input;
@@ -39,9 +38,9 @@ public class NormalizationParser implements Iterable<Node> {
     }
 
     @SuppressWarnings("unchecked")
-    public Node nextRecord() throws XMLStreamException, IOException {
-        Node rootNode = null;
-        Stack<Node> nodeStack = new Stack<Node>();
+    public GroovyNode nextRecord() throws XMLStreamException, IOException {
+        GroovyNode rootNode = null;
+        Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
         StringBuilder value = new StringBuilder();
         boolean withinRecord = false;
         boolean finishedRecord = false;
@@ -55,7 +54,7 @@ public class NormalizationParser implements Iterable<Node> {
                         withinRecord = true;
                     }
                     if (withinRecord) {
-                        Node parent;
+                        GroovyNode parent;
                         if (nodeStack.isEmpty()) {
                             parent = null;
                         }
@@ -63,7 +62,7 @@ public class NormalizationParser implements Iterable<Node> {
                             parent = nodeStack.peek();
                         }
                         String nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix()+"_"+input.getLocalName();
-                        Node node = new Node(parent, nodeName);
+                        GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
@@ -89,7 +88,7 @@ public class NormalizationParser implements Iterable<Node> {
                         finishedRecord = true;
                     }
                     if (withinRecord) {
-                        Node node = nodeStack.pop();
+                        GroovyNode node = nodeStack.pop();
                         if (value.length() > 0) {
                             node.setValue(value.toString());
                         }
@@ -110,13 +109,13 @@ public class NormalizationParser implements Iterable<Node> {
     }
 
     @Override
-    public Iterator<Node> iterator() {
+    public Iterator<GroovyNode> iterator() {
         return new RecordIterator();
     }
 
-    private class RecordIterator implements Iterator<Node> {
+    private class RecordIterator implements Iterator<GroovyNode> {
 
-        private Node nextNode;
+        private GroovyNode nextNode;
 
         private RecordIterator() {
             advance();
@@ -128,8 +127,8 @@ public class NormalizationParser implements Iterable<Node> {
         }
 
         @Override
-        public Node next() {
-            Node current = nextNode;
+        public GroovyNode next() {
+            GroovyNode current = nextNode;
             advance();
             return current;
         }
