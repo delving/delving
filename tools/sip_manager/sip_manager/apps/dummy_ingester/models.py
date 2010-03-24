@@ -59,15 +59,15 @@ DAST_TYPES = {
 
 class DataSet(models.Model):
     Provider_id = models.ForeignKey(Provider)
-    Name = models.CharField(max_length=200)
-    Language = models.CharField(max_length=4)
-    QName = models.CharField(max_length=200)
     Collection_name = models.CharField(max_length=200)
+    Language = models.CharField(max_length=4)
+    #Name = models.CharField(max_length=200)
+    #QName = models.CharField(max_length=200)
     Type = models.IntegerField(choices=dict_2_django_choice(DAST_TYPES),
                                default = DAST_ESE)
 
     def __unicode__(self):
-        return self.Name
+        return self.Collection_name
 
 admin.site.register(DataSet)
 
@@ -101,7 +101,14 @@ class Request(models.Model):
     Status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
                                  default = REQS_INIT)
     File_name = models.CharField(max_length=200)
-    Date = models.TimeField()
+    Date = models.DateTimeField(auto_now_add=True, editable=False)
     # Data_format = models.IntegerField() - what was this??
+
+    def save(self, *args, **kwargs):
+        fname = self.find_ingest_filename()
+        super(Request, self).save(*args, **kwargs)
+
+    def find_ingest_filename(self):
+        pass
 
 admin.site.register(Request)

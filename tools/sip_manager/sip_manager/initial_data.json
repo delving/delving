@@ -21,9 +21,8 @@
     "pk": 1,
     "fields": {
       "Provider_id": "1",
-      "Name": "Musee Du Louvre",
-      "Language": "Fr",
-      "Collection_name": "Atlas: Database of exhibits"
+      "Collection_name": "Atlas: Database of exhibits",
+      "Language": "Fr"
     }
   }
 ]
