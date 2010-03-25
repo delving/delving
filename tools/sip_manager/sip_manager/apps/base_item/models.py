@@ -54,16 +54,16 @@ MDRS_STATES = {
     }
 
 class MdRecord(models.Model):
-    Status_Md_record = models.IntegerField(choices=dict_2_django_choice(MDRS_STATES),
+    content_hash = models.CharField(max_length=100)
+    source_data = models.XMLField()
+    status = models.IntegerField(choices=dict_2_django_choice(MDRS_STATES),
                                  default = MDRS_CREATED)
-    Content_hash = models.CharField(max_length=100)
-    Source_data = models.XMLField()
+    time_created = models.TimeField()
+    time_last_change = models.TimeField()
 
-    Enrichment_done = models.BooleanField(default=False)
     pid = models.IntegerField(default=0) # what process 'owns' this item
-    Uniqueness_hash = models.CharField(max_length=100)
-    Date_Created = models.TimeField()
-    Date_last_modified = models.TimeField()
+    uniqueness_hash = models.CharField(max_length=100)
+    Enrichment_done = models.BooleanField(default=False)
 
 admin.site.register(MdRecord)
 

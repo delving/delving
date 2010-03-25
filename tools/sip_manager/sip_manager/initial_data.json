@@ -3,26 +3,32 @@
     "model": "dummy_ingester.aggregator",
     "pk": 1,
     "fields": {
-      "Name": "Athena",
-      "Home_page": "http://athena.eu/"
+      "name_code": "03",
+      "name": "Athena",
+      "home_page": "http://athena.eu/"
     }
   },
   {
     "model": "dummy_ingester.provider",
     "pk": 1,
     "fields": {
-      "Name": "Musee Du Louvre",
-      "Aggregator_id": "1",
-      "Home_page": "http://www.louvre.fr/"
+      "aggregator_id": "1",
+      "name_code": "902",
+      "name": "Musee Du Louvre",
+      "home_page": "http://www.louvre.fr/",
+      "country": "fr",
+      "ttype": "1"
     }
   },
   {
     "model": "dummy_ingester.dataset",
     "pk": 1,
     "fields": {
-      "Provider_id": "1",
-      "Collection_name": "Atlas: Database of exhibits",
-      "Language": "Fr"
+      "provider_id": "1",
+      "name_code": "03902_Ag_FR_MCC_louvre_atlas",
+      "name": "Atlas: Database of exhibits",
+      "home_page": "http://cartelen.louvre.fr/",
+      "language": "fr"
     }
   }
 ]

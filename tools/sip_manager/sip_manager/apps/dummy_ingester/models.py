@@ -1,4 +1,9 @@
+import os
+
+from django.core import exceptions
 from django.db import models
+from django import forms
+from django.conf import settings
 from django.contrib import admin
 
 from utils.gen_utils import dict_2_django_choice
@@ -6,8 +11,9 @@ from utils.gen_utils import dict_2_django_choice
 
 
 class Aggregator(models.Model):
-    Name = models.CharField(max_length=200)
-    Home_page = models.CharField(max_length=200)
+    name_code = models.CharField(max_length=10)
+    name = models.CharField(max_length=200)
+    home_page = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.Name
@@ -35,12 +41,13 @@ PROV_TYPES = {
 
 
 class Provider(models.Model):
-    Name = models.CharField(max_length=200)
-    Aggregator_id = models.ForeignKey(Aggregator)
-    Country = models.CharField(max_length=5)
-    Type = models.IntegerField(choices=dict_2_django_choice(PROV_TYPES),
-                               default = PROVT_MUSEUM)
-    Home_page = models.CharField(max_length=200)
+    aggregator_id = models.ForeignKey(Aggregator)
+    name_code = models.CharField(max_length=10)
+    name = models.CharField(max_length=200)
+    home_page = models.CharField(max_length=200)
+    country = models.CharField(max_length=5)
+    ttype = models.IntegerField(choices=dict_2_django_choice(PROV_TYPES),
+                                default = PROVT_MUSEUM)
 
     def __unicode__(self):
         return self.Name
@@ -58,12 +65,14 @@ DAST_TYPES = {
     }
 
 class DataSet(models.Model):
-    Provider_id = models.ForeignKey(Provider)
-    Collection_name = models.CharField(max_length=200)
-    Language = models.CharField(max_length=4)
-    #Name = models.CharField(max_length=200)
-    #QName = models.CharField(max_length=200)
-    Type = models.IntegerField(choices=dict_2_django_choice(DAST_TYPES),
+    provider_id = models.ForeignKey(Provider)
+    name_code = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    home_page = models.CharField(max_length=200)
+    language = models.CharField(max_length=4)
+    #collection_name = models.CharField(max_length=200)
+    #q_name = models.CharField(max_length=200)
+    ttype = models.IntegerField(choices=dict_2_django_choice(DAST_TYPES),
                                default = DAST_ESE)
 
     def __unicode__(self):
@@ -97,18 +106,38 @@ REQS_STATES = {
     }
 
 class Request(models.Model):
-    Data_set_id = models.ForeignKey(DataSet)
-    Status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
+    data_set_id = models.ForeignKey(DataSet)
+    status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
                                  default = REQS_INIT)
-    File_name = models.CharField(max_length=200)
-    Date = models.DateTimeField(auto_now_add=True, editable=False)
-    # Data_format = models.IntegerField() - what was this??
+    file_name = models.CharField(max_length=200)
+    time_created = models.DateTimeField(auto_now_add=True, editable=False)
+    #data_format = models.IntegerField() - what was this??
 
     def save(self, *args, **kwargs):
         fname = self.find_ingest_filename()
+        if not fname:
+            raise exceptions.ValidationError('Did not match any existing file')
         super(Request, self).save(*args, **kwargs)
 
     def find_ingest_filename(self):
-        pass
+        s = self.File_name.lower()
+        fname = ''
+        for dir_entry in os.listdir(settings.DUMMY_INGEST_DIR):
+            if dir_entry.lower().find(s) == 0:
+                fname = dir_entry
+                break
+        return fname
 
-admin.site.register(Request)
+class MyRequestAdminForm(forms.ModelForm):
+    class Meta:
+        model = Request
+
+    def clean_file_name(self):
+        return self.cleaned_data["file_name"]
+
+class RequestAdmin(admin.ModelAdmin):
+    form = MyRequestAdminForm
+
+
+
+admin.site.register(Request, RequestAdmin)
