@@ -28,14 +28,13 @@ public class GroovyService {
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
     private final ExecutorService threadPool = Executors.newSingleThreadExecutor();
 
-    private File mappingFile;
+    private File groovyFile;
+    private Listener listener;
     private BindingSource bindingSource;
 
-    public interface LoadListener {
+    public interface Listener {
         void loadComplete(String groovySnippet);
-    }
 
-    public interface CompileListener {
         void compilationResult(String result);
     }
 
@@ -43,45 +42,39 @@ public class GroovyService {
         Binding createBinding(Writer writer);
     }
 
-    public GroovyService(File mappingFile, BindingSource bindingSource) {
-        this.mappingFile = mappingFile;
+    public GroovyService(BindingSource bindingSource, Listener listener) {
         this.bindingSource = bindingSource;
-        LOG.debug(String.format("Mapping file %s%n", mappingFile));
+        this.listener = listener;
     }
 
-    public void compile(String groovySnippet, CompileListener compileListener) throws Exception {
-        threadPool.execute(new GroovyCompiler(groovySnippet, compileListener));
+    public void setGroovyFile(File groovyFile) {
+        this.groovyFile = groovyFile;
+        if (this.groovyFile.exists()) {
+            threadPool.execute(new Loader());
+        }
+        else {
+            LOG.info("Mapping file did not exist " + groovyFile.getAbsolutePath());
+        }
     }
 
-    public void save(File file, String groovySnippet) throws IOException {
-        threadPool.execute(new Persistor(groovySnippet, file));
-    }
-
-    public void read(File file, LoadListener loadListener) throws IOException {
-        threadPool.execute(new Loader(file, loadListener));
-    }
-
-    public void setMappingFile(File mappingFile) {
-        this.mappingFile = mappingFile;
-        LOG.debug(String.format("Updated mapping file to %s%n", mappingFile));
+    public void setGroovyCode(String groovyCode) {
+        threadPool.execute(new ComplilationRunner(groovyCode));
     }
 
     private class Persistor implements Runnable {
 
         private String groovySnippet;
-        private File file;
 
-        public Persistor(String groovySnippet, File file) {
+        public Persistor(String groovySnippet) {
             this.groovySnippet = groovySnippet;
-            this.file = file;
         }
 
         @Override
         public void run() {
             FileOutputStream fileOutputStream;
             try {
-                fileOutputStream = new FileOutputStream(file);
-                LOG.debug(String.format("Writing to %s; %s [%d bytes written]%n", file, groovySnippet, groovySnippet.length()));
+                fileOutputStream = new FileOutputStream(groovyFile);
+                LOG.debug(String.format("Writing to %s; %s [%d bytes written]%n", groovyFile, groovySnippet, groovySnippet.length()));
                 fileOutputStream.write(groovySnippet.getBytes(), 0, groovySnippet.length());
                 fileOutputStream.close();
             }
@@ -92,28 +85,21 @@ public class GroovyService {
     }
 
     private class Loader implements Runnable {
-
-        private File file;
-        private LoadListener loadListener;
-
-        private Loader(File file, LoadListener loadListener) {
-            this.file = file;
-            this.loadListener = loadListener;
-        }
-
         @Override
         public void run() {
             FileInputStream fileInputStream;
             try {
-                fileInputStream = new FileInputStream(file);
+                fileInputStream = new FileInputStream(groovyFile);
                 StringBuffer result = new StringBuffer();
                 int count;
                 while (-1 != (count = fileInputStream.read())) {
                     result.append((char) count);
                 }
-                LOG.debug(String.format("Reading from %s; %s [%d bytes read]%n", file, result, result.length()));
+                LOG.debug(String.format("Reading from %s; %s [%d bytes read]%n", groovyFile, result, result.length()));
                 fileInputStream.close();
-                loadListener.loadComplete(result.toString());
+                if (listener != null) {
+                    listener.loadComplete(result.toString());
+                }
             }
             catch (IOException e) {
                 LOG.error("Error reading snippet", e);
@@ -121,14 +107,12 @@ public class GroovyService {
         }
     }
 
-    private class GroovyCompiler implements Runnable {
+    private class ComplilationRunner implements Runnable {
         private StringWriter writer = new StringWriter();
-        private CompileListener compileListener;
         private String groovySnippet;
 
-        public GroovyCompiler(String groovySnippet, CompileListener compileListener) {
+        public ComplilationRunner(String groovySnippet) {
             this.groovySnippet = groovySnippet;
-            this.compileListener = compileListener;
         }
 
         @Override
@@ -136,32 +120,39 @@ public class GroovyService {
             try {
                 Binding binding = bindingSource.createBinding(writer);
                 new GroovyShell(binding).evaluate(groovySnippet);
-                compileListener.compilationResult(writer.toString());
+                sendResult(writer.toString());
+                threadPool.execute(new Persistor(groovySnippet));
             }
             catch (MissingPropertyException e) {
-                compileListener.compilationResult("Missing Property: "+e.getProperty());
+                sendResult("Missing Property: " + e.getProperty());
             }
             catch (MultipleCompilationErrorsException e) {
                 StringBuilder out = new StringBuilder();
                 for (Object o : e.getErrorCollector().getErrors()) {
-                    SyntaxErrorMessage message = (SyntaxErrorMessage)o;
+                    SyntaxErrorMessage message = (SyntaxErrorMessage) o;
                     SyntaxException se = message.getCause();
                     out.append(String.format("Line %d Column %d: %s\n", se.getLine(), se.getStartColumn(), se.getOriginalMessage()));
                 }
-                compileListener.compilationResult(out.toString());
+                sendResult(out.toString());
             }
             catch (Exception e) {
                 LOG.error("Uncaught exception", e);
                 StringWriter writer = new StringWriter();
                 e.printStackTrace(new PrintWriter(writer));
-                compileListener.compilationResult(writer.toString());
+                sendResult(writer.toString());
+            }
+        }
+
+        private void sendResult(String result) {
+            if (listener != null) {
+                listener.compilationResult(result);
             }
         }
     }
 
     public String toString() {
         return "GroovyEngineImpl{" +
-                "mappingFile=" + mappingFile +
+                "groovyFile=" + groovyFile +
                 '}';
     }
 }

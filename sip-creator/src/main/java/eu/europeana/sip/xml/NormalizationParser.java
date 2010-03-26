@@ -10,7 +10,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -20,7 +19,7 @@ import java.util.Stack;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class NormalizationParser implements Iterable<GroovyNode> {
+public class NormalizationParser {
     private Logger logger = Logger.getLogger(getClass());
     private InputStream inputStream;
     private XMLStreamReader2 input;
@@ -108,44 +107,12 @@ public class NormalizationParser implements Iterable<GroovyNode> {
         return rootNode;
     }
 
-    @Override
-    public Iterator<GroovyNode> iterator() {
-        return new RecordIterator();
-    }
-
-    private class RecordIterator implements Iterator<GroovyNode> {
-
-        private GroovyNode nextNode;
-
-        private RecordIterator() {
-            advance();
+    public void close() {
+        try {
+            input.close();
         }
-
-        @Override
-        public boolean hasNext() {
-            return nextNode != null;
-        }
-
-        @Override
-        public GroovyNode next() {
-            GroovyNode current = nextNode;
-            advance();
-            return current;
-        }
-
-        @Override
-        public void remove() {
-            throw new RuntimeException("Remove not allowed");
-        }
-
-
-        private void advance() {
-            try {
-                nextNode = nextRecord();
-            }
-            catch (Exception e) {
-                throw new RuntimeException("XML Streaming problem", e);
-            }
+        catch (XMLStreamException e) {
+            logger.error("closing", e);
         }
     }
 }

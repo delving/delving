@@ -49,14 +49,7 @@ public class TransformPanel extends JPanel {
         });
         p.add(transformBox, BorderLayout.CENTER);
         add(p, BorderLayout.NORTH);
-        final GroovyEditor groovyEditor = new GroovyEditor(
-                new GroovyEditor.Listener() {
-                    @Override
-                    public void update(String result) {
-                        validationStatus.setText(result);
-                    }
-                }
-        );
+        final GroovyEditor groovyEditor = new GroovyEditor(null); // todo: give it a binding source
         add(new JScrollPane(groovyEditor), BorderLayout.CENTER);
         add(validationStatus, BorderLayout.NORTH);
         for (Transform transform : Transform.values()) {

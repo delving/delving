@@ -34,6 +34,10 @@ public class FileMenu extends JMenu {
     private JMenu recentFilesMenu = new JMenu("Recent Files");
     private SelectListener selectListener;
 
+    public interface SelectListener {
+        void select(File file);
+    }
+
     public interface Enablement {
         void enable(boolean enabled);
     }
@@ -61,10 +65,6 @@ public class FileMenu extends JMenu {
                 });
             }
         };
-    }
-
-    public interface SelectListener {
-        void select(File file);
     }
 
     private class LoadNewFileAction extends AbstractAction {

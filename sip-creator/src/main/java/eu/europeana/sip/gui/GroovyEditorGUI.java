@@ -13,21 +13,15 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Writer;
-import java.util.Iterator;
 
 /**
  * @author Serkan Demirel <serkan@blackbuilt.nl>
@@ -35,34 +29,36 @@ import java.util.Iterator;
 public class GroovyEditorGUI extends JFrame {
 
     private static final String DEFAULT_INPUT_FILE = "core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml"; // todo: replace
-    private GroovyEditor groovyEditor;
-    private JTextArea outputTextArea = new JTextArea();
+    private GroovyEditor groovyEditor = new GroovyEditor(new Source());
     private NormalizationParser normalizationParser;
+    private JButton next = new JButton("Next");
     private GroovyNode record;
-    private Iterator<GroovyNode> nodeIterator;
-    private FileMenu fileMenu;
     private File mappingFile;
 
-    public GroovyEditorGUI(File inputFile) throws FileNotFoundException, XMLStreamException {
+    public GroovyEditorGUI() {
         super("Standalone Groovy editor");
         getContentPane().add(createMainPanel());
-        QName recordRoot = QNameBuilder.createQName("record");
-        normalizationParser = new NormalizationParser(new FileInputStream(inputFile), recordRoot);
-        nodeIterator = normalizationParser.iterator();
-        nextRecord();
-        setSize(1200, 900);
         setJMenuBar(createMenuBar());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
     }
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
+        FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
             public void select(File file) {
-                GroovyEditorGUI.this.setTitle("Metadata: "+file.getAbsolutePath());
+                try {
+                    prepareInputFile(file);
+                    GroovyEditorGUI.this.setTitle("Metadata: " + file.getAbsolutePath());
+                    next.setEnabled(true);
+                }
+                catch (Exception e) {
+                    GroovyEditorGUI.this.setTitle("No Metadata");
+                    next.setEnabled(false);
+                }
                 mappingFile = new File(file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(".")) + ".mapping");
-                groovyEditor.setMappingFile(mappingFile);
+                groovyEditor.setGroovyFile(mappingFile);
             }
         });
         bar.add(fileMenu);
@@ -71,13 +67,13 @@ public class GroovyEditorGUI extends JFrame {
 
     private JComponent createMainPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.add(createSplitPane(), BorderLayout.CENTER);
+        p.add(groovyEditor, BorderLayout.CENTER);
         p.add(createNextButton(), BorderLayout.NORTH);
         return p;
     }
 
     private JComponent createNextButton() {
-        JButton next = new JButton("Next");
+        next.setEnabled(false);
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,37 +84,22 @@ public class GroovyEditorGUI extends JFrame {
         return next;
     }
 
-    private JComponent createSplitPane() {
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        if (null == mappingFile) {
-            try {
-                mappingFile = new File("Groovy.mapping").getCanonicalFile();
-            }
-            catch (IOException e) {
-                e.printStackTrace();  // todo: handle catch
-            }
+    private void prepareInputFile(File inputFile) throws XMLStreamException, FileNotFoundException {
+        if (normalizationParser != null) {
+            normalizationParser.close();
         }
-        groovyEditor = new GroovyEditor(
-                new GroovyEditor.Listener() {
-                    @Override
-                    public void update(String result) {
-                        outputTextArea.setText(result);
-                    }
-                },
-                new Source(),
-                mappingFile
-        );
-        JScrollPane scroll;
-        split.setTopComponent(scroll = new JScrollPane(groovyEditor));
-        scroll.setPreferredSize(new Dimension(1200, 400));
-        split.setBottomComponent(scroll = new JScrollPane(outputTextArea));
-        scroll.setPreferredSize(new Dimension(1200, 400));
-        split.setDividerLocation(0.5);
-        return split;
+        QName recordRoot = QNameBuilder.createQName("record");
+        normalizationParser = new NormalizationParser(new FileInputStream(inputFile), recordRoot);
+        nextRecord();
     }
 
     private void nextRecord() {
-        record = nodeIterator.next();
+        try {
+            record = normalizationParser.nextRecord();
+        }
+        catch (Exception e) {
+            next.setEnabled(false);
+        }
     }
 
     private class Source implements GroovyService.BindingSource {
@@ -138,14 +119,7 @@ public class GroovyEditorGUI extends JFrame {
     }
 
     public static void main(String... args) throws FileNotFoundException, XMLStreamException {
-        File file;
-        if (args.length < 1) {
-            file = new File(DEFAULT_INPUT_FILE);
-        }
-        else {
-            file = new File(args[0]);
-        }
-        GroovyEditorGUI groovyEditorGUI = new GroovyEditorGUI(file);
+        GroovyEditorGUI groovyEditorGUI = new GroovyEditorGUI();
         groovyEditorGUI.setVisible(true);
     }
 }
