@@ -83,7 +83,7 @@ INSTALLED_APPS = (
     'apps.base_item',
     'apps.dummy_ingester',
     #'apps.cache_machine',
-    #'apps.plug_uris',
-    #'apps.process_monitor',
+    'apps.plug_uris',
+    'apps.process_monitor',
 )
 

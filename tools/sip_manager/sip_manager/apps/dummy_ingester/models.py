@@ -16,7 +16,7 @@ class Aggregator(models.Model):
     home_page = models.CharField(max_length=200)
 
     def __unicode__(self):
-        return self.Name
+        return '[%s] %s' % (self.name_code, self.name)
 
 admin.site.register(Aggregator)
 
@@ -46,11 +46,11 @@ class Provider(models.Model):
     name = models.CharField(max_length=200)
     home_page = models.CharField(max_length=200)
     country = models.CharField(max_length=5)
-    ttype = models.IntegerField(choices=dict_2_django_choice(PROV_TYPES),
-                                default = PROVT_MUSEUM)
+    item_type = models.IntegerField(choices=dict_2_django_choice(PROV_TYPES),
+                                    default = PROVT_MUSEUM)
 
     def __unicode__(self):
-        return self.Name
+        return '%s - [%s] %s' % (self.aggregator_id, self.name_code, self.name)
 
 
 admin.site.register(Provider)
@@ -70,13 +70,11 @@ class DataSet(models.Model):
     name = models.CharField(max_length=200)
     home_page = models.CharField(max_length=200)
     language = models.CharField(max_length=4)
-    #collection_name = models.CharField(max_length=200)
-    #q_name = models.CharField(max_length=200)
-    ttype = models.IntegerField(choices=dict_2_django_choice(DAST_TYPES),
-                               default = DAST_ESE)
+    item_type = models.IntegerField(choices=dict_2_django_choice(DAST_TYPES),
+                                    default = DAST_ESE)
 
     def __unicode__(self):
-        return self.Collection_name
+        return '[%s] %s' % (self.name_code, self.name)
 
 admin.site.register(DataSet)
 
@@ -108,19 +106,25 @@ REQS_STATES = {
 class Request(models.Model):
     data_set_id = models.ForeignKey(DataSet)
     status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
-                                 default = REQS_INIT)
+                                 default = REQS_INIT, editable=False)
     file_name = models.CharField(max_length=200)
     time_created = models.DateTimeField(auto_now_add=True, editable=False)
-    #data_format = models.IntegerField() - what was this??
 
-    def save(self, *args, **kwargs):
-        fname = self.find_ingest_filename()
+    def __unicode__(self):
+        return '%s - %s' % (self.data_set_id, self.time_created)
+
+class MyRequestAdminForm(forms.ModelForm):
+    class Meta:
+        model = Request
+
+    def clean_file_name(self):
+        fname = self.find_ingest_filename(self.cleaned_data["file_name"])
         if not fname:
-            raise exceptions.ValidationError('Did not match any existing file')
-        super(Request, self).save(*args, **kwargs)
+            raise forms.util.ValidationError('Did not match any existing file')
+        return fname # self.cleaned_data["file_name"]
 
-    def find_ingest_filename(self):
-        s = self.File_name.lower()
+    def find_ingest_filename(self, s_in):
+        s = s_in.lower()
         fname = ''
         for dir_entry in os.listdir(settings.DUMMY_INGEST_DIR):
             if dir_entry.lower().find(s) == 0:
@@ -128,12 +132,7 @@ class Request(models.Model):
                 break
         return fname
 
-class MyRequestAdminForm(forms.ModelForm):
-    class Meta:
-        model = Request
 
-    def clean_file_name(self):
-        return self.cleaned_data["file_name"]
 
 class RequestAdmin(admin.ModelAdmin):
     form = MyRequestAdminForm

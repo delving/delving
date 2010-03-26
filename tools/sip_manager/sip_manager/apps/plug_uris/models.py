@@ -56,9 +56,9 @@ URI_STATES = {
 
 
 
-class UriSource(models.model):
+class UriSource(models.Model):
     pid = models.IntegerField(default=0) # what process 'owns' this item
-    name_or_ip = models.CharField()
+    name_or_ip = models.CharField(max_length=100)
 
 
 class Uri(models.Model):
@@ -66,12 +66,12 @@ class Uri(models.Model):
     Identifies one server providing thumbnail resources to Europeana, to avoid
     the risk that we hammer the same server with multiple requests
     """
-    md_rec_id = models.ForeignKey('base_item.MdRecord')
+    #md_rec_id = models.ForeignKey('base_item.MdRecord')
     sstate = models.IntegerField(choices=dict_2_django_choice(URI_STATES),
                                  default = URIS_CREATED)
-    uri_source = models.ForeignKey(verify_exists=False)
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    #uri_source = models.ForeignKey(verify_exists=False)
+    #pid = models.IntegerField(default=0) # what process 'owns' this item
     #element
-    url = models.URLField(verify_exists=False)
-    err_msg = models.TextField()
-    date_lastcheck = models.DateTimeField()
+    #url = models.URLField(verify_exists=False)
+    #err_msg = models.TextField()
+    #date_lastcheck = models.DateTimeField()
