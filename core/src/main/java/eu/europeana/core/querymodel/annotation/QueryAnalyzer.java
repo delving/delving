@@ -78,7 +78,7 @@ public class QueryAnalyzer {
         return QueryType.SIMPLE_QUERY;
     }
 
-    public static String sanitize(String query) {
+    public String sanitize(String query) {
         String[] terms = query.split("\\s+");
         StringBuilder out = new StringBuilder();
         for (String term : terms) {
@@ -127,7 +127,7 @@ public class QueryAnalyzer {
      * @return all parameters formatted as a single Lucene Query
      */
 
-    public static String createAdvancedQuery(Map<String, String[]> params) {
+    public String createAdvancedQuery(Map<String, String[]> params) {
         StringBuilder queryString = new StringBuilder();
         for (int i = 1; i < 4; i++) {
             if (params.containsKey(MessageFormat.format("query{0}", i)) && params.containsKey(MessageFormat.format("facet{0}", i))) {
@@ -146,7 +146,7 @@ public class QueryAnalyzer {
                         queryString.append(facet);
                     }
                     else {
-                        queryString.append("text");
+                        queryString.append(facetDefault);
                     }
                     queryString.append(":").append(query);
                 }

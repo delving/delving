@@ -38,6 +38,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private UserDao dashboardDao;
 
     @Autowired
+    @Qualifier("solrUpdateServer")
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
