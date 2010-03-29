@@ -58,8 +58,8 @@ class MdRecord(models.Model):
     source_data = models.XMLField()
     status = models.IntegerField(choices=dict_2_django_choice(MDRS_STATES),
                                  default = MDRS_CREATED)
-    time_created = models.TimeField()
-    time_last_change = models.TimeField()
+    time_created = models.DateTimeField()
+    time_last_change = models.DateTimeField()
 
     pid = models.IntegerField(default=0) # what process 'owns' this item
     uniqueness_hash = models.CharField(max_length=100)

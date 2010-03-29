@@ -28,14 +28,23 @@
 from django.core import exceptions
 from django.db import models
 
-#from django.contrib import admin
-#from django.contrib import databrowse
+from utils.gen_utils import dict_2_django_choice
 
-#from utils import glob_consts
-#from utils.gen_utils import dict_2_django_choice
 
-"""
-class ProcessMonitor(models.Model):
-    pid = models.IntegerField(default=0) # what process 'owns' this item
-    role
-"""
+# PMS_ = ProcssMonitoring status
+PMS_RUNNING = 1
+PMS_DISAPPEARED = 2
+PMS_TERMINATED = 3
+
+PMS_STATES = {
+    PMS_RUNNING: 'running',
+    PMS_DISAPPEARED: 'disappeared',
+    PMS_TERMINATED: 'terminated',
+    }
+
+class ProcessMonitoring(models.Model):
+    pid = models.IntegerField() # what process 'owns' this item
+    task = models.CharField(max_length=200)
+    status = models.IntegerField(choices=dict_2_django_choice(PMS_STATES),
+                                 default = PMS_RUNNING)
+    time_created = models.DateTimeField(auto_now_add=True,editable=False)

@@ -20,10 +20,10 @@
 
 
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
-
-
-
 """
+
+import os
+
 
 
 class SipProcess(object):
@@ -41,6 +41,32 @@ class SipProcess(object):
     PLUGIN_TAXES_CPU = False
     PLUGIN_TAXES_DISK_IO = False
     PLUGIN_TAXES_NET_IO = False
+
+    def __init__(self, run_once=False):
+        self.run_once = run_once # if true plugin should exit after one runthrough
+
+    def run(self, *args, **kwargs):
+        print 'running ', self.short_name()
+        return self.run_it(*args, **kwargs)
+
+    def log(self, msg):
+        print msg
+
+    def error_log(self, msg):
+        print self.short_name(), msg
+
+    # Pid locking mechanisms
+    def grab_item(self, cls, pk):
+        "Locks item to current pid, if successfull, returns updated item, otherwise returns None."
+        item = cls.objects.filter(pk=pk)[0]
+        if not item.pid:
+            item.pid = os.getpid()
+            item.save()
+            return item
+        else:
+            return None
+
+    # End of Pid locking
 
 
     def __unicode__(self):

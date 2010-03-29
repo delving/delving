@@ -34,34 +34,42 @@ from utils.sipproc import SipProcess
 class UriCreateNewRecords(SipProcess):
     SHORT_DESCRIPTION = 'Create new uri records'
 
-    def run(self):
+    def run_it(self):
+        """
         for mdRecord in MdRecord.items.all():
             if not Uri.items.filter(md_rec_id=mdRecord.id):
                 u = Uri(md_rec_id=mdRecord.id)
                 u.save()
-        return
+        """
+        return True
+
+
 
 class UriProcessNewRecords(SipProcess):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
 
-    def run(self):
+    def run_it(self):
+        """
         for uri_source in UriSource.items.filter(pid=0):
             for uri in Uris.items.filter(uri_source=uri_source.id, pid=0):
                 process_one_uri(uri)
-        return
+        """
+        return True
+
+
 
 class UriCleanup(SipProcess):
     SHORT_DESCRIPTION = 'Remove uri records no longer having a request'
 
-    def run(self):
-        pass
+    def run_it(self):
+        return True
 
 
 class UriFileTreeMonitor(SipProcess):
     SHORT_DESCRIPTION = 'Walks file tree and finds orphan files'
 
-    def run(self):
+    def run_it(self):
         return True # does nothing for the moment
 
 

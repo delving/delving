@@ -22,32 +22,31 @@
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
 
  Maintains and runs tasks
-
 """
 
+import time
+
+
 from django.conf import settings
-
-#from utils.sipproc import SipProcess
-
-#from apps.plug_uris.tasjsimport UriCreateNewRecords
 
 
 class MainProcessor(object):
     def __init__(self, single_run=False):
         self.single_run = single_run
-        self.tasks = [] # list of all tasks found
-
-        # some lists of resource heavy tasks, that should propably not
-        # be running in paralell
-        self.taxes_cpu = []
-        self.taxes_disk = []
-        self.taxes_net = []
+        self.tasks_simple = [] # list of all tasks found
+        self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
         self.find_tasks()
-
 
     def run(self):
         #a = UriCreateNewRecords()
         #b = a.short_name()
+        while True:
+            # First run all simple tasks once
+            for task_group in (self.tasks_simple, self.tasks_heavy):
+                for taskClass in task_group:
+                    tc = taskClass()
+                    tc.run()
+            time.sleep(0.1)
         return True
 
     """
@@ -61,15 +60,21 @@ class MainProcessor(object):
             try:
                 exec('from %s.tasks import task_list' % app )
                 for task in task_list:
-                    self.tasks.append(task)
+                    resource_hog = False
                     if task.PLUGIN_TAXES_CPU:
-                        self.taxes_cpu.append(task)
+                        resource_hog = True
                     if task.PLUGIN_TAXES_DISK_IO:
-                        self.taxes_disk.append(task)
+                        resource_hog = True
                     if task.PLUGIN_TAXES_NET_IO:
-                        self.taxes_net.append(task)
-            except:
-                pass
+                        resource_hog = True
+                    if resource_hog:
+                        self.tasks_heavy.append(task)
+                    else:
+                        self.tasks_simple.append(task)
+            except ImportError as inst:
+                if inst.args[0].find('No module named ') != 0:
+                    raise inst
+                pass # no tasks in that dir
             pass
 
 
