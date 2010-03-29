@@ -12,7 +12,7 @@
     "model": "dummy_ingester.provider",
     "pk": 1,
     "fields": {
-      "aggregator_id": "1",
+      "aggregator": "1",
       "name_code": "902",
       "name": "Musee Du Louvre",
       "home_page": "http://www.louvre.fr/",
@@ -24,7 +24,7 @@
     "model": "dummy_ingester.dataset",
     "pk": 1,
     "fields": {
-      "provider_id": "1",
+      "provider": "1",
       "name_code": "03902_Ag_FR_MCC_louvre_atlas",
       "name": "Atlas: Database of exhibits",
       "home_page": "http://cartelen.louvre.fr/",

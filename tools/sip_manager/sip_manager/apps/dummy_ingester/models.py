@@ -41,7 +41,7 @@ PROV_TYPES = {
 
 
 class Provider(models.Model):
-    aggregator_id = models.ForeignKey(Aggregator)
+    aggregator = models.ForeignKey(Aggregator)
     name_code = models.CharField(max_length=10)
     name = models.CharField(max_length=200)
     home_page = models.CharField(max_length=200,blank=True)
@@ -50,7 +50,7 @@ class Provider(models.Model):
                                     default = PROVT_MUSEUM)
 
     def __unicode__(self):
-        return '%s - [%s] %s' % (self.aggregator_id, self.name_code, self.name)
+        return '%s - [%s] %s' % (self.aggregator, self.name_code, self.name)
 
 
 admin.site.register(Provider)
@@ -65,7 +65,7 @@ DAST_TYPES = {
     }
 
 class DataSet(models.Model):
-    provider_id = models.ForeignKey(Provider)
+    provider = models.ForeignKey(Provider)
     name_code = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     home_page = models.CharField(max_length=200, blank=True)
@@ -104,7 +104,7 @@ REQS_STATES = {
     }
 
 class Request(models.Model):
-    data_set_id = models.ForeignKey(DataSet)
+    data_set = models.ForeignKey(DataSet)
     status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
                                  default = REQS_INIT, editable=False)
 
@@ -115,14 +115,14 @@ class Request(models.Model):
     pid = models.IntegerField(default=0) # what process 'owns' this item
 
     def __unicode__(self):
-        return '%s - %s' % (self.data_set_id, self.time_created)
+        return '%s - %s' % (self.data_set, self.time_created)
 
     def add_from_file(self, data_set, full_path):
         file_name = os.path.split(full_path)[1]
         mtime = os.path.getmtime(full_path)
 
         #slightly dangerous, creating an instance of own class - watch out!
-        request = Request(data_set_id=data_set,
+        request = Request(data_set=data_set,
                           file_name=file_name,
                           time_created=datetime.datetime.fromtimestamp(mtime))
         request.save()

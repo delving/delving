@@ -1,11 +1,13 @@
 import sys
 import os
 import datetime
+import hashlib
 
 from django.core import exceptions
 from django.conf import settings
 
-from utils.sipproc import SipProcess
+from apps.process_monitor.sipproc import SipProcess
+from apps.base_item import models as base_item
 
 import models
 
@@ -46,14 +48,45 @@ class RequestParseNew(SipProcess):
             self.error_log('Cant find file %s for Request %i' % (
                 request.file_name, request.pk))
             return False
-        request = self.grab_item(models.Request, request.pk)
+        request, process_manager = self.grab_item(models.Request, request.pk,
+                                                  'About to parse for ese records')
         if not request:
             return False
-        x = WgetFileParser(request, debug_lvl=4)
-        x.run()
-        return True
 
+        self.current_request = request
+        self.log('Parsing ese file for records: %s' % full_path, 1)
+        f = open(full_path)
+        record_count = 0
+        record = []
+        for line_raw in f.readlines():
+            line = line_raw.strip()
+            if line == '<record>':
+                record = []
+            elif line == '</record>':
+                self.add_record(record)
+            elif line: # skip empty lines
+                record.append(line_raw)
+            pass
+        f.close()
 
+    def add_record(self, record):
+        r_hash = self.calculate_hash(record)
+        mdrs = base_item.MdRecord.objects.filter(content_hash=r_hash)
+        if mdrs:
+            mdr= mdrs[0]
+        else:
+            mdr = base_item.MdRecord(content_hash=r_hash,source_data=''.join(record))
+            mdr.save()
+        r_m = base_item.RequestMdRecord(request=self.current_request,
+                                         mdrec=mdr)
+        r_m.save()
+
+    def calculate_hash(self, record):
+        lst = []
+        for line in record:
+            lst.append(line.strip())
+        r_hash = hashlib.sha256(''.join(lst)).hexdigest().upper()
+        return r_hash
 
     def find_file(self, request):
         full_path = ''
@@ -153,7 +186,7 @@ class RequestFindNew(SipProcess):
                 full_path = os.path.join(dirpath, filename)
                 mtime = os.path.getmtime(full_path)
                 time_created = datetime.datetime.fromtimestamp(mtime)
-                requests = models.Request.objects.filter(data_set_id=data_set,
+                requests = models.Request.objects.filter(data_set=data_set,
                                                          time_created=time_created,
                                                          file_name=filename)
                 if not requests:
@@ -200,7 +233,7 @@ class RequestFindNew(SipProcess):
                 name = ' '.join(sanitized_file_name.split('_')[country_idx+1:])
             except:
                 name = AUTOGEN_NAME
-            provider = models.Provider(aggregator_id=aggregator,
+            provider = models.Provider(aggregator=aggregator,
                                        name_code=provider_nc,
                                        name=name,
                                        item_type=item_type,
@@ -211,7 +244,7 @@ class RequestFindNew(SipProcess):
         if data_sets:
             data_set = data_sets[0]
         else:
-            data_set = models.DataSet(provider_id=provider,
+            data_set = models.DataSet(provider=provider,
                                       name_code=file_name,
                                       name=AUTOGEN_NAME,
                                       language='??')

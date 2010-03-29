@@ -55,11 +55,11 @@ MDRS_STATES = {
 
 class MdRecord(models.Model):
     content_hash = models.CharField(max_length=100)
-    source_data = models.XMLField()
+    source_data = models.TextField()
     status = models.IntegerField(choices=dict_2_django_choice(MDRS_STATES),
                                  default = MDRS_CREATED)
-    time_created = models.DateTimeField()
-    time_last_change = models.DateTimeField()
+    time_created = models.DateTimeField(auto_now_add=True,editable=False)
+    time_last_change = models.DateTimeField(auto_now_add=True,editable=False)
 
     pid = models.IntegerField(default=0) # what process 'owns' this item
     uniqueness_hash = models.CharField(max_length=100)
@@ -69,8 +69,8 @@ admin.site.register(MdRecord)
 
 
 
-class Request_MdRecord(models.Model):
-    Request_id = models.ManyToManyRel(Request)
-    md_rec = models.ManyToManyRel(MdRecord)
+class RequestMdRecord(models.Model):
+    request = models.ManyToManyRel(Request)
+    mdrec = models.ManyToManyRel(MdRecord)
 
-admin.site.register(Request_MdRecord)
+admin.site.register(RequestMdRecord)
