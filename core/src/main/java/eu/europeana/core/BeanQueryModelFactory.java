@@ -87,7 +87,13 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
             if (!params.containsKey("query1")) {
-                solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                // rq is the refine query that needs to be parsed from the request paramaters
+                if (params.containsKey("rq")) { // merge the refine query with the original query
+                    solrQuery.setQuery(queryAnalyzer.createRefineSearch(params));
+                }
+                else {
+                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                }
             }
             else { // support advanced search
                 solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
@@ -264,7 +270,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private Map<String, String> facetLogs;
         private BriefDoc matchDoc;
 
-//        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
         private BriefBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, String requestQueryString) throws UnsupportedEncodingException {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean));
@@ -401,7 +407,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private QueryResponse getSolrResponse(SolrQuery solrQuery, boolean decrementStart) throws EuropeanaQueryException {
-        if (solrQuery.getStart() != null && solrQuery.getStart() < 1) {
+        if (solrQuery.getStart() != null && solrQuery.getStart() < 0) {
             solrQuery.setStart(0);
             log.warn("Solr Start cannot be negative");
         }
