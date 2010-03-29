@@ -24,7 +24,18 @@
 
 import os
 
+from django.conf import settings
+
 import models
+
+
+# thinks its a teeny bit faster to extract the setting once...
+SIP_LOG_FILE = settings.SIP_LOG_FILE
+
+
+
+class SipProcessException(Exception):
+    pass
 
 
 class SipProcess(object):
@@ -46,6 +57,7 @@ class SipProcess(object):
     def __init__(self, debug_lvl=2, run_once=False):
         self.debug_lvl = debug_lvl
         self.run_once = run_once # if true plugin should exit after one runthrough
+        self.pid = os.getpid()
 
     def run(self, *args, **kwargs):
         print 'running ', self.short_name()
@@ -55,16 +67,29 @@ class SipProcess(object):
         if self.debug_lvl < lvl:
             return
         print msg
+        #f = open(LOG_FILE,'a')
+        #f.write('%s\n' % msg)
+        #f.close()
+        open(SIP_LOG_FILE,'a').write('%s\n' % msg)
 
     def error_log(self, msg):
         print self.short_name(), msg
+
+
+    def abort_process(self, msg):
+        "Terminats process, trying to clean up and remove all pid locks."
+        pms = models.ProcessMonitoring.objects.filter(pid=self.pid)
+        for pm in pms:
+            # TODO: a process failed, flag it, and remove its lock
+            pass
+        raise SipProcessException(msg)
 
     # Pid locking mechanisms
     def grab_item(self, cls, pk, task_description):
         "Locks item to current pid, if successfull, returns updated item, otherwise returns None."
         item = cls.objects.filter(pk=pk)[0]
         if not item.pid:
-            item.pid = os.getpid()
+            item.pid = self.pid
             item.save()
             pm = models.ProcessMonitoring(pid=item.pid,
                                           task=task_description)

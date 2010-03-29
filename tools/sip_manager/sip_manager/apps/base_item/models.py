@@ -70,7 +70,8 @@ admin.site.register(MdRecord)
 
 
 class RequestMdRecord(models.Model):
-    request = models.ManyToManyRel(Request)
-    mdrec = models.ManyToManyRel(MdRecord)
+    request = models.ForeignKey(Request)
+    md_record = models.ForeignKey(MdRecord)
+    i = models.IntegerField(default=0, blank=True)
 
 admin.site.register(RequestMdRecord)

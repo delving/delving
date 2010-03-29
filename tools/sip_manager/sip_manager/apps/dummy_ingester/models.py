@@ -107,7 +107,7 @@ class Request(models.Model):
     data_set = models.ForeignKey(DataSet)
     status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
                                  default = REQS_INIT, editable=False)
-
+    record_count = models.IntegerField() # no of records in request
     # we dont store path, find it by os.walk and check time_stamp
     file_name = models.CharField(max_length=200,
                                  help_text='relative filename, dont store path, system will find it with os.walk() and timestamp...')
@@ -117,13 +117,14 @@ class Request(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.data_set, self.time_created)
 
-    def add_from_file(self, data_set, full_path):
+    def add_from_file(self, data_set, full_path, rec_count):
         file_name = os.path.split(full_path)[1]
         mtime = os.path.getmtime(full_path)
 
         #slightly dangerous, creating an instance of own class - watch out!
         request = Request(data_set=data_set,
                           file_name=file_name,
+                          record_count=rec_count,
                           time_created=datetime.datetime.fromtimestamp(mtime))
         request.save()
         return request

@@ -29,6 +29,7 @@ import time
 
 from django.conf import settings
 
+SIP_PROCESS_DBG_LVL = 9
 
 class MainProcessor(object):
     def __init__(self, single_run=False):
@@ -44,9 +45,11 @@ class MainProcessor(object):
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
                 for taskClass in task_group:
-                    tc = taskClass()
+                    tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
                     tc.run()
-            time.sleep(0.1)
+            #time.sleep(0.1)
+            print 'Test mode, aborting after one run-through'
+            break # only run once
         return True
 
     """
