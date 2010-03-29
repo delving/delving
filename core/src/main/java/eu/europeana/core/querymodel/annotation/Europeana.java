@@ -39,13 +39,6 @@ import java.lang.annotation.Target;
 public @interface Europeana {
 
     /**
-     * only copy field cannot be used to add metadata directly during indexing
-     * @return true if this is a copy field
-     */
-
-    boolean copyField() default false;
-
-    /**
      * Is this field one of the facets?
      *
      * @return true if it is to be a facet
@@ -134,4 +127,15 @@ public @interface Europeana {
      */
 
     boolean importAddition() default false;
+
+    /**
+     *  The annotated fields can be valid at different levels in the application. The ValidationLevel will be used to
+     * create a Data Model Validator to be used at various stages of ingestion.
+     *
+     * The validator should also be used in the Sip-Creator and could be used in external applications. 
+     *
+     * @return the validation level of a certain field
+     */
+
+    ValidationLevel validation() default ValidationLevel.EseOptional;
 }
