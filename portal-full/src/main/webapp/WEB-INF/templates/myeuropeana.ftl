@@ -153,7 +153,7 @@
                                                                  onclick="removeRequest('CarouselItem',${item.id?string("0")});">Carousel - <@spring.message 'Delete_t'/></button>
                                                     <#else> <#-- if !item.europeanaId.hasCarouselItem() -->  <#-- check if nobody else has saved this item -->
                                                          <button class="del-button"
-                                                             onclick="addEditorItemRequest('CarouselItem',${item.id?string("0")});">Carousel - <@spring.message 'Add_t'/></button>
+                                                             onclick="saveRequest('CarouselItem',${item.id?string("0")});">Carousel - <@spring.message 'Add_t'/></button>
                                                     </#if>
                                                 </#if>
                                             </#if>
@@ -192,7 +192,7 @@
                                                 <#else>
                                                     <#-- todo: add add button -->
                                                     <button class="del-button"
-                                                        onclick="addEditorItemRequest('SearchTerm',${search.id?string("0")});">SearchTerm - <@spring.message 'Add_t'/></button>
+                                                        onclick="saveRequest('SearchTerm',${search.id?string("0")});">SearchTerm - <@spring.message 'Add_t'/></button>
                                                 </#if>
                                             </#if>
                                         </#if>
