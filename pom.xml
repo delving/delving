@@ -175,8 +175,8 @@
                             <value>../core/src/test/resources/europeana-test.properties</value>
                         </property>
                         <property>
-                            <name>europeana.test.external.server</name>
-                            <value>${europeana.test.external.server}</value>
+                            <name>europeana.test.external.host</name>
+                            <value>${europeana.test.external.host}</value>
                         </property>
                     </systemProperties>
                 </configuration>
