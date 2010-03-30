@@ -22,10 +22,8 @@
 package eu.europeana.frontend;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.junit.Ignore;
-import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.log.Log;
 
@@ -37,9 +35,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 import eu.europeana.bootstrap.PortalFullStarter;
 import eu.europeana.bootstrap.SolrStarter;
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.incoming.cli.ContentLoader;
 
 /**
@@ -47,6 +42,7 @@ import eu.europeana.core.database.incoming.cli.ContentLoader;
  * @author Vitali Kiruta
  */
 public class FrontendTestUtil {
+
 
 	public static class Constants {
 
@@ -60,10 +56,6 @@ public class FrontendTestUtil {
 	}
 
 	private static final String TEST_URL_CONFIG_PARAMETER_NAME = "europeana.test.external.server";
-	@Ignore
-	private static String getTestServerURL() {
-		return (System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME) == null) ? System.getenv(TEST_URL_CONFIG_PARAMETER_NAME) : System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME);
-	}
 
 	/**
 	 * Real portal URL we tests against.
@@ -71,17 +63,22 @@ public class FrontendTestUtil {
 	 */
 	@Ignore
 	public static String portalUrl() {
-		return realPortalUrl + "portal/";
+		return staticUrl() + "portal/";
 	}
 
 	@Ignore
 	public static String staticUrl() {
-		return realPortalUrl;
+		String url = (System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME) == null) ? System.getenv(TEST_URL_CONFIG_PARAMETER_NAME) : System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME);
+		if (url == null) {
+			url = TEST_PORTAL_URL;
+			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + url);
+		}
+		return url;
 	}
 
+	private static final String HTTP_LOCALHOST = "http://localhost:";
 	private static final int TEST_PORT = 8081;
-	private static final String TEST_PORTAL_URL = "http://localhost:" + TEST_PORT + "/";
-	private static String realPortalUrl = TEST_PORTAL_URL;
+	private static final String TEST_PORTAL_URL = HTTP_LOCALHOST + TEST_PORT + "/";
 
 	public static final String EMAIL = "test@example.com";
 	public static final String USERNAME = "test_user";
@@ -125,10 +122,7 @@ public class FrontendTestUtil {
 
 	@Ignore
 	public static void start() throws Exception {
-
-		String url = getTestServerURL();
-		if (url == null) {
-			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + portalUrl());
+		if (portalUrl().startsWith(HTTP_LOCALHOST) ) {
 			if (server == null) {
 				PortalFullStarter starter = new PortalFullStarter();
 				if (!loaded) {
@@ -142,14 +136,12 @@ public class FrontendTestUtil {
 			}
 			server.start();
 			solr.start();
-		} else {
-			realPortalUrl = url;
 		}
 	}
 
 	@Ignore
 	public static void stop() throws Exception {
-		if (getTestServerURL() == null) {
+		if (portalUrl().startsWith(HTTP_LOCALHOST)) {
 			server.stop();
 			solr.stop();
 		}
