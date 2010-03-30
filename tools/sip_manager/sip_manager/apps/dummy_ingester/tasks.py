@@ -242,7 +242,7 @@ class RequestParseNew(SipProcess):
                     mdr= mdrs[0]
                 else:
                     # MdRecord not found, create a new
-                    mdr = base_item.MdRecord(content_hash=r_hash,source_data=unicode('\n'.join(record),'utf-8'))
+                    mdr = base_item.MdRecord(content_hash=r_hash,source_data='\n'.join(record))
                     mdr.save()
                 r_m = base_item.RequestMdRecord(request=self.current_request,
                                                  md_record=mdr)
