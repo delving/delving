@@ -45,7 +45,7 @@ import eu.europeana.bootstrap.PortalFullStarter;
 @ContextConfiguration(locations = {"/core-application-context.xml"})
 public class TokenBasedAuthenticationTest {
 
-	private static final String MYEUROPEANA_URL = FrontendTestUtil.TEST_PORTAL_URL + "myeuropeana.html";
+	private static final String MYEUROPEANA_URL = FrontendTestUtil.portalUrl() + "myeuropeana.html";
 	private static final String REMEMBER_ME_COOKIE_NAME = AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY;
 
 	@Test
@@ -76,12 +76,12 @@ public class TokenBasedAuthenticationTest {
 		webClient.setThrowExceptionOnFailingStatusCode(false);
 		myEuropeanaPage = webClient.getPage(MYEUROPEANA_URL); //go to secured page
 		Assert.assertEquals(200, myEuropeanaPage.getWebResponse().getStatusCode());
-		Assert.assertEquals(FrontendTestUtil.TEST_PORTAL_URL + "login.html", myEuropeanaPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
+		Assert.assertEquals(FrontendTestUtil.portalUrl() + "login.html", myEuropeanaPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
 
 		//Now access thief "session" again.
 		stolenPage = thiefClient.getPage(MYEUROPEANA_URL);
 		Assert.assertEquals(200, stolenPage.getWebResponse().getStatusCode());
-		Assert.assertEquals(FrontendTestUtil.TEST_PORTAL_URL + "login.html", stolenPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
+		Assert.assertEquals(FrontendTestUtil.portalUrl() + "login.html", stolenPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
 	}
 
 	@Test

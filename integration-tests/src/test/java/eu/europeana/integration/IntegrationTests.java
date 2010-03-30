@@ -44,7 +44,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class IntegrationTests {
 
 	public static String getTestSystemUrl()  {
-		return "http://test1.europeana.sara.nl/portal/";
+		return "http://portal-test.europeana.sara.nl/portal";
+		// "http://test1.europeana.sara.nl/portal/";
 	}
 
 	public static HtmlPage getPortalPage() throws FailingHttpStatusCodeException, MalformedURLException, IOException {

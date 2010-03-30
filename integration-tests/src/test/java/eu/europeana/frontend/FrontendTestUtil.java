@@ -24,8 +24,10 @@ package eu.europeana.frontend;
 import java.io.IOException;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
+import org.mortbay.log.Log;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -46,7 +48,7 @@ import eu.europeana.core.database.incoming.cli.ContentLoader;
  */
 public class FrontendTestUtil {
 
-    public static class Constants {
+	public static class Constants {
 
 		static final String CAROUSEL_EL_TYPE = "input";
 		static final String CAROUSEL_STYLE = "carousel-input";
@@ -57,109 +59,95 @@ public class FrontendTestUtil {
 
 	}
 
-	public static final int TEST_PORT = 8081;
-    public static final String TEST_PORTAL_URL = "http://localhost:" + TEST_PORT + "/portal/";
+	private static final String TEST_URL_CONFIG_PARAMETER_NAME = "europeana.test.external.server";
+	@Ignore
+	private static String getTestServerURL() {
+		return (System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME) == null) ? System.getenv(TEST_URL_CONFIG_PARAMETER_NAME) : System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME);
+	}
 
+	/**
+	 * Real portal URL we tests against.
+	 * @return
+	 */
+	@Ignore
+	public static String portalUrl() {
+		return realPortalUrl;
+	}
 
-    public static final String EMAIL = "test@example.com";
-    public static final String USERNAME = "test_user";
-    public static final String PASSWORD = "test";
-    public static final String FIRST_NAME = "First";
-    public static final String LAST_NAME = "Last";
+	private static final int TEST_PORT = 8081;
+	private static final String TEST_PORTAL_URL = "http://localhost:" + TEST_PORT + "/portal/";
+	private static String realPortalUrl = TEST_PORTAL_URL;
 
-    public static WebClient createWebClient() {
-        WebClient webClient = new WebClient();
+	public static final String EMAIL = "test@example.com";
+	public static final String USERNAME = "test_user";
+	public static final String PASSWORD = "test";
+	public static final String FIRST_NAME = "First";
+	public static final String LAST_NAME = "Last";
 
-        //A temprorary workaround to avoid javascript error caused by jQuery 1.3.1
-        //htmlunit does not fully support jQuery 1.3.1 yet.
-        webClient.setThrowExceptionOnScriptError(false);
+	public static WebClient createWebClient() {
+		WebClient webClient = new WebClient();
 
-        // TODO: remove it
+		//A temprorary workaround to avoid javascript error caused by jQuery 1.3.1
+		//htmlunit does not fully support jQuery 1.3.1 yet.
+		webClient.setThrowExceptionOnScriptError(false);
 
-        //webClient.setJavaScriptEnabled(false);
+		// TODO: remove it
+		//webClient.setJavaScriptEnabled(false);
 
-        return webClient;
-    }
+		return webClient;
+	}
 
-    /*
-     * get a Successful login page.
-     */
-    public static HtmlPage login(WebClient webClient, String username, String password) throws IOException {
-        HtmlPage page = webClient.getPage(TEST_PORTAL_URL + "login.html"); //go to login page
+	/*
+	 * get a Successful login page.
+	 */
+	public static HtmlPage login(WebClient webClient, String username, String password) throws IOException {
+		HtmlPage page = webClient.getPage(TEST_PORTAL_URL + "login.html"); //go to login page
 
-        HtmlTextInput usernameInput = (HtmlTextInput) page.getElementById("j_username");
-        usernameInput.setValueAttribute(username);
+		HtmlTextInput usernameInput = (HtmlTextInput) page.getElementById("j_username");
+		usernameInput.setValueAttribute(username);
 
-        HtmlPasswordInput passwordInput = (HtmlPasswordInput) page.getElementById("j_password");
-        passwordInput.setValueAttribute(password);
+		HtmlPasswordInput passwordInput = (HtmlPasswordInput) page.getElementById("j_password");
+		passwordInput.setValueAttribute(password);
 
-        HtmlSubmitInput loginButton = (HtmlSubmitInput) page.getElementsByName("submit_login").get(0);
-        return loginButton.click();
-    }
-
-	public static User createUser(String email, Role role) {
-		User user = new User();
-		user.setFirstName(FrontendTestUtil.FIRST_NAME);
-		user.setLastName(FrontendTestUtil.LAST_NAME);
-		user.setUserName(FrontendTestUtil.USERNAME);
-		user.setPassword(FrontendTestUtil.PASSWORD);
-		user.setEmail(email);
-		user.setEnabled(true);
-		user.setLastLogin(new Date());
-		user.setNewsletter(true);
-		user.setRegistrationDate(new Date());
-		user.setRole(role);
-		return user;
+		HtmlSubmitInput loginButton = (HtmlSubmitInput) page.getElementsByName("submit_login").get(0);
+		return loginButton.click();
 	}
 
 	private static boolean loaded = false;
 	private static Server server;
 	private static SolrStarter solr;
 
-	@Test
+
+	@Ignore
 	public static void start() throws Exception {
-		if (server == null) {
-			PortalFullStarter starter = new PortalFullStarter();
-			if (!loaded) {
-				ContentLoader.main();
-/*				LoadContent loader = new LoadContent() {
 
-					@Override
-					public void postLoad() {
-						// create default users
-						userDao.addUser(FrontendTestUtil.createUser(Constants.USER_1, Role.ROLE_EDITOR));
-						userDao.addUser(FrontendTestUtil.createUser(Constants.USER_2, Role.ROLE_EDITOR));
-						userDao.addUser(FrontendTestUtil.createUser(Constants.USER_SIMPLE, Role.ROLE_USER));
-						userDao.addUser(FrontendTestUtil.createUser(EMAIL, Role.ROLE_USER));
-					}
-
-				};
-				loader.init();
-				loader.load(true);
-				staticUserDao = loader.getUserDao();*/
-				//LoadContent.main();//load(true, normalizedEseImporter, dashboardDao, normalizedImportRepository, languageDao, staticInfoDao);
-				loaded = true;
+		String url = getTestServerURL();
+		if (url == null) {
+			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + TEST_PORTAL_URL);
+			if (server == null) {
+				PortalFullStarter starter = new PortalFullStarter();
+				if (!loaded) {
+					ContentLoader.main();
+					loaded = true;
+				}
+				server = starter.startServer(FrontendTestUtil.TEST_PORT);
+				if (!server.isRunning())
+					throw new Exception("Server not started");
+				solr = new SolrStarter();
 			}
-			server = starter.startServer(FrontendTestUtil.TEST_PORT);
-			if (!server.isRunning())
-				throw new Exception("Server not started");
-			solr = new SolrStarter();
+			server.start();
+			solr.start();
+		} else {
+			realPortalUrl = url;
 		}
-		server.start();
-		solr.start();
 	}
 
-	public static UserDao staticUserDao;
-
-	@Deprecated
-	public static UserDao getUserDao() {
-		return staticUserDao;
-	}
-
-	//	@AfterClass
+	@Ignore
 	public static void stop() throws Exception {
-		server.stop();
-		solr.stop();
+		if (getTestServerURL() == null) {
+			server.stop();
+			solr.stop();
+		}
 	}
 
 
