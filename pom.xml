@@ -176,7 +176,7 @@
                         </property>
                         <property>
                             <name>europeana.test.external.server</name>
-                            <value>${env.europeana.test.external.server}</value>
+                            <value>${europeana.test.external.server}</value>
                         </property>
                     </systemProperties>
                 </configuration>
