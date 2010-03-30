@@ -55,7 +55,7 @@ public class FrontendTestUtil {
 
 	}
 
-	private static final String TEST_URL_CONFIG_PARAMETER_NAME = "europeana.test.external.server";
+	private static final String TEST_URL_CONFIG_PARAMETER_NAME = "europeana.test.external.host";
 
 	/**
 	 * Real portal URL we tests against.
@@ -77,6 +77,8 @@ public class FrontendTestUtil {
 		if (url == null) {
 			url = TEST_PORTAL_URL;
 			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + url);
+		} else {
+			url = "http://" + url + "/";
 		}
 		return url;
 	}
