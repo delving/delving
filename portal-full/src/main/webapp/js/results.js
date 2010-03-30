@@ -24,6 +24,14 @@
 $(document).ready(function() {
     $('div.toggler-c').toggleElements(
     { fxAnimation:'slide', fxSpeed:'fast', className:'toggler' });
+
+    $('#refine-search').click(function(){
+        var originalQ = $('input#query').attr('value');
+        // set hidden input #oq to the original query
+        $('input#oq').attr('value',originalQ);
+        // empty the search input field
+        $('input#query').attr('value','');
+    });
 });
 
 function saveQuery(queryToSave, queryString){

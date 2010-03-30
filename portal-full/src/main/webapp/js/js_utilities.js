@@ -55,10 +55,23 @@ function isEmpty( inputStr ) {
 
 function checkFormSimpleSearch(oId){
     var o = document.getElementById(oId);
+
     if (isEmpty(o.value)){
         document.getElementById(oId).style.border="1px dotted firebrick";
         return false;
     }
+
+    var oq = $('input[type=hidden]#oq').attr('value');
+    // if the hidden input #oq is not empty (refine search is checked) and submitted
+    if(!isEmpty(oq)) {
+        var refinement = $('input#query').attr('value');
+        // set hidden input #rq to what was entered in the input field
+        $('input[type=hidden]#rq').attr('value',refinement);
+        // set the value of the input field back to the original query which
+        // was stored in the hidden input #oq
+        $('input[type=text]#query').attr('value',oq);
+    }
+
     return true;
 }
 
