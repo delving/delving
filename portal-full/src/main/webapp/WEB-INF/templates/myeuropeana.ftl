@@ -125,7 +125,7 @@
                                         <td width="220" align="right">
                                        <!-- AddThis Button BEGIN -->
                                         <#assign  showthislang = locale>
-                                        <#if  locale = "mt" || locale = "et">
+                                        <#if  locale = "mt" || locale = "et" || locale = "bg">
                                            <#assign  showthislang = "en">
                                         </#if>
                                            <a class="addthis_button"

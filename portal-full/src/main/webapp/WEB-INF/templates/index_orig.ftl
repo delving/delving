@@ -78,7 +78,7 @@
                     <li>
                    <!-- AddThis Button BEGIN -->
                     <#assign  showthislang = locale>
-                    <#if  locale = "mt" || locale = "et">
+                    <#if  locale = "mt" || locale = "et" || locale = "bg">
                        <#assign  showthislang = "en">
                     </#if>
                        <a class="addthis_button" addthis:url="http://www.europeana.eu/portal/images/think_culture_logo_top_4.jpg"
