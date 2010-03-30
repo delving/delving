@@ -165,7 +165,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>2.5</version>
                 <configuration>
                     <groups>regression</groups>
                     <parallel>true</parallel>
@@ -173,6 +173,10 @@
                         <property>
                             <name>europeana.properties</name>
                             <value>../core/src/test/resources/europeana-test.properties</value>
+                        </property>
+                        <property>
+                            <name>europeana.test.external.server</name>
+                            <value>${env.europeana.test.external.server}</value>
                         </property>
                     </systemProperties>
                 </configuration>
