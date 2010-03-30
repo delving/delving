@@ -71,11 +71,16 @@ public class FrontendTestUtil {
 	 */
 	@Ignore
 	public static String portalUrl() {
+		return realPortalUrl + "portal/";
+	}
+
+	@Ignore
+	public static String staticUrl() {
 		return realPortalUrl;
 	}
 
 	private static final int TEST_PORT = 8081;
-	private static final String TEST_PORTAL_URL = "http://localhost:" + TEST_PORT + "/portal/";
+	private static final String TEST_PORTAL_URL = "http://localhost:" + TEST_PORT + "/";
 	private static String realPortalUrl = TEST_PORTAL_URL;
 
 	public static final String EMAIL = "test@example.com";
@@ -101,7 +106,7 @@ public class FrontendTestUtil {
 	 * get a Successful login page.
 	 */
 	public static HtmlPage login(WebClient webClient, String username, String password) throws IOException {
-		HtmlPage page = webClient.getPage(TEST_PORTAL_URL + "login.html"); //go to login page
+		HtmlPage page = webClient.getPage(portalUrl() + "login.html"); //go to login page
 
 		HtmlTextInput usernameInput = (HtmlTextInput) page.getElementById("j_username");
 		usernameInput.setValueAttribute(username);
@@ -123,7 +128,7 @@ public class FrontendTestUtil {
 
 		String url = getTestServerURL();
 		if (url == null) {
-			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + TEST_PORTAL_URL);
+			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + portalUrl());
 			if (server == null) {
 				PortalFullStarter starter = new PortalFullStarter();
 				if (!loaded) {
