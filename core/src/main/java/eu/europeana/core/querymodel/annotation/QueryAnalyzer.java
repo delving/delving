@@ -47,7 +47,7 @@ public class QueryAnalyzer {
     }
 
     public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
-        String[] terms = query.split("\\s+");
+            String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
                 return QueryType.ADVANCED_QUERY;
