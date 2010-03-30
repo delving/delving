@@ -79,6 +79,7 @@ public class FrontendTestUtil {
 			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + url);
 		} else {
 			url = "http://" + url + "/";
+			Log.info("Testing against " + url);
 		}
 		return url;
 	}
