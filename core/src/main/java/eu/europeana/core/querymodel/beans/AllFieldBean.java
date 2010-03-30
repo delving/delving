@@ -53,7 +53,7 @@ public class AllFieldBean extends FullBean {
     @Field("SUBJECT")
     @Europeana(validation = CopyField, facet = false, facetPrefix = "sub", fullDoc = false)
     @Solr(fieldType = "string")
-    String[] subject;
+    String[] SUBJECT;
 
 
     @Europeana(validation = EseOptional, fullDoc = false, mappable = true)
@@ -106,6 +106,11 @@ public class AllFieldBean extends FullBean {
     @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] relation;
+
+    @Field
+    @Europeana(validation = CopyField, fullDoc = false)
+    @Solr()
+    String[] subject;
 
     // wh copy fields
     @Field
