@@ -27,16 +27,20 @@
                     <div id="savedItems">
                         <ul>
                             <li><a href="#fragment-0"
-                                   title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a>
+                                   title="<@spring.message 'UserInformation_t' />"
+                                   onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });"><span><@spring.message 'UserInformation_t' /></span></a>
                             </li>
                             <li><a href="#fragment-1"
-                                   title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a>
+                                   title="<@spring.message 'SavedItems_t'/>"
+                                    onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });"><span><@spring.message 'SavedItems_t'/></span></a>
                             </li>
                             <li><a href="#fragment-2"
-                                   title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a>
+                                   title="<@spring.message 'SavedSearches_t'/>"
+                                    onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });"><span><@spring.message 'SavedSearches_t'/></span></a>
                             </li>
                             <li><a href="#fragment-3"
-                                   title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a>
+                                   title="<@spring.message 'SavedTags_t'/>"
+                                    onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });"><span><@spring.message 'SavedTags_t'/></span></a>
                             </li>
                         </ul>
                         <div id="fragment-0">
