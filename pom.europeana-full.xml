@@ -83,6 +83,7 @@
 						<phase>validate</phase>
 						<configuration>
 							<tasks>
+							    <echo message="Writing Revision ${buildNumber} built at ${timestamp} to build.txt"/>
                                 <echo message="Revision ${buildNumber} built at ${timestamp}" file="portal-full/src/main/webapp/build.txt" />
 							</tasks>
 						</configuration>
