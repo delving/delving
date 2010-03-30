@@ -68,7 +68,12 @@ public class FrontendTestUtil {
 
 	@Ignore
 	public static String staticUrl() {
-		String url = (System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME) == null) ? System.getenv(TEST_URL_CONFIG_PARAMETER_NAME) : System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME);
+		String url = System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME);
+
+		if (url == null) {
+			url = System.getenv(TEST_URL_CONFIG_PARAMETER_NAME);
+		}
+
 		if (url == null) {
 			url = TEST_PORTAL_URL;
 			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + url);
