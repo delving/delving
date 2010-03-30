@@ -24,6 +24,7 @@
 
 
 """
+import hashlib
 
 from django.db import models
 from django.contrib import admin
@@ -31,6 +32,51 @@ from django.contrib import admin
 from utils.gen_utils import dict_2_django_choice
 
 from apps.dummy_ingester.models import Request
+
+
+
+def to_str(text):
+    """ Convert 'text' to a `str` object.
+
+        >>> to_str(u'I\xf1t\xebrn\xe2ti')
+        'I\xc3\xb1t\xc3\xabrn\xc3\xa2ti'
+        >>> to_str(42)
+        '42'
+        >>> to_str('ohai')
+        'ohai'
+        >>> class Foo:
+        ...     def __str__(self):
+        ...         return 'foo'
+        ...
+        >>> f = Foo()
+        >>> to_str()
+        'foo'
+        >>> f.__unicode__ = lambda: u'I\xf1t\xebrn\xe2ti'
+        >>> to_str(f)
+        'I\xc3\xb1t\xc3\xabrn\xc3\xa2ti'
+        >>> """
+    if isinstance(text, str):
+        return text
+
+    if hasattr(text, '__unicode__'):
+        text = text.__unicode__()
+
+    if hasattr(text, '__str__'):
+        return text.__str__()
+
+    return text.encode('utf-8')
+
+
+def calculate_mdr_content_hash(record):
+    """
+    When calculating the content hash for the record, the following is asumed:
+      the lines are stripped for initial and trailing whitespaces,
+      sorted alphabetically
+      each line is separated by one \n character
+    """
+    #s = to_str(record)
+    r_hash = hashlib.sha256(record.upper()).hexdigest().upper()
+    return r_hash
 
 
 
@@ -55,6 +101,10 @@ MDRS_STATES = {
 
 class MdRecord(models.Model):
     content_hash = models.CharField(max_length=100)
+
+    # source data is the original record, treated in the following way:
+    #   each line from the file is stripped of initial and trailing whitespace
+    #   then concatenated with one \n char, no trailing \n
     source_data = models.TextField()
     status = models.IntegerField(choices=dict_2_django_choice(MDRS_STATES),
                                  default = MDRS_CREATED)
@@ -66,6 +116,7 @@ class MdRecord(models.Model):
     Enrichment_done = models.BooleanField(default=False)
 
 admin.site.register(MdRecord)
+
 
 
 

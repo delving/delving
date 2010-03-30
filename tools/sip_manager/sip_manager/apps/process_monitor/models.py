@@ -44,7 +44,9 @@ PMS_STATES = {
 
 class ProcessMonitoring(models.Model):
     pid = models.IntegerField() # what process 'owns' this item
-    task = models.CharField(max_length=200)
+    task_label = models.CharField(max_length=200)
+    task_progress = models.CharField(max_length=50, default='') # count and percentage done
+    task_eta = models.CharField(max_length=15, default='unknown')
     status = models.IntegerField(choices=dict_2_django_choice(PMS_STATES),
                                  default = PMS_RUNNING)
     time_created = models.DateTimeField(auto_now_add=True,editable=False)

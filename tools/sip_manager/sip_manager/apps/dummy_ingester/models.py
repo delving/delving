@@ -82,6 +82,7 @@ admin.site.register(DataSet)
 
 
 # REQS_ = Request status
+REQS_PRE = 0 # unoficial state, only in dummy_ingestion
 REQS_INIT = 1
 REQS_IMPORTED = 2
 REQS_ABORTED = 3
@@ -92,6 +93,7 @@ REQS_CREATING_AIP = 7
 REQS_AIP_COMPLETED = 8
 
 REQS_STATES = {
+    REQS_PRE: 'unprocessed',
     REQS_INIT: 'under construction',
     REQS_IMPORTED: 'import completed',
     REQS_ABORTED: 'aborted',
@@ -106,7 +108,7 @@ REQS_STATES = {
 class Request(models.Model):
     data_set = models.ForeignKey(DataSet)
     status = models.IntegerField(choices=dict_2_django_choice(REQS_STATES),
-                                 default = REQS_INIT, editable=False)
+                                 default = REQS_PRE)
     record_count = models.IntegerField() # no of records in request
     # we dont store path, find it by os.walk and check time_stamp
     file_name = models.CharField(max_length=200,
