@@ -27,6 +27,7 @@ function setLang(lang) {
 }
 
 function toggleObject(oId) {
+
     var oObj = document.getElementById(oId);
     var cObj = (oObj.style.display == "none") ? "block" : "none";
     oObj.style.display = cObj;
@@ -61,16 +62,17 @@ function checkFormSimpleSearch(oId){
         return false;
     }
 
-    var oq = $('input[type=hidden]#oq').attr('value');
-    // if the hidden input #oq is not empty (refine search is checked) and submitted
-    if(!isEmpty(oq)) {
-        var refinement = $('input#query').attr('value');
-        // set hidden input #rq to what was entered in the input field
-        $('input[type=hidden]#rq').attr('value',refinement);
-        // set the value of the input field back to the original query which
-        // was stored in the hidden input #oq
-        $('input[type=text]#query').attr('value',oq);
-    }
+    // we are in 'Refine Search'
+//    if(oId=="rq") {
+//        //var refinement = $('input#rq').attr('value');
+//        var withFacets = $('input#queryWithFacets').attr('value');
+//        // check if 'withFacets' is checked
+//        var n = $("input#withFacets:checked").length;
+//        if(n==1){
+//           $('input#rqq').attr('value',withFacets);
+//        }
+//
+//    }
 
     return true;
 }

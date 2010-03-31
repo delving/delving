@@ -291,7 +291,7 @@ input.error
 
 }
 
-#search #search_advanced
+#search #search_advanced, #search #search_refine
 {
 	background:#eee;
 	border:1px solid #ccc;
@@ -311,6 +311,13 @@ input.error
 	left:150px;
 	position:absolute;
 	top:0;
+}
+
+#search #search_refine.search_result
+{
+	left:180px;
+	position:absolute;
+	top:40px;
 }
 
 #tbl_adv_search td
