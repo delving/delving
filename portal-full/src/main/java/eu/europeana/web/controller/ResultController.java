@@ -111,7 +111,6 @@ public class ResultController {
         page.addObject("nextQueryFacets", briefBeanView.getFacetQueryLinks());
         page.addObject("typeUrl", briefBeanView.getPagination().getPresentationQuery().getTypeQuery());
         page.addObject("pagination", briefBeanView.getPagination());
-        page.addObject("queryToSave", briefBeanView.getPagination().getPresentationQuery().getQueryToSave());
         page.addObject("servletUrl", ControllerUtil.getServletUrl(request));
         clickStreamLogger.logBriefResultView(request, briefBeanView, solrQuery, page);
         return page;

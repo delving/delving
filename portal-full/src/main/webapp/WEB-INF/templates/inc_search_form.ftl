@@ -32,10 +32,12 @@
             <input type="hidden" name="view" value="${view}" />
             <input class="search-input" name="query" id="query" type="text" title="Europeana Search" <#if query?exists>value="${qt}"</#if> maxlength="75"/>
             <input id="submit_search" type="submit" class="button" value="<@spring.message 'Search_t' />" /><br/>
-            <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
+            <#if query?? && query?length &gt; 0 >
+                <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
+            </#if>
             <a class="advanced-search" href="advancedsearch.html" onclick="toggleObject('search_simple');toggleObject('search_advanced');return false;" title="Advanced Search"><@spring.message 'AdvancedSearch_t' /></a>
 
-            <label     
+            <label
         </form>
     </div>
 
@@ -85,6 +87,7 @@
         </form>
     </div>
 
+<#if query??>
     <div id="search_refine" class="${className}" style="display:${showRefine};z-index:1012;" onsubmit="return checkFormSimpleSearch('rq');">
       <form method="get" action="brief-doc.html?" accept-charset="UTF-8" name="formRefineSearch" id="formRefineSearch">
         <input type="hidden" name="start" value="1" />
@@ -103,6 +106,6 @@
 
          </table>
         </form>
-
     </div>
+</#if>
 </#macro>
