@@ -45,35 +45,8 @@ class UriSource(models.Model):
     name_or_ip = models.CharField(max_length=100)
 
 
-# URIE_ Uri Error
-URIE_TIMEOUT = 1
-URIE_NO_RESPONSE = 2
-URIE_HTTP_ERROR = 3
-URIE_HTML_ERROR = 4
-#URIE_
-URIE_STATES = {
-    }
 
-ITEM_STATES = { # MdRec with new naming
-    ST_INITIALIZING: 'inializing',
-    ST_PENDING: 'pending',
-    ST_PARSING: 'parsing',
-    ST_RETRIEVED: 'retrieved',
-    ST_COMPLETED: 'completed',
-    ST_ABORTED: 'aborted',
-    ST_ERROR: 'error', # other error see message for details
-    ST_TIMEOUT: 'timeout',
-    ST_FAILED: 'failed', # failure in identification of item
-    IS_NO_RESPONSE: 'no response',
-    IS_NO_URI: 'no uri',
-    IS_HTTP_ERROR: 'http error',
-    IS_HTML_ERROR: 'html error',
-    IS_URL_ERROR: 'url error',
-    IS_MIME_TYPE_ERROR: 'mime type error',
-    IS_DOWNLOAD_FAILED: 'download failed',
-    IS_INVALID_DATA: 'invalid data',
-    IS_IDENTIFICATION: 'identification',
-}
+
 
 
 # URIS_ = Uri State
@@ -106,6 +79,48 @@ URI_TYPES = {
     URIT_SHOWNAT : 'isShownAt',
     }
 
+"""
+    ST_INITIALIZING: 'inializing',
+    ST_PENDING: 'pending',
+    ST_PARSING: 'parsing',
+    ST_RETRIEVED: 'retrieved',
+    ST_COMPLETED: 'completed',
+    ST_ABORTED: 'aborted',
+    ST_ERROR: 'error', # other error see message for details
+    ST_FAILED: 'failed', # failure in identification of item
+    IS_NO_URI: 'no uri',
+    IS_URL_ERROR: 'url error',
+    IS_IDENTIFICATION: 'identification',
+"""
+
+# URIE_ Uri Error
+URIE_NO_ERROR        = 0
+URIE_OTHER_ERROR     = 1 # used
+URIE_TIMEOUT         = 2 # used
+URIE_HTTP_ERROR      = 3 # used
+URIE_HTML_ERROR      = 4 # used
+URIE_URL_ERROR       = 5 # used
+URIE_MIMETYPE_ERROR  = 6 # used
+URIE_WRONG_FILESIZE  = 7 # used
+URIE_DOWNLOAD_FAILED = 8
+URIE_INVALID_DATA    = 9
+#URIE_NO_RESPONSE     = 3
+
+URI_ERR_CODES = {
+    URIE_NO_ERROR        : '',
+    URIE_OTHER_ERROR     : 'other error',
+    URIE_TIMEOUT         : 'timeout',
+    URIE_HTTP_ERROR      : 'http error',
+    URIE_HTML_ERROR      : 'html error',
+    URIE_URL_ERROR       : 'url error',
+    URIE_MIMETYPE_ERROR  : 'mime type error',
+    URIE_DOWNLOAD_FAILED : 'download failed',
+    URIE_INVALID_DATA    : 'invalid data',
+    URIE_WRONG_FILESIZE  : 'wrong filesize',
+    #URIE_NO_RESPONSE     : 'no response',
+    }
+
+
 class Uri(models.Model):
     """
     Identifies one server providing thumbnail resources to Europeana, to avoid
@@ -116,10 +131,13 @@ class Uri(models.Model):
                                  default = URIS_CREATED)
     item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
                                  default = URIT_OBJECT)
+    mime_type = models.CharField(max_length=50,blank=True) # only relevant for objects...
     uri_source = models.ForeignKey(UriSource)
     pid = models.IntegerField(default=0) # what process 'owns' this item
     #element
     url = models.URLField(verify_exists=False)
+    err_code = models.IntegerField(choices=dict_2_django_choice(URI_ERR_CODES),
+                                 default = URIE_NO_ERROR)
     err_msg = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True,editable=False)
     time_lastcheck = models.DateTimeField(auto_now_add=True)

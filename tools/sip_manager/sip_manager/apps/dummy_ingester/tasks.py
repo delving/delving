@@ -209,7 +209,7 @@ class RequestParseNew(SipProcess):
             self.handle_request(requests[0])
         return True
 
-    @transaction.commit_manually
+    # @ transaction.commit_manually
     def handle_request(self, request):
         full_path = self.find_file(request)
         if not full_path:
@@ -255,13 +255,13 @@ class RequestParseNew(SipProcess):
             if t0 + self.TASK_PROGRESS_TIME < time.time():
                 self.task_progress(record_count)
                 t0 = time.time()
-                transaction.commit()
+                #transaction.commit()
             line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
         f.close()
         request.status = models.REQS_INIT
         request.save()
         self.release_item(models.Request, request.pk)
-        transaction.commit()
+        #transaction.commit()
         return True
 
 

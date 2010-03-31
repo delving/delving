@@ -26,6 +26,8 @@
 """
 
 import time
+import urllib2
+
 import urlparse
 #from xml.dom.minidom import parseString
 
@@ -104,84 +106,119 @@ class UriProcessNewRecords(SipProcess):
             for uri in Uris.items.filter(uri_source=uri_source.id, pid=0):
                 process_one_uri(uri)
         """
-        self.task_starting('Process new Uri records', cursor.rowcount)
+        uris =  models.Uri.objects.filter(status=models.URIS_CREATED, pid=0)
+        self.task_starting('Process new Uri records', len(uris))
         t0 = time.time()
         record_count = 0
-        for uri in models.Uri.objects.filter(status=models.URIS_CREATED, pid=0):
+        for uri in uris:
             record_count += 1
-            self.handle_uri(uri)
+
+            self.uri = self.grab_item(models.Uri, uri.pk, 'About to check url')
+            if not self.uri:
+                continue # Failed to take control of it
+
+            self.handle_uri()
+
+            self.release_item(models.Uri, self.uri.pk)
+
             if t0 + self.TASK_PROGRESS_TIME < time.time():
                 self.task_progress(record_count)
                 t0 = time.time()
         return True
 
-    def handle_uri(self, uri_obj):
-        self.uri = self.grab_item(models.Uri, uri_obj.pk,
-                             'About to check url')
-        if not self.uri:
-            return False # Failed to take control of it
-
-        if not self.verify_url():
-            self.uri_state(URIS_FAILED)
+    def handle_uri(self):
+        if not self.verify():
             return False
-        self.uri_state(models.URIS_VERIFIED)
+
+        if self.uri.item_type != models.URIT_OBJECT:
+            return True # we only download objects
 
         # URIS_DOWNLOADED = 3
         # URIS_FULL_GENERATED = 4
         # URIS_BRIEF_GENERATED = 5
         # URIS_COMPLETED = 6
 
-        self.release_item(models.Uri, self.uri.pk)
         return True
 
 
-    def verify_url(self):
+    def verify(self):
         "Check if item can be downloaded."
         msg = []
         try:
             itm = urllib2.urlopen(self.uri.url)#,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
-            self.uri.err_msg = 'http error: %i' % e.code
-            return False # let caller do the save
+            return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i' % e.code)
         except urllib2.URLError, e:
             if str(e.reason) == 'timed out':
-            self.uri.err_msg = 'http error: %i' % e.code
-                self.thing_set_state(cache_item, glob_consts.ST_TIMEOUT)
+                code = models.URIE_TIMEOUT
+                msg =  models.URI_ERR_CODES[self.uri.err_code]
             else:
-                self.thing_set_state(cache_item, glob_consts.IS_URL_ERROR)
-                cache_item.set_msg('URLError %s' % str(e.reason))
-            return False
+                code = models.URIE_URL_ERROR
+                msg =  '%s: %s' % (models.URI_ERR_CODES[self.uri.err_code], str(r.reason))
+            return self.set_urierr(code, msg)
         except:
-            self.thing_set_state(cache_item, glob_consts.ST_ERROR)
-            cache_item.set_msg('Unhandled error when checking url')
-            return False
+            return self.set_urierr(models.URIE_OTHER_ERROR, 'Unhandled error when checking url')
 
         if itm.code != 200:
-            self.thing_set_state(cache_item, glob_consts.IS_HTML_ERROR)
-            cache_item.set_msg('HTML status: %i' % itm.code)
-            return False
+            return self.set_urierr(models.URIE_HTML_ERROR, 'HTML status: %i' % itm.code)
         try:
             content_t = itm.headers['content-type']
         except:
-            self.thing_set_state(cache_item, glob_consts.ST_ERROR)
-            cache_item.set_msg('Failed to parse mime-type')
-            return False
+            return self.set_urierr(models.URIE_MIMETYPE_ERROR, 'Failed to parse mime-type')
 
-        ret = True
-        if content_t not in (self.mime_ok):
-            if content_t in self.mime_not_good:
-                ret = False
-            else:
-                if not self.verify_odd_mimetype(content_t):
-                    ret = False
-        if not ret:
-            self.thing_set_state(cache_item, glob_consts.IS_MIME_TYPE_ERROR)
-            cache_item.set_msg('Bad mime-type: %s' % content_t)
-        return ret
+        self.uri.mime_type = content_t
+        self.uri_state(models.URIS_VERIFIED)
+        if self.uri.item_type != models.URIT_OBJECT:
+            return True # we only download objects
+
+        data = itm.read()
+        try:
+            content_length = int(itm.headers['content-length'])
+        except:
+            return self.set_urierr(models.URIE_OTHER_ERROR,
+                                   'Bad header response, missing "content-length"')
+
+        if len(data) != content_length:
+            return self.set_urierr(models.URIE_WRONG_FILESIZE,
+                                   'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
+        #self.calculate_url_hash()
+        return True
+
+    def calculate_url_hash(self):
+        url_hash = hashlib.sha256(self.uri.url).hexdigest().upper()
+        #cache_item.fname='%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
+        return url_hash
+
+    def calculate_url_hash_old_style(self, cache_item):
+        """Calculate hashed filename based on url.
+        for each file
+        hashlib.sha256('http://www.theeuropeanlibrary.org/portal/images/treasures/hy10.jpg').hexdigest()
+        get file and store in /ORIGINAL
+        log as retrieved in db
+
+        oldsyntax
+        /3first/4: HASHNAME_BRIEF_DOC.jpg
+        _FULL_DOC.jpg
+
+        """
+        url_hash = hashlib.sha256(cache_item.uri_obj).hexdigest().upper()
+        cache_item.fname = '%s/%s' % (url_hash[:3], url_hash[3:])
+        return True
+
+
+
+
+    def set_urierr(self, code, msg):
+        if code not in models.URI_ERR_CODES:
+            raise SipProcessException('set_urierr called with invalid errcode')
+        self.uri.err_code = code
+        self.uri.err_msg = msg
+        self.uri_state(models.URIS_FAILED)
+        return False # propagate error
 
 
     def uri_state(self, state):
-        self.uri.state = state
+        self.uri.status = state
         self.uri.save()
 
 
@@ -210,7 +247,7 @@ def process_one_uri(uri):
 
 
 task_list = [UriCreateNewRecords,
-             #UriProcessNewRecords,
+             UriProcessNewRecords,
              #UriCleanup,
              #UriFileTreeMonitor,
              ]
