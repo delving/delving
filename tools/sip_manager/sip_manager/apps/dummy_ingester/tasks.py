@@ -180,7 +180,7 @@ class RequestCreate(SipProcess):
         retcode = p.wait()
         if retcode:
             self.abort_process('shell command counting records in xml-file failed: %s' % fname)
-        rec_count = p.stdout.read().strip()
+        rec_count = p.stdout.read().strip() or 0
         self.log('\tfound records: %s' % rec_count, 9)
         return rec_count
 
@@ -271,7 +271,7 @@ class RequestParseNew(SipProcess):
             mdr= mdrs[0]
         else:
             # MdRecord not found, create a new
-            mdr = base_item.MdRecord(content_hash=r_hash,source_data=unicode('\n'.join(record),'utf-8'))
+            mdr = base_item.MdRecord(content_hash=r_hash,source_data='\n'.join(record))
             mdr.save()
         r_m = base_item.RequestMdRecord(request=self.current_request,
                                          md_record=mdr)
@@ -299,6 +299,6 @@ class RequestParseNew(SipProcess):
 
 
 
-task_list = [#RequestCreate,
+task_list = [RequestCreate,
              RequestParseNew
              ]
