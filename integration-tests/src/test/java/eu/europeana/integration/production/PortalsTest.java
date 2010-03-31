@@ -55,7 +55,7 @@ public class PortalsTest {
             String content = searchResult.getWebResponse().getContentAsString();
 			Assert.assertNotNull("Empty content at " + page, content);
 			Assert.assertFalse("Exception at " + page, content.contains("xception"));
-			Assert.assertTrue("On " + page, content.contains("Bible"));
+			Assert.assertTrue("On " + page, content.contains("ible"));
 			IntegrationTests.assertText(searchResult, "//table[@id='multi']/tbody/tr[1]/td[2]/h2", "ible");
 		}
     }

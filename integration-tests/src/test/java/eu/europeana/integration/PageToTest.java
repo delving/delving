@@ -21,6 +21,8 @@
 
 package eu.europeana.integration;
 
+import org.junit.Ignore;
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -30,7 +32,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * 
  * @author Borys Omelayenko
  */
-
+@Ignore
 public class PageToTest {
 	HtmlPage page;
 	String lang;
@@ -60,7 +62,7 @@ public class PageToTest {
 	}
 	@Override
 	public String toString() {
-		return "PageToTest [url=" + url + ", lang=" + lang + ", browser=" + browser + "]";
+		return "PageToTest [url=" + url + ", lang=" + lang + ", browser=" + browser.getApplicationName() + "."  + browser.getApplicationVersion() + "]";
 	}
 
 }
