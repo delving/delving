@@ -1,3 +1,24 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
@@ -14,7 +35,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -66,10 +86,9 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener {
         top.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Code"));
         top.add(scroll = new JScrollPane(codeArea));
         split.setTopComponent(top);
-        scroll.setPreferredSize(new Dimension(1200, 400));
         scroll.doLayout();
-        split.setBottomComponent(scroll = new JScrollPane(outputArea));
-        scroll.setPreferredSize(new Dimension(1200, 400));
+        split.setBottomComponent(new JScrollPane(outputArea));
+        split.setResizeWeight(0.5);
         split.setDividerLocation(0.5);
         return split;
     }

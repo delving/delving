@@ -1,10 +1,10 @@
-package eu.europeana.sip.xml;
+package eu.europeana.sip.reference;
 
 import com.thoughtworks.xstream.XStream;
 import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
 import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.core.querymodel.query.Language;
-import eu.europeana.sip.reference.Profile;
+import eu.europeana.sip.xml.Counters;
 import groovy.util.Node;
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
