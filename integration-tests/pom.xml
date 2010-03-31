@@ -93,16 +93,19 @@
                         <groupId>eu.europeana</groupId>
                         <artifactId>portal-full</artifactId>
                         <version>${europeana.portal.version}</version>
+                       <type>war</type>
                     </dependency>
                     <dependency>
                         <groupId>eu.europeana</groupId>
                         <artifactId>portal-lite</artifactId>
                         <version>${europeana.portal.version}</version>
+                       <type>war</type>
                     </dependency>
                     <dependency>
                         <groupId>eu.europeana</groupId>
                         <artifactId>api</artifactId>
                         <version>${europeana.api.version}</version>
+                        <type>war</type>
                     </dependency>
                     <dependency>
                         <groupId>eu.europeana</groupId>
@@ -113,6 +116,7 @@
                         <groupId>eu.europeana</groupId>
                         <artifactId>dashboard</artifactId>
                         <version>${europeana.dashboard.version}</version>
+                       <type>war</type>
                     </dependency>
 				</dependencies>
 			</plugin>
