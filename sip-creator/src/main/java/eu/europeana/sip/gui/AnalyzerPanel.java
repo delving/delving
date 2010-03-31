@@ -37,8 +37,8 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.List;
 
@@ -120,36 +120,28 @@ public class AnalyzerPanel extends JPanel {
                 setStatistics(node.getStatistics());
             }
         });
-        statisticsJTree.addMouseListener(
-                new MouseListener() {
 
+        statisticsJTree.addMouseListener(
+                new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-
-                    }
-
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        // todo: implement
-                    }
-
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
                         if (e.getButton() == MouseEvent.BUTTON3) {
-                            TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
-                            statisticsJTree.setSelectionPath(path);
-                            System.out.printf("%s%n", path.getPath()[path.getPath().length - 1]);
+                            final TreePath treePath = statisticsJTree.getPathForLocation(e.getX(), e.getY());
+                            statisticsJTree.setSelectionPath(treePath);
+                            JPopupMenu popupMenu = new JPopupMenu();
+                            JMenuItem jMenuItem = new JMenuItem("Set as delimiter");
+                            jMenuItem.addActionListener(
+                                    new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            System.out.printf("Finally! %s%n", treePath.getPath()[treePath.getPath().length - 1]);
+                                            // todo: set delimiter for
+                                        }
+                                    }
+                            );
+                            popupMenu.add(jMenuItem);
+                            popupMenu.show(statisticsJTree, e.getX(), e.getY());
                         }
-                    }
-
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        // todo: implement
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        // todo: implement
                     }
                 }
         );
