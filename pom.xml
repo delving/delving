@@ -170,16 +170,10 @@
                 <configuration>
                     <groups>regression</groups>
                     <parallel>true</parallel>
-                    <systemProperties>
-                        <property>
-                            <name>europeana.properties</name>
-                            <value>../core/src/test/resources/europeana-test.properties</value>
-                        </property>
-                        <property>
-                            <name>europeana.test.external.host</name>
-                            <value>${europeana.test.external.host}</value>
-                        </property>
-                    </systemProperties>
+                    <systemPropertyVariables>
+                        <europeana.properties>../core/src/test/resources/europeana-test.properties</europeana.properties>
+                        <europeana.test.external.host>${europeana.test.external.host}</europeana.test.external.host>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
