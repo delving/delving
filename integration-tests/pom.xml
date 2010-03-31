@@ -84,6 +84,36 @@
 						<artifactId>core</artifactId>
 						<version>${europeana.core.version}</version>
 					</dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>definitions</artifactId>
+                        <version>${europeana.definitions.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>portal-full</artifactId>
+                        <version>${europeana.portal.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>portal-lite</artifactId>
+                        <version>${europeana.portal.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>api</artifactId>
+                        <version>${europeana.api.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>sip-creator</artifactId>
+                        <version>${europeana.sip-creator.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>eu.europeana</groupId>
+                        <artifactId>dashboard</artifactId>
+                        <version>${europeana.dashboard.version}</version>
+                    </dependency>
 				</dependencies>
 			</plugin>
 
