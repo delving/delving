@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 import org.apache.commons.fileupload.util.Streams;
+import org.junit.Ignore;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -46,7 +47,7 @@ import eu.europeana.frontend.FrontendTestUtil;
  * 
  * @author Borys Omelayenko
  */
-
+@Ignore
 public class IntegrationTests implements Iterable<PageToTest> {
 
 
