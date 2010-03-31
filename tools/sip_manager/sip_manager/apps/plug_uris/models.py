@@ -32,10 +32,22 @@ from django.db import models
 #from django.contrib import databrowse
 
 #from utils import glob_consts
+
+from apps.base_item.models import MdRecord
+
 from utils.gen_utils import dict_2_django_choice
 
 
-# US_ = Uri State
+
+# We want to group all cacheable images by server...
+class UriSource(models.Model):
+    pid = models.IntegerField(default=0) # what process 'owns' this item
+    name_or_ip = models.CharField(max_length=100)
+
+
+
+
+# URIS_ = Uri State
 URIS_CREATED = 1
 URIS_VERIFIED = 2 #  the uri responds and returns an OK
 URIS_DOWNLOADED = 3
@@ -54,24 +66,36 @@ URI_STATES = {
     URIS_FAILED : 'failed',
     }
 
+# URIT_ = Uri Type
+URIT_OBJECT = 1
+URIT_SHOWNBY = 2
+URIT_SHOWNAT = 3
 
-
-class UriSource(models.Model):
-    pid = models.IntegerField(default=0) # what process 'owns' this item
-    name_or_ip = models.CharField(max_length=100)
-
+URI_TYPES = {
+    URIT_OBJECT : 'object',
+    URIT_SHOWNBY : 'isShownBy',
+    URIT_SHOWNAT : 'isShownAt',
+    }
 
 class Uri(models.Model):
     """
     Identifies one server providing thumbnail resources to Europeana, to avoid
     the risk that we hammer the same server with multiple requests
     """
-    #md_rec_id = models.ForeignKey('base_item.MdRecord')
+    mdr = models.ForeignKey(MdRecord)
     sstate = models.IntegerField(choices=dict_2_django_choice(URI_STATES),
                                  default = URIS_CREATED)
-    #uri_source = models.ForeignKey(verify_exists=False)
-    #pid = models.IntegerField(default=0) # what process 'owns' this item
+    item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
+                                 default = URIT_OBJECT)
+    uri_source = models.ForeignKey(UriSource)
+    pid = models.IntegerField(default=0) # what process 'owns' this item
     #element
-    #url = models.URLField(verify_exists=False)
-    #err_msg = models.TextField()
-    #date_lastcheck = models.DateTimeField()
+    url = models.URLField(verify_exists=False)
+    err_msg = models.TextField()
+    time_created = models.DateTimeField(auto_now_add=True,editable=False)
+    time_lastcheck = models.DateTimeField(auto_now_add=True)
+
+
+
+
+

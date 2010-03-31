@@ -35,46 +35,14 @@ from apps.dummy_ingester.models import Request
 
 
 
-def to_str(text):
-    """ Convert 'text' to a `str` object.
-
-        >>> to_str(u'I\xf1t\xebrn\xe2ti')
-        'I\xc3\xb1t\xc3\xabrn\xc3\xa2ti'
-        >>> to_str(42)
-        '42'
-        >>> to_str('ohai')
-        'ohai'
-        >>> class Foo:
-        ...     def __str__(self):
-        ...         return 'foo'
-        ...
-        >>> f = Foo()
-        >>> to_str()
-        'foo'
-        >>> f.__unicode__ = lambda: u'I\xf1t\xebrn\xe2ti'
-        >>> to_str(f)
-        'I\xc3\xb1t\xc3\xabrn\xc3\xa2ti'
-        >>> """
-    if isinstance(text, str):
-        return text
-
-    if hasattr(text, '__unicode__'):
-        text = text.__unicode__()
-
-    if hasattr(text, '__str__'):
-        return text.__str__()
-
-    return text.encode('utf-8')
-
-
 def calculate_mdr_content_hash(record):
     """
     When calculating the content hash for the record, the following is asumed:
       the lines are stripped for initial and trailing whitespaces,
       sorted alphabetically
       each line is separated by one \n character
+      and finaly the <record> and </record> should be kept!
     """
-    #s = to_str(record)
     r_hash = hashlib.sha256(record.upper()).hexdigest().upper()
     return r_hash
 

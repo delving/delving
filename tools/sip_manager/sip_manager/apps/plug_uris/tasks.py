@@ -25,10 +25,16 @@
 
 """
 
-#from models import UriSource, Uri
-#from apps.base_item.models import MdRecord
+import time
+import urlparse
+#from xml.dom.minidom import parseString
 
-from utils.sipproc import SipProcess
+from django.db import connection, transaction
+
+from apps.base_item import models as base_item
+from apps.process_monitor.sipproc import SipProcess
+
+import models
 
 
 class UriCreateNewRecords(SipProcess):
@@ -41,8 +47,52 @@ class UriCreateNewRecords(SipProcess):
                 u = Uri(md_rec_id=mdRecord.id)
                 u.save()
         """
+        cursor = connection.cursor()
+
+        # Findind MdRecords with no matching Uri items, since all MdRecords
+        # contains uri this indicates that this item is not processed
+        cursor.execute('SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL')
+        self.task_starting('Creating new uri records', cursor.rowcount)
+        t0 = time.time()
+        record_count = 0
+        while True:
+            result = cursor.fetchone()
+            if not result:
+                break
+            record_count += 1
+            mdr_id = result[0]
+            mdrs = base_item.MdRecord.objects.filter(pk=mdr_id,pid=0)
+            if not mdrs:
+                # we know it exists, so must be busy, leave it for later processing
+                continue
+            mdr = mdrs[0]
+            if mdr.status not in (base_item.MDRS_CREATED,
+                                  base_item.MDRS_IDLE,
+                                  base_item.MDRS_PROCESSING):
+                continue # never touch bad / completed items
+            self.handle_md_record(mdr)
+            if t0 + self.TASK_PROGRESS_TIME < time.time():
+                self.task_progress(record_count)
+                t0 = time.time()
         return True
 
+    def handle_md_record(self, mdr):
+        #dom = parseString(mdr.source_data)
+        parts = mdr.source_data.split('<europeana:object>')
+        if len(parts) == 1:
+            return # no obj found
+        img_url = parts[1].split('<')[0]
+        srvr_name = urlparse.urlsplit(img_url).netloc.lower()
+        uri_sources = models.UriSource.objects.filter(name_or_ip=srvr_name)
+        if uri_sources:
+            uri_source = uri_sources[0]
+        else:
+            uri_source = models.UriSource(name_or_ip=srvr_name)
+            uri_source.save()
+        uri = models.Uri(mdr=mdr,item_type=models.URIT_OBJECT,
+                         url=img_url,uri_source=uri_source)
+        uri.save()
+        return
 
 
 class UriProcessNewRecords(SipProcess):
@@ -79,4 +129,8 @@ def process_one_uri(uri):
 
 
 
-task_list = [UriCreateNewRecords,UriProcessNewRecords,UriCleanup, UriFileTreeMonitor]
+task_list = [UriCreateNewRecords,
+             #UriProcessNewRecords,
+             #UriCleanup,
+             #UriFileTreeMonitor,
+             ]

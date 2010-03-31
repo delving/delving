@@ -63,15 +63,18 @@ class SipProcess(object):
         self.debug_lvl = debug_lvl
         self.run_once = run_once # if true plugin should exit after one runthrough
         self.pid = os.getpid()
-        self.pm = None # process monitor item ascociated with this task
+        self.pm = models.ProcessMonitoring(pid=self.pid, task_label=self.SHORT_DESCRIPTION)
+        self.pm.save()
 
     def run(self, *args, **kwargs):
-        print 'running ', self.short_name()
+        self.log('starting task   -----   %s   -----' % self.short_name(), 1)
         #try:
         ret = self.run_it(*args, **kwargs)
         #except Exception as inst:
         #    self._log_task_exception_in_monitor(inst)
         #    ret = False
+        print self.pm
+        self.pm.delete()
         return ret
 
     def _log_task_exception_in_monitor(self, inst):
@@ -108,8 +111,7 @@ class SipProcess(object):
         if not item.pid:
             item.pid = self.pid
             item.save()
-            self.pm = models.ProcessMonitoring(pid=item.pid,
-                                          task_label=task_description)
+            self.pm.task_label=task_description
             self.pm.save()
             return item
         else:
@@ -122,7 +124,6 @@ class SipProcess(object):
             return False
         item.pid = 0
         item.save()
-        self.pm = None
         return True
     # ==========   End of Pid locking mechanisms   ====================
 
@@ -151,6 +152,7 @@ class SipProcess(object):
             self.pm.task_progress = '%i' % step
             self.pm.task_eta = 'unknown'
         self.pm.save()
+        self.log('%s  -  %s  eta: %s' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta), 9)
 
     def _task_calc_eta(self, step):
         percent_done = float(step) / self._task_steps * 100
