@@ -23,7 +23,6 @@ package eu.europeana.frontend;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.Cookie;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.util.Cookie;
 
 import eu.europeana.bootstrap.PortalFullStarter;
 
@@ -45,7 +45,7 @@ import eu.europeana.bootstrap.PortalFullStarter;
 @ContextConfiguration(locations = {"/core-application-context.xml"})
 public class TokenBasedAuthenticationTest {
 
-	private static final String MYEUROPEANA_URL = FrontendTestUtil.portalUrl() + "myeuropeana.html";
+	private static final String MYEUROPEANA_URL = FrontendTestUtil.testPortalUrl() + "myeuropeana.html";
 	private static final String REMEMBER_ME_COOKIE_NAME = AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY;
 
 	@Test
@@ -76,12 +76,12 @@ public class TokenBasedAuthenticationTest {
 		webClient.setThrowExceptionOnFailingStatusCode(false);
 		myEuropeanaPage = webClient.getPage(MYEUROPEANA_URL); //go to secured page
 		Assert.assertEquals(200, myEuropeanaPage.getWebResponse().getStatusCode());
-		Assert.assertEquals(FrontendTestUtil.portalUrl() + "login.html", myEuropeanaPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
+		Assert.assertEquals(FrontendTestUtil.testPortalUrl() + "login.html", myEuropeanaPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
 
 		//Now access thief "session" again.
 		stolenPage = thiefClient.getPage(MYEUROPEANA_URL);
 		Assert.assertEquals(200, stolenPage.getWebResponse().getStatusCode());
-		Assert.assertEquals(FrontendTestUtil.portalUrl() + "login.html", stolenPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
+		Assert.assertEquals(FrontendTestUtil.testPortalUrl() + "login.html", stolenPage.getWebResponse().getRequestUrl().toExternalForm()); //user was logged out and is now redirected to Login page.
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class TokenBasedAuthenticationTest {
 
 	@Test
 	public void loadBalancing() throws Exception {
-		//Amulate load balancing by starting two different servers and
+		//Simulate load balancing by starting two different servers and
 		//connecting to each one sequentially
 		WebClient webClient = FrontendTestUtil.createWebClient();
 		FrontendTestUtil.login(webClient, FrontendTestUtil.EMAIL, FrontendTestUtil.PASSWORD);

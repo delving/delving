@@ -107,7 +107,7 @@ public class ForgotPasswordTest {
 		//and on a different server
 		webClient = FrontendTestUtil.createWebClient();
 		HtmlPage loginSuccessPage = FrontendTestUtil.login(webClient, FrontendTestUtil.EMAIL, NEW_PASSWORD);
-		Assert.assertEquals(FrontendTestUtil.portalUrl(), loginSuccessPage.getWebResponse().getRequestUrl().toExternalForm());
+		Assert.assertEquals(FrontendTestUtil.testPortalUrl(), loginSuccessPage.getWebResponse().getRequestUrl().toExternalForm());
 
 		//remove user and token
 		//userDao.removeUser( userDao.fetchUserByEmail(FrontendTestUtil.EMAIL) );
@@ -121,7 +121,7 @@ public class ForgotPasswordTest {
 	private HtmlPage changePassword(Token token, int port) throws Exception {
 		WebClient webClient = FrontendTestUtil.createWebClient();
 
-		HtmlPage registrationPage = webClient.getPage(formatUrl(FrontendTestUtil.portalUrl() + "change-password.html", token.getToken()));
+		HtmlPage registrationPage = webClient.getPage(formatUrl(FrontendTestUtil.testPortalUrl() + "change-password.html", token.getToken()));
 
 		//fill in change-password form
 		HtmlPasswordInput password = (HtmlPasswordInput) registrationPage.getElementById("password");

@@ -41,7 +41,7 @@ public class SearchTest {
     public void test() throws IOException {
         WebClient webClient = FrontendTestUtil.createWebClient();
 
-        HtmlPage homePage = webClient.getPage(FrontendTestUtil.portalUrl());
+        HtmlPage homePage = webClient.getPage(FrontendTestUtil.testPortalUrl());
 
         //enter search term
         HtmlTextInput query = (HtmlTextInput) homePage.getElementById("query");

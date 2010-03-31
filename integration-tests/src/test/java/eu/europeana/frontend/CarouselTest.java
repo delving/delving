@@ -70,7 +70,7 @@ public class CarouselTest {
 		FrontendTestUtil.login(webClient, email, FrontendTestUtil.PASSWORD);
 
 		// search for bible
-		HtmlPage homePage = webClient.getPage(FrontendTestUtil.portalUrl());
+		HtmlPage homePage = webClient.getPage(FrontendTestUtil.testPortalUrl());
 		HtmlTextInput query = (HtmlTextInput) homePage.getElementById("query");
 		query.setValueAttribute(queryString);
 		HtmlSubmitInput submit = (HtmlSubmitInput) homePage.getElementById("submit_search");

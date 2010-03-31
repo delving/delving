@@ -47,7 +47,7 @@ public class SitemapTest {
 	@Test
 	public void testSitemapIndex() throws IOException {
 
-		URL indexUrl = new URL(FrontendTestUtil.portalUrl() + "europeana-sitemap.xml");
+		URL indexUrl = new URL(FrontendTestUtil.testPortalUrl() + "europeana-sitemap.xml");
 		InputStream indexStream =  indexUrl.openStream();
 
 		// iterate links to ensure that they are alive
@@ -87,7 +87,7 @@ public class SitemapTest {
 	@Test
 	public void testBuildNumber() throws IOException {
 
-		URL indexUrl = new URL(FrontendTestUtil.portalUrl() + "build.txt");
+		URL indexUrl = new URL(FrontendTestUtil.testPortalUrl() + "build.txt");
 		InputStream indexStream =  indexUrl.openStream();
 
 		// iterate links to ensure that they are alive

@@ -22,6 +22,8 @@
 package eu.europeana.frontend;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Ignore;
 import org.mortbay.jetty.Server;
@@ -55,28 +57,54 @@ public class FrontendTestUtil {
 
 	}
 
-	private static final String TEST_URL_CONFIG_PARAMETER_NAME = "europeana.test.external.host";
+	private static final String PARAMETER_TEST_HOST = "europeana.test.external.host";
+
+	private static final String[] productionUrls = {
+			
+			// production 
+			"http://portal1.europeana.sara.nl/portal/",
+			"http://portal2.europeana.sara.nl/portal/",
+			"http://portal3.europeana.sara.nl/portal/",
+			"http://portal4.europeana.sara.nl/portal/",
+
+			"http://europeana.eu/portal/"	
+
+	};
 
 	/**
-	 * Real portal URL we tests against.
+	 * Test portal, where we can create users, etc.
 	 * @return
 	 */
 	@Ignore
-	public static String portalUrl() {
+	public static String testPortalUrl() {
 		return staticUrl() + "portal/";
+	}
+
+	/**
+	 * Production portals, read-only.
+	 * @return
+	 */
+	@Ignore
+	public static List<String> portalUrls() {
+		List<String> list = new ArrayList<String>();
+		list.add(testPortalUrl());
+		for (String url : productionUrls) {
+			list.add(url);
+		}
+		return list;
 	}
 
 	@Ignore
 	public static String staticUrl() {
-		String url = System.getProperty(TEST_URL_CONFIG_PARAMETER_NAME);
+		String url = System.getProperty(PARAMETER_TEST_HOST);
 
 		if (url == null) {
-			url = System.getenv(TEST_URL_CONFIG_PARAMETER_NAME);
+			url = System.getenv(PARAMETER_TEST_HOST);
 		}
 
 		if (url == null) {
 			url = TEST_PORTAL_URL;
-			Log.warn("Missing env parameter " + TEST_URL_CONFIG_PARAMETER_NAME + ", testing againast " + url);
+			Log.warn("Missing env parameter " + PARAMETER_TEST_HOST + ", testing againast " + url);
 		} else {
 			url = "http://" + url + "/";
 			Log.info("Testing against " + url);
@@ -111,7 +139,7 @@ public class FrontendTestUtil {
 	 * get a Successful login page.
 	 */
 	public static HtmlPage login(WebClient webClient, String username, String password) throws IOException {
-		HtmlPage page = webClient.getPage(portalUrl() + "login.html"); //go to login page
+		HtmlPage page = webClient.getPage(testPortalUrl() + "login.html"); //go to login page
 
 		HtmlTextInput usernameInput = (HtmlTextInput) page.getElementById("j_username");
 		usernameInput.setValueAttribute(username);
@@ -130,7 +158,7 @@ public class FrontendTestUtil {
 
 	@Ignore
 	public static void start() throws Exception {
-		if (portalUrl().startsWith(HTTP_LOCALHOST) ) {
+		if (testPortalUrl().startsWith(HTTP_LOCALHOST) ) {
 			if (server == null) {
 				PortalFullStarter starter = new PortalFullStarter();
 				if (!loaded) {
@@ -149,7 +177,7 @@ public class FrontendTestUtil {
 
 	@Ignore
 	public static void stop() throws Exception {
-		if (portalUrl().startsWith(HTTP_LOCALHOST)) {
+		if (testPortalUrl().startsWith(HTTP_LOCALHOST)) {
 			server.stop();
 			solr.stop();
 		}

@@ -21,17 +21,15 @@
 
 package eu.europeana.integration.production;
 
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
-import eu.europeana.frontend.FrontendTestUtil;
+import eu.europeana.integration.IntegrationTests;
+import eu.europeana.integration.PageToTest;
 
 /**
  * 
@@ -41,40 +39,24 @@ import eu.europeana.frontend.FrontendTestUtil;
  */
 public class PortalsTest {
 
-	
-	public final String[] urls = {
-			
-			// production 
-			"http://portal1.europeana.sara.nl/portal/",
-			"http://portal2.europeana.sara.nl/portal/",
-			"http://portal3.europeana.sara.nl/portal/",
-			"http://portal4.europeana.sara.nl/portal/",
-			
-			// test
-			"http://test1.europeana.sara.nl/portal/",
-			"http://test2.europeana.sara.nl/portal/",
-			
-	};
-	
+		
     @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
 
-    	WebClient webClient = FrontendTestUtil.createWebClient();
-
-    	for (String url : urls) {
+    	for (PageToTest page : IntegrationTests.portals()) {
        
-    		HtmlPage homePage = webClient.getPage(url);
-
             //enter search term
-            HtmlTextInput query = (HtmlTextInput) homePage.getElementById("query");
-            query.setValueAttribute("viva");
+            HtmlTextInput query = (HtmlTextInput) page.getPage().getElementById("query");
+            HtmlPage p = (HtmlPage) query.setValueAttribute("bible");
 
-            HtmlSubmitInput submitQuery = (HtmlSubmitInput) homePage.getElementById("submit_search");
+            HtmlSubmitInput submitQuery = (HtmlSubmitInput) p.getElementById("submit_search");
             HtmlPage searchResult = submitQuery.click();
-            Assert.assertNotNull("No search result at " + url, searchResult);
+            Assert.assertNotNull("No search result at " + page, searchResult);
             String content = searchResult.getWebResponse().getContentAsString();
-			Assert.assertNotNull("Empty content at " + url, content);
-			Assert.assertFalse("Exception at " + url, content.contains("xception"));
+			Assert.assertNotNull("Empty content at " + page, content);
+			Assert.assertFalse("Exception at " + page, content.contains("xception"));
+			Assert.assertTrue("On " + page, content.contains("Bible"));
+			IntegrationTests.assertText(searchResult, "//table[@id='multi']/tbody/tr[1]/td[2]/h2", "ible");
 		}
     }
 }

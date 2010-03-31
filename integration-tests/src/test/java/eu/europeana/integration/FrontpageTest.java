@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
@@ -50,8 +51,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 @RunWith(JUnit4.class)
 public class FrontpageTest {
 
-	public static HtmlPage navigateSearchSelect(String queryString, boolean goToFullView) throws IOException {
-		HtmlPage page = IntegrationTests.getPortalPage();
+	public static HtmlPage navigateSearchSelect(HtmlPage page, String queryString, boolean goToFullView) throws IOException {
+
 		// search for bible
 		HtmlPage query = (HtmlPage)((HtmlTextInput) page.getElementById("query")).setValueAttribute(queryString);
 		HtmlSubmitInput submit = (HtmlSubmitInput) query.getElementById("submit_search");
@@ -69,68 +70,63 @@ public class FrontpageTest {
 
 	/**
 	 * Checks translations of the front page text "This is Europeana ...".
-	 * @throws IOException
+	 * @throws Exception 
+	 * @throws ElementNotFoundException 
 	 */
 	@Test
-	public void testLanguage() throws IOException {
-		HtmlPage page = IntegrationTests.getPortalPage();
-		Assert.assertTrue(IntegrationTests.assertText(page, "//div[@id='top']/h1", "This is Europeana - a place for inspiration and ideas"));
-		HtmlSelect inputByName = page.getElementByName("dd_lang");
-		page = (HtmlPage)inputByName.setSelectedAttribute("nl", true);
-		Assert.assertTrue(IntegrationTests.assertText(page, "//div[@id='top']/h1", "Dit is Europeana - een plaats voor inspiratie en ide"));
+	public void testLanguage() throws ElementNotFoundException, Exception {
+		for (PageToTest ptt : IntegrationTests.portals()) {
+			HtmlPage page = ptt.getPage();
+			Assert.assertTrue(IntegrationTests.assertText(page, "//div[@id='top']/h1", "This is Europeana - a place for inspiration and ideas"));
+			HtmlSelect inputByName = page.getElementByName("dd_lang");
+			page = (HtmlPage)inputByName.setSelectedAttribute("nl", true);
+			Assert.assertTrue(IntegrationTests.assertText(page, "//div[@id='top']/h1", "Dit is Europeana - een plaats voor inspiratie en ide"));
+		}
 	}
 
-	/**
-	 * Checks that we can find a bible.
-	 * 
-	 * @throws IOException
-	 */
-	@Test
-	public void testBible() throws IOException {
-		HtmlPage page = navigateSearchSelect("bible", false);
-		Assert.assertTrue(IntegrationTests.assertText(page, "//table[@id='multi']/tbody/tr[1]/td[2]/h2", "ible"));
-	}
 
 	/**
 	 * Checks that there are at least 10 carousel items, where there are a few visible and with images.
-	 * @throws IOException
+	 * @throws Exception 
 	 */
 	@Test
-	public void testCarousel() throws IOException {
-		HtmlPage page = IntegrationTests.getPortalPage();
+	public void testCarousel() throws Exception {
 
-		// check if carousel is present
-		HtmlElement carousel = page.getElementById("mycarousel");
-		Assert.assertNotNull(carousel);
+		for (PageToTest ptt : IntegrationTests.portals()) {
+			HtmlPage page = ptt.getPage();
 
-		// check if it has at least 10 items
-		List<HtmlElement> carouselItems = carousel.getHtmlElementsByTagName("li");
-		Assert.assertTrue(carouselItems.size() > 10);
+			// check if carousel is present
+			HtmlElement carousel = page.getElementById("mycarousel");
+			Assert.assertNotNull(carousel);
 
-		// check that there are real items with images that are BEING SHOWN
-		int shown = 0;
-		for (HtmlElement carouselItem : carouselItems) {
-			Assert.assertTrue(carouselItem.getAttribute("class").contains("jcarousel-item jcarousel-item-horizontal jcarousel-item-"));
+			// check if it has at least 10 items
+			List<HtmlElement> carouselItems = carousel.getHtmlElementsByTagName("li");
+			Assert.assertTrue(carouselItems.size() > 10);
 
-			if (carouselItem.hasChildNodes()) {
-				shown ++;
-				// link to image
-				HtmlAnchor a = (HtmlAnchor)carouselItem.getElementsByTagName("a").get(0);
-				Assert.assertNotNull(a);
+			// check that there are real items with images that are BEING SHOWN
+			int shown = 0;
+			for (HtmlElement carouselItem : carouselItems) {
+				Assert.assertTrue(carouselItem.getAttribute("class").contains("jcarousel-item jcarousel-item-horizontal jcarousel-item-"));
 
-				// image
-				HtmlImage img = (HtmlImage)a.getElementsByTagName("img").get(0);
-				Assert.assertNotNull(img);
+				if (carouselItem.hasChildNodes()) {
+					shown ++;
+					// link to image
+					HtmlAnchor a = (HtmlAnchor)carouselItem.getElementsByTagName("a").get(0);
+					Assert.assertNotNull(a);
 
-				BufferedImage image = ImageIO.read(new URL(img.getSrcAttribute()));
-				Assert.assertNotNull(image);
-				Assert.assertTrue(image.getHeight() > 0);
-				Assert.assertTrue(image.getWidth() > 0);
+					// image
+					HtmlImage img = (HtmlImage)a.getElementsByTagName("img").get(0);
+					Assert.assertNotNull(img);
+
+					BufferedImage image = ImageIO.read(new URL(img.getSrcAttribute()));
+					Assert.assertNotNull(image);
+					Assert.assertTrue(image.getHeight() > 0);
+					Assert.assertTrue(image.getWidth() > 0);
+				}
 			}
+
+			Assert.assertTrue(shown > 5);
+
 		}
-
-		Assert.assertTrue(shown > 5);
-
-		
 	}
 }

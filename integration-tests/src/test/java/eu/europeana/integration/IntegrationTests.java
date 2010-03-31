@@ -23,32 +23,108 @@ package eu.europeana.integration;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 import org.apache.commons.fileupload.util.Streams;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 import eu.europeana.frontend.FrontendTestUtil;
 
 
 /**
- * Integration tests running against an external system.
+ * Returns all portal pages, for all languages, for all browsers.
  * 
  * @author Borys Omelayenko
  */
 
-public class IntegrationTests {
+public class IntegrationTests implements Iterable<PageToTest> {
 
-	public static HtmlPage getPortalPage() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-		WebClient webClient = new WebClient();
-		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-		return webClient.getPage(FrontendTestUtil.portalUrl());
+
+	private static BrowserVersion[] browsers = {
+
+		BrowserVersion.FIREFOX_3,
+		BrowserVersion.INTERNET_EXPLORER_7,
+		BrowserVersion.INTERNET_EXPLORER_8
+	};
+
+	List<PageToTest> list = new ArrayList<PageToTest>();
+
+    private static IntegrationTests tests = null;
+	public static IntegrationTests portals() throws Exception {
+		if (tests == null) {
+			tests = new IntegrationTests();
+		}
+		return tests;
+	}
+	
+	private IntegrationTests() throws Exception {
+		// list of pages
+		String url = null;
+
+		try {
+			for (BrowserVersion browser : browsers) {
+				// get page
+				WebClient webClient = new WebClient(browser);
+				webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+				webClient.setJavaScriptEnabled(true);
+				
+				url = FrontendTestUtil.testPortalUrl();
+				HtmlPage page = webClient.getPage(url);
+
+				// get languages
+				List<String> languages = new ArrayList<String>();
+				languages.add(null);
+				
+				List<HtmlElement> options = page.getElementByName("dd_lang").getElementsByTagName("option");
+				for (HtmlElement option : options) {
+					if (option.getAttribute("value").length() == 2) {
+						languages.add(option.getAttribute("value"));
+					}
+				}
+				
+				// get pages
+				for (String lang : languages) {
+					list.add(new PageToTest(page, lang, url, browser));	
+				}
+				
+			}
+		} catch (IOException e) {
+			throw new IOException("On url " + url, e);
+		}
+
+		if (list.size() > 30 * browsers.length) {
+			throw new IOException("Too many languages: " + list.size());
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<PageToTest> iterator() {
+		return new AbstractIteratorDecorator(list.iterator()) {
+
+			@Override
+			public Object next() {
+				PageToTest page = (PageToTest) super.next();
+				HtmlSelect inputByName = page.getPage().getElementByName("dd_lang");
+				HtmlPage langPage = page.getPage();
+				if (page.getLang() != null) {
+					langPage = (HtmlPage)inputByName.setSelectedAttribute(page.getLang(), true);
+				}
+				return new PageToTest(langPage, page.getLang(), page.getUrl(), page.getBrowser());
+			}
+			
+		};
 	}
 
 	public static boolean assertText(HtmlPage page, String xpath, String text) {
