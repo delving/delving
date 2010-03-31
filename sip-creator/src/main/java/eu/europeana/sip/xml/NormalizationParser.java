@@ -60,7 +60,13 @@ public class NormalizationParser {
                         else {
                             parent = nodeStack.peek();
                         }
-                        String nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix()+"_"+input.getLocalName();
+                        String nodeName;
+                        if (null == input.getPrefix()) {
+                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getLocalName();
+                        }
+                        else {
+                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + input.getLocalName();
+                        }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
