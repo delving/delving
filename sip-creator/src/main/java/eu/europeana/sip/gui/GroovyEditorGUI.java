@@ -29,14 +29,10 @@ import groovy.lang.Binding;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -54,6 +50,7 @@ public class GroovyEditorGUI extends JFrame {
     private JButton next = new JButton("Next");
     private GroovyNode record;
     private File mappingFile;
+    private JTextField recordRootDelimiterField = new JTextField();
 
     public GroovyEditorGUI() {
         super("Standalone Groovy editor");
@@ -89,6 +86,7 @@ public class GroovyEditorGUI extends JFrame {
         JPanel p = new JPanel(new BorderLayout());
         p.add(groovyEditor, BorderLayout.CENTER);
         p.add(createNextButton(), BorderLayout.NORTH);
+        p.add(recordRootDelimiterField, BorderLayout.SOUTH);
         return p;
     }
 
@@ -108,7 +106,13 @@ public class GroovyEditorGUI extends JFrame {
         if (normalizationParser != null) {
             normalizationParser.close();
         }
-        QName recordRoot = QNameBuilder.createQName("record");
+        QName recordRoot;
+        if (null == recordRootDelimiterField.getText() || "".equals(recordRootDelimiterField.getText())) {
+            recordRoot = QNameBuilder.createQName("record");
+        }
+        else {
+            recordRoot = QNameBuilder.createQName(recordRootDelimiterField.getText());
+        }
         normalizationParser = new NormalizationParser(new FileInputStream(inputFile), recordRoot);
         nextRecord();
     }
