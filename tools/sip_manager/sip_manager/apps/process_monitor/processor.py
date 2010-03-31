@@ -77,7 +77,6 @@ class MainProcessor(object):
             except ImportError as inst:
                 if inst.args[0].find('No module named ') != 0:
                     raise inst
-                pass # no tasks in that dir
             pass
 
 

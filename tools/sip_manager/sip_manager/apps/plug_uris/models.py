@@ -45,6 +45,35 @@ class UriSource(models.Model):
     name_or_ip = models.CharField(max_length=100)
 
 
+# URIE_ Uri Error
+URIE_TIMEOUT = 1
+URIE_NO_RESPONSE = 2
+URIE_HTTP_ERROR = 3
+URIE_HTML_ERROR = 4
+#URIE_
+URIE_STATES = {
+    }
+
+ITEM_STATES = { # MdRec with new naming
+    ST_INITIALIZING: 'inializing',
+    ST_PENDING: 'pending',
+    ST_PARSING: 'parsing',
+    ST_RETRIEVED: 'retrieved',
+    ST_COMPLETED: 'completed',
+    ST_ABORTED: 'aborted',
+    ST_ERROR: 'error', # other error see message for details
+    ST_TIMEOUT: 'timeout',
+    ST_FAILED: 'failed', # failure in identification of item
+    IS_NO_RESPONSE: 'no response',
+    IS_NO_URI: 'no uri',
+    IS_HTTP_ERROR: 'http error',
+    IS_HTML_ERROR: 'html error',
+    IS_URL_ERROR: 'url error',
+    IS_MIME_TYPE_ERROR: 'mime type error',
+    IS_DOWNLOAD_FAILED: 'download failed',
+    IS_INVALID_DATA: 'invalid data',
+    IS_IDENTIFICATION: 'identification',
+}
 
 
 # URIS_ = Uri State
@@ -83,7 +112,7 @@ class Uri(models.Model):
     the risk that we hammer the same server with multiple requests
     """
     mdr = models.ForeignKey(MdRecord)
-    sstate = models.IntegerField(choices=dict_2_django_choice(URI_STATES),
+    status = models.IntegerField(choices=dict_2_django_choice(URI_STATES),
                                  default = URIS_CREATED)
     item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
                                  default = URIT_OBJECT)

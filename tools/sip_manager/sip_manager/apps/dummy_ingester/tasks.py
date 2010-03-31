@@ -219,7 +219,7 @@ class RequestParseNew(SipProcess):
         request = self.grab_item(models.Request, request.pk,
                                  'About to parse for ese records')
         if not request:
-            return True
+            return False # Failed to take control of it
 
         self.current_request = request
         self.log('Parsing ese file for records: %s' % full_path, 1)
