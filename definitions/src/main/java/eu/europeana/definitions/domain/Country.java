@@ -1,4 +1,4 @@
-package eu.europeana.core.database.domain;
+package eu.europeana.definitions.domain;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>

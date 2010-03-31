@@ -121,6 +121,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>eu.europeana</groupId>
+            <artifactId>definitions</artifactId>
+            <version>${europeana.definitions.version}</version>
+        </dependency>
+        <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>

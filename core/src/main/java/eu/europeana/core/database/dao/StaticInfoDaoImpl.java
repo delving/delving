@@ -24,11 +24,11 @@ package eu.europeana.core.database.dao;
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.domain.CarouselItem;
 import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.SavedItem;
 import eu.europeana.core.database.domain.SavedSearch;
 import eu.europeana.core.database.domain.SearchTerm;
 import eu.europeana.core.database.domain.User;
+import eu.europeana.definitions.domain.Language;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 

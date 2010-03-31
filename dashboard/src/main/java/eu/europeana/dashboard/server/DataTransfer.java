@@ -23,12 +23,10 @@ package eu.europeana.dashboard.server;
 
 import eu.europeana.core.database.domain.CarouselItem;
 import eu.europeana.core.database.domain.CollectionState;
-import eu.europeana.core.database.domain.Country;
 import eu.europeana.core.database.domain.DashboardLog;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.ImportFileState;
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedSearch;
 import eu.europeana.core.database.domain.User;
@@ -44,6 +42,8 @@ import eu.europeana.dashboard.client.dto.LanguageX;
 import eu.europeana.dashboard.client.dto.RoleX;
 import eu.europeana.dashboard.client.dto.SavedSearchX;
 import eu.europeana.dashboard.client.dto.UserX;
+import eu.europeana.definitions.domain.Country;
+import eu.europeana.definitions.domain.Language;
 
 import java.util.ArrayList;
 import java.util.List;

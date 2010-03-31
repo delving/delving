@@ -20,7 +20,7 @@
  */
 package eu.europeana.core.util.web;
 
-import eu.europeana.core.database.domain.Language;
+import eu.europeana.definitions.domain.Language;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 

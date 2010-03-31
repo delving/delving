@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ you may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~ http://ec.europa.eu/idabc/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europeana</groupId>
+    <artifactId>definitions</artifactId>
+    <packaging>jar</packaging>
+    <name>Europeana Definitions</name>
+    <version>${europeana.definitions.version}</version>
+    <description>Definition classes for Europeana</description>
+    <inceptionYear>2008</inceptionYear>
+
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
+
+    <developers>
+        <developer>
+            <name>Sjoerd Siebinga</name>
+            <email>sjoerd.siebinga@gmail.com</email>
+            <roles>
+                <role>architect</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Gerald de Jong</name>
+            <email>geralddejong@gmail.com</email>
+            <roles>
+                <role>consultant</role>
+            </roles>
+        </developer>
+    </developers>
+    <organization>
+        <name>Europeana Foundation</name>
+        <url>http://www.europeana.eu</url>
+    </organization>
+    <dependencies>
+    </dependencies>
+</project>

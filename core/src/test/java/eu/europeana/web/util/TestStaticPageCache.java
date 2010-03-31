@@ -21,8 +21,8 @@
 
 package eu.europeana.web.util;
 
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.util.web.StaticPageCache;
+import eu.europeana.definitions.domain.Language;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test the utility classes
