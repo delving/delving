@@ -25,16 +25,7 @@ import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -43,12 +34,11 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.List;
 
@@ -69,7 +59,7 @@ public class AnalyzerPanel extends JPanel {
     private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
-    private NormalizationParserBindingSource source = new NormalizationParserBindingSource();
+    private NormalizationParserBindingSource source = new NormalizationParserBindingSource(); // todo: delimiter should be passed here
     private GroovyEditor groovyEditor = new GroovyEditor(source);
     private JButton next = new JButton("Next");
 
@@ -121,6 +111,7 @@ public class AnalyzerPanel extends JPanel {
         p.add(title, BorderLayout.NORTH);
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
@@ -129,6 +120,39 @@ public class AnalyzerPanel extends JPanel {
                 setStatistics(node.getStatistics());
             }
         });
+        statisticsJTree.addMouseListener(
+                new MouseListener() {
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        // todo: implement
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
+                            statisticsJTree.setSelectionPath(path);
+                            System.out.printf("%s%n", path.getPath()[path.getPath().length - 1]);
+                        }
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        // todo: implement
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        // todo: implement
+                    }
+                }
+        );
         JScrollPane scroll = new JScrollPane(statisticsJTree);
         p.add(scroll, BorderLayout.CENTER);
         return p;
