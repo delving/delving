@@ -60,7 +60,7 @@ public class AnalyzerPanel extends JPanel {
     private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
-    private NormalizationParserBindingSource source = new NormalizationParserBindingSource(); // todo: delimiter should be passed here
+    private NormalizationParserBindingSource source = new NormalizationParserBindingSource();
     private GroovyEditor groovyEditor = new GroovyEditor(source);
     private JButton next = new JButton("Next");
     private File analyzedFile;
@@ -107,11 +107,12 @@ public class AnalyzerPanel extends JPanel {
     }
 
     private Component createDocumentTreePanel() {
+        final AnalysisTreeCellRenderer analysisTreeCellRenderer = new AnalysisTreeCellRenderer();
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 0));
         title.setFont(new Font("Serif", Font.BOLD, 22));
         p.add(title, BorderLayout.NORTH);
-        statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
+        statisticsJTree.setCellRenderer(analysisTreeCellRenderer);
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -139,6 +140,7 @@ public class AnalyzerPanel extends JPanel {
                                         public void actionPerformed(ActionEvent e) {
                                             QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
                                             source.recordRootChanged(analyzedFile, recordRoot);
+                                            analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
                                         }
                                     }
                             );

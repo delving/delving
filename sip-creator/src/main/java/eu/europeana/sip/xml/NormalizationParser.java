@@ -74,7 +74,7 @@ public class NormalizationParser {
                         withinRecord = true;
                     }
                     if (withinRecord) {
-                        logger.debug(String.format("Available node <%s>%n", input.getName()));
+                        logger.info(String.format("Available node <%s>", input.getName()));
                         GroovyNode parent;
                         if (nodeStack.isEmpty()) {
                             parent = null;
