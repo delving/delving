@@ -17,4 +17,5 @@ if [[ BUILD_ALL ]]; then
 	echo "building extra modules"
 	cd ../api; $PACKAGE
 	cd ../dashboard; $PACKAGE
+	cd ../sip-creator; $PACKAGE
 fi
