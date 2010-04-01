@@ -24,7 +24,6 @@ package eu.europeana.sip.gui;
 import eu.europeana.sip.io.GroovyService;
 import eu.europeana.sip.xml.GroovyNode;
 import eu.europeana.sip.xml.NormalizationParser;
-import eu.europeana.sip.xml.QNameBuilder;
 import groovy.lang.Binding;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
@@ -42,15 +41,14 @@ import java.io.Writer;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class NormalizationParserBindingSource implements GroovyService.BindingSource {
+public class NormalizationParserBindingSource implements GroovyService.BindingSource, AnalyzerPanel.RecordChangeListener {
     private NormalizationParser normalizationParser;
     private GroovyNode record;
 
-    public void prepareInputFile(File inputFile) throws XMLStreamException, FileNotFoundException {
+    public void prepareInputFile(File inputFile, QName recordRoot) throws XMLStreamException, FileNotFoundException {
         if (normalizationParser != null) {
             normalizationParser.close();
         }
-        QName recordRoot = QNameBuilder.createQName("record");
         normalizationParser = new NormalizationParser(new FileInputStream(inputFile), recordRoot);
         nextRecord();
     }
@@ -75,6 +73,19 @@ public class NormalizationParserBindingSource implements GroovyService.BindingSo
         binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
         binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
         return binding;
+    }
+
+    @Override
+    public void recordRootChanged(File file, QName recordRoot) {
+        try {
+            prepareInputFile(file, recordRoot);
+        }
+        catch (XMLStreamException e) {
+            e.printStackTrace();  // todo: handle catch
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();  // todo: handle catch
+        }
     }
 }
 

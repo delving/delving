@@ -34,6 +34,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.xml.namespace.QName;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +63,7 @@ public class AnalyzerPanel extends JPanel {
     private NormalizationParserBindingSource source = new NormalizationParserBindingSource(); // todo: delimiter should be passed here
     private GroovyEditor groovyEditor = new GroovyEditor(source);
     private JButton next = new JButton("Next");
+    private File analyzedFile;
 
     public AnalyzerPanel() {
         super(new BorderLayout());
@@ -120,27 +122,28 @@ public class AnalyzerPanel extends JPanel {
                 setStatistics(node.getStatistics());
             }
         });
-
         statisticsJTree.addMouseListener(
                 new MouseAdapter() {
+
                     @Override
-                    public void mouseClicked(MouseEvent e) {
+                    public void mouseReleased(MouseEvent e) {
                         if (e.getButton() == MouseEvent.BUTTON3) {
-                            final TreePath treePath = statisticsJTree.getPathForLocation(e.getX(), e.getY());
-                            statisticsJTree.setSelectionPath(treePath);
-                            JPopupMenu popupMenu = new JPopupMenu();
+                            final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
+                            statisticsJTree.setSelectionPath(path);
+                            JPopupMenu jPopupMenu = new JPopupMenu();
                             JMenuItem jMenuItem = new JMenuItem("Set as delimiter");
                             jMenuItem.addActionListener(
                                     new ActionListener() {
+
                                         @Override
                                         public void actionPerformed(ActionEvent e) {
-                                            System.out.printf("Finally! %s%n", treePath.getPath()[treePath.getPath().length - 1]);
-                                            // todo: set delimiter for
+                                            QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
+                                            source.recordRootChanged(analyzedFile, recordRoot);
                                         }
                                     }
                             );
-                            popupMenu.add(jMenuItem);
-                            popupMenu.show(statisticsJTree, e.getX(), e.getY());
+                            jPopupMenu.add(jMenuItem);
+                            jPopupMenu.show(statisticsJTree, e.getX(), e.getY());
                         }
                     }
                 }
@@ -148,6 +151,10 @@ public class AnalyzerPanel extends JPanel {
         JScrollPane scroll = new JScrollPane(statisticsJTree);
         p.add(scroll, BorderLayout.CENTER);
         return p;
+    }
+
+    public interface RecordChangeListener {
+        void recordRootChanged(File file, QName recordRoot);
     }
 
     private Component createStatisticsListPanel() {
@@ -226,6 +233,7 @@ public class AnalyzerPanel extends JPanel {
     }
 
     public void analyze(final File file) {
+        this.analyzedFile = file;
         loadStarted();
         FileHandler.Listener listener = new FileHandler.Listener() {
             @Override
