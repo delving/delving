@@ -27,7 +27,7 @@
                 </div>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');" name="form-simple-search" id="form-simple-search">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="search-input" name="query" id="query" type="text" title="Europeana Search" <#if query?exists>value="${qt}"</#if> maxlength="75"/>
@@ -48,7 +48,7 @@
     </#if>
     </#if>
     <div id="search_advanced" class="${className}" style="display:${showAdv};z-index:1001;${topPos}">
-      <form method="get" action="brief-doc.html" accept-charset="UTF-8">
+      <form method="get" action="brief-doc.html" accept-charset="UTF-8" name="form-advanced-search" id="form-advanced-search">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
 
