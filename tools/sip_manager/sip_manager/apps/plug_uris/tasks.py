@@ -23,8 +23,30 @@
 
 
 
+
+ Url structure for generated thumbnails, can be one of
+
+ 1 = - old style (pre 0.6)
+
+        item with sha256 FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51
+
+        would be saved as
+        FE21/CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.FULL_DOC.jpg
+        FE21/CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.BRIEF_DOC.jpg
+
+ 2 = from now on
+        item with sha256 FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51
+
+        would be saved as:
+        original/FE/21/FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51
+        FULL_DOC/FE/21/FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.jpg
+        BRIEF_DOC/FE/21/FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.jpg
+
+        only FULL_DOC & BRIEF_DOC is sent to production
 """
 
+import hashlib
+import os
 import time
 import urllib2
 
@@ -32,11 +54,16 @@ import urlparse
 #from xml.dom.minidom import parseString
 
 from django.db import connection, transaction
+from django.conf import settings
 
 from apps.base_item import models as base_item
 from apps.process_monitor.sipproc import SipProcess
 
 import models
+
+
+
+SIP_OBJ_FILES = settings.SIP_OBJ_FILES
 
 
 class UriCreateNewRecords(SipProcess):
@@ -106,7 +133,8 @@ class UriProcessNewRecords(SipProcess):
             for uri in Uris.items.filter(uri_source=uri_source.id, pid=0):
                 process_one_uri(uri)
         """
-        uris =  models.Uri.objects.filter(status=models.URIS_CREATED, pid=0)
+        uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
+                                          pid=0).order_by('-uri_source')
         self.task_starting('Process new Uri records', len(uris))
         t0 = time.time()
         record_count = 0
@@ -171,6 +199,14 @@ class UriProcessNewRecords(SipProcess):
         if self.uri.item_type != models.URIT_OBJECT:
             return True # we only download objects
 
+        return self.handle_object(itm)
+
+
+
+    def handle_object(self, itm):
+        if self.uri.mime_type == 'text/html':
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR,
+                                   models.URI_ERR_CODES[models.URIE_WAS_HTML_PAGE_ERROR])
         data = itm.read()
         try:
             content_length = int(itm.headers['content-length'])
@@ -181,31 +217,49 @@ class UriProcessNewRecords(SipProcess):
         if len(data) != content_length:
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
                                    'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
-        #self.calculate_url_hash()
+
+        self.uri.content_hash = self.generate_hash(data)
+
+        base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
+        org_fname = os.path.join(SIP_OBJ_FILES, base_fname)
+        dest_dir = os.path.split(org_fname)[0]
+        try:
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+        except:
+            return self.set_urierr(models.URIE_OTHER_ERROR,
+                                   'Failed to create dir for storing original')
+
+        try:
+            fp = open(org_fname, 'w')
+            fp.write(data)
+            fp.close()
+        except:
+            return self.set_urierr(models.URIE_FILE_STORAGE_FAILED,
+                                   'Failed to save original')
+        self.uri_state(models.URIS_ORG_SAVED)
+
+        # generate full
+
+        # generate brief
+
+        #hashlib.sha256
         return True
 
-    def calculate_url_hash(self):
-        url_hash = hashlib.sha256(self.uri.url).hexdigest().upper()
-        #cache_item.fname='%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
-        return url_hash
-
-    def calculate_url_hash_old_style(self, cache_item):
-        """Calculate hashed filename based on url.
-        for each file
-        hashlib.sha256('http://www.theeuropeanlibrary.org/portal/images/treasures/hy10.jpg').hexdigest()
-        get file and store in /ORIGINAL
-        log as retrieved in db
-
-        oldsyntax
-        /3first/4: HASHNAME_BRIEF_DOC.jpg
-        _FULL_DOC.jpg
-
-        """
-        url_hash = hashlib.sha256(cache_item.uri_obj).hexdigest().upper()
-        cache_item.fname = '%s/%s' % (url_hash[:3], url_hash[3:])
-        return True
 
 
+    def generate_hash(self, thing):
+        hex_hash = hashlib.sha256(thing).hexdigest().upper()
+        return hex_hash
+
+    def file_name_from_hash(self, url_hash):
+        fname = '%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
+        return fname
+
+    def file_name_from_hash_old_style(self, url_hash):
+        "Old style (<= 0.6 release) way of generating filenames from hash."
+        fname = '%s/%s' % (url_hash[:3], url_hash[3:])
+        return fname
 
 
     def set_urierr(self, code, msg):
@@ -213,7 +267,6 @@ class UriProcessNewRecords(SipProcess):
             raise SipProcessException('set_urierr called with invalid errcode')
         self.uri.err_code = code
         self.uri.err_msg = msg
-        self.uri_state(models.URIS_FAILED)
         return False # propagate error
 
 

@@ -27,7 +27,7 @@
 import hashlib
 
 from django.db import models
-from django.contrib import admin
+#from django.contrib import admin
 
 from utils.gen_utils import dict_2_django_choice
 
@@ -83,14 +83,9 @@ class MdRecord(models.Model):
     uniqueness_hash = models.CharField(max_length=100)
     Enrichment_done = models.BooleanField(default=False)
 
-admin.site.register(MdRecord)
-
-
 
 
 class RequestMdRecord(models.Model):
     request = models.ForeignKey(Request)
     md_record = models.ForeignKey(MdRecord)
     i = models.IntegerField(default=0, blank=True)
-
-admin.site.register(RequestMdRecord)

@@ -2,9 +2,7 @@ import os
 import datetime
 
 from django.db import models
-from django import forms
 from django.conf import settings
-from django.contrib import admin
 
 from utils.gen_utils import dict_2_django_choice
 
@@ -18,7 +16,6 @@ class Aggregator(models.Model):
     def __unicode__(self):
         return '[%s] %s' % (self.name_code, self.name)
 
-admin.site.register(Aggregator)
 
 
 
@@ -53,7 +50,6 @@ class Provider(models.Model):
         return '%s - [%s] %s' % (self.aggregator, self.name_code, self.name)
 
 
-admin.site.register(Provider)
 
 
 
@@ -76,7 +72,6 @@ class DataSet(models.Model):
     def __unicode__(self):
         return '[%s] %s' % (self.name_code, self.name)
 
-admin.site.register(DataSet)
 
 
 
@@ -131,30 +126,3 @@ class Request(models.Model):
         request.save()
         return request
 
-class MyRequestAdminForm(forms.ModelForm):
-    class Meta:
-        model = Request
-
-    def clean_file_name(self):
-        fname = self.find_ingest_filename(self.cleaned_data["file_name"])
-        if not fname:
-            raise forms.util.ValidationError('Did not match any existing file')
-        return fname # self.cleaned_data["file_name"]
-
-    def find_ingest_filename(self, s_in):
-        s = s_in.lower()
-        fname = ''
-        for dir_entry in os.listdir(settings.DUMMY_INGEST_DIR):
-            if dir_entry.lower().find(s) == 0:
-                fname = dir_entry
-                break
-        return fname
-
-
-
-class RequestAdmin(admin.ModelAdmin):
-    form = MyRequestAdminForm
-
-
-
-admin.site.register(Request, RequestAdmin)
