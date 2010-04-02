@@ -61,7 +61,15 @@
             </script>
             </#if>
                 <script type="text/javascript" src="js/results.js"></script>
-                <title>Europeana - Search results</title>
+                <#if metaTitle??>
+                    <title>${metaTitle?js_string}</title>
+                <#else>
+                    <title>Europeana - Search results</title>
+                </#if>
+                <#if metaDescription??>
+                    <meta name="description" content="${metaDescription?js_string}"/>
+                </#if>
+                <meta name="robots" content="noindex,nofollow"/>
             <#break>
         <#case "full-doc.html">
         <#assign pageId = "fd"/>
@@ -76,7 +84,15 @@
             </#if>
                 <script type="text/javascript" src="js/jquery.validate.js"></script>
                 <script type="text/javascript" src="js/results.js"></script>
-                <title>Europeana - Search results</title>
+                <#if metaTitle??>
+                    <title>${metaTitle?js_string}</title>
+                <#else>
+                    <title>Europeana - Search results</title>
+                </#if>
+                <#if metaDescription??>
+                    <meta name="description" content="${metaDescription?js_string}"/>
+                </#if>
+                <meta name="robots" content="nofollow"/>
             <#break>
         <#case "myeuropeana.html">
             <#assign pageId = "me"/>
