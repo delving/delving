@@ -29,11 +29,11 @@
 </#if>
 <#-- Removed ?url('utf-8') from query assignment -->
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
-<#-- page title and description, the way to pull description is copied from DC DESCRIPTION below -->
+<#-- page title and description -->
 <#assign metaTitle = postTitle />
-<#assign descriptionArr = model.fullDoc.dcDescription />
-<#if isNonEmpty(descriptionArr)>
-     <#assign metaDescription = <@simple_list_truncated descriptionArr "; " "200"/> />
+<#assign metaDescription = result.fullDoc.dcDescription[0] />
+<#if metaDescription?length &gt; 200>
+   <#assign metaDescription = result.fullDoc.dcDescription[0]?substring(0, 200) + "..."/>
 </#if>
 <#if metaDescription??>
 <#else>
