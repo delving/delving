@@ -94,10 +94,10 @@ URIE_HTML_ERROR          = 4 # used
 URIE_URL_ERROR           = 5 # used
 URIE_MIMETYPE_ERROR      = 6 # used
 URIE_WRONG_FILESIZE      = 7 # used
-URIE_WAS_HTML_PAGE_ERROR = 8
-URIE_FILE_STORAGE_FAILED = 9
-URIE_DOWNLOAD_FAILED     = 10
-URIE_INVALID_DATA        = 11
+URIE_DOWNLOAD_FAILED     = 8
+URIE_WAS_HTML_PAGE_ERROR = 9
+URIE_FILE_STORAGE_FAILED = 10
+URIE_UNRECOGNIZED_FORMAT = 11
 #URIE_NO_RESPONSE        = 3
 
 URI_ERR_CODES = {
@@ -112,7 +112,7 @@ URI_ERR_CODES = {
     URIE_WAS_HTML_PAGE_ERROR : 'Object was a html page',
     URIE_FILE_STORAGE_FAILED : 'file storage failed',
     URIE_DOWNLOAD_FAILED     : 'download failed',
-    URIE_INVALID_DATA        : 'invalid data',
+    URIE_UNRECOGNIZED_FORMAT : 'unrecognized format',
 
     #URIE_NO_RESPONSE     : 'no response',
     }
