@@ -35,6 +35,8 @@
     </#if>
 </#list>
 
+<#-- page title -->
+<#assign metaTitle = query />
 <#assign servletUrl = servletUrl/>
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl">
