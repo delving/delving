@@ -140,7 +140,12 @@
             <#break>
         <#case "sitemap.html">
             <#assign pageId = "sm">
-        <title>Europeana - Sitemap</title>
+            <#if metaTitle??>
+                 <title>Europeana - Sitemap: ${metaTitle?replace("%20"," ")?xhtml}</title>
+            <#else>
+                 <title>Europeana - Sitemap</title>
+            </#if>
+            <meta name="robots" content="noindex"/>
             <#break>
         <#case "thought-lab.html">
             <link rel="alternate" href="brief-doc.rss?query=mozart"  type="application/rss+xml" title="" id="gallery" />

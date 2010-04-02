@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.querymodel.query.DocId;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
@@ -79,23 +78,23 @@ public class SitemapController {
 			@RequestParam(value = "page", required = false) String page,
 			HttpServletRequest request
 	) throws SolrServerException, EuropeanaQueryException {
-		ModelAndView mavPage = generator(collection, page, "sitemap-index", "sitemap", MAX_RECORDS_PER_SITEMAP_FILE);
+		ModelAndView mavPage = generator(".xml", collection, page, MAX_RECORDS_PER_SITEMAP_FILE);
 		clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
 		return mavPage;
 	}
-	/*
-    @RequestMapping("/collections.html")
+
+    @RequestMapping("/europeana-sitemap.html")
     public ModelAndView handleCollections(
             @RequestParam(value = "collection", required = false) String collection,
             @RequestParam(value = "page", required = false) String page,
             HttpServletRequest request
     ) throws SolrServerException, EuropeanaQueryException {
-        ModelAndView mavPage = generator(collection, page, "collections-index", "collections");
+        ModelAndView mavPage = generator(".html", collection, page, MAX_RECORDS_PER_SITEMAP_FILE * 10);
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
         return mavPage;
     }
-	 */
-	private ModelAndView generator(String collection, String page, String mvcIndex, String mvcSitemap, int maxRecordsPerFile)
+
+	private ModelAndView generator(String affix, String collection, String page, int maxRecordsPerFile)
 	throws EuropeanaQueryException, SolrServerException {
 		String fullDocPageString = "full-doc.html";
 		String baseUrl = fullViewUrl;
@@ -111,24 +110,25 @@ public class SitemapController {
 				do {
 					entries.add(
 							new SitemapIndexEntry(
-									StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?collection=%s&page=%d", baseUrl, facetField.getName(), pageCounter)),
+									StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap%s?collection=%s&page=%d", baseUrl, affix, facetField.getName(), pageCounter)),
+									facetField.getName(),
 									new Date(),
 									facetField.getCount())); //todo: add more relevant date later
 					pageCounter++;
 				}
 				while (pageCounter < numberOfPages);
 			}
-			mavPage = ControllerUtil.createModelAndViewPage(mvcIndex);
+			mavPage = ControllerUtil.createModelAndViewPage("sitemap-index" + affix);
 			mavPage.addObject("entries", entries);
 		}
 		else {
-			mavPage = ControllerUtil.createModelAndViewPage(mvcSitemap);
+			mavPage = ControllerUtil.createModelAndViewPage("sitemap" + affix);
 			mavPage.addObject("fullViewUrl", fullViewUrl);
 
 			// generate sitemap for a collection
 			if (page != null && page.length() > 0 && page.length() < 4 && NumberUtils.isDigits(page)) {
 				int pageInt = Integer.parseInt(page);
-				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
+				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, maxRecordsPerFile, pageInt);
 				int maxPageForCollection = siteMapBeanView.getMaxPageForCollection();
 				if (pageInt <= maxPageForCollection) {
 					List<? extends DocId> list = siteMapBeanView.getIdBeans();
@@ -160,7 +160,7 @@ public class SitemapController {
 		return facetFieldCount;
 	}
 
-	/**
+	/* *
 	 * This is a test method to determine the load crawl bots put on the system and to see how a test collection
 	 * "tel-treasures" is discoverable via the web search engine
 	 *
@@ -172,7 +172,7 @@ public class SitemapController {
 	 *
 	 * @throws eu.europeana.core.querymodel.query.EuropeanaQueryException
 	 *
-	 */
+	 * /
 	//@RequestMapping("/sitemap.xml")
 	public ModelAndView handleTestSitemap(
 			@RequestParam(value = "collection", required = false) String collection,
@@ -223,13 +223,14 @@ public class SitemapController {
 		clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
 		return mavPage;
 	}
-
+*/
 	/**
 	 * Sitemap index entry, model for MVC.
 	 */
 	public static class SitemapIndexEntry {
 
 		private String loc;
+		private String name;
 		private final Date lastmod;
 		private long count;
 
@@ -245,10 +246,15 @@ public class SitemapController {
 			return count;
 		}
 
-		public SitemapIndexEntry(String loc, Date lastmod, long count) {
+		public String getName() {
+			return name;
+		}
+
+		public SitemapIndexEntry(String loc, String name, Date lastmod, long count) {
 			this.loc = loc;
 			this.lastmod = lastmod;
 			this.count = count;
+			this.name = name;
 		}
 
 	}
