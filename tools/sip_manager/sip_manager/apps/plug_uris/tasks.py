@@ -49,9 +49,13 @@ import hashlib
 import os
 import time
 import urllib2
-
 import urlparse
 #from xml.dom.minidom import parseString
+
+from PIL import Image
+
+# sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
+#from pythonmagickwand.image import Image
 
 from django.db import connection, transaction
 from django.conf import settings
@@ -61,6 +65,23 @@ from apps.process_monitor.sipproc import SipProcess
 
 import models
 
+"""
+Old img generation
+FULL_DOC
+mogrify -path /dest_dir
+    -format jpg
+    -define jpeg:size=260x200
+    -thumbnail 200x [one orginals sub dir]/*.original
+
+
+BRIEF_DOC
+mogrify -path BRIEF_DOC/subdir1/subdir2
+    -format jpg
+    -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
+"""
+
+FULLDOC_SIZE = (200, 10000)
+BRIEFDOC_SIZE = (10000, 110)
 
 
 SIP_OBJ_FILES = settings.SIP_OBJ_FILES
@@ -241,12 +262,30 @@ class UriProcessNewRecords(SipProcess):
 
         # generate full
 
-        # generate brief
+        try:
+            img = Image.open(org_fname)
+        except IOError as inst:
+            return self.set_urierr(models.URIE_UNRECOGNIZED_FORMAT,
+                                   inst.args)
 
+        orgX,orgY=img.size
+        #im = im.resize( formatCorrected , self._imagePIL_filter )
+        img_full = img.resize(self.resize_proportional(img.size, FULLDOC_SIZE))
+
+        # generate brief
+        img_brief = img_full.resize(self.resize_proportional(img.size, BRIEFDOC_SIZE))
         #hashlib.sha256
         return True
 
 
+    def resize_proportional(self, org_size, max_size):
+        org_x, org_y = org_size
+        max_x,max_y = max_size
+        x_factor = max_x / float(org_x)
+        y_factor = max_y / float(org_y)
+        factor = min(x_factor, y_factor)
+        format_corrected = (int(org_x * factor), int(org_y * factor))
+        return format_corrected
 
     def generate_hash(self, thing):
         hex_hash = hashlib.sha256(thing).hexdigest().upper()
