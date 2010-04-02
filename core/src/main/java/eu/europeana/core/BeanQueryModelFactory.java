@@ -89,13 +89,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
             if (!params.containsKey("query1")) {
-                // rq is the refine query that needs to be parsed from the request paramaters
-                if (params.containsKey("rq")) { // merge the refine query with the original query
-                    solrQuery.setQuery(queryAnalyzer.createRefineSearch(params));
-                }
-                else {
                     solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
-                }
             }
             else { // support advanced search
                 solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
@@ -130,6 +124,13 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         if (filterQueries != null) {
             for (String filterQuery : filterQueries) {
                 solrQuery.addFilterQuery(filterQuery);
+            }
+        }
+        // find rq and add to filter queries
+        if (params.containsKey("rq") && params.get("rq").length != 0) {
+            String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params);
+            if (!refineSearchFilterQuery.isEmpty()) {
+                solrQuery.addFilterQuery(refineSearchFilterQuery);
             }
         }
         solrQuery.setFilterQueries(SolrQueryUtil.getFilterQueriesAsPhrases(solrQuery));

@@ -136,24 +136,24 @@ public class TestQueryAnalyzer {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("query", new String[]{"ioan"});
         params.put("rq", new String[]{"mercury"});
-        String refinedQueryString = qa.createRefineSearch(params);
+        String refinedQueryString = qa.createRefineSearchFilterQuery(params);
         assertNotNull(refinedQueryString);
-        assertEquals("queries should be equal", "ioan mercury", refinedQueryString);
+        assertEquals("queries should be equal", "text:\"mercury\"", refinedQueryString);
 
         params = new HashMap<String, String[]>();
         params.put("query", new String[]{"ioan"});
         params.put("rq", new String[]{""});
-        assertEquals("queries should be equal", "ioan", qa.createRefineSearch(params));
+        assertEquals("should return an empty string", "", qa.createRefineSearchFilterQuery(params));
 
         params = new HashMap<String, String[]>();
         params.put("query", new String[]{"text:ioan"});
-        params.put("rq", new String[]{"mercury"});
-        assertEquals("queries should be equal", "(text:ioan) AND mercury", qa.createRefineSearch(params));
+        params.put("rq", new String[]{"title:mercury"});
+        assertEquals("queries should be equal", "title:mercury", qa.createRefineSearchFilterQuery(params));
 
         params = new HashMap<String, String[]>();
         params.put("query", new String[]{"ioan"});
         params.put("rq", new String[]{"text:mercury and title:romania"});
-        assertEquals("queries should be equal", "ioan AND (text:mercury AND title:romania)", qa.createRefineSearch(params));
+        assertEquals("queries should be equal", "text:mercury AND title:romania", qa.createRefineSearchFilterQuery(params));
     }
 
     @Test(expected = EuropeanaQueryException.class)
@@ -161,6 +161,6 @@ public class TestQueryAnalyzer {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put("query", new String[]{""});
         params.put("rq", new String[]{"mercury"});
-        qa.createRefineSearch(params);
+        qa.createRefineSearchFilterQuery(params);
     }
 }
