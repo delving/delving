@@ -157,6 +157,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.13.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.6</source>
@@ -171,7 +184,8 @@
                     <groups>regression</groups>
                     <parallel>true</parallel>
                     <systemPropertyVariables>
-                        <europeana.properties>../core/src/test/resources/europeana-test.properties</europeana.properties>
+                        <europeana.properties>../core/src/test/resources/europeana-test.properties
+                        </europeana.properties>
                         <europeana.test.external.host>${europeana.test.external.host}</europeana.test.external.host>
                     </systemPropertyVariables>
                 </configuration>
@@ -493,11 +507,26 @@
                 <artifactId>solr-solrj</artifactId>
                 <version>1.4.0</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>asm</groupId>-->
-                <!--<artifactId>asm</artifactId>-->
-                <!--<version>3.2</version>-->
-            <!--</dependency>-->
+
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest</artifactId>
+                <version>${scalaTest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <properties>
@@ -522,6 +551,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <gwtVersion>2.0.0</gwtVersion>
+        <scala.version>2.8.0.Beta1</scala.version>
+        <scalaTest.version>1.0.1-for-scala-2.8.0.Beta1-SNAPSHOT</scalaTest.version>
         <!--<google.webtoolkit.home>${env.GWT_HOME}</google.webtoolkit.home>-->
 
     </properties>
