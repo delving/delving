@@ -35,8 +35,7 @@
 <#if metaDescription?length &gt; 200>
    <#assign metaDescription = result.fullDoc.dcDescription[0]?substring(0, 200) + "..."/>
 </#if>
-<#if metaDescription??>
-<#else>
+<#if metaDescription?length &lt; 20>
      <#assign metaDescription = metaTitle />
 </#if>
 <#include "inc_header.ftl">
