@@ -85,12 +85,12 @@
                 <script type="text/javascript" src="js/jquery.validate.js"></script>
                 <script type="text/javascript" src="js/results.js"></script>
                 <#if metaTitle??>
-                    <title>${metaTitle?html}</title>
+                    <title>${metaTitle?replace("%20"," ")?xhtml}</title>
                 <#else>
                     <title>Europeana - Search results</title>
                 </#if>
                 <#if metaDescription??>
-                    <meta name="description" content="${metaDescription?html}"/>
+                    <meta name="description" content="${metaDescription?replace("%20"," ")?xhtml}"/>
                 </#if>
                 <meta name="robots" content="nofollow"/>
             <#break>
