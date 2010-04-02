@@ -85,12 +85,12 @@
                 <script type="text/javascript" src="js/jquery.validate.js"></script>
                 <script type="text/javascript" src="js/results.js"></script>
                 <#if metaTitle??>
-                    <title>${metaTitle?js_string}</title>
+                    <title>${metaTitle?html}</title>
                 <#else>
                     <title>Europeana - Search results</title>
                 </#if>
                 <#if metaDescription??>
-                    <meta name="description" content="${metaDescription?js_string}"/>
+                    <meta name="description" content="${metaDescription?html}"/>
                 </#if>
                 <meta name="robots" content="nofollow"/>
             <#break>
