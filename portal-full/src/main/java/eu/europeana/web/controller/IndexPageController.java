@@ -21,11 +21,11 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.util.web.CarouselItemSampler;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.ProposedSearchTermSampler;
+import eu.europeana.definitions.domain.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

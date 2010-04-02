@@ -1,5 +1,25 @@
 from local_settings import *
 
+from django.core import exceptions
+
+# Verify we have all (important) local_settings
+
+try:
+    IMPORT_SCAN_TREE
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE')
+
+try:
+    SIP_LOG_FILE
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting SIP_LOG_FILE')
+
+try:
+    SIP_OBJ_FILES
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting SIP_OBJ_FILES')
+
+
 # Django settings for sip_web project.
 
 #local_settings DEBUG = True
@@ -80,10 +100,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
 
+    'django.contrib.databrowse',
+
     'apps.base_item',
     'apps.dummy_ingester',
-    #'apps.cache_machine',
-    #'apps.plug_uris',
-    #'apps.process_monitor',
+    'apps.plug_uris',
+    'apps.process_monitor',
+
+    'apps.statistics',
 )
 

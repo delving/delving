@@ -1,11 +1,15 @@
 package eu.europeana.core.util.web;
 
 import eu.europeana.core.database.StaticInfoDao;
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.definitions.domain.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Pick some objects from serch terms

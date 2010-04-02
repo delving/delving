@@ -21,10 +21,10 @@
 
 package eu.europeana.core.util.web;
 
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.FullBeanView;
+import eu.europeana.definitions.domain.Language;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.servlet.ModelAndView;
 

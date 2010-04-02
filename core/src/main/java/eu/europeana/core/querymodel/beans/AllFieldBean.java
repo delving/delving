@@ -25,6 +25,9 @@ import eu.europeana.core.querymodel.annotation.Europeana;
 import eu.europeana.core.querymodel.annotation.Solr;
 import org.apache.solr.client.solrj.beans.Field;
 
+import static eu.europeana.core.querymodel.annotation.ValidationLevel.CopyField;
+import static eu.europeana.core.querymodel.annotation.ValidationLevel.EseOptional;
+
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:17:26 AM
@@ -33,95 +36,100 @@ import org.apache.solr.client.solrj.beans.Field;
 public class AllFieldBean extends FullBean {
 
     @Field("LOCATION")
-    @Europeana(copyField = true, facet = false, facetPrefix = "loc", fullDoc = false)
+    @Europeana(validation = CopyField, facet = false, facetPrefix = "loc", fullDoc = false)
     @Solr(fieldType = "string")
     String[] location;
 
     @Field("CONTRIBUTOR")
-    @Europeana(copyField = true, facet = false, facetPrefix = "cont", fullDoc = false)
+    @Europeana(validation = CopyField, facet = false, facetPrefix = "cont", fullDoc = false)
     @Solr(fieldType = "string")
     String[] contributor;
 
     @Field("USERTAGS")
-    @Europeana(copyField = true, facet = false, facetPrefix = "ut", fullDoc = false)
+    @Europeana(validation = CopyField, facet = false, facetPrefix = "ut", fullDoc = false)
     @Solr(fieldType = "string")
     String[] userTags;
 
     @Field("SUBJECT")
-    @Europeana(copyField = true, facet = false, facetPrefix = "sub", fullDoc = false)
+    @Europeana(validation = CopyField, facet = false, facetPrefix = "sub", fullDoc = false)
     @Solr(fieldType = "string")
-    String[] subject;
+    String[] SUBJECT;
 
 
-    @Europeana(fullDoc = false, mappable = true)
+    @Europeana(validation = EseOptional, fullDoc = false, mappable = true)
     @Solr(namespace = "europeana", name = "unstored", stored = false)
     @Field("europeana_unstored")
     String[] europeanaUnstored;
 
     // copy fields
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] text;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] description;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] date;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] format;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] publisher;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] source;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] rights;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] identifier;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] relation;
 
+    @Field
+    @Europeana(validation = CopyField, fullDoc = false)
+    @Solr()
+    String[] subject;
+
     // wh copy fields
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] who;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] when;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] what;
 
     @Field
-    @Europeana(copyField = true, fullDoc = false)
+    @Europeana(validation = CopyField, fullDoc = false)
     @Solr()
     String[] where;
 }

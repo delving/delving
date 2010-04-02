@@ -22,6 +22,7 @@
 package eu.europeana.core.database.domain;
 
 import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.definitions.domain.Language;
 import org.hibernate.annotations.Index;
 
 import javax.persistence.Column;

@@ -98,8 +98,18 @@
 
     <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
 
-    <bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-        <constructor-arg value="#{europeanaProperties['solr.baseUrl']}"/>
+    <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+        <constructor-arg value="#{europeanaProperties['solr.selectUrl']}"/>
+        <property name="soTimeout" value="#{europeanaProperties['solr.timeout']}"/>
+        <property name="connectionTimeout" value="#{europeanaProperties['solr.timeout']}"/>
+        <property name="defaultMaxConnectionsPerHost" value="64"/>
+        <property name="maxTotalConnections" value="125"/>
+        <property name="followRedirects" value="false"/>
+        <property name="maxRetries" value="#{europeanaProperties['solr.retries']}"/>
+    </bean>
+
+    <bean id="solrUpdateServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+        <constructor-arg value="#{europeanaProperties['solr.updateUrl']}"/>
         <property name="soTimeout" value="#{europeanaProperties['solr.timeout']}"/>
         <property name="connectionTimeout" value="#{europeanaProperties['solr.timeout']}"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>

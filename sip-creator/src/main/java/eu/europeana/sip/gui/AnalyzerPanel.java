@@ -1,26 +1,45 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.sip.gui;
 
-import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
+import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import javax.xml.namespace.QName;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
@@ -33,46 +52,152 @@ import java.util.List;
 
 public class AnalyzerPanel extends JPanel {
     private static final int COUNTER_LIST_SIZE = 100;
-    private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
-    private MappingPanel mappingPanel;
+    private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(15, 15, 15, 15);
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
+    private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
+    private JLabel statsTitle = new JLabel("Statistics", JLabel.CENTER);
+    private JTable statsTable;
+    private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
+    private NormalizationParserBindingSource source = new NormalizationParserBindingSource();
+    private GroovyEditor groovyEditor = new GroovyEditor(source);
+    private JButton next = new JButton("Next");
+    private File analyzedFile;
 
-    public AnalyzerPanel(AnnotationProcessor annotationProcessor) {
+    public AnalyzerPanel() {
         super(new BorderLayout());
-        this.mappingPanel = new MappingPanel(annotationProcessor);
+        createStatsTable();
+        this.statsTitle.setFont(new Font("Serif", Font.BOLD, 20));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createAnalysisPanel());
-        split.setRightComponent(mappingPanel);
-        split.setDividerLocation(0.4);
-        split.setSize(1280, 800);
+        split.setRightComponent(createMappingPanel());
+        split.setResizeWeight(0.5);
+        split.setDividerLocation(0.5);
         add(split, BorderLayout.CENTER);
     }
 
+    private Component createMappingPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.add(groovyEditor, BorderLayout.CENTER);
+        p.add(createNextButton(), BorderLayout.NORTH);
+        p.setPreferredSize(new Dimension(500, 800));
+        return p;
+    }
+
+    private JComponent createNextButton() {
+        next.setEnabled(false);
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                source.nextRecord();
+                groovyEditor.triggerExecution();
+            }
+        });
+        return next;
+    }
+
     private Component createAnalysisPanel() {
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        split.setTopComponent(createDocumentTreePanel());
+        split.setBottomComponent(createStatisticsListPanel());
+        split.setResizeWeight(0.5);
+        split.setDividerLocation(0.5);
+        return split;
+    }
+
+    private Component createDocumentTreePanel() {
+        final AnalysisTreeCellRenderer analysisTreeCellRenderer = new AnalysisTreeCellRenderer();
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 0));
         title.setFont(new Font("Serif", Font.BOLD, 22));
         p.add(title, BorderLayout.NORTH);
-        statisticsJTree.setCellRenderer(new CellRenderer());
+        statisticsJTree.setCellRenderer(analysisTreeCellRenderer);
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
                 TreePath path = event.getPath();
                 MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
-                if (node.getStatistics() != null) {
-                    mappingPanel.setNode(node);
-                } else {
-                    mappingPanel.setNode(null);
-                }
+                setStatistics(node.getStatistics());
             }
         });
+        statisticsJTree.addMouseListener(
+                new MouseAdapter() {
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
+                            statisticsJTree.setSelectionPath(path);
+                            JPopupMenu jPopupMenu = new JPopupMenu();
+                            JMenuItem jMenuItem = new JMenuItem("Set as delimiter");
+                            jMenuItem.addActionListener(
+                                    new ActionListener() {
+
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
+                                            source.recordRootChanged(analyzedFile, recordRoot);
+                                            analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
+                                        }
+                                    }
+                            );
+                            jPopupMenu.add(jMenuItem);
+                            jPopupMenu.show(statisticsJTree, e.getX(), e.getY());
+                        }
+                    }
+                }
+        );
         JScrollPane scroll = new JScrollPane(statisticsJTree);
         p.add(scroll, BorderLayout.CENTER);
-        scroll.setPreferredSize(new Dimension(400, 800));
         return p;
+    }
+
+    public interface RecordChangeListener {
+        void recordRootChanged(File file, QName recordRoot);
+    }
+
+    private Component createStatisticsListPanel() {
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
+        JScrollPane scroll = new JScrollPane(statsTable);
+        tablePanel.add(scroll, BorderLayout.CENTER);
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setBorder(EMPTY_BORDER);
+        p.add(statsTitle, BorderLayout.NORTH);
+        p.add(tablePanel, BorderLayout.CENTER);
+        return p;
+    }
+
+    private void createStatsTable() {
+        statisticsTableColumnModel = new DefaultTableColumnModel();
+        statisticsTableColumnModel.addColumn(new TableColumn(0, 70));
+        statisticsTableColumnModel.getColumn(0).setHeaderValue("Percent");
+        statisticsTableColumnModel.getColumn(0).setResizable(false);
+        statisticsTableColumnModel.addColumn(new TableColumn(1, 90));
+        statisticsTableColumnModel.getColumn(1).setHeaderValue("Count");
+        statisticsTableColumnModel.getColumn(1).setResizable(false);
+        statisticsTableColumnModel.addColumn(new TableColumn(2));
+        statisticsTableColumnModel.getColumn(2).setHeaderValue("Value");
+        statisticsTableColumnModel.getColumn(2).setPreferredWidth(300);
+        statsTable = new JTable(new StatisticsCounterTableModel(null), statisticsTableColumnModel);
+        statsTable.getTableHeader().setReorderingAllowed(false);
+        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private void setStatistics(Statistics statistics) {
+        if (statistics == null) {
+            statsTitle.setText("Statistics");
+            statsTable.setModel(new StatisticsCounterTableModel(null));
+            statsTable.setColumnModel(statisticsTableColumnModel);
+        }
+        else {
+            statsTitle.setText("Statistics for \"" + statistics.getPath().getLastNodeString() + "\"");
+            statsTable.setModel(new StatisticsCounterTableModel(statistics.getCounters()));
+            statsTable.setColumnModel(statisticsTableColumnModel);
+        }
     }
 
     private void setMappingTree(MappingTree mappingTree) {
@@ -110,12 +235,14 @@ public class AnalyzerPanel extends JPanel {
     }
 
     public void analyze(final File file) {
-        File statisticsFile = createStatisticsFile(file);
+        this.analyzedFile = file;
         loadStarted();
         FileHandler.Listener listener = new FileHandler.Listener() {
             @Override
             public void success(List<Statistics> list) {
                 setMappingTree(MappingTree.create(list, file.getName()));
+                File mappingFile = createMappingFile(file);
+                groovyEditor.setGroovyFile(mappingFile);
                 loadFinished();
             }
 
@@ -130,7 +257,7 @@ public class AnalyzerPanel extends JPanel {
                 loadFinished();
             }
         };
-
+        File statisticsFile = createStatisticsFile(file);
         if (statisticsFile.exists()) {
             FileHandler.loadStatistics(statisticsFile, listener, progressDialog);
         }
@@ -143,29 +270,8 @@ public class AnalyzerPanel extends JPanel {
         return new File(file.getParentFile(), file.getName() + ".statistics");
     }
 
-    private class CellRenderer extends DefaultTreeCellRenderer {
-        private Font normalFont, thickFont;
+    private File createMappingFile(File file) {
+        return new File(file.getParentFile(), file.getName() + ".mapping");
 
-        @Override
-        public Component getTreeCellRendererComponent(JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3) {
-            MappingTree.Node node = (MappingTree.Node) o;
-            JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, o, b, b1, b2, i, b3);
-            label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
-            return label;
-        }
-
-        private Font getNormalFont() {
-            if (normalFont == null) {
-                normalFont = super.getFont();
-            }
-            return normalFont;
-        }
-
-        private Font getThickFont() {
-            if (thickFont == null) {
-                thickFont = new Font(getNormalFont().getFontName(), Font.BOLD, getNormalFont().getSize());
-            }
-            return thickFont;
-        }
     }
 }

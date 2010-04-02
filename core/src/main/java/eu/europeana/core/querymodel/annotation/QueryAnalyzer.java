@@ -31,10 +31,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * The query is an advanced query when the query string contains
- * - " AND ", " OR ", " NOT " (both uppercase)
- * - a fielded query (detected by the use of a : seperating field and query), e.g. title:"something
- * - a word or phrase prefixed by + or -
+ * The query is an advanced query when the query string contains - " AND ", " OR ", " NOT " (both uppercase) - a fielded
+ * query (detected by the use of a : seperating field and query), e.g. title:"something - a word or phrase prefixed by +
+ * or -
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -48,7 +47,7 @@ public class QueryAnalyzer {
     }
 
     public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
-        String[] terms = query.split("\\s+");
+            String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
                 return QueryType.ADVANCED_QUERY;
@@ -78,7 +77,7 @@ public class QueryAnalyzer {
         return QueryType.SIMPLE_QUERY;
     }
 
-    public static String sanitize(String query) {
+    public String sanitize(String query) {
         String[] terms = query.split("\\s+");
         StringBuilder out = new StringBuilder();
         for (String term : terms) {
@@ -120,14 +119,14 @@ public class QueryAnalyzer {
 
     /**
      * Create advanced query from params with facet[1-3], operator[1-3], query[1-3].
-     *
+     * <p/>
      * This query is structured by the advanced search pane in the portal
      *
      * @param params request parameters
      * @return all parameters formatted as a single Lucene Query
      */
 
-    public static String createAdvancedQuery(Map<String, String[]> params) {
+    public String createAdvancedQuery(Map<String, String[]> params) {
         StringBuilder queryString = new StringBuilder();
         for (int i = 1; i < 4; i++) {
             if (params.containsKey(MessageFormat.format("query{0}", i)) && params.containsKey(MessageFormat.format("facet{0}", i))) {
@@ -146,12 +145,41 @@ public class QueryAnalyzer {
                         queryString.append(facet);
                     }
                     else {
-                        queryString.append("text");
+                        queryString.append(facetDefault);
                     }
                     queryString.append(":").append(query);
                 }
             }
         }
         return sanitize(queryString.toString());
+    }
+
+    public String createRefineSearch(Map<String, String[]> params) throws EuropeanaQueryException {
+        String newQuery;
+        String refineQuery = params.get("rq")[0];
+        String originalQuery = params.get("query")[0];
+        if (refineQuery.trim().length() > 0 && originalQuery.trim().length() > 0) {
+            QueryType refineQueryType = findSolrQueryType(refineQuery);
+            QueryType originalQueryType = findSolrQueryType(originalQuery);
+            if (refineQueryType == QueryType.SIMPLE_QUERY && originalQueryType == QueryType.SIMPLE_QUERY) {
+                newQuery = MessageFormat.format("{0} {1}", originalQuery, refineQuery);
+            }
+            else if (refineQueryType != QueryType.SIMPLE_QUERY && originalQueryType == QueryType.SIMPLE_QUERY) {
+                newQuery = MessageFormat.format("{0} AND ({1})", originalQuery, refineQuery);
+            }
+            else if (refineQueryType == QueryType.SIMPLE_QUERY && originalQueryType != QueryType.SIMPLE_QUERY) {
+                newQuery = MessageFormat.format("({0}) AND {1}", originalQuery, refineQuery);
+            }
+            else {
+                newQuery = MessageFormat.format("({0}) AND ({1})", originalQuery, refineQuery);
+            }
+        }
+        else if (originalQuery.trim().length() > 0) {
+            newQuery = originalQuery;
+        }
+        else {
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
+        }
+        return sanitize(newQuery);
     }
 }

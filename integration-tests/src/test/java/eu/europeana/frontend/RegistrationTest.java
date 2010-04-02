@@ -105,7 +105,7 @@ public class RegistrationTest {
 		//and on a different server
 		webClient = FrontendTestUtil.createWebClient();
 		HtmlPage loginSuccessPage = FrontendTestUtil.login(webClient, FrontendTestUtil.EMAIL, FrontendTestUtil.PASSWORD);
-		Assert.assertEquals(FrontendTestUtil.TEST_PORTAL_URL, loginSuccessPage.getWebResponse().getRequestUrl().toExternalForm());
+		Assert.assertEquals(FrontendTestUtil.testPortalUrl(), loginSuccessPage.getWebResponse().getRequestUrl().toExternalForm());
 
 		//token has to be removed now
 		token = tokenService.getTokenByEmail(FrontendTestUtil.EMAIL);
@@ -122,7 +122,7 @@ public class RegistrationTest {
 	private HtmlPage completeRegistration(Token token, int port) throws Exception {
 		WebClient webClient = FrontendTestUtil.createWebClient();
 
-		HtmlPage registrationPage = webClient.getPage(formatUrl(FrontendTestUtil.TEST_PORTAL_URL + "register.html", token.getToken()));
+		HtmlPage registrationPage = webClient.getPage(formatUrl(FrontendTestUtil.testPortalUrl() + "register.html", token.getToken()));
 
 		//fill in registration form
 		HtmlTextInput email = (HtmlTextInput) registrationPage.getElementById("email");

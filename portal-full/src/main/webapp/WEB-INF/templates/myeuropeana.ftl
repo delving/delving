@@ -27,16 +27,20 @@
                     <div id="savedItems">
                         <ul>
                             <li><a href="#fragment-0"
-                                   title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a>
+                                   title="<@spring.message 'UserInformation_t' />"
+                                   onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });"><span><@spring.message 'UserInformation_t' /></span></a>
                             </li>
                             <li><a href="#fragment-1"
-                                   title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a>
+                                   title="<@spring.message 'SavedItems_t'/>"
+                                    onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });"><span><@spring.message 'SavedItems_t'/></span></a>
                             </li>
                             <li><a href="#fragment-2"
-                                   title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a>
+                                   title="<@spring.message 'SavedSearches_t'/>"
+                                    onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });"><span><@spring.message 'SavedSearches_t'/></span></a>
                             </li>
                             <li><a href="#fragment-3"
-                                   title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a>
+                                   title="<@spring.message 'SavedTags_t'/>"
+                                    onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });"><span><@spring.message 'SavedTags_t'/></span></a>
                             </li>
                         </ul>
                         <div id="fragment-0">
@@ -121,9 +125,6 @@
                                         <td width="220" align="right">
                                        <!-- AddThis Button BEGIN -->
                                         <#assign  showthislang = locale>
-                                        <#if  locale = "mt" || locale = "et">
-                                           <#assign  showthislang = "en">
-                                        </#if>
                                            <a class="addthis_button"
                                               href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36"
                                               addthis:url="${item.europeanaId.europeanaUri}"
@@ -133,7 +134,7 @@
                                                     addthis:title="Europeana Object"
                                                </#if>
                                              >
-                                             <img src="http://s7.addthis.com/static/btn/lg-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
+                                             <img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                                             <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
                                             <script type="text/javascript">
                                                 var addthis_config = {
@@ -153,7 +154,7 @@
                                                                  onclick="removeRequest('CarouselItem',${item.id?string("0")});">Carousel - <@spring.message 'Delete_t'/></button>
                                                     <#else> <#-- if !item.europeanaId.hasCarouselItem() -->  <#-- check if nobody else has saved this item -->
                                                          <button class="del-button"
-                                                             onclick="addEditorItemRequest('CarouselItem',${item.id?string("0")});">Carousel - <@spring.message 'Add_t'/></button>
+                                                             onclick="saveRequest('CarouselItem',${item.id?string("0")});">Carousel - <@spring.message 'Add_t'/></button>
                                                     </#if>
                                                 </#if>
                                             </#if>
@@ -192,7 +193,7 @@
                                                 <#else>
                                                     <#-- todo: add add button -->
                                                     <button class="del-button"
-                                                        onclick="addEditorItemRequest('SearchTerm',${search.id?string("0")});">SearchTerm - <@spring.message 'Add_t'/></button>
+                                                        onclick="saveRequest('SearchTerm',${search.id?string("0")});">SearchTerm - <@spring.message 'Add_t'/></button>
                                                 </#if>
                                             </#if>
                                         </#if>

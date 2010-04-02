@@ -17,16 +17,16 @@ $(document).ready(function() {
          });
     };
 
-    function addEditorItemRequest(className, id){
+    function saveRequest(className, id){
         $.ajax({
            type: "POST",
-           url: "save-editor-item.ajax",
+           url: "save.ajax",
            data: "className="+className+"&id="+id,
            success: function(msg){
                 window.location.reload();
            },
            error: function(msg) {
-                alert("An error occured. The item could not be removed");
+                alert("An error occured. The item could not be saved");
            }
          });
     };

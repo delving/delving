@@ -27,6 +27,7 @@ import eu.europeana.core.querymodel.query.BriefDoc;
 import eu.europeana.core.querymodel.query.DocType;
 import org.apache.solr.client.solrj.beans.Field;
 
+import static eu.europeana.core.querymodel.annotation.ValidationLevel.*;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
 
 /**
@@ -38,49 +39,49 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
 
-    @Europeana
+    @Europeana(validation = EsePlusRequired)
     @Solr(namespace = "europeana", name = "europeanaCollectionName", multivalued = false, required = true)
     @Field("europeana_collectionName")
     String[] europeanaCollectionName;
 
     @Field("PROVIDER")
-    @Europeana(copyField = true, facet = true, facetPrefix = "prov", briefDoc = true)
+    @Europeana(validation = CopyField, facet = true, facetPrefix = "prov", briefDoc = true)
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(briefDoc = true, object = true, mappable = true)
+    @Europeana(validation = EseRequired, briefDoc = true, object = true, mappable = true)
     @Solr(namespace = "europeana", name = "object")
     @Field("europeana_object")
     String[] europeanaObject;
 
     @Field("COUNTRY")
-    @Europeana(copyField = true, facet = true, facetPrefix = "coun")
+    @Europeana(validation = CopyField, facet = true, facetPrefix = "coun")
     @Solr(fieldType = "string")
     String[] country;
 
     @Field("TYPE")
-    @Europeana(copyField = true, facet = true, facetPrefix = "type", briefDoc = true, type = true)
+    @Europeana(validation = CopyField, facet = true, facetPrefix = "type", briefDoc = true, type = true)
     @Solr(fieldType = "string")
     String[] docType;
 
     @Field("LANGUAGE")
-    @Europeana(copyField = true, facet = true, facetPrefix = "lang", briefDoc = true)
+    @Europeana(validation = CopyField, facet = true, facetPrefix = "lang", briefDoc = true)
     @Solr(fieldType = "string")
     String[] language;
 
     @Field("YEAR")
-    @Europeana(copyField = true, facet = true, facetPrefix = "yr", briefDoc = true)
+    @Europeana(validation = CopyField, facet = true, facetPrefix = "yr", briefDoc = true)
     @Solr(fieldType = "string")
     String[] year;
 
     @Field
-    @Europeana(copyField = true, briefDoc = true)
+    @Europeana(validation = CopyField, briefDoc = true)
     @Solr()
     String[] title;
 
     @Field
     @Solr()
-    @Europeana(copyField = true, briefDoc = true)
+    @Europeana(validation = CopyField, briefDoc = true)
     String[] creator;
 
     @Override

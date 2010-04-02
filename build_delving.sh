@@ -7,7 +7,8 @@ PACKAGE="mvn clean package -Dmaven.test.skip=true"
 BUILD_ALL=false
 
 # Installation of jar is m2 repository
-cd core; $INSTALL
+cd definitions; $INSTALL
+cd ../core; $INSTALL
 
 # Packaging of War files
 cd ../portal-full; $PACKAGE

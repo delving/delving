@@ -291,7 +291,7 @@ input.error
 
 }
 
-#search #search_advanced
+#search #search_advanced, #search #search_refine
 {
 	background:#eee;
 	border:1px solid #ccc;
@@ -313,6 +313,13 @@ input.error
 	top:0;
 }
 
+#search #search_refine.search_result
+{
+	left:180px;
+	position:absolute;
+	top:40px;
+}
+
 #tbl_adv_search td
 {
 	padding:2px;
@@ -325,7 +332,11 @@ input.error
 	font-weight:400;
 	text-decoration:underline;
 }
-
+#search span {
+    color: #000;
+    font-size: .85em;
+    margin-left: 10px; 
+}
 /* footer
 =======================*/
 #ft ul

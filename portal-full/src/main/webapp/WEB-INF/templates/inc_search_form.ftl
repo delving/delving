@@ -2,10 +2,12 @@
 
     <#assign showAdv="none"/>
     <#assign showSim="block"/>
+    <#assign showRefine="none"/>
     <#if pageId??>
     <#if pageId="adv">
         <#assign showAdv="block"/>
         <#assign showSim="none"/>
+        <#assign showRefine="none"/>
     </#if>
     <#assign  qt = ""/>
     <#if query?? && !query?starts_with('europeana_uri:')>
@@ -25,12 +27,17 @@
                 </div>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');" name="form-simple-search" id="form-simple-search">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="search-input" name="query" id="query" type="text" title="Europeana Search" <#if query?exists>value="${qt}"</#if> maxlength="75"/>
             <input id="submit_search" type="submit" class="button" value="<@spring.message 'Search_t' />" /><br/>
+            <#if query?? && query?length &gt; 0 >
+                <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
+            </#if>
             <a class="advanced-search" href="advancedsearch.html" onclick="toggleObject('search_simple');toggleObject('search_advanced');return false;" title="Advanced Search"><@spring.message 'AdvancedSearch_t' /></a>
+
+            <label
         </form>
     </div>
 
@@ -41,9 +48,10 @@
     </#if>
     </#if>
     <div id="search_advanced" class="${className}" style="display:${showAdv};z-index:1001;${topPos}">
-      <form method="get" action="brief-doc.html" accept-charset="UTF-8">
+      <form method="get" action="brief-doc.html" accept-charset="UTF-8" name="form-advanced-search" id="form-advanced-search">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
+
         <table id="tbl_adv_search">
 
             <#if pageId??>
@@ -78,4 +86,26 @@
          </table>
         </form>
     </div>
+
+<#if query??>
+    <div id="search_refine" class="${className}" style="display:${showRefine};z-index:1012;" onsubmit="return checkFormSimpleSearch('rq');">
+      <form method="get" action="brief-doc.html?" accept-charset="UTF-8" name="formRefineSearch" id="formRefineSearch">
+        <input type="hidden" name="start" value="1" />
+        <input type="hidden" name="view" value="${view}" />
+        <input type="hidden" name="query" id="rqq" value="${query}"/>
+        <input type="hidden" id="queryWithFacets" value="<#if queryStringForPresentation??>${queryStringForPresentation?replace('query=','')}</#if>"/>
+        <a href="#" onclick="toggleObject('search_refine');toggleObject('search_simple');">Hide Refine Search</a>
+        <table id="tbl_refine_search">
+            <tr>
+                <td><input type="text" name="rq" id="rq" value=""></td>
+                <td><input id="searchsubmit3" type="submit" class="button" value="<@spring.message 'Search_t' />" /></td>
+            </tr>
+            <#--<tr>-->
+                <#--<td><input type="checkbox" name="withFacets" id="withFacets"/>&#160;Include facets</td>-->
+            <#--</tr>-->
+
+         </table>
+        </form>
+    </div>
+</#if>
 </#macro>

@@ -27,6 +27,7 @@ function setLang(lang) {
 }
 
 function toggleObject(oId) {
+
     var oObj = document.getElementById(oId);
     var cObj = (oObj.style.display == "none") ? "block" : "none";
     oObj.style.display = cObj;
@@ -55,10 +56,24 @@ function isEmpty( inputStr ) {
 
 function checkFormSimpleSearch(oId){
     var o = document.getElementById(oId);
+
     if (isEmpty(o.value)){
         document.getElementById(oId).style.border="1px dotted firebrick";
         return false;
     }
+
+    // we are in 'Refine Search'
+//    if(oId=="rq") {
+//        //var refinement = $('input#rq').attr('value');
+//        var withFacets = $('input#queryWithFacets').attr('value');
+//        // check if 'withFacets' is checked
+//        var n = $("input#withFacets:checked").length;
+//        if(n==1){
+//           $('input#rqq').attr('value',withFacets);
+//        }
+//
+//    }
+
     return true;
 }
 
