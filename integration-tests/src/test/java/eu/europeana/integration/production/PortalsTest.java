@@ -29,7 +29,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 import eu.europeana.integration.IntegrationTests;
-import eu.europeana.integration.PageToTest;
+import eu.europeana.integration.TestClientFixture;
 
 /**
  * 
@@ -43,7 +43,7 @@ public class PortalsTest {
     @Test
     public void test() throws Exception {
 
-    	for (PageToTest page : IntegrationTests.portals()) {
+    	for (TestClientFixture page : IntegrationTests.multiBrowserSetup()) {
        
             //enter search term
             HtmlTextInput query = (HtmlTextInput) page.getPage().getElementById("query");

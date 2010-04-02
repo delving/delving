@@ -75,7 +75,7 @@ public class FrontpageTest {
 	 */
 	@Test
 	public void testLanguage() throws ElementNotFoundException, Exception {
-		for (PageToTest ptt : IntegrationTests.portals()) {
+		for (TestClientFixture ptt : IntegrationTests.singleSetup()) {
 			HtmlPage page = ptt.getPage();
 			Assert.assertTrue(IntegrationTests.assertText(page, "//div[@id='top']/h1", "This is Europeana - a place for inspiration and ideas"));
 			HtmlSelect inputByName = page.getElementByName("dd_lang");
@@ -92,7 +92,7 @@ public class FrontpageTest {
 	@Test
 	public void testCarousel() throws Exception {
 
-		for (PageToTest ptt : IntegrationTests.portals()) {
+		for (TestClientFixture ptt : IntegrationTests.singleSetup()) {
 			HtmlPage page = ptt.getPage();
 
 			// check if carousel is present
