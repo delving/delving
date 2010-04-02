@@ -33,7 +33,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @author Borys Omelayenko
  */
 @Ignore
-public class PageToTest {
+public class TestClientFixture {
 	HtmlPage page;
 	String lang;
 	String url;
@@ -54,7 +54,7 @@ public class PageToTest {
 	public BrowserVersion getBrowser() {
 		return browser;
 	}
-	public PageToTest(HtmlPage page, String lang, String url, BrowserVersion browser) {
+	public TestClientFixture(HtmlPage page, String lang, String url, BrowserVersion browser) {
 		this.lang = lang;
 		this.url = url;
 		this.browser = browser;

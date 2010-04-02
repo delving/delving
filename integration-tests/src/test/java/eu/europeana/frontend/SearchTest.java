@@ -26,31 +26,43 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
+import eu.europeana.integration.IntegrationTests;
+import eu.europeana.integration.TestClientFixture;
+
 /**
  * @author Borys Omelayenko
- * @author vitali
  */
 public class SearchTest {
 
-    @Test
-    public void test() throws IOException {
-        WebClient webClient = FrontendTestUtil.createWebClient();
+	/**
+	 * Bible should be foundable in all languages
+	 * @throws Exception
+	 */
+	@Test
+	public void test() throws Exception {
 
-        HtmlPage homePage = webClient.getPage(FrontendTestUtil.testPortalUrl());
+		for (TestClientFixture ptt : IntegrationTests.multiLingualSetup()) {
 
-        //enter search term
-        HtmlTextInput query = (HtmlTextInput) homePage.getElementById("query");
-        query.setValueAttribute("viva");
+			//enter search term
+			String queryText = "bible";
+			HtmlPage searchResult = search(ptt, queryText);
+			Assert.assertNotNull(searchResult);
+			Assert.assertNotNull(searchResult.getWebResponse().getContentAsString());
+			Assert.assertTrue(searchResult.getWebResponse().getContentAsString().contains(queryText));
+		}
+	}
 
-        HtmlSubmitInput submitQuery = (HtmlSubmitInput) homePage.getElementById("submit_search");
-        HtmlPage searchResult = submitQuery.click();
-        Assert.assertNotNull(searchResult);
-        Assert.assertNotNull(searchResult.getWebResponse().getContentAsString());
-        //System.out.println( searchResult.getWebResponse().getContentAsString() );
-    }
+	public static HtmlPage search(TestClientFixture ptt, String queryText) throws IOException {
+		HtmlTextInput query = (HtmlTextInput) ptt.getPage().getElementById("query");
+		query.setValueAttribute(queryText);
+
+		HtmlSubmitInput submitQuery = (HtmlSubmitInput) ptt.getPage().getElementById("submit_search");
+		HtmlPage searchResult = submitQuery.click();
+		return searchResult;
+	}
+
 }
