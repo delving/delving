@@ -44,50 +44,19 @@ $(document).ready(function() {
          });
     };
 
-    function addEditorItemRequest(className, id){
+    function saveRequest(className, id){
         $.ajax({
            type: "POST",
-           url: "save-editor-item.ajax",
+           url: "save.ajax",
            data: "className="+className+"&id="+id,
            success: function(msg){
                 window.location.reload();
            },
            error: function(msg) {
-               //alert("An error occured. The item could not be added");
-               $("#removeRequestMessage-"+id).show();
+               alert("An error occured. The item could not be saved.");
            }
          });
-    };
-
-    function carouselRequest(className, id){
-    	var status = document.getElementById("carousel_" + id).checked;
-        $.ajax({
-           type: "POST",
-           url: "save-to-carousel.ajax",
-           data: "className="+className+"&id="+id+"&status="+status,
-           success: function(msg){
-                window.location.reload();
-           },
-           error: function(msg) {
-                alert("An error occured. The item could not be aded to carousel");
-           }
-         });
-    };
-
-    function pactaRequest(className, id){
-    	var status = document.getElementById("pacta_" + id).checked;
-        $.ajax({
-           type: "POST",
-           url: "save-to-pacta.ajax",
-           data: "className="+className+"&id="+id+"&status="+status,
-           success: function(msg){
-                window.location.reload();
-           },
-           error: function(msg) {
-                alert("An error occured. The item could not be aded to pacta");
-           }
-         });
-    };
+    }
 
     function showDefault(obj,iType){
         switch(iType)

@@ -21,7 +21,12 @@
 
 package eu.europeana.core.database;
 
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.definitions.domain.Language;
 
 import java.util.List;
 

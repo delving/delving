@@ -1,7 +1,13 @@
 package eu.europeana.core.database.dao;
 
 import eu.europeana.core.database.StaticInfoDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.definitions.domain.Language;
 import eu.europeana.fixture.DatabaseFixture;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -20,7 +26,9 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 /**

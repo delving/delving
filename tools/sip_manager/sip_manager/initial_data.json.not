@@ -1,0 +1,35 @@
+[
+  {
+    "model": "dummy_ingester.aggregator",
+    "pk": 1,
+    "fields": {
+      "name_code": "03",
+      "name": "Athena",
+      "home_page": "http://athena.eu/"
+    }
+  },
+  {
+    "model": "dummy_ingester.provider",
+    "pk": 1,
+    "fields": {
+      "aggregator": "1",
+      "name_code": "902",
+      "name": "Musee Du Louvre",
+      "home_page": "http://www.louvre.fr/",
+      "country": "fr",
+      "item_type": "1"
+    }
+  },
+  {
+    "model": "dummy_ingester.dataset",
+    "pk": 1,
+    "fields": {
+      "provider": "1",
+      "name_code": "03902_Ag_FR_MCC_louvre_atlas",
+      "name": "Atlas: Database of exhibits",
+      "home_page": "http://cartelen.louvre.fr/",
+      "language": "fr",
+      "item_type": "1"
+    }
+  }
+]

@@ -13,7 +13,7 @@
 .yui-t2 #yui-main .yui-b {margin-left:19.4615em;}
 #bobframe {border: none;}
 #timegrid {padding: 0; text-align: center; margin-bottom: 60px;}
-#timegrid a, a:visited {text-decoration: none; color: #333; font-size: 14px;}
+#timegrid a, #timegrid a:visited {text-decoration: none; color: #333; font-size: 14px;}
 #timegrid a:hover {text-decoration: none; color: #ccc;}
 #timegrid a:active {border: 4px solid #FF1493; color:#FF1493; }
 #timegrid a:visited {color: #26a097;}

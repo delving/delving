@@ -34,6 +34,7 @@
 
       <!-- copy selected modules -->
       <copy todir="${ostmp}">
+          <fileset dir="." includes="definitions/**" excludes="${excludePattern}" />
           <fileset dir="." includes="core/**" excludes="${excludePattern}" />
           <fileset dir="." includes="portal-lite/**" excludes="${excludePattern}" />
           <fileset dir="." includes="api/**" excludes="${excludePattern}" />

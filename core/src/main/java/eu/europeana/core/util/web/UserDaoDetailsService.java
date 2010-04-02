@@ -84,6 +84,7 @@ public class UserDaoDetailsService implements UserDetailsService {
                     addRole(Role.ROLE_USER);
                     addRole(Role.ROLE_TRANSLATOR);
                     addRole(Role.ROLE_EDITOR);
+                    addRole(Role.ROLE_PACTA);
                     addRole(Role.ROLE_ADMINISTRATOR);
                     addRole(Role.ROLE_GOD);
                     break;

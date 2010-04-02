@@ -3,7 +3,12 @@ package eu.europeana.core.database.dao;
 import eu.europeana.core.database.DashboardDao;
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.definitions.domain.Language;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author todo insert: "name" <email>

@@ -1,3 +1,24 @@
+/*
+ * Copyright 2007 EDL FOUNDATION
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.europeana.sip.xml;
 
 import org.apache.log4j.Logger;
@@ -10,7 +31,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -20,7 +40,7 @@ import java.util.Stack;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class NormalizationParser implements Iterable<GroovyNode> {
+public class NormalizationParser {
     private Logger logger = Logger.getLogger(getClass());
     private InputStream inputStream;
     private XMLStreamReader2 input;
@@ -54,6 +74,7 @@ public class NormalizationParser implements Iterable<GroovyNode> {
                         withinRecord = true;
                     }
                     if (withinRecord) {
+                        logger.info(String.format("Available node <%s>", input.getName()));
                         GroovyNode parent;
                         if (nodeStack.isEmpty()) {
                             parent = null;
@@ -61,7 +82,13 @@ public class NormalizationParser implements Iterable<GroovyNode> {
                         else {
                             parent = nodeStack.peek();
                         }
-                        String nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix()+"_"+input.getLocalName();
+                        String nodeName;
+                        if (null == input.getPrefix()) {
+                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getLocalName();
+                        }
+                        else {
+                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + input.getLocalName();
+                        }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
@@ -108,44 +135,12 @@ public class NormalizationParser implements Iterable<GroovyNode> {
         return rootNode;
     }
 
-    @Override
-    public Iterator<GroovyNode> iterator() {
-        return new RecordIterator();
-    }
-
-    private class RecordIterator implements Iterator<GroovyNode> {
-
-        private GroovyNode nextNode;
-
-        private RecordIterator() {
-            advance();
+    public void close() {
+        try {
+            input.close();
         }
-
-        @Override
-        public boolean hasNext() {
-            return nextNode != null;
-        }
-
-        @Override
-        public GroovyNode next() {
-            GroovyNode current = nextNode;
-            advance();
-            return current;
-        }
-
-        @Override
-        public void remove() {
-            throw new RuntimeException("Remove not allowed");
-        }
-
-
-        private void advance() {
-            try {
-                nextNode = nextRecord();
-            }
-            catch (Exception e) {
-                throw new RuntimeException("XML Streaming problem", e);
-            }
+        catch (XMLStreamException e) {
+            logger.error("closing", e);
         }
     }
 }

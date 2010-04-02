@@ -21,15 +21,11 @@
 
 package eu.europeana.frontend;
 
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
-import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.SavedItem;
-import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.User;
-import eu.europeana.frontend.FrontendTestUtil.Constants;
+import java.io.IOException;
+import java.util.List;
+
 import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +34,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.io.IOException;
-import java.util.List;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlImage;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+
+import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.User;
+import eu.europeana.frontend.FrontendTestUtil.Constants;
 
 /**
  * Carousel tests.
@@ -62,7 +70,7 @@ public class CarouselTest {
 		FrontendTestUtil.login(webClient, email, FrontendTestUtil.PASSWORD);
 
 		// search for bible
-		HtmlPage homePage = webClient.getPage(FrontendTestUtil.TEST_PORTAL_URL);
+		HtmlPage homePage = webClient.getPage(FrontendTestUtil.testPortalUrl());
 		HtmlTextInput query = (HtmlTextInput) homePage.getElementById("query");
 		query.setValueAttribute(queryString);
 		HtmlSubmitInput submit = (HtmlSubmitInput) homePage.getElementById("submit_search");

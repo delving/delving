@@ -1,7 +1,15 @@
 package eu.europeana.fixture;
 
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CarouselItem;
+import eu.europeana.core.database.domain.EuropeanaCollection;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.Role;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SearchTerm;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.definitions.domain.Language;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

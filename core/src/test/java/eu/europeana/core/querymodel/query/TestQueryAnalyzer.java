@@ -27,7 +27,7 @@ import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.core.querymodel.beans.BriefBean;
 import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -46,18 +46,17 @@ import static junit.framework.Assert.assertNotNull;
 
 public class TestQueryAnalyzer {
 
-    private QueryAnalyzer qa;
-    private AnnotationProcessorImpl annotationProcessor;
+    private static QueryAnalyzer qa;
 
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void init() {
         qa = new QueryAnalyzer();
         List<Class<?>> list = new ArrayList<Class<?>>();
         list.add(IdBean.class);
         list.add(BriefBean.class);
         list.add(FullBean.class);
         list.add(AllFieldBean.class);
-        annotationProcessor = new AnnotationProcessorImpl();
+        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
         annotationProcessor.setClasses(list);
         qa.setAnnotationProcessor(annotationProcessor);
     }
@@ -120,16 +119,48 @@ public class TestQueryAnalyzer {
     }
 
     private void simple(String query) throws EuropeanaQueryException {
-        assertEquals("Not a simple query ["+query+"]", QueryType.SIMPLE_QUERY, qa.findSolrQueryType(query));
+        assertEquals("Not a simple query [" + query + "]", QueryType.SIMPLE_QUERY, qa.findSolrQueryType(query));
     }
 
     private void advanced(String query) throws EuropeanaQueryException {
-        assertEquals("Not an advanced query ["+query+"]", QueryType.ADVANCED_QUERY, qa.findSolrQueryType(query));
+        assertEquals("Not an advanced query [" + query + "]", QueryType.ADVANCED_QUERY, qa.findSolrQueryType(query));
     }
 
     private void moreLike(String query) throws EuropeanaQueryException {
-        assertEquals("Not a more-like query ["+query+"]", QueryType.MORE_LIKE_THIS_QUERY, qa.findSolrQueryType(query));
+        assertEquals("Not a more-like query [" + query + "]", QueryType.MORE_LIKE_THIS_QUERY, qa.findSolrQueryType(query));
     }
 
 
+    @Test
+    public void testCreateRefineSearch() throws Exception {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("query", new String[]{"ioan"});
+        params.put("rq", new String[]{"mercury"});
+        String refinedQueryString = qa.createRefineSearch(params);
+        assertNotNull(refinedQueryString);
+        assertEquals("queries should be equal", "ioan mercury", refinedQueryString);
+
+        params = new HashMap<String, String[]>();
+        params.put("query", new String[]{"ioan"});
+        params.put("rq", new String[]{""});
+        assertEquals("queries should be equal", "ioan", qa.createRefineSearch(params));
+
+        params = new HashMap<String, String[]>();
+        params.put("query", new String[]{"text:ioan"});
+        params.put("rq", new String[]{"mercury"});
+        assertEquals("queries should be equal", "(text:ioan) AND mercury", qa.createRefineSearch(params));
+
+        params = new HashMap<String, String[]>();
+        params.put("query", new String[]{"ioan"});
+        params.put("rq", new String[]{"text:mercury and title:romania"});
+        assertEquals("queries should be equal", "ioan AND (text:mercury AND title:romania)", qa.createRefineSearch(params));
+    }
+
+    @Test(expected = EuropeanaQueryException.class)
+    public void testIllegalRefineSearch() throws EuropeanaQueryException {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("query", new String[]{""});
+        params.put("rq", new String[]{"mercury"});
+        qa.createRefineSearch(params);
+    }
 }

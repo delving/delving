@@ -28,6 +28,9 @@ import org.apache.solr.client.solrj.beans.Field;
 
 import java.util.Date;
 
+import static eu.europeana.core.querymodel.annotation.ValidationLevel.EsePlusRequired;
+import static eu.europeana.core.querymodel.annotation.ValidationLevel.IndexTimeField;
+
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:15:43 AM
@@ -35,12 +38,12 @@ import java.util.Date;
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true)
+    @Europeana(briefDoc = true, id = true, validation = EsePlusRequired)
     @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
     @Field("europeana_uri")
     String europeanaUri;
 
-    @Europeana
+    @Europeana(validation = IndexTimeField)
     @Solr(name = "timestamp", multivalued = false, defaultValue = "NOW")
     @Field("timestamp")
     Date timestamp;

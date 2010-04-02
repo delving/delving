@@ -26,7 +26,7 @@ setup please consult *develop.md*
 
 Maven 2 (2.10 or higher) is used to build the _Europeana Framework_ so make sure it is installed on your system and is available from the command-line. 
 
-Go to the root of the project, i.e. where you find the `core`, `portal-lite`, etc. module folders. You can build the components in two ways: run the `build_europeana.sh` build script or perform the steps manually.
+Go to the root of the project, i.e. where you find the `definitions`, `core`, `portal-lite`, etc. module folders. You can build the components in two ways: run the `build_europeana.sh` build script or perform the steps manually.
 
 ### Build Script ###
 
@@ -39,7 +39,12 @@ Make the file executable and execute it.
 ### Manually ###
 
 
-Build `core` component and install in your local maven2 repository (~/.m2/repository)	
+Build `definitions` component and install in your local maven2 repository (~/.m2/repository)
+
+	cd definitions
+	mvn clean install
+
+Build `core` component and install in your local maven2 repository (~/.m2/repository)
 
 	cd core
 	mvn clean install -Dmaven.test.skip=true
