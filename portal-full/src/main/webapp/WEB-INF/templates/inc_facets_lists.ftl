@@ -63,24 +63,25 @@
                <#--<#break/>-->
         </#switch>
         <#assign facet_max = 20/>
-        <form id="form-refine-search" method="get">
-            <input type="hidden" id="query-get" name="query" value=""/>
-            <input type="hidden" id="qf-get" name="qf" value=""/>
-        </form>
-        <script>
-            function refineSearch(query,qf){
-               $("input#query-get").val(query);
-                var strqf = $("input#qf-get").val(qf.replace("&qf=",""));
-                //strqf = strqf.replace("&amp;","&");
+        <#--<form id="form-refine-search" method="get">-->
+            <#--<input type="hidden" id="query-get" name="query" value=""/>-->
+            <#--<input type="hidden" id="qf-get" name="qf" value=""/>-->
+        <#--</form>-->
+        <#--<script>-->
+            <#--function refineSearch(query,qf){-->
+               <#--$("input#query-get").val(query);-->
+                <#--var strqf = $("input#qf-get").val(qf.replace("&qf=",""));-->
+                <#--//strqf = strqf.replace("&amp;","&");-->
 
-               $("#form-refine-search").submit();
-            }
+               <#--$("#form-refine-search").submit();-->
+            <#--}-->
 
-        </script>
-                   <style>
-                       .ui-icon {float: left;}
-                   </style>
+        <#--</script>-->
+       <style>
+           .ui-icon {float: left;}
+       </style>
         <#if facet.links?size &gt; 0>
+
             <div  style="width: 180px; overflow-x: hidden; overflow-y: auto; max-height: 200px;">
                 <table class="facetTable" width="160px">
                     <#list facet.links?chunk(columsize) as row>
@@ -88,7 +89,6 @@
                            <#list row as link>
                                <td align="left" style="padding: 2px;" class="ui-state-default ui-corner-all no-bg">
                                    <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-
                                    <#if !link.remove = true>
                                         <a href="${thisPage}?query=${query?html}${link.url?html}&view=${view}" title="${link.value}">
                                         <span class="ui-icon ui-icon-circle-plus"></span>

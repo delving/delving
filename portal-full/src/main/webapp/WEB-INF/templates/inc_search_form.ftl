@@ -36,7 +36,6 @@
                 <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
             </#if>
             <a class="advanced-search" href="advancedsearch.html" onclick="toggleObject('search_simple');toggleObject('search_advanced');return false;" title="Advanced Search"><@spring.message 'AdvancedSearch_t' /></a>
-
             <label
         </form>
     </div>
@@ -88,22 +87,17 @@
     </div>
 
 <#if query??>
-    <div id="search_refine" class="${className}" style="display:${showRefine};z-index:1012;" onsubmit="return checkFormSimpleSearch('rq');">
-      <form method="get" action="brief-doc.html?" accept-charset="UTF-8" name="formRefineSearch" id="formRefineSearch">
+    <div id="search_refine" class="${className}" style="display:${showRefine};z-index:1012;">
+      <form method="get" accept-charset="UTF-8" name="formRefineSearch" id="formRefineSearch" onsubmit="return checkFormRefineSearch('rq',this);">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
-        <input type="hidden" name="query" id="rqq" value="${query}"/>
-        <input type="hidden" id="queryWithFacets" value="<#if queryStringForPresentation??>${queryStringForPresentation?replace('query=','')}</#if>"/>
+        <input type="hidden" id="qq" name="qq" value="<#if queryStringForPresentation??>${queryStringForPresentation}</#if>"/>
         <a href="#" onclick="toggleObject('search_refine');toggleObject('search_simple');">Hide Refine Search</a>
         <table id="tbl_refine_search">
             <tr>
                 <td><input type="text" name="rq" id="rq" value=""></td>
                 <td><input id="searchsubmit3" type="submit" class="button" value="<@spring.message 'Search_t' />" /></td>
             </tr>
-            <#--<tr>-->
-                <#--<td><input type="checkbox" name="withFacets" id="withFacets"/>&#160;Include facets</td>-->
-            <#--</tr>-->
-
          </table>
         </form>
     </div>
