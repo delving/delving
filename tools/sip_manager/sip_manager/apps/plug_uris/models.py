@@ -97,8 +97,9 @@ URIE_WRONG_FILESIZE      = 7 # used
 URIE_DOWNLOAD_FAILED     = 8
 URIE_WAS_HTML_PAGE_ERROR = 9
 URIE_FILE_STORAGE_FAILED = 10
-URIE_UNRECOGNIZED_FORMAT = 11
-#URIE_NO_RESPONSE        = 3
+URIE_OBJ_CONVERTION_ERROR = 11
+URIE_UNRECOGNIZED_FORMAT = 12
+#URIE_NO_RESPONSE        = 13
 
 URI_ERR_CODES = {
     URIE_NO_ERROR            : '',
@@ -111,6 +112,7 @@ URI_ERR_CODES = {
     URIE_WRONG_FILESIZE      : 'wrong filesize',
     URIE_WAS_HTML_PAGE_ERROR : 'Object was a html page',
     URIE_FILE_STORAGE_FAILED : 'file storage failed',
+    URIE_OBJ_CONVERTION_ERROR: 'object convertion failed',
     URIE_DOWNLOAD_FAILED     : 'download failed',
     URIE_UNRECOGNIZED_FORMAT : 'unrecognized format',
 

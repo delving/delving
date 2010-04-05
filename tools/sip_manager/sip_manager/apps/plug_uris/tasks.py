@@ -22,6 +22,12 @@
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
 
 
+ Two alternative image generation methods are available
+   generate_images_pil() - 20% faster but more limited in image formats
+   generate_images_magic() - richer support for image formats, slightly better image quality
+
+ Selectable with the global boolean USE_IMAGE_MAGIC
+
 
 
  Url structure for generated thumbnails, can be one of
@@ -43,29 +49,7 @@
         BRIEF_DOC/FE/21/FE21CB0D3B5C30C2AACD9026D5C445571FD0A932162872D7C45397DD65A51.jpg
 
         only FULL_DOC & BRIEF_DOC is sent to production
-"""
 
-import hashlib
-import os
-import time
-import urllib2
-import urlparse
-#from xml.dom.minidom import parseString
-
-from PIL import Image
-
-# sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
-#from pythonmagickwand.image import Image
-
-from django.db import connection, transaction
-from django.conf import settings
-
-from apps.base_item import models as base_item
-from apps.process_monitor.sipproc import SipProcess
-
-import models
-
-"""
 Old img generation
 FULL_DOC
 mogrify -path /dest_dir
@@ -80,11 +64,75 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
     -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
 """
 
+import datetime
+import hashlib
+import subprocess
+import os
+import sys
+import time
+import urllib2
+import urlparse
+#from xml.dom.minidom import parseString
+
+try:
+    from PIL import Image
+except ImportError:
+    try:
+        import Image
+    except:
+        print '*** No module named PIL - needed by %s' % __file__
+        print '\tsuggested solution: sudo easy_install pil'
+        sys.exit(1)
+
+
+# sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
+#from pythonmagickwand.image import Image
+
+from django.db import connection, transaction
+from django.conf import settings
+
+from apps.base_item import models as base_item
+from apps.process_monitor.sipproc import SipProcess
+
+import models
+
 FULLDOC_SIZE = (200, 10000)
 BRIEFDOC_SIZE = (10000, 110)
 
 
 SIP_OBJ_FILES = settings.SIP_OBJ_FILES
+
+USE_IMAGE_MAGIC = False
+
+
+
+class UriPepareStorageDirs(SipProcess):
+    SINGLE_RUN = True
+    INIT_PLUGIN = True
+    PLUGIN_TAXES_DISK_IO = True
+
+    def run_it(self):
+        for s in ('orginal','FULL_DOC', 'BRIEF_DOC'):
+            test_dir = os.path.join(SIP_OBJ_FILES, s,'12','32')
+            if not os.path.exists(test_dir):
+                self.task_starting('Creating dirs for %s' % s, 256)
+                self.pre_generate_uri_trees(s)
+        return True
+
+    def pre_generate_uri_trees(self, prefix):
+        hex_str = '0123456789ABCDEF'
+        base_dir = os.path.join(SIP_OBJ_FILES, prefix)
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
+        for f1 in hex_str:
+            for f2 in hex_str:
+                first_dir = os.path.join(base_dir, '%s%s' % (f1, f2))
+                os.mkdir(first_dir)
+                for s1 in hex_str:
+                    for s2 in hex_str:
+                        second_dir = os.path.join(first_dir, '%s%s' % (s1, s2))
+                        os.mkdir(second_dir)
+
 
 
 class UriCreateNewRecords(SipProcess):
@@ -147,13 +195,7 @@ class UriProcessNewRecords(SipProcess):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
 
-
     def run_it(self):
-        """
-        for uri_source in UriSource.items.filter(pid=0):
-            for uri in Uris.items.filter(uri_source=uri_source.id, pid=0):
-                process_one_uri(uri)
-        """
         uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
                                           pid=0).order_by('-uri_source')
         self.task_starting('Process new Uri records', len(uris))
@@ -162,7 +204,7 @@ class UriProcessNewRecords(SipProcess):
         for uri in uris:
             record_count += 1
 
-            self.uri = self.grab_item(models.Uri, uri.pk, 'About to check url')
+            self.uri = self.grab_item(models.Uri, uri.pk, 'Checking url')
             if not self.uri:
                 continue # Failed to take control of it
 
@@ -175,24 +217,24 @@ class UriProcessNewRecords(SipProcess):
                 t0 = time.time()
         return True
 
+
     def handle_uri(self):
-        if not self.verify():
+        url_itm = self.verify()
+        if not url_itm:
             return False
 
-        if self.uri.item_type != models.URIT_OBJECT:
-            return True # we only download objects
+        if self.uri.item_type == models.URIT_OBJECT:
+            # we only download objects
+            if not self.save_object(url_itm):
+                return False
 
-        # URIS_DOWNLOADED = 3
-        # URIS_FULL_GENERATED = 4
-        # URIS_BRIEF_GENERATED = 5
-        # URIS_COMPLETED = 6
-
+        self.uri_state(models.URIS_COMPLETED)
         return True
 
 
     def verify(self):
-        "Check if item can be downloaded."
-        msg = []
+        "Check if url is responding and giving a 200 result."
+        self.uri.time_lastcheck = datetime.datetime.now()
         try:
             itm = urllib2.urlopen(self.uri.url)#,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
@@ -200,10 +242,10 @@ class UriProcessNewRecords(SipProcess):
         except urllib2.URLError, e:
             if str(e.reason) == 'timed out':
                 code = models.URIE_TIMEOUT
-                msg =  models.URI_ERR_CODES[self.uri.err_code]
+                msg = ''
             else:
                 code = models.URIE_URL_ERROR
-                msg =  '%s: %s' % (models.URI_ERR_CODES[self.uri.err_code], str(r.reason))
+                msg =  '%s: %s' % (models.URI_ERR_CODES[code], str(e.reason))
             return self.set_urierr(code, msg)
         except:
             return self.set_urierr(models.URIE_OTHER_ERROR, 'Unhandled error when checking url')
@@ -217,17 +259,13 @@ class UriProcessNewRecords(SipProcess):
 
         self.uri.mime_type = content_t
         self.uri_state(models.URIS_VERIFIED)
-        if self.uri.item_type != models.URIT_OBJECT:
-            return True # we only download objects
-
-        return self.handle_object(itm)
+        return itm
 
 
 
-    def handle_object(self, itm):
+    def save_object(self, itm):
         if self.uri.mime_type == 'text/html':
-            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR,
-                                   models.URI_ERR_CODES[models.URIE_WAS_HTML_PAGE_ERROR])
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
         data = itm.read()
         try:
             content_length = int(itm.headers['content-length'])
@@ -242,15 +280,8 @@ class UriProcessNewRecords(SipProcess):
         self.uri.content_hash = self.generate_hash(data)
 
         base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
-        org_fname = os.path.join(SIP_OBJ_FILES, base_fname)
-        dest_dir = os.path.split(org_fname)[0]
-        try:
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-        except:
-            return self.set_urierr(models.URIE_OTHER_ERROR,
-                                   'Failed to create dir for storing original')
-
+        org_fname = os.path.join(SIP_OBJ_FILES, 'original', base_fname)
+        #self.make_needed_dirs(org_fname)
         try:
             fp = open(org_fname, 'w')
             fp.write(data)
@@ -260,32 +291,22 @@ class UriProcessNewRecords(SipProcess):
                                    'Failed to save original')
         self.uri_state(models.URIS_ORG_SAVED)
 
-        # generate full
-
-        try:
-            img = Image.open(org_fname)
-        except IOError as inst:
-            return self.set_urierr(models.URIE_UNRECOGNIZED_FORMAT,
-                                   inst.args)
-
-        orgX,orgY=img.size
-        #im = im.resize( formatCorrected , self._imagePIL_filter )
-        img_full = img.resize(self.resize_proportional(img.size, FULLDOC_SIZE))
-
-        # generate brief
-        img_brief = img_full.resize(self.resize_proportional(img.size, BRIEFDOC_SIZE))
-        #hashlib.sha256
+        if USE_IMAGE_MAGIC:
+            self.generate_images_magic(base_fname, org_fname)
+        else:
+            self.generate_images_pil(base_fname, org_fname)
         return True
 
+    def NOT_make_needed_dirs(self, fname):
+        dest_dir = os.path.split(fname)[0]
+        try:
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+        except:
+            return self.set_urierr(models.URIE_OTHER_ERROR,
+                                   'Failed to create dir [%s] for storing object file' % dest_dir)
+        return True
 
-    def resize_proportional(self, org_size, max_size):
-        org_x, org_y = org_size
-        max_x,max_y = max_size
-        x_factor = max_x / float(org_x)
-        y_factor = max_y / float(org_y)
-        factor = min(x_factor, y_factor)
-        format_corrected = (int(org_x * factor), int(org_y * factor))
-        return format_corrected
 
     def generate_hash(self, thing):
         hex_hash = hashlib.sha256(thing).hexdigest().upper()
@@ -301,11 +322,16 @@ class UriProcessNewRecords(SipProcess):
         return fname
 
 
-    def set_urierr(self, code, msg):
+    def set_urierr(self, code, msg=''):
         if code not in models.URI_ERR_CODES:
             raise SipProcessException('set_urierr called with invalid errcode')
         self.uri.err_code = code
-        self.uri.err_msg = msg
+        if msg:
+            self.uri.err_msg = msg
+        else:
+            # give name of error as default message
+            self.uri.err_msg = models.URI_ERR_CODES[code]
+        self.uri.save()
         return False # propagate error
 
 
@@ -313,8 +339,97 @@ class UriProcessNewRecords(SipProcess):
         self.uri.status = state
         self.uri.save()
 
+    #------------------   PIL utility methods   -------------------------------
+    def generate_images_pil(self, base_fname, org_fname):
+
+        try:
+            img = Image.open(org_fname)
+        except IOError as inst:
+            return self.set_urierr(models.URIE_UNRECOGNIZED_FORMAT,
+                                   inst.args)
+
+        fname = os.path.join(SIP_OBJ_FILES, 'FULL_DOC', '%s.jpg' % base_fname)
+        img_full = self.clone_and_save_img(img, FULLDOC_SIZE, fname)
+        self.uri_state(models.URIS_FULL_GENERATED)
+
+        fname = os.path.join(SIP_OBJ_FILES, 'BRIEF_DOC', '%s.jpg' % base_fname)
+        self.clone_and_save_img(img_full, BRIEFDOC_SIZE, fname)
+        self.uri_state(models.URIS_BRIEF_GENERATED)
+        return True
 
 
+    def clone_and_save_img(self, org_img, dest_size, fname):
+        img2 = org_img.resize(self.resize_proportional(org_img.size, dest_size))
+        #self.make_needed_dirs(fname)
+        img2.save(fname)
+        return img2
+
+    def resize_proportional(self, org_size, max_size):
+        org_x, org_y = org_size
+        max_x,max_y = max_size
+        x_factor = max_x / float(org_x)
+        y_factor = max_y / float(org_y)
+        factor = min(x_factor, y_factor)
+        format_corrected = (int(org_x * factor), int(org_y * factor))
+        return format_corrected
+
+    #---------------   End of PIL utility methods   ---------------------------
+
+
+
+
+
+
+    #--------------   ImageMagic utility methods   ----------------------------
+    def generate_images_magic(self, base_fname, org_fname):
+        """
+        Old img generation
+            FULL_DOC
+            mogrify -path /dest_dir
+                -format jpg
+                -define jpeg:size=260x200
+                -thumbnail 200x [one orginals sub dir]/*.original
+
+
+            BRIEF_DOC
+            mogrify -path BRIEF_DOC/subdir1/subdir2
+                -format jpg
+                -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
+
+        """
+        fname_full = os.path.join(SIP_OBJ_FILES, 'FULL_DOC', '%s.jpg' % base_fname)
+        #self.make_needed_dirs(fname_full)
+        cmd = ['convert -resize 200x']
+        cmd.append(org_fname)
+        cmd.append(fname_full)
+        err_msg = self.cmd_execute(cmd)
+        if err_msg:
+            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
+                                   'Failed to generate FULL_DOC\n%s' % err_msg)
+        self.uri_state(models.URIS_FULL_GENERATED)
+
+        fname_brief = os.path.join(SIP_OBJ_FILES, 'BRIEF_DOC', '%s.jpg' % base_fname)
+        #self.make_needed_dirs(fname_brief)
+        cmd = ['convert -resize x110']
+        cmd.append(fname_full)
+        cmd.append(fname_brief)
+        err_msg = self.cmd_execute(cmd)
+        if err_msg:
+            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
+                                   'Failed to generate BRIEF_DOC\n%s' % err_msg)
+        self.uri_state(models.URIS_BRIEF_GENERATED)
+        return True
+
+    def cmd_execute(self, cmd):
+        if isinstance(cmd, (list, tuple)):
+            cmd = ' '.join(cmd)
+        err_msg = ''
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, close_fds=True)
+        retcode = p.wait()
+        if retcode:
+            err_msg = p.stderr.read()
+        return err_msg
 
 
 
@@ -332,13 +447,10 @@ class UriFileTreeMonitor(SipProcess):
         return True # does nothing for the moment
 
 
-def process_one_uri(uri):
-    # Step one, find available UriSource
-    pass
 
-
-
-task_list = [UriCreateNewRecords,
+# List of active plugins from this file
+task_list = [UriPepareStorageDirs,
+             UriCreateNewRecords,
              UriProcessNewRecords,
              #UriCleanup,
              #UriFileTreeMonitor,
