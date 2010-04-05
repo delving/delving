@@ -121,7 +121,7 @@
                 </#if>
             </p>
             <#if !user??>
-            <div id="mustlogin" class="msg"><a href="secure/${thisPage}?${queryStringForPresentation}"><u><@spring.message 'LogIn_t'/></u></a> | <a href="secure/${thisPage}?${queryStringForPresentation}"><u><@spring.message 'Register_t'/></u></a></div>
+            <div id="mustlogin" class="msg"><a href="secure/${thisPage}?${queryStringForPresentation?html}"><u><@spring.message 'LogIn_t'/></u></a> | <a href="secure/${thisPage}?${queryStringForPresentation}"><u><@spring.message 'Register_t'/></u></a></div>
             </#if>
             <div id="msg-save-search" class="msg-hide fg-pink"></div>
         </div>

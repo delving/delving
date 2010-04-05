@@ -162,7 +162,7 @@
         <#list row as cell>
         <td valign="bottom" width="25%" class="${cell.type}">
             <div class="brief-thumb-container">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="full-doc.html?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
                          <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" height="110"/>
                     <#else>
@@ -199,7 +199,7 @@
     <tr>
         <td valign="top" width="80">
             <div class="brief-thumb-container-listview">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="full-doc.html?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true"><img class="thumb" id="thumb_${cell.index}" align="middle"
                                               src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                                               alt="<@spring.message 'AltMoreInfo_t' />" height="50"/>
@@ -213,7 +213,7 @@
         <td class="${cell.type}">
             <div>
                 <h3>
-                    <a class="fg-gray" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd"><@stringLimiter "${cell.title}" "250"/></a>
+                    <a class="fg-gray" href="full-doc.html?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd"><@stringLimiter "${cell.title}" "250"/></a>
                 </h3>
                 <#-- without labels -->
                 <#if !cell.creator[0]?matches(" ")>${cell.creator}<br/></#if>
