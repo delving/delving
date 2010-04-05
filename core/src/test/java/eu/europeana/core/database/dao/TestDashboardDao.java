@@ -3,34 +3,33 @@ package eu.europeana.core.database.dao;
 import eu.europeana.core.database.DashboardDao;
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.CarouselItem;
-import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.SavedItem;
-import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.User;
+import eu.europeana.core.database.domain.*;
 import eu.europeana.definitions.domain.Language;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author todo insert: "name" <email>
  */
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = {
-//        "/core-application-context.xml"
-//})
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "/core-application-context.xml"
+})
 
+@Ignore("needs a reference to europeana.properties test file")    
 public class TestDashboardDao {
     private Logger log = Logger.getLogger(getClass());
     // europeanaUri from 92001_Ag_EU_TELtreasures.xml
@@ -52,14 +51,14 @@ public class TestDashboardDao {
         log.info("activate the tests here!");
     }
 
-//    @Before
+    @Before
     public void init() {
         user1 = createUser("test1", "tester1", "test1@tester.com");
         user2 = createUser("test2", "tester2", "test2@tester.com");
 
     }
 
-//    @Test
+    @Test
     public void testFindOrphanedSavedItem() throws Exception {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
@@ -75,7 +74,7 @@ public class TestDashboardDao {
 
     }
 
-//    @Test
+    @Test
     public void testSavedItemToCarouselItem() throws Exception {
         EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
@@ -109,7 +108,7 @@ public class TestDashboardDao {
         assertNotNull(savedItems);
     }
 
-//    @Test
+    @Test
     public void testRemoveOrphanedCarouselItem() throws Exception {
         EuropeanaId europeanaId1 = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
         EuropeanaId europeanaId2 = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_1);
@@ -132,7 +131,7 @@ public class TestDashboardDao {
         assertEquals("list should be 1", 1, staticInfoDao.fetchCarouselItems().size());
     }
 
-//    @Test
+    @Test
     public void testSavedSearchToSearchTerm() throws Exception {
         User user = userDao.addUser(user2);
         SavedSearch search1 = new SavedSearch();

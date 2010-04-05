@@ -75,6 +75,8 @@
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<finalName>portal</finalName>
+        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
 		<plugins>
 		    <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -116,7 +118,7 @@
                     <providerImplementations>
                         <svn>javasvn</svn>
                     </providerImplementations>
-                    <timestampFormat>{0,date,yyyy-MM-dd HH:mm:ss}</timestampFormat>        
+                    <timestampFormat>{0,date,yyyy-MM-dd HH:mm:ss}</timestampFormat>
                 </configuration>
                 <executions>
                     <execution>
@@ -221,6 +223,21 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
