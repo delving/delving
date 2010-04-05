@@ -1,5 +1,6 @@
 package eu.europeana.core.querymodel.query;
 
+import eu.europeana.core.querymodel.annotation.QueryAnalyzer;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.text.MessageFormat;
@@ -19,10 +20,12 @@ public class SolrQueryUtil {
         }
         List<String> phraseFilterQueries = new ArrayList<String>(filterQueries.length);
         for (String facetTerm : filterQueries) {
-            int colon = facetTerm.indexOf(":");
-            String facetName = facetTerm.substring(0, colon);
-            String facetValue = facetTerm.substring(colon + 1);
-            phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
+            if (facetTerm.contains(":")) {
+                int colon = facetTerm.indexOf(":");
+                String facetName = facetTerm.substring(0, colon);
+                String facetValue = facetTerm.substring(colon + 1);
+                phraseFilterQueries.add(MessageFormat.format("{0}:\"{1}\"", facetName, facetValue));
+            }
         }
         return phraseFilterQueries.toArray(new String[phraseFilterQueries.size()]);
     }
@@ -34,16 +37,18 @@ public class SolrQueryUtil {
         }
         List<String> nonPhraseFilterQueries = new ArrayList<String>(filterQueries.length);
         for (String facetTerm : filterQueries) {
-            int colon = facetTerm.indexOf(":");
-            String facetName = facetTerm.substring(0, colon);
-            if (facetName.contains("!tag")) {
-                facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
+            if (facetTerm.contains(":")) {
+                int colon = facetTerm.indexOf(":");
+                String facetName = facetTerm.substring(0, colon);
+                if (facetName.contains("!tag")) {
+                    facetName = facetName.replaceFirst("\\{!tag=.*?\\}", "");
+                }
+                String facetValue = facetTerm.substring(colon + 1);
+                if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
+                    facetValue = facetValue.substring(1, facetValue.length() - 1);
+                }
+                nonPhraseFilterQueries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
             }
-            String facetValue = facetTerm.substring(colon + 1);
-            if (facetValue.length() >= 2 && facetValue.startsWith("\"") && facetValue.endsWith("\"")) {
-                facetValue = facetValue.substring(1, facetValue.length() - 1);
-            }
-            nonPhraseFilterQueries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
         }
         return nonPhraseFilterQueries.toArray(new String[nonPhraseFilterQueries.size()]);
     }
@@ -99,5 +104,62 @@ public class SolrQueryUtil {
             queries.add(MessageFormat.format("{0}:{1}", facetName, facetValue));
         }
         return queries.toArray(new String[queries.size()]);
+    }
+
+    private static void addFilterQueries(String[] filterQueries, SolrQuery query) {
+        if (filterQueries != null) {
+            for (String filterQuery : filterQueries) {
+                if (filterQuery.contains(":")) {
+                    query.addFilterQuery(filterQuery);
+                }
+            }
+        }
+        query.setFilterQueries(SolrQueryUtil.getFilterQueriesAsPhrases(query));
+    }
+
+    public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer) throws EuropeanaQueryException {
+        SolrQuery solrQuery = new SolrQuery();
+        if (params.containsKey("query") || params.containsKey("query1")) {
+            if (!params.containsKey("query1")) {
+                // rq is the refine query that needs to be parsed from the request paramaters
+                if (params.containsKey("rq")) { // merge the refine query with the original query
+                    solrQuery.setQuery(queryAnalyzer.createRefineSearch(params));
+                }
+                else {
+                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                }
+            }
+            else { // support advanced search
+                solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
+            }
+        }
+        else {
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
+        }
+        if (solrQuery.getQuery().trim().length() == 0) { // throw exception when no query is specified
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
+        }
+        if (params.containsKey("start")) {
+            try {
+                Integer start = Integer.valueOf(params.get("start")[0]);
+                solrQuery.setStart(start);
+            } catch (NumberFormatException e) {
+                // if number exception is thrown take default setting 0 (hardening parameter handling)
+            }
+        }
+        if (params.containsKey("rows")) {
+            try {
+                Integer rows = Integer.valueOf(params.get("rows")[0]);
+                solrQuery.setRows(rows);
+            } catch (NumberFormatException e) {
+                // number exception is thrown take default setting 12 (hardening parameter handling)
+            }
+        }
+        solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+
+        //set constraints
+        final String[] filterQueries = params.get("qf");
+        SolrQueryUtil.addFilterQueries(filterQueries, solrQuery);
+        return solrQuery;
     }
 }
