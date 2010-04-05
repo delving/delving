@@ -73,12 +73,13 @@ class SipProcess(object):
         self.pm.save()
 
     def run(self, *args, **kwargs):
-        self.log('starting task   -----   %s   -----' % self.short_name(), 1)
+        self.log('starting task  +++++   %s' % self.short_name(), 1)
         #try:
         ret = self.run_it(*args, **kwargs)
         #except Exception as inst:
         #    self._log_task_exception_in_monitor(inst)
         #    ret = False
+        self.log('Finished task  -----   %s' % self.short_name(), 1)
         self.pm.delete()
         return ret
 
@@ -183,8 +184,7 @@ class SipProcess(object):
             minutes += 1
         eta_s += '%02i:%02i' % (minutes, eta)
         """
-        return percent_done, time.strftime('%H:%M:%S', time.localtime(eta))
-
+        return percent_done, time.strftime('%m-%d %H:%M:%S', time.localtime(eta))
 
     # ==========   End of Task steps   ====================
 

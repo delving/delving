@@ -106,13 +106,22 @@ USE_IMAGE_MAGIC = False
 
 
 
+
+
+# To avoid typos, we define the dirnames here and later use theese vars
+REL_DIR_ORIGINAL = 'original'
+REL_DIR_FULL = 'FULL_DOC'
+REL_DIR_BRIEF = 'BRIEF_DOC'
+
+
+
 class UriPepareStorageDirs(SipProcess):
     SINGLE_RUN = True
     INIT_PLUGIN = True
     PLUGIN_TAXES_DISK_IO = True
 
     def run_it(self):
-        for s in ('orginal','FULL_DOC', 'BRIEF_DOC'):
+        for s in (REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF):
             test_dir = os.path.join(SIP_OBJ_FILES, s,'12','32')
             if not os.path.exists(test_dir):
                 self.task_starting('Creating dirs for %s' % s, 256)
@@ -280,7 +289,7 @@ class UriProcessNewRecords(SipProcess):
         self.uri.content_hash = self.generate_hash(data)
 
         base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
-        org_fname = os.path.join(SIP_OBJ_FILES, 'original', base_fname)
+        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
         #self.make_needed_dirs(org_fname)
         try:
             fp = open(org_fname, 'w')
@@ -292,10 +301,9 @@ class UriProcessNewRecords(SipProcess):
         self.uri_state(models.URIS_ORG_SAVED)
 
         if USE_IMAGE_MAGIC:
-            self.generate_images_magic(base_fname, org_fname)
+            return self.generate_images_magic(base_fname, org_fname)
         else:
-            self.generate_images_pil(base_fname, org_fname)
-        return True
+            return self.generate_images_pil(base_fname, org_fname)
 
     def NOT_make_needed_dirs(self, fname):
         dest_dir = os.path.split(fname)[0]
@@ -345,14 +353,13 @@ class UriProcessNewRecords(SipProcess):
         try:
             img = Image.open(org_fname)
         except IOError as inst:
-            return self.set_urierr(models.URIE_UNRECOGNIZED_FORMAT,
-                                   inst.args)
+            return self.set_urierr(models.URIE_UNRECOGNIZED_FORMAT, inst.args)
 
-        fname = os.path.join(SIP_OBJ_FILES, 'FULL_DOC', '%s.jpg' % base_fname)
+        fname = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL, '%s.jpg' % base_fname)
         img_full = self.clone_and_save_img(img, FULLDOC_SIZE, fname)
         self.uri_state(models.URIS_FULL_GENERATED)
 
-        fname = os.path.join(SIP_OBJ_FILES, 'BRIEF_DOC', '%s.jpg' % base_fname)
+        fname = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF, '%s.jpg' % base_fname)
         self.clone_and_save_img(img_full, BRIEFDOC_SIZE, fname)
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
@@ -397,7 +404,7 @@ class UriProcessNewRecords(SipProcess):
                 -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
 
         """
-        fname_full = os.path.join(SIP_OBJ_FILES, 'FULL_DOC', '%s.jpg' % base_fname)
+        fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL, '%s.jpg' % base_fname)
         #self.make_needed_dirs(fname_full)
         cmd = ['convert -resize 200x']
         cmd.append(org_fname)
@@ -408,7 +415,7 @@ class UriProcessNewRecords(SipProcess):
                                    'Failed to generate FULL_DOC\n%s' % err_msg)
         self.uri_state(models.URIS_FULL_GENERATED)
 
-        fname_brief = os.path.join(SIP_OBJ_FILES, 'BRIEF_DOC', '%s.jpg' % base_fname)
+        fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF, '%s.jpg' % base_fname)
         #self.make_needed_dirs(fname_brief)
         cmd = ['convert -resize x110']
         cmd.append(fname_full)
