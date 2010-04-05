@@ -39,6 +39,8 @@ class SipProcessException(Exception):
     pass
 
 
+
+
 class SipProcess(object):
     """
     This is the baseclass for sip processes
@@ -48,6 +50,10 @@ class SipProcess(object):
     all locking to the database are done by this baseclass
     """
     SHORT_DESCRIPTION = '' # a one-two word description.
+
+    SINGLE_RUN = False  # If true, this plugin is run once then unloaded
+
+    INIT_PLUGIN = False  # If True, is run before normal plugins
 
     # For loadbalancing, set to True if this plugin uses a lot of system resources
     # taskmanager will try to spread load depending on what is indicated here
@@ -73,7 +79,6 @@ class SipProcess(object):
         #except Exception as inst:
         #    self._log_task_exception_in_monitor(inst)
         #    ret = False
-        print self.pm
         self.pm.delete()
         return ret
 
@@ -134,6 +139,7 @@ class SipProcess(object):
         "new subtask starting, give at label and if possible no of steps."
         self._task_time_start = time.time()
         self._task_steps = steps
+        self._task_previous = 0
 
         self.pm.task_label = label
         self.pm.task_progress = ''
@@ -147,7 +153,10 @@ class SipProcess(object):
         #percent_done = '%0.2f' % (float(step) / self._task_steps * 100)
         if self._task_steps and step: # avoid zero div
             perc_done, self.pm.task_eta = self._task_calc_eta(step)
-            self.pm.task_progress = '%i / %i  (%0.2f%%)' % (step, self._task_steps,perc_done)
+            since_last = step - self._task_previous
+            self._task_previous = step
+            self.pm.task_progress = '%i/%i %i  (%0.2f%%)' % (step, self._task_steps,
+                                                             since_last, perc_done)
         else:
             self.pm.task_progress = '%i' % step
             self.pm.task_eta = 'unknown'
@@ -156,8 +165,10 @@ class SipProcess(object):
 
     def _task_calc_eta(self, step):
         percent_done = float(step) / self._task_steps * 100
-        eta_t_from_now = int( (time.time() - self._task_time_start) / ((percent_done / 100) or 0.001))
-        eta = self._task_time_start + eta_t_from_now - time.time()
+        elapsed_time = time.time() - self._task_time_start
+        eta_t_from_now = int(elapsed_time / ((percent_done / 100) or 0.001))
+        eta = self._task_time_start + eta_t_from_now # - time.time()
+        """
         hours = 0
         while eta > 3600:
             eta -= 3600
@@ -171,7 +182,8 @@ class SipProcess(object):
             eta -= 60
             minutes += 1
         eta_s += '%02i:%02i' % (minutes, eta)
-        return percent_done, eta_s
+        """
+        return percent_done, time.strftime('%H:%M:%S', time.localtime(eta))
 
 
     # ==========   End of Task steps   ====================

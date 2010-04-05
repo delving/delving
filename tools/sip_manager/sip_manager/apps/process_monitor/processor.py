@@ -34,6 +34,7 @@ SIP_PROCESS_DBG_LVL = 9
 class MainProcessor(object):
     def __init__(self, single_run=False):
         self.single_run = single_run
+        self.tasks_init = [] # tasks that should be run first
         self.tasks_simple = [] # list of all tasks found
         self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
         self.find_tasks()
@@ -41,6 +42,10 @@ class MainProcessor(object):
     def run(self):
         #a = UriCreateNewRecords()
         #b = a.short_name()
+        for taskClass in self.tasks_init:
+            tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
+            tc.run()
+
         while True:
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
@@ -57,12 +62,18 @@ class MainProcessor(object):
 
     """
     def find_tasks(self):
+        print 'Scanning for plugins'
         for app in settings.INSTALLED_APPS:
             if not app.find('apps') == 0:
                 continue
             try:
                 exec('from %s.tasks import task_list' % app )
+                print ' %s:' % app,
                 for task in task_list:
+                    print task.__name__,
+                    if task.INIT_PLUGIN:
+                        self.tasks_init.append(task)
+                        continue
                     resource_hog = False
                     if task.PLUGIN_TAXES_CPU:
                         resource_hog = True
@@ -74,10 +85,11 @@ class MainProcessor(object):
                         self.tasks_heavy.append(task)
                     else:
                         self.tasks_simple.append(task)
+                print
             except ImportError as inst:
                 if inst.args[0].find('No module named ') != 0:
                     raise inst
-            pass
+        print 'done!'
 
 
 """
