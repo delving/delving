@@ -47,10 +47,28 @@
 <div class="yui-g" id="display">
 
 <div id="breadcrumb">
-    <#if query?exists>
+    <#if pagination??>
     <ul>
+        <#if !query?starts_with("europeana_uri:")>
         <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-        <li><strong><a href="#">${query?replace("%20"," ")?html}</a></strong></li>
+        <#list pagination.breadcrumbs as crumb><#if !crumb.last>
+        <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+        <#else>
+        <li><strong>${crumb.display?html}</strong></li>
+        </#if></#list>
+        <#else>
+        <li class="first">
+
+            <@spring.message 'ViewingRelatedItems_t' />
+            <#assign match = result.matchDoc/>
+            <a href="full-doc.html?&amp;uri=${match.id}">
+                <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                </#if>
+            </a>
+
+        </li>
+        </#if>
     </ul>
     <#else> <ul>
         <li>&#160;</li>

@@ -1,5 +1,7 @@
 package eu.europeana.core.querymodel.query;
 
+import java.util.List;
+
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 9, 2010 12:47:37 PM
@@ -34,4 +36,6 @@ public interface DocIdWindowPager {
     String toString();
 
     String getStartPage();
+
+    List<Breadcrumb> getBreadcrumbs();
 }

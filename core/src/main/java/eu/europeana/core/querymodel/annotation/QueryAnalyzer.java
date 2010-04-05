@@ -163,7 +163,7 @@ public class QueryAnalyzer {
                 newQuery = MessageFormat.format("{0}", refineQuery);
             }
             else {
-                newQuery = MessageFormat.format("text:\"{0}\"", refineQuery);
+                newQuery = MessageFormat.format("text:\"{0}\"", sanitize(refineQuery));
             }
         }
         return sanitize(newQuery);

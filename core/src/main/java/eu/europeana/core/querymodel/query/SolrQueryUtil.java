@@ -53,9 +53,9 @@ public class SolrQueryUtil {
         return nonPhraseFilterQueries.toArray(new String[nonPhraseFilterQueries.size()]);
     }
 
-     /*
-     * Transform "LANGUAGE:en, LANGUAGE:de, PROVIDER:"The European Library" "  to "{!tag=lang}LANGUAGE:(en OR de), PRODIVER:"The European Library" "
-     */
+    /*
+    * Transform "LANGUAGE:en, LANGUAGE:de, PROVIDER:"The European Library" "  to "{!tag=lang}LANGUAGE:(en OR de), PRODIVER:"The European Library" "
+    */
 
     public static String[] getFilterQueriesAsOrQueries(SolrQuery solrQuery, Map<String, String> facetMap) {
         String[] filterQueries = solrQuery.getFilterQueries();
@@ -84,7 +84,6 @@ public class SolrQueryUtil {
             String facetName = entry.getKey();
             String facetValue;
             if (entry.getValue().size() == 1) {
-//                facetValue = '"' + entry.getValue().get(0) + '"';
                 facetValue = entry.getValue().get(0);
             }
             else {
@@ -92,7 +91,6 @@ public class SolrQueryUtil {
                 Iterator<String> walk = entry.getValue().iterator();
                 while (walk.hasNext()) {
                     String value = walk.next();
-//                    orStatement.append('"').append(value).append('"');
                     orStatement.append(value);
                     if (walk.hasNext()) {
                         orStatement.append(" OR ");
@@ -106,31 +104,14 @@ public class SolrQueryUtil {
         return queries.toArray(new String[queries.size()]);
     }
 
-    private static void addFilterQueries(String[] filterQueries, SolrQuery query) {
-        if (filterQueries != null) {
-            for (String filterQuery : filterQueries) {
-                if (filterQuery.contains(":")) {
-                    query.addFilterQuery(filterQuery);
-                }
-            }
-        }
-        query.setFilterQueries(SolrQueryUtil.getFilterQueriesAsPhrases(query));
-    }
-
     public static SolrQuery createFromQueryParams(Map<String, String[]> params, QueryAnalyzer queryAnalyzer) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
-            if (!params.containsKey("query1")) {
-                // rq is the refine query that needs to be parsed from the request paramaters
-                if (params.containsKey("rq")) { // merge the refine query with the original query
-                    solrQuery.setQuery(queryAnalyzer.createRefineSearch(params));
-                }
-                else {
-                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
-                }
-            }
-            else { // support advanced search
+            if (!params.containsKey("query")) {  // support advanced search
                 solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
+            }
+            else {
+                solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
             }
         }
         else {
@@ -159,7 +140,19 @@ public class SolrQueryUtil {
 
         //set constraints
         final String[] filterQueries = params.get("qf");
-        SolrQueryUtil.addFilterQueries(filterQueries, solrQuery);
+        if (filterQueries != null) {
+            for (String filterQuery : filterQueries) {
+                solrQuery.addFilterQuery(filterQuery);
+            }
+        }
+        // find rq and add to filter queries
+        if (params.containsKey("rq") && params.get("rq").length != 0) {
+            String refineSearchFilterQuery = queryAnalyzer.createRefineSearchFilterQuery(params);
+            if (!refineSearchFilterQuery.isEmpty()) {
+                solrQuery.addFilterQuery(refineSearchFilterQuery);
+            }
+        }
+        solrQuery.setFilterQueries(SolrQueryUtil.getFilterQueriesAsPhrases(solrQuery));
         return solrQuery;
     }
 }

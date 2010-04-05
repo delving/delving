@@ -28,6 +28,7 @@ import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.core.querymodel.query.DocId;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
 import eu.europeana.core.querymodel.query.DocIdWindowPagerImpl;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.fixture.IngestionFixture;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -87,7 +88,7 @@ public class TestDocIdWindowPager {
     }
 
 //    @Test
-    public void hasNextAndPreviousTest() throws SolrServerException {
+    public void hasNextAndPreviousTest() throws SolrServerException, EuropeanaQueryException {
         String uri = "http://www.europeana.eu/resolve/record/900/74108B5CC7D4A0B86C7C5E53EC8300F17ED9AF2D";
         request.addParameter("uri", uri);
         request.addParameter("startPage", "1");
@@ -107,7 +108,7 @@ public class TestDocIdWindowPager {
 
 
 //    @Test
-    public void hasNoPrevious() throws SolrServerException {
+    public void hasNoPrevious() throws SolrServerException, EuropeanaQueryException {
         String uri = "http://www.europeana.eu/resolve/record/900/2E27B23C3161A60AA13212D2991AB9E5F7226977";
         request.addParameter("uri", uri);
         request.addParameter("startPage", "1");
@@ -125,7 +126,7 @@ public class TestDocIdWindowPager {
     }
 
 //    @Test
-    public void hasNoNext() throws SolrServerException {
+    public void hasNoNext() throws SolrServerException, EuropeanaQueryException {
         String uri = "http://www.europeana.eu/resolve/record/900/5B2BC9E71B33BAC133EBBF4A8EC0594B71D2103F";
         request.addParameter("uri", uri);
         request.addParameter("startPage", "13");
@@ -143,7 +144,7 @@ public class TestDocIdWindowPager {
     }
 
 //    @Test
-    public void arrayOutOfBounds() throws SolrServerException {
+    public void arrayOutOfBounds() throws SolrServerException, EuropeanaQueryException {
         String uri = "http://www.europeana.eu/resolve/record/900/5B2BC9E71B33BAC133EBBF4A8EC0594B71D2103F";
         request.addParameter("uri", uri);
         request.addParameter("start", "18");
@@ -160,7 +161,7 @@ public class TestDocIdWindowPager {
     }
 
 //    @Test
-    public void returnToBob() throws SolrServerException {
+    public void returnToBob() throws SolrServerException, EuropeanaQueryException {
         String uri = "http://www.europeana.eu/resolve/record/900/2E27B23C3161A60AA13212D2991AB9E5F7226977";
         request.addParameter("uri", uri);
         request.addParameter("start", "1");

@@ -32,8 +32,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String returnToResults;
     private String pageId;
     private String tab;
+    private List<Breadcrumb> breadcrumbs;
 
-    public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException {
+    public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException, EuropeanaQueryException {
         DocIdWindowPagerImpl pager = new DocIdWindowPagerImpl();
         pager.query = originalBriefSolrQuery.getQuery();
         pager.fullDocUri = fetchParameter(httpParameters, "uri", "");
@@ -64,6 +65,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         originalBriefSolrQuery.setStart(solrStartRow);
         originalBriefSolrQuery.setRows(3);
         QueryResponse queryResponse = solrServer.query(originalBriefSolrQuery);
+        pager.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery);
         if (queryResponse.getResults() == null) {
             return null; // if no results are found return null to signify that docIdPage can be created.
         }
@@ -173,6 +175,11 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public String getStartPage() {
         return startPage;
+    }
+
+    @Override
+    public List<Breadcrumb> getBreadcrumbs() {
+        return breadcrumbs;
     }
 
     @Override
