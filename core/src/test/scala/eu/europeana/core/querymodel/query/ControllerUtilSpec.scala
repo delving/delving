@@ -1,44 +1,22 @@
-/*
- * Copyright 2007 EDL FOUNDATION
- *
- *  Licensed under the EUPL, Version 1.0 or as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
- *
- *  http://ec.europa.eu/idabc/eupl
- *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
- */
+package eu.europeana.core.querymodel.query
 
-package eu.europeana.web.util;
+import _root_.org.scalatest.matchers.ShouldMatchers
+import _root_.org.junit.runner.RunWith
+import _root_.org.scalatest.Spec
+import _root_.org.scalatest.junit.JUnitRunner
 
-import eu.europeana.core.querymodel.query.SolrQueryUtil;
-import eu.europeana.core.util.web.ControllerUtil;
-import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Dec 13, 2009 11:03:59 AM
+ * @since Apr 5, 2010 10:55:58 PM
  */
-public class TestControllerUtil {
 
-    private Logger log = Logger.getLogger(getClass());
+@RunWith(classOf[JUnitRunner])
+class ControllerUtilSpec extends Spec with ShouldMatchers {
+
+  /*
+  private Logger log = Logger.getLogger(getClass());
 
     @Test
     public void testFormatParameterMapAsQueryString() throws Exception {
@@ -94,4 +72,5 @@ public class TestControllerUtil {
         }
         Assert.assertArrayEquals("arrays should be equal", expectFilterQueries, actualFilterQueries);
     }
+   */
 }
