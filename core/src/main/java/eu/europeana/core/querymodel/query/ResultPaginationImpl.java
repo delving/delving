@@ -30,7 +30,7 @@ public class ResultPaginationImpl implements ResultPagination {
     private PresentationQueryImpl presentationQuery = new PresentationQueryImpl();
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
 
-    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString) {
+    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString) throws EuropeanaQueryException {
         this.solrQuery = solrQuery;
         this.numFound = numFound;
         int rows = solrQuery.getRows();
