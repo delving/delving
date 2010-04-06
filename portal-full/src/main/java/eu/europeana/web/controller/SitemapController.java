@@ -21,12 +21,9 @@
 
 package eu.europeana.web.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -40,13 +37,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import eu.europeana.core.querymodel.query.DocId;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
-import eu.europeana.core.querymodel.query.QueryType;
-import eu.europeana.core.querymodel.query.SiteMapBeanView;
-import eu.europeana.core.util.web.ClickStreamLogger;
-import eu.europeana.core.util.web.ControllerUtil;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -92,7 +86,7 @@ public class SitemapController {
 			for (FacetField.Count facetField : getCollections()) {
 
 				// sitemaps have a limit on links per file (page)
-				double numberOfPages = (double) facetField.getCount() / MAX_RECORDS_PER_SITEMAP_FILE;					
+				double numberOfPages = (double) facetField.getCount() / MAX_RECORDS_PER_SITEMAP_FILE;
 				if (numberOfPages > 0) {
 					int pageCounter = 0;
 					do {
@@ -170,13 +164,13 @@ public class SitemapController {
 		.setQuery("*:*")
 		.setRows(0)
 		.setFacet(true)
-		.addFacetField("europeana_collectionName")
+        .addFacetField("PROVIDER")
 		.setFacetMinCount(1)
 		.setQueryType(QueryType.ADVANCED_QUERY.toString());
 		final QueryResponse response = beanQueryModelFactory.getSolrResponse(solrQuery);
 		List<FacetField.Count> facetFieldCount = null;
 		for (FacetField facetField : response.getFacetFields()) {
-			if (facetField.getName().equalsIgnoreCase("europeana_collectionName")) {
+			if (facetField.getName().equalsIgnoreCase("PROVIDER")) {
 				facetFieldCount = facetField.getValues();
 			}
 		}

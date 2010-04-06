@@ -175,7 +175,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
      */
     @Override
     public SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException  {
-        SolrQuery solrQuery = new SolrQuery("europeana_collectionName:"+europeanaCollectionName);
+        SolrQuery solrQuery = new SolrQuery("PROVIDER:\""+europeanaCollectionName + "\"");
         solrQuery.setRows(rowsReturned);
         solrQuery.setFields("europeana_uri", "timestamp");
         solrQuery.setStart(pageNumber * rowsReturned);
