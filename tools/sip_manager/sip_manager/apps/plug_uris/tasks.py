@@ -148,18 +148,24 @@ class UriCreateNewRecords(SipProcess):
     SHORT_DESCRIPTION = 'Create new uri records'
     EXECUTOR_STYLE = True
 
-    def run_it(self):
-        cursor = connection.cursor()
-
+    def prepare(self):
+        self.cursor = connection.cursor()
         # SQL logic:
         #   Finding MdRecords with no matching Uri items, since all MdRecords
         #   contains uri this indicates that this item is not processed
-        cursor.execute('SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL')
-        self.task_starting('Creating new uri records', cursor.rowcount)
+        # TODO: In desperate need of optimization!
+        self.cursor.execute('SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL')
+        if self.cursor.rowcount:
+            return True
+        else:
+            return False
+
+    def run_it(self):
+        self.task_starting('Creating new uri records', self.cursor.rowcount)
         t0 = time.time()
         record_count = 0
         while True:
-            result = cursor.fetchone()
+            result = self.cursor.fetchone()
             if not result:
                 break
             record_count += 1
@@ -180,25 +186,38 @@ class UriCreateNewRecords(SipProcess):
         return True
 
     def handle_md_record(self, mdr):
-        """For the moment cheat a bit and just get the europeana:object item
-        we need to build the new cache asap!
+        """For the moment we cheat a bit and dont bother with treating this
+        as xml, just plain old stringparsing
         """
         #dom = parseString(mdr.source_data)
-        parts = mdr.source_data.split('<europeana:object>')
-        if len(parts) == 1:
-            return False # no obj found - shouldnt happen
-        img_url = parts[1].split('<')[0]
-        srvr_name = urlparse.urlsplit(img_url).netloc.lower()
+        for tag, itype in (('<europeana:object>',models.URIT_OBJECT),
+                           ('isShownAt>', models.URIT_SHOWNAT),
+                           ):
+            url = self.find_tag(tag, mdr.source_data)
+            if url:
+                break
+        if not url:
+            return False
+
+        srvr_name = urlparse.urlsplit(url).netloc.lower()
         uri_sources = models.UriSource.objects.filter(name_or_ip=srvr_name)
         if uri_sources:
             uri_source = uri_sources[0]
         else:
             uri_source = models.UriSource(name_or_ip=srvr_name)
             uri_source.save()
-        uri = models.Uri(mdr=mdr,item_type=models.URIT_OBJECT,
-                         url=img_url,uri_source=uri_source)
+        uri = models.Uri(mdr=mdr, item_type=itype, url=url, uri_source=uri_source)
         uri.save()
         return True
+
+    def find_tag(self, tag, source_data):
+        parts = source_data.split(tag)
+        if len(parts) == 1:
+            return None
+        url = parts[1].split('<')[0]
+        return url
+
+
 
 
 class UriProcessNewRecords(SipProcess):
@@ -206,51 +225,51 @@ class UriProcessNewRecords(SipProcess):
     PLUGIN_TAXES_NET_IO = True
     IS_THREADABLE = True
 
-    def run_it(self):
+    def prepare(self):
         urisources = models.UriSource.objects.filter(pid=0)
         if not urisources:
             return False
 
+        self.uris = []
         for urisource in urisources:
             # Loop over available sources, see if any of them has pending jobs
-            uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
-                                              uri_source=urisource,
-                                              pid=0).values('id')
-            if uris:
+            self.uris = models.Uri.objects.new_by_source(urisource.id)
+            if self.uris:
                 # found one!  lets work on it
                 self.urisource = urisource
                 break
 
-        if not uris:
-            return False # nothing to work on
+        if not self.uris:
+            return False
 
+        return True # Found something to do!
+
+
+    def run_it(self):
         # We must mark this item early, before possible threading kicks in
         # otherwise we might find it again before the thread actually starts
         # to work on the current set
-        self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source')
+        if not self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source'):
+            return False
 
-        # Here we need to use a copy of the uris item, since otherwise we
-        # get threading issues.
-        # By sending a copy, and the implicit automatic garbage collection of
-        # the original uris this seems to be handled
-        self.run_in_thread(self.do_one_source, uris[:])
+        self.run_in_thread(self.do_one_source)
         return True
 
 
-    def do_one_source(self, uris):
-        self.task_starting('Process new Uri records', len(uris))
+    def do_one_source(self):
+        self.task_starting('Process new Uri records', len(self.uris))
         t0 = time.time()
         record_count = 0
-        for uri in uris:
+        for uri_id in self.uris:
             record_count += 1
 
-            self.uri = self.grab_item(models.Uri, uri['id'], 'Checking urls for %s' % self.urisource.name_or_ip)
+            self.uri = self.grab_item(models.Uri, uri_id, 'Checking urls for %s' % self.urisource.name_or_ip)
             if not self.uri:
                 continue # Failed to take control of it
 
             self.handle_uri()
 
-            self.release_item(models.Uri, self.uri.pk)
+            self.release_item(models.Uri, uri_id)
 
             if t0 + self.TASK_PROGRESS_TIME < time.time():
                 self.task_progress(record_count)
@@ -476,6 +495,7 @@ class UriCleanup(SipProcess):
     SHORT_DESCRIPTION = 'Remove uri records no longer having a request'
 
     def run_it(self):
+        "Not implemented"
         return True
 
 
@@ -483,6 +503,7 @@ class UriFileTreeMonitor(SipProcess):
     SHORT_DESCRIPTION = 'Walks file tree and finds orphan files'
 
     def run_it(self):
+        "Not implemented"
         return True # does nothing for the moment
 
 
@@ -490,7 +511,7 @@ class UriFileTreeMonitor(SipProcess):
 # List of active plugins from this file
 task_list = [UriPepareStorageDirs,
              UriCreateNewRecords,
-             #UriProcessNewRecords,
+             UriProcessNewRecords,
              #UriCleanup,
              #UriFileTreeMonitor,
              ]

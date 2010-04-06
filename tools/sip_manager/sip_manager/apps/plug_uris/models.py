@@ -26,7 +26,7 @@
 """
 
 from django.core import exceptions
-from django.db import models
+from django.db import models, connection
 
 #from django.contrib import admin
 
@@ -120,6 +120,26 @@ URI_ERR_CODES = {
     }
 
 
+
+
+
+class UriManager(models.Manager):
+    def new_by_source(self, source_id):
+        "All new uris that should be checked for one UriSource."
+        cursor = connection.cursor()
+        sql = ['SELECT u.id FROM plug_uris_uri u']
+        sql.append('WHERE u.status=%i' % URIS_CREATED)
+        sql.append('AND uri_source_id=%i' % source_id)
+        sql.append('AND err_code=%i' % URIE_NO_ERROR)
+        sql.append('AND item_type=%i' % URIT_OBJECT) # only for initial cachegeneration!
+        sql.append('AND pid=0')
+        cursor.execute(' '.join(sql))
+        result_list = []
+        for row in cursor.fetchall():
+            result_list.append(row[0])
+        return result_list
+
+
 class Uri(models.Model):
     """
     Please note that Uri.status does not have an broken/aborted state
@@ -130,16 +150,18 @@ class Uri(models.Model):
 
     With this hopefully the system can continue with the problematic items
     later if the issue was solved.
+
+    Drawback it requires you to remember to check the err_code when selecting items,
+    cant have it both ways...
     """
     mdr = models.ForeignKey(MdRecord)
     status = models.IntegerField(choices=dict_2_django_choice(URI_STATES),
                                  default = URIS_CREATED)
     item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
                                  default = URIT_OBJECT)
-    mime_type = models.CharField(max_length=50, blank=True) # only relevant for objects...
+    mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
     uri_source = models.ForeignKey(UriSource)
     pid = models.IntegerField(default=0) # what process 'owns' this item
-    #element
     url = models.URLField(verify_exists=False)
     content_hash = models.CharField(max_length=32, blank=True),
     err_code = models.IntegerField(choices=dict_2_django_choice(URI_ERR_CODES),
@@ -147,6 +169,8 @@ class Uri(models.Model):
     err_msg = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True,editable=False)
     time_lastcheck = models.DateTimeField(auto_now_add=True)
+
+    objects = UriManager()
 
     def __unicode__(self):
         return self.url
