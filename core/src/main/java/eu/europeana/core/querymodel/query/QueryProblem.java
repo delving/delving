@@ -38,7 +38,7 @@ public enum QueryProblem {
     UNABLE_TO_CHANGE_LANGUAGE("We are unable to change the interface to the requested language."),
     TOKEN_EXPIRED("Europeana token has expired and is no longer valid."),
     UNKNOWN_TOKEN("Token does not exist."),
-    SOLR_UNREACHABLE("Unable to reach Solr Search Engine."),
+    SOLR_UNREACHABLE("Unable to reach Solr Search Engine (Europeana Exception)."),
     UNABLE_TO_PARSE_JSON("Unable to parse JSON response."),
     NONE("An exception occurred"); // Move on, people, nothing to see here.
 
