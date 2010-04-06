@@ -68,7 +68,7 @@ public class SitemapController {
 
 	@RequestMapping("/europeana-sitemap.xml")
 	public ModelAndView handleSitemap(
-			@RequestParam(value = "collection", required = false) String collection,
+			@RequestParam(value = "provider", required = false) String provider,
 			@RequestParam(value = "page", required = false) String page,
 			HttpServletRequest request
 	) throws SolrServerException, EuropeanaQueryException {
@@ -79,7 +79,7 @@ public class SitemapController {
 			baseUrl = baseUrl.substring(0, fullViewUrl.length() - fullDocPageString.length());
 		}
 		ModelAndView mavPage;
-		if (collection == null) {
+		if (provider == null) {
 
 			// sitemap index - collections overview
 			List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
@@ -92,7 +92,7 @@ public class SitemapController {
 					do {
 						entries.add(
 								new SitemapIndexEntry(
-										StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?collection=%s&page=%d", baseUrl, facetField.getName(), pageCounter)),
+										StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?provider=%s&page=%d", baseUrl, facetField.getName(), pageCounter)),
 										facetField.getName(),
 										new Date(),
 										facetField.getCount())); //todo: add more relevant date later
@@ -109,15 +109,12 @@ public class SitemapController {
 			// a sitemap
 			mavPage = ControllerUtil.createModelAndViewPage("sitemap.xml");
 			mavPage.addObject("fullViewUrl", fullViewUrl);
-			mavPage.addObject("collection", collection);
-			mavPage.addObject("part", "0");
 
 			// generate sitemap for a collection
 			if (page != null && page.length() > 0 && page.length() < 4 && NumberUtils.isDigits(page)) {
 				int pageInt = Integer.parseInt(page);
-				mavPage.addObject("part", page);
 
-				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
+				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(provider, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
 				int maxPageForCollection = siteMapBeanView.getMaxPageForCollection();
 				if (pageInt <= maxPageForCollection) {
 					List<? extends DocId> list = siteMapBeanView.getIdBeans();
@@ -147,7 +144,7 @@ public class SitemapController {
 
 			entries.add(
 					new SitemapIndexEntry(
-							StringEscapeUtils.escapeXml(facetField.getAsFilterQuery()),
+							StringEscapeUtils.escapeXml(String.format("%sbrief-doc.html?query=*:*&view=table&qf=PROVIDER:\"%s\"", baseUrl, facetField.getName())),
 							facetField.getName(),
 							new Date(),
 							facetField.getCount())); //todo: add more relevant date later
