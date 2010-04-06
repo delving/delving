@@ -85,12 +85,12 @@
                 <script type="text/javascript" src="js/jquery.validate.js"></script>
                 <script type="text/javascript" src="js/results.js"></script>
                 <#if metaTitle??>
-                    <title>${metaTitle?replace("%20"," ")?xhtml}</title>
+                    <title>${metaTitle}</title>
                 <#else>
                     <title>Europeana - Search results</title>
                 </#if>
                 <#if metaDescription??>
-                    <meta name="description" content="${metaDescription?replace("%20"," ")?xhtml}"/>
+                    <meta name="description" content="${metaDescription}"/>
                 </#if>
                 <meta name="robots" content="nofollow"/>
             <#break>
@@ -141,7 +141,7 @@
         <#case "sitemap.html">
             <#assign pageId = "sm">
             <#if metaTitle??>
-                 <title>Europeana - Sitemap: ${metaTitle?replace("%20"," ")?xhtml}</title>
+                 <title>Europeana - Sitemap: ${metaTitle?xhtml}</title>
             <#else>
                  <title>Europeana - Sitemap</title>
             </#if>
