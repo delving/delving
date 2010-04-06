@@ -36,7 +36,7 @@
 </#list>
 
 <#-- page title -->
-<#assign metaTitle = query />
+<#assign metaTitle = query?xhtml + " - Europeana Search " />
 <#assign servletUrl = servletUrl/>
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl">

@@ -30,10 +30,10 @@
 <#-- Removed ?url('utf-8') from query assignment -->
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
 <#-- page title and description -->
-<#assign metaTitle = postTitle />
-<#assign metaDescription = result.fullDoc.dcDescription[0] />
+<#assign metaTitle = result.fullDoc.dcTitle[0]?xhtml />
+<#assign metaDescription = result.fullDoc.dcDescription[0]?xhtml />
 <#if metaDescription?length &gt; 200>
-   <#assign metaDescription = result.fullDoc.dcDescription[0]?substring(0, 200) + "..."/>
+   <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
 </#if>
 <#if metaDescription?length &lt; 20>
      <#assign metaDescription = metaTitle />
@@ -69,7 +69,7 @@
         <li class="first">
 
             <@spring.message 'ViewingRelatedItems_t' />
-            <#assign match = result.matchDoc/>
+            <#assign match = result.fullDoc />
             <a href="full-doc.html?&amp;uri=${match.id}">
                 <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                 <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
