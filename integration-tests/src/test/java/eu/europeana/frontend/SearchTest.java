@@ -69,4 +69,25 @@ public class SearchTest {
 		return searchResult;
 	}
 
+	/**
+	 * Refined search. 
+	 * @throws Exception
+	 */
+	@Test
+	public void testRefinedSearch() throws Exception {
+		
+		// http://europeanalabs.eu/ticket/1017
+		URL indexUrl = new URL(FrontendTestUtil.testPortalUrl() 
+				+ "full-doc.html?query=europeana_uri%3A%22http%3A%2F%2Fwww.europeana.eu%2Fresolve%2Frecord%2F09407%2F9B5AAE061094331DA1800CA24A805B70F1024042%22&tab=&start=2&startPage=1&" 
+				+ "uri=http://www.europeana.eu/resolve/record/09407/ADD143857A36068C18E76353ECFCFB2BE9FB0DC9&view=table&pageId=brd");
+		InputStream indexStream =  indexUrl.openStream();
+
+		try {
+			// something in
+			Assert.assertFalse(IOUtils.toString(new InputStreamReader(indexStream, "UTF-8")).contains("Exception"));
+		} finally {
+			indexStream.close();
+		}
+
+	}
 }
