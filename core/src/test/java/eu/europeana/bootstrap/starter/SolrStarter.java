@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.bootstrap;
+package eu.europeana.bootstrap.starter;
 
 import eu.europeana.core.util.StarterUtil;
 import org.mortbay.jetty.Server;
