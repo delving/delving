@@ -25,16 +25,8 @@ import eu.europeana.sip.io.GroovyService;
 import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.log4j.Logger;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -48,11 +40,10 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class GroovyEditor extends JPanel implements GroovyService.Listener {
+public class GroovyEditor extends JPanel implements GroovyService.Listener, AnalyzerPanel.Listener {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
-
 
     private JEditorPane codeArea = new JEditorPane();
     private JTextArea outputArea = new JTextArea();
@@ -118,6 +109,18 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener {
         });
     }
 
+    @Override
+    public void updateAvailableNodes(java.util.List<String> groovyNodes) {
+        // todo: contents of list should go in autocompletion window
+        JDialog dialog = new JDialog();
+        JList list = new JList(groovyNodes.toArray());
+        JScrollPane pane = new JScrollPane();
+        dialog.setSize(new Dimension(300, 200));
+        dialog.add(pane);
+        pane.getViewport().setView(list);
+        dialog.setVisible(true);
+    }
+
     private class CompileTimer implements ActionListener {
 
         private Timer timer = new Timer(VALIDATION_DELAY, this);
@@ -133,6 +136,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener {
         }
 
     }
+
     @Override
     public String toString() {
         return "GroovyEditor";

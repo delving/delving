@@ -27,6 +27,7 @@ import groovy.lang.MetaClass;
 import groovy.xml.QName;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -72,7 +73,6 @@ public class GroovyNode {
         this.name = name;
         this.attributes = attributes;
         this.value = value;
-
         if (parent != null) {
             getParentList(parent).add(this);
         }
@@ -129,7 +129,7 @@ public class GroovyNode {
             @Override
             public void setAttribute(final Object object, final String attribute, final Object newValue) {
                 GroovyNode n = (GroovyNode) object;
-                n.attributes().put(attribute, (String)newValue);
+                n.attributes().put(attribute, (String) newValue);
             }
 
             @Override
@@ -194,6 +194,14 @@ public class GroovyNode {
 
     public Iterator iterator() {
         return children().iterator();
+    }
+
+    public List<String> names() {
+        List<String> names = new ArrayList<String>();
+        for (Object o : children()) {
+            names.add(((GroovyNode) o).name().toString());
+        }
+        return names;
     }
 
     public List children() {

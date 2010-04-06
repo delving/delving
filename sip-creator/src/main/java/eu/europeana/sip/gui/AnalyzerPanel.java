@@ -35,12 +35,14 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -60,10 +62,28 @@ public class AnalyzerPanel extends JPanel {
     private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
-    private NormalizationParserBindingSource source = new NormalizationParserBindingSource();
+
+    private NormalizationParserBindingSource source = new NormalizationParserBindingSource(
+            new NormalizationParserBindingSource.Listener() {
+
+                @Override
+                public void updateAvailableNodes(List<String> groovyNodes) {
+                    groovyEditor.updateAvailableNodes(groovyNodes);
+                }
+            }
+    );
+
     private GroovyEditor groovyEditor = new GroovyEditor(source);
     private JButton next = new JButton("Next");
     private File analyzedFile;
+
+    public interface RecordChangeListener {
+        void recordRootChanged(File file, QName recordRoot);
+    }
+
+    public interface Listener {
+        void updateAvailableNodes(List<String> groovyNodes);
+    }
 
     public AnalyzerPanel() {
         super(new BorderLayout());
@@ -155,10 +175,6 @@ public class AnalyzerPanel extends JPanel {
         return p;
     }
 
-    public interface RecordChangeListener {
-        void recordRootChanged(File file, QName recordRoot);
-    }
-
     private Component createStatisticsListPanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
@@ -232,6 +248,15 @@ public class AnalyzerPanel extends JPanel {
     private void loadFinished() {
         fileMenuEnablement.enable(true);
         progressDialog.dispose();
+        try {
+            source.prepareInputFile(analyzedFile, new QName("record"));
+        }
+        catch (XMLStreamException e) {
+            e.printStackTrace();  // todo: handle catch
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();  // todo: handle catch
+        }
     }
 
     public void analyze(final File file) {

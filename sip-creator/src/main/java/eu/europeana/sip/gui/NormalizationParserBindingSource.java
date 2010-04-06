@@ -27,13 +27,16 @@ import eu.europeana.sip.xml.NormalizationParser;
 import groovy.lang.Binding;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
+import org.apache.log4j.Logger;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
 /**
  * Use the normalization parser as a source of binding objects for the groovy script execution
@@ -42,8 +45,18 @@ import java.io.Writer;
  */
 
 public class NormalizationParserBindingSource implements GroovyService.BindingSource, AnalyzerPanel.RecordChangeListener {
+    private final static Logger LOG = Logger.getLogger(NormalizationParserBindingSource.class);
     private NormalizationParser normalizationParser;
     private GroovyNode record;
+    private Listener listener;
+
+    public interface Listener {
+        void updateAvailableNodes(List<String> groovyNodes);
+    }
+
+    public NormalizationParserBindingSource(Listener listener) {
+        this.listener = listener;
+    }
 
     public void prepareInputFile(File inputFile, QName recordRoot) throws XMLStreamException, FileNotFoundException {
         if (normalizationParser != null) {
@@ -53,13 +66,19 @@ public class NormalizationParserBindingSource implements GroovyService.BindingSo
         nextRecord();
     }
 
+    @SuppressWarnings("unchecked")
     void nextRecord() {
         try {
             record = normalizationParser.nextRecord();
+            listener.updateAvailableNodes(record.names());
         }
-        catch (Exception e) {
+        catch (XMLStreamException e) {
+            LOG.error("XML stream error", e);
+        }
+        catch (IOException e) {
+            LOG.error("IO error", e);
+        }
 //            next.setEnabled(false);
-        }
     }
 
     @Override
@@ -81,10 +100,10 @@ public class NormalizationParserBindingSource implements GroovyService.BindingSo
             prepareInputFile(file, recordRoot);
         }
         catch (XMLStreamException e) {
-            e.printStackTrace();  // todo: handle catch
+            LOG.error("XML Stream error", e);
         }
         catch (FileNotFoundException e) {
-            e.printStackTrace();  // todo: handle catch
+            LOG.error("File not found", e);
         }
     }
 }
