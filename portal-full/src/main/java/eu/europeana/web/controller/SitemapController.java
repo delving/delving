@@ -78,24 +78,7 @@ public class SitemapController {
 			@RequestParam(value = "page", required = false) String page,
 			HttpServletRequest request
 	) throws SolrServerException, EuropeanaQueryException {
-		ModelAndView mavPage = generator(".xml", collection, page, MAX_RECORDS_PER_SITEMAP_FILE);
-		clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
-		return mavPage;
-	}
 
-    @RequestMapping("/europeana-sitemap.html")
-    public ModelAndView handleCollections(
-            @RequestParam(value = "collection", required = false) String collection,
-            @RequestParam(value = "page", required = false) String page,
-            HttpServletRequest request
-    ) throws SolrServerException, EuropeanaQueryException {
-        ModelAndView mavPage = generator(".html", collection, page, MAX_RECORDS_PER_SITEMAP_FILE * 10);
-        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
-        return mavPage;
-    }
-
-	private ModelAndView generator(String affix, String collection, String page, int maxRecordsPerFile)
-	throws EuropeanaQueryException, SolrServerException {
 		String fullDocPageString = "full-doc.html";
 		String baseUrl = fullViewUrl;
 		if (baseUrl.endsWith(fullDocPageString)) {
@@ -103,32 +86,44 @@ public class SitemapController {
 		}
 		ModelAndView mavPage;
 		if (collection == null) {
+
+			// sitemap index - collections overview
 			List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
 			for (FacetField.Count facetField : getCollections()) {
-				double numberOfPages = (double) facetField.getCount() / maxRecordsPerFile;
-				int pageCounter = 0;
-				do {
-					entries.add(
-							new SitemapIndexEntry(
-									StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap%s?collection=%s&page=%d", baseUrl, affix, facetField.getName(), pageCounter)),
-									facetField.getName(),
-									new Date(),
-									facetField.getCount())); //todo: add more relevant date later
-					pageCounter++;
+
+				// sitemaps have a limit on links per file (page)
+				double numberOfPages = (double) facetField.getCount() / MAX_RECORDS_PER_SITEMAP_FILE;					
+				if (numberOfPages > 0) {
+					int pageCounter = 0;
+					do {
+						entries.add(
+								new SitemapIndexEntry(
+										StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?collection=%s&page=%d", baseUrl, facetField.getName(), pageCounter)),
+										facetField.getName(),
+										new Date(),
+										facetField.getCount())); //todo: add more relevant date later
+						pageCounter++;
+					}
+					while (pageCounter < numberOfPages);
 				}
-				while (pageCounter < numberOfPages);
 			}
-			mavPage = ControllerUtil.createModelAndViewPage("sitemap-index" + affix);
+			mavPage = ControllerUtil.createModelAndViewPage("sitemap-index.xml");
 			mavPage.addObject("entries", entries);
 		}
 		else {
-			mavPage = ControllerUtil.createModelAndViewPage("sitemap" + affix);
+
+			// a sitemap
+			mavPage = ControllerUtil.createModelAndViewPage("sitemap.xml");
 			mavPage.addObject("fullViewUrl", fullViewUrl);
+			mavPage.addObject("collection", collection);
+			mavPage.addObject("part", "0");
 
 			// generate sitemap for a collection
 			if (page != null && page.length() > 0 && page.length() < 4 && NumberUtils.isDigits(page)) {
 				int pageInt = Integer.parseInt(page);
-				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, maxRecordsPerFile, pageInt);
+				mavPage.addObject("part", page);
+
+				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(collection, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
 				int maxPageForCollection = siteMapBeanView.getMaxPageForCollection();
 				if (pageInt <= maxPageForCollection) {
 					List<? extends DocId> list = siteMapBeanView.getIdBeans();
@@ -136,6 +131,37 @@ public class SitemapController {
 				}
 			}
 		}
+		clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
+		return mavPage;
+	}
+
+	@RequestMapping("/europeana-sitemap.html")
+	public ModelAndView handleCollections(
+			HttpServletRequest request
+	) throws SolrServerException, EuropeanaQueryException {
+
+		String fullDocPageString = "full-doc.html";
+		String baseUrl = fullViewUrl;
+		if (baseUrl.endsWith(fullDocPageString)) {
+			baseUrl = baseUrl.substring(0, fullViewUrl.length() - fullDocPageString.length());
+		}
+		ModelAndView mavPage;
+
+		// sitemap index - collections overview
+		List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
+		for (FacetField.Count facetField : getCollections()) {
+
+			entries.add(
+					new SitemapIndexEntry(
+							StringEscapeUtils.escapeXml(facetField.getAsFilterQuery()),
+							facetField.getName(),
+							new Date(),
+							facetField.getCount())); //todo: add more relevant date later
+		}
+		mavPage = ControllerUtil.createModelAndViewPage("sitemap-index.html");
+		mavPage.addObject("entries", entries);
+
+		clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
 		return mavPage;
 	}
 
@@ -223,7 +249,7 @@ public class SitemapController {
 		clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.SITE_MAP_XML, mavPage);
 		return mavPage;
 	}
-*/
+	 */
 	/**
 	 * Sitemap index entry, model for MVC.
 	 */
