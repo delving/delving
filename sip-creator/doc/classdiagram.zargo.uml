@@ -26,7 +26,7 @@
       <fontname>Lucida Grande</fontname>
       <fontsize>13</fontsize>
       <defaultstereotypeview>0</defaultstereotypeview>
-      <activediagram>Class Diagram</activediagram>
+      <activediagram>AutocompletionClass</activediagram>
     </settings>
     <searchpath href="PROJECT_DIR" />
     <members>
@@ -42,6 +42,14 @@
               name="classdiagram.zargo_UseCaseDiagram.pgml"
               diagramclass="org.argouml.uml.diagram.use_case.ui.UMLUseCaseDiagram"
               diagramname="Use Case Diagram" />
+      <member type="pgml"
+              name="classdiagram.zargo_AutocompletionClass.pgml"
+              diagramclass="org.argouml.uml.diagram.static_structure.ui.UMLClassDiagram"
+              diagramname="AutocompletionClass" />
+      <member type="pgml"
+              name="classdiagram.zargo_AutocompletionSequence.pgml"
+              diagramclass="org.argouml.sequence2.diagram.UMLSequenceDiagram"
+              diagramname="AutocompletionSequence" />
       <member type="todo"
               name="classdiagram.zargo.todo" />
     </members>
@@ -58,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Mar 24 11:11:17 CET 2010'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Tue Apr 06 17:21:07 CEST 2010'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.30(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -75,7 +83,11 @@
           <UML:Namespace.ownedElement>
             <UML:Class xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB'
               name = 'GroovyEditor' visibility = 'public' isSpecification = 'false' isRoot = 'false'
-              isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+              isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:ModelElement.clientDependency>
+                <UML:Abstraction xmi.idref = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BF'/>
+              </UML:ModelElement.clientDependency>
+            </UML:Class>
             <UML:Association xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDF'
               name = 'groovy code handling' isSpecification = 'false' isRoot = 'false'
               isLeaf = 'false' isAbstract = 'false'>
@@ -126,7 +138,28 @@
               isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
             <UML:Class xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7'
               name = 'AnalyzerPanel' visibility = 'public' isSpecification = 'false' isRoot = 'false'
-              isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+              isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:ModelElement.clientDependency>
+                <UML:Abstraction xmi.idref = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012B9'/>
+              </UML:ModelElement.clientDependency>
+              <UML:Namespace.ownedElement>
+                <UML:Interface xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111A'
+                  name = 'RecordChangeListener' visibility = 'public' isSpecification = 'false'
+                  isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
+                  <UML:Classifier.feature>
+                    <UML:Operation xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114A'
+                      name = 'recordRootChanged' visibility = 'public' isSpecification = 'false'
+                      ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'>
+                      <UML:BehavioralFeature.parameter>
+                        <UML:Parameter xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114B'
+                          name = 'return' isSpecification = 'false' kind = 'return'/>
+                      </UML:BehavioralFeature.parameter>
+                    </UML:Operation>
+                  </UML:Classifier.feature>
+                </UML:Interface>
+              </UML:Namespace.ownedElement>
+            </UML:Class>
             <UML:Class xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DEA'
               name = 'MappingPanel' visibility = 'public' isSpecification = 'false' isRoot = 'false'
               isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
@@ -638,6 +671,238 @@
                 </UML:AssociationEnd>
               </UML:Association.connection>
             </UML:Association>
+            <UML:Class xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5'
+              name = 'NormalizationParserBindingSource' visibility = 'public' isSpecification = 'false'
+              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:ModelElement.clientDependency>
+                <UML:Abstraction xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111B'/>
+                <UML:Abstraction xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001156'/>
+              </UML:ModelElement.clientDependency>
+              <UML:Namespace.ownedElement>
+                <UML:Interface xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130D'
+                  name = 'Listener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'>
+                  <UML:Classifier.feature>
+                    <UML:Operation xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012AB'
+                      name = 'updateAvailableNodes' visibility = 'public' isSpecification = 'false'
+                      ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'>
+                      <UML:BehavioralFeature.parameter>
+                        <UML:Parameter xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012AC'
+                          name = 'return' isSpecification = 'false' kind = 'return'/>
+                      </UML:BehavioralFeature.parameter>
+                    </UML:Operation>
+                  </UML:Classifier.feature>
+                </UML:Interface>
+              </UML:Namespace.ownedElement>
+              <UML:Classifier.feature>
+                <UML:Operation xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B6'
+                  name = 'prepareInputFile' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B7'
+                      name = 'return' isSpecification = 'false' kind = 'return'/>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Attribute xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BA'
+                  name = 'normalizationParser' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' changeability = 'changeable' targetScope = 'instance'>
+                  <UML:StructuralFeature.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001140'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113F'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:StructuralFeature.multiplicity>
+                  <UML:StructuralFeature.type>
+                    <UML:Class xmi.idref = '10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064'/>
+                  </UML:StructuralFeature.type>
+                </UML:Attribute>
+                <UML:Attribute xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E3'
+                  name = 'record' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  changeability = 'changeable' targetScope = 'instance'>
+                  <UML:StructuralFeature.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BE'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BD'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:StructuralFeature.multiplicity>
+                  <UML:StructuralFeature.type>
+                    <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110A'/>
+                  </UML:StructuralFeature.type>
+                </UML:Attribute>
+                <UML:Operation xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001225'
+                  name = 'nextRecord' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001226'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110A'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+              </UML:Classifier.feature>
+            </UML:Class>
+            <UML:Abstraction xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111B'
+              name = 'Inform new record change' isSpecification = 'false'>
+              <UML:ModelElement.stereotype>
+                <UML:Stereotype xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111C'/>
+              </UML:ModelElement.stereotype>
+              <UML:Dependency.client>
+                <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5'/>
+              </UML:Dependency.client>
+              <UML:Dependency.supplier>
+                <UML:Interface xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111A'/>
+              </UML:Dependency.supplier>
+            </UML:Abstraction>
+            <UML:Association xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112B'
+              name = '' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
+              <UML:Association.connection>
+                <UML:AssociationEnd xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112C'
+                  visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+                  aggregation = 'composite' targetScope = 'instance' changeability = 'changeable'>
+                  <UML:AssociationEnd.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113B'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113A'
+                          lower = '0' upper = '-1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:AssociationEnd.multiplicity>
+                  <UML:AssociationEnd.participant>
+                    <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5'/>
+                  </UML:AssociationEnd.participant>
+                </UML:AssociationEnd>
+                <UML:AssociationEnd xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112F'
+                  visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+                  aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>
+                  <UML:AssociationEnd.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001130'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001131'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:AssociationEnd.multiplicity>
+                  <UML:AssociationEnd.participant>
+                    <UML:Class xmi.idref = '10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064'/>
+                  </UML:AssociationEnd.participant>
+                </UML:AssociationEnd>
+              </UML:Association.connection>
+            </UML:Association>
+            <UML:Association xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001141'
+              name = '' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
+              <UML:Association.connection>
+                <UML:AssociationEnd xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001142'
+                  visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+                  aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>
+                  <UML:AssociationEnd.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001143'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001144'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:AssociationEnd.multiplicity>
+                  <UML:AssociationEnd.participant>
+                    <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5'/>
+                  </UML:AssociationEnd.participant>
+                </UML:AssociationEnd>
+                <UML:AssociationEnd xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001145'
+                  visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+                  aggregation = 'composite' targetScope = 'instance' changeability = 'changeable'>
+                  <UML:AssociationEnd.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001146'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001147'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:AssociationEnd.multiplicity>
+                  <UML:AssociationEnd.participant>
+                    <UML:Class xmi.idref = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7'/>
+                  </UML:AssociationEnd.participant>
+                </UML:AssociationEnd>
+              </UML:Association.connection>
+            </UML:Association>
+            <UML:Abstraction xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001156'
+              name = 'Show available nodes' isSpecification = 'false'>
+              <UML:ModelElement.stereotype>
+                <UML:Stereotype xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111C'/>
+              </UML:ModelElement.stereotype>
+              <UML:Dependency.client>
+                <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5'/>
+              </UML:Dependency.client>
+              <UML:Dependency.supplier>
+                <UML:Interface xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114C'/>
+              </UML:Dependency.supplier>
+            </UML:Abstraction>
+            <UML:Association xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A4'
+              name = '' isSpecification = 'false' isRoot = 'false' isLeaf = 'false' isAbstract = 'false'>
+              <UML:Association.connection>
+                <UML:AssociationEnd xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A5'
+                  visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+                  aggregation = 'composite' targetScope = 'instance' changeability = 'changeable'>
+                  <UML:AssociationEnd.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A6'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A7'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:AssociationEnd.multiplicity>
+                  <UML:AssociationEnd.participant>
+                    <UML:Class xmi.idref = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7'/>
+                  </UML:AssociationEnd.participant>
+                </UML:AssociationEnd>
+                <UML:AssociationEnd xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A8'
+                  visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+                  aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>
+                  <UML:AssociationEnd.multiplicity>
+                    <UML:Multiplicity xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A9'>
+                      <UML:Multiplicity.range>
+                        <UML:MultiplicityRange xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012AA'
+                          lower = '1' upper = '1'/>
+                      </UML:Multiplicity.range>
+                    </UML:Multiplicity>
+                  </UML:AssociationEnd.multiplicity>
+                  <UML:AssociationEnd.participant>
+                    <UML:Class xmi.idref = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB'/>
+                  </UML:AssociationEnd.participant>
+                </UML:AssociationEnd>
+              </UML:Association.connection>
+            </UML:Association>
+            <UML:Abstraction xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012B9'
+              name = 'Show available nodes' isSpecification = 'false'>
+              <UML:ModelElement.stereotype>
+                <UML:Stereotype xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111C'/>
+              </UML:ModelElement.stereotype>
+              <UML:Dependency.client>
+                <UML:Class xmi.idref = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7'/>
+              </UML:Dependency.client>
+              <UML:Dependency.supplier>
+                <UML:Interface xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130D'/>
+              </UML:Dependency.supplier>
+            </UML:Abstraction>
+            <UML:Abstraction xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BF'
+              name = 'Show available nodes' isSpecification = 'false'>
+              <UML:ModelElement.stereotype>
+                <UML:Stereotype xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111C'/>
+              </UML:ModelElement.stereotype>
+              <UML:Dependency.client>
+                <UML:Class xmi.idref = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB'/>
+              </UML:Dependency.client>
+              <UML:Dependency.supplier>
+                <UML:Interface xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130D'/>
+              </UML:Dependency.supplier>
+            </UML:Abstraction>
           </UML:Namespace.ownedElement>
         </UML:Package>
         <UML:Package xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE6'
@@ -823,7 +1088,40 @@
               isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
             <UML:Class xmi.id = '10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064'
               name = 'NormalizationParser' visibility = 'public' isSpecification = 'false'
-              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:Namespace.ownedElement>
+                <UML:Interface xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114C'
+                  name = 'Listener' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'>
+                  <UML:Classifier.feature>
+                    <UML:Operation xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114D'
+                      name = 'updateAvailableNodes' visibility = 'public' isSpecification = 'false'
+                      ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                      isLeaf = 'false' isAbstract = 'false'>
+                      <UML:BehavioralFeature.parameter>
+                        <UML:Parameter xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114E'
+                          name = 'return' isSpecification = 'false' kind = 'return'/>
+                      </UML:BehavioralFeature.parameter>
+                    </UML:Operation>
+                  </UML:Classifier.feature>
+                </UML:Interface>
+              </UML:Namespace.ownedElement>
+              <UML:Classifier.feature>
+                <UML:Operation xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001113'
+                  name = 'nextRecord' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001114'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110A'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+              </UML:Classifier.feature>
+            </UML:Class>
             <UML:Class xmi.id = '10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001065'
               name = 'Normalizer' visibility = 'public' isSpecification = 'false' isRoot = 'false'
               isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
@@ -972,10 +1270,91 @@
                 </UML:AssociationEnd>
               </UML:Association.connection>
             </UML:Association>
+            <UML:Class xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110A'
+              name = 'GroovyNode' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+              isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
           </UML:Namespace.ownedElement>
         </UML:Package>
+        <UML:Stereotype xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111C'
+          name = 'realize' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+          isAbstract = 'false'>
+          <UML:Stereotype.baseClass>Abstraction</UML:Stereotype.baseClass>
+        </UML:Stereotype>
+        <UML:Comment xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113C'
+          isSpecification = 'false' body = 'Zooming into the necessary classes for autocompletion&#10;--------------------------------------------&#10;&#10;Nodes that show up in NormalizationParser should&#10;appear in AnalyzerPanel. NormalizationParser has no direct &#10;association with AnalyzerPanel.&#10;&#10;'/>
+        <UML:Collaboration xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001159'
+          name = 'Autocompletion' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+          isAbstract = 'false'>
+          <UML:Namespace.ownedElement>
+            <UML:ClassifierRole xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E4'
+              name = 'GUI' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:ClassifierRole.multiplicity>
+                <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F9'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F8'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:ClassifierRole.multiplicity>
+              <UML:ClassifierRole.base>
+                <UML:Class xmi.idref = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7'/>
+              </UML:ClassifierRole.base>
+              <UML:ClassifierRole.availableContents>
+                <UML:Interface xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111A'/>
+              </UML:ClassifierRole.availableContents>
+            </UML:ClassifierRole>
+            <UML:ClassifierRole xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F2'
+              name = 'Source' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:ClassifierRole.multiplicity>
+                <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130C'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130B'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:ClassifierRole.multiplicity>
+              <UML:ClassifierRole.base>
+                <UML:Class xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5'/>
+              </UML:ClassifierRole.base>
+              <UML:ClassifierRole.availableFeature>
+                <UML:Operation xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B6'/>
+                <UML:Attribute xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BA'/>
+                <UML:Attribute xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E3'/>
+              </UML:ClassifierRole.availableFeature>
+            </UML:ClassifierRole>
+            <UML:ClassifierRole xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F9'
+              name = 'Parser' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+              isAbstract = 'false'>
+              <UML:ClassifierRole.multiplicity>
+                <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001308'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001307'
+                      lower = '1' upper = '1'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:ClassifierRole.multiplicity>
+              <UML:ClassifierRole.base>
+                <UML:Class xmi.idref = '10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064'/>
+              </UML:ClassifierRole.base>
+              <UML:ClassifierRole.availableFeature>
+                <UML:Operation xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001113'/>
+              </UML:ClassifierRole.availableFeature>
+              <UML:ClassifierRole.availableContents>
+                <UML:Interface xmi.idref = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114C'/>
+              </UML:ClassifierRole.availableContents>
+            </UML:ClassifierRole>
+          </UML:Namespace.ownedElement>
+        </UML:Collaboration>
       </UML:Namespace.ownedElement>
     </UML:Model>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000122A'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001229'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
     <UML:Multiplicity xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE1'>
       <UML:Multiplicity.range>
         <UML:MultiplicityRange xmi.id = '10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE2'
@@ -1093,6 +1472,1320 @@
     <UML:Multiplicity xmi.id = '10-101-28-20-23a37eb9:1278f6ad151:-8000:00000000000010AF'>
       <UML:Multiplicity.range>
         <UML:MultiplicityRange xmi.id = '10-101-28-20-23a37eb9:1278f6ad151:-8000:00000000000010AE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010BF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C2'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C1'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C4'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C3'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C6'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C8'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C7'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010CA'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010C9'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010CC'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010CB'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010CE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010CD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010CF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D2'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D1'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D4'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D3'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D6'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D8'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D7'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010DA'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010D9'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010DC'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010DB'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010DF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E2'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E1'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E4'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E9'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010E8'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010EB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010EA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010ED'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010EC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010EF'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010EE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F9'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010F8'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010FB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010FA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010FD'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010FC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010FF'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010FE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001101'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001100'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001103'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001102'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001105'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001104'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001107'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001106'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001109'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001108'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110C'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110B'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001110'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000110F'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001112'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001111'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001116'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001115'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001118'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001117'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001126'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001127'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001133'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001132'
+          lower = '0' upper = '-1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001135'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001134'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001137'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001136'
+          lower = '0' upper = '-1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001139'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001138'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000115C'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000115B'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000115E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000115D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001160'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000115F'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001163'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001162'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001165'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001164'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001167'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001166'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000116A'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001169'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000116C'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000116B'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000116E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000116D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001170'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000116F'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001172'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001171'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001174'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001173'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001176'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001175'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001178'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001177'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000117A'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001179'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000117C'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000117B'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000117E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000117D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001181'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001180'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001183'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001182'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001185'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001184'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001187'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001186'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001189'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001188'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000118B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000118A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000118D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000118C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000119B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000119A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000119D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000119C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000119F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000119E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011A3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011A2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011A5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011A4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011AE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011AD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011AF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011B6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011BC'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011BB'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011BE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011BD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011BF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C2'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C1'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C4'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C3'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C6'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011CA'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011C9'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011CC'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011CB'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011D5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011D4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011D7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011D6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011D9'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011D8'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011DB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011DA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011DD'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011DC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E6'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E9'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E8'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011EB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011EA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011ED'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011EC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011EF'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011EE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F4'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F3'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F6'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F8'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F7'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011FB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011FA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011FE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011FD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001200'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011FF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001202'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001201'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000120B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000120A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000120D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000120C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001216'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001215'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001218'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001217'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000121A'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001219'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000121C'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000121B'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000121E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000121D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001220'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000121F'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001222'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001221'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001224'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001223'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001228'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001227'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000122C'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000122B'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000122E'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000122D'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001230'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000122F'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001232'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001231'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001234'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001233'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001236'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001235'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001238'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001237'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000123A'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001239'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001243'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001242'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001245'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001244'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001247'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001246'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001249'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001248'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000124B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000124A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000124D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000124C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000124F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000124E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001251'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001250'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001253'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001252'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001255'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001254'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001257'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001256'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001259'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001258'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000125B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000125A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000125D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000125C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000125F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000125E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001261'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001260'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001263'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001262'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001265'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001264'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001267'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001266'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001269'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001268'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000126B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000126A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000126D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000126C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000126F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000126E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001271'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001270'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001273'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001272'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001275'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001274'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001277'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001276'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001279'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001278'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000127B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000127A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000127D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000127C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000127F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000127E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001281'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001280'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001283'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001282'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001285'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001284'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001287'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001286'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001289'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001288'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000128B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000128A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000128D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000128C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000128F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000128E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001291'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001290'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001293'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001292'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001295'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001294'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001297'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001296'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001299'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001298'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000129B'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000129A'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000129D'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000129C'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000129F'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000129E'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012A6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012AB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012AA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012AF'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012AE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012B1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012B0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012BB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012BA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012BD'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012BC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012BF'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012BE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C9'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012C8'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012CB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012CA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012CD'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012CC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012D6'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012D5'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012D8'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012D7'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012DA'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012D9'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012DC'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012DB'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012DE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012DD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012DF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E9'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012E8'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012EB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012EA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012ED'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012EC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012EF'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012EE'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F1'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F0'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F3'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F2'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F5'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F4'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F7'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012F6'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012FB'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012FA'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012FD'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:00000000000012FC'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001306'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001305'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130A'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001309'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012AE'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012AD'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012B0'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012AF'
+          lower = '1' upper = '1'/>
+      </UML:Multiplicity.range>
+    </UML:Multiplicity>
+    <UML:Multiplicity xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BC'>
+      <UML:Multiplicity.range>
+        <UML:MultiplicityRange xmi.id = '10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BB'
           lower = '1' upper = '1'/>
       </UML:Multiplicity.range>
     </UML:Multiplicity>
@@ -4083,7 +5776,7 @@
       justification="Center"
     >AnalysisParser</text>
     <group name="Fig32.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1073, 73, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1073, 73, 131, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001060"
          fill="0"
          fillcolor="white"
@@ -4097,7 +5790,7 @@
       <rectangle name="Fig32.2.0"
         x="1073"
         y="73"
-        width="64"
+        width="131"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4208,7 +5901,7 @@
       justification="Center"
     >Counters</text>
     <group name="Fig33.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1281, 305, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1281, 305, 97, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001061"
          fill="0"
          fillcolor="white"
@@ -4222,7 +5915,7 @@
       <rectangle name="Fig33.2.0"
         x="1281"
         y="305"
-        width="64"
+        width="97"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4333,7 +6026,7 @@
       justification="Center"
     >EuropeanaUriHasher</text>
     <group name="Fig34.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[33, 465, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[33, 465, 167, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001062"
          fill="0"
          fillcolor="white"
@@ -4347,7 +6040,7 @@
       <rectangle name="Fig34.2.0"
         x="33"
         y="465"
-        width="64"
+        width="167"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4458,7 +6151,7 @@
       justification="Center"
     >FileHandler</text>
     <group name="Fig35.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[697, 129, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[697, 129, 111, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001063"
          fill="0"
          fillcolor="white"
@@ -4472,7 +6165,7 @@
       <rectangle name="Fig35.2.0"
         x="697"
         y="129"
-        width="64"
+        width="111"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4546,7 +6239,7 @@
     </group>
   </group>
   <group name="Fig36"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1184, 480, 137, 68]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1184, 480, 177, 71]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
        fill="1"
        fillcolor="white"
@@ -4559,8 +6252,8 @@
     <rectangle name="Fig36.0"
       x="1184"
       y="480"
-      width="137"
-      height="68"
+      width="177"
+      height="71"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -4569,7 +6262,7 @@
     <text name="Fig36.1"
       x="1185"
       y="481"
-      width="135"
+      width="175"
       height="23"
       fill="0"
       fillcolor="white"
@@ -4583,7 +6276,7 @@
       justification="Center"
     >NormalizationParser</text>
     <group name="Fig36.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1185, 481, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1185, 481, 174, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
          fill="0"
          fillcolor="white"
@@ -4597,7 +6290,7 @@
       <rectangle name="Fig36.2.0"
         x="1185"
         y="481"
-        width="64"
+        width="174"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4608,7 +6301,7 @@
     <rectangle name="Fig36.3"
       x="1184"
       y="504"
-      width="137"
+      width="177"
       height="1"
       fill="1"
       fillcolor="black"
@@ -4616,7 +6309,7 @@
       strokecolor="black"
     />
     <group name="Fig36.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1185, 505, 135, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1185, 505, 175, 21]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
          fill="0"
          fillcolor="white"
@@ -4629,7 +6322,7 @@
       <rectangle name="Fig36.4.0"
         x="1185"
         y="505"
-        width="135"
+        width="175"
         height="21"
         fill="0"
         fillcolor="white"
@@ -4640,7 +6333,7 @@
     <rectangle name="Fig36.5"
       x="1184"
       y="525"
-      width="137"
+      width="177"
       height="1"
       fill="1"
       fillcolor="black"
@@ -4648,7 +6341,7 @@
       strokecolor="black"
     />
     <group name="Fig36.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1185, 526, 135, 21]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1185, 526, 175, 25]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
          fill="0"
          fillcolor="white"
@@ -4661,13 +6354,29 @@
       <rectangle name="Fig36.6.0"
         x="1185"
         y="526"
-        width="135"
-        height="21"
+        width="175"
+        height="25"
         fill="0"
         fillcolor="white"
         stroke="0"
         strokecolor="black"
       />
+      <text name="Fig36.6.1"
+        x="1185"
+        y="526"
+        width="175"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >nextRecord() : GroovyNode</text>
     </group>
   </group>
   <group name="Fig37"
@@ -4708,7 +6417,7 @@
       justification="Center"
     >Normalizer</text>
     <group name="Fig37.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1121, 321, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1121, 321, 109, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001065"
          fill="0"
          fillcolor="white"
@@ -4722,7 +6431,7 @@
       <rectangle name="Fig37.2.0"
         x="1121"
         y="321"
-        width="64"
+        width="109"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4833,7 +6542,7 @@
       justification="Center"
     >QnameBuilder</text>
     <group name="Fig38.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[977, 609, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[977, 609, 127, 0]"
          href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001066"
          fill="0"
          fillcolor="white"
@@ -4847,7 +6556,7 @@
       <rectangle name="Fig38.2.0"
         x="977"
         y="609"
-        width="64"
+        width="127"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4965,7 +6674,7 @@
                         offset="36" />
     </private>
     <path name="Fig39.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5022,7 +6731,7 @@
                         offset="5" />
     </private>
     <path name="Fig40.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5079,7 +6788,7 @@
                         offset="5" />
     </private>
     <path name="Fig41.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5136,7 +6845,7 @@
                         offset="5" />
     </private>
     <path name="Fig42.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5193,7 +6902,7 @@
                         offset="5" />
     </private>
     <path name="Fig43.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5250,7 +6959,7 @@
                         offset="5" />
     </private>
     <path name="Fig44.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5307,7 +7016,7 @@
                         offset="5" />
     </private>
     <path name="Fig45.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5364,7 +7073,7 @@
                         offset="5" />
     </private>
     <path name="Fig46.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5421,7 +7130,7 @@
                         offset="26" />
     </private>
     <path name="Fig47.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -5437,6 +7146,1812 @@
 <pgml description="org.argouml.uml.diagram.use_case.ui.UMLUseCaseDiagram|10-101-28-20-185319fc:1278a4d2d61:-8000:00000000000009C8"
       name="Use Case Diagram"
 >
+</pgml>
+<pgml description="org.argouml.uml.diagram.static_structure.ui.UMLClassDiagram|10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001159"
+      name="AutocompletionClass"
+>
+  <group name="Fig0"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[504, 216, 276, 109]pathVisible=true;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig0.0"
+      x="504"
+      y="216"
+      width="276"
+      height="109"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig0.1"
+      x="505"
+      y="217"
+      width="274"
+      height="23"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >gui::NormalizationParserBindingSource</text>
+    <group name="Fig0.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[505, 217, 274, 0]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig0.2.0"
+        x="505"
+        y="217"
+        width="274"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig0.3"
+      x="504"
+      y="240"
+      width="276"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig0.4"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[505, 241, 274, 42]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig0.4.0"
+        x="505"
+        y="241"
+        width="274"
+        height="42"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig0.4.1"
+        x="505"
+        y="241"
+        width="274"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >normalizationParser : NormalizationParser</text>
+      <text name="Fig0.4.2"
+        x="505"
+        y="258"
+        width="274"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >record : GroovyNode</text>
+    </group>
+    <rectangle name="Fig0.5"
+      x="504"
+      y="282"
+      width="276"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig0.6"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[505, 283, 274, 42]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000010B5"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig0.6.0"
+        x="505"
+        y="283"
+        width="274"
+        height="42"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig0.6.1"
+        x="505"
+        y="283"
+        width="274"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >prepareInputFile()</text>
+      <text name="Fig0.6.2"
+        x="505"
+        y="300"
+        width="274"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >nextRecord() : GroovyNode</text>
+    </group>
+  </group>
+  <group name="Fig1"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[904, 224, 177, 71]pathVisible=true;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig1.0"
+      x="904"
+      y="224"
+      width="177"
+      height="71"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig1.1"
+      x="905"
+      y="225"
+      width="175"
+      height="23"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >xml::NormalizationParser</text>
+    <group name="Fig1.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[905, 225, 175, 0]"
+         href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig1.2.0"
+        x="905"
+        y="225"
+        width="175"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig1.3"
+      x="904"
+      y="248"
+      width="177"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig1.4"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[905, 249, 175, 21]"
+         href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig1.4.0"
+        x="905"
+        y="249"
+        width="175"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig1.5"
+      x="904"
+      y="269"
+      width="177"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig1.6"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[905, 270, 175, 25]"
+         href="10-101-28-20-23a37eb9:1278f6ad151:-8000:0000000000001064"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig1.6.0"
+        x="905"
+        y="270"
+        width="175"
+        height="25"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig1.6.1"
+        x="905"
+        y="270"
+        width="175"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >nextRecord() : GroovyNode</text>
+    </group>
+  </group>
+  <group name="Fig2"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[256, 272, 168, 67]pathVisible=true;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig2.0"
+      x="256"
+      y="272"
+      width="168"
+      height="67"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig2.1"
+      x="257"
+      y="273"
+      width="166"
+      height="23"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >gui::AnalyzerPanel</text>
+    <group name="Fig2.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[257, 273, 123, 0]"
+         href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig2.2.0"
+        x="257"
+        y="273"
+        width="123"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig2.3"
+      x="256"
+      y="296"
+      width="168"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig2.4"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[257, 297, 166, 21]"
+         href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig2.4.0"
+        x="257"
+        y="297"
+        width="166"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig2.5"
+      x="256"
+      y="317"
+      width="168"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig2.6"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[257, 318, 166, 21]"
+         href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DE7"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig2.6.0"
+        x="257"
+        y="318"
+        width="166"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+  </group>
+  <group name="Fig3"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[456, 24, 151, 70]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111A"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig3.0"
+      x="456"
+      y="24"
+      width="151"
+      height="70"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig3.1"
+      x="457"
+      y="25"
+      width="149"
+      height="43"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >RecordChangeListener</text>
+    <group name="Fig3.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[457, 25, 149, 20]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111A"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig3.2.0"
+        x="457"
+        y="25"
+        width="149"
+        height="20"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig3.2.1"
+        x="457"
+        y="25"
+        width="149"
+        height="18"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Center"
+      >&lt;&lt;interface&gt;&gt;</text>
+    </group>
+    <rectangle name="Fig3.3"
+      x="456"
+      y="68"
+      width="151"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig3.4"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[457, 69, 149, 25]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111A"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig3.4.0"
+        x="457"
+        y="69"
+        width="149"
+        height="25"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig3.4.1"
+        x="457"
+        y="69"
+        width="149"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >recordRootChanged()</text>
+    </group>
+  </group>
+  <group name="Fig4"
+       description="org.argouml.uml.diagram.ui.FigAbstraction"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111B"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig0.0"
+      destPortFig="Fig3.0"
+      sourceFigNode="Fig0"
+      destFigNode="Fig3"
+      <argouml:pathitem figname="Fig4.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000111B"
+                        angle="-90.0"
+                        offset="114" />
+    </private>
+    <path name="Fig4.0"
+      description="org.argouml.gefext.ArgoFigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="551"
+              y="216" />
+      <lineto x="551"
+              y="94" />
+    </path>
+  </group>
+  <group name="Fig5"
+       description="org.argouml.uml.diagram.ui.FigAssociation"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112B"
+       sourceConnector="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112C"
+       destConnector="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112F"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig0.0"
+      destPortFig="Fig1.0"
+      sourceFigNode="Fig0"
+      destFigNode="Fig1"
+      <argouml:pathitem figname="Fig5.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112B"
+                        angle="270.0"
+                        offset="25" />
+      <argouml:pathitem figname="Fig5.2"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112C"
+                        angle="315.0"
+                        offset="29" />
+      <argouml:pathitem figname="Fig5.3"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112C"
+                        angle="57.0"
+                        offset="28" />
+      <argouml:pathitem figname="Fig5.4"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112F"
+                        angle="223.0"
+                        offset="26" />
+      <argouml:pathitem figname="Fig5.5"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000112F"
+                        angle="124.99999999999999"
+                        offset="29" />
+    </private>
+    <path name="Fig5.0"
+      description="org.argouml.gefext.ArgoFigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="780"
+              y="269" />
+      <lineto x="904"
+              y="269" />
+    </path>
+  </group>
+  <group name="Fig6"
+       description="org.argouml.uml.diagram.static_structure.ui.FigComment[992, 0, 394, 184]pathVisible=false;stereotypeView=0;"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113C"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig6.0"
+      x="992"
+      y="0"
+      width="394"
+      height="184"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+    />
+    <path name="Fig6.1"
+      description="org.tigris.gef.presentation.FigPoly"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="992"
+              y="0" />
+      <lineto x="1375"
+              y="0" />
+      <lineto x="1385"
+              y="10" />
+      <lineto x="1385"
+              y="183" />
+      <lineto x="992"
+              y="183" />
+      <lineto x="992"
+              y="0" />
+    </path>
+    <path name="Fig6.2"
+      description="org.tigris.gef.presentation.FigPoly"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="1375"
+              y="0" />
+      <lineto x="1385"
+              y="10" />
+      <lineto x="1375"
+              y="10" />
+      <lineto x="1375"
+              y="0" />
+    </path>
+    <group name="Fig6.3"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[994, 2, 380, 0]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000113C"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig6.3.0"
+        x="994"
+        y="2"
+        width="380"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <text name="Fig6.4"
+      x="994"
+      y="2"
+      width="380"
+      height="180"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Left"
+    >Zooming into the necessary classes for autocompletion
+--------------------------------------------
+
+Nodes that show up in NormalizationParser should
+appear in AnalyzerPanel. NormalizationParser has no direct 
+association with AnalyzerPanel.
+
+</text>
+  </group>
+  <group name="Fig7"
+       description="org.argouml.uml.diagram.ui.FigAssociation"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001141"
+       sourceConnector="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001142"
+       destConnector="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001145"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig0.0"
+      destPortFig="Fig2.0"
+      sourceFigNode="Fig0"
+      destFigNode="Fig2"
+      <argouml:pathitem figname="Fig7.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001141"
+                        angle="98.0"
+                        offset="64" />
+      <argouml:pathitem figname="Fig7.2"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001142"
+                        angle="315.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig7.3"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001142"
+                        angle="43.0"
+                        offset="27" />
+      <argouml:pathitem figname="Fig7.4"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001145"
+                        angle="225.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig7.5"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001145"
+                        angle="135.0"
+                        offset="5" />
+    </private>
+    <path name="Fig7.0"
+      description="org.argouml.gefext.ArgoFigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="504"
+              y="299" />
+      <lineto x="424"
+              y="299" />
+    </path>
+  </group>
+  <group name="Fig8"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[728, 16, 160, 70]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114C"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig8.0"
+      x="728"
+      y="16"
+      width="160"
+      height="70"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig8.1"
+      x="729"
+      y="17"
+      width="158"
+      height="43"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >Listener</text>
+    <group name="Fig8.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[729, 17, 158, 20]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114C"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig8.2.0"
+        x="729"
+        y="17"
+        width="158"
+        height="20"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig8.2.1"
+        x="729"
+        y="17"
+        width="158"
+        height="18"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Center"
+      >&lt;&lt;interface&gt;&gt;</text>
+    </group>
+    <rectangle name="Fig8.3"
+      x="728"
+      y="60"
+      width="160"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig8.4"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[729, 61, 158, 25]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000114C"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig8.4.0"
+        x="729"
+        y="61"
+        width="158"
+        height="25"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig8.4.1"
+        x="729"
+        y="61"
+        width="158"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >updateAvailableNodes()</text>
+    </group>
+  </group>
+  <group name="Fig9"
+       description="org.argouml.uml.diagram.ui.FigAbstraction"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001156"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig0.0"
+      destPortFig="Fig8.0"
+      sourceFigNode="Fig0"
+      destFigNode="Fig8"
+      <argouml:pathitem figname="Fig9.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001156"
+                        angle="87.99999999999999"
+                        offset="92" />
+    </private>
+    <path name="Fig9.0"
+      description="org.argouml.gefext.ArgoFigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="760"
+              y="216" />
+      <lineto x="760"
+              y="86" />
+    </path>
+  </group>
+  <group name="Fig10"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[104, 528, 157, 70]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130D"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig10.0"
+      x="104"
+      y="528"
+      width="157"
+      height="70"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig10.1"
+      x="105"
+      y="529"
+      width="155"
+      height="43"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >Listener</text>
+    <group name="Fig10.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[105, 529, 155, 20]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130D"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig10.2.0"
+        x="105"
+        y="529"
+        width="155"
+        height="20"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig10.2.1"
+        x="105"
+        y="529"
+        width="155"
+        height="18"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Center"
+      >&lt;&lt;interface&gt;&gt;</text>
+    </group>
+    <rectangle name="Fig10.3"
+      x="104"
+      y="572"
+      width="157"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig10.4"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[105, 573, 155, 25]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:000000000000130D"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig10.4.0"
+        x="105"
+        y="573"
+        width="155"
+        height="25"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig10.4.1"
+        x="105"
+        y="573"
+        width="155"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Left"
+      >updateAvailableNodes()</text>
+    </group>
+  </group>
+  <group name="Fig11"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[56, 272, 119, 68]pathVisible=true;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig11.0"
+      x="56"
+      y="272"
+      width="119"
+      height="68"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig11.1"
+      x="57"
+      y="273"
+      width="117"
+      height="23"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Lucida Grande"
+      italic="false"
+      bold="false"
+      textsize="13"
+      justification="Center"
+    >gui::GroovyEditor</text>
+    <group name="Fig11.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[57, 273, 117, 0]"
+         href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig11.2.0"
+        x="57"
+        y="273"
+        width="117"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig11.3"
+      x="56"
+      y="296"
+      width="119"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig11.4"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[57, 297, 117, 21]"
+         href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig11.4.0"
+        x="57"
+        y="297"
+        width="117"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig11.5"
+      x="56"
+      y="317"
+      width="119"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig11.6"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[57, 318, 117, 21]"
+         href="10-101-28-20-185319fc:1278a4d2d61:-8000:0000000000000DDB"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig11.6.0"
+        x="57"
+        y="318"
+        width="117"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+  </group>
+  <group name="Fig12"
+       description="org.argouml.uml.diagram.ui.FigAssociation"
+       href="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A4"
+       sourceConnector="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A5"
+       destConnector="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A8"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig2.0"
+      destPortFig="Fig11.0"
+      sourceFigNode="Fig2"
+      destFigNode="Fig11"
+      <argouml:pathitem figname="Fig12.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A4"
+                        angle="270.0"
+                        offset="25" />
+      <argouml:pathitem figname="Fig12.2"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A5"
+                        angle="315.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig12.3"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A5"
+                        angle="45.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig12.4"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A8"
+                        angle="225.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig12.5"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012A8"
+                        angle="135.0"
+                        offset="5" />
+    </private>
+    <path name="Fig12.0"
+      description="org.tigris.gef.presentation.FigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="256"
+              y="312" />
+      <lineto x="175"
+              y="312" />
+    </path>
+  </group>
+  <group name="Fig13"
+       description="org.argouml.uml.diagram.ui.FigAbstraction"
+       href="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012B9"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig2.0"
+      destPortFig="Fig10.0"
+      sourceFigNode="Fig2"
+      destFigNode="Fig10"
+      <argouml:pathitem figname="Fig13.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012B9"
+                        angle="-87.0"
+                        offset="107" />
+    </private>
+    <path name="Fig13.0"
+      description="org.tigris.gef.presentation.FigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="256"
+              y="339" />
+      <lineto x="256"
+              y="528" />
+    </path>
+  </group>
+  <group name="Fig14"
+       description="org.argouml.uml.diagram.ui.FigAbstraction"
+       href="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BF"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig11.0"
+      destPortFig="Fig10.0"
+      sourceFigNode="Fig11"
+      destFigNode="Fig10"
+      <argouml:pathitem figname="Fig14.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="10-101-28-20-6787918e:127bef2383e:-8000:00000000000012BF"
+                        angle="78.0"
+                        offset="67" />
+    </private>
+    <path name="Fig14.0"
+      description="org.tigris.gef.presentation.FigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="144"
+              y="340" />
+      <lineto x="144"
+              y="528" />
+    </path>
+  </group>
+</pgml>
+<pgml description="org.argouml.sequence2.diagram.UMLSequenceDiagram|10-101-28-20--415b2692:127bdfe652e:-8000:0000000000001159"
+      name="AutocompletionSequence"
+>
+  <group name="Fig0"
+       description="org.argouml.sequence2.diagram.FigClassifierRole[124, 90, 193, 544]pathVisible=false;stereotypeView=0;"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E4"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig0.0"
+      x="124"
+      y="90"
+      width="193"
+      height="544"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      visibility="0"
+    />
+    <rectangle name="Fig0.1"
+      x="124"
+      y="90"
+      width="193"
+      height="0"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+    />
+    <group name="Fig0.2"
+         description="org.argouml.sequence2.diagram.FigLifeLine[124, 139, 193, 494]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E4"
+         fill="1"
+         fillcolor="white"
+         stroke="1"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig0.2.0"
+        x="124"
+        y="139"
+        width="193"
+        height="494"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <path name="Fig0.2.1"
+        description="org.tigris.gef.presentation.FigLine"
+        fill="1"
+        fillcolor="white"
+        stroke="1"
+        strokecolor="black"
+      >
+        <moveto x="220"
+                y="139" />
+        <lineto x="220"
+                y="633" />
+      </path>
+      <group name="Fig0.2.2"
+           description="org.argouml.sequence2.diagram.FigActivation[210, 139, 20, 494]"
+           href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E4"
+           fill="1"
+           fillcolor="white"
+           stroke="1"
+           strokecolor="black"
+      >
+        <private>
+        </private>
+        
+        <rectangle name="Fig0.2.2.0"
+          x="210"
+          y="139"
+          width="20"
+          height="494"
+          fill="1"
+          fillcolor="white"
+          stroke="1"
+          strokecolor="black"
+        />
+      </group>
+    </group>
+    <group name="Fig0.3"
+         description="org.argouml.sequence2.diagram.FigHead[124, 90, 193, 50]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E4"
+         fill="1"
+         fillcolor="white"
+         stroke="1"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig0.3.0"
+        x="124"
+        y="90"
+        width="193"
+        height="50"
+        fill="1"
+        fillcolor="white"
+        stroke="1"
+        strokecolor="black"
+      />
+      <text name="Fig0.3.1"
+        x="124"
+        y="90"
+        width="193"
+        height="24"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Center"
+      >/GUI:AnalyzerPanel</text>
+      <group name="Fig0.3.2"
+           description="org.argouml.uml.diagram.ui.FigStereotypesGroup[124, 90, 193, 0]"
+           href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011E4"
+           fill="0"
+           fillcolor="white"
+           stroke="0"
+           strokecolor="black"
+      >
+        <private>
+        </private>
+        
+        <rectangle name="Fig0.3.2.0"
+          x="124"
+          y="90"
+          width="193"
+          height="0"
+          fill="0"
+          fillcolor="white"
+          stroke="0"
+          strokecolor="black"
+        />
+      </group>
+    </group>
+  </group>
+  <group name="Fig1"
+       description="org.argouml.sequence2.diagram.FigClassifierRole[520, 90, 277, 542]pathVisible=false;stereotypeView=0;"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F2"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig1.0"
+      x="520"
+      y="90"
+      width="277"
+      height="542"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      visibility="0"
+    />
+    <rectangle name="Fig1.1"
+      x="520"
+      y="90"
+      width="277"
+      height="0"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+    />
+    <group name="Fig1.2"
+         description="org.argouml.sequence2.diagram.FigLifeLine[520, 139, 277, 492]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F2"
+         fill="1"
+         fillcolor="white"
+         stroke="1"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig1.2.0"
+        x="520"
+        y="139"
+        width="277"
+        height="492"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <path name="Fig1.2.1"
+        description="org.tigris.gef.presentation.FigLine"
+        fill="1"
+        fillcolor="white"
+        stroke="1"
+        strokecolor="black"
+      >
+        <moveto x="658"
+                y="139" />
+        <lineto x="658"
+                y="631" />
+      </path>
+      <group name="Fig1.2.2"
+           description="org.argouml.sequence2.diagram.FigActivation[648, 139, 20, 492]"
+           href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F2"
+           fill="1"
+           fillcolor="white"
+           stroke="1"
+           strokecolor="black"
+      >
+        <private>
+        </private>
+        
+        <rectangle name="Fig1.2.2.0"
+          x="648"
+          y="139"
+          width="20"
+          height="492"
+          fill="1"
+          fillcolor="white"
+          stroke="1"
+          strokecolor="black"
+        />
+      </group>
+    </group>
+    <group name="Fig1.3"
+         description="org.argouml.sequence2.diagram.FigHead[520, 90, 277, 50]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F2"
+         fill="1"
+         fillcolor="white"
+         stroke="1"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig1.3.0"
+        x="520"
+        y="90"
+        width="277"
+        height="50"
+        fill="1"
+        fillcolor="white"
+        stroke="1"
+        strokecolor="black"
+      />
+      <text name="Fig1.3.1"
+        x="520"
+        y="90"
+        width="277"
+        height="24"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Center"
+      >/Source:NormalizationParserBindingSource</text>
+      <group name="Fig1.3.2"
+           description="org.argouml.uml.diagram.ui.FigStereotypesGroup[520, 90, 277, 0]"
+           href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F2"
+           fill="0"
+           fillcolor="white"
+           stroke="0"
+           strokecolor="black"
+      >
+        <private>
+        </private>
+        
+        <rectangle name="Fig1.3.2.0"
+          x="520"
+          y="90"
+          width="277"
+          height="0"
+          fill="0"
+          fillcolor="white"
+          stroke="0"
+          strokecolor="black"
+        />
+      </group>
+    </group>
+  </group>
+  <group name="Fig2"
+       description="org.argouml.sequence2.diagram.FigClassifierRole[984, 90, 184, 544]pathVisible=false;stereotypeView=0;"
+       href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F9"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig2.0"
+      x="984"
+      y="90"
+      width="184"
+      height="544"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      visibility="0"
+    />
+    <rectangle name="Fig2.1"
+      x="984"
+      y="90"
+      width="184"
+      height="0"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+    />
+    <group name="Fig2.2"
+         description="org.argouml.sequence2.diagram.FigLifeLine[984, 139, 184, 494]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F9"
+         fill="1"
+         fillcolor="white"
+         stroke="1"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig2.2.0"
+        x="984"
+        y="139"
+        width="184"
+        height="494"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <path name="Fig2.2.1"
+        description="org.tigris.gef.presentation.FigLine"
+        fill="1"
+        fillcolor="white"
+        stroke="1"
+        strokecolor="black"
+      >
+        <moveto x="1076"
+                y="139" />
+        <lineto x="1076"
+                y="633" />
+      </path>
+      <group name="Fig2.2.2"
+           description="org.argouml.sequence2.diagram.FigActivation[1066, 139, 20, 494]"
+           href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F9"
+           fill="1"
+           fillcolor="white"
+           stroke="1"
+           strokecolor="black"
+      >
+        <private>
+        </private>
+        
+        <rectangle name="Fig2.2.2.0"
+          x="1066"
+          y="139"
+          width="20"
+          height="494"
+          fill="1"
+          fillcolor="white"
+          stroke="1"
+          strokecolor="black"
+        />
+      </group>
+    </group>
+    <group name="Fig2.3"
+         description="org.argouml.sequence2.diagram.FigHead[984, 90, 184, 50]"
+         href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F9"
+         fill="1"
+         fillcolor="white"
+         stroke="1"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig2.3.0"
+        x="984"
+        y="90"
+        width="184"
+        height="50"
+        fill="1"
+        fillcolor="white"
+        stroke="1"
+        strokecolor="black"
+      />
+      <text name="Fig2.3.1"
+        x="984"
+        y="90"
+        width="184"
+        height="24"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Lucida Grande"
+        italic="false"
+        bold="false"
+        textsize="13"
+        justification="Center"
+      >/Parser:NormalizationParser</text>
+      <group name="Fig2.3.2"
+           description="org.argouml.uml.diagram.ui.FigStereotypesGroup[984, 90, 184, 0]"
+           href="10-101-28-20--415b2692:127bdfe652e:-8000:00000000000011F9"
+           fill="0"
+           fillcolor="white"
+           stroke="0"
+           strokecolor="black"
+      >
+        <private>
+        </private>
+        
+        <rectangle name="Fig2.3.2.0"
+          x="984"
+          y="90"
+          width="184"
+          height="0"
+          fill="0"
+          fillcolor="white"
+          stroke="0"
+          strokecolor="black"
+        />
+      </group>
+    </group>
+  </group>
 </pgml>
 <todo>
 <todolist>
