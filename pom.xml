@@ -130,6 +130,17 @@
             <name>EBR External Release Repository</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
+          <repository>
+            <id>scala-tools.releases</id>
+            <name>Scala-Tools Dependencies Repository for Releases</name>
+            <url>http://scala-tools.org/repo-releases</url>
+        </repository>
+        <repository>
+            <id>scala-tools.snapshots</id>
+            <name>Scala-Tools Dependencies Repository for Snapshots</name>
+            <url>http://scala-tools.org/repo-snapshots</url>
+            <snapshots/>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -157,6 +168,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.13.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>1.6</source>
@@ -171,7 +195,8 @@
                     <groups>regression</groups>
                     <parallel>true</parallel>
                     <systemPropertyVariables>
-                        <europeana.properties>../core/src/test/resources/europeana-test.properties</europeana.properties>
+                        <europeana.properties>../core/src/test/resources/europeana-test.properties
+                        </europeana.properties>
                         <europeana.test.external.host>${europeana.test.external.host}</europeana.test.external.host>
                     </systemPropertyVariables>
                 </configuration>
@@ -493,16 +518,31 @@
                 <artifactId>solr-solrj</artifactId>
                 <version>1.4.0</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>asm</groupId>-->
-                <!--<artifactId>asm</artifactId>-->
-                <!--<version>3.2</version>-->
-            <!--</dependency>-->
+
+            <dependency>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest</artifactId>
+                <version>${scalaTest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <properties>
         <europeana.definitions.version>1.00</europeana.definitions.version>
-        <europeana.core.version>1.19</europeana.core.version>
+        <europeana.core.version>1.20</europeana.core.version>
         <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
         <europeana.portal.version>0.6</europeana.portal.version>
         <europeana.api.version>0.1</europeana.api.version>
@@ -522,6 +562,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <gwtVersion>2.0.0</gwtVersion>
+        <scala.version>2.8.0.Beta1</scala.version>
+        <scalaTest.version>1.0.1-for-scala-2.8.0.Beta1-SNAPSHOT</scalaTest.version>
         <!--<google.webtoolkit.home>${env.GWT_HOME}</google.webtoolkit.home>-->
 
     </properties>

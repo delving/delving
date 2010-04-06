@@ -1,47 +1,21 @@
-/*
- * Copyright 2007 EDL FOUNDATION
- *
- *  Licensed under the EUPL, Version 1.0 or as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
- *
- *  http://ec.europa.eu/idabc/eupl
- *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
- */
+package eu.europeana.core.querymodel.query
 
-package eu.europeana.web.util;
-
-import eu.europeana.core.querymodel.query.FacetQueryLinks;
-import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.FacetField;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static junit.framework.Assert.assertEquals;
+import _root_.org.junit.runner.RunWith
+import _root_.org.scalatest.junit.JUnitRunner
+import _root_.org.scalatest.matchers.ShouldMatchers
+import _root_.org.scalatest.Spec
 
 /**
- * Test the FacetQueryLinks
  *
- * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @since Apr 5, 2010 10:55:58 PM
  */
 
-public class TestLinkGenerators {
-    private Logger log = Logger.getLogger(getClass());
+@RunWith(classOf[JUnitRunner])
+class FacetQueryLinksSpec extends Spec with ShouldMatchers {
 
-    @Test
+  /*
+  @Test
     public void facetQueryLinks() throws Exception {
         log.info("facet query links");
         List<FacetField> facets = new ArrayList<FacetField>();
@@ -86,4 +60,5 @@ public class TestLinkGenerators {
             }
         }
     }
+   */
 }

@@ -31,6 +31,7 @@ import eu.europeana.fixture.IngestionFixture;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ import static org.junit.Assert.assertTrue;
         "/core-application-context.xml",
         "/test-application-context.xml"
 })
+
+@Ignore("needs a reference to europeana.properties test file")
 public class TestIngestion {
     private static Logger log = Logger.getLogger(TestIngestion.class);
 
@@ -121,5 +124,4 @@ public class TestIngestion {
         assertNotNull("result should not be null", fullDoc);
         assertEquals("uri should equal "+uri, uri, fullDoc.getId());
     }
-
 }

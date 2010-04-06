@@ -1,32 +1,24 @@
-package eu.europeana.solrj;
+package eu.europeana.core.querymodel.query
 
-import eu.europeana.bootstrap.SolrStarter;
-import eu.europeana.core.BeanQueryModelFactory;
-import eu.europeana.core.querymodel.beans.BriefBean;
-import eu.europeana.core.querymodel.beans.FullBean;
-import eu.europeana.core.querymodel.query.QueryType;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
+import _root_.org.junit.runner.RunWith
+import _root_.org.scalatest.matchers.ShouldMatchers
+import _root_.org.scalatest.Spec
+import _root_.org.scalatest.junit.JUnitRunner
 
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 1:58:10 PM
+ * @since Apr 5, 2010 10:55:58 PM
  */
 
-public class SolrQueryModelTest {
+@RunWith(classOf[JUnitRunner])
+class BeanQueryModelFactorySpec extends Spec with ShouldMatchers {
 
-    private static final String url = "http://localhost:8983/solr";
+
+
+//  Old test class
+   /* private static final String url = "http://localhost:8983/solr";
     private static CommonsHttpSolrServer server;
     private static SolrStarter solrStarter;
 
@@ -51,6 +43,11 @@ public class SolrQueryModelTest {
         server.setMaxRetries(1); // defaults to 0.  > 1 not recommended.
     }
 
+    @AfterClass
+    public static void after() throws Exception {
+        solrStarter.stop();
+    }
+
     @Test
     public void testCreateFromQueryParams() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -59,7 +56,7 @@ public class SolrQueryModelTest {
         request.addParameter("start", "1");
         request.addParameter("rows", "12");
 
-        Map<String,String[]> requestMap = request.getParameterMap();
+        Map<String, String[]> requestMap = request.getParameterMap();
         BeanQueryModelFactory solrQueryModelFactory = new BeanQueryModelFactory();
     }
 
@@ -99,5 +96,5 @@ public class SolrQueryModelTest {
         SolrDocumentList matchDoc = (SolrDocumentList) queryResponse.getResponse().get("match");
         List<FullBean> fullBean = server.getBinder().getBeans(FullBean.class, matchDoc);
         assertNotNull(fullBean);
-    }
+    }*/
 }

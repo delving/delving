@@ -1,77 +1,24 @@
-/*
- * Copyright 2007 EDL FOUNDATION
- *
- *  Licensed under the EUPL, Version 1.0 or as soon they
- *  will be approved by the European Commission - subsequent
- *  versions of the EUPL (the "Licence");
- *  you may not use this work except in compliance with the
- *  Licence.
- *  You may obtain a copy of the Licence at:
- *
- *  http://ec.europa.eu/idabc/eupl
- *
- *  Unless required by applicable law or agreed to in
- *  writing, software distributed under the Licence is
- *  distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- *  express or implied.
- *  See the Licence for the specific language governing
- *  permissions and limitations under the Licence.
- */
+package eu.europeana.core.querymodel.query
 
-package eu.europeana.core.util.web;
+import _root_.org.junit.runner.RunWith
+import _root_.org.scalatest.matchers.ShouldMatchers
+import _root_.org.scalatest.Spec
+import _root_.org.scalatest.junit.JUnitRunner
 
-import eu.europeana.core.database.domain.CarouselItem;
-import eu.europeana.core.querymodel.query.ResultPaginationImpl;
-import eu.europeana.web.util.FreemarkerUtil;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import static junit.framework.Assert.*;
 
 /**
- * Test the utility classes
  *
- * @author Gerald de Jong <geralddejong@gmail.com>
- * @author Vitali Kiruta
- * @author Sjoerd Siebinga  <sjoerd.siebinga@gmail.com>
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @since Apr 5, 2010 10:55:58 PM
  */
 
-public class TestUtilities {
+@RunWith(classOf[JUnitRunner])
+class ResultPaginationSpec extends Spec with ShouldMatchers {
 
-    @Test
-    public void testPickShuffledRandomItems() {
-        List<CarouselItem> cache = fillCarouselItemList();
-        CarouselItemSampler sampler = new CarouselItemSampler();
-        sampler.setDisplayCount(3);
-        sampler.setCache(cache);
-        List<CarouselItem> previous = sampler.pickShuffledRandomItems();
-        for (int i = 0; i < 10; i++) {
-            assertNotNull(previous);
-            List<CarouselItem> next = sampler.pickShuffledRandomItems();
-            assertNotNull(next);
-            assertNotSame("Next and Previous shuffeled list should not be the same", next, previous);
-            previous = next;
-        }
-    }
 
-    private List<CarouselItem> fillCarouselItemList() {
-        List<CarouselItem> dummylist = new ArrayList<CarouselItem>();
-        for (int i = 0; i < 40; i++) {
-            CarouselItem item = new CarouselItem();
-            item.setEuropeanaUri("uri-" + i);
-            item.setTitle("title: " + i);
-            dummylist.add(item);
-        }
-        return dummylist;
-    }
 
-    @Test
+/*
+  @Test
     public void smallPagination() throws Exception {
         String page = makePage(30, 20, 0);
         assertEquals(
@@ -173,5 +120,42 @@ public class TestUtilities {
         Map<String, Object> model = new TreeMap<String, Object>();
         model.put("pagination", p);
         return FreemarkerUtil.processResource("/example-pagination.ftl", model);
-    }
+    }*/
+
+  /*
+    def processResource(templateName: String, model: Map[_, _]): String = {
+  var out: StringWriter = new StringWriter
+getResourceTemplate(templateName).process(model, out)
+return out.toString
+}
+
+
+
+  def processWebInf(templateName: String, model: Map[_, _]): String = {
+  var out: StringWriter = new StringWriter
+getWebInfTemplate(templateName).process(model, out)
+return out.toString
+}
+
+
+
+private   def getResourceTemplate(fileName: String): Template = {
+return getTemplate(fileName, new InputStreamReader(classOf[FreemarkerUtil].getResourceAsStream(fileName)))
+}
+
+
+
+  def getWebInfTemplate(fileName: String): Template = {
+return getTemplate(fileName, new FileReader("./portal-full/src/main/webapp/WEB-INF/templates/" + fileName))
+}
+
+
+
+private   def getTemplate(name: String, reader: Reader): Template = {
+  var configuration: Configuration = new Configuration
+configuration.setLocale(new Locale("nl"))
+configuration.setObjectWrapper(new DefaultObjectWrapper)
+return new Template(name, reader, configuration)
+}
+   */
 }

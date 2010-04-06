@@ -1,52 +1,21 @@
-/*
- * Copyright 2007 EDL FOUNDATION
- *
- * Licensed under the EUPL, Version 1.0 or - as soon they
- * will be approved by the European Commission - subsequent
- * versions of the EUPL (the "Licence");
- * you may not use this work except in compliance with the
- * Licence.
- * You may obtain a copy of the Licence at:
- *
- * http://ec.europa.eu/idabc/eupl
- *
- * Unless required by applicable law or agreed to in
- * writing, software distributed under the Licence is
- * distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied.
- * See the Licence for the specific language governing
- * permissions and limitations under the Licence.
- */
+package eu.europeana.core.querymodel.query
 
-package eu.europeana.core.querymodel.query;
-
-import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
-import eu.europeana.core.querymodel.annotation.QueryAnalyzer;
-import eu.europeana.core.querymodel.beans.AllFieldBean;
-import eu.europeana.core.querymodel.beans.BriefBean;
-import eu.europeana.core.querymodel.beans.FullBean;
-import eu.europeana.core.querymodel.beans.IdBean;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import _root_.org.junit.runner.RunWith
+import _root_.org.scalatest.matchers.ShouldMatchers
+import _root_.org.scalatest.Spec
+import _root_.org.scalatest.junit.JUnitRunner
 
 /**
- * Make sure the query analyzer understands the different query types
  *
- * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
+ * @since Apr 5, 2010 10:55:58 PM
  */
 
-public class TestQueryAnalyzer {
+@RunWith(classOf[JUnitRunner])
+class QueryAnalyzerSpec extends Spec with ShouldMatchers {
 
-    private static QueryAnalyzer qa;
+  /*
+  * private static QueryAnalyzer qa;
 
     @BeforeClass
     public static void init() {
@@ -155,5 +124,5 @@ public class TestQueryAnalyzer {
         params.put("rq", new String[]{"text:mercury and title:romania"});
         assertEquals("queries should be equal", "text:mercury AND title:romania", qa.createRefineSearchFilterQuery(params));
     }
-
+    */
 }
