@@ -90,13 +90,13 @@
                                <td align="left" style="padding: 2px;" class="ui-state-default ui-corner-all no-bg">
                                    <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
                                    <#if !link.remove = true>
-                                        <a href="${thisPage}?query=${query?html}${link.url?html}&view=${view}" title="${link.value}">
+                                        <a href="${thisPage}?query=${query?html}${link.url?html}&view=${view}" title="${link.value}" rel="nofollow">
                                         <span class="ui-icon ui-icon-circle-plus"></span>
                                             <#--<input type="checkbox" value="" onclick="document.location.href='${thisPage}?query=${query?html}${link.url}';"/>-->
                                                 <@stringLimiter "${link.value}" "20"/>(${link.count})
                                         </a>
                                 <#else>
-                                         <a href="${thisPage}?query=${query?html}${link.url?html}&view=${view}" title="${link.value}">
+                                         <a href="${thisPage}?query=${query?html}${link.url?html}&view=${view}" title="${link.value}" rel="nofollow">
                                              <span class="ui-icon ui-icon-circle-minus"></span>
                                              <@stringLimiter "${link.value}" "20"/>
                                             <span class="fg-pink"> (${link.count})</span>
