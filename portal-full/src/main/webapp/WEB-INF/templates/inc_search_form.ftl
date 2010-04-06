@@ -91,7 +91,7 @@
       <form method="get" accept-charset="UTF-8" name="formRefineSearch" id="formRefineSearch" onsubmit="return checkFormRefineSearch('rq',this);">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
-        <input type="hidden" id="qq" name="qq" value="<#if queryStringForPresentation??>${queryStringForPresentation}</#if>"/>
+        <input type="hidden" id="qq" name="qq" value="<#if queryStringForPresentation??>${queryStringForPresentation?html}</#if>"/>
         <a href="#" onclick="toggleObject('search_refine');toggleObject('search_simple');">Hide Refine Search</a>
         <table id="tbl_refine_search">
             <tr>
