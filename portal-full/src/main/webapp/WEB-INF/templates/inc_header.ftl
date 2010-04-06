@@ -69,7 +69,7 @@
                 <#if metaDescription??>
                     <meta name="description" content="${metaDescription?js_string}"/>
                 </#if>
-                <meta name="robots" content="noindex,nofollow"/>
+                <meta name="robots" content="noindex"/>
             <#break>
         <#case "full-doc.html">
         <#assign pageId = "fd"/>
