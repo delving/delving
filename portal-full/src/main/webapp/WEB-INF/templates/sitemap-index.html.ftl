@@ -1,8 +1,7 @@
 <#import "spring.ftl" as spring />
 <#assign thisPage = "sitemap.html"/>
-<#include "inc_header.ftl">
-
 <#compress>
+<#include "inc_header.ftl">
     <#if entries??>
         <#list entries as entry>
             <p>
