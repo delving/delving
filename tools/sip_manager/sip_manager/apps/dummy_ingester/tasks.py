@@ -1,3 +1,30 @@
+"""
+ Copyright 2010 EDL FOUNDATION
+
+ Licensed under the EUPL, Version 1.1 or as soon they
+ will be approved by the European Commission - subsequent
+ versions of the EUPL (the "Licence");
+ you may not use this work except in compliance with the
+ Licence.
+ You may obtain a copy of the Licence at:
+
+ http://ec.europa.eu/idabc/eupl
+
+ Unless required by applicable law or agreed to in
+ writing, software distributed under the Licence is
+ distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ express or implied.
+ See the Licence for the specific language governing
+ permissions and limitations under the Licence.
+
+
+ Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
+
+
+
+"""
+
 import codecs
 import datetime
 import subprocess
@@ -8,7 +35,6 @@ import os
 import django.db
 from django.core import exceptions
 from django.conf import settings
-from django.db import transaction
 
 from apps.process_monitor.sipproc import SipProcess
 from apps.base_item import models as base_item
@@ -32,6 +58,8 @@ REC_STOP = '</record>'
 
 class RequestCreate(SipProcess):
     SHORT_DESCRIPTION = 'Scan for new imports, if found grab it'
+    EXECUTOR_STYLE = True
+
     PROVIDER_TYPE_LOOKUP = {'L': models.PROVT_LIBRARY,
                             'A':models.PROVT_ARCHIVE,
                             'M': models.PROVT_MUSEUM,
@@ -190,13 +218,10 @@ class RequestCreate(SipProcess):
 
 
 class RequestParseNew(SipProcess):
-    """
-    hash for a MdRecord
-    """
     SHORT_DESCRIPTION = 'Parse new Requests'
+    EXECUTOR_STYLE = True
 
-    def run_it(self):
-        #cursor.execute('SELECT id FROM dummy_ingester_request WHERE status=%i AND pid=0' % models.REQS_PRE)
+    def prepare(self):
         try:
             request = models.Request.objects.filter(status=models.REQS_PRE,
                                                         pid=0)[0]
@@ -204,13 +229,13 @@ class RequestParseNew(SipProcess):
             return False
 
         # in order not to grab control to long, just handle one request on each call to this
-        self.handle_request(request.id)
+        self.request_id = request.id
         return True
 
-    # @ transaction.commit_manually
-    def handle_request(self, req_id):
+
+    def run_it(self):
         try:
-            req = models.Request.objects.filter(pk=req_id,pid=0)[0]
+            req = models.Request.objects.filter(pk=self.request_id,pid=0)[0]
         except:
             # either request was deleted or taken by somebody else
             return False
@@ -259,12 +284,10 @@ class RequestParseNew(SipProcess):
             if t0 + self.TASK_PROGRESS_TIME < time.time():
                 self.task_progress(record_count)
                 t0 = time.time()
-                #transaction.commit()
         f.close()
         request.status = models.REQS_INIT
         request.save()
         self.release_item(models.Request, request.pk)
-        #transaction.commit()
         return True
 
 

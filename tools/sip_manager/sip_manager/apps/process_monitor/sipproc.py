@@ -84,31 +84,46 @@ class SipProcess(object):
         self.run_once = run_once # if true plugin should exit after one runthrough
         self.pid = os.getpid()
         self.runs_in_thread = False
-        self.pm = models.ProcessMonitoring(pid=self.pid,
-                                           plugin_module = self.__class__.__module__,
-                                           plugin_name = self.__class__.__name__,
-                                           task_label=self.SHORT_DESCRIPTION)
-        self.pm.save()
+        self.is_prepared = False
+
 
     def run(self, *args, **kwargs):
         global RUNNING_EXECUTORS
-        self.log('starting task    +++++   %s   +++++' % self.short_name(), 8)
         ret = False
+        if self.short_name() == 'RequestParseNew':
+            pass
         if self.EXECUTOR_STYLE:
             if self.short_name() not in RUNNING_EXECUTORS:
-                print '++++++ Starting executor', self.short_name()
+                if not self.do_prepare():
+                    return
+                self.log('++++++ Starting executor %s (%i)' % (self.short_name(), self.pm.pk), 8)
                 RUNNING_EXECUTORS.append(self.short_name())
                 ret = self.run_in_thread(self.run_it, *args, **kwargs)
+            else:
+                pass
         else:
-            #try:
+            if not self.do_prepare():
+                return
             ret = self.run_it(*args, **kwargs)
-            #except Exception as inst:
-            #    self._log_task_exception_in_monitor(inst)
-            #    ret = False
 
-        if not self.runs_in_thread:
+        if not self.runs_in_thread and self.is_prepared:
             self.process_cleanup()
         return ret
+
+
+    def do_prepare(self):
+        b = self.prepare()
+        if b:
+            "Do this once prepare has indicated something to be done."
+            self.log('starting task    +++++   %s   +++++' % self.short_name(), 8)
+            self.pm = models.ProcessMonitoring(pid=self.pid,
+                                               plugin_module = self.__class__.__module__,
+                                               plugin_name = self.__class__.__name__,
+                                               task_label=self.SHORT_DESCRIPTION)
+            self.pm.save()
+            self.is_prepared = True
+        return b
+
 
     def _log_task_exception_in_monitor(self, inst):
         "TODO: If this task is in the process monitor, log the failure"
@@ -139,16 +154,35 @@ class SipProcess(object):
     def process_cleanup(self):
         global RUNNING_EXECUTORS
         self.log('  Finished task  -----   %s' % self.short_name(), 8)
-        x = self.pm.pk
+        pm_id = self.pm.pk
         self.pm.delete()
-        if self.EXECUTOR_STYLE:
-            pass
-        if self.short_name() in RUNNING_EXECUTORS:
-            print '------- terminating executor', self.short_name(), x
+        if self.runs_in_thread and (self.short_name() in RUNNING_EXECUTORS):
+            # the runs_in_thread check is needed, to avoid removing an actual
+            # running executor if we are terminating due to this executor
+            # already running.
+            # a running executor will set runs_in_thread True
+            self.log('------- terminating executor %s (%i)' % (self.short_name(), pm_id), 8)
             RUNNING_EXECUTORS.remove(self.short_name())
         return
 
+
+    # ==========   Must be overloaded   ====================
+
+    def run_it(self):
+        msg = 'run_it() must be implemented!'
+        print '******', msg
+        raise SipProcessException(msg)
+
+
+    # ==========   Can be overloaded   ====================
+
+    def prepare(self):
+        "This is called before run_it() if returns True, it indicates run_it will have something to do."
+        return True
+
+
     # ==========   Thread handling   ====================
+
     def run_in_thread(self, mthd, *args, **kwargs):
         "If threading is disabled, mthd will be run normally."
         if settings.THREADING_PLUGINS:
@@ -223,7 +257,7 @@ class SipProcess(object):
             self.pm.task_progress = '%i' % step
             self.pm.task_eta = 'unknown'
         self.pm.save()
-        self.log('%s  -  %s  eta: %s' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta), 7)
+        self.log('%s  -  %s  eta: %s | %i' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta, self.pm.id), 7)
 
     def _task_calc_eta(self, step):
         percent_done = float(step) / self._task_steps * 100

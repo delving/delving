@@ -71,13 +71,16 @@ class MainProcessor(object):
                 for taskClass in task_group:
                     if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
                         while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                            print '*** started thread for', taskClass.__name__
+                            # Continue to start new threads as long as they
+                            # find something to work on
+                            #print '*** started thread for', taskClass.__name__
+                            pass
                     else:
                         taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
-            print 'sleeping a while'
+            #print 'sleeping a while'
             time.sleep(10)
         return True
 
