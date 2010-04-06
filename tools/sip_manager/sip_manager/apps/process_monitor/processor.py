@@ -24,24 +24,43 @@
  Maintains and runs tasks
 """
 
+import sys
 import time
 
 
 from django.conf import settings
+from django.db import connection
 
-SIP_PROCESS_DBG_LVL = 9
+import sipproc
+
+
+SIP_PROCESS_DBG_LVL = 7
 
 class MainProcessor(object):
-    def __init__(self, single_run=False):
-        self.single_run = single_run
+    def __init__(self, options):
+        self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
         self.tasks_simple = [] # list of all tasks found
         self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
+        if options['flush-all']:
+            self.flush_all()
+            sys.exit(0)
+        elif options['clear-pids']:
+            self.clear_pids()
+            sys.exit(0)
         self.find_tasks()
 
     def run(self):
-        #a = UriCreateNewRecords()
-        #b = a.short_name()
+        "wrapper to catch Ctrl-C."
+        try:
+            self.run2()
+        except KeyboardInterrupt:
+            print 'Terminated from Keyboard!'
+            sys.exit(1)
+        return
+
+    def run2(self):
+        # First run all init tasks once
         for taskClass in self.tasks_init:
             tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
             tc.run()
@@ -50,11 +69,16 @@ class MainProcessor(object):
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
                 for taskClass in task_group:
-                    tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
-                    tc.run()
-            #time.sleep(0.1)
-            print 'Test mode, aborting after one run-through'
-            break # only run once
+                    if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
+                        while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                            print '*** started thread for', taskClass.__name__
+                    else:
+                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+            if self.single_run:
+                print 'Single run, aborting after one run-through'
+                break # only run once
+            print 'sleeping a while'
+            time.sleep(10)
         return True
 
     """
@@ -90,6 +114,38 @@ class MainProcessor(object):
                 if inst.args[0].find('No module named ') != 0:
                     raise inst
         print 'done!'
+
+
+    def flush_all(self):
+        cursor = connection.cursor()
+        if not 'mysql' in cursor.db.__module__:
+            print 'Not a mysql db, cant flush it, giving up'
+            return False
+        for table in ('base_item_mdrecord',
+                      'base_item_requestmdrecord',
+                      'dummy_ingester_aggregator',
+                      'dummy_ingester_dataset',
+                      'dummy_ingester_provider',
+                      'dummy_ingester_request',
+                      'plug_uris_uri',
+                      'plug_uris_urisource',
+                      'process_monitor_processmonitoring',
+                      ):
+            cursor.execute('TRUNCATE %s' % table)
+        return True
+
+    def clear_pids(self):
+        cursor = connection.cursor()
+        if not 'mysql' in cursor.db.__module__:
+            print 'Not a mysql db, cant flush it, giving up'
+            return False
+        cursor.execute('TRUNCATE process_monitor_processmonitoring')
+        for table in ('base_item_mdrecord',
+                      'dummy_ingester_request',
+                      'plug_uris_uri',
+                      'plug_uris_urisource',
+                      ):
+            cursor.execute('UPDATE %s SET pid=0' % table)
 
 
 """

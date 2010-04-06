@@ -23,6 +23,7 @@
 """
 
 import os
+import threading
 import time
 
 from django.conf import settings
@@ -33,6 +34,11 @@ import models
 # thinks its a teeny bit faster to extract the setting once...
 SIP_LOG_FILE = settings.SIP_LOG_FILE
 
+
+SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
+
+
+RUNNING_EXECUTORS = []
 
 
 class SipProcessException(Exception):
@@ -51,9 +57,17 @@ class SipProcess(object):
     """
     SHORT_DESCRIPTION = '' # a one-two word description.
 
-    SINGLE_RUN = False  # If true, this plugin is run once then unloaded
+    INIT_PLUGIN = False  # If True, is run (once) before normal plugins
 
-    INIT_PLUGIN = False  # If True, is run before normal plugins
+    EXECUTOR_STYLE = False # Limited threading, at the most one instance of a class
+                           # marked with this is started in a thread,
+                           # but no more are started until the running executor
+                           # has terminated
+
+    IS_THREADABLE = False # Indicates this plugin is threadable
+                          # and will be called repeatedly until it returns False
+                          # a True result means that a thread was spawned.
+
 
     # For loadbalancing, set to True if this plugin uses a lot of system resources
     # taskmanager will try to spread load depending on what is indicated here
@@ -69,18 +83,31 @@ class SipProcess(object):
         self.debug_lvl = debug_lvl
         self.run_once = run_once # if true plugin should exit after one runthrough
         self.pid = os.getpid()
-        self.pm = models.ProcessMonitoring(pid=self.pid, task_label=self.SHORT_DESCRIPTION)
+        self.runs_in_thread = False
+        self.pm = models.ProcessMonitoring(pid=self.pid,
+                                           plugin_module = self.__class__.__module__,
+                                           plugin_name = self.__class__.__name__,
+                                           task_label=self.SHORT_DESCRIPTION)
         self.pm.save()
 
     def run(self, *args, **kwargs):
-        self.log('starting task  +++++   %s' % self.short_name(), 1)
-        #try:
-        ret = self.run_it(*args, **kwargs)
-        #except Exception as inst:
-        #    self._log_task_exception_in_monitor(inst)
-        #    ret = False
-        self.log('Finished task  -----   %s' % self.short_name(), 1)
-        self.pm.delete()
+        global RUNNING_EXECUTORS
+        self.log('starting task    +++++   %s   +++++' % self.short_name(), 8)
+        ret = False
+        if self.EXECUTOR_STYLE:
+            if self.short_name() not in RUNNING_EXECUTORS:
+                print '++++++ Starting executor', self.short_name()
+                RUNNING_EXECUTORS.append(self.short_name())
+                ret = self.run_in_thread(self.run_it, *args, **kwargs)
+        else:
+            #try:
+            ret = self.run_it(*args, **kwargs)
+            #except Exception as inst:
+            #    self._log_task_exception_in_monitor(inst)
+            #    ret = False
+
+        if not self.runs_in_thread:
+            self.process_cleanup()
         return ret
 
     def _log_task_exception_in_monitor(self, inst):
@@ -109,10 +136,45 @@ class SipProcess(object):
             pass
         raise SipProcessException(msg)
 
+    def process_cleanup(self):
+        global RUNNING_EXECUTORS
+        self.log('  Finished task  -----   %s' % self.short_name(), 8)
+        x = self.pm.pk
+        self.pm.delete()
+        if self.EXECUTOR_STYLE:
+            pass
+        if self.short_name() in RUNNING_EXECUTORS:
+            print '------- terminating executor', self.short_name(), x
+            RUNNING_EXECUTORS.remove(self.short_name())
+        return
+
+    # ==========   Thread handling   ====================
+    def run_in_thread(self, mthd, *args, **kwargs):
+        "If threading is disabled, mthd will be run normally."
+        if settings.THREADING_PLUGINS:
+            self.runs_in_thread = True
+            args = (mthd,) + args
+            t = threading.Thread(target=self.thread_wrapper, args=args, kwargs=kwargs)
+            t.start()
+            return True
+        else:
+            return mthd(*args, **kwargs)
+
+
+    def thread_wrapper(self, *args, **kwargs):
+        mthd = args[0]
+        args = args[1:]
+        mthd(*args, **kwargs)
+        self.process_cleanup()
+
+
     # ==========   Pid locking mechanisms   ====================
     def grab_item(self, cls, pk, task_description):
-        """Locks item to current pid, if successfull, returns updated item, otherwise returns None.
-        Once the item is locked, nobody else but the locking process may modify it"""
+        """Locks item to current pid, if successfull, returns updated item,
+        otherwise returns None. Once the item is locked, nobody else but
+        the locking process may modify it.
+
+        It is reconended to use the returned object, instead of a possible earlier incarnation of it"""
         item = cls.objects.filter(pk=pk)[0]
         if not item.pid:
             item.pid = self.pid
@@ -151,7 +213,6 @@ class SipProcess(object):
 
     def task_progress(self, step):
         "update stepcount and eta (from last call to task_starting()."
-        #percent_done = '%0.2f' % (float(step) / self._task_steps * 100)
         if self._task_steps and step: # avoid zero div
             perc_done, self.pm.task_eta = self._task_calc_eta(step)
             since_last = step - self._task_previous
@@ -162,29 +223,18 @@ class SipProcess(object):
             self.pm.task_progress = '%i' % step
             self.pm.task_eta = 'unknown'
         self.pm.save()
-        self.log('%s  -  %s  eta: %s' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta), 9)
+        self.log('%s  -  %s  eta: %s' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta), 7)
 
     def _task_calc_eta(self, step):
         percent_done = float(step) / self._task_steps * 100
         elapsed_time = time.time() - self._task_time_start
         eta_t_from_now = int(elapsed_time / ((percent_done / 100) or 0.001))
-        eta = self._task_time_start + eta_t_from_now # - time.time()
-        """
-        hours = 0
-        while eta > 3600:
-            eta -= 3600
-            hours += 1
-        if hours:
-            eta_s = '%02i:' % hours
+        eta = self._task_time_start + eta_t_from_now
+        if (eta - time.time()) < SHOW_DATE_LIMIT:
+            eta_s = time.strftime('%H:%M:%S', time.localtime(eta))
         else:
-            eta_s = ''
-        minutes = 0
-        while eta > 60:
-            eta -= 60
-            minutes += 1
-        eta_s += '%02i:%02i' % (minutes, eta)
-        """
-        return percent_done, time.strftime('%m-%d %H:%M:%S', time.localtime(eta))
+            eta_s = time.strftime('%m-%d %H:%M:%S', time.localtime(eta))
+        return percent_done, eta_s
 
     # ==========   End of Task steps   ====================
 

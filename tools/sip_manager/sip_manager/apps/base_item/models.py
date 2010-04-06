@@ -68,7 +68,7 @@ MDRS_STATES = {
     }
 
 class MdRecord(models.Model):
-    content_hash = models.CharField(max_length=100)
+    content_hash = models.CharField(max_length=64, unique=True)
 
     # source data is the original record, treated in the following way:
     #   each line from the file is stripped of initial and trailing whitespace

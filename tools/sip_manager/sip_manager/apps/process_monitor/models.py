@@ -44,6 +44,8 @@ PMS_STATES = {
 
 class ProcessMonitoring(models.Model):
     pid = models.IntegerField() # what process 'owns' this item
+    plugin_module = models.CharField(max_length=100)
+    plugin_name = models.CharField(max_length=100)
     task_label = models.CharField(max_length=200)
     task_progress = models.CharField(max_length=50, default='') # count and percentage done
     task_eta = models.CharField(max_length=15, default='unknown')

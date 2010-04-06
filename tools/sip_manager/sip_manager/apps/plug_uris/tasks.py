@@ -108,6 +108,7 @@ USE_IMAGE_MAGIC = False
 
 
 
+
 # To avoid typos, we define the dirnames here and later use theese vars
 REL_DIR_ORIGINAL = 'original'
 REL_DIR_FULL = 'FULL_DOC'
@@ -116,7 +117,6 @@ REL_DIR_BRIEF = 'BRIEF_DOC'
 
 
 class UriPepareStorageDirs(SipProcess):
-    SINGLE_RUN = True
     INIT_PLUGIN = True
     PLUGIN_TAXES_DISK_IO = True
 
@@ -146,6 +146,7 @@ class UriPepareStorageDirs(SipProcess):
 
 class UriCreateNewRecords(SipProcess):
     SHORT_DESCRIPTION = 'Create new uri records'
+    EXECUTOR_STYLE = True
 
     def run_it(self):
         cursor = connection.cursor()
@@ -203,17 +204,47 @@ class UriCreateNewRecords(SipProcess):
 class UriProcessNewRecords(SipProcess):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
+    IS_THREADABLE = True
 
     def run_it(self):
-        uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
-                                          pid=0).order_by('-uri_source')
+        urisources = models.UriSource.objects.filter(pid=0)
+        if not urisources:
+            return False
+
+        for urisource in urisources:
+            # Loop over available sources, see if any of them has pending jobs
+            uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
+                                              uri_source=urisource,
+                                              pid=0).values('id')
+            if uris:
+                # found one!  lets work on it
+                self.urisource = urisource
+                break
+
+        if not uris:
+            return False # nothing to work on
+
+        # We must mark this item early, before possible threading kicks in
+        # otherwise we might find it again before the thread actually starts
+        # to work on the current set
+        self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source')
+
+        # Here we need to use a copy of the uris item, since otherwise we
+        # get threading issues.
+        # By sending a copy, and the implicit automatic garbage collection of
+        # the original uris this seems to be handled
+        self.run_in_thread(self.do_one_source, uris[:])
+        return True
+
+
+    def do_one_source(self, uris):
         self.task_starting('Process new Uri records', len(uris))
         t0 = time.time()
         record_count = 0
         for uri in uris:
             record_count += 1
 
-            self.uri = self.grab_item(models.Uri, uri.pk, 'Checking url')
+            self.uri = self.grab_item(models.Uri, uri['id'], 'Checking urls for %s' % self.urisource.name_or_ip)
             if not self.uri:
                 continue # Failed to take control of it
 
@@ -224,6 +255,7 @@ class UriProcessNewRecords(SipProcess):
             if t0 + self.TASK_PROGRESS_TIME < time.time():
                 self.task_progress(record_count)
                 t0 = time.time()
+        self.release_item(models.UriSource, self.urisource.pk)
         return True
 
 
@@ -458,7 +490,7 @@ class UriFileTreeMonitor(SipProcess):
 # List of active plugins from this file
 task_list = [UriPepareStorageDirs,
              UriCreateNewRecords,
-             UriProcessNewRecords,
+             #UriProcessNewRecords,
              #UriCleanup,
              #UriFileTreeMonitor,
              ]

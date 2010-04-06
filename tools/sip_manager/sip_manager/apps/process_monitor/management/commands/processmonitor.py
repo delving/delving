@@ -36,6 +36,10 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--single-run', action='store_true', dest='single-run', default=False,
             help='Process queue once then terminate.'),
+        make_option('--flush-all', action='store_true', dest='flush-all', default=False,
+            help='Completely erase all data.'),
+        make_option('--clear-pids', action='store_true', dest='clear-pids', default=False,
+            help='Clear all process monitoring data.'),
     )
     help = """Runs all checks and keeps track of running processes.
     Also responsible for filesystem cleanup actions.
@@ -45,10 +49,16 @@ class Command(BaseCommand):
     --single-run
        Perform all pendning tasks then exit
 
+    --flush-all
+       Completeley erase everything - Dangerous!
+
+    --clear-pids
+       Clear all process-monitoring data
+
     """
     args = ''#[--daemon]'
 
     def handle(self, *args, **options):
-        mp = MainProcessor(options['single-run'])
+        mp = MainProcessor(options)
         mp.run()
 
