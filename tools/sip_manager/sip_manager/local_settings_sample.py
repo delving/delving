@@ -17,7 +17,14 @@ SECRET_KEY = '%yh05 long and random string uxv6)%'
 
 
 
-#
-# Where the dummy_ingester can find ingest files
-#
-DUMMY_INGEST_DIR = '/Users/jaclu/proj/europeana/trunk/tools/sip_manager/ingestions'
+
+TREE_IS_INGESTION_SVN = True
+#IMPORT_SCAN_TREE = '/Users/jaclu/proj/europeana/ingestion/trunk/sourcedata/xml'
+IMPORT_SCAN_TREE = '/Users/jaclu/tmp/ingestion'
+
+
+SIP_LOG_FILE = '/tmp/sip-manager.log'
+
+# Where all downloaded Europeana:objects and generated images are stored
+SIP_OBJ_FILES = '/Volumes/JacBook/SIP_object_files'
+

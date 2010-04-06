@@ -12,13 +12,17 @@ except:
 try:
     SIP_LOG_FILE
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting SIP_LOG_FILE')
+    raise exceptions.ImproperlyConfigured('Missing setting SIP_LOG_FILE (logfile)')
 
 try:
     SIP_OBJ_FILES
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting SIP_OBJ_FILES')
+    raise exceptions.ImproperlyConfigured('Missing setting SIP_OBJ_FILES (directory)')
 
+try:
+    THREADING_PLUGINS
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting THREADING_PLUGINS (boolean)')
 
 # Django settings for sip_web project.
 
