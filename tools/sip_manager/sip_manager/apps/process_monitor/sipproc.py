@@ -41,6 +41,12 @@ SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
 RUNNING_EXECUTORS = []
 
 
+try:
+    TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
+except:
+    TASK_PROGRESS_INTERVALL = 5
+
+
 class SipProcessException(Exception):
     pass
 
@@ -75,8 +81,8 @@ class SipProcess(object):
     PLUGIN_TAXES_DISK_IO = False
     PLUGIN_TAXES_NET_IO = False
 
-
-    TASK_PROGRESS_TIME = 5 # how often task status should be updated
+    # how often task status should be updated
+    TASK_PROGRESS_TIME = TASK_PROGRESS_INTERVALL
 
 
     def __init__(self, debug_lvl=2, run_once=False):

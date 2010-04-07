@@ -28,3 +28,6 @@ SIP_LOG_FILE = '/tmp/sip-manager.log'
 # Where all downloaded Europeana:objects and generated images are stored
 SIP_OBJ_FILES = '/Volumes/JacBook/SIP_object_files'
 
+
+# how often plugins should report what is happening
+TASK_PROGRESS_INTERVALL = 5
