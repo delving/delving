@@ -509,10 +509,9 @@ class UriValidateSave(SipProcess):
         cmd = ['convert -resize 200x']
         cmd.append(org_fname)
         cmd.append(fname_full)
-        err_msg = self.cmd_execute(cmd)
-        if err_msg:
+        if self.cmd_execute(cmd):
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate FULL_DOC\n%s' % err_msg)
+                                   'Failed to generate FULL_DOC')
         self.uri_state(models.URIS_FULL_GENERATED)
 
         if OLD_STYLE_IMAGE_NAMES:
@@ -524,25 +523,31 @@ class UriValidateSave(SipProcess):
         cmd = ['convert -resize x110']
         cmd.append(fname_full)
         cmd.append(fname_brief)
-        err_msg = self.cmd_execute(cmd)
-        if err_msg:
+        if self.cmd_execute(cmd):
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate BRIEF_DOC\n%s' % err_msg)
+                                   'Failed to generate BRIEF_DOC')
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
 
     def cmd_execute(self, cmd):
-        if isinstance(cmd, (list, tuple)):
-            cmd = ' '.join(cmd)
-        err_msg = ''
+
+        """Returns 0 on success, or errcode on failure.
+
+        Previous version that breaks terribly if multi-threading
+
+        err_msg = None
         p = subprocess.Popen(cmd, shell=True,
-                             stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
-                             close_fds=True)
+                             close_fds=True
+                             )
         retcode = p.wait()
         if retcode:
             err_msg = p.stderr.read()
-        return err_msg
+        """
+        if isinstance(cmd, (list, tuple)):
+            cmd = ' '.join(cmd)
+        retcode = subprocess.call(cmd, shell=True)
+        return retcode
 
 
 
