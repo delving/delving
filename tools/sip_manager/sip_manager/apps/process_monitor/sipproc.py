@@ -217,7 +217,12 @@ class SipProcess(object):
         the locking process may modify it.
 
         It is reconended to use the returned object, instead of a possible earlier incarnation of it"""
-        item = cls.objects.filter(pk=pk)[0]
+        try:
+            item = cls.objects.filter(pk=pk)[0]
+        except:
+            # item is gone, nothing cant be locked so fail
+            return None
+
         if not item.pid:
             item.pid = self.pid
             item.save()
@@ -225,6 +230,7 @@ class SipProcess(object):
             self.pm.save()
             return item
         else:
+            # item exists but is already taken
             return None
 
 

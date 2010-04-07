@@ -24,10 +24,11 @@
 
 
 """
+
+
 import hashlib
 
-from django.db import models
-#from django.contrib import admin
+from django.db import models, connection
 
 from utils.gen_utils import dict_2_django_choice
 
@@ -67,6 +68,20 @@ MDRS_STATES = {
     MDRS_VERIFIED: 'verified',
     }
 
+class MdRecordManager(models.Manager):
+
+    def get_or_create(self, content_hash, source_data):
+        cursor = connection.cursor()
+        cursor.execute('SELECT id FROM base_item_mdrecord WHERE content_hash="%s"' % content_hash)
+        if cursor.rowcount:
+            # this can so not fail - i just refuse to do errorhandling for this call
+            item = self.model.objects.filter(content_hash=content_hash)[0]
+        else:
+            item = self.model(content_hash=content_hash, source_data=source_data)
+            item.save()
+        return item
+
+
 class MdRecord(models.Model):
     content_hash = models.CharField(max_length=64, unique=True)
 
@@ -82,6 +97,8 @@ class MdRecord(models.Model):
     pid = models.IntegerField(default=0) # what process 'owns' this item
     uniqueness_hash = models.CharField(max_length=100)
     Enrichment_done = models.BooleanField(default=False)
+
+    objects = MdRecordManager()
 
 
 
