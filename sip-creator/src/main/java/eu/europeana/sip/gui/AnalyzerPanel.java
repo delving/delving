@@ -247,12 +247,7 @@ public class AnalyzerPanel extends JPanel {
     private void loadFinished() {
         fileMenuEnablement.enable(true);
         progressDialog.dispose();
-        try {
-            recordChangeListener.recordRootChanged(analyzedFile, recordChangeListener.load(analyzedFile));
-        }
-        catch (IOException e) {
-            e.printStackTrace();  // todo: handle catch
-        }
+
     }
 
     public void analyze(final File file) {
@@ -264,6 +259,12 @@ public class AnalyzerPanel extends JPanel {
                 setMappingTree(MappingTree.create(list, file.getName()));
                 File mappingFile = createMappingFile(file);
                 groovyEditor.setGroovyFile(mappingFile);
+                try {
+                    recordChangeListener.recordRootChanged(analyzedFile, recordChangeListener.load(analyzedFile));
+                }
+                catch (IOException e) {
+                    e.printStackTrace();  // todo: handle catch
+                }
                 loadFinished();
             }
 
