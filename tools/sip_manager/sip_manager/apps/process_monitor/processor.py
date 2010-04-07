@@ -45,6 +45,9 @@ class MainProcessor(object):
         if options['flush-all']:
             self.flush_all()
             sys.exit(0)
+        elif options['drop-all']:
+            self.drop_all()
+            sys.exit(0)
         elif options['clear-pids']:
             self.clear_pids()
             sys.exit(0)
@@ -141,6 +144,24 @@ class MainProcessor(object):
                       'process_monitor_processmonitoring',
                       ):
             cursor.execute(sql % table)
+        return True
+
+    def drop_all(self):
+        cursor = connection.cursor()
+        for table in ('base_item_mdrecord',
+                      'base_item_requestmdrecord',
+                      'dummy_ingester_aggregator',
+                      'dummy_ingester_dataset',
+                      'dummy_ingester_provider',
+                      'dummy_ingester_request',
+                      'plug_uris_uri',
+                      'plug_uris_urisource',
+                      'process_monitor_processmonitoring',
+                      ):
+            try:
+                cursor.execute('DROP TABLE %s' % table)
+            except:
+                print 'Failed to remove %s' % table
         return True
 
     def clear_pids(self):
