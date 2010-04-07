@@ -110,7 +110,7 @@ BRIEFDOC_SIZE = (10000, 110)
 
 
 USE_IMAGE_MAGIC = True
-
+URL_TIMEOUT = 10
 
 
 
@@ -173,7 +173,7 @@ class UriPepareStorageDirs(SipProcess):
                     os.mkdir(new_dir)
 
 
-class UriCreateNewRecords(SipProcess):
+class UriCreate(SipProcess):
     SHORT_DESCRIPTION = 'Create new uri records'
     EXECUTOR_STYLE = True
 
@@ -249,7 +249,7 @@ class UriCreateNewRecords(SipProcess):
 
 
 
-class UriProcessNewRecords(SipProcess):
+class UriValidateSave(SipProcess):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
     IS_THREADABLE = True
@@ -331,7 +331,8 @@ class UriProcessNewRecords(SipProcess):
         "Check if url is responding and giving a 200 result."
         self.uri.time_lastcheck = datetime.datetime.now()
         try:
-            itm = urllib2.urlopen(self.uri.url)#,timeout=URL_TIMEOUT)
+            self.log('+++ %s' % self.uri.url, 1)
+            itm = urllib2.urlopen(self.uri.url,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
             return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i' % e.code)
         except urllib2.URLError, e:
@@ -361,7 +362,11 @@ class UriProcessNewRecords(SipProcess):
     def save_object(self, itm):
         if self.uri.mime_type == 'text/html':
             return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
-        data = itm.read()
+        try:
+            data = itm.read()
+        except:
+            return self.set_urierr(models.URIE_DOWNLOAD_FAILED,
+                                   'Failed to read object content')
         try:
             content_length = int(itm.headers['content-length'])
         except:
@@ -375,7 +380,7 @@ class UriProcessNewRecords(SipProcess):
         self.uri.content_hash = self.generate_hash(data)
 
         if OLD_STYLE_IMAGE_NAMES:
-            base_fname = self.file_name_from_hash_old_style(self.uri.url)
+            base_fname = self.file_name_from_hash_old_style(self.generate_hash(self.uri.url))
         else:
             base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
         org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
@@ -493,8 +498,12 @@ class UriProcessNewRecords(SipProcess):
                 -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
 
         """
-        fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL, '%s.jpg' % base_fname)
-        #self.make_needed_dirs(fname_full)
+        if OLD_STYLE_IMAGE_NAMES:
+            ext = '.FULL_DOC.jpg'
+        else:
+            ext = '.jpg'
+        fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL,
+                                  '%s%s' % (base_fname, ext))
         cmd = ['convert -resize 200x']
         cmd.append(org_fname)
         cmd.append(fname_full)
@@ -504,8 +513,12 @@ class UriProcessNewRecords(SipProcess):
                                    'Failed to generate FULL_DOC\n%s' % err_msg)
         self.uri_state(models.URIS_FULL_GENERATED)
 
-        fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF, '%s.jpg' % base_fname)
-        #self.make_needed_dirs(fname_brief)
+        if OLD_STYLE_IMAGE_NAMES:
+            ext = '.BRIEF_DOC.jpg'
+        else:
+            ext = '.jpg'
+        fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF,
+                                   '%s%s' % (base_fname, ext))
         cmd = ['convert -resize x110']
         cmd.append(fname_full)
         cmd.append(fname_brief)
@@ -520,8 +533,11 @@ class UriProcessNewRecords(SipProcess):
         if isinstance(cmd, (list, tuple)):
             cmd = ' '.join(cmd)
         err_msg = ''
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, close_fds=True)
+        self.log(cmd,1)
+        p = subprocess.Popen(cmd, shell=True,
+                             #stdout=subprocess.PIPE,
+                             #stderr=subprocess.PIPE,
+                             close_fds=True)
         retcode = p.wait()
         if retcode:
             err_msg = p.stderr.read()
@@ -548,8 +564,8 @@ class UriFileTreeMonitor(SipProcess):
 
 # List of active plugins from this file
 task_list = [UriPepareStorageDirs,
-             UriCreateNewRecords,
-             UriProcessNewRecords,
+             #UriCreate,
+             UriValidateSave,
              #UriCleanup,
              #UriFileTreeMonitor,
              ]
