@@ -131,6 +131,19 @@ if not USE_IMAGE_MAGIC:
 
 
 
+if not USE_IMAGE_MAGIC:
+    try:
+        from PIL import Image
+    except ImportError:
+        try:
+            import Image
+        except:
+            print '*** No module named PIL - needed by %s' % __file__
+            print '\tsuggested solution: sudo easy_install pil'
+            sys.exit(1)
+
+
+
 # To avoid typos, we define the dirnames here and later use theese vars
 REL_DIR_ORIGINAL = 'original'
 if OLD_STYLE_IMAGE_NAMES:
