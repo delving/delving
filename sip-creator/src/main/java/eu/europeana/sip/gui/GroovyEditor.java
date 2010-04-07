@@ -26,12 +26,15 @@ import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -40,7 +43,7 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class GroovyEditor extends JPanel implements GroovyService.Listener, AnalyzerPanel.Listener {
+public class GroovyEditor extends JPanel implements GroovyService.Listener, AnalyzerPanel.RecordChangeListener {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
@@ -49,9 +52,27 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private JTextArea outputArea = new JTextArea();
     private CompileTimer compileTimer;
     private GroovyService groovyService;
+    private JDialog dialog = new JDialog();
+    private JScrollPane pane;
 
-    public GroovyEditor(GroovyService.BindingSource bindingSource) {
+    private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
+            new NormalizationParserBindingSource.Listener() {
+
+                @Override
+                public void updateAvailableNodes(java.util.List<String> groovyNodes) {
+                    // todo: contents of list should go in autocompletion window
+                    JList list = new JList(groovyNodes.toArray());
+                    pane.getViewport().setView(list);
+                    dialog.setVisible(true);
+                }
+            }
+    );
+
+    public GroovyEditor() {
         super(new BorderLayout());
+        pane = new JScrollPane();
+        dialog.setSize(new Dimension(300, 200));
+        dialog.add(pane);
         DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
@@ -85,6 +106,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     }
 
     public void triggerExecution() {
+        bindingSource.nextRecord();
         compileTimer.timer.restart();
     }
 
@@ -110,15 +132,16 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     }
 
     @Override
-    public void updateAvailableNodes(java.util.List<String> groovyNodes) {
-        // todo: contents of list should go in autocompletion window
-        JDialog dialog = new JDialog();
-        JList list = new JList(groovyNodes.toArray());
-        JScrollPane pane = new JScrollPane();
-        dialog.setSize(new Dimension(300, 200));
-        dialog.add(pane);
-        pane.getViewport().setView(list);
-        dialog.setVisible(true);
+    public void recordRootChanged(File file, QName recordRoot) {
+        try {
+            bindingSource.prepareInputFile(file, recordRoot);
+        }
+        catch (XMLStreamException e) {
+            LOG.error("XML Stream error", e);
+        }
+        catch (FileNotFoundException e) {
+            LOG.error("File not found", e);
+        }
     }
 
     private class CompileTimer implements ActionListener {
