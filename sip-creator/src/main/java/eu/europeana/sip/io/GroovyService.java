@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.io;
 
+import eu.europeana.sip.gui.AnalyzerPanel;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
@@ -29,6 +30,8 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
+import javax.swing.*;
+import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,7 +47,7 @@ import java.util.concurrent.Executors;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class GroovyService {
+public class GroovyService implements AnalyzerPanel.RecordChangeListener {
 
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
     private final ExecutorService threadPool = Executors.newSingleThreadExecutor();
@@ -52,6 +55,22 @@ public class GroovyService {
     private File groovyFile;
     private Listener listener;
     private BindingSource bindingSource;
+    private QName recordRoot;
+
+    @Override
+    public void recordRootChanged(File file, QName recordRoot) {
+        this.recordRoot = recordRoot;
+    }
+
+    @Override
+    public void save(File file, QName recordRoot) {
+        // todo: implement
+    }
+
+    @Override
+    public QName load(File file) {
+        return null;  // todo: implement
+    }
 
     public interface Listener {
         void loadComplete(String groovySnippet);
@@ -149,7 +168,8 @@ public class GroovyService {
                 Binding binding = bindingSource.createBinding(writer);
                 if (null == binding.getVariable(BindingSource.INPUT)) {
                     LOG.error("input is returning null");
-                    return; // todo : inform user that passed delimiter is resulting in empty node list
+                    JOptionPane.showMessageDialog(null, "Invalid delimiter '" + recordRoot + "'");
+                    return;
                 }
                 new GroovyShell(binding).evaluate(groovySnippet);
                 sendResult(writer.toString());
