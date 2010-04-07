@@ -70,6 +70,9 @@ public class NormalizationParserBindingSource implements GroovyService.BindingSo
     void nextRecord() {
         try {
             record = normalizationParser.nextRecord();
+            if (null == record) {
+                return;
+            }
             listener.updateAvailableNodes(record.names());
         }
         catch (XMLStreamException e) {

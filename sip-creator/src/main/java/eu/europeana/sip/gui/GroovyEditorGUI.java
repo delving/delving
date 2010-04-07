@@ -133,11 +133,11 @@ public class GroovyEditorGUI extends JFrame {
             MarkupBuilder builder = new MarkupBuilder(writer);
             NamespaceBuilder xmlns = new NamespaceBuilder(builder);
             Binding binding = new Binding();
-            binding.setVariable("input", record);
-            binding.setVariable("output", builder);
-            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
-            binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
-            binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
+            binding.setVariable(INPUT, record);
+            binding.setVariable(OUTPUT, builder);
+            binding.setVariable(DC, xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
+            binding.setVariable(DCTERMS, xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
+            binding.setVariable(EUROPEANA, xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
             return binding;
         }
     }
