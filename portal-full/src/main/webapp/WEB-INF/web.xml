@@ -105,15 +105,15 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/mc/css/*</url-pattern>
+        <url-pattern>/portal/mc/css/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/mc/js/*</url-pattern>
+        <url-pattern>/portal/mc/js/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/mc/img/*</url-pattern>
+        <url-pattern>/portal/mc/img/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
