@@ -61,10 +61,15 @@ class MainProcessor(object):
 
     def run2(self):
         # First run all init tasks once
+        print
+        print 'Running init plugins'
         for taskClass in self.tasks_init:
             tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
+            print '\t%s' % tc.short_name()
             tc.run()
 
+        print
+        print 'Commencing operations'
         while True:
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
