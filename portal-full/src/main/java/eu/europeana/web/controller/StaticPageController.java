@@ -85,7 +85,7 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/mc/css/{pageName}.css")
+    @RequestMapping("/{pageName}.css")
     public ModelAndView fetchMcCss(
             @PathVariable("pageName") String pageName,
             HttpServletRequest request
@@ -103,7 +103,7 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/mc/js/{pageName}.js")
+    @RequestMapping("/{pageName}.js")
     public ModelAndView fetchMcJs(
             @PathVariable("pageName") String pageName,
             HttpServletRequest request
@@ -121,7 +121,7 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/mc/img/{pageName}.jpg")
+    @RequestMapping("/{pageName}.jpg")
     public ModelAndView fetchMcJpg(
             @PathVariable("pageName") String pageName,
             HttpServletRequest request
