@@ -274,7 +274,11 @@ class RequestParseNew(SipProcess):
                     mdr = base_item.MdRecord(content_hash=r_hash,source_data=record_str)
                     mdr.save()
                 except django.db.IntegrityError: # asume record exists
-                    mdr = base_item.MdRecord.objects.filter(content_hash=r_hash)[0]
+                    mdrs = base_item.MdRecord.objects.filter(content_hash=r_hash)
+                    if len(mdrs):
+                        mdr = mdrs[0]
+                    else:
+                        pass
                 r_m = base_item.RequestMdRecord(request=request,
                                                  md_record=mdr)
                 r_m.save()
