@@ -341,6 +341,6 @@ class RequestParseNew(SipProcess):
 
 
 
-task_list = [#RequestCreate,
-             #RequestParseNew
+task_list = [RequestCreate,
+             RequestParseNew
              ]

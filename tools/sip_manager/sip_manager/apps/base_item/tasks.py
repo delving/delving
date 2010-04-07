@@ -49,5 +49,5 @@ class MdRecordFixDB(SipProcess):
 
 # List of active plugins from this file
 task_list = [
-    #MdRecordFixDB,
+    MdRecordFixDB,
              ]
