@@ -210,7 +210,12 @@ class RequestCreate(SipProcess):
                              stderr=subprocess.PIPE, close_fds=True)
         retcode = p.wait()
         if retcode:
-            self.abort_process('shell command counting records in xml-file failed: %s' % fname)
+            msg = 'shell command counting records in xml-file failed: %s' % fname
+            self.log('*****************************',1)
+            self.log('Aborting due to failure with %s.record_count()' % __name__, 1)
+            self.log(msg,1)
+            sys.exit(1)
+            #self.abort_process(msg)
         rec_count = p.stdout.read().strip() or 0
         self.log('\tfound records: %s' % rec_count, 9)
         return rec_count
