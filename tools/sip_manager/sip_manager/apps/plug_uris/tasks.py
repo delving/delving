@@ -74,16 +74,6 @@ import urllib2
 import urlparse
 #from xml.dom.minidom import parseString
 
-try:
-    from PIL import Image
-except ImportError:
-    try:
-        import Image
-    except:
-        print '*** No module named PIL - needed by %s' % __file__
-        print '\tsuggested solution: sudo easy_install pil'
-        sys.exit(1)
-
 
 # sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
 #from pythonmagickwand.image import Image
@@ -113,6 +103,19 @@ USE_IMAGE_MAGIC = True
 URL_TIMEOUT = 10
 
 
+
+
+
+if not USE_IMAGE_MAGIC:
+    try:
+        from PIL import Image
+    except ImportError:
+        try:
+            import Image
+        except:
+            print '*** No module named PIL - needed by %s' % __file__
+            print '\tsuggested solution: sudo easy_install pil'
+            sys.exit(1)
 
 
 
