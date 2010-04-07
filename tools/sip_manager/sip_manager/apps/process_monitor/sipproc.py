@@ -151,6 +151,8 @@ class SipProcess(object):
 
     def abort_process(self, msg):
         "Terminats process, trying to clean up and remove all pid locks."
+        self.log('*********************')
+
         pms = models.ProcessMonitoring.objects.filter(pid=self.pid)
         for pm in pms:
             # TODO: a process failed, flag it, and remove its lock
