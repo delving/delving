@@ -161,17 +161,17 @@ public class FrontendTestUtil {
 		if (testPortalUrl().startsWith(HTTP_LOCALHOST) ) {
 			if (server == null) {
 				PortalFullStarter starter = new PortalFullStarter();
+				solr = new SolrStarter();
+				solr.start();
+
 				if (!loaded) {
-					ContentLoader.main();
+					//ContentLoader.main();
 					loaded = true;
 				}
 				server = starter.startServer(FrontendTestUtil.TEST_PORT);
 				if (!server.isRunning())
 					throw new Exception("Server not started");
-				solr = new SolrStarter();
 			}
-			server.start();
-			solr.start();
 		}
 	}
 

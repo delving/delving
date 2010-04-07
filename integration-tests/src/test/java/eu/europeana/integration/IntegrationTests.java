@@ -96,7 +96,7 @@ public class IntegrationTests implements Iterable<TestClientFixture> {
 					page = webClient.getPage(url);
 				} catch (Exception e) {
 					e.printStackTrace();
-					throw new RuntimeException(e);
+					throw new RuntimeException("On url " + url, e);
 				}
 
 				// get languages
