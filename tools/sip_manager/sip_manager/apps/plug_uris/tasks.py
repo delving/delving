@@ -565,7 +565,7 @@ class UriFileTreeMonitor(SipProcess):
 
 # List of active plugins from this file
 task_list = [UriPepareStorageDirs,
-             #UriCreate,
+             UriCreate,
              UriValidateSave,
              #UriCleanup,
              #UriFileTreeMonitor,
