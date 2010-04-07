@@ -121,9 +121,10 @@ class MainProcessor(object):
 
     def flush_all(self):
         cursor = connection.cursor()
-        if not 'mysql' in cursor.db.__module__:
-            print 'Not a mysql db, cant flush it, giving up'
-            return False
+        if 'mysql' in cursor.db.__module__:
+            sql = 'TRUNCATE %s'
+        else:
+            sql = 'TRUNCATE %s CASCADE'
         for table in ('base_item_mdrecord',
                       'base_item_requestmdrecord',
                       'dummy_ingester_aggregator',
@@ -134,14 +135,11 @@ class MainProcessor(object):
                       'plug_uris_urisource',
                       'process_monitor_processmonitoring',
                       ):
-            cursor.execute('TRUNCATE %s' % table)
+            cursor.execute(sql % table)
         return True
 
     def clear_pids(self):
         cursor = connection.cursor()
-        if not 'mysql' in cursor.db.__module__:
-            print 'Not a mysql db, cant flush it, giving up'
-            return False
         cursor.execute('TRUNCATE process_monitor_processmonitoring')
         for table in ('base_item_mdrecord',
                       'dummy_ingester_request',

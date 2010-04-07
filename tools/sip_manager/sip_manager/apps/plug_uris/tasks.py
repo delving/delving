@@ -88,7 +88,7 @@ except ImportError:
 # sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
 #from pythonmagickwand.image import Image
 
-from django.db import connection, transaction
+from django.db import connection
 from django.conf import settings
 
 from apps.base_item import models as base_item
@@ -96,13 +96,20 @@ from apps.process_monitor.sipproc import SipProcess
 
 import models
 
+
+try:
+    OLD_STYLE_IMAGE_NAMES = settings.OLD_STYLE_IMAGE_NAMES
+except:
+    OLD_STYLE_IMAGE_NAMES = False
+
+SIP_OBJ_FILES = settings.SIP_OBJ_FILES
+
+
 FULLDOC_SIZE = (200, 10000)
 BRIEFDOC_SIZE = (10000, 110)
 
 
-SIP_OBJ_FILES = settings.SIP_OBJ_FILES
-
-USE_IMAGE_MAGIC = False
+USE_IMAGE_MAGIC = True
 
 
 
@@ -111,9 +118,11 @@ USE_IMAGE_MAGIC = False
 
 # To avoid typos, we define the dirnames here and later use theese vars
 REL_DIR_ORIGINAL = 'original'
-REL_DIR_FULL = 'FULL_DOC'
-REL_DIR_BRIEF = 'BRIEF_DOC'
-
+if OLD_STYLE_IMAGE_NAMES:
+    REL_DIR_BRIEF = REL_DIR_FULL = 'OLD_STYLE_IMGS'
+else:
+    REL_DIR_FULL = 'FULL_DOC'
+    REL_DIR_BRIEF = 'BRIEF_DOC'
 
 
 class UriPepareStorageDirs(SipProcess):
@@ -121,11 +130,21 @@ class UriPepareStorageDirs(SipProcess):
     PLUGIN_TAXES_DISK_IO = True
 
     def run_it(self):
-        for s in (REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF):
-            test_dir = os.path.join(SIP_OBJ_FILES, s,'12','32')
+        if OLD_STYLE_IMAGE_NAMES:
+            places = (REL_DIR_ORIGINAL, REL_DIR_BRIEF)
+            tst_dir = '6EA'
+        else:
+            places = (REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF)
+            tst_dir = '12/32'
+
+        for s in places:
+            test_dir = os.path.join(SIP_OBJ_FILES, s, tst_dir)
             if not os.path.exists(test_dir):
                 self.task_starting('Creating dirs for %s' % s, 256)
-                self.pre_generate_uri_trees(s)
+                if OLD_STYLE_IMAGE_NAMES:
+                    self.pre_generate_uri_trees_old_style(s)
+                else:
+                    self.pre_generate_uri_trees(s)
         return True
 
     def pre_generate_uri_trees(self, prefix):
@@ -142,6 +161,16 @@ class UriPepareStorageDirs(SipProcess):
                         second_dir = os.path.join(first_dir, '%s%s' % (s1, s2))
                         os.mkdir(second_dir)
 
+    def pre_generate_uri_trees_old_style(self, prefix):
+        hex_str = '0123456789ABCDEF'
+        base_dir = os.path.join(SIP_OBJ_FILES, prefix)
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
+        for f1 in hex_str:
+            for f2 in hex_str:
+                for f3 in hex_str:
+                    new_dir = os.path.join(base_dir, '%s%s%s' % (f1, f2, f3))
+                    os.mkdir(new_dir)
 
 
 class UriCreateNewRecords(SipProcess):
@@ -230,16 +259,15 @@ class UriProcessNewRecords(SipProcess):
         if not urisources:
             return False
 
-        self.uris = []
+        self.urisource = None
         for urisource in urisources:
             # Loop over available sources, see if any of them has pending jobs
-            self.uris = models.Uri.objects.new_by_source(urisource.id)
-            if self.uris:
+            if models.Uri.objects.new_by_source_count(urisource.pk):
                 # found one!  lets work on it
                 self.urisource = urisource
                 break
 
-        if not self.uris:
+        if not self.urisource:
             return False
 
         return True # Found something to do!
@@ -257,10 +285,11 @@ class UriProcessNewRecords(SipProcess):
 
 
     def do_one_source(self):
-        self.task_starting('Process new Uri records', len(self.uris))
+        current_count = models.Uri.objects.new_by_source_count(self.urisource.pk)
+        self.task_starting('Process new Uri records', current_count)
         t0 = time.time()
         record_count = 0
-        for uri_id in self.uris:
+        for uri_id in models.Uri.objects.new_by_source_generator(self.urisource.pk):
             record_count += 1
 
             self.uri = self.grab_item(models.Uri, uri_id, 'Checking urls for %s' % self.urisource.name_or_ip)
@@ -274,6 +303,12 @@ class UriProcessNewRecords(SipProcess):
             if t0 + self.TASK_PROGRESS_TIME < time.time():
                 self.task_progress(record_count)
                 t0 = time.time()
+            if record_count > current_count:
+                # More items has turned up since we started this loop,
+                # not a problem as such but in order to show a correct eta and stuff
+                # we should terminate now, and things will continue on next call
+                # to this plugin
+                break
         self.release_item(models.UriSource, self.urisource.pk)
         return True
 
@@ -339,7 +374,10 @@ class UriProcessNewRecords(SipProcess):
 
         self.uri.content_hash = self.generate_hash(data)
 
-        base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
+        if OLD_STYLE_IMAGE_NAMES:
+            base_fname = self.file_name_from_hash_old_style(self.uri.url)
+        else:
+            base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
         org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
         #self.make_needed_dirs(org_fname)
         try:

@@ -122,22 +122,49 @@ URI_ERR_CODES = {
 
 
 
+LIMIT_COUNT = 200
 
 class UriManager(models.Manager):
-    def new_by_source(self, source_id):
-        "All new uris that should be checked for one UriSource."
+
+    def base_sql(self, source_id, count=False):
+        if count:
+            s = 'COUNT(u.id)'
+        else:
+            s = 'u.id'
+        lst = ['SELECT %s FROM plug_uris_uri u' % s]
+        lst.append('WHERE u.status=%i' % URIS_CREATED)
+        lst.append('AND uri_source_id=%i' % source_id)
+        lst.append('AND err_code=%i' % URIE_NO_ERROR)
+        lst.append('AND item_type=%i' % URIT_OBJECT) # only for initial cachegeneration!
+        lst.append('AND pid=0')
+        sql = ' '.join(lst)
+        return sql
+
+    def new_by_source_count(self, source_id):
+        sql = self.base_sql(source_id, count=True)
         cursor = connection.cursor()
-        sql = ['SELECT u.id FROM plug_uris_uri u']
-        sql.append('WHERE u.status=%i' % URIS_CREATED)
-        sql.append('AND uri_source_id=%i' % source_id)
-        sql.append('AND err_code=%i' % URIE_NO_ERROR)
-        sql.append('AND item_type=%i' % URIT_OBJECT) # only for initial cachegeneration!
-        sql.append('AND pid=0')
-        cursor.execute(' '.join(sql))
-        result_list = []
-        for row in cursor.fetchall():
-            result_list.append(row[0])
-        return result_list
+        cursor.execute(sql)
+        i = cursor.fetchone()[0]
+        return i
+
+    def new_by_source_generator(self, source_id):
+        "All new uris that should be checked for one UriSource."
+        sql = self.base_sql(source_id)
+        cursor = connection.cursor()
+        if 'mysql' in cursor.db.__module__:
+            limit_syntax = 'LIMIT %i,%i'
+        else:
+            limit_syntax = 'OFFSET %i LIMIT %i'
+
+        offset = 0
+        while True:
+            limiter = limit_syntax % (offset, LIMIT_COUNT)
+            cursor.execute('%s %s' % (sql, limiter))
+            if not cursor.rowcount:
+                break
+            for row in cursor.fetchall():
+                yield row[0]
+            offset += LIMIT_COUNT
 
 
 class Uri(models.Model):
