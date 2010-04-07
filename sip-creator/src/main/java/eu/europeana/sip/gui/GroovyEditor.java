@@ -161,6 +161,9 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
         File recordFile = new File(file.getName() + ".record");
         if (!recordFile.exists()) {
             LOG.warn(String.format("File %s not found, will use the default delimiter '%s'", recordFile.getAbsoluteFile(), AnalyzerPanel.DEFAULT_RECORD));
+            JOptionPane.showMessageDialog(this, "No delimiter specified for this file yet.\n" +
+                    "Please select a delimiter from the Document Structure panel\n" +
+                    "by a right-click on a node.");
             return new QName(AnalyzerPanel.DEFAULT_RECORD);
         }
         FileInputStream fileInputStream = new FileInputStream(recordFile);
