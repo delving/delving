@@ -239,12 +239,7 @@ class RequestParseNew(SipProcess):
 
 
     def run_it(self):
-        try:
-            req = models.Request.objects.filter(pk=self.request_id,pid=0)[0]
-        except:
-            # either request was deleted or taken by somebody else
-            return False
-        request = self.grab_item(models.Request, req.pk,
+        request = self.grab_item(models.Request, self.request_id,
                                  'About to parse for ese records')
         if not request:
             return False # Failed to take control of it
@@ -275,15 +270,8 @@ class RequestParseNew(SipProcess):
 
                 record_str = '\n'.join(record)
                 r_hash = base_item.calculate_mdr_content_hash(record_str)
-                try:
-                    mdr = base_item.MdRecord(content_hash=r_hash,source_data=record_str)
-                    mdr.save()
-                except django.db.IntegrityError: # asume record exists
-                    mdrs = base_item.MdRecord.objects.filter(content_hash=r_hash)
-                    if len(mdrs):
-                        mdr = mdrs[0]
-                    else:
-                        pass
+                mdr = base_item.MdRecord.objects.get_or_create(content_hash=r_hash,
+                                                               source_data=record_str)
                 r_m = base_item.RequestMdRecord(request=request,
                                                  md_record=mdr)
                 r_m.save()
