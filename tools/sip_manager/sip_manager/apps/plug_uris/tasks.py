@@ -536,8 +536,8 @@ class UriValidateSave(SipProcess):
             cmd = ' '.join(cmd)
         err_msg = ''
         p = subprocess.Popen(cmd, shell=True,
-                             #stdout=subprocess.PIPE,
-                             #stderr=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
                              close_fds=True)
         retcode = p.wait()
         if retcode:
