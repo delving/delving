@@ -34,7 +34,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -142,6 +145,32 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
         catch (FileNotFoundException e) {
             LOG.error("File not found", e);
         }
+    }
+
+    @Override
+    public void save(File file, QName recordRoot) throws IOException {
+        File recordFile = new File(file.getName() + ".record");
+        FileOutputStream fileOutputStream = new FileOutputStream(recordFile);
+        fileOutputStream.write(recordRoot.toString().getBytes());
+        fileOutputStream.close();
+        LOG.info(String.format("Written '%s' to file %s", recordRoot, recordFile.getAbsoluteFile()));
+    }
+
+    @Override
+    public QName load(File file) throws IOException {
+        File recordFile = new File(file.getName() + ".record");
+        if (!recordFile.exists()) {
+            LOG.warn(String.format("File %s not found, will use the default delimiter '%s'", recordFile.getAbsoluteFile(), AnalyzerPanel.DEFAULT_RECORD));
+            return new QName(AnalyzerPanel.DEFAULT_RECORD);
+        }
+        FileInputStream fileInputStream = new FileInputStream(recordFile);
+        StringBuffer b = new StringBuffer();
+        int i;
+        while (-1 != (i = fileInputStream.read())) {
+            b.append((char) i);
+        }
+        LOG.info(String.format("Loaded '%s' from file %s", b, recordFile.getAbsoluteFile()));
+        return new QName(b.toString());
     }
 
     private class CompileTimer implements ActionListener {

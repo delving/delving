@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -56,6 +57,7 @@ public class AnalyzerPanel extends JPanel {
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private JLabel statsTitle = new JLabel("Statistics", JLabel.CENTER);
+
     private JTable statsTable;
     private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
@@ -64,11 +66,17 @@ public class AnalyzerPanel extends JPanel {
     private GroovyEditor groovyEditor = new GroovyEditor();
     private JButton next = new JButton("Next");
     private File analyzedFile;
-    private static final String DEFAULT_RECORD = "record";
+    public static final String DEFAULT_RECORD = "record";
+
+    private RecordChangeListener recordChangeListener = groovyEditor;
 
     public interface RecordChangeListener {
 
-        void recordRootChanged(File file, QName recordRoot);
+        public void recordRootChanged(File file, QName recordRoot);
+
+        public void save(File file, QName recordRoot) throws IOException;
+
+        public QName load(File file) throws IOException;
     }
 
     public AnalyzerPanel() {
@@ -144,7 +152,13 @@ public class AnalyzerPanel extends JPanel {
                                         @Override
                                         public void actionPerformed(ActionEvent e) {
                                             QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
-                                            groovyEditor.recordRootChanged(analyzedFile, recordRoot);
+                                            recordChangeListener.recordRootChanged(analyzedFile, recordRoot);
+                                            try {
+                                                recordChangeListener.save(analyzedFile, recordRoot);
+                                            }
+                                            catch (IOException e1) {
+                                                e1.printStackTrace();  // todo: handle catch
+                                            }
                                             analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
                                         }
                                     }
@@ -233,7 +247,12 @@ public class AnalyzerPanel extends JPanel {
     private void loadFinished() {
         fileMenuEnablement.enable(true);
         progressDialog.dispose();
-        groovyEditor.recordRootChanged(analyzedFile, new QName(DEFAULT_RECORD));
+        try {
+            recordChangeListener.recordRootChanged(analyzedFile, recordChangeListener.load(analyzedFile));
+        }
+        catch (IOException e) {
+            e.printStackTrace();  // todo: handle catch
+        }
     }
 
     public void analyze(final File file) {
@@ -250,7 +269,7 @@ public class AnalyzerPanel extends JPanel {
 
             @Override
             public void failure(Exception exception) {
-                // todo: use JOptionPane or something else to show failure to user
+                JOptionPane.showMessageDialog(null, "Error analyzing file : '" + exception.getMessage() + "'");
                 loadFinished();
             }
 
