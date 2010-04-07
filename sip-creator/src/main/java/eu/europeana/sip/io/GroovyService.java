@@ -60,7 +60,14 @@ public class GroovyService {
     }
 
     public interface BindingSource {
-        Binding createBinding(Writer writer);
+
+        public static final String INPUT = "input";
+        public static final String OUTPUT = "output";
+        public static final String DC = "dc";
+        public static final String DCTERMS = "dcterms";
+        public static final String EUROPEANA = "europeana";
+
+        public Binding createBinding(Writer writer);
     }
 
     public GroovyService(BindingSource bindingSource, Listener listener) {
@@ -140,6 +147,10 @@ public class GroovyService {
         public void run() {
             try {
                 Binding binding = bindingSource.createBinding(writer);
+                if (null == binding.getVariable(BindingSource.INPUT)) {
+                    LOG.error("input is returning null");
+                    return; // todo : inform user that passed delimiter is resulting in empty node list
+                }
                 new GroovyShell(binding).evaluate(groovySnippet);
                 sendResult(writer.toString());
                 threadPool.execute(new Persistor(groovySnippet));
