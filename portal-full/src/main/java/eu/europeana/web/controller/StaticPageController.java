@@ -192,7 +192,7 @@ public class StaticPageController {
 		String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("verbatim");
         if (pageValue != null) {
-            pageModel.addObject("pageBody", pageValue);
+            pageModel.addObject("pageBody", pageName);
         }
         return pageModel;
 	}
