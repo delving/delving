@@ -2,7 +2,11 @@
 <#assign request = request>
 <#assign hostName = hostName>
 <#assign agent = agent>
-<#assign referer = referer>
+<#if referer??>
+    <#assign referer = referer />
+<#else>
+    <#assign referer = "(no referrer)" />    
+</#if>
 
 Hello Human Master,
 
