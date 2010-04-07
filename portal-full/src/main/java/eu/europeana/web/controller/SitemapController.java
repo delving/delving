@@ -144,7 +144,7 @@ public class SitemapController {
 
 			entries.add(
 					new SitemapIndexEntry(
-							StringEscapeUtils.escapeXml(String.format("%sbrief-doc.html?query=*:*&view=table&qf=PROVIDER:%s", baseUrl, facetField.getName())),
+							StringEscapeUtils.escapeXml(String.format("%sbrief-doc.html?query=PROVIDER:\"%s\"&view=table", baseUrl, facetField.getName())),
 							facetField.getName(),
 							new Date(),
 							facetField.getCount())); //todo: add more relevant date later
