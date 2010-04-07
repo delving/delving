@@ -24,6 +24,8 @@ package eu.europeana.bootstrap;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
+import eu.europeana.core.util.StarterUtil;
+
 import java.io.File;
 
 
@@ -47,19 +49,16 @@ public class PortalFullStarter {
     }
 
     public Server startServer(int portNumber) throws Exception {
-        File webappA = new File("./portal-full/src/main/webapp");
-        File webappB = new File("./src/main/webapp");
-        WebAppContext webAppContext;
+
+        File webappA = new File(StarterUtil.getEuropeanaPath() + "/portal-full/src/main/webapp");
+         WebAppContext webAppContext;
         if (webappA.exists()) {
-            webAppContext = new WebAppContext(webappA.toString(), PORTAL_PATH);
-            webAppContext.setExtraClasspath("./api/src/main/resources;./core/src/test/resources");
-        }
-        else if (webappB.exists()) {
-            webAppContext = new WebAppContext(webappB.toString(), PORTAL_PATH);
+            webAppContext = new WebAppContext(StarterUtil.getEuropeanaPath() + "/portal-full/src/main/webapp", PORTAL_PATH);
+            webAppContext.setExtraClasspath("./portal-full/target/classes/;./portal-full/src/main/resources/;./integration-tests/src/main/resources/;./api/src/main/resources/;./core/src/test/resources/");
         }
         else {
             throw new Exception("Unable to find the webapp dir. Please make sure you start from the root of " +
-                    "the Europeana Project or from the root of the module");
+                    "the Europeana Project ");
         }
         Server server = new Server(portNumber);
         server.setHandler(webAppContext);
