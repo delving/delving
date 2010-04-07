@@ -331,7 +331,6 @@ class UriValidateSave(SipProcess):
         "Check if url is responding and giving a 200 result."
         self.uri.time_lastcheck = datetime.datetime.now()
         try:
-            self.log('+++ %s' % self.uri.url, 1)
             itm = urllib2.urlopen(self.uri.url,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
             return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i' % e.code)
@@ -533,7 +532,6 @@ class UriValidateSave(SipProcess):
         if isinstance(cmd, (list, tuple)):
             cmd = ' '.join(cmd)
         err_msg = ''
-        self.log(cmd,1)
         p = subprocess.Popen(cmd, shell=True,
                              #stdout=subprocess.PIPE,
                              #stderr=subprocess.PIPE,
