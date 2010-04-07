@@ -546,7 +546,14 @@ class UriValidateSave(SipProcess):
         """
         if isinstance(cmd, (list, tuple)):
             cmd = ' '.join(cmd)
-        retcode = subprocess.call(cmd, shell=True)
+        #self.cmd_lock.acquire()
+        try:
+            retcode = subprocess.call(cmd, shell=True)
+        except:
+            #self.cmd_lock.release()
+            print '******************* cmd_execute() exception - terminating'
+            sys.exit(1)
+        #self.cmd_lock.release()
         return retcode
 
 

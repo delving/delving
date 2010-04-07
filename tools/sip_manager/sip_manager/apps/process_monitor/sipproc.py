@@ -31,6 +31,14 @@ from django.conf import settings
 import models
 
 
+try:
+    TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
+except:
+    TASK_PROGRESS_INTERVALL = 5
+
+
+
+
 # thinks its a teeny bit faster to extract the setting once...
 SIP_LOG_FILE = settings.SIP_LOG_FILE
 
@@ -39,12 +47,6 @@ SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
 
 
 RUNNING_EXECUTORS = []
-
-
-try:
-    TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
-except:
-    TASK_PROGRESS_INTERVALL = 5
 
 
 class SipProcessException(Exception):
@@ -196,7 +198,9 @@ class SipProcess(object):
         if settings.THREADING_PLUGINS:
             self.runs_in_thread = True
             args = (mthd,) + args
-            t = threading.Thread(target=self.thread_wrapper, args=args, kwargs=kwargs)
+            t = threading.Thread(target=self.thread_wrapper,
+                                 name='pmid-%i' % self.pm.pk,
+                                 args=args, kwargs=kwargs)
             t.start()
             return True
         else:

@@ -51,4 +51,5 @@ class ProcessMonitoring(models.Model):
     task_eta = models.CharField(max_length=15, default='unknown')
     status = models.IntegerField(choices=dict_2_django_choice(PMS_STATES),
                                  default = PMS_RUNNING)
-    time_created = models.DateTimeField(auto_now_add=True,editable=False)
+    time_created = models.DateTimeField(auto_now_add=True, editable=False)
+    last_change =  models.DateTimeField(auto_now=True, editable=False)
