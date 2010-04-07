@@ -37,6 +37,8 @@ class GroovyDraft {
 		println "After overriding toString() - implicit call to toString() ${gd}";
 		println "After overriding tellName() ${gd.tellName()}";
 		println "After overriding toString() - explicit call to toString() ${gd.toString()}";
+		assert "abc" instanceof String;
+		assert "def${println "aap"}" instanceof GString;
 	}
 }
 
