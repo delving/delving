@@ -156,8 +156,8 @@ public class AnalyzerPanel extends JPanel {
                                             try {
                                                 recordChangeListener.save(analyzedFile, recordRoot);
                                             }
-                                            catch (IOException e1) {
-                                                e1.printStackTrace();  // todo: handle catch
+                                            catch (IOException exception) {
+                                                JOptionPane.showMessageDialog(null, "Error saving delimiter to file : " + exception.getMessage());
                                             }
                                             analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
                                         }
@@ -263,7 +263,7 @@ public class AnalyzerPanel extends JPanel {
                     recordChangeListener.recordRootChanged(analyzedFile, recordChangeListener.load(analyzedFile));
                 }
                 catch (IOException e) {
-                    e.printStackTrace();  // todo: handle catch
+                    JOptionPane.showMessageDialog(null, "Error loading delimiter from file : " + e.getMessage());
                 }
                 loadFinished();
             }
