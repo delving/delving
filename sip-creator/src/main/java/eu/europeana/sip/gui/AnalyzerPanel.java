@@ -35,14 +35,12 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -63,26 +61,14 @@ public class AnalyzerPanel extends JPanel {
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
 
-    private NormalizationParserBindingSource source = new NormalizationParserBindingSource(
-            new NormalizationParserBindingSource.Listener() {
-
-                @Override
-                public void updateAvailableNodes(List<String> groovyNodes) {
-                    groovyEditor.updateAvailableNodes(groovyNodes);
-                }
-            }
-    );
-
-    private GroovyEditor groovyEditor = new GroovyEditor(source);
+    private GroovyEditor groovyEditor = new GroovyEditor();
     private JButton next = new JButton("Next");
     private File analyzedFile;
+    private static final String DEFAULT_RECORD = "record";
 
     public interface RecordChangeListener {
-        void recordRootChanged(File file, QName recordRoot);
-    }
 
-    public interface Listener {
-        void updateAvailableNodes(List<String> groovyNodes);
+        void recordRootChanged(File file, QName recordRoot);
     }
 
     public AnalyzerPanel() {
@@ -110,7 +96,6 @@ public class AnalyzerPanel extends JPanel {
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                source.nextRecord();
                 groovyEditor.triggerExecution();
             }
         });
@@ -159,7 +144,7 @@ public class AnalyzerPanel extends JPanel {
                                         @Override
                                         public void actionPerformed(ActionEvent e) {
                                             QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
-                                            source.recordRootChanged(analyzedFile, recordRoot);
+                                            groovyEditor.recordRootChanged(analyzedFile, recordRoot);
                                             analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
                                         }
                                     }
@@ -248,15 +233,7 @@ public class AnalyzerPanel extends JPanel {
     private void loadFinished() {
         fileMenuEnablement.enable(true);
         progressDialog.dispose();
-        try {
-            source.prepareInputFile(analyzedFile, new QName("record"));
-        }
-        catch (XMLStreamException e) {
-            e.printStackTrace();  // todo: handle catch
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();  // todo: handle catch
-        }
+        groovyEditor.recordRootChanged(analyzedFile, new QName(DEFAULT_RECORD));
     }
 
     public void analyze(final File file) {

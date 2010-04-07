@@ -45,7 +45,7 @@ import java.io.Writer;
  */
 public class GroovyEditorGUI extends JFrame {
 
-    private GroovyEditor groovyEditor = new GroovyEditor(new Source());
+    private GroovyEditor groovyEditor = new GroovyEditor();
     private NormalizationParser normalizationParser;
     private JButton next = new JButton("Next");
     private GroovyNode record;

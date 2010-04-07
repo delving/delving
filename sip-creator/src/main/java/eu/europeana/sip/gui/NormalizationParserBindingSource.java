@@ -44,7 +44,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class NormalizationParserBindingSource implements GroovyService.BindingSource, AnalyzerPanel.RecordChangeListener {
+public class NormalizationParserBindingSource implements GroovyService.BindingSource {
     private final static Logger LOG = Logger.getLogger(NormalizationParserBindingSource.class);
     private NormalizationParser normalizationParser;
     private GroovyNode record;
@@ -92,19 +92,6 @@ public class NormalizationParserBindingSource implements GroovyService.BindingSo
         binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
         binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
         return binding;
-    }
-
-    @Override
-    public void recordRootChanged(File file, QName recordRoot) {
-        try {
-            prepareInputFile(file, recordRoot);
-        }
-        catch (XMLStreamException e) {
-            LOG.error("XML Stream error", e);
-        }
-        catch (FileNotFoundException e) {
-            LOG.error("File not found", e);
-        }
     }
 }
 
