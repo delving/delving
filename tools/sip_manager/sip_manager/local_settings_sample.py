@@ -30,4 +30,9 @@ SIP_OBJ_FILES = '/Volumes/JacBook/SIP_object_files'
 
 
 # how often plugins should report what is happening
-TASK_PROGRESS_INTERVALL = 5
+#  this setting is optional 15 is default
+TASK_PROGRESS_INTERVALL = 15
+
+# How often we check for new tasks
+#  this setting is optional 60 is default
+#PROCESS_SLEEP_TIME = 60
