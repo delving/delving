@@ -53,7 +53,6 @@ public class StaticPageController {
     /**
      * All of the pages are served up from here
      *
-     * @param pageName name of the page
      * @param request  where we find locale
      * @param response where to write it
      * @return ModelAndView
@@ -80,9 +79,7 @@ public class StaticPageController {
     /**
      * All mc/ css are served up from here
      *
-     * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
@@ -97,9 +94,7 @@ public class StaticPageController {
     /**
      * All mc/ js are served up from here
      *
-     * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
@@ -114,9 +109,7 @@ public class StaticPageController {
     /**
      * All mc/ jpg are served up from here
      *
-     * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
