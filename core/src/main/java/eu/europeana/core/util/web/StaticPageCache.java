@@ -49,7 +49,7 @@ public class StaticPageCache {
 		this.staticPagePath = staticPagePath;
 	}
 
-	private final Pattern fileNamePattern = Pattern.compile("[a-zA-Z0-9_/]+\\.[a-z]+");
+	private final Pattern fileNamePattern = Pattern.compile("[a-zA-Z0-9_/\\-]+\\.[a-z]+");
 
 	public String getPage(String pageNamePrefix, String pageName, Language language) {
 		// composed from servletPath and pathInfo that may be null
