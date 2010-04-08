@@ -29,6 +29,7 @@ import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
 import eu.europeana.core.database.exception.AnnotationNotFoundException;
 import eu.europeana.core.database.exception.AnnotationNotOwnedException;
+import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
 import eu.europeana.definitions.domain.Language;
 import eu.europeana.fixture.DatabaseFixture;
@@ -164,7 +165,7 @@ public class TestAnnotationDao {
     }
 
     @Test
-    public void list() throws AnnotationHasBeenModifiedException, AnnotationNotFoundException, UserNotFoundException {
+    public void list() throws AnnotationHasBeenModifiedException, AnnotationNotFoundException, UserNotFoundException, EuropeanaUriNotFoundException {
         createSuccessor();
         List<Long> ids = annotationDao.list(AnnotationType.IMAGE_ANNOTATION, europeanaIds.get(0).getEuropeanaUri());
         assertEquals(2, ids.size());

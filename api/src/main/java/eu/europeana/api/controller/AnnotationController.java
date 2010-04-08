@@ -28,9 +28,11 @@ import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
 import eu.europeana.core.database.exception.AnnotationNotFoundException;
 import eu.europeana.core.database.exception.AnnotationNotOwnedException;
+import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.definitions.domain.Language;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -57,6 +59,8 @@ import java.util.Locale;
 @Controller
 @RequestMapping("/annotation")
 public class AnnotationController {
+
+    private Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private AnnotationDao annotationDao;
@@ -114,7 +118,7 @@ public class AnnotationController {
     public @ResponseBody String list(
             @PathVariable String europeanaUri,
             @PathVariable String type
-    ) throws IOException {
+    ) throws IOException, EuropeanaUriNotFoundException {
         AnnotationType annotationType = AnnotationType.valueOf(type);
         List<Long> ids = annotationDao.list(annotationType, europeanaUri);
         StringBuilder out = new StringBuilder();
@@ -127,33 +131,39 @@ public class AnnotationController {
     // ===== exceptions ======
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(AnnotationNotFoundException.class)
-    public void notFound() {
-
+    @ExceptionHandler({AnnotationNotFoundException.class})
+    public void notFoundAnnotation() {
+        log.warn("problem");
     }
 
-    @ExceptionHandler(AnnotationHasBeenModifiedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({EuropeanaUriNotFoundException.class})
+    public void notFoundId() {
+         log.warn("problem");
+    }
+
+    @ExceptionHandler({AnnotationHasBeenModifiedException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public void hasBeenModified() {
-
+        log.warn("problem");
     }
 
-    @ExceptionHandler(AnnotationNotOwnedException.class)
+    @ExceptionHandler({AnnotationNotOwnedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public void notOwned() {
-
+        log.warn("problem");
     }
 
-    @ExceptionHandler(Throwable.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void unknownProblem() {
-
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler({UserNotFoundException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void userNotFound() {
+        log.warn("problem");
+    }
 
+    @ExceptionHandler({Throwable.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public void unknownProblem() {
+        log.warn("problem");
     }
 
     private User getUser() throws UserNotFoundException {

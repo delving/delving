@@ -29,6 +29,7 @@ import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
 import eu.europeana.core.database.exception.AnnotationNotFoundException;
 import eu.europeana.core.database.exception.AnnotationNotOwnedException;
+import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
 import eu.europeana.definitions.domain.Language;
 import org.apache.log4j.Logger;
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -171,12 +173,17 @@ public class AnnotationDaoImpl implements AnnotationDao {
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<Long> list(AnnotationType annotationType, String europeanaUri) {
+    public List<Long> list(AnnotationType annotationType, String europeanaUri) throws EuropeanaUriNotFoundException {
         Query idQuery = entityManager.createQuery("select id from EuropeanaId id where id.europeanaUri = :europeanaUri");
         idQuery.setParameter("europeanaUri", europeanaUri);
-        EuropeanaId europeanaId = (EuropeanaId) idQuery.getSingleResult();
-        Query query = entityManager.createQuery("select a.id from Annotation a where a.europeanaId = :europeanaId");
-        query.setParameter("europeanaId", europeanaId);
-        return (List<Long>) query.getResultList();
+        try {
+            EuropeanaId europeanaId = (EuropeanaId) idQuery.getSingleResult();
+            Query query = entityManager.createQuery("select a.id from Annotation a where a.europeanaId = :europeanaId");
+            query.setParameter("europeanaId", europeanaId);
+            return (List<Long>) query.getResultList();
+        }
+        catch (NoResultException e) {
+            throw new EuropeanaUriNotFoundException(europeanaUri);
+        }
     }
 }
