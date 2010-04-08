@@ -21,18 +21,18 @@
 
 package eu.europeana.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.StaticPageCache;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Genereric controller for static pages.
@@ -60,18 +60,20 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/{pageName}.html")
+    @RequestMapping("/**/*.html")
     public ModelAndView fetchStaticPage(
-            @PathVariable("pageName") String pageName,
             HttpServletRequest request,
             HttpServletResponse response
     ) throws Exception {
-        String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+        String pageValue = staticPageCache.getPage(
+        		request.getServletPath(), 
+        		request.getPathInfo(),
+        		ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
         if (pageValue != null) {
             pageModel.addObject("pageValue", pageValue);
         }
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ pageName);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ request.getPathInfo());
         return pageModel;
     }
 
@@ -85,12 +87,11 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/{pageName}.css")
+    @RequestMapping("/css/**/*.css")
     public ModelAndView fetchMcCss(
-            @PathVariable("pageName") String pageName,
             HttpServletRequest request
     ) throws Exception {
-    	return fetchVerbatimPage(pageName, request);
+    	return fetchVerbatimPage(request);
     }
 
     /**
@@ -103,12 +104,11 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/{pageName}.js")
+    @RequestMapping("/js/**/*.js")
     public ModelAndView fetchMcJs(
-            @PathVariable("pageName") String pageName,
             HttpServletRequest request
     ) throws Exception {
-    	return fetchVerbatimPage(pageName, request);
+    	return fetchVerbatimPage(request);
     }
     
     /**
@@ -121,23 +121,24 @@ public class StaticPageController {
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/{pageName}.jpg")
+    @RequestMapping("/img/**/*.jpg")
     public ModelAndView fetchMcJpg(
-            @PathVariable("pageName") String pageName,
             HttpServletRequest request
     ) throws Exception {
-    	return fetchVerbatimPage(pageName, request);
+    	return fetchVerbatimPage(request);
     }
 
-    private ModelAndView fetchVerbatimPage(String pageName, HttpServletRequest request) {
-		
-		String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+    private ModelAndView fetchVerbatimPage(HttpServletRequest request) {
+        String pageValue = staticPageCache.getPage(
+        		request.getServletPath(), 
+        		request.getPathInfo(),
+        		null);
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("verbatim");
         if (pageValue != null) {
-            pageModel.addObject("pageBody", pageName);
+            pageModel.addObject("pageValue", pageValue);
         }
         return pageModel;
-	}
+    }
 
     /*
     * freemarker template not loadable from database
