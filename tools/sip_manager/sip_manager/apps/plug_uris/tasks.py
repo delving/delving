@@ -516,7 +516,7 @@ class UriValidateSave(SipProcess):
         fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF,
                                    '%s%s' % (base_fname, ext))
         cmd = ['/opt/local/bin/convert -resize x110']
-        cmd.append(fname_full)
+        cmd.append(org_fname)
         cmd.append(fname_brief)
         if self.cmd_execute(cmd):
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
