@@ -33,20 +33,13 @@ from django.db import connection
 
 import sipproc
 
-try:
-    PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
-except:
-    PROCESS_SLEEP_TIME = 60
 
-try:
-    PLUGIN_FILTER = settings.PLUGIN_FILTER
-except:
-    PLUGIN_FILTER = []
+# Since looking up in settings takes some extra cpu, important settings
+# are cached within the module
+PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
+PLUGIN_FILTER = settings.PLUGIN_FILTER
+SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
 
-try:
-    SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
-except:
-    SIP_PROCESS_DBG_LVL = 3
 
 class MainProcessor(object):
 
