@@ -135,6 +135,7 @@ public class ControllerUtil {
         return 0;
     }
 
+    @Deprecated // todo: use Locale as a controller method parameter and SpringMVC sets it automatically
     public static Language getLocale(HttpServletRequest request) {
         LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
         Locale locale = localeResolver.resolveLocale(request);

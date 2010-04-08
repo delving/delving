@@ -34,6 +34,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class IngestionFixture {
     private BeanQueryModelFactory beanQueryModelFactory;
 
     @Autowired
+    @Qualifier("solrSelectServer")
     private SolrServer solrServer;
 
     @Autowired

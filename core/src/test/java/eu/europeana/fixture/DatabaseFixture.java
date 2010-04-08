@@ -182,4 +182,7 @@ public class DatabaseFixture {
     }
 
 
+    public void flush() {
+        entityManager.flush();
+    }
 }

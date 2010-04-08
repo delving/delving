@@ -88,6 +88,8 @@
 
     <bean name="userDao" class="eu.europeana.core.database.dao.UserDaoImpl"/>
 
+    <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
+
     <bean name="staticInfoDao" class="eu.europeana.core.database.dao.StaticInfoDaoImpl"/>
 
     <bean name="dashboardDao" class="eu.europeana.core.database.dao.DashboardDaoImpl"/>

@@ -542,7 +542,7 @@
     </dependencyManagement>
     <properties>
         <europeana.definitions.version>1.00</europeana.definitions.version>
-        <europeana.core.version>1.21</europeana.core.version>
+        <europeana.core.version>1.22</europeana.core.version>
         <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
         <europeana.portal.version>0.6</europeana.portal.version>
         <europeana.api.version>0.1</europeana.api.version>
