@@ -45,6 +45,10 @@
      <#assign metaDescription = metaTitle />
 </#if>
 
+
+<#-- disable refined search -->
+<#assign showRefine="none"/>
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 
