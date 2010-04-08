@@ -20,18 +20,17 @@
  */
 package eu.europeana.core.util.web;
 
-import eu.europeana.definitions.domain.Language;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+
+import eu.europeana.definitions.domain.Language;
 
 /**
  * This class pays attention to a file system directory and delivers pages if they are present.
@@ -41,7 +40,6 @@ import java.util.regex.Pattern;
 
 public class StaticPageCache {
 	private static final String DOT = ".";
-	private static final String HTML_EXTENSION = ".html";
 	private Logger log = Logger.getLogger(getClass());
 	private Map<String, Page> pageMapCache = new ConcurrentHashMap<String, Page>();
 	private String staticPagePath;
@@ -55,7 +53,7 @@ public class StaticPageCache {
 
 	public String getPage(String pageNamePrefix, String pageName, Language language) {
 		// composed from servletPath and pathInfo that may be null
-		// and may be called w/o language for verbatium pages
+		// and may be called w/o language for verbatim pages
 		String fileName = 
 			(pageNamePrefix == null ? "" : pageNamePrefix)  
 			+ (pageName == null ? "" : pageName);
@@ -64,14 +62,14 @@ public class StaticPageCache {
 		if (pattern.matcher(fileName).matches()) {
 
 			// paranoid test
-			if (fileName.indexOf(DOT) == fileName.lastIndexOf(DOT)) {
+			if (checkForDot(fileName)) {
 				String lingualFileName = fileName;
 				if (language != null) {
-					lingualFileName = fileName.replace(DOT, DOT + "_" + language.getCode());
+					lingualFileName = fileName.replace(DOT, "_" + language.getCode() + DOT);
 				}
 				Page page = pageMap().get(lingualFileName);
 				if (page == null) {
-					String defautFileName = fileName.replace(DOT, DOT + "_" + Language.EN.getCode());
+					String defautFileName = fileName.replace(DOT, "_" + Language.EN.getCode() + DOT);
 					page = pageMap().get(defautFileName);
 					if (page == null) {
 						return null;
@@ -81,6 +79,10 @@ public class StaticPageCache {
 			} 
 		}
 		return null;
+	}
+
+	private boolean checkForDot(String fileName) {
+		return fileName.indexOf(DOT) == fileName.lastIndexOf(DOT);
 	}
 
 	public void invalidate() {
@@ -93,19 +95,21 @@ public class StaticPageCache {
 			if (!root.isDirectory()) {
 				throw new RuntimeException(staticPagePath+" is not a directory!");
 			}
-			addToPageMap(root);
+			addToPageMap(root, root);
 		}
 		return pageMapCache;
 	}
 
-	private void addToPageMap(File directory) {
+	private void addToPageMap(File root, File directory) {
 		for (File file : directory.listFiles()) {
 			if (file.isDirectory()) {
-				addToPageMap(file);
+				addToPageMap(root, file);
 			}
-			else if (file.getName().endsWith(HTML_EXTENSION)) {
-				String baseFileName = file.getName().substring(0, file.getName().length() - HTML_EXTENSION.length());
-				pageMapCache.put(baseFileName, new Page(file));
+			else {
+				String baseFileName = file.getPath().substring(root.getPath().length());
+				if (checkForDot(baseFileName)) {
+					pageMapCache.put(baseFileName, new Page(file));
+				}
 			}
 		}
 	}
