@@ -518,10 +518,11 @@ class UriValidateSave(SipProcess):
             ext = '.jpg'
         fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL,
                                   '%s%s' % (base_fname, ext))
-        cmd = ['/opt/local/bin/convert -resize 200x']
+        cmd = ['convert -resize 200x']
         cmd.append(org_fname)
         cmd.append(fname_full)
         if self.cmd_execute(cmd):
+            self.remove_file(fname_full)
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
                                    'Failed to generate FULL_DOC')
         self.uri_state(models.URIS_FULL_GENERATED)
@@ -532,14 +533,27 @@ class UriValidateSave(SipProcess):
             ext = '.jpg'
         fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF,
                                    '%s%s' % (base_fname, ext))
-        cmd = ['/opt/local/bin/convert -resize x110']
+        cmd = ['convert -resize x110']
         cmd.append(org_fname)
         cmd.append(fname_brief)
         if self.cmd_execute(cmd):
+            self.remove_file(fname_brief)
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
                                    'Failed to generate BRIEF_DOC')
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
+
+
+    def remove_file(self, full_path):
+        if not SIP_OBJ_FILES in full_path:
+            raise SipProcessException('Attempt to remove illegal filename: %s' % full_path)
+        try:
+            os.remove(full_path)
+        except OSError:
+            # maybe it wasnt created, no problemas at least its gone
+            pass
+        return
+
 
     def cmd_execute(self, cmd):
 
