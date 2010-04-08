@@ -49,7 +49,7 @@ public class StaticPageCache {
 		this.staticPagePath = staticPagePath;
 	}
 
-	final Pattern pattern = Pattern.compile("[a-zA-Z0-9_/]+\\.[a-z]+");
+	private final Pattern fileNamePattern = Pattern.compile("[a-zA-Z0-9_/]+\\.[a-z]+");
 
 	public String getPage(String pageNamePrefix, String pageName, Language language) {
 		// composed from servletPath and pathInfo that may be null
@@ -59,7 +59,7 @@ public class StaticPageCache {
 			+ (pageName == null ? "" : pageName);
 
 		// check file name for a-z
-		if (pattern.matcher(fileName).matches()) {
+		if (fileNamePattern.matcher(fileName).matches()) {
 
 			// paranoid test
 			if (checkForDot(fileName)) {

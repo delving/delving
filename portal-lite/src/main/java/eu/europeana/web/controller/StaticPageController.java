@@ -34,13 +34,14 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Genereric controller for static pages.
+ * Genereric controller for static pages. Badly deprecated, see StaticPageCOntroller in portal-full
  *
  * @author Eric van der Meulen <eric.meulen@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 @Controller
+@Deprecated
 public class StaticPageController {
 
     @Autowired
@@ -63,7 +64,7 @@ public class StaticPageController {
             @PathVariable("pageName") String pageName,
             HttpServletRequest request
     ) {
-        String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+        String pageValue = staticPageCache.getPage(null, pageName, ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
         if (pageValue != null) {
             pageModel.addObject("pageValue", pageValue);
