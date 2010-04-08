@@ -127,8 +127,10 @@ class SipProcess(object):
             self.pm = models.ProcessMonitoring(pid=self.pid,
                                                plugin_module = self.__class__.__module__,
                                                plugin_name = self.__class__.__name__,
-                                               task_label=self.SHORT_DESCRIPTION)
-            self.pm.save()
+                                               #task_label=self.SHORT_DESCRIPTION
+                                               )
+            #self.pm.save()
+            self.task_starting(self.SHORT_DESCRIPTION)
             self.is_prepared = True
         return b
 
@@ -261,7 +263,30 @@ class SipProcess(object):
         self.pm.task_eta = ''
         self.pm.save()
         self.task_progress(0)
-        pass
+        self._task_show_time = time.time()
+
+
+    def task_time_to_show(self, progress=''):
+        """Either use as a bool check, or give a param directly.
+
+        A number param is sent to task_progess()
+        a string param is used directly."""
+        if self._task_show_time + self.TASK_PROGRESS_TIME < time.time():
+            if progress:
+                if isinstance(progress, int):
+                    self.task_progress(progress)
+                else:
+                    self.pm.task_progress = progress
+                    self.pm.save()
+                    self.log('%s - %s | %i' % (self.pm.task_label,
+                                               self.pm.task_progress,
+                                               self.pm.id), 7)
+            self._task_show_time = time.time()
+            b = True
+        else:
+            b = False
+        return b
+
 
     def task_progress(self, step):
         "update stepcount and eta (from last call to task_starting()."
@@ -276,6 +301,7 @@ class SipProcess(object):
             self.pm.task_eta = 'unknown'
         self.pm.save()
         self.log('%s  -  %s  eta: %s | %i' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta, self.pm.id), 7)
+
 
     def _task_calc_eta(self, step):
         percent_done = float(step) / self._task_steps * 100
