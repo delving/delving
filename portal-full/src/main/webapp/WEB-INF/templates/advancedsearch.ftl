@@ -3,6 +3,7 @@
 
 <#assign view = "table">
 <#if RequestParameters.view?exists><#assign view = "${RequestParameters.view}"></#if>
+<#assign enableRefinedSearch="true"/>
 <#include "inc_header.ftl"/>
 <#include "inc_search_form.ftl">
 <div id="doc4" class="yui-t2">

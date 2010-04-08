@@ -2,6 +2,7 @@
 <#assign formatTypes = formatTypes/>
 <#assign thisPage = "explain.html">
 <#assign view = "table">
+<#assign enableRefinedSearch="true"/>
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl">
 
