@@ -194,7 +194,6 @@ class UriCreate(SipProcess):
 
     def run_it(self):
         self.task_starting('Creating new uri records', self.cursor.rowcount)
-        t0 = time.time()
         record_count = 0
         while True:
             result = self.cursor.fetchone()
@@ -212,9 +211,7 @@ class UriCreate(SipProcess):
                                   base_item.MDRS_PROCESSING):
                 continue # never touch bad / completed items
             self.handle_md_record(mdr)
-            if t0 + self.TASK_PROGRESS_TIME < time.time():
-                self.task_progress(record_count)
-                t0 = time.time()
+            self.task_time_to_show(record_count)
         return True
 
     def handle_md_record(self, mdr):
@@ -255,7 +252,7 @@ class UriCreate(SipProcess):
 class UriValidateSave(SipProcess):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
-    IS_THREADABLE = True
+    #IS_THREADABLE = True
 
     def prepare(self):
         urisources = models.UriSource.objects.filter(pid=0)
@@ -290,7 +287,6 @@ class UriValidateSave(SipProcess):
     def do_one_source(self):
         current_count = models.Uri.objects.new_by_source_count(self.urisource.pk)
         self.task_starting('Process new Uri records', current_count)
-        t0 = time.time()
         record_count = 0
         for uri_id in models.Uri.objects.new_by_source_generator(self.urisource.pk):
             record_count += 1
@@ -303,9 +299,8 @@ class UriValidateSave(SipProcess):
 
             self.release_item(models.Uri, uri_id)
 
-            if t0 + self.TASK_PROGRESS_TIME < time.time():
-                self.task_progress(record_count)
-                t0 = time.time()
+            self.task_time_to_show(record_count)
+
             if record_count > current_count:
                 # More items has turned up since we started this loop,
                 # not a problem as such but in order to show a correct eta and stuff
@@ -506,7 +501,7 @@ class UriValidateSave(SipProcess):
             ext = '.jpg'
         fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL,
                                   '%s%s' % (base_fname, ext))
-        cmd = ['convert -resize 200x']
+        cmd = ['/opt/local/bin/convert -resize 200x']
         cmd.append(org_fname)
         cmd.append(fname_full)
         if self.cmd_execute(cmd):
@@ -520,7 +515,7 @@ class UriValidateSave(SipProcess):
             ext = '.jpg'
         fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF,
                                    '%s%s' % (base_fname, ext))
-        cmd = ['convert -resize x110']
+        cmd = ['/opt/local/bin/convert -resize x110']
         cmd.append(fname_full)
         cmd.append(fname_brief)
         if self.cmd_execute(cmd):
@@ -533,29 +528,56 @@ class UriValidateSave(SipProcess):
 
         """Returns 0 on success, or errcode on failure.
 
-        Previous version that breaks terribly if multi-threading
-
-        err_msg = None
-        p = subprocess.Popen(cmd, shell=True,
-                             stderr=subprocess.PIPE,
-                             close_fds=True
-                             )
-        retcode = p.wait()
-        if retcode:
-            err_msg = p.stderr.read()
         """
         if isinstance(cmd, (list, tuple)):
             cmd = ' '.join(cmd)
-        #self.cmd_lock.acquire()
         try:
             retcode = subprocess.call(cmd, shell=True)
+            """
+            p = subprocess.Popen(cmd, shell=True)
+            print '+++ cmd started', cmd
+            while True:
+                print 'hepp1'
+                pid, retcode = -1
+                try:
+                    pid, retcode = os.waitpid(p.pid, os.WNOHANG)
+                except:
+                    print '*******  Wait problem %i %i' % (pid, retcode)
+                print 'hepp2'
+                if retcode:
+                    self.die('found retcode %i' % retcode)
+                    break
+                time.sleep(0.1)
+                if t0 + 10 < time.time():
+                    self.die('timeout retcode')
+                    p.kill()
+                    retcode = -1
+                    break
+            """
+            """
+            p = subprocess.Popen(cmd, shell=True)
+            while p.returncode == None:
+                time.sleep(0.1)
+                if t0 + 10 < time.time():
+                    p.kill()
+                    break
+            if p.returncode != None:
+                retcode = p.returncode
+            else:
+                retcode = -1
+            """
         except:
             #self.cmd_lock.release()
             print '******************* cmd_execute() exception - terminating'
+            print cmd
             sys.exit(1)
         #self.cmd_lock.release()
+        #self.die('would have continued')
         return retcode
 
+    def die(self, msg):
+        print '**********', msg
+        sys.exit(1)
 
 
 class UriCleanup(SipProcess):

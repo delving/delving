@@ -34,13 +34,22 @@ from django.db import connection
 import sipproc
 
 try:
-  PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
+    PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
 except:
-  PROCESS_SLEEP_TIME = 60
+    PROCESS_SLEEP_TIME = 60
 
-SIP_PROCESS_DBG_LVL = 7
+try:
+    PLUGIN_FILTER = settings.PLUGIN_FILTER
+except:
+    PLUGIN_FILTER = []
+
+try:
+    SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
+except:
+    SIP_PROCESS_DBG_LVL = 3
 
 class MainProcessor(object):
+
     def __init__(self, options):
         self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
@@ -93,7 +102,7 @@ class MainProcessor(object):
                 print 'Single run, aborting after one run-through'
                 break # only run once
             #print 'sleeping a while'
-            time.sleep(60)
+            time.sleep(PROCESS_SLEEP_TIME)
         return True
 
     """
@@ -112,6 +121,9 @@ class MainProcessor(object):
                     print task.__name__,
                     if task.INIT_PLUGIN:
                         self.tasks_init.append(task)
+                        continue
+                    if PLUGIN_FILTER and not task.__name__ in PLUGIN_FILTER:
+                        # we dont ever want to prevent task inits to run...
                         continue
                     resource_hog = False
                     if task.PLUGIN_TAXES_CPU:
