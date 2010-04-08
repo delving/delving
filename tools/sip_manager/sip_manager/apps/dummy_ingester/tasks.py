@@ -84,6 +84,7 @@ class RequestCreate(SipProcess):
             uploading
         """
         skip_trees = [] # if we find a subtree that shouldnt be followed like .svn dont dive into it
+        i_found = i_added = 0
         for dirpath, dirnames, filenames in os.walk(IMPORT_SCAN_TREE):
             if dirpath == IMPORT_SCAN_TREE:
                 continue # we dont want this one to end up in skip_trees, that would be lonely...
@@ -112,6 +113,7 @@ class RequestCreate(SipProcess):
                     # extra check needed for using ingestion svn tree
                     continue
 
+                i_found += 1
                 full_path = os.path.join(dirpath, filename)
                 mtime = os.path.getmtime(full_path)
                 if not (self.already_parsed.has_key(full_path) and self.already_parsed[full_path] == mtime):
@@ -119,8 +121,10 @@ class RequestCreate(SipProcess):
                     request, was_created = models.Request.objects.get_or_create_from_file(full_path)
                     if was_created:
                         self.log('Added request %s' % filename, 3)
+                        i_added += 1
                     if request:
                         self.already_parsed[full_path] = mtime
+                self.task_time_to_show('%i / %i' % (i_added, i_found))
         return True
 
 
