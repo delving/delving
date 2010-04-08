@@ -33,6 +33,10 @@ from django.db import connection
 
 import sipproc
 
+try:
+  PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
+except:
+  PROCESS_SLEEP_TIME = 60
 
 SIP_PROCESS_DBG_LVL = 7
 
@@ -89,7 +93,7 @@ class MainProcessor(object):
                 print 'Single run, aborting after one run-through'
                 break # only run once
             #print 'sleeping a while'
-            time.sleep(10)
+            time.sleep(60)
         return True
 
     """
