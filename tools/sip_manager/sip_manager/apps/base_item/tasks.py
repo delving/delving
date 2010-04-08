@@ -39,6 +39,9 @@ class MdRecordFixDB(SipProcess):
 
     def run_it(self):
         "Set source_data to be a binary field."
+        if models.MdRecord.objects.all().count():
+            # only run this on newly created dbs...
+            return True
         cursor = django.db.connection.cursor()
         if not 'mysql' in cursor.db.__module__:
             return True
