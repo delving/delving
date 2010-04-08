@@ -59,7 +59,7 @@
                 <#if result.fullDoc.europeanaType == "IMAGE">		            
                 	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
 	                    <p class="linetop">	                	
-		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>              
+		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>              
 		                </p>
 	                </#if>
                 </#if>
