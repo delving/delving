@@ -53,7 +53,7 @@ REC_STOP = '</record>'
 
 
 class RequestCreate(SipProcess):
-    SHORT_DESCRIPTION = 'Scan for new imports, if found grab it'
+    SHORT_DESCRIPTION = 'Checking file tree for new requests'
     EXECUTOR_STYLE = True
 
     already_parsed = {}
@@ -62,6 +62,9 @@ class RequestCreate(SipProcess):
         self.skip_dirs = ['error', 'to-import', 'to-import-cache-only',
                           'to-import-no-cache', 'uploading', '.svn']
         super(RequestCreate, self).__init__(*args, **kwargs)
+        self.default_task_show_log_lvl = self.task_show_log_lvl
+        self.task_show_log_lvl = 9 # to try to avoid shoing initial task progress
+                                   # will be reset to normal if we actually do something
 
     def run_it(self):
         """
@@ -116,14 +119,16 @@ class RequestCreate(SipProcess):
                 i_found += 1
                 full_path = os.path.join(dirpath, filename)
                 mtime = os.path.getmtime(full_path)
-                if not (self.already_parsed.has_key(full_path) and self.already_parsed[full_path] == mtime):
-                    # we dont bother with files we have already checked
-                    request, was_created = models.Request.objects.get_or_create_from_file(full_path)
-                    if was_created:
-                        self.log('Added request %s' % filename, 3)
-                        i_added += 1
-                    if request:
-                        self.already_parsed[full_path] = mtime
+                #if not (self.already_parsed.has_key(full_path) and self.already_parsed[full_path] == mtime):
+                #    # we dont bother with files we have already checked
+                request, was_created = models.Request.objects.get_or_create_from_file(full_path)
+                if was_created:
+                    self.task_show_log_lvl = self.default_task_show_log_lvl
+                    self.task_force_progress_timeout()
+                    self.log('Added request %s' % filename, 3)
+                    i_added += 1
+                if request:
+                    self.already_parsed[full_path] = mtime
                 self.task_time_to_show('%i / %i' % (i_added, i_found))
         return True
 
@@ -165,7 +170,6 @@ class RequestParseNew(SipProcess):
         self.task_starting('Reading ESE records from file (req:%i)' % request.pk,request.record_count)
         line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
         record_count = 0
-        t0 = time.time()
         while line:
             if line == REC_START:
                 record = []
@@ -180,9 +184,7 @@ class RequestParseNew(SipProcess):
             elif line: # skip empty lines
                 record.append(line)
             line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
-            if t0 + self.TASK_PROGRESS_TIME < time.time():
-                self.task_progress(record_count)
-                t0 = time.time()
+            self.task_time_to_show(record_count)
         f.close()
         request.status = models.REQS_INIT
         request.save()

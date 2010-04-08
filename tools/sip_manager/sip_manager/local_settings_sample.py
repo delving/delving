@@ -36,3 +36,13 @@ TASK_PROGRESS_INTERVALL = 15
 # How often we check for new tasks
 #  this setting is optional 60 is default
 #PROCESS_SLEEP_TIME = 60
+
+
+#==============================================================================
+#
+# Debug related settings - should never be used under normal operation!
+#
+
+# If given only the named plugins will be run
+#  init plugins are excluded from this check - they are always run!
+#PLUGIN_FILTER = ['UriCreate',]

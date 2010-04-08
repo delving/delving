@@ -26,6 +26,7 @@ import os
 import threading
 import time
 
+from django import db
 from django.conf import settings
 
 import models
@@ -93,6 +94,7 @@ class SipProcess(object):
         self.pid = os.getpid()
         self.runs_in_thread = False
         self.is_prepared = False
+        self.task_show_log_lvl = 7 # normal level for showing task progress
 
 
     def run(self, *args, **kwargs):
@@ -149,6 +151,7 @@ class SipProcess(object):
         #f.close()
         open(SIP_LOG_FILE,'a').write('%s\n' % msg)
 
+
     def error_log(self, msg):
         print self.short_name(), msg
 
@@ -175,6 +178,11 @@ class SipProcess(object):
             # a running executor will set runs_in_thread True
             self.log('------- terminating executor %s (%i)' % (self.short_name(), pm_id), 8)
             RUNNING_EXECUTORS.remove(self.short_name())
+
+        # Theese clean up cached queries if settings.DEBUG = True
+        # otherwise does nothing
+        db.reset_queries()
+        db.connection.close()
         return
 
 
@@ -266,6 +274,11 @@ class SipProcess(object):
         self._task_show_time = time.time()
 
 
+    def task_force_progress_timeout(self):
+        "Ensures that next call to task_time_to_show() will trigger."
+        self._task_show_time = 0
+
+
     def task_time_to_show(self, progress=''):
         """Either use as a bool check, or give a param directly.
 
@@ -300,7 +313,9 @@ class SipProcess(object):
             self.pm.task_progress = '%i' % step
             self.pm.task_eta = 'unknown'
         self.pm.save()
-        self.log('%s  -  %s  eta: %s | %i' % (self.pm.task_label, self.pm.task_progress, self.pm.task_eta, self.pm.id), 7)
+        self.log('%s  -  %s  eta: %s | %i' % (self.pm.task_label, self.pm.task_progress,
+                                              self.pm.task_eta, self.pm.id),
+                 self.task_show_log_lvl)
 
 
     def _task_calc_eta(self, step):

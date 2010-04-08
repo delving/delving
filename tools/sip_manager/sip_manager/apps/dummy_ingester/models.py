@@ -231,8 +231,8 @@ class RequestManager(models.Manager):
         cursor = connection.cursor()
         cursor.execute(sql)
         if cursor.rowcount:
+            # this can so not fail - i just refuse to do errorhandling for this
             pk = cursor.fetchone()[0]
-            # this can so not fail - i just refuse to do errorhandling for this call
             item = self.model.objects.filter(pk=pk)[0]
             was_created = False
         else:

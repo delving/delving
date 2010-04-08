@@ -124,7 +124,27 @@ URI_ERR_CODES = {
 
 LIMIT_COUNT = 200
 
+
+
+
 class UriManager(models.Manager):
+    STORAGE_IS_MYSQL = None
+
+    def __init__(self, *args, **kwargs):
+        if self.STORAGE_IS_MYSQL == None:
+            self.STORAGE_IS_MYSQL = self.is_it_mysql()
+        super(UriManager, self).__init__(*args, **kwargs)
+
+    def is_it_mysql(self):
+        # This will be uggly...
+        cursor = connection.cursor()
+        if hasattr(cursor, 'db'):
+            # if DEBUG=True its found here...
+            b = 'mysql' in cursor.db.__module__
+        else:
+            # Otherwise we find it here
+            b = 'mysql' in cursor.__module__
+        return b
 
     def base_sql(self, source_id, count=False):
         if count:
@@ -151,7 +171,8 @@ class UriManager(models.Manager):
         "All new uris that should be checked for one UriSource."
         sql = self.base_sql(source_id)
         cursor = connection.cursor()
-        if 'mysql' in cursor.db.__module__:
+
+        if self.STORAGE_IS_MYSQL:
             limit_syntax = 'LIMIT %i,%i'
         else:
             limit_syntax = 'OFFSET %i LIMIT %i'
