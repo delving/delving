@@ -27,6 +27,7 @@ import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
 import eu.europeana.core.database.exception.AnnotationNotFoundException;
 import eu.europeana.core.database.exception.AnnotationNotOwnedException;
+import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
 import eu.europeana.definitions.domain.Language;
 
@@ -116,5 +117,5 @@ public interface AnnotationDao {
      * @return a list of internal identifiers which can be used with get() above
      */
     
-    List<Long> list(AnnotationType annotationType, String europeanaUri);
+    List<Long> list(AnnotationType annotationType, String europeanaUri) throws EuropeanaUriNotFoundException;
 }

@@ -33,6 +33,12 @@
 
     <context:component-scan base-package="eu.europeana.api.controller"/>
 
+    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">-->
+        <!--<property name="defaultContentType" value="text/plain"/>-->
+    <!--</bean>-->
+
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver"/>
+
     <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
         <property name="exposeSpringMacroHelpers" value="true"/>
@@ -49,7 +55,7 @@
         <property name="exposeRequestAttributes" value="false"/>
         <property name="requestContextAttribute" value="requestContext"/>
     </bean>
-    
+
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
     <bean id="localeChangeInterceptor" class="eu.europeana.core.util.web.LocaleChangeInterceptor">
