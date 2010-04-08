@@ -55,27 +55,23 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private JTextArea outputArea = new JTextArea();
     private CompileTimer compileTimer;
     private GroovyService groovyService;
-    private JDialog dialog = new JDialog();
-    private JScrollPane pane;
+    private java.util.List<String> _groovyNodes;
+    private AutoComplete autoComplete = new AutoCompleteImpl();
+    private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog();
 
     private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
             new NormalizationParserBindingSource.Listener() {
 
                 @Override
                 public void updateAvailableNodes(java.util.List<String> groovyNodes) {
-                    // todo: contents of list should go in autocompletion window
-                    JList list = new JList(groovyNodes.toArray());
-                    pane.getViewport().setView(list);
-                    dialog.setVisible(true);
+                    _groovyNodes = groovyNodes;
+                    autoCompleteDialog.updateElements(groovyNodes);
                 }
             }
     );
 
     public GroovyEditor() {
         super(new BorderLayout());
-        pane = new JScrollPane();
-        dialog.setSize(new Dimension(300, 200));
-        dialog.add(pane);
         DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
@@ -85,6 +81,9 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
             @Override
             public void keyPressed(KeyEvent event) {
                 compileTimer.triggerSoon();
+                java.util.List<String> remaining = autoComplete.complete(event, _groovyNodes);
+                autoCompleteDialog.updateElements(remaining);
+                autoCompleteDialog.updateLocation(codeArea.getCaret().getMagicCaretPosition(), event.getComponent().getLocationOnScreen());
             }
         });
         codeArea.setContentType("text/groovy");
