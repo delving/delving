@@ -28,15 +28,15 @@ public class TestRecordChangeListener {
 
     @Test
     public void save() throws IOException {
-        LOG.info(String.format("Saving '%s' to file %s%n", recordRoot, file.getAbsoluteFile()));
+        LOG.info(String.format("Saving '%s' to file %s.record%n", recordRoot, file.getAbsoluteFile()));
         groovyEditor.save(file, recordRoot);
     }
 
 
     @Test
     public void load() throws IOException {
-        QName recordRoot = groovyEditor.load(file);
-        LOG.info(String.format("Loaded '%s' from file %s%n", recordRoot, file.getAbsoluteFile()));
+        LOG.info(String.format("Loaded '%s' from file %s.record%n", recordRoot, file.getAbsoluteFile()));
+        assert recordRoot == groovyEditor.load(file);
     }
 
     @After
