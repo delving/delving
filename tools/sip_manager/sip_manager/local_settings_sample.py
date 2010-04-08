@@ -38,6 +38,9 @@ TASK_PROGRESS_INTERVALL = 15
 #PROCESS_SLEEP_TIME = 60
 
 
+# If one minute load is over this, new UriValidate threads wont be started
+URIVALIDATE_MAX_LOAD = 2.0
+
 #==============================================================================
 #
 # Debug related settings - should never be used under normal operation!

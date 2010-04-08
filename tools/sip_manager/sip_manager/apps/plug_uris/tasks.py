@@ -92,6 +92,11 @@ try:
 except:
     OLD_STYLE_IMAGE_NAMES = False
 
+try:
+    URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
+except:
+    URIVALIDATE_MAX_LOAD = 2.0
+
 SIP_OBJ_FILES = settings.SIP_OBJ_FILES
 
 
@@ -270,7 +275,19 @@ class UriValidateSave(SipProcess):
         if not self.urisource:
             return False
 
+        if self.system_is_occupied():
+            self.log('UriValidateSave wont run due to high load on server', 1)
+            return False
+
         return True # Found something to do!
+
+
+    def system_is_occupied(self):
+        "Since this process is multithreaded, we dont start new when load is high."
+        load_1, load_5, load_15 = os.getloadavg()
+        if load_1 > URIVALIDATE_MAX_LOAD:
+            return True
+        return False
 
 
     def run_it(self):

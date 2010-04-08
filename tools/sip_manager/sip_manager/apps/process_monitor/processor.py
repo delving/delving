@@ -91,11 +91,17 @@ class MainProcessor(object):
             for task_group in (self.tasks_simple, self.tasks_heavy):
                 for taskClass in task_group:
                     if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
+                        # For the moment try slow starting, just one thread per run
+                        # this way load builds up more slowly and should keep
+                        # within reasonable limits.
+                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+                        """
                         while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
                             # Continue to start new threads as long as they
                             # find something to work on
                             #print '*** started thread for', taskClass.__name__
                             pass
+                        """
                     else:
                         taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
             if self.single_run:
