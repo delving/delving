@@ -38,13 +38,7 @@ from apps.base_item import models as base_item
 
 import models
 
-try:
-    TREE_IS_INGESTION_SVN = settings.TREE_IS_INGESTION_SVN
-except:
-    TREE_IS_INGESTION_SVN = False
-
-
-
+TREE_IS_INGESTION_SVN = settings.TREE_IS_INGESTION_SVN
 IMPORT_SCAN_TREE = settings.IMPORT_SCAN_TREE
 
 

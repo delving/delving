@@ -32,15 +32,7 @@ from django.conf import settings
 import models
 
 
-try:
-    TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
-except:
-    TASK_PROGRESS_INTERVALL = 5
-
-
-
-
-# thinks its a teeny bit faster to extract the setting once...
+TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
 SIP_LOG_FILE = settings.SIP_LOG_FILE
 
 

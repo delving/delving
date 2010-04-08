@@ -87,17 +87,10 @@ from apps.process_monitor.sipproc import SipProcess
 import models
 
 
-try:
-    OLD_STYLE_IMAGE_NAMES = settings.OLD_STYLE_IMAGE_NAMES
-except:
-    OLD_STYLE_IMAGE_NAMES = False
-
-try:
-    URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
-except:
-    URIVALIDATE_MAX_LOAD = 2.0
-
 SIP_OBJ_FILES = settings.SIP_OBJ_FILES
+OLD_STYLE_IMAGE_NAMES = settings.OLD_STYLE_IMAGE_NAMES
+URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
+
 
 
 FULLDOC_SIZE = (200, 10000)
