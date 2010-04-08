@@ -6,6 +6,7 @@
     <div id="hd">
         <#include "inc_top_nav.ftl"/>
     </div>
+    <div id="bd">
     <#if entries??>
         <#list entries as entry>
             <p>
@@ -13,6 +14,7 @@
             </p>
         </#list>
     </#if>
+    </div>
  </div>   
 </body>
 </html>
