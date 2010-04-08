@@ -35,9 +35,16 @@
 <#if metaDescription?length &gt; 200>
    <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
 </#if>
+<#if metaTitle?length &lt; 5>
+     <#assign metaTitle = metaDescription />
+</#if>
+<#if metaTitle?length &lt; 5>
+     <#assign metaTitle = result.fullDoc.dcTermsAlternative[0]?xhtml />
+</#if>
 <#if metaDescription?length &lt; 20>
      <#assign metaDescription = metaTitle />
 </#if>
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 
