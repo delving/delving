@@ -252,7 +252,7 @@ class UriCreate(SipProcess):
 class UriValidateSave(SipProcess):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
-    #IS_THREADABLE = True
+    IS_THREADABLE = True
 
     def prepare(self):
         urisources = models.UriSource.objects.filter(pid=0)
