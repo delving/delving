@@ -36,9 +36,6 @@ public class AutoCompleteDialog extends JDialog {
     }
 
     public void updateLocation(Point caretLocation, Point editorLocation) {
-        if (!isVisible()) {
-            setVisible(true);
-        }
         Point point = new Point(
                 (int) caretLocation.getX() + (int) editorLocation.getX(),
                 (int) caretLocation.getY() + (int) editorLocation.getY() + 16 // todo: get caret height
@@ -71,6 +68,5 @@ public class AutoCompleteDialog extends JDialog {
 
     private void selectItem(InputEvent inputEvent) {
         listener.itemSelected(((JList) inputEvent.getSource()).getSelectedValue());
-        setVisible(false);
     }
 }
