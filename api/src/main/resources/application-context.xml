@@ -16,6 +16,7 @@
                     <property name="supportedMediaTypes">
                         <list>
                             <value>text/plain;charset=UTF-8</value>
+                            <value>application/xml;charset=UTF-8</value>
                         </list>
                     </property>
                 </bean>
