@@ -99,6 +99,7 @@ URIE_WAS_HTML_PAGE_ERROR = 9
 URIE_FILE_STORAGE_FAILED = 10
 URIE_OBJ_CONVERTION_ERROR = 11 # used
 URIE_UNRECOGNIZED_FORMAT = 12
+URIE_UNSUPORTED_MIMETYPE_ERROR = 13
 #URIE_NO_RESPONSE        = 13
 
 URI_ERR_CODES = {
@@ -115,6 +116,7 @@ URI_ERR_CODES = {
     URIE_OBJ_CONVERTION_ERROR: 'object convertion failed',
     URIE_DOWNLOAD_FAILED     : 'download failed',
     URIE_UNRECOGNIZED_FORMAT : 'unrecognized format',
+    URIE_UNSUPORTED_MIMETYPE_ERROR : 'unsuported mime-type',
 
     #URIE_NO_RESPONSE     : 'no response',
     }
@@ -204,16 +206,17 @@ class Uri(models.Model):
     """
     mdr = models.ForeignKey(MdRecord)
     status = models.IntegerField(choices=dict_2_django_choice(URI_STATES),
-                                 default = URIS_CREATED)
+                                 default = URIS_CREATED,db_index=True)
     item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
-                                 default = URIT_OBJECT)
+                                 default = URIT_OBJECT, db_index=True)
     mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
     uri_source = models.ForeignKey(UriSource)
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    pid = models.IntegerField(default=0, db_index=True) # what process 'owns' this item
     url = models.CharField(max_length=450)
-    content_hash = models.CharField(max_length=32, blank=True),
+    url_hash = models.CharField(max_length=64,default='')
+    content_hash = models.CharField(max_length=64,default='')
     err_code = models.IntegerField(choices=dict_2_django_choice(URI_ERR_CODES),
-                                 default = URIE_NO_ERROR)
+                                   default = URIE_NO_ERROR)
     err_msg = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True,editable=False)
     time_lastcheck = models.DateTimeField(auto_now_add=True)
@@ -222,7 +225,6 @@ class Uri(models.Model):
 
     def __unicode__(self):
         return self.url
-
 
 
 

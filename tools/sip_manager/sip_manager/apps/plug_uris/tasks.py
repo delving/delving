@@ -65,7 +65,6 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 """
 
 import datetime
-import hashlib
 import subprocess
 import os
 import sys
@@ -84,12 +83,13 @@ from django.conf import settings
 from apps.base_item import models as base_item
 from apps.process_monitor.sipproc import SipProcess
 
+from utils.gen_utils import calculate_hash
+
 import models
 
 
 SIP_OBJ_FILES = settings.SIP_OBJ_FILES
 OLD_STYLE_IMAGE_NAMES = settings.OLD_STYLE_IMAGE_NAMES
-URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
 
 
 
@@ -268,19 +268,7 @@ class UriValidateSave(SipProcess):
         if not self.urisource:
             return False
 
-        if self.system_is_occupied():
-            self.log('UriValidateSave wont run due to high load on server', 1)
-            return False
-
         return True # Found something to do!
-
-
-    def system_is_occupied(self):
-        "Since this process is multithreaded, we dont start new when load is high."
-        load_1, load_5, load_15 = os.getloadavg()
-        if load_1 > URIVALIDATE_MAX_LOAD:
-            return True
-        return False
 
 
     def run_it(self):
@@ -369,6 +357,10 @@ class UriValidateSave(SipProcess):
     def save_object(self, itm):
         if self.uri.mime_type == 'text/html':
             return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
+
+        for bad_groups in ('audio','video'):
+            if self.uri.mime_type.find(bad_groups) > -1:
+                return self.set_urierr(models.URIE_UNSUPORTED_MIMETYPE_ERROR)
         try:
             data = itm.read()
         except:
@@ -384,12 +376,13 @@ class UriValidateSave(SipProcess):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
                                    'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
 
-        self.uri.content_hash = self.generate_hash(data)
+        self.uri.url_hash = calculate_hash(self.uri.url)
+        self.uri.content_hash = calculate_hash(data)
 
         if OLD_STYLE_IMAGE_NAMES:
-            base_fname = self.file_name_from_hash_old_style(self.generate_hash(self.uri.url))
+            base_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
         else:
-            base_fname = self.file_name_from_hash(self.generate_hash(self.uri.url))
+            base_fname = self.file_name_from_hash(self.uri.url_hash)
         org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
         #self.make_needed_dirs(org_fname)
         try:
@@ -416,10 +409,6 @@ class UriValidateSave(SipProcess):
                                    'Failed to create dir [%s] for storing object file' % dest_dir)
         return True
 
-
-    def generate_hash(self, thing):
-        hex_hash = hashlib.sha256(thing).hexdigest().upper()
-        return hex_hash
 
     def file_name_from_hash(self, url_hash):
         fname = '%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
