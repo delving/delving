@@ -1,7 +1,6 @@
 package eu.europeana.sip.gui;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
@@ -17,10 +16,14 @@ import java.awt.event.MouseEvent;
 public class AutoCompleteDialog extends JDialog {
 
     private JScrollPane availableElementsWindow = new JScrollPane();
-    private JTextComponent targetTextPanel;
+    private Listener listener;
 
-    public AutoCompleteDialog(JEditorPane targetTextPanel) {
-        this.targetTextPanel = targetTextPanel;
+    interface Listener {
+        void itemSelected(Object selectedItem);
+    }
+
+    public AutoCompleteDialog(Listener listener) {
+        this.listener = listener;
         init();
     }
 
@@ -67,7 +70,7 @@ public class AutoCompleteDialog extends JDialog {
     }
 
     private void selectItem(InputEvent inputEvent) {
-        targetTextPanel.setText(targetTextPanel.getText() + ((JList) inputEvent.getSource()).getSelectedValue());
+        listener.itemSelected(((JList) inputEvent.getSource()).getSelectedValue());
         setVisible(false);
     }
 }
