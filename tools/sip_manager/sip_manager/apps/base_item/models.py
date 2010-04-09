@@ -26,26 +26,11 @@
 """
 
 
-import hashlib
-
 from django.db import models, connection
 
 from utils.gen_utils import dict_2_django_choice
 
 from apps.dummy_ingester.models import Request
-
-
-
-def calculate_mdr_content_hash(record):
-    """
-    When calculating the content hash for the record, the following is asumed:
-      the lines are stripped for initial and trailing whitespaces,
-      sorted alphabetically
-      each line is separated by one \n character
-      and finaly the <record> and </record> should be kept!
-    """
-    r_hash = hashlib.sha256(record.upper()).hexdigest().upper()
-    return r_hash
 
 
 

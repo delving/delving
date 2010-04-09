@@ -24,6 +24,7 @@
  Maintains and runs tasks
 """
 
+import os
 import sys
 import time
 
@@ -39,6 +40,7 @@ import sipproc
 PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
 PLUGIN_FILTER = settings.PLUGIN_FILTER
 SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
+URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
 
 
 class MainProcessor(object):
@@ -83,6 +85,8 @@ class MainProcessor(object):
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
                 for taskClass in task_group:
+                    if self.system_is_occupied():
+                        break
                     if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
                         # For the moment try slow starting, just one thread per run
                         # this way load builds up more slowly and should keep
@@ -103,6 +107,15 @@ class MainProcessor(object):
             #print 'sleeping a while'
             time.sleep(PROCESS_SLEEP_TIME)
         return True
+
+
+    def system_is_occupied(self):
+        "dont start new tasks when load is high."
+        load_1, load_5, load_15 = os.getloadavg()
+        if load_1 > URIVALIDATE_MAX_LOAD:
+            return True
+        return False
+
 
     """
     Scan all apps, find the tasks module and add all classes found there

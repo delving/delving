@@ -36,6 +36,8 @@ from django.conf import settings
 from apps.process_monitor.sipproc import SipProcess
 from apps.base_item import models as base_item
 
+from utils.gen_utils import calculate_hash
+
 import models
 
 TREE_IS_INGESTION_SVN = settings.TREE_IS_INGESTION_SVN
@@ -188,7 +190,15 @@ class RequestParseNew(SipProcess):
 
     def add_record(self, record, request):
         record_str = '\n'.join(record)
-        r_hash = base_item.calculate_mdr_content_hash(record_str)
+        """
+        When calculating the content hash for the record, the following is asumed:
+          the lines are stripped for initial and trailing whitespaces,
+          sorted alphabetically
+          each line is separated by one \n character
+          and finaly the <record> and </record> should be kept!
+          the <record>,</record> should obviously not be sorted...
+        """
+        r_hash = calculate_hash(record_str)
         mdr, was_created = base_item.MdRecord.objects.get_or_create(
             content_hash=r_hash, source_data=record_str)
 
