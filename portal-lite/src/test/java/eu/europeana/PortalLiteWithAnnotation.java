@@ -36,12 +36,16 @@ public class PortalLiteWithAnnotation {
     public static void main(String... args) throws Exception {
     	System.setProperty("hibernate.bytecode.provider", "javassist");
         
+    	// make sure the backend is running
     	//new SolrStarter().start();
     	
     	String aitRoot = StarterUtil.getAITPath();
         Server server = new Server(8080);
         server.addHandler(new WebAppContext(StarterUtil.getEuropeanaPath() + "/portal-lite/src/main/webapp", "/portal"));
-//        server.addHandler(new WebAppContext(aitRoot + "/annotation-middleware/target/annotation-middleware.war", "/annotation-middleware"));
+
+        // not needed anymore since we integrated the middleware code in the core module
+        //server.addHandler(new WebAppContext(aitRoot + "/annotation-middleware/target/annotation-middleware.war", "/annotation-middleware"));
+        
         server.addHandler(new WebAppContext(aitRoot + "/image-annotation-frontend/target/image-annotation-frontend.war", "/image-annotation-frontend"));
         server.start();
 
