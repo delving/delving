@@ -97,6 +97,16 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
             }
     );
 
+    private boolean validatePrefix(int caretPosition) {
+        String text = codeArea.getText();
+        if (text.length() < AutoComplete.DEFAULT_PREFIX.length()) {
+            return false;
+        }
+        String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
+        LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
+        return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
+    }
+
     public GroovyEditor() {
         super(new BorderLayout());
 //        DefaultSyntaxKit.initKit();
@@ -110,7 +120,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        if (event.getModifiers() == KeyEvent.CTRL_MASK && !autoCompleteDialog.isVisible()) {
+                        if (event.getModifiers() == KeyEvent.CTRL_MASK && validatePrefix(codeArea.getCaretPosition())) {
                             autoCompleteDialog.setVisible(true);
                             autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
                         }
