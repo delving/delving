@@ -542,16 +542,16 @@
     </dependencyManagement>
     <properties>
         <europeana.definitions.version>1.00</europeana.definitions.version>
-        <europeana.core.version>1.23</europeana.core.version>
+        <europeana.core.version>1.24</europeana.core.version>
         <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
-        <europeana.portal.version>0.6</europeana.portal.version>
-        <europeana.api.version>0.11</europeana.api.version>
+        <europeana.portal.version>0.6.2</europeana.portal.version>
+        <europeana.api.version>0.12</europeana.api.version>
         <europeana.dashboard.version>0.3</europeana.dashboard.version>
 
         <jdkLevel>1.6</jdkLevel>
 
-        <spring.version>3.0.1.RELEASE</spring.version>
-        <spring.security.version>3.0.0.RELEASE</spring.security.version>
+        <spring.version>3.0.2.RELEASE</spring.version>
+        <spring.security.version>3.0.2.RELEASE</spring.security.version>
 
         <hibernate.version>3.2.7.ga</hibernate.version>
         <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
