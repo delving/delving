@@ -136,38 +136,44 @@ public class AnnotationController {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({AnnotationNotFoundException.class})
-    public void notFoundAnnotation() {
-        log.warn("problem");
+    public String notFoundAnnotation(Exception e) {
+        log.warn("problem", e);
+        return e.toString();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({EuropeanaUriNotFoundException.class})
-    public void notFoundId() {
-         log.warn("problem");
+    public String notFoundId(Exception e) {
+        log.warn("problem", e);
+        return e.toString();
     }
 
     @ExceptionHandler({AnnotationHasBeenModifiedException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public void hasBeenModified() {
-        log.warn("problem");
+    public String hasBeenModified(Exception e) {
+        log.warn("problem", e);
+        return e.toString();
     }
 
     @ExceptionHandler({AnnotationNotOwnedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public void notOwned() {
-        log.warn("problem");
+    public String notOwned(Exception e) {
+        log.warn("problem", e);
+        return e.toString();
     }
 
     @ExceptionHandler({UserNotFoundException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void userNotFound() {
-        log.warn("problem");
+    public String userNotFound(Exception e) {
+        log.warn("problem", e);
+        return e.toString();
     }
 
     @ExceptionHandler({Throwable.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void unknownProblem() {
-        log.warn("problem");
+    public String unknownProblem(Exception e) {
+        log.warn("problem", e);
+        return e.toString();
     }
 
     private User getUser() throws UserNotFoundException {
