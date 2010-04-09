@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class AutoCompleteImpl implements AutoComplete {
+public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listener {
 
     private final Logger LOG = Logger.getLogger(AutoCompleteImpl.class);
     private final StringBuffer KEY_BUFFER = new StringBuffer();
@@ -20,8 +20,23 @@ public class AutoCompleteImpl implements AutoComplete {
 
     private String prefix;
     private int offSet;
+    private Listener listener;
 
-    public AutoCompleteImpl() {
+    @Override
+    public void itemSelected(Object selectedItem) {
+        KEY_BUFFER.setLength(0);
+        LOG.debug("Item selected and KEY_BUFFER emptied ; " + selectedItem);
+    }
+
+    interface Listener {
+        /**
+         * Autocompletion cancelled by user e.g. ESCAPE
+         */
+        public void cancelled();
+    }
+
+    public AutoCompleteImpl(Listener listener) {
+        this.listener = listener;
         this.offSet = DEFAULT_OFFSET;
         this.prefix = DEFAULT_PREFIX;
     }
@@ -53,9 +68,11 @@ public class AutoCompleteImpl implements AutoComplete {
             KEY_BUFFER.append(entered.getKeyChar());
         }
         switch (entered.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
+            case KeyEvent.VK_ENTER: // todo: enter should select item in list
             case KeyEvent.VK_ESCAPE:
                 KEY_BUFFER.setLength(0);
+                LOG.debug("KEY_BUFFER emptied");
+                listener.cancelled();
                 break;
             case KeyEvent.VK_BACK_SPACE:
                 if (KEY_BUFFER.length() <= 0) {

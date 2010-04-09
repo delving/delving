@@ -3,7 +3,6 @@ package eu.europeana.sip.gui;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,14 @@ import java.util.List;
  */
 public class TestAutoComplete {
 
-    private AutoComplete autoComplete = new AutoCompleteImpl();
+    private AutoComplete autoComplete = new AutoCompleteImpl(
+            new AutoCompleteImpl.Listener() {
+
+                @Override
+                public void cancelled() {
+                }
+            }
+    );
     private List<String> original = new ArrayList<String>();
 
     @Before

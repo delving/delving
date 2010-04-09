@@ -17,6 +17,15 @@ public class AutoCompleteDialog extends JDialog {
 
     private JScrollPane availableElementsWindow = new JScrollPane();
     private Listener listener;
+    private JList jList = new JList();
+
+    @Override
+    public void requestFocus() {
+        jList.requestFocus();
+        if (-1 == jList.getSelectedIndex()) {
+            jList.setSelectedIndex(0);
+        }
+    }
 
     interface Listener {
         void itemSelected(Object selectedItem);
@@ -33,6 +42,16 @@ public class AutoCompleteDialog extends JDialog {
         setUndecorated(true);
         add(availableElementsWindow);
         setVisible(true);
+        jList.addKeyListener(
+                new KeyAdapter() {
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        if (KeyEvent.VK_ENTER == e.getKeyCode()) {
+                            selectItem(e);
+                        }
+                    }
+                }
+        );
     }
 
     public void updateLocation(Point caretLocation, Point editorLocation) {
@@ -44,7 +63,11 @@ public class AutoCompleteDialog extends JDialog {
     }
 
     public void updateElements(java.util.List<String> availableElements) {
-        final JList jList = new JList(availableElements.toArray());
+        assert null != availableElements;
+        if (!isVisible()) {
+            setVisible(true);
+        }
+        jList.setListData(availableElements.toArray());
         jList.addMouseListener(
                 new MouseAdapter() {
                     @Override
@@ -53,20 +76,11 @@ public class AutoCompleteDialog extends JDialog {
                     }
                 }
         );
-        jList.addKeyListener(
-                new KeyAdapter() {
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                        if (KeyEvent.VK_ENTER == e.getKeyCode()) {
-                            selectItem(e);
-                        }
-                    }
-                }
-        );
         availableElementsWindow.getViewport().setView(jList);
     }
 
     private void selectItem(InputEvent inputEvent) {
+        setVisible(false);
         listener.itemSelected(((JList) inputEvent.getSource()).getSelectedValue());
     }
 }
