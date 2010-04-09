@@ -110,7 +110,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
                 switch (event.getKeyCode()) {
                     case KeyEvent.VK_UP:
                     case KeyEvent.VK_DOWN:
-                        autoCompleteDialog.requestFocus();
+                        autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
                         break;
                     default:
                         codeArea.requestFocus();
