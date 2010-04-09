@@ -61,7 +61,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private UserDao dashboardDao;
 
     @Autowired
-    @Qualifier("solrUpdateServer")
+    @Qualifier("solrSelectServer")
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
