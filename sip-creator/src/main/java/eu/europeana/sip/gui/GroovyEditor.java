@@ -105,9 +105,16 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
         this.groovyService = new GroovyService(bindingSource, this);
         this.compileTimer = new CompileTimer();
         this.codeArea.addKeyListener(new KeyAdapter() {
+
             @Override
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
+                    case KeyEvent.VK_SPACE:
+                        if (event.getModifiers() == KeyEvent.CTRL_MASK && !autoCompleteDialog.isVisible()) {
+                            autoCompleteDialog.setVisible(true);
+                            autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
+                        }
+                        return;
                     case KeyEvent.VK_UP:
                     case KeyEvent.VK_DOWN:
                         autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());

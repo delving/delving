@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * GUI for the AutoCompletionImpl
+ * GUI for the AutoCompletionImpl.
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
@@ -60,6 +60,7 @@ public class AutoCompleteDialog extends JDialog {
                                 break;
                             case KeyEvent.VK_ENTER:
                                 selectItem(e);
+                                parent.requestFocus();
                                 break;
                             case KeyEvent.VK_ESCAPE:
                                 setVisible(false);
