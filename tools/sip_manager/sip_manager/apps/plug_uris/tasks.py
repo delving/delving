@@ -514,10 +514,11 @@ class UriValidateSave(SipProcess):
         cmd = ['convert -resize 200x']
         cmd.append(org_fname)
         cmd.append(fname_full)
-        if self.cmd_execute(cmd):
+        output = self.cmd_execute(cmd)
+        if output:
             self.remove_file(fname_full)
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate FULL_DOC')
+                                   'Failed to generate FULL_DOC\ncmd output %s' % output)
         self.uri_state(models.URIS_FULL_GENERATED)
 
         if OLD_STYLE_IMAGE_NAMES:
@@ -529,10 +530,11 @@ class UriValidateSave(SipProcess):
         cmd = ['convert -resize x110']
         cmd.append(org_fname)
         cmd.append(fname_brief)
-        if self.cmd_execute(cmd):
-            self.remove_file(fname_brief)
+        output = self.cmd_execute(cmd)
+        if output:
+            self.remove_file(fname_full)
             return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate BRIEF_DOC')
+                                   'Failed to generate BRIEF_DOC\ncmd output %s' % output)
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
 
@@ -549,59 +551,23 @@ class UriValidateSave(SipProcess):
 
 
     def cmd_execute(self, cmd):
-
-        """Returns 0 on success, or errcode on failure.
-
-        """
+        "Returns 0 on success, or error message on failure."
         if isinstance(cmd, (list, tuple)):
             cmd = ' '.join(cmd)
         try:
-            retcode = subprocess.call(cmd, shell=True)
-            """
-            p = subprocess.Popen(cmd, shell=True)
-            print '+++ cmd started', cmd
-            while True:
-                print 'hepp1'
-                pid, retcode = -1
-                try:
-                    pid, retcode = os.waitpid(p.pid, os.WNOHANG)
-                except:
-                    print '*******  Wait problem %i %i' % (pid, retcode)
-                print 'hepp2'
-                if retcode:
-                    self.die('found retcode %i' % retcode)
-                    break
-                time.sleep(0.1)
-                if t0 + 10 < time.time():
-                    self.die('timeout retcode')
-                    p.kill()
-                    retcode = -1
-                    break
-            """
-            """
-            p = subprocess.Popen(cmd, shell=True)
-            while p.returncode == None:
-                time.sleep(0.1)
-                if t0 + 10 < time.time():
-                    p.kill()
-                    break
-            if p.returncode != None:
-                retcode = p.returncode
-            else:
-                retcode = -1
-            """
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            result = p.returncode
+            if result or stdout or stderr:
+                result = 'retcode: %s' % result
+                if stdout:
+                    result += '\nstdout: %s' % stdout
+                if stderr:
+                    result += '\nstderr: %s' % stderr
         except:
-            #self.cmd_lock.release()
-            print '******************* cmd_execute() exception - terminating'
-            print cmd
-            sys.exit(1)
-        #self.cmd_lock.release()
-        #self.die('would have continued')
-        return retcode
+            result = 'cmd_execute() exception - shouldnt normally happen'
+        return result
 
-    def die(self, msg):
-        print '**********', msg
-        sys.exit(1)
 
 
 class UriCleanup(SipProcess):
