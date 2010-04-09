@@ -22,7 +22,6 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
-import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -57,7 +56,15 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private GroovyService groovyService;
     private java.util.List<String> _groovyNodes;
     private AutoComplete autoComplete = new AutoCompleteImpl();
-    private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(codeArea);
+    private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
+            new AutoCompleteDialog.Listener() {
+
+                @Override
+                public void itemSelected(Object selectedItem) {
+                    codeArea.setText(codeArea.getText() + selectedItem);
+                }
+            }
+    );
 
     private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
             new NormalizationParserBindingSource.Listener() {
@@ -72,7 +79,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
     public GroovyEditor() {
         super(new BorderLayout());
-        DefaultSyntaxKit.initKit();
+//        DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
         this.groovyService = new GroovyService(bindingSource, this);
@@ -162,7 +169,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
             LOG.warn(String.format("File %s not found, will use the default delimiter '%s'", recordFile.getAbsoluteFile(), AnalyzerPanel.DEFAULT_RECORD));
             JOptionPane.showMessageDialog(this, "No delimiter specified for this file yet.\n" +
                     "Please select a delimiter from the Document Structure panel\n" +
-                    "by a right-click on a node.");
+                    "by a right-click on a node."); // todo: hardcoded; this text might be retrieved from an external source
             return new QName(AnalyzerPanel.DEFAULT_RECORD);
         }
         FileInputStream fileInputStream = new FileInputStream(recordFile);
