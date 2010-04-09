@@ -46,6 +46,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,10 +74,11 @@ public class AnnotationController {
             @PathVariable String europeanaUri,
             Locale locale,
             String content
-    ) throws UserNotFoundException {
+    ) throws UserNotFoundException, UnsupportedEncodingException {
         AnnotationType annotationType = AnnotationType.valueOf(type);
+        String decoded = URLDecoder.decode(europeanaUri, "UTF-8");
         Language language = Language.findByCode(locale.getLanguage());
-        Annotation fresh = annotationDao.create(getUser(), annotationType, europeanaUri, language, content);
+        Annotation fresh = annotationDao.create(getUser(), annotationType, decoded, language, content);
         return fresh.getId().toString();
     }
 
@@ -120,7 +123,8 @@ public class AnnotationController {
             @PathVariable String type
     ) throws IOException, EuropeanaUriNotFoundException {
         AnnotationType annotationType = AnnotationType.valueOf(type);
-        List<Long> ids = annotationDao.list(annotationType, europeanaUri);
+        String decoded = URLDecoder.decode(europeanaUri, "UTF-8");
+        List<Long> ids = annotationDao.list(annotationType, decoded);
         StringBuilder out = new StringBuilder();
         for (Long id : ids) {
             out.append(id).append('\n');
