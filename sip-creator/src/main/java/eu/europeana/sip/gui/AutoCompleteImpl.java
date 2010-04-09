@@ -14,9 +14,9 @@ import java.util.regex.Pattern;
  */
 public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listener {
 
-    private final Logger LOG = Logger.getLogger(AutoCompleteImpl.class);
-    private final StringBuffer KEY_BUFFER = new StringBuffer();
-    private final String VALIDATION_REGEX = "[a-zA-Z_0-9\\.]+";
+    private static final Logger LOG = Logger.getLogger(AutoCompleteImpl.class);
+    private static final String VALIDATION_REGEX = "[a-zA-Z_0-9\\.]+";
+    private final StringBuffer keyBuffer = new StringBuffer();
 
     private String prefix;
     private int offSet;
@@ -24,8 +24,8 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
 
     @Override
     public void itemSelected(Object selectedItem) {
-        KEY_BUFFER.setLength(0);
-        LOG.debug("Item selected and KEY_BUFFER emptied ; " + selectedItem);
+        keyBuffer.setLength(0);
+        LOG.debug("Item selected and keyBuffer emptied ; " + selectedItem);
     }
 
     interface Listener {
@@ -49,7 +49,7 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
     @Override
     public List<String> complete(String entered, List<String> originalElements) {
         if (!entered.startsWith(prefix)) { // todo: do this check in advance?
-            return originalElements;
+            return null;
         }
         entered = entered.substring(entered.lastIndexOf(DEFAULT_PREFIX) + DEFAULT_PREFIX.length());
         List<String> remaining = new ArrayList<String>();
@@ -63,24 +63,21 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
 
     @Override
     public List<String> complete(KeyEvent entered, List<String> originalElements) {
-        List<String> remainingElements;
         if (validate(entered)) {
-            KEY_BUFFER.append(entered.getKeyChar());
+            keyBuffer.append(entered.getKeyChar());
         }
         switch (entered.getKeyCode()) {
-            case KeyEvent.VK_ENTER: // todo: enter should select item in list
             case KeyEvent.VK_ESCAPE:
-                KEY_BUFFER.setLength(0);
-                LOG.debug("KEY_BUFFER emptied");
+                keyBuffer.setLength(0);
                 listener.cancelled();
-                break;
+                return null;
             case KeyEvent.VK_BACK_SPACE:
-                if (KEY_BUFFER.length() <= 0) {
-                    break;
+                if (keyBuffer.length() <= 0) {
+                    listener.cancelled();
+                    return null;
                 }
-                KEY_BUFFER.setLength(KEY_BUFFER.length() - 1);
+                keyBuffer.setLength(keyBuffer.length() - 1);
         }
-        remainingElements = complete(KEY_BUFFER.toString(), originalElements);
-        return remainingElements;
+        return complete(keyBuffer.toString(), originalElements);
     }
 }
