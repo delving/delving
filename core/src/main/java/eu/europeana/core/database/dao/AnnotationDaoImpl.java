@@ -60,10 +60,12 @@ public class AnnotationDaoImpl implements AnnotationDao {
     @Override
     @Transactional
     public Annotation create(User user, Long predecessorId, String content) throws AnnotationNotFoundException, UserNotFoundException, AnnotationHasBeenModifiedException {
-        Long userId = user.getId();
-        user = entityManager.find(User.class, userId);
-        if (user == null) {
-            throw new UserNotFoundException(userId);
+        if (user != null) {
+            Long userId = user.getId();
+            user = entityManager.find(User.class, userId);
+            if (user == null) {
+                throw new UserNotFoundException(userId);
+            }
         }
         Annotation predecessor = entityManager.find(Annotation.class, predecessorId);
         if (predecessor == null) {
@@ -92,10 +94,12 @@ public class AnnotationDaoImpl implements AnnotationDao {
     @Override
     @Transactional
     public Annotation create(User user, AnnotationType annotationType, String europeanaUri, Language language, String content) throws UserNotFoundException {
-        Long userId = user.getId();
-        user = entityManager.find(User.class, userId);
-        if (user == null) {
-            throw new UserNotFoundException(userId);
+        if (user != null) {
+            Long userId = user.getId();
+            user = entityManager.find(User.class, userId);
+            if (user == null) {
+                throw new UserNotFoundException(userId);
+            }
         }
         Query query = entityManager.createQuery("select id from EuropeanaId id where id.europeanaUri = :europeanaUri");
         query.setParameter("europeanaUri", europeanaUri);
@@ -123,8 +127,10 @@ public class AnnotationDaoImpl implements AnnotationDao {
         if (existing.isParent()) {
             throw new AnnotationHasBeenModifiedException(existing.getId());
         }
-        if (!existing.getUser().getId().equals(user.getId())) {
-            throw new AnnotationNotOwnedException(existing.getId(), user);
+        if (user != null) {
+            if (!existing.getUser().getId().equals(user.getId())) {
+                throw new AnnotationNotOwnedException(existing.getId(), user);
+            }
         }
         Annotation fresh = new Annotation();
         // copy from existing
@@ -153,8 +159,10 @@ public class AnnotationDaoImpl implements AnnotationDao {
         if (existing.isParent()) {
             throw new AnnotationHasBeenModifiedException(existing.getId());
         }
-        if (!existing.getUser().getId().equals(user.getId())) {
-            throw new AnnotationNotOwnedException(existing.getId(), user);
+        if (user != null) {
+            if (!existing.getUser().getId().equals(user.getId())) {
+                throw new AnnotationNotOwnedException(existing.getId(), user);
+            }
         }
         entityManager.remove(existing);
         return existing;
