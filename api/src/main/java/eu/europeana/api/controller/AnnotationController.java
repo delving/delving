@@ -135,15 +135,8 @@ public class AnnotationController {
     // ===== exceptions ======
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({AnnotationNotFoundException.class})
+    @ExceptionHandler({AnnotationNotFoundException.class, EuropeanaUriNotFoundException.class})
     public String notFoundAnnotation(Exception e) {
-        log.warn("problem", e);
-        return e.toString();
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({EuropeanaUriNotFoundException.class})
-    public String notFoundId(Exception e) {
         log.warn("problem", e);
         return e.toString();
     }
@@ -155,20 +148,12 @@ public class AnnotationController {
         return e.toString();
     }
 
-    @ExceptionHandler({AnnotationNotOwnedException.class})
+    @ExceptionHandler({AnnotationNotOwnedException.class, UserNotFoundException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String notOwned(Exception e) {
         log.warn("problem", e);
         return e.toString();
     }
-
-    @ExceptionHandler({UserNotFoundException.class})
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String userNotFound(Exception e) {
-        log.warn("problem", e);
-        return e.toString();
-    }
-
     @ExceptionHandler({Throwable.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String unknownProblem(Exception e) {
