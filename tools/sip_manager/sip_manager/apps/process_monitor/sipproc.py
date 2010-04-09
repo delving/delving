@@ -252,17 +252,19 @@ class SipProcess(object):
 
     # ==========   Task steps   ====================
 
-    def task_starting(self, label, steps=0):
+    def task_starting(self, label, steps=0, display=True):
         "new subtask starting, give at label and if possible no of steps."
         self._task_time_start = time.time()
         self._task_steps = steps
         self._task_previous = 0
 
-        self.pm.task_label = label
+        if label:
+            self.pm.task_label = label
         self.pm.task_progress = ''
         self.pm.task_eta = ''
         self.pm.save()
-        self.task_progress(0)
+        if display:
+            self.task_progress(0)
         self._task_show_time = time.time()
 
 
