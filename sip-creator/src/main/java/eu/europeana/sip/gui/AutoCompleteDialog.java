@@ -1,20 +1,26 @@
 package eu.europeana.sip.gui;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
- * todo: add class description
+ * GUI for the AutoCompletionImpl
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 public class AutoCompleteDialog extends JDialog {
 
     private JScrollPane availableElementsWindow = new JScrollPane();
+    private JTextComponent targetTextPanel;
 
-    public AutoCompleteDialog() {
+    public AutoCompleteDialog(JEditorPane targetTextPanel) {
+        this.targetTextPanel = targetTextPanel;
         init();
     }
 
@@ -24,42 +30,12 @@ public class AutoCompleteDialog extends JDialog {
         setUndecorated(true);
         add(availableElementsWindow);
         setVisible(true);
-
-        addKeyListener(
-                new KeyAdapter() { // todo: not working
-
-                    private void handleKeyEvent(KeyEvent keyEvent) {
-                        switch (keyEvent.getKeyCode()) {
-                            case KeyEvent.VK_DOWN:
-                                System.out.printf("Down%n");
-                                break;
-                            case KeyEvent.VK_UP:
-                                System.out.printf("Up%n");
-                                break;
-                            default:
-                                System.out.printf("Dont know %s%n", keyEvent);
-                        }
-                    }
-
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                        handleKeyEvent(e);
-                    }
-
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        handleKeyEvent(e);
-                    }
-
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                        handleKeyEvent(e);
-                    }
-                }
-        );
     }
 
     public void updateLocation(Point caretLocation, Point editorLocation) {
+        if (!isVisible()) {
+            setVisible(true);
+        }
         Point point = new Point(
                 (int) caretLocation.getX() + (int) editorLocation.getX(),
                 (int) caretLocation.getY() + (int) editorLocation.getY() + 16 // todo: get caret height
@@ -68,6 +44,30 @@ public class AutoCompleteDialog extends JDialog {
     }
 
     public void updateElements(java.util.List<String> availableElements) {
-        availableElementsWindow.getViewport().setView(new JList(availableElements.toArray()));
+        final JList jList = new JList(availableElements.toArray());
+        jList.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        selectItem(e);
+                    }
+                }
+        );
+        jList.addKeyListener(
+                new KeyAdapter() {
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        if (KeyEvent.VK_ENTER == e.getKeyCode()) {
+                            selectItem(e);
+                        }
+                    }
+                }
+        );
+        availableElementsWindow.getViewport().setView(jList);
+    }
+
+    private void selectItem(InputEvent inputEvent) {
+        targetTextPanel.setText(targetTextPanel.getText() + ((JList) inputEvent.getSource()).getSelectedValue());
+        setVisible(false);
     }
 }

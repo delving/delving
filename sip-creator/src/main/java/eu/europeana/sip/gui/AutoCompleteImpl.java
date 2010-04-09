@@ -30,7 +30,7 @@ public class AutoCompleteImpl implements AutoComplete {
         this.prefix = prefix;
     }
 
-    public int getOffSet() {
+    public int getOffSet() { // todo: what if offSet is intentionally set to 0? 
         if (0 == offSet) {
             offSet = DEFAULT_OFFSET;
         }

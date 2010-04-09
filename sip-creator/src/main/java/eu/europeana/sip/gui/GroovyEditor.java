@@ -57,7 +57,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private GroovyService groovyService;
     private java.util.List<String> _groovyNodes;
     private AutoComplete autoComplete = new AutoCompleteImpl();
-    private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog();
+    private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(codeArea);
 
     private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
             new NormalizationParserBindingSource.Listener() {
