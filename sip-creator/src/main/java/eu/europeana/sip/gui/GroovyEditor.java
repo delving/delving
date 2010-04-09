@@ -55,17 +55,16 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private CompileTimer compileTimer;
     private GroovyService groovyService;
     private java.util.List<String> _groovyNodes;
-    private AutoComplete autoComplete = new AutoCompleteImpl(
+    private final AutoComplete autoComplete = new AutoCompleteImpl(
             new AutoCompleteImpl.Listener() {
 
                 @Override
                 public void cancelled() {
-                    // todo: implement cancellation of autocompletion (clean up buffer / hide)
-                    LOG.debug("Cancelled");
+                    autoCompleteDialog.setVisible(false);
                 }
             }
     );
-    private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
+    private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
             new AutoCompleteDialog.Listener() {
 
                 @Override
@@ -75,12 +74,15 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
                         ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
                     }
                 }
-            }
+            },
+            codeArea
     );
 
-    private void updateCodeArea(Object selectedItem) {
+    private void updateCodeArea(Object selectedItem) { // todo: buggy, fix appending end of codeArea
         int startFrom = codeArea.getText().lastIndexOf(AutoComplete.DEFAULT_PREFIX) + AutoComplete.DEFAULT_PREFIX.length(); // todo: hardcoded
-        codeArea.setText(codeArea.getText().substring(0, startFrom) + selectedItem);
+        String begin = codeArea.getText().substring(0, startFrom);
+        String end = codeArea.getText().substring(startFrom);
+        codeArea.setText(begin + selectedItem);
     }
 
     private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
@@ -90,6 +92,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
                 public void updateAvailableNodes(java.util.List<String> groovyNodes) {
                     _groovyNodes = groovyNodes;
                     autoCompleteDialog.updateElements(groovyNodes);
+                    autoCompleteDialog.setVisible(false);
                 }
             }
     );
@@ -109,6 +112,8 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
                     case KeyEvent.VK_DOWN:
                         autoCompleteDialog.requestFocus();
                         break;
+                    default:
+                        codeArea.requestFocus();
                 }
                 compileTimer.triggerSoon();
                 java.util.List<String> remaining = autoComplete.complete(event, _groovyNodes);
