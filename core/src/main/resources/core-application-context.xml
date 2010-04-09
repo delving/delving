@@ -304,6 +304,7 @@
     </security:http>
     
     <bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
+        <property name="userDetailsService" ref="daoUserDetailsService"/>
         <property name="tokenRepository" ref="tokenRepositoryService" />
         <property name="key" value="europeanaKey"/>
     </bean>

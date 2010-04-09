@@ -73,7 +73,7 @@ public class AnnotationController {
             @PathVariable String type,
             @PathVariable String europeanaUri,
             Locale locale,
-            String content
+            @RequestBody String content
     ) throws UserNotFoundException, UnsupportedEncodingException {
         AnnotationType annotationType = AnnotationType.valueOf(type);
         String decoded = URLDecoder.decode(europeanaUri, "UTF-8");
@@ -163,9 +163,10 @@ public class AnnotationController {
 
     private User getUser() throws UserNotFoundException {
         User user = ControllerUtil.getUser();
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+// todo: work out the security for API
+//        if (user == null) {
+//            throw new UserNotFoundException();
+//        }
         return user;
     }
 }
