@@ -284,7 +284,7 @@ class UriValidateSave(SipProcess):
 
     def do_one_source(self):
         current_count = models.Uri.objects.new_by_source_count(self.urisource.pk)
-        self.task_starting('Process new Uri records', current_count)
+        self.task_starting('', current_count, display=False)
         record_count = 0
         for uri_id in models.Uri.objects.new_by_source_generator(self.urisource.pk):
             record_count += 1
@@ -398,17 +398,6 @@ class UriValidateSave(SipProcess):
             return self.generate_images_magic(base_fname, org_fname)
         else:
             return self.generate_images_pil(base_fname, org_fname)
-
-    def NOT_make_needed_dirs(self, fname):
-        dest_dir = os.path.split(fname)[0]
-        try:
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-        except:
-            return self.set_urierr(models.URIE_OTHER_ERROR,
-                                   'Failed to create dir [%s] for storing object file' % dest_dir)
-        return True
-
 
     def file_name_from_hash(self, url_hash):
         fname = '%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
