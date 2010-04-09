@@ -29,9 +29,6 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
     }
 
     interface Listener {
-        /**
-         * Autocompletion cancelled by user e.g. ESCAPE
-         */
         public void cancelled();
     }
 
@@ -67,6 +64,7 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
             keyBuffer.append(entered.getKeyChar());
         }
         switch (entered.getKeyCode()) {
+            case KeyEvent.VK_ENTER:
             case KeyEvent.VK_ESCAPE:
                 keyBuffer.setLength(0);
                 listener.cancelled();
