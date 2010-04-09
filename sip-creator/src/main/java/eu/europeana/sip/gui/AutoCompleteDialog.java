@@ -20,9 +20,10 @@ public class AutoCompleteDialog extends JDialog {
     private Listener listener;
     private JList jList = new JList();
     private JTextComponent parent;
+    private Point lastCaretPosition;
 
-    @Override
-    public void requestFocus() {
+    public void requestFocus(Point lastCaretPosition) {
+        this.lastCaretPosition = lastCaretPosition;
         jList.requestFocus();
         if (-1 == jList.getSelectedIndex()) {
             jList.setSelectedIndex(0);
@@ -51,6 +52,12 @@ public class AutoCompleteDialog extends JDialog {
                     @Override
                     public void keyReleased(KeyEvent e) {
                         switch (e.getKeyCode()) {
+                            case KeyEvent.VK_UP:
+                                if (0 == jList.getSelectedIndex()) {
+                                    parent.requestFocus();
+                                    parent.getCaret().setMagicCaretPosition(lastCaretPosition);
+                                }
+                                break;
                             case KeyEvent.VK_ENTER:
                                 selectItem(e);
                                 break;
