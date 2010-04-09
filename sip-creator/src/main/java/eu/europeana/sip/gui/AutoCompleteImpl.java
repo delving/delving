@@ -19,31 +19,14 @@ public class AutoCompleteImpl implements AutoComplete {
     private String prefix;
     private int offSet;
 
-    public String getPrefix() {
-        if (null == prefix) {
-            prefix = DEFAULT_PREFIX;
-        }
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public int getOffSet() { // todo: what if offSet is intentionally set to 0? 
-        if (0 == offSet) {
-            offSet = DEFAULT_OFFSET;
-        }
-        return offSet;
-    }
-
-    public void setOffSet(int offSet) {
-        this.offSet = offSet;
+    public AutoCompleteImpl() {
+        this.offSet = DEFAULT_OFFSET;
+        this.prefix = DEFAULT_PREFIX;
     }
 
     @Override
     public List<String> complete(String entered, List<String> originalElements) {
-        if (!entered.startsWith(getPrefix())) {
+        if (!entered.startsWith(prefix)) {
             return originalElements;
         }
         entered = entered.substring(entered.lastIndexOf(".") + 1); // todo: index delimiter not the .

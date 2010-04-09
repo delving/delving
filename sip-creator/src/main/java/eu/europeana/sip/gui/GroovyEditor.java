@@ -22,6 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
+import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -61,10 +62,15 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
                 @Override
                 public void itemSelected(Object selectedItem) {
-                    codeArea.setText(codeArea.getText() + selectedItem);
+                    updateCodeArea(selectedItem);
                 }
             }
     );
+
+    private void updateCodeArea(Object selectedItem) {
+        int startFrom = codeArea.getText().lastIndexOf(AutoComplete.DEFAULT_PREFIX) + AutoComplete.DEFAULT_PREFIX.length(); // todo: hardcoded
+        codeArea.setText(codeArea.getText().substring(0, startFrom) + selectedItem);
+    }
 
     private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
             new NormalizationParserBindingSource.Listener() {
@@ -79,7 +85,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
     public GroovyEditor() {
         super(new BorderLayout());
-//        DefaultSyntaxKit.initKit();
+        DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
         this.groovyService = new GroovyService(bindingSource, this);
