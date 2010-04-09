@@ -71,7 +71,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
         val filterBreadCrumbList = list.tail
         for (index <- 0 until filterBreadCrumbList.length) {
           filterBreadCrumbList(index).getHref should equal (
-            filterQueries.dropRight(filterQueries.length - (index + 1)).mkString(start = queryPrefix + filterPrefix, sep = filterPrefix, end = "")
+            filterQueries.take(index + 1).mkString(start = queryPrefix + filterPrefix, sep = filterPrefix, end = "")
             )
         }
       }

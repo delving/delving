@@ -14,12 +14,22 @@ import _root_.org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class EuropeanaQueryExceptionSpec extends Spec with ShouldMatchers {
 
-  /*
-  @Test
-    public void testGetMessage() {
-        EuropeanaQueryException exception = new EuropeanaQueryException(QueryProblem.RECORD_NOT_FOUND.toString());
-        QueryProblem problem = QueryProblem.get(exception.getMessage());
-        Assert.assertEquals("Should be full-doc not found", QueryProblem.RECORD_NOT_FOUND, problem);
+  describe("A EuropeanaQueryException") {
+    val problem = QueryProblem.RECORD_NOT_FOUND
+    val exception = new EuropeanaQueryException(problem toString)
+
+    describe("(when it contains a message)") {
+
+      it("should give return that message through getMessage()") {
+        exception.getMessage should equal(problem toString)
+      }
     }
-   */
+
+    describe("(when the exception message is given to QueryProblem)") {
+
+      it("should find the correct QueryProblem enumeration") {
+        QueryProblem get (exception getMessage) should equal (problem)
+      }
+    }
+  }
 }
