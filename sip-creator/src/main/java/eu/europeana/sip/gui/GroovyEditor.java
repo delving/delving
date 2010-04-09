@@ -22,7 +22,6 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.GroovyService;
-import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -56,13 +55,25 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private CompileTimer compileTimer;
     private GroovyService groovyService;
     private java.util.List<String> _groovyNodes;
-    private AutoComplete autoComplete = new AutoCompleteImpl();
+    private AutoComplete autoComplete = new AutoCompleteImpl(
+            new AutoCompleteImpl.Listener() {
+
+                @Override
+                public void cancelled() {
+                    // todo: implement cancellation of autocompletion (clean up buffer / hide)
+                    LOG.debug("Cancelled");
+                }
+            }
+    );
     private AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
             new AutoCompleteDialog.Listener() {
 
                 @Override
                 public void itemSelected(Object selectedItem) {
                     updateCodeArea(selectedItem);
+                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
+                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
+                    }
                 }
             }
     );
@@ -85,7 +96,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
     public GroovyEditor() {
         super(new BorderLayout());
-        DefaultSyntaxKit.initKit();
+//        DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
         this.groovyService = new GroovyService(bindingSource, this);
@@ -93,6 +104,12 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
         this.codeArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
+                switch (event.getKeyCode()) {
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_DOWN:
+                        autoCompleteDialog.requestFocus();
+                        break;
+                }
                 compileTimer.triggerSoon();
                 java.util.List<String> remaining = autoComplete.complete(event, _groovyNodes);
                 autoCompleteDialog.updateElements(remaining);
@@ -208,4 +225,6 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     public String toString() {
         return "GroovyEditor";
     }
+
+
 }
