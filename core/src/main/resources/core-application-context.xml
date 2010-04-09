@@ -299,8 +299,14 @@
         <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
         <security:logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>
-        <security:remember-me token-repository-ref="tokenRepositoryService" />
+        <!--<security:remember-me token-repository-ref="tokenRepositoryService" />-->
+        <security:remember-me services-ref="rememberMeServices" key="europeanaKey"/>
     </security:http>
+    
+    <bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
+        <property name="tokenRepository" ref="tokenRepositoryService" />
+        <property name="key" value="europeanaKey"/>
+    </bean>
 
     <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
