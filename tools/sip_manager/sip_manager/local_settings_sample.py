@@ -1,3 +1,12 @@
+#
+#=========================   Fix path   ====================================
+#
+import os.path
+
+#Yes the extra normpath _is_ needed, otherwise proj_root becomes invalid
+#when settings are called from apps...
+proj_root = os.path.normpath(os.path.dirname(__file__))
+
 
 
 DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.

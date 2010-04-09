@@ -26,13 +26,15 @@
 """
 
 from django.conf.urls.defaults import *
-
-
+from django.views.generic import list_detail
+from models import Uri
 import views
 
 
+uri_info = {
+    "queryset" : Uri.objects.all(),
+}
 
 urlpatterns = patterns('',
-  #url(r'^$', views.index, name='clm_index'),
-  url(r'^foo/$', views.foo, name='uri_foo'),
-  )
+    (r'^alla/$', list_detail.object_list, uri_info)
+)
