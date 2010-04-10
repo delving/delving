@@ -24,10 +24,13 @@ package eu.europeana.core.database.exception;
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
 public class EuropeanaUriNotFoundException extends Exception {
-    public EuropeanaUriNotFoundException(String europeanaUri) {
+	private static final long serialVersionUID = 5311820042555584127L;
+
+	public EuropeanaUriNotFoundException(String europeanaUri) {
         super("EuropeanaId not found. europeanaUri = "+europeanaUri);
     }
 }

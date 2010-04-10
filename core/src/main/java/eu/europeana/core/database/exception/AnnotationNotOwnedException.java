@@ -26,10 +26,13 @@ import eu.europeana.core.database.domain.User;
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
 public class AnnotationNotOwnedException extends Exception {
-    public AnnotationNotOwnedException(Long id, User user) {
+	private static final long serialVersionUID = 5592064922743864884L;
+
+	public AnnotationNotOwnedException(Long id, User user) {
         super("Annotation not owned by user "+user.getEmail()+". ID="+id);
     }
 }

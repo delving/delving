@@ -21,8 +21,10 @@
 
 package eu.europeana.core.database.domain;
 
-import eu.europeana.definitions.domain.Language;
-import org.hibernate.annotations.Index;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,11 +35,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
+
+import org.hibernate.annotations.Index;
+
+import eu.europeana.definitions.domain.Language;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -47,7 +51,9 @@ import java.util.Map;
 @Entity
 public class Annotation implements Serializable {
 
-    @Id
+	private static final long serialVersionUID = 1704555721067084065L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column
     private Long id;
@@ -75,13 +81,18 @@ public class Annotation implements Serializable {
     @JoinColumn(name = "userid")
     private User user;
 
-    @Column
-    private boolean parent;
+    @OneToMany
+    @JoinColumn(name="predecessorId")
+	private List<Annotation> children;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSaved;
 
+    public Annotation() {
+    	children = new ArrayList<Annotation>();
+    }
+    
     public Long getId() {
         return id;
     }
@@ -142,16 +153,12 @@ public class Annotation implements Serializable {
         this.dateSaved = dateSaved;
     }
 
-    public void setParent() {
-        this.parent = true;
-    }
+	public List<Annotation> getChildren() {
+		return children;
+	}
 
-    public boolean isParent() {
-        return parent;
-    }
-
-    public interface IndexExtractor {
-        Map<String,String> getMap(String content);
-    }
+	public void setChildren(List<Annotation> children) {
+		this.children = children;
+	}
 
 }
