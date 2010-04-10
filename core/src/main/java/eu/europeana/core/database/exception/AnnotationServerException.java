@@ -24,11 +24,13 @@ package eu.europeana.core.database.exception;
  * Some system problem in annotations
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
 public class AnnotationServerException extends Exception {
-    
-    public AnnotationServerException(String message) {
+	private static final long serialVersionUID = -2653598382337817968L;
+
+	public AnnotationServerException(String message) {
         super(message);
     }
 

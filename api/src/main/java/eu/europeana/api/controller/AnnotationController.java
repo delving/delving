@@ -136,29 +136,26 @@ public class AnnotationController {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({AnnotationNotFoundException.class, EuropeanaUriNotFoundException.class})
-    public String notFoundAnnotation(Exception e) {
+    public void notFoundAnnotation(Exception e) {
         log.warn("problem", e);
-        return e.toString();
     }
 
     @ExceptionHandler({AnnotationHasBeenModifiedException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String hasBeenModified(Exception e) {
+    public void hasBeenModified(Exception e) {
         log.warn("problem", e);
-        return e.toString();
     }
 
     @ExceptionHandler({AnnotationNotOwnedException.class, UserNotFoundException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String notOwned(Exception e) {
+    public void notOwned(Exception e) {
         log.warn("problem", e);
-        return e.toString();
     }
+    
     @ExceptionHandler({Throwable.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String unknownProblem(Exception e) {
+    public void unknownProblem(Exception e) {
         log.warn("problem", e);
-        return e.toString();
     }
 
     private User getUser() throws UserNotFoundException {

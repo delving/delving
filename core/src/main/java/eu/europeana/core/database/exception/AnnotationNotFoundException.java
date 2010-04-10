@@ -24,10 +24,13 @@ package eu.europeana.core.database.exception;
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
 public class AnnotationNotFoundException extends Exception {
-    public AnnotationNotFoundException(Long id) {
+	private static final long serialVersionUID = 7181567946702253362L;
+
+	public AnnotationNotFoundException(Long id) {
         super("Annotation not found. ID="+id);
     }
 }

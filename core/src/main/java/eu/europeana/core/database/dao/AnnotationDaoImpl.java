@@ -78,7 +78,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         catch (OptimisticLockException e) {
             throw new AnnotationHasBeenModifiedException(predecessorId, e);
         }
-        predecessor.setParent();
+        
         Annotation annotation = new Annotation();
         annotation.setType(predecessor.getType());
         annotation.setLanguage(predecessor.getLanguage());
@@ -86,6 +86,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         annotation.setUser(user);
         annotation.setContent(content);
         annotation.setDateSaved(new Date());
+        annotation.setPredecessorId(predecessorId);
         entityManager.persist(annotation);
         log.info("Created annotation " + annotation.getId() + " dependent on " + predecessor.getId());
         return annotation;
@@ -124,7 +125,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         }
         entityManager.lock(existing, LockModeType.WRITE);
         entityManager.refresh(existing);
-        if (existing.isParent()) {
+        if (!existing.getChildren().isEmpty()) {
             throw new AnnotationHasBeenModifiedException(existing.getId());
         }
         if (user != null) {
@@ -156,7 +157,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         }
         entityManager.lock(existing, LockModeType.WRITE);
         entityManager.refresh(existing);
-        if (existing.isParent()) {
+        if (!existing.getChildren().isEmpty()) {
             throw new AnnotationHasBeenModifiedException(existing.getId());
         }
         if (user != null) {
@@ -177,7 +178,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         }
         return annotation;
     }
-
+ 
     @Override
     @Transactional
     @SuppressWarnings("unchecked")

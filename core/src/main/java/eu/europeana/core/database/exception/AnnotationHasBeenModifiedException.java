@@ -25,11 +25,14 @@ package eu.europeana.core.database.exception;
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Christian Sadilek <christian.sadilek@gmail.com>
+ * 
  */
 
 public class AnnotationHasBeenModifiedException extends Exception {
+	private static final long serialVersionUID = 3948481183923798118L;
 
-    public AnnotationHasBeenModifiedException(Long id, Exception cause) {
+	public AnnotationHasBeenModifiedException(Long id, Exception cause) {
         super("Annotation has been modified. ID="+id, cause);
     }
 

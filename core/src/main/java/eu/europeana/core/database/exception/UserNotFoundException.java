@@ -24,10 +24,13 @@ package eu.europeana.core.database.exception;
  * Somebody modified an annotation that a new one depends on
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
+ * @author Christian Sadilek <christian.sadilek@gmail.com>
  */
 
 public class UserNotFoundException extends Exception {
-    public UserNotFoundException() {
+	private static final long serialVersionUID = 7993738854683850975L;
+
+	public UserNotFoundException() {
         super("User not found in session");
     }
 
