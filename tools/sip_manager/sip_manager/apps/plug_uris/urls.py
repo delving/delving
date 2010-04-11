@@ -27,6 +27,9 @@
 
 from django.conf.urls.defaults import *
 from django.views.generic import list_detail
+
+from django.conf import settings
+
 from models import Uri
 import views
 

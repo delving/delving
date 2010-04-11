@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Publishers</h2>
+    <h2>Uri items</h2>
     <ul>
-        {% for publisher in object_list %}
-            <li>{{ publisher.name }}</li>
+        {% for uri in queryset %}
+            <li>{{ uri.status }}</li>
         {% endfor %}
     </ul>
 {% endblock %}

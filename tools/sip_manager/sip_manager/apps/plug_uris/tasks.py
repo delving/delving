@@ -369,10 +369,11 @@ class UriValidateSave(SipProcess):
         try:
             content_length = int(itm.headers['content-length'])
         except:
-            return self.set_urierr(models.URIE_OTHER_ERROR,
-                                   'Bad header response, missing "content-length"')
+            content_length = 0
+            # Since not all servers supply content_length, we dont consider this
+            # a failure anymore
 
-        if len(data) != content_length:
+        if content_length and (len(data) != content_length):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
                                    'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
 
@@ -566,9 +567,10 @@ class UriFileTreeMonitor(SipProcess):
 
 
 # List of active plugins from this file
-task_list = [UriPepareStorageDirs,
-             UriCreate,
-             UriValidateSave,
-             #UriCleanup,
-             #UriFileTreeMonitor,
-             ]
+task_list = [
+    UriPepareStorageDirs,
+    UriCreate,
+    UriValidateSave,
+    #UriCleanup,
+    #UriFileTreeMonitor,
+]

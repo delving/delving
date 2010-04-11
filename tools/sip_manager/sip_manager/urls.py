@@ -38,7 +38,7 @@ urlpatterns = patterns('',
     # Example:
     # (r'^sip_web/', include('sip_web.foo.urls')),
 
-    #(r'^uris/', include('apps.plug_uris.urls')),
+    (r'^uris/', include('apps.plug_uris.urls')),
     (r'^stats/', include('apps.statistics.urls')),
 
     (r'^databrowse/(.*)', databrowse.site.root),
