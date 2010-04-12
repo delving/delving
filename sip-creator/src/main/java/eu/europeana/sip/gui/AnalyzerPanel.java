@@ -224,10 +224,15 @@ public class AnalyzerPanel extends JPanel {
                                 public void actionPerformed(ActionEvent e) {
                                     MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
                                     QName recordRoot = node.getQName();
-                                    groovyEditor.setRecordRoot(recordRoot);
                                     DefaultTreeModel tm = (DefaultTreeModel)statisticsJTree.getModel();
-                                    setRecordRoot(tm, recordRoot);
-                                    tm.reload(node);
+                                    int count = MappingTree.setRecordRoot(tm, recordRoot);
+                                    if (count != 1) {
+                                        JOptionPane.showConfirmDialog(AnalyzerPanel.this, "Expected one record root, got "+count);
+                                    }
+                                    else {
+                                        groovyEditor.setRecordRoot(recordRoot);
+                                        tm.reload(node);
+                                    }
                                 }
                             });
                             delimiterPopup.add(delimiterMenuItem);
@@ -243,18 +248,6 @@ public class AnalyzerPanel extends JPanel {
         JScrollPane scroll = new JScrollPane(statisticsJTree);
         p.add(scroll, BorderLayout.CENTER);
         return p;
-    }
-
-    private void setRecordRoot(DefaultTreeModel model, QName recordRoot) {
-        MappingTree.Node node = (MappingTree.Node)model.getRoot();
-        setRecordRoot(node, recordRoot);
-    }
-
-    private void setRecordRoot(MappingTree.Node node, QName recordRoot) {
-        node.setRecordRoot(recordRoot);
-        for (MappingTree.Node child : node.getChildNodes()) {
-            setRecordRoot(child, recordRoot);
-        }
     }
 
     private Component createStatisticsListPanel() {
