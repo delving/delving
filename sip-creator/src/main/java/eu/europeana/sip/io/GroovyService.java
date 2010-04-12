@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.io;
 
-import eu.europeana.sip.gui.AnalyzerPanel;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
