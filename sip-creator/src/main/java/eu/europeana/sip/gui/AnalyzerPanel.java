@@ -140,8 +140,8 @@ public class AnalyzerPanel extends JPanel {
                 new MouseAdapter() {
 
                     @Override
-                    public void mouseReleased(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON3) {
+                    public void mousePressed(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
                             final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
                             statisticsJTree.setSelectionPath(path);
                             JPopupMenu jPopupMenu = new JPopupMenu();
@@ -165,6 +165,13 @@ public class AnalyzerPanel extends JPanel {
                             );
                             jPopupMenu.add(jMenuItem);
                             jPopupMenu.show(statisticsJTree, e.getX(), e.getY());
+                        }
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+
                         }
                     }
                 }
