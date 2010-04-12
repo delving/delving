@@ -46,7 +46,7 @@ import java.util.concurrent.Executors;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class GroovyService implements AnalyzerPanel.RecordChangeListener {
+public class GroovyService {
 
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
     private final ExecutorService threadPool = Executors.newSingleThreadExecutor();
@@ -56,19 +56,8 @@ public class GroovyService implements AnalyzerPanel.RecordChangeListener {
     private BindingSource bindingSource;
     private QName recordRoot;
 
-    @Override
-    public void recordRootChanged(File file, QName recordRoot) {
+    public void setRecordRoot(QName recordRoot) {
         this.recordRoot = recordRoot;
-    }
-
-    @Override
-    public void save(File file, QName recordRoot) {
-        // todo: implement
-    }
-
-    @Override
-    public QName load(File file) {
-        return null;  // todo: implement
     }
 
     public interface Listener {
