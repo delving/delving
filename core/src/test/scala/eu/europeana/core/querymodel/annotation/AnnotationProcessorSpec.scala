@@ -9,7 +9,6 @@ import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.Spec
 import _root_.org.scalatest.junit.JUnitRunner
 import collection.mutable.ListBuffer
-
 /**
  *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
