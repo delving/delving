@@ -208,7 +208,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
     @Override
     public QName load(File file) throws IOException {
-        File recordFile = new File(file.getName() + ".record");
+        File recordFile = new File(file.getAbsoluteFile() + ".record");
         if (!recordFile.exists()) {
             LOG.warn(String.format("File %s not found, will use the default delimiter '%s'", recordFile.getAbsoluteFile(), AnalyzerPanel.DEFAULT_RECORD));
             JOptionPane.showMessageDialog(this, "No delimiter specified for this file yet.\n" +
