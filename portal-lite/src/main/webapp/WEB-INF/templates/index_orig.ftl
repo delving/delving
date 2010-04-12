@@ -14,18 +14,27 @@
 
 
 
-    <div class="grid_5"><img src="images/europeana_open_logo_large.jpg" id="logo-home" alt="Europeana Open Source"/></div>
+    <div class="grid_12">
+            <img src="images/logo.png" id="logo-home" alt="Delving"/>
+    </div>
 
-    <div class="grid_7">
-        <noscript>
+    <div class="grid_12">
+
+         <noscript>
             <div class="ui-widget grid_5 alpha">
                 <div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin-top: 20px;">
                     <@spring.message 'NoScript_t' />
                 </div>
             </div>
         </noscript>
+
         <@SearchForm "search_home"/>
-     </div>
+
+    </div>
+
+
+
+
 
 </div>
 

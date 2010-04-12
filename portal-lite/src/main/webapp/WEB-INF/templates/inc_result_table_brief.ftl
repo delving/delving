@@ -47,7 +47,7 @@
                 <#if pr?length &gt; 80>
                 <#assign pr = cell.provider?substring(0, 80) + "..."/>
                 </#if>
-                <li title="${cell.provider}"><span class="fg-green">${pr}</span></li>
+                <li title="${cell.provider}"><span class="provider">${pr}</span></li>
                 </#if>
             </ul>
         </td>
@@ -89,7 +89,7 @@
                 <#-- with labels -->
                 <#if !cell.creator[0]?matches(" ")><span><@spring.message 'Creator_t' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message 'Date_t' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="fg-green">${cell.provider}</span></#if>
+                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>

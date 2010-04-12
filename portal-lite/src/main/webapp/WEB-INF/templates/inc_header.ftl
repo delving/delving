@@ -2,7 +2,7 @@
 <#if user??>
     <#assign user = user/>
 </#if>
-<#assign useCache = "true">
+<#assign useCache = "false">
 <#if RequestParameters.useCache??>
     <#assign useCache = "${RequestParameters.useCache}"/>
 </#if>

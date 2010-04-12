@@ -34,8 +34,8 @@
 
 <div id="sidebar" class="grid_3">
     <div id="identity">
-            <h1>Europeana Lite</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/europeana_open_logo_small.jpg" alt="European Open Source"/></a>
+            <h1>Delving</h1>
+            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
     <div id="facet-list">
