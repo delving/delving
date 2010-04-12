@@ -7,13 +7,32 @@
         <#include "inc_top_nav.ftl"/>
     </div>
     <div id="bd">
-    <#if entries??>
-        <#list entries as entry>
-            <p>
-                <a href="${entry.loc}">${entry.name} (${entry.count})</a>
-            </p>
-        </#list>
-    </#if>
+        <div id="yui-main">
+            <div class="yui-b">
+                <div class="yui-g" id="mainContent">
+                    <h1><@spring.message 'Collections_t' /></h1>
+                    
+                    <div id="secondaryContent">
+
+                        <div class="yui-u first">
+                            <ul class="share-ideas">
+                            <#if entries??>
+                                <#list entries as entry>
+                                    <li>
+                                        <a href="${entry.loc}">${entry.name} (${entry.count})</a>
+                                    </li>
+                                </#list>
+                            </#if>
+                            </ul>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+                            
     </div>
  </div>   
 </body>
