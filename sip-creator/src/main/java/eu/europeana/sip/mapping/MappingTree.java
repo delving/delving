@@ -44,9 +44,12 @@ public class MappingTree implements Serializable {
     private static final long serialVersionUID = -15171971879119571L;
     private QNameNode root;
 
-    public interface Node {
+    public interface Node extends TreeNode {
         Statistics getStatistics();
         TreePath getTreePath();
+        QName getQName();
+        void setRecordRoot(QName recordRoot);
+        boolean isRecordRoot();
         Iterable<? extends Node> getChildNodes();
     }
 
@@ -58,27 +61,29 @@ public class MappingTree implements Serializable {
         return new DefaultTreeModel(root, true);
     }
 
-    private static class QNameNode implements TreeNode, Node, Serializable {
+    private static class QNameNode implements Node, Serializable {
         private static final long serialVersionUID = -8362212829296408316L;
         private QNameNode parent;
         private List<QNameNode> children = new ArrayList<QNameNode>();
         private String tag;
-        private QName name;
+        private QName qName;
+        private boolean recordRoot;
         private Statistics statistics;
 
         private QNameNode(String tag) {
             this.tag = tag;
         }
 
-        private QNameNode(QNameNode parent, QName name) {
+        private QNameNode(QNameNode parent, QName qName, boolean recordRoot) {
             this.parent = parent;
-            this.name = name;
+            this.qName = qName;
+            this.recordRoot = recordRoot;
         }
 
         private QNameNode(QNameNode parent, Statistics statistics) {
             this.parent = parent;
             this.statistics = statistics;
-            this.name = statistics.getPath().peek();
+            this.qName = statistics.getPath().peek();
         }
 
         public void setStatistics(Statistics statistics) {
@@ -95,6 +100,21 @@ public class MappingTree implements Serializable {
             List<QNameNode> list = new ArrayList<QNameNode>();
             compilePathList(list);
             return new TreePath(list.toArray());
+        }
+
+        @Override
+        public QName getQName() {
+            return qName;
+        }
+
+        @Override
+        public void setRecordRoot(QName recordRoot) {
+            this.recordRoot = qName != null && qName.equals(recordRoot); 
+        }
+
+        @Override
+        public boolean isRecordRoot() {
+            return recordRoot;
         }
 
         @Override
@@ -150,14 +170,14 @@ public class MappingTree implements Serializable {
         }
 
         public String toString() {
-            if (name == null) {
+            if (qName == null) {
                 return tag;
             }
-            else if (!name.getPrefix().isEmpty()) {
-                return name.getPrefix() + ':' + name.getLocalPart();
+            else if (!qName.getPrefix().isEmpty()) {
+                return qName.getPrefix() + ':' + qName.getLocalPart();
             }
             else {
-                return name.getLocalPart();
+                return qName.getLocalPart();
             }
         }
     }
@@ -166,13 +186,13 @@ public class MappingTree implements Serializable {
         return new MappingTree(new QNameNode(rootTag));
     }
 
-    public static MappingTree create(List<Statistics> statisticsList, String rootTag) {
-        QNameNode root = createSubtree(statisticsList, new QNamePath(), null);
+    public static MappingTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
+        QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
         root.tag = rootTag;
         return new MappingTree(root);
     }
 
-    private static QNameNode createSubtree(List<Statistics> statisticsList, QNamePath path, QNameNode parent) {
+    private static QNameNode createSubtree(List<Statistics> statisticsList, QNamePath path, QName recordRoot, QNameNode parent) {
         Map<QName, List<Statistics>> statisticsMap = new HashMap<QName, List<Statistics>>();
         for (Statistics statistics : statisticsList) {
             QNamePath pp = new QNamePath(statistics.getPath(), path.size());
@@ -190,7 +210,8 @@ public class MappingTree implements Serializable {
         if (statisticsMap.isEmpty()) {
             return null;
         }
-        QNameNode node = new QNameNode(parent, path.peek());
+        QName name = path.peek();
+        QNameNode node = new QNameNode(parent, name, name != null && name.equals(recordRoot));
         for (Map.Entry<QName, List<Statistics>> entry : statisticsMap.entrySet()) {
             QNamePath childPath = new QNamePath(path);
             childPath.push(entry.getKey());
@@ -200,7 +221,7 @@ public class MappingTree implements Serializable {
                     statisticsForChild = statistics;
                 }
             }
-            QNameNode child = createSubtree(statisticsList, childPath, node);
+            QNameNode child = createSubtree(statisticsList, childPath, recordRoot, node);
             if (child != null) {
                 node.add(child);
                 child.setStatistics(statisticsForChild);

@@ -42,7 +42,6 @@ public class Statistics implements Comparable<Statistics>, Serializable {
     private static final int MAXIMUM_LENGTH = 100;
     private QNamePath path;
     private int total;
-    private boolean unique = true;
     private Map<String, CounterImpl> counterMap = new TreeMap<String, CounterImpl>();
 
     public Statistics(QNamePath path) {
@@ -57,9 +56,6 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         if (counter == null) {
             counterMap.put(value, counter = new CounterImpl(value));
         }
-        else {
-            unique = false;
-        }
         counter.increment();
         total++;
     }
@@ -68,19 +64,8 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         return path;
     }
 
-    public boolean isUnique() {
-        return unique;
-    }
-
-    public int getTotal() {
-        return total;
-    }
-
     public void trim() {
         List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
-        if (!unique) {
-            Collections.sort(counterList);
-        }
         counterMap.clear();
         int count = MAX_STATISTICS_LIST_SIZE;
         for (CounterImpl counter : counterList) {
@@ -93,14 +78,12 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
     public List<? extends Counter> getCounters() {
         List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
-        if (!unique) {
-            Collections.sort(counterList);
-        }
+        Collections.sort(counterList);
         return counterList;
     }
 
     public String toString() {
-        return path + " (" + total + ") "+ (unique ? "unique" : "non-unique");
+        return path + " (" + total + ")";
     }
 
     @Override
@@ -110,7 +93,9 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
     public interface Counter {
         String getValue();
+
         int getCount();
+
         String getPercentage();
     }
 
@@ -139,7 +124,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
         @Override
         public String getPercentage() {
-            double percent = (double)count / total;
+            double percent = (double) count / total;
             return PERCENT.format(percent);
         }
 

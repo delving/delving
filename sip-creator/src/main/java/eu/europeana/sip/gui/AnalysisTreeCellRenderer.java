@@ -23,9 +23,12 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.mapping.MappingTree;
 
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 
 /**
  * Render the cells of the analysis tree
@@ -35,14 +38,13 @@ import java.awt.*;
 
 public class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {
     private Font normalFont, thickFont;
-    private String selectedPath;
 
     @Override
     public Component getTreeCellRendererComponent(JTree jTree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
         MappingTree.Node node = (MappingTree.Node) value;
         label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
-        if (value.toString().equals(selectedPath)) {
+        if (node.isRecordRoot()) {
             label.setForeground(Color.RED);
         }
         return label;
@@ -60,9 +62,5 @@ public class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {
             thickFont = new Font(getNormalFont().getFontName(), Font.BOLD, getNormalFont().getSize());
         }
         return thickFont;
-    }
-
-    public void setSelectedPath(String selectedPath) {
-        this.selectedPath = selectedPath;
     }
 }

@@ -223,7 +223,7 @@ public class RecentFileSets {
                 StringBuilder qNameString = new StringBuilder();
                 int ch;
                 while ((ch = in.read()) >= 0) {
-                    qNameString.append(ch);
+                    qNameString.append((char)ch);
                 }
                 in.close();
                 try {

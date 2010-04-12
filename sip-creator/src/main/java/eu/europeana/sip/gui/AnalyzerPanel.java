@@ -45,6 +45,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -82,7 +83,6 @@ public class AnalyzerPanel extends JPanel {
     private GroovyEditor groovyEditor = new GroovyEditor();
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
-    private FileSet fileSet;
 
     public AnalyzerPanel() {
         super(new BorderLayout());
@@ -98,6 +98,7 @@ public class AnalyzerPanel extends JPanel {
 
     public void setFileSet(final FileSet fileSet) {
         try {
+            final QName recordRoot = fileSet.getRecordRoot();
             List<Statistics> statistics = fileSet.getStatistics();
             if (statistics == null) {
                 abort = false;
@@ -105,7 +106,7 @@ public class AnalyzerPanel extends JPanel {
                 fileSet.analyze(new FileSet.AnalysisListener() {
                     @Override
                     public void success(List<Statistics> statistics) {
-                        setMappingTree(MappingTree.create(statistics, fileSet.getName()));
+                        setMappingTree(MappingTree.create(statistics, fileSet.getName(), recordRoot));
                         fileMenuEnablement.enable(true);
                         if (progressDialog != null) {
                             progressDialog.setVisible(false);
@@ -155,7 +156,7 @@ public class AnalyzerPanel extends JPanel {
                 });
             }
             else {
-                setMappingTree(MappingTree.create(statistics, fileSet.getName()));
+                setMappingTree(MappingTree.create(statistics, fileSet.getName(), recordRoot));
             }
             groovyEditor.setFileSet(fileSet);
         }
@@ -200,7 +201,6 @@ public class AnalyzerPanel extends JPanel {
         p.add(title, BorderLayout.NORTH);
         statisticsJTree.setCellRenderer(analysisTreeCellRenderer);
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
@@ -219,17 +219,17 @@ public class AnalyzerPanel extends JPanel {
                             statisticsJTree.setSelectionPath(path);
                             JPopupMenu delimiterPopup = new JPopupMenu();
                             JMenuItem delimiterMenuItem = new JMenuItem("Set as delimiter");
-                            delimiterMenuItem.addActionListener(
-                                    new ActionListener() {
-                                        @Override
-                                        public void actionPerformed(ActionEvent e) {
-                                            QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
-                                            groovyEditor.setRecordRoot(recordRoot);
-                                            // todo: don't set the cell renderer!
-                                            analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
-                                        }
-                                    }
-                            );
+                            delimiterMenuItem.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
+                                    QName recordRoot = node.getQName();
+                                    groovyEditor.setRecordRoot(recordRoot);
+                                    DefaultTreeModel tm = (DefaultTreeModel)statisticsJTree.getModel();
+                                    setRecordRoot(tm, recordRoot);
+                                    tm.reload(node);
+                                }
+                            });
                             delimiterPopup.add(delimiterMenuItem);
                             delimiterPopup.show(statisticsJTree, e.getX(), e.getY());
                         }
@@ -237,15 +237,24 @@ public class AnalyzerPanel extends JPanel {
 
                     @Override
                     public void mouseReleased(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON3) {
-
-                        }
                     }
                 }
         );
         JScrollPane scroll = new JScrollPane(statisticsJTree);
         p.add(scroll, BorderLayout.CENTER);
         return p;
+    }
+
+    private void setRecordRoot(DefaultTreeModel model, QName recordRoot) {
+        MappingTree.Node node = (MappingTree.Node)model.getRoot();
+        setRecordRoot(node, recordRoot);
+    }
+
+    private void setRecordRoot(MappingTree.Node node, QName recordRoot) {
+        node.setRecordRoot(recordRoot);
+        for (MappingTree.Node child : node.getChildNodes()) {
+            setRecordRoot(child, recordRoot);
+        }
     }
 
     private Component createStatisticsListPanel() {
@@ -327,7 +336,7 @@ public class AnalyzerPanel extends JPanel {
             super(getFrame(), "Analysis", false);
             getContentPane().add(createContent());
             pack();
-//            setLocationRelativeTo(AnalyzerPanel.this);
+            setLocationRelativeTo(AnalyzerPanel.this);
         }
 
         private Component createContent() {
@@ -346,7 +355,7 @@ public class AnalyzerPanel extends JPanel {
         }
 
         public void setRecordsProcessed(long recordNumber) {
-            label.setText(LABEL_PROMPT + format.format(recordNumber/1000) + "k");
+            label.setText(LABEL_PROMPT + format.format(recordNumber / 1000) + "k");
         }
     }
 }
