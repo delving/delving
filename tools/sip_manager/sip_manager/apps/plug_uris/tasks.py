@@ -427,9 +427,10 @@ class UriValidateSave(SipProcess):
             self.uri.err_msg = models.URI_ERR_CODES[code]
 
         # Only mark as failed if we didnt make any progress at all
-        if (self.uri.status == URIS_CREATED) and code in (URIE_TIMEOUT, URIE_HTTP_ERROR,
-                                                          URIE_HTML_ERROR, URIE_URL_ERROR):
-            self.uri.status = URIS_FAILED
+        if (self.uri.status == models.URIS_CREATED) and code in (
+            models.URIE_TIMEOUT, models.URIE_HTTP_ERROR,
+            models.URIE_HTML_ERROR, models.URIE_URL_ERROR):
+            self.uri.status = models.URIS_FAILED
 
         self.uri.save()
         return False # propagate error
