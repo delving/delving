@@ -45,7 +45,6 @@ public class AutoCompleteDialog extends JDialog {
         setSize(new Dimension(300, 200));
         setUndecorated(true);
         add(availableElementsWindow);
-        setVisible(true);
         jList.addKeyListener(
                 new KeyAdapter() {
 
