@@ -53,6 +53,23 @@ public class MappingTree implements Serializable {
         Iterable<? extends Node> getChildNodes();
     }
 
+    public static int setRecordRoot(DefaultTreeModel model, QName recordRoot) {
+        MappingTree.Node node = (MappingTree.Node)model.getRoot();
+        return setRecordRoot(node, recordRoot);
+    }
+
+    private static int setRecordRoot(MappingTree.Node node, QName recordRoot) {
+        node.setRecordRoot(recordRoot);
+        int sum = 0;
+        if (node.isRecordRoot()) {
+            sum++;
+        }
+        for (MappingTree.Node child : node.getChildNodes()) {
+            sum += setRecordRoot(child, recordRoot);
+        }
+        return sum;
+    }
+
     public MappingTree(QNameNode root) {
         this.root = root;
     }
