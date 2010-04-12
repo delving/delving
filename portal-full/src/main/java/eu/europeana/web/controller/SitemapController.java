@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -62,6 +63,8 @@ import eu.europeana.core.util.web.ControllerUtil;
 
 @Controller
 public class SitemapController {
+
+    private Logger log = Logger.getLogger(getClass());
 
 	// don't increase this higher then 1000. It will put undue strain on SearchEngine
 	private static final int MAX_RECORDS_PER_SITEMAP_FILE = 1000;
@@ -114,7 +117,7 @@ public class SitemapController {
 											new Date(), //todo: add more relevant date later
 											facetField.getCount()));
 						} catch (UnsupportedEncodingException e) {
-							Log.warn(e.getMessage() + " on " + facetField.getName());
+							log.warn(e.getMessage() + " on " + facetField.getName());
 						} 
 						pageCounter++;
 					}
@@ -174,7 +177,7 @@ public class SitemapController {
 								new Date(), //todo: add more relevant date later
 								facetField.getCount()));
 			} catch (UnsupportedEncodingException e) {
-				Log.warn(e.getMessage() + " on " + facetField.getName());
+				log.warn(e.getMessage() + " on " + facetField.getName());
 			} 
 		}
 		mavPage = ControllerUtil.createModelAndViewPage("sitemap-index.html");
