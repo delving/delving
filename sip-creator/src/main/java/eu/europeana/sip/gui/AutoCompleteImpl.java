@@ -45,7 +45,7 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
 
     @Override
     public List<String> complete(String entered, List<String> originalElements) {
-        if (!entered.startsWith(prefix)) { // todo: do this check in advance?
+        if (!entered.endsWith(prefix)) { // todo: do this check in advance?
             return null;
         }
         entered = entered.substring(entered.lastIndexOf(DEFAULT_PREFIX) + DEFAULT_PREFIX.length());
