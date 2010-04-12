@@ -61,7 +61,7 @@ URIS_ORG_SAVED = 3
 URIS_FULL_GENERATED = 4
 URIS_BRIEF_GENERATED = 5
 URIS_COMPLETED = 6
-#URIS_FAILED = 7
+URIS_FAILED = 7
 
 URI_STATES = {
     URIS_CREATED : 'created',
@@ -70,7 +70,7 @@ URI_STATES = {
     URIS_FULL_GENERATED : 'full_doc generated',
     URIS_BRIEF_GENERATED : 'brief_doc generated',
     URIS_COMPLETED : 'completed',
-    #URIS_FAILED : 'failed',
+    URIS_FAILED : 'failed',
     }
 
 # URIT_ = Uri Type
@@ -121,6 +121,16 @@ URI_ERR_CODES = {
     #URIE_NO_RESPONSE     : 'no response',
     }
 
+"""
+URIS_FAILED is only used for errors before URIS_VERIFIED has been set.
+
+This is to make sure that if we did _any_ progress on the uri we keep the state
+so the check could continue later after manual intervention.
+
+Whenever there is an error err_code is set, so in order to find problematic
+records, the primary check should be on the err_code field, status indicates
+if the uri made any progress before the failure.
+"""
 
 
 

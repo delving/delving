@@ -101,6 +101,9 @@ USE_IMAGE_MAGIC = True
 URL_TIMEOUT = 10
 
 
+HTTPH_CONT_LENGTH = 'content-length'
+HTTPH_K_TRANS_ENC = 'transfer-encoding'
+HTTPH_CHUNKED = 'chunked'
 
 
 
@@ -259,6 +262,9 @@ class UriValidateSave(SipProcess):
 
         self.urisource = None
         for urisource in urisources:
+            if urisource.pk > 1:
+                return False # debug only handle first source
+
             # Loop over available sources, see if any of them has pending jobs
             if models.Uri.objects.new_by_source_count(urisource.pk):
                 # found one!  lets work on it
@@ -361,17 +367,20 @@ class UriValidateSave(SipProcess):
         for bad_groups in ('audio','video'):
             if self.uri.mime_type.find(bad_groups) > -1:
                 return self.set_urierr(models.URIE_UNSUPORTED_MIMETYPE_ERROR)
+        headers = itm.headers
+        if headers.has_key(HTTPH_K_TRANS_ENC) and (headers[HTTPH_K_TRANS_ENC] == HTTPH_CHUNKED):
+            content_length = 0
+        else:
+            try:
+                content_length = int(itm.headers[HTTPH_CONT_LENGTH])
+            except:
+                return self.set_urierr(models.URIE_OTHER_ERROR,
+                                       'Failed to read %s' % HTTPH_CONT_LENGTH)
         try:
             data = itm.read()
         except:
             return self.set_urierr(models.URIE_DOWNLOAD_FAILED,
                                    'Failed to read object content')
-        try:
-            content_length = int(itm.headers['content-length'])
-        except:
-            content_length = 0
-            # Since not all servers supply content_length, we dont consider this
-            # a failure anymore
 
         if content_length and (len(data) != content_length):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
@@ -419,6 +428,12 @@ class UriValidateSave(SipProcess):
         else:
             # give name of error as default message
             self.uri.err_msg = models.URI_ERR_CODES[code]
+
+        # Only mark as failed if we didnt make any progress at all
+        if (self.uri.status == URIS_CREATED) and code in (URIE_TIMEOUT, URIE_HTTP_ERROR,
+                                                          URIE_HTML_ERROR, URIE_URL_ERROR):
+            self.uri.status = URIS_FAILED
+
         self.uri.save()
         return False # propagate error
 
