@@ -52,7 +52,7 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
         List<String> remaining = new ArrayList<String>();
         for (String inList : originalElements) {
             if (inList.startsWith(entered)) {
-                remaining.add(inList.substring(entered.length()));
+                remaining.add(inList);
             }
         }
         return remaining;

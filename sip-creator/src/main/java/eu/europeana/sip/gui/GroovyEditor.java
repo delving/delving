@@ -69,7 +69,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
                 @Override
                 public void itemSelected(Object selectedItem) {
-                    updateCodeArea(selectedItem);
+                    updateCodeArea(codeArea.getCaretPosition(), selectedItem);
                     if (autoComplete instanceof AutoCompleteDialog.Listener) {
                         ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
                     }
@@ -78,11 +78,10 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
             codeArea
     );
 
-    private void updateCodeArea(Object selectedItem) { // todo: buggy, fix appending end of codeArea
-        int startFrom = codeArea.getText().lastIndexOf(AutoComplete.DEFAULT_PREFIX) + AutoComplete.DEFAULT_PREFIX.length(); // todo: hardcoded
-        String begin = codeArea.getText().substring(0, startFrom);
-        String end = codeArea.getText().substring(startFrom);
-        codeArea.setText(begin + selectedItem);
+    private void updateCodeArea(int caretPositon, Object selectedItem) {
+        String begin = codeArea.getText().substring(0, caretPositon);
+        String end = codeArea.getText().substring(caretPositon);
+        codeArea.setText(begin + selectedItem + end);
     }
 
     private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
