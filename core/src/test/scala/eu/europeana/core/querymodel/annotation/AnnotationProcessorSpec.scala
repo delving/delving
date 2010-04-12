@@ -38,7 +38,6 @@ class AnnotationProcessorSpec extends Spec with ShouldMatchers {
 //            europeanaBean.getFields.foreach(field => println (field) )
         }
       }
-
     }
 
   }
