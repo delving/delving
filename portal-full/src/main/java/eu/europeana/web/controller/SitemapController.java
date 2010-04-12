@@ -57,7 +57,7 @@ public class SitemapController {
 	// don't increase this higher then 1000. It will put undue strain on SearchEngine
 	private static final int MAX_RECORDS_PER_SITEMAP_FILE = 1000;
 	// reserved for collections of up to 99,999,000 items
-	private static final int MAX_LENGTH_PAGE_NUMBER = 5;
+	private static final int MAX_LENGTH_PAGE_NUMBER = 6;
 
 	@Value("#{europeanaProperties['displayPageUrl']}")
 	private String fullViewUrl;
