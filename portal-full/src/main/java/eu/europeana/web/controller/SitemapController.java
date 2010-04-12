@@ -56,6 +56,8 @@ public class SitemapController {
 
 	// don't increase this higher then 1000. It will put undue strain on SearchEngine
 	private static final int MAX_RECORDS_PER_SITEMAP_FILE = 1000;
+	// reserved for collections of up to 99,999,000 items
+	private static final int MAX_LENGTH_PAGE_NUMBER = 5;
 
 	@Value("#{europeanaProperties['displayPageUrl']}")
 	private String fullViewUrl;
@@ -111,7 +113,7 @@ public class SitemapController {
 			mavPage.addObject("fullViewUrl", fullViewUrl);
 
 			// generate sitemap for a collection
-			if (page != null && page.length() > 0 && page.length() < 4 && NumberUtils.isDigits(page)) {
+			if (page != null && page.length() > 0 && page.length() < MAX_LENGTH_PAGE_NUMBER && NumberUtils.isDigits(page)) {
 				int pageInt = Integer.parseInt(page);
 
 				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(provider, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
