@@ -22,7 +22,6 @@
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
 
 
-
 """
 
 from django.conf.urls.defaults import *
@@ -34,6 +33,8 @@ admin.autodiscover()
 from django.contrib import databrowse
 
 
+
+
 urlpatterns = patterns('',
     # Example:
     # (r'^sip_web/', include('sip_web.foo.urls')),
@@ -41,7 +42,7 @@ urlpatterns = patterns('',
     (r'^uris/', include('apps.plug_uris.urls')),
     (r'^stats/', include('apps.statistics.urls')),
 
-    (r'^databrowse/(.*)', databrowse.site.root),
+    #(r'^databrowse/(.*)', databrowse.site.root),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:

@@ -26,18 +26,17 @@
 """
 
 from django.conf.urls.defaults import *
-from django.views.generic import list_detail
 
 from django.conf import settings
 
-from models import Uri
 import views
 
 
-uri_info = {
-    "queryset" : Uri.objects.all(),
-}
-
 urlpatterns = patterns('',
-    (r'^alla/$', list_detail.object_list, uri_info)
+
+    url(r'^statistics/(?P<order_by>\S+)/$', views.statistics, name='uri_stats'),
+    url(r'^statistics/$', views.statistics, name='uri_stats'),
+
+    url(r'^problems/(?P<source_id>\S+)/$', views.problems, name='uri_problems'),
+
 )
