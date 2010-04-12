@@ -31,7 +31,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -90,6 +89,7 @@ public class NormalizationParser {
                             nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + input.getLocalName();
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
+                        logger.info("created node "+node);
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
@@ -116,8 +116,10 @@ public class NormalizationParser {
                     }
                     if (withinRecord) {
                         GroovyNode node = nodeStack.pop();
-                        if (value.length() > 0) {
-                            node.setValue(value.toString());
+                        String valueString = value.toString().trim();
+                        value.setLength(0);
+                        if (valueString.length() > 0) {
+                            node.setValue(valueString);
                         }
                     }
                     break;
@@ -139,12 +141,12 @@ public class NormalizationParser {
     }
 
     private void printRecord(GroovyNode node, StringBuilder out, int depth) {
-        if (node.value() instanceof List) {
+        if (node.value() instanceof GroovyNodeList) {
             for (int walk=0; walk<depth; walk++) {
                 out.append(' ');
             }
-            out.append(node.name()).append('\n');
-            List list = (List)node.value();
+            GroovyNodeList list = (GroovyNodeList)node.value();
+            out.append(node.name()).append("\n");
             for (Object member : list) {
                 GroovyNode childNode = (GroovyNode)member;
                 printRecord(childNode, out, depth+1);
@@ -154,7 +156,7 @@ public class NormalizationParser {
             for (int walk=0; walk<depth; walk++) {
                 out.append(' ');
             }
-            out.append(node.name()).append(" := ").append(node.value().toString()).append('\n');
+            out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
         }
     }
 

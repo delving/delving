@@ -174,7 +174,7 @@ public class AnalyzerPanel extends JPanel {
     }
 
     private JComponent createNextButton() {
-        nextRecordButton.setEnabled(false);
+//        nextRecordButton.setEnabled(false);
         nextRecordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
