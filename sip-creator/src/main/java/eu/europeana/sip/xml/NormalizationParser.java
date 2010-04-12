@@ -31,6 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -118,7 +119,6 @@ public class NormalizationParser {
                         if (value.length() > 0) {
                             node.setValue(value.toString());
                         }
-                        logger.info("Read record");
                     }
                     break;
                 case XMLEvent.END_DOCUMENT: {
@@ -132,7 +132,30 @@ public class NormalizationParser {
             }
             input.next();
         }
+        StringBuilder recordPrinted = new StringBuilder();
+        printRecord(rootNode, recordPrinted, 0);
+        logger.info("Read record :\n" + recordPrinted);
         return rootNode;
+    }
+
+    private void printRecord(GroovyNode node, StringBuilder out, int depth) {
+        if (node.value() instanceof List) {
+            for (int walk=0; walk<depth; walk++) {
+                out.append(' ');
+            }
+            out.append(node.name()).append('\n');
+            List list = (List)node.value();
+            for (Object member : list) {
+                GroovyNode childNode = (GroovyNode)member;
+                printRecord(childNode, out, depth+1);
+            }
+        }
+        else {
+            for (int walk=0; walk<depth; walk++) {
+                out.append(' ');
+            }
+            out.append(node.name()).append(" := ").append(node.value().toString()).append('\n');
+        }
     }
 
     public void close() {
