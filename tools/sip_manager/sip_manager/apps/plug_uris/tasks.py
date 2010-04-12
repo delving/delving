@@ -262,9 +262,6 @@ class UriValidateSave(SipProcess):
 
         self.urisource = None
         for urisource in urisources:
-            if urisource.pk > 1:
-                return False # debug only handle first source
-
             # Loop over available sources, see if any of them has pending jobs
             if models.Uri.objects.new_by_source_count(urisource.pk):
                 # found one!  lets work on it
