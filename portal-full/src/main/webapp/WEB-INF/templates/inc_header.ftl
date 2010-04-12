@@ -89,6 +89,10 @@
                 <#else>
                     <title>Europeana - Search results</title>
                 </#if>
+                <#-- If we fail to assign it a reasonably long title then we dont index -->
+                <#if metaTitle?length &lt; 3>
+                    <meta name="robots" content="noindex"/>
+                </#if>
                 <#if metaDescription??>
                     <meta name="description" content="${metaDescription}"/>
                 </#if>

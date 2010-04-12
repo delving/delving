@@ -32,16 +32,16 @@
 <#-- page title and description -->
 <#assign metaTitle = result.fullDoc.dcTitle[0]?xhtml />
 <#assign metaDescription = result.fullDoc.dcDescription[0]?xhtml />
+<#if metaTitle?length &lt; 3>
+     <#assign metaTitle = metaDescription?substring(0, 50) />
+</#if>
+<#if metaTitle?length &lt; 3>
+     <#assign metaTitle = result.fullDoc.dcTermsAlternative[0]?xhtml />
+</#if>
 <#if metaDescription?length &gt; 200>
    <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
 </#if>
-<#if metaTitle?length &lt; 5>
-     <#assign metaTitle = metaDescription />
-</#if>
-<#if metaTitle?length &lt; 5>
-     <#assign metaTitle = result.fullDoc.dcTermsAlternative[0]?xhtml />
-</#if>
-<#if metaDescription?length &lt; 20>
+<#if metaDescription?length &lt; 10>
      <#assign metaDescription = metaTitle />
 </#if>
 
