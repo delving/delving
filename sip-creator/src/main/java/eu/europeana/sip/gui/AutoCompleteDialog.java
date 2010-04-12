@@ -1,13 +1,17 @@
 package eu.europeana.sip.gui;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * GUI for the AutoCompletionImpl.
@@ -21,14 +25,6 @@ public class AutoCompleteDialog extends JDialog {
     private JList jList = new JList();
     private JTextComponent parent;
     private Point lastCaretPosition;
-
-    public void requestFocus(Point lastCaretPosition) {
-        this.lastCaretPosition = lastCaretPosition;
-        jList.requestFocus();
-        if (-1 == jList.getSelectedIndex()) {
-            jList.setSelectedIndex(0);
-        }
-    }
 
     interface Listener {
         void itemSelected(Object selectedItem);
@@ -86,7 +82,7 @@ public class AutoCompleteDialog extends JDialog {
         setLocation(point);
     }
 
-    public void updateElements(java.util.List<String> availableElements) {
+    public void updateElements(List<String> availableElements) {
         if (null == availableElements) {
             setVisible(false);
             parent.requestFocus();
@@ -110,6 +106,14 @@ public class AutoCompleteDialog extends JDialog {
                 (int) availableElementsWindow.getViewport().getPreferredSize().getHeight() * 2
         );
         setSize(dimension);
+    }
+
+    public void requestFocus(Point lastCaretPosition) {
+        this.lastCaretPosition = lastCaretPosition;
+        jList.requestFocus();
+        if (-1 == jList.getSelectedIndex()) {
+            jList.setSelectedIndex(0);
+        }
     }
 
     private void selectItem(InputEvent inputEvent) {

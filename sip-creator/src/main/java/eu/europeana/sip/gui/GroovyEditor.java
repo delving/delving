@@ -21,22 +21,25 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.io.FileSet;
 import eu.europeana.sip.io.GroovyService;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -45,7 +48,7 @@ import java.io.IOException;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class GroovyEditor extends JPanel implements GroovyService.Listener, AnalyzerPanel.RecordChangeListener {
+public class GroovyEditor extends JPanel {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
@@ -55,66 +58,35 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
     private CompileTimer compileTimer;
     private GroovyService groovyService;
     private java.util.List<String> _groovyNodes;
-    private final AutoComplete autoComplete = new AutoCompleteImpl(
-            new AutoCompleteImpl.Listener() {
-
-                @Override
-                public void cancelled() {
-                    autoCompleteDialog.setVisible(false);
-                }
-            }
-    );
-    private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
-            new AutoCompleteDialog.Listener() {
-
-                @Override
-                public void itemSelected(Object selectedItem) {
-                    updateCodeArea(codeArea.getCaretPosition(), selectedItem);
-                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
-                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
-                    }
-                }
-            },
-            codeArea
-    );
-
-    private void updateCodeArea(int caretPositon, Object selectedItem) {
-        String begin = codeArea.getText().substring(0, caretPositon);
-        String end = codeArea.getText().substring(caretPositon);
-        codeArea.setText(begin + selectedItem + end);
-    }
-
-    private NormalizationParserBindingSource bindingSource = new NormalizationParserBindingSource(
-            new NormalizationParserBindingSource.Listener() {
-
-                @Override
-                public void updateAvailableNodes(java.util.List<String> groovyNodes) {
-                    _groovyNodes = groovyNodes;
-                    autoCompleteDialog.updateElements(groovyNodes);
-                    autoCompleteDialog.setVisible(false);
-                }
-            }
-    );
-
-    private boolean validatePrefix(int caretPosition) {
-        String text = codeArea.getText();
-        if (text.length() < AutoComplete.DEFAULT_PREFIX.length()) {
-            return false;
-        }
-        String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
-        LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
-        return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
-    }
 
     public GroovyEditor() {
         super(new BorderLayout());
-//        DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
-        this.groovyService = new GroovyService(bindingSource, this);
+        this.groovyService = new GroovyService(new GroovyService.Listener() {
+            @Override
+            public void setMapping(final String groovyCode) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        codeArea.setText(groovyCode);
+                        compileTimer.triggerSoon();
+                    }
+                });
+            }
+
+            @Override
+            public void setResult(final String result) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        outputArea.setText(result);
+                    }
+                });
+            }
+        });
         this.compileTimer = new CompileTimer();
         this.codeArea.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
@@ -140,8 +112,16 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
         codeArea.setContentType("text/groovy");
     }
 
-    public void setGroovyFile(File groovyFile) {
-        groovyService.setGroovyFile(groovyFile);
+    public void setFileSet(FileSet fileSet) {
+        groovyService.setFileSet(fileSet);
+    }
+
+    public void setRecordRoot(QName recordRoot) {
+        groovyService.setRecordRoot(recordRoot);
+    }
+
+    public void nextRecord() {
+        groovyService.nextRecord();
     }
 
     private JComponent createSplitPane() {
@@ -158,90 +138,57 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
         return split;
     }
 
-    public void triggerExecution() {
-        bindingSource.nextRecord();
-        compileTimer.timer.restart();
+    private void updateCodeArea(int caretPositon, Object selectedItem) {
+        String begin = codeArea.getText().substring(0, caretPositon);
+        String end = codeArea.getText().substring(caretPositon);
+        codeArea.setText(begin + selectedItem + end);
     }
 
-    @Override
-    public void loadComplete(final String groovyCode) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                codeArea.setText(groovyCode);
-                compileTimer.triggerSoon();
-            }
-        });
-    }
-
-    @Override
-    public void compilationResult(final String result) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                outputArea.setText(result);
-            }
-        });
-    }
-
-    @Override
-    public void recordRootChanged(File file, QName recordRoot) {
-        groovyService.setRecordRoot(recordRoot);
-        try {
-            bindingSource.prepareInputFile(file, recordRoot);
+    private boolean validatePrefix(int caretPosition) {
+        String text = codeArea.getText();
+        if (text.length() < AutoComplete.DEFAULT_PREFIX.length()) {
+            return false;
         }
-        catch (XMLStreamException e) {
-            LOG.error("XML Stream error", e);
-        }
-        catch (FileNotFoundException e) {
-            LOG.error("File not found", e);
-        }
-    }
-
-    @Override
-    public void save(File file, QName recordRoot) throws IOException {
-        File recordFile = new File(file.getAbsoluteFile() + ".record");
-        FileOutputStream fileOutputStream = new FileOutputStream(recordFile);
-        fileOutputStream.write(recordRoot.toString().getBytes());
-        fileOutputStream.close();
-        LOG.info(String.format("Written '%s' to file %s", recordRoot, recordFile.getAbsoluteFile()));
-    }
-
-    @Override
-    public QName load(File file) throws IOException {
-        File recordFile = new File(file.getAbsoluteFile() + ".record");
-        if (!recordFile.exists()) {
-            LOG.warn(String.format("File %s not found, will use the default delimiter '%s'", recordFile.getAbsoluteFile(), AnalyzerPanel.DEFAULT_RECORD));
-            JOptionPane.showMessageDialog(this, "No delimiter specified for this file yet.\n" +
-                    "Please select a delimiter from the Document Structure panel\n" +
-                    "by a right-click on a node."); // todo: hardcoded; this text might be retrieved from an external source
-            return new QName(AnalyzerPanel.DEFAULT_RECORD);
-        }
-        FileInputStream fileInputStream = new FileInputStream(recordFile);
-        StringBuffer b = new StringBuffer();
-        int i;
-        while (-1 != (i = fileInputStream.read())) {
-            b.append((char) i);
-        }
-        LOG.info(String.format("Loaded '%s' from file %s", b, recordFile.getAbsoluteFile()));
-        return new QName(b.toString());
+        String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
+        LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
+        return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
     }
 
     private class CompileTimer implements ActionListener {
-
         private Timer timer = new Timer(VALIDATION_DELAY, this);
 
         @Override
         public void actionPerformed(ActionEvent e) {
             timer.stop();
-            groovyService.setGroovyCode(codeArea.getText());
+            groovyService.setMapping(codeArea.getText());
         }
 
         public void triggerSoon() {
             timer.restart();
         }
-
     }
+
+    private final AutoComplete autoComplete = new AutoCompleteImpl(
+            new AutoCompleteImpl.Listener() {
+                @Override
+                public void cancelled() {
+                    autoCompleteDialog.setVisible(false);
+                }
+            }
+    );
+
+    private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
+            new AutoCompleteDialog.Listener() {
+                @Override
+                public void itemSelected(Object selectedItem) {
+                    updateCodeArea(codeArea.getCaretPosition(), selectedItem);
+                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
+                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
+                    }
+                }
+            },
+            codeArea
+    );
 
     @Override
     public String toString() {

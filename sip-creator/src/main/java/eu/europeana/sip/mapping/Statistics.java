@@ -36,6 +36,7 @@ import java.util.TreeMap;
  */
 
 public class Statistics implements Comparable<Statistics>, Serializable {
+    private static int MAX_STATISTICS_LIST_SIZE = 100;
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
     private static final long serialVersionUID = 2187793718415968490L;
     private static final int MAXIMUM_LENGTH = 100;
@@ -75,12 +76,13 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         return total;
     }
 
-    public void trimTo(int count) {
+    public void trim() {
         List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
         if (!unique) {
             Collections.sort(counterList);
         }
         counterMap.clear();
+        int count = MAX_STATISTICS_LIST_SIZE;
         for (CounterImpl counter : counterList) {
             if (count-- == 0) {
                 break;
