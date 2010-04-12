@@ -71,6 +71,7 @@ public class GroovyService {
         this.fileSet = fileSet;
         normalizationParser = null;
         record = null;
+        LOG.info("set file set to "+fileSet);
         executor.execute(new FileSetLoader());
     }
 
@@ -124,11 +125,19 @@ public class GroovyService {
         public void run() {
             try {
                 QName recordRoot = fileSet.getRecordRoot();
+                LOG.info("got record root "+recordRoot);
+                if (normalizationParser != null) {
+                    normalizationParser.close();
+                }
                 normalizationParser = new NormalizationParser(fileSet.getInputStream(), recordRoot);
                 record = normalizationParser.nextRecord();
+                LOG.info("set up normalization parser, got first record "+record);
                 String mapping = fileSet.getMapping();
+                LOG.info("got mapping");
                 listener.setMapping(mapping);
+                LOG.info("setting mapping so it compiles");
                 setMapping(mapping);
+                LOG.info("file set loaded");
             }
             catch (Exception e) {
                 LOG.error("Error loading file set", e);

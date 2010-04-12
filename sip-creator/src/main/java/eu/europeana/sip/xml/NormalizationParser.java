@@ -118,6 +118,7 @@ public class NormalizationParser {
                         if (value.length() > 0) {
                             node.setValue(value.toString());
                         }
+                        logger.info("Read record");
                     }
                     break;
                 case XMLEvent.END_DOCUMENT: {
