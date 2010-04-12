@@ -199,7 +199,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
     @Override
     public void save(File file, QName recordRoot) throws IOException {
-        File recordFile = new File(file.getName() + ".record");
+        File recordFile = new File(file.getAbsoluteFile() + ".record");
         FileOutputStream fileOutputStream = new FileOutputStream(recordFile);
         fileOutputStream.write(recordRoot.toString().getBytes());
         fileOutputStream.close();
