@@ -30,7 +30,6 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
-import javax.swing.*;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileInputStream;
@@ -167,8 +166,8 @@ public class GroovyService implements AnalyzerPanel.RecordChangeListener {
             try {
                 Binding binding = bindingSource.createBinding(writer);
                 if (null == binding.getVariable(BindingSource.INPUT)) {
-                    LOG.error("input is returning null");
-                    JOptionPane.showMessageDialog(null, "Invalid delimiter '" + recordRoot + "'");
+                    LOG.error(String.format("Input is returning null on delimiter '%s'", recordRoot));
+
                     return;
                 }
                 new GroovyShell(binding).evaluate(groovySnippet);
