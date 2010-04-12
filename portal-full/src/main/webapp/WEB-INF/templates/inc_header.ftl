@@ -89,10 +89,15 @@
                 <#else>
                     <title>Europeana - Search results</title>
                 </#if>
+                <#-- only pages with title are indexed -->
+                <#if metaTitle?? && metaTitle?length &gt; 3>
+                    <meta name="robots" content="nofollow"/>
+                <#else>    
+                    <meta name="robots" content="noindex, nofollow"/>
+                </#if>
                 <#if metaDescription??>
                     <meta name="description" content="${metaDescription}"/>
                 </#if>
-                <meta name="robots" content="nofollow"/>
             <#break>
         <#case "myeuropeana.html">
             <#assign pageId = "me"/>

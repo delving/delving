@@ -4,25 +4,130 @@ from django.core import exceptions
 
 # Verify we have all (important) local_settings
 
+
+try:
+    DATABASE_ENGINE
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_ENGINE - see local_settings_sample.py')
+
+
+try:
+    DATABASE_NAME
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_NAME - see local_settings_sample.py')
+
+
+try:
+    DATABASE_USER
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_USER - see local_settings_sample.py')
+
+
+try:
+    DATABASE_PASSWORD
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PASSWORD - see local_settings_sample.py')
+
+
+try:
+    DATABASE_HOST
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_HOST - see local_settings_sample.py')
+
+
+try:
+    DATABASE_PORT
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PORT - see local_settings_sample.py')
+
+
+try:
+    SECRET_KEY
+except:
+    raise exceptions.ImproperlyConfigured('Missing setting SECRET_KEY - see local_settings_sample.py')
+
+
 try:
     IMPORT_SCAN_TREE
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE')
+    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE - see local_settings_sample.py')
 
 try:
     SIP_LOG_FILE
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting SIP_LOG_FILE (logfile)')
+    raise exceptions.ImproperlyConfigured('Missing setting SIP_LOG_FILE - see local_settings_sample.py')
 
 try:
     SIP_OBJ_FILES
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting SIP_OBJ_FILES (directory)')
+    raise exceptions.ImproperlyConfigured('Missing setting SIP_OBJ_FILES - see local_settings_sample.py')
+
+
+
+
+#
+#  Optional settings, if not given default is used
+#
+try:
+    DEBUG
+except:
+    DEBUG = False
+
 
 try:
     THREADING_PLUGINS
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting THREADING_PLUGINS (boolean)')
+    THREADING_PLUGINS = True
+
+
+try:
+    TREE_IS_INGESTION_SVN
+except:
+    TREE_IS_INGESTION_SVN = True
+
+try:
+    OLD_STYLE_IMAGE_NAMES
+except:
+    OLD_STYLE_IMAGE_NAMES = False
+
+
+try:
+    TASK_PROGRESS_INTERVALL
+except:
+    TASK_PROGRESS_INTERVALL = 15
+
+try:
+    PROCESS_SLEEP_TIME
+except:
+    PROCESS_SLEEP_TIME = 60
+
+
+try:
+    SIP_PROCESS_DBG_LVL
+except:
+    SIP_PROCESS_DBG_LVL = 3
+
+
+try:
+    URIVALIDATE_MAX_LOAD
+except:
+    URIVALIDATE_MAX_LOAD = 2.0
+
+
+#
+#   Debug settings
+#
+try:
+    PLUGIN_FILTER
+except:
+    PLUGIN_FILTER = []
+
+
+
+
+
+
+
 
 # Django settings for sip_web project.
 
@@ -95,6 +200,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    '%s/templates' % proj_root,
+
 )
 
 INSTALLED_APPS = (

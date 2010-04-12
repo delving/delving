@@ -38,6 +38,8 @@ class Command(BaseCommand):
             help='Process queue once then terminate.'),
         make_option('--flush-all', action='store_true', dest='flush-all', default=False,
             help='Completely erase all data.'),
+        make_option('--drop-all', action='store_true', dest='drop-all', default=False,
+            help='Remove all tables from db.'),
         make_option('--clear-pids', action='store_true', dest='clear-pids', default=False,
             help='Clear all process monitoring data.'),
     )
@@ -51,6 +53,9 @@ class Command(BaseCommand):
 
     --flush-all
        Completeley erase everything - Dangerous!
+
+    --drop-all
+       Removes all sip_manager tables - Dangerous!
 
     --clear-pids
        Clear all process-monitoring data

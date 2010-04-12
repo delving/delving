@@ -21,18 +21,18 @@
 
 package eu.europeana.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.StaticPageCache;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Genereric controller for static pages.
@@ -53,25 +53,83 @@ public class StaticPageController {
     /**
      * All of the pages are served up from here
      *
-     * @param pageName name of the page
      * @param request  where we find locale
      * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
 
-    @RequestMapping("/{pageName}.html")
+    @RequestMapping("/**/*.html")
     public ModelAndView fetchStaticPage(
-            @PathVariable("pageName") String pageName,
             HttpServletRequest request,
             HttpServletResponse response
     ) throws Exception {
-        String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+        String pageValue = staticPageCache.getPage(
+        		request.getServletPath(), 
+        		request.getPathInfo(),
+        		ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
         if (pageValue != null) {
             pageModel.addObject("pageValue", pageValue);
         }
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ pageName);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ request.getPathInfo());
+        return pageModel;
+    }
+
+    /**
+     * All mc/ css are served up from here
+     *
+     * @param request  where we find locale
+     * @return ModelAndView
+     * @throws Exception something went wrong
+     */
+
+    @RequestMapping("/css/**/*.css")
+    public ModelAndView fetchMcCss(
+            HttpServletRequest request
+    ) throws Exception {
+    	return fetchVerbatimPage(request);
+    }
+
+    /**
+     * All mc/ js are served up from here
+     *
+     * @param request  where we find locale
+     * @return ModelAndView
+     * @throws Exception something went wrong
+     */
+
+    @RequestMapping("/js/**/*.js")
+    public ModelAndView fetchMcJs(
+            HttpServletRequest request
+    ) throws Exception {
+    	return fetchVerbatimPage(request);
+    }
+    
+    /**
+     * All mc/ jpg are served up from here
+     *
+     * @param request  where we find locale
+     * @return ModelAndView
+     * @throws Exception something went wrong
+     */
+
+    @RequestMapping("/img/**/*.jpg")
+    public ModelAndView fetchMcJpg(
+            HttpServletRequest request
+    ) throws Exception {
+    	return fetchVerbatimPage(request);
+    }
+
+    private ModelAndView fetchVerbatimPage(HttpServletRequest request) {
+        String pageValue = staticPageCache.getPage(
+        		request.getServletPath(), 
+        		request.getPathInfo(),
+        		null);
+        ModelAndView pageModel = ControllerUtil.createModelAndViewPage("verbatim");
+        if (pageValue != null) {
+            pageModel.addObject("pageValue", pageValue);
+        }
         return pageModel;
     }
 

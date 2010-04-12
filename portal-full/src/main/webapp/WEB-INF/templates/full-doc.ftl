@@ -32,12 +32,13 @@
 <#-- page title and description -->
 <#assign metaTitle = result.fullDoc.dcTitle[0]?xhtml />
 <#assign metaDescription = result.fullDoc.dcDescription[0]?xhtml />
+<#if metaDescription?length &lt; 10>
+     <#assign metaDescription = result.fullDoc.dcTermsAlternative[0]?xhtml />
+</#if>
 <#if metaDescription?length &gt; 200>
    <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
 </#if>
-<#if metaDescription?length &lt; 20>
-     <#assign metaDescription = metaTitle />
-</#if>
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 

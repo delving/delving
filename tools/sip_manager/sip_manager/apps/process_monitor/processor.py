@@ -24,6 +24,7 @@
  Maintains and runs tasks
 """
 
+import os
 import sys
 import time
 
@@ -34,9 +35,16 @@ from django.db import connection
 import sipproc
 
 
-SIP_PROCESS_DBG_LVL = 7
+# Since looking up in settings takes some extra cpu, important settings
+# are cached within the module
+PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
+PLUGIN_FILTER = settings.PLUGIN_FILTER
+SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
+URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
+
 
 class MainProcessor(object):
+
     def __init__(self, options):
         self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
@@ -44,6 +52,9 @@ class MainProcessor(object):
         self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
         if options['flush-all']:
             self.flush_all()
+            sys.exit(0)
+        elif options['drop-all']:
+            self.drop_all()
             sys.exit(0)
         elif options['clear-pids']:
             self.clear_pids()
@@ -61,25 +72,50 @@ class MainProcessor(object):
 
     def run2(self):
         # First run all init tasks once
+        print
+        print 'Running init plugins'
         for taskClass in self.tasks_init:
             tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
+            print '\t%s' % tc.short_name()
             tc.run()
 
+        print
+        print 'Commencing operations'
         while True:
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
                 for taskClass in task_group:
+                    if self.system_is_occupied():
+                        break
                     if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
+                        # For the moment try slow starting, just one thread per run
+                        # this way load builds up more slowly and should keep
+                        # within reasonable limits.
+                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+                        """
                         while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                            print '*** started thread for', taskClass.__name__
+                            # Continue to start new threads as long as they
+                            # find something to work on
+                            #print '*** started thread for', taskClass.__name__
+                            pass
+                        """
                     else:
                         taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
-            print 'sleeping a while'
-            time.sleep(10)
+            #print 'sleeping a while'
+            time.sleep(PROCESS_SLEEP_TIME)
         return True
+
+
+    def system_is_occupied(self):
+        "dont start new tasks when load is high."
+        load_1, load_5, load_15 = os.getloadavg()
+        if load_1 > URIVALIDATE_MAX_LOAD:
+            return True
+        return False
+
 
     """
     Scan all apps, find the tasks module and add all classes found there
@@ -97,6 +133,9 @@ class MainProcessor(object):
                     print task.__name__,
                     if task.INIT_PLUGIN:
                         self.tasks_init.append(task)
+                        continue
+                    if PLUGIN_FILTER and not task.__name__ in PLUGIN_FILTER:
+                        # we dont ever want to prevent task inits to run...
                         continue
                     resource_hog = False
                     if task.PLUGIN_TAXES_CPU:
@@ -118,9 +157,10 @@ class MainProcessor(object):
 
     def flush_all(self):
         cursor = connection.cursor()
-        if not 'mysql' in cursor.db.__module__:
-            print 'Not a mysql db, cant flush it, giving up'
-            return False
+        if 'mysql' in cursor.db.__module__:
+            sql = 'TRUNCATE %s'
+        else:
+            sql = 'TRUNCATE %s CASCADE'
         for table in ('base_item_mdrecord',
                       'base_item_requestmdrecord',
                       'dummy_ingester_aggregator',
@@ -131,14 +171,29 @@ class MainProcessor(object):
                       'plug_uris_urisource',
                       'process_monitor_processmonitoring',
                       ):
-            cursor.execute('TRUNCATE %s' % table)
+            cursor.execute(sql % table)
+        return True
+
+    def drop_all(self):
+        cursor = connection.cursor()
+        for table in ('base_item_mdrecord',
+                      'base_item_requestmdrecord',
+                      'dummy_ingester_aggregator',
+                      'dummy_ingester_dataset',
+                      'dummy_ingester_provider',
+                      'dummy_ingester_request',
+                      'plug_uris_uri',
+                      'plug_uris_urisource',
+                      'process_monitor_processmonitoring',
+                      ):
+            try:
+                cursor.execute('DROP TABLE %s' % table)
+            except:
+                print 'Failed to remove %s' % table
         return True
 
     def clear_pids(self):
         cursor = connection.cursor()
-        if not 'mysql' in cursor.db.__module__:
-            print 'Not a mysql db, cant flush it, giving up'
-            return False
         cursor.execute('TRUNCATE process_monitor_processmonitoring')
         for table in ('base_item_mdrecord',
                       'dummy_ingester_request',

@@ -24,27 +24,13 @@
 
 
 """
-import hashlib
 
-from django.db import models
-#from django.contrib import admin
+
+from django.db import models, connection
 
 from utils.gen_utils import dict_2_django_choice
 
 from apps.dummy_ingester.models import Request
-
-
-
-def calculate_mdr_content_hash(record):
-    """
-    When calculating the content hash for the record, the following is asumed:
-      the lines are stripped for initial and trailing whitespaces,
-      sorted alphabetically
-      each line is separated by one \n character
-      and finaly the <record> and </record> should be kept!
-    """
-    r_hash = hashlib.sha256(record.upper()).hexdigest().upper()
-    return r_hash
 
 
 
@@ -67,6 +53,23 @@ MDRS_STATES = {
     MDRS_VERIFIED: 'verified',
     }
 
+class MdRecordManager(models.Manager):
+
+    def get_or_create(self, content_hash, source_data):
+        cursor = connection.cursor()
+        cursor.execute('SELECT id FROM %s_mdrecord WHERE content_hash="%s"' % (
+            __name__.split('.')[-2], content_hash))
+        if cursor.rowcount:
+            # this can so not fail - i just refuse to do errorhandling for this call
+            item = self.model.objects.filter(content_hash=content_hash)[0]
+            was_created = False
+        else:
+            item = self.model(content_hash=content_hash, source_data=source_data)
+            item.save()
+            was_created = True
+        return item, was_created
+
+
 class MdRecord(models.Model):
     content_hash = models.CharField(max_length=64, unique=True)
 
@@ -82,6 +85,8 @@ class MdRecord(models.Model):
     pid = models.IntegerField(default=0) # what process 'owns' this item
     uniqueness_hash = models.CharField(max_length=100)
     Enrichment_done = models.BooleanField(default=False)
+
+    objects = MdRecordManager()
 
 
 

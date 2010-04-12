@@ -21,28 +21,46 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.io.FileSet;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
-import eu.europeana.sip.xml.FileHandler;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTree;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -53,37 +71,18 @@ import java.util.List;
  */
 
 public class AnalyzerPanel extends JPanel {
-    private static final int COUNTER_LIST_SIZE = 100;
     private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(15, 15, 15, 15);
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private JLabel statsTitle = new JLabel("Statistics", JLabel.CENTER);
+
     private JTable statsTable;
     private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
-
-    private NormalizationParserBindingSource source = new NormalizationParserBindingSource(
-            new NormalizationParserBindingSource.Listener() {
-
-                @Override
-                public void updateAvailableNodes(List<String> groovyNodes) {
-                    groovyEditor.updateAvailableNodes(groovyNodes);
-                }
-            }
-    );
-
-    private GroovyEditor groovyEditor = new GroovyEditor(source);
-    private JButton next = new JButton("Next");
-    private File analyzedFile;
-
-    public interface RecordChangeListener {
-        void recordRootChanged(File file, QName recordRoot);
-    }
-
-    public interface Listener {
-        void updateAvailableNodes(List<String> groovyNodes);
-    }
+    private GroovyEditor groovyEditor = new GroovyEditor();
+    private JButton nextRecordButton = new JButton("Next");
+    private boolean abort = false;
 
     public AnalyzerPanel() {
         super(new BorderLayout());
@@ -97,6 +96,75 @@ public class AnalyzerPanel extends JPanel {
         add(split, BorderLayout.CENTER);
     }
 
+    public void setFileSet(final FileSet fileSet) {
+        try {
+            final QName recordRoot = fileSet.getRecordRoot();
+            List<Statistics> statistics = fileSet.getStatistics();
+            if (statistics == null) {
+                abort = false;
+                fileMenuEnablement.enable(false);
+                fileSet.analyze(new FileSet.AnalysisListener() {
+                    @Override
+                    public void success(List<Statistics> statistics) {
+                        setMappingTree(MappingTree.create(statistics, fileSet.getName(), recordRoot));
+                        fileMenuEnablement.enable(true);
+                        if (progressDialog != null) {
+                            progressDialog.setVisible(false);
+                        }
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        if (progressDialog != null) {
+                            progressDialog.setVisible(false);
+                        }
+                        JOptionPane.showMessageDialog(AnalyzerPanel.this, "Error analyzing file : '" + exception.getMessage() + "'");
+                        fileMenuEnablement.enable(true);
+                    }
+
+                    @Override
+                    public void progress(final long recordNumber) {
+                        if (progressDialog == null) {
+                            try {
+                                SwingUtilities.invokeAndWait(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressDialog = new ProgressDialog();
+                                        progressDialog.setVisible(true);
+                                    }
+                                });
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();  // todo: something
+                            }
+                        }
+                        else {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressDialog.setRecordsProcessed(recordNumber);
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public boolean abort() {
+                        return abort;
+                    }
+
+                });
+            }
+            else {
+                setMappingTree(MappingTree.create(statistics, fileSet.getName(), recordRoot));
+            }
+            groovyEditor.setFileSet(fileSet);
+        }
+        catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error analyzing file : '" + e.getMessage() + "'");
+        }
+    }
+
     private Component createMappingPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.add(groovyEditor, BorderLayout.CENTER);
@@ -106,15 +174,14 @@ public class AnalyzerPanel extends JPanel {
     }
 
     private JComponent createNextButton() {
-        next.setEnabled(false);
-        next.addActionListener(new ActionListener() {
+        nextRecordButton.setEnabled(false);
+        nextRecordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                source.nextRecord();
-                groovyEditor.triggerExecution();
+                groovyEditor.nextRecord();
             }
         });
-        return next;
+        return nextRecordButton;
     }
 
     private Component createAnalysisPanel() {
@@ -134,7 +201,6 @@ public class AnalyzerPanel extends JPanel {
         p.add(title, BorderLayout.NORTH);
         statisticsJTree.setCellRenderer(analysisTreeCellRenderer);
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
@@ -147,26 +213,35 @@ public class AnalyzerPanel extends JPanel {
                 new MouseAdapter() {
 
                     @Override
-                    public void mouseReleased(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON3) {
+                    public void mousePressed(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
                             final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
                             statisticsJTree.setSelectionPath(path);
-                            JPopupMenu jPopupMenu = new JPopupMenu();
-                            JMenuItem jMenuItem = new JMenuItem("Set as delimiter");
-                            jMenuItem.addActionListener(
-                                    new ActionListener() {
-
-                                        @Override
-                                        public void actionPerformed(ActionEvent e) {
-                                            QName recordRoot = new QName(path.getPath()[path.getPath().length - 1].toString());
-                                            source.recordRootChanged(analyzedFile, recordRoot);
-                                            analysisTreeCellRenderer.setSelectedPath(path.getPath()[path.getPath().length - 1].toString());
-                                        }
+                            JPopupMenu delimiterPopup = new JPopupMenu();
+                            JMenuItem delimiterMenuItem = new JMenuItem("Set as delimiter");
+                            delimiterMenuItem.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
+                                    QName recordRoot = node.getQName();
+                                    DefaultTreeModel tm = (DefaultTreeModel)statisticsJTree.getModel();
+                                    int count = MappingTree.setRecordRoot(tm, recordRoot);
+                                    if (count != 1) {
+                                        JOptionPane.showConfirmDialog(AnalyzerPanel.this, "Expected one record root, got "+count);
                                     }
-                            );
-                            jPopupMenu.add(jMenuItem);
-                            jPopupMenu.show(statisticsJTree, e.getX(), e.getY());
+                                    else {
+                                        groovyEditor.setRecordRoot(recordRoot);
+                                        tm.reload(node);
+                                    }
+                                }
+                            });
+                            delimiterPopup.add(delimiterMenuItem);
+                            delimiterPopup.show(statisticsJTree, e.getX(), e.getY());
                         }
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
                     }
                 }
         );
@@ -236,67 +311,44 @@ public class AnalyzerPanel extends JPanel {
         this.fileMenuEnablement = fileMenuEnablement;
     }
 
-    public void setProgressDialog(ProgressDialog progressDialog) {
-        this.progressDialog = progressDialog;
+    private Frame getFrame() {
+        Component component = this;
+        while (!(component instanceof Frame)) {
+            component = component.getParent();
+        }
+        return (Frame) component;
     }
 
-    private void loadStarted() {
-        fileMenuEnablement.enable(false);
-        progressDialog.setVisible(true);
-    }
+    private class ProgressDialog extends JDialog {
+        private DecimalFormat format = new DecimalFormat("#########");
+        private static final String LABEL_PROMPT = "XML Elements Analyzed: ";
+        private JLabel label = new JLabel(LABEL_PROMPT + "None so far");
+        private JButton button = new JButton("Abort Analysis");
 
-    private void loadFinished() {
-        fileMenuEnablement.enable(true);
-        progressDialog.dispose();
-        try {
-            source.prepareInputFile(analyzedFile, new QName("record"));
+        private ProgressDialog() {
+            super(getFrame(), "Analysis", false);
+            getContentPane().add(createContent());
+            pack();
+            setLocationRelativeTo(AnalyzerPanel.this);
         }
-        catch (XMLStreamException e) {
-            e.printStackTrace();  // todo: handle catch
+
+        private Component createContent() {
+            JPanel p = new JPanel(new BorderLayout(5, 5));
+            p.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+            label.setFont(new Font("Serif", Font.BOLD, 24));
+            p.add(label, BorderLayout.CENTER);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    abort = true;
+                }
+            });
+            p.add(button, BorderLayout.SOUTH);
+            return p;
         }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();  // todo: handle catch
+
+        public void setRecordsProcessed(long recordNumber) {
+            label.setText(LABEL_PROMPT + format.format(recordNumber / 1000) + "k");
         }
-    }
-
-    public void analyze(final File file) {
-        this.analyzedFile = file;
-        loadStarted();
-        FileHandler.Listener listener = new FileHandler.Listener() {
-            @Override
-            public void success(List<Statistics> list) {
-                setMappingTree(MappingTree.create(list, file.getName()));
-                File mappingFile = createMappingFile(file);
-                groovyEditor.setGroovyFile(mappingFile);
-                loadFinished();
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                // todo: use JOptionPane or something else to show failure to user
-                loadFinished();
-            }
-
-            @Override
-            public void finished() {
-                loadFinished();
-            }
-        };
-        File statisticsFile = createStatisticsFile(file);
-        if (statisticsFile.exists()) {
-            FileHandler.loadStatistics(statisticsFile, listener, progressDialog);
-        }
-        else {
-            FileHandler.compileStatistics(file, createStatisticsFile(file), COUNTER_LIST_SIZE, listener, progressDialog);
-        }
-    }
-
-    private File createStatisticsFile(File file) {
-        return new File(file.getParentFile(), file.getName() + ".statistics");
-    }
-
-    private File createMappingFile(File file) {
-        return new File(file.getParentFile(), file.getName() + ".mapping");
-
     }
 }

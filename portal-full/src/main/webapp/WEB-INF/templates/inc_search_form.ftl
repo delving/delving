@@ -32,7 +32,7 @@
             <input type="hidden" name="view" value="${view}" />
             <input class="search-input" name="query" id="query" type="text" title="Europeana Search" <#if query?exists>value="${qt}"</#if> maxlength="75"/>
             <input id="submit_search" type="submit" class="button" value="<@spring.message 'Search_t' />" /><br/>
-            <#if query?? && query?length &gt; 0 >
+            <#if query?? && query?length &gt; 0 && enableRefinedSearch??>
                 <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
             </#if>
             <a class="advanced-search" href="advancedsearch.html" onclick="toggleObject('search_simple');toggleObject('search_advanced');return false;" title="Advanced Search"><@spring.message 'AdvancedSearch_t' /></a>

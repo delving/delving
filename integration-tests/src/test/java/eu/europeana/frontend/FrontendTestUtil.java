@@ -21,6 +21,7 @@
 
 package eu.europeana.frontend;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,14 +61,14 @@ public class FrontendTestUtil {
 	private static final String PARAMETER_TEST_HOST = "europeana.test.external.host";
 
 	private static final String[] productionUrls = {
-			
-			// production 
-			"http://portal1.europeana.sara.nl/portal/",
-			"http://portal2.europeana.sara.nl/portal/",
-			"http://portal3.europeana.sara.nl/portal/",
-			"http://portal4.europeana.sara.nl/portal/",
 
-			"http://europeana.eu/portal/"	
+		// production 
+		"http://portal1.europeana.sara.nl/portal/",
+		"http://portal2.europeana.sara.nl/portal/",
+		"http://portal3.europeana.sara.nl/portal/",
+		"http://portal4.europeana.sara.nl/portal/",
+
+		"http://europeana.eu/portal/"	
 
 	};
 
@@ -161,17 +162,26 @@ public class FrontendTestUtil {
 		if (testPortalUrl().startsWith(HTTP_LOCALHOST) ) {
 			if (server == null) {
 				PortalFullStarter starter = new PortalFullStarter();
+				solr = new SolrStarter();
+				solr.start();
+
 				if (!loaded) {
-					ContentLoader.main();
+					File file = new File("core/src/test/sample-metadata/92001_Ag_EU_TELtreasures.xml");
+					if (file.exists()) {
+						ContentLoader contentLoader = new ContentLoader();
+						contentLoader.addMetadataFile(file.getCanonicalPath());
+						contentLoader.init();
+						contentLoader.loadMetadata();
+					}
+					else {
+						throw new Exception("Parameters: XML input files, try " + file.getAbsolutePath());
+					}
 					loaded = true;
 				}
 				server = starter.startServer(FrontendTestUtil.TEST_PORT);
 				if (!server.isRunning())
 					throw new Exception("Server not started");
-				solr = new SolrStarter();
 			}
-			server.start();
-			solr.start();
 		}
 	}
 

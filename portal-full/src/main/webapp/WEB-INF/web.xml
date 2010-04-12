@@ -105,6 +105,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/mc/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.srw</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

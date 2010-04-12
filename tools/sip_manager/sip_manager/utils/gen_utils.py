@@ -24,8 +24,22 @@
  Generic utility functions
 """
 
+import hashlib
+
 def dict_2_django_choice(d):
     lst = []
     for key in d:
         lst.append((key, d[key]))
     return lst
+
+
+def calculate_hash(item):
+    """
+    When calculating the content hash for the record, the following is asumed:
+      the lines are stripped for initial and trailing whitespaces,
+      sorted alphabetically
+      each line is separated by one \n character
+      and finaly the <record> and </record> should be kept!
+    """
+    r_hash = hashlib.sha256(item.upper()).hexdigest().upper()
+    return r_hash

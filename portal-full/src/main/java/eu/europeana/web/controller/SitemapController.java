@@ -21,11 +21,17 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.querymodel.query.*;
-import eu.europeana.core.util.web.ClickStreamLogger;
-import eu.europeana.core.util.web.ControllerUtil;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -37,10 +43,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import eu.europeana.core.querymodel.query.DocId;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.querymodel.query.SiteMapBeanView;
+import eu.europeana.core.util.web.ClickStreamLogger;
+import eu.europeana.core.util.web.ControllerUtil;
 
 
 /**
@@ -54,8 +63,12 @@ import java.util.List;
 @Controller
 public class SitemapController {
 
+    private Logger log = Logger.getLogger(getClass());
+
 	// don't increase this higher then 1000. It will put undue strain on SearchEngine
 	private static final int MAX_RECORDS_PER_SITEMAP_FILE = 1000;
+	// reserved for collections of up to 99,999,000 items
+	private static final int MAX_LENGTH_PAGE_NUMBER = 6;
 
 	@Value("#{europeanaProperties['displayPageUrl']}")
 	private String fullViewUrl;
@@ -90,12 +103,21 @@ public class SitemapController {
 				if (numberOfPages > 0) {
 					int pageCounter = 0;
 					do {
-						entries.add(
-								new SitemapIndexEntry(
-										StringEscapeUtils.escapeXml(String.format("%seuropeana-sitemap.xml?provider=%s&page=%d", baseUrl, facetField.getName(), pageCounter)),
-										facetField.getName(),
-										new Date(),
-										facetField.getCount())); //todo: add more relevant date later
+						try {
+							entries.add(
+									new SitemapIndexEntry(
+											StringEscapeUtils.escapeXml(
+													String.format(
+															"%seuropeana-sitemap.xml?provider=%s&page=%d", 
+															baseUrl, 
+															URLEncoder.encode(facetField.getName(), "UTF-8"), 
+															pageCounter)),
+											facetField.getName(),
+											new Date(), //todo: add more relevant date later
+											facetField.getCount()));
+						} catch (UnsupportedEncodingException e) {
+							log.warn(e.getMessage() + " on " + facetField.getName());
+						} 
 						pageCounter++;
 					}
 					while (pageCounter < numberOfPages);
@@ -111,7 +133,7 @@ public class SitemapController {
 			mavPage.addObject("fullViewUrl", fullViewUrl);
 
 			// generate sitemap for a collection
-			if (page != null && page.length() > 0 && page.length() < 4 && NumberUtils.isDigits(page)) {
+			if (page != null && page.length() > 0 && page.length() < MAX_LENGTH_PAGE_NUMBER && NumberUtils.isDigits(page)) {
 				int pageInt = Integer.parseInt(page);
 
 				SiteMapBeanView siteMapBeanView = beanQueryModelFactory.getSiteMapBeanView(provider, MAX_RECORDS_PER_SITEMAP_FILE, pageInt);
@@ -142,12 +164,20 @@ public class SitemapController {
 		List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
 		for (FacetField.Count facetField : getCollections()) {
 
-			entries.add(
-					new SitemapIndexEntry(
-							StringEscapeUtils.escapeXml(String.format("%sbrief-doc.html?query=*:*&view=table&qf=PROVIDER:%s", baseUrl, facetField.getName())),
-							facetField.getName(),
-							new Date(),
-							facetField.getCount())); //todo: add more relevant date later
+			try {
+				entries.add(
+						new SitemapIndexEntry(
+								StringEscapeUtils.escapeXml(
+										String.format(
+												"%sbrief-doc.html?query=PROVIDER:\"%s\"&view=table", 
+												baseUrl, 
+												URLEncoder.encode(facetField.getName(), "UTF-8"))),
+								facetField.getName(),
+								new Date(), //todo: add more relevant date later
+								facetField.getCount()));
+			} catch (UnsupportedEncodingException e) {
+				log.warn(e.getMessage() + " on " + facetField.getName());
+			} 
 		}
 		mavPage = ControllerUtil.createModelAndViewPage("sitemap-index.html");
 		mavPage.addObject("entries", entries);
