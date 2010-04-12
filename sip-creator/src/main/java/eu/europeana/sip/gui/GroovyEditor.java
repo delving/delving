@@ -186,6 +186,7 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener, Anal
 
     @Override
     public void recordRootChanged(File file, QName recordRoot) {
+        groovyService.recordRootChanged(file, recordRoot);
         try {
             bindingSource.prepareInputFile(file, recordRoot);
         }
