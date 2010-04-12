@@ -13,7 +13,7 @@
             <#case "LANGUAGE">
                 <#if facet.links?size &gt; 0>
                    <#if showLanguage = 1><#assign togglerClass="toggler-c-opened"/></#if>
-                   <div class="toggler-c ${togglerClass}" title="<@spring.message 'ByLanguage_t' /> ">
+                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message 'ByLanguage_t' /> ">
                    <noscript><h4><@spring.message 'ByLanguage_t' />:</h4></noscript>
                    <#assign columsize = 2>
                 </#if>
