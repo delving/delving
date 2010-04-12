@@ -88,11 +88,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     public SolrQuery createFromQueryParams(Map<String, String[]> params) throws EuropeanaQueryException {
         SolrQuery solrQuery = new SolrQuery();
         if (params.containsKey("query") || params.containsKey("query1")) {
-            if (!params.containsKey("query1")) {
-                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
-            }
-            else { // support advanced search
+            if (!params.containsKey("query")) {  // support advanced search
                 solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
+            }
+            else {
+                solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
             }
         }
         else {
