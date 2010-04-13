@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     'django.contrib.databrowse',
+    'dajax',
 
     'apps.base_item',
     'apps.dummy_ingester',

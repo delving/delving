@@ -89,7 +89,7 @@ class CacheSource(models.Model):
                                         )
     created_date = models.DateTimeField(auto_now_add=True, editable=False)
     checked_date = models.DateTimeField(auto_now=True, editable=False) # last time item was verified
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    pid = models.FloatField(default=0) # what process 'owns' this item
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.ITEM_STATES),
                                  default = glob_consts.ST_IDLE,
                                  editable=False)
@@ -109,7 +109,7 @@ class CacheItem(models.Model, MessageModel):
     fname = models.TextField('url hash')
 
     content_hash = models.TextField('content hash')
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    pid = models.FloatField(default=0) # what process 'owns' this item
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.ITEM_STATES),
                                  default = glob_consts.ST_INITIALIZING,
                                  editable=False)
@@ -190,7 +190,7 @@ class ProcessMonitoring(models.Model):
     Keeping track of various external processes working towards the database
     """
     role = models.IntegerField(choices=dict_2_django_choice(glob_consts.PROC_ROLES))
-    pid = models.IntegerField(default=0)
+    pid = models.FloatField(default=0)
     sstate = models.IntegerField(choices=dict_2_django_choice(glob_consts.PM_STATES))
     start_time = models.DateTimeField(auto_now_add=True, editable=False)
 

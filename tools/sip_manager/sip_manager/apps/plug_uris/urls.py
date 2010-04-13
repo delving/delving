@@ -38,5 +38,6 @@ urlpatterns = patterns('',
     url(r'^statistics/$', views.statistics, name='uri_stats'),
 
     url(r'^problems/(?P<source_id>\S+)/$', views.problems, name='uri_problems'),
+    url(r'^problems/$', views.problems, name='uri_problems'),
 
 )

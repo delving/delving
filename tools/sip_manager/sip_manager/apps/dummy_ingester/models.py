@@ -81,7 +81,7 @@ class ProviderManager(models.Manager):
 
     def get_or_create(self, name_code, file_name, aggregator):
         cursor = connection.cursor()
-        cursor.execute('SELECT id FROM %s_provider WHERE name_code="%s"' % (__name__.split('.')[-2], name_code))
+        cursor.execute("SELECT id FROM %s_provider WHERE name_code='%s'" % (__name__.split('.')[-2], name_code))
         if cursor.rowcount:
             # this can so not fail - i just refuse to do errorhandling for this call
             item = self.model.objects.filter(name_code=name_code)[0]
@@ -143,7 +143,7 @@ class DataSetManager(models.Manager):
 
     def get_or_create(self, file_name):
         cursor = connection.cursor()
-        cursor.execute('SELECT id FROM %s_dataset WHERE name_code="%s"' % (
+        cursor.execute("SELECT id FROM %s_dataset WHERE name_code LIKE '%s'" % (
             __name__.split('.')[-2], file_name))
         if cursor.rowcount:
             # this can so not fail - i just refuse to do errorhandling for this call
@@ -222,10 +222,10 @@ class RequestManager(models.Manager):
         mtime = os.path.getmtime(full_path)
         time_created = datetime.datetime.fromtimestamp(mtime)
 
-        lst = ['SELECT id FROM %s_request' % __name__.split('.')[-2] ]
-        lst.append('WHERE data_set_id=%i' % data_set.pk)
-        lst.append('AND file_name="%s"' % file_name)
-        lst.append('AND time_created="%s"' % time_created)
+        lst = ["SELECT id FROM %s_request" % __name__.split('.')[-2] ]
+        lst.append("WHERE data_set_id=%i" % data_set.pk)
+        lst.append("AND file_name='%s'" % file_name)
+        lst.append("AND time_created='%s'" % time_created)
         sql = ' '.join(lst)
 
         cursor = connection.cursor()
@@ -265,7 +265,7 @@ class Request(models.Model):
     file_name = models.CharField(max_length=200,
                                  help_text='relative filename, dont store path, system will find it with os.walk() and timestamp...')
     time_created = models.DateTimeField(editable=False)
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    pid = models.FloatField(default=0) # what process 'owns' this item
     err_msg = models.CharField(max_length=200, blank=True)
 
     objects = RequestManager()

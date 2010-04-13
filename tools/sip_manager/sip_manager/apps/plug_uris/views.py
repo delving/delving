@@ -48,32 +48,33 @@ def statistics(request, order_by=''):
     request.session['sortkey'] = p_order_by
 
     # Summary
+
     imgs_ok = models.Uri.objects.filter(status=models.URIS_COMPLETED).count()
     imgs_waiting = models.Uri.objects.filter(status=models.URIS_CREATED,err_code=models.URIE_NO_ERROR).count()
     imgs_bad = models.Uri.objects.exclude(err_code=models.URIE_NO_ERROR).count()
 
 
-    sel_common = 'SELECT COUNT(*) FROM plug_uris_uri WHERE'
-    sql_table_join = 'AND uri_source_id=plug_uris_urisource.id'
+    sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
+    sql_table_join = "AND uri_source_id=plug_uris_urisource.id"
 
-    sql_img_ok = '%s status=%i %s' % (sel_common, models.URIS_COMPLETED, sql_table_join)
-    sql_img_waiting = '%s status=%i AND err_code=%i %s' % (
-        sel_common, models.URIS_CREATED, models.URIE_NO_ERROR, sql_table_join)
-    sql_img_bad = '%s err_code > %i %s' % (sel_common, models.URIE_NO_ERROR, sql_table_join)
+    sql_img_ok = "%s status=%i %s" % (sel_common, models.URIS_COMPLETED, sql_table_join)
+    sql_img_waiting = "%s status=%i AND item_type=%i AND err_code=%i %s" % (
+        sel_common, models.URIS_CREATED, models.URIT_OBJECT, models.URIE_NO_ERROR, sql_table_join)
+    sql_img_bad = "%s err_code > %i %s" % (sel_common, models.URIE_NO_ERROR, sql_table_join)
 
-    sql = 'SELECT CONCAT(task_eta, " ", task_progress) FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid'
+    sql = "SELECT task_eta FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid"
     uri_sources = models.UriSource.objects.extra(select={'imgs_ok':sql_img_ok,
                                                      'imgs_bad': sql_img_bad,
                                                      'imgs_waiting':sql_img_waiting,
-                                                     'eta':sql,
+                                                     #'eta':sql,
                                                      }).order_by(p_order_by)
         #'imgs_ok':'status = %i' % models.URIS_COMPLETED})
-
-    return render_to_response('plug_uris/statistics.html', {
-        'uri_sources':uri_sources,
-        'summary': {'imgs_ok': imgs_ok,
-                    'imgs_waiting': imgs_waiting,
-                    'imgs_bad': imgs_bad},})
+    i = len(uri_sources)
+    return render_to_response("plug_uris/statistics.html", {
+        "uri_sources":uri_sources,
+        "summary": {"imgs_ok": imgs_ok,
+                    "imgs_waiting": imgs_waiting,
+                    "imgs_bad": imgs_bad},})
 
 
 def problems(request, source_id=-1):

@@ -57,7 +57,7 @@ class MdRecordManager(models.Manager):
 
     def get_or_create(self, content_hash, source_data):
         cursor = connection.cursor()
-        cursor.execute('SELECT id FROM %s_mdrecord WHERE content_hash="%s"' % (
+        cursor.execute("SELECT id FROM %s_mdrecord WHERE content_hash='%s'" % (
             __name__.split('.')[-2], content_hash))
         if cursor.rowcount:
             # this can so not fail - i just refuse to do errorhandling for this call
@@ -82,7 +82,7 @@ class MdRecord(models.Model):
     time_created = models.DateTimeField(auto_now_add=True,editable=False)
     time_last_change = models.DateTimeField(auto_now_add=True,editable=False)
 
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    pid = models.FloatField(default=0) # what process 'owns' this item
     uniqueness_hash = models.CharField(max_length=100)
     Enrichment_done = models.BooleanField(default=False)
 

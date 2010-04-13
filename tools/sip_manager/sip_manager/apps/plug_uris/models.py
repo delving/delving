@@ -44,7 +44,7 @@ class UriSource(models.Model):
     Identifies one server providing thumbnail resources to Europeana, to avoid
     the risk that we hammer the same server with multiple requests
     """
-    pid = models.IntegerField(default=0) # what process 'owns' this item
+    pid = models.FloatField(default=0) # what process 'owns' this item
     name_or_ip = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -163,12 +163,12 @@ class UriManager(models.Manager):
             s = 'COUNT(u.id)'
         else:
             s = 'u.id'
-        lst = ['SELECT %s FROM %s_uri u' % (s, __name__.split('.')[-2])]
-        lst.append('WHERE u.status=%i' % URIS_CREATED)
-        lst.append('AND uri_source_id=%i' % source_id)
-        lst.append('AND err_code=%i' % URIE_NO_ERROR)
-        lst.append('AND item_type=%i' % URIT_OBJECT) # only for initial cachegeneration!
-        lst.append('AND pid=0')
+        lst = ["SELECT %s FROM %s_uri u" % (s, __name__.split('.')[-2])]
+        lst.append("WHERE u.status=%i" % URIS_CREATED)
+        lst.append("AND uri_source_id=%i" % source_id)
+        lst.append("AND err_code=%i" % URIE_NO_ERROR)
+        lst.append("AND item_type=%i" % URIT_OBJECT) # only for initial cachegeneration!
+        lst.append("AND pid=0")
         sql = ' '.join(lst)
         return sql
 
@@ -185,9 +185,9 @@ class UriManager(models.Manager):
         cursor = connection.cursor()
 
         if self.STORAGE_IS_MYSQL:
-            limit_syntax = 'LIMIT %i,%i'
+            limit_syntax = "LIMIT %i,%i"
         else:
-            limit_syntax = 'OFFSET %i LIMIT %i'
+            limit_syntax = "OFFSET %i LIMIT %i"
 
         offset = 0
         while True:
@@ -221,12 +221,12 @@ class Uri(models.Model):
                                  default = URIT_OBJECT, db_index=True)
     mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
     uri_source = models.ForeignKey(UriSource)
-    pid = models.IntegerField(default=0, db_index=True) # what process 'owns' this item
+    pid = models.FloatField(default=0, db_index=True) # what process 'owns' this item
     url = models.CharField(max_length=450)
     url_hash = models.CharField(max_length=64,default='')
     content_hash = models.CharField(max_length=64,default='')
     err_code = models.IntegerField(choices=dict_2_django_choice(URI_ERR_CODES),
-                                   default = URIE_NO_ERROR)
+                                   default = URIE_NO_ERROR, db_index=True)
     err_msg = models.TextField()
     time_created = models.DateTimeField(auto_now_add=True,editable=False)
     time_lastcheck = models.DateTimeField(auto_now_add=True)

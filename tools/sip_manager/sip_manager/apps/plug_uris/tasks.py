@@ -187,7 +187,8 @@ class UriCreate(SipProcess):
         #   Finding MdRecords with no matching Uri items, since all MdRecords
         #   contains uri this indicates that this item is not processed
         # TODO: In desperate need of optimization!
-        self.cursor.execute('SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL')
+        self.cursor.execute(
+            "SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL")
         if self.cursor.rowcount:
             return True
         else:
