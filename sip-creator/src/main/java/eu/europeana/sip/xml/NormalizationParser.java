@@ -89,7 +89,6 @@ public class NormalizationParser {
                             nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + input.getLocalName();
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
-                        logger.info("created node "+node);
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);

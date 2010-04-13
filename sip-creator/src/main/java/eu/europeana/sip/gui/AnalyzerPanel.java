@@ -24,6 +24,7 @@ package eu.europeana.sip.gui;
 import eu.europeana.sip.io.FileSet;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
+import org.apache.log4j.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -61,6 +62,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,6 +74,7 @@ import java.util.List;
 
 public class AnalyzerPanel extends JPanel {
     private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(15, 15, 15, 15);
+    private Logger log = Logger.getLogger(getClass());
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
     private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
     private JLabel statsTitle = new JLabel("Statistics", JLabel.CENTER);
@@ -292,6 +295,11 @@ public class AnalyzerPanel extends JPanel {
     }
 
     private void setMappingTree(MappingTree mappingTree) {
+        List<String> variables = new ArrayList<String>();
+        mappingTree.getVariables(variables);
+        for (String variable : variables) {
+            log.info(variable);
+        }
         TreeModel treeModel = mappingTree.createTreeModel();
         statisticsJTree.setModel(treeModel);
         expandEmptyNodes((MappingTree.Node) treeModel.getRoot());

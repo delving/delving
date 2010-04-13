@@ -26,6 +26,7 @@ import eu.europeana.sip.io.FileSet;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JTabbedPane;
+import java.awt.Toolkit;
 import java.io.File;
 
 /**
@@ -47,7 +48,7 @@ public class SipCreatorGUI extends JFrame {
         tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
         getContentPane().add(tabs);
         setJMenuBar(createMenuBar());
-        setSize(1200, 800);
+        setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 
     private JMenuBar createMenuBar() {
