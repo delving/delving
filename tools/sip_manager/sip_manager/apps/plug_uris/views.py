@@ -63,13 +63,13 @@ def statistics(request, order_by=''):
     sql_img_bad = "%s err_code > %i %s" % (sel_common, models.URIE_NO_ERROR, sql_table_join)
 
     sql = "SELECT task_eta FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid"
-    uri_sources = models.UriSource.objects.extra(select={'imgs_ok':sql_img_ok,
-                                                     'imgs_bad': sql_img_bad,
-                                                     'imgs_waiting':sql_img_waiting,
-                                                     #'eta':sql,
-                                                     }).order_by(p_order_by)
+    uri_sources = models.UriSource.objects.extra(select={
+        'imgs_ok':sql_img_ok,
+        'imgs_bad': sql_img_bad,
+        'imgs_waiting':sql_img_waiting,
+        #'eta':sql,
+        }).order_by(p_order_by)
         #'imgs_ok':'status = %i' % models.URIS_COMPLETED})
-    i = len(uri_sources)
     return render_to_response("plug_uris/statistics.html", {
         "uri_sources":uri_sources,
         "summary": {"imgs_ok": imgs_ok,

@@ -23,6 +23,7 @@
 """
 
 import os
+import subprocess
 import threading
 import time
 
@@ -329,6 +330,26 @@ class SipProcess(object):
         return percent_done, eta_s
 
     # ==========   End of Task steps   ====================
+
+
+    def cmd_execute1(self, cmd):
+        "Returns 0 on success, or error message on failure."
+        if isinstance(cmd, (list, tuple)):
+            cmd = ' '.join(cmd)
+        try:
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            result = p.returncode
+            if result or stdout or stderr:
+                result = 'retcode: %s' % result
+                if stdout:
+                    result += '\nstdout: %s' % stdout
+                if stderr:
+                    result += '\nstderr: %s' % stderr
+        except:
+            result = 'cmd_execute() exception - shouldnt normally happen'
+        return result
+
 
 
 

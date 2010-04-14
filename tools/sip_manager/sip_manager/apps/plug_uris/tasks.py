@@ -65,7 +65,6 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 """
 
 import datetime
-import subprocess
 import os
 import sys
 import time
@@ -105,6 +104,9 @@ HTTPH_CONT_LENGTH = 'content-length'
 HTTPH_K_TRANS_ENC = 'transfer-encoding'
 HTTPH_CHUNKED = 'chunked'
 
+
+#CONVERT_COMMAND = 'convert -colorspace RGB -normalize'
+CONVERT_COMMAND = 'convert -colorspace RGB'
 
 
 if not USE_IMAGE_MAGIC:
@@ -441,6 +443,74 @@ class UriValidateSave(SipProcess):
         self.uri.status = state
         self.uri.save()
 
+
+    #--------------   ImageMagic utility methods   ----------------------------
+    def generate_images_magic(self, base_fname, org_fname):
+        """
+        Old img generation
+            FULL_DOC
+            mogrify -path /dest_dir
+                -format jpg
+                -define jpeg:size=260x200
+                -thumbnail 200x [one orginals sub dir]/*.original
+
+
+            BRIEF_DOC
+            mogrify -path BRIEF_DOC/subdir1/subdir2
+                -format jpg
+                -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
+
+        """
+        if OLD_STYLE_IMAGE_NAMES:
+            ext = '.FULL_DOC.jpg'
+        else:
+            ext = '.jpg'
+        fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL,
+                                  '%s%s' % (base_fname, ext))
+        cmd = [CONVERT_COMMAND]
+        cmd.append('-resize 200x')
+        cmd.append(org_fname)
+        cmd.append(fname_full)
+        output = self.cmd_execute1(cmd)
+        if output:
+            self.remove_file(fname_full)
+            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
+                                   'Failed to generate FULL_DOC\ncmd output %s' % output)
+        self.uri_state(models.URIS_FULL_GENERATED)
+
+        if OLD_STYLE_IMAGE_NAMES:
+            ext = '.BRIEF_DOC.jpg'
+        else:
+            ext = '.jpg'
+        fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF,
+                                   '%s%s' % (base_fname, ext))
+        cmd = [CONVERT_COMMAND]
+        cmd.append('-resize x110')
+        cmd.append(org_fname)
+        cmd.append(fname_brief)
+        output = self.cmd_execute1(cmd)
+        if output:
+            self.remove_file(fname_full)
+            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
+                                   'Failed to generate BRIEF_DOC\ncmd output %s' % output)
+        self.uri_state(models.URIS_BRIEF_GENERATED)
+        return True
+
+
+    def remove_file(self, full_path):
+        if not SIP_OBJ_FILES in full_path:
+            raise SipProcessException('Attempt to remove illegal filename: %s' % full_path)
+        try:
+            os.remove(full_path)
+        except OSError:
+            # maybe it wasnt created, no problemas at least its gone
+            pass
+        return
+    #-----------   End of ImageMagic utility methods   ------------------------
+
+
+
+
     #------------------   PIL utility methods   -------------------------------
     def generate_images_pil(self, base_fname, org_fname):
 
@@ -478,88 +548,6 @@ class UriValidateSave(SipProcess):
 
 
 
-
-
-
-    #--------------   ImageMagic utility methods   ----------------------------
-    def generate_images_magic(self, base_fname, org_fname):
-        """
-        Old img generation
-            FULL_DOC
-            mogrify -path /dest_dir
-                -format jpg
-                -define jpeg:size=260x200
-                -thumbnail 200x [one orginals sub dir]/*.original
-
-
-            BRIEF_DOC
-            mogrify -path BRIEF_DOC/subdir1/subdir2
-                -format jpg
-                -thumbnail x110 FULL_DOC/subdir1/subdir2/*.jpg
-
-        """
-        if OLD_STYLE_IMAGE_NAMES:
-            ext = '.FULL_DOC.jpg'
-        else:
-            ext = '.jpg'
-        fname_full = os.path.join(SIP_OBJ_FILES, REL_DIR_FULL,
-                                  '%s%s' % (base_fname, ext))
-        cmd = ['convert -resize 200x']
-        cmd.append(org_fname)
-        cmd.append(fname_full)
-        output = self.cmd_execute(cmd)
-        if output:
-            self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate FULL_DOC\ncmd output %s' % output)
-        self.uri_state(models.URIS_FULL_GENERATED)
-
-        if OLD_STYLE_IMAGE_NAMES:
-            ext = '.BRIEF_DOC.jpg'
-        else:
-            ext = '.jpg'
-        fname_brief = os.path.join(SIP_OBJ_FILES, REL_DIR_BRIEF,
-                                   '%s%s' % (base_fname, ext))
-        cmd = ['convert -resize x110']
-        cmd.append(org_fname)
-        cmd.append(fname_brief)
-        output = self.cmd_execute(cmd)
-        if output:
-            self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate BRIEF_DOC\ncmd output %s' % output)
-        self.uri_state(models.URIS_BRIEF_GENERATED)
-        return True
-
-
-    def remove_file(self, full_path):
-        if not SIP_OBJ_FILES in full_path:
-            raise SipProcessException('Attempt to remove illegal filename: %s' % full_path)
-        try:
-            os.remove(full_path)
-        except OSError:
-            # maybe it wasnt created, no problemas at least its gone
-            pass
-        return
-
-
-    def cmd_execute(self, cmd):
-        "Returns 0 on success, or error message on failure."
-        if isinstance(cmd, (list, tuple)):
-            cmd = ' '.join(cmd)
-        try:
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
-            result = p.returncode
-            if result or stdout or stderr:
-                result = 'retcode: %s' % result
-                if stdout:
-                    result += '\nstdout: %s' % stdout
-                if stderr:
-                    result += '\nstderr: %s' % stderr
-        except:
-            result = 'cmd_execute() exception - shouldnt normally happen'
-        return result
 
 
 

@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+<script type="text/javascript" src="/media/js/jquery.min.js"></script>
+<script type="text/javascript">
+   // we will add our javascript code here
+
+
+
+</script>
+{% endblock %}
+
 {% block content %}
+
+<a href="">Link</a>
+
 
 <h2>Summary</h2>
 
@@ -12,3 +25,7 @@ Images with problems: {{ summary.imgs_bad }}<br>
 {% include "plug_uris/snippets/tbl_stats_by_source.html" %}
 
 {% endblock %}
+
+
+{% comment %}
+{% endcomment %}
