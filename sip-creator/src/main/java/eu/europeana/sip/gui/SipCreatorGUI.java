@@ -23,11 +23,8 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.FileSet;
 
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JTabbedPane;
-import java.awt.Toolkit;
-import java.io.File;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The main GUI class for the sip creator
@@ -37,15 +34,15 @@ import java.io.File;
  */
 
 public class SipCreatorGUI extends JFrame {
-    private FileMenu fileMenu;
     private AnalyzerPanel analyzerPanel = new AnalyzerPanel();
+    private NormalizerPanel normalizerPanel = new NormalizerPanel();
 
     public SipCreatorGUI() {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analyzer", analyzerPanel);
-        tabs.addTab("Normalizer", new NormalizerPanel(new File("."), new File(".")));
+        tabs.addTab("Normalizer", normalizerPanel);
         getContentPane().add(tabs);
         setJMenuBar(createMenuBar());
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -53,10 +50,11 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
+        FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
             public void select(FileSet fileSet) {
                 analyzerPanel.setFileSet(fileSet);
+                normalizerPanel.setFileSet(fileSet);
             }
         });
         analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
@@ -72,6 +70,7 @@ public class SipCreatorGUI extends JFrame {
 //        return annotationProcessor;
 //    }
 //
+
     public static void main(String[] args) {
         SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
         sipCreatorGUI.setVisible(true);
