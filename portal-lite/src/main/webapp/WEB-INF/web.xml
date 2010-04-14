@@ -25,7 +25,7 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:/application-context.xml</param-value>
+        <param-value>classpath:/secure-application-context.xml</param-value>
     </context-param>
 
     <listener>
@@ -129,7 +129,7 @@
         <session-timeout>30</session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>/index.html</welcome-file>
     </welcome-file-list>
 
     <error-page>

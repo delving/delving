@@ -285,29 +285,21 @@
         </property>
     </bean>
 
-    <bean id="exceptionResolver" class="eu.europeana.core.util.web.ExceptionResolver"/>
+    <!--SECURITY MOVED TO secure-application-context in various webapps.-->
+    <!--<security:authentication-manager alias="authenticationManager">-->
+        <!--<security:authentication-provider user-service-ref="daoUserDetailsService">-->
+            <!--<security:password-encoder hash="sha"/>-->
+        <!--</security:authentication-provider>-->
+    <!--</security:authentication-manager>-->
 
-    <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider user-service-ref="daoUserDetailsService">
-            <security:password-encoder hash="sha"/>
-        </security:authentication-provider>
-    </security:authentication-manager>
-
-    <security:http auto-config="true" create-session="never">
-        <security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
-        <security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
-        <security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>
-        <security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
-        <security:logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>
+    <!--<security:http auto-config="true" create-session="never">-->
+        <!--<security:intercept-url pattern="/secure/*.html" access="ROLE_USER"/>-->
+        <!--<security:intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>-->
+        <!--<security:intercept-url pattern="/*.ajax" access="ROLE_USER"/>-->
+        <!--<security:form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>-->
+        <!--<security:logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>-->
         <!--<security:remember-me token-repository-ref="tokenRepositoryService" />-->
-        <security:remember-me services-ref="rememberMeServices" key="europeanaKey"/>
-    </security:http>
-    
-    <bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
-        <property name="userDetailsService" ref="daoUserDetailsService"/>
-        <property name="tokenRepository" ref="tokenRepositoryService" />
-        <property name="key" value="europeanaKey"/>
-    </bean>
+    <!--</security:http>-->
 
     <bean id="log4jInitialization" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
