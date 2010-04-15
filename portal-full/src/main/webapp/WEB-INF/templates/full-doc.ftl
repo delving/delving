@@ -39,6 +39,8 @@
    <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
 </#if>
 
+<#assign metaCanonicalUrl = ${uri}?xhtml />
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 
