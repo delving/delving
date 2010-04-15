@@ -1,0 +1,22 @@
+<table border="1">
+      <th>id</th>
+      <th><a href="{% url uri_stats 'name_or_ip' %}">Name</a></th>
+      <th><a href="{% url uri_stats 'imgs_waiting' %}">waiting</a></th>
+      <th><a href="{% url uri_stats 'imgs_ok' %}">ok</a></th>
+      <th><a href="{% url uri_stats 'imgs_bad' %}">bad</a></th>
+    {% for uri_source in uri_sources %}
+    <tr>
+        <td>{{ uri_source.id }}</td>
+        <td>{{ uri_source.name_or_ip }}</td>
+        <td>{{ uri_source.imgs_waiting }}</td>
+        <td>{{ uri_source.imgs_ok }}</td>
+        <td><a href="{% url uri_problems uri_source.id %}">{{ uri_source.imgs_bad }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% comment %}
+      <th><a href="{% url uri_stats 'eta' %}">eta</a></th>
+        <td>{{ uri_source.eta|default:"&nbsp;"}}</td>
+{% endcomment %}

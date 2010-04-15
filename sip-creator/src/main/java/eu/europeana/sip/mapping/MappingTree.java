@@ -30,8 +30,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.Vector;
 
 /**
@@ -46,15 +48,20 @@ public class MappingTree implements Serializable {
 
     public interface Node extends TreeNode {
         Statistics getStatistics();
+
         TreePath getTreePath();
+
         QName getQName();
+
         void setRecordRoot(QName recordRoot);
+
         boolean isRecordRoot();
+
         Iterable<? extends Node> getChildNodes();
     }
 
     public static int setRecordRoot(DefaultTreeModel model, QName recordRoot) {
-        MappingTree.Node node = (MappingTree.Node)model.getRoot();
+        MappingTree.Node node = (MappingTree.Node) model.getRoot();
         return setRecordRoot(node, recordRoot);
     }
 
@@ -70,12 +77,59 @@ public class MappingTree implements Serializable {
         return sum;
     }
 
-    public MappingTree(QNameNode root) {
+    public static MappingTree create(String rootTag) {
+        return new MappingTree(new QNameNode(rootTag));
+    }
+
+    public static MappingTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
+        QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
+        root.tag = rootTag;
+        return new MappingTree(root);
+    }
+
+    private MappingTree(QNameNode root) {
         this.root = root;
     }
 
     public TreeModel createTreeModel() {
         return new DefaultTreeModel(root, true);
+    }
+
+    public void getVariables(List<String> variables) {
+        Stack<String> stack = new Stack<String>();
+        getVariables(root, false, stack, variables);
+    }
+
+    private static void getVariables(QNameNode node, boolean withinRecord, Stack<String> stack, List<String> variables) {
+        if (withinRecord) {
+            stack.push(node.toString());
+        }
+        else if (node.isRecordRoot()) {
+            stack.push("input");
+            withinRecord = true;
+        }
+        if (node.getStatistics() != null) {
+            if (withinRecord) {
+                StringBuilder out = new StringBuilder();
+                Iterator<String> tagWalk = stack.iterator();
+                while (tagWalk.hasNext()) {
+                    String tag = tagWalk.next();
+                    out.append(tag);
+                    if (tagWalk.hasNext()) {
+                        out.append('.');
+                    }
+                }
+                variables.add(out.toString());
+            }
+        }
+        else {
+            for (QNameNode child : node.children) {
+                getVariables(child, withinRecord, stack, variables);
+            }
+        }
+        if (withinRecord) {
+            stack.pop();
+        }
     }
 
     private static class QNameNode implements Node, Serializable {
@@ -126,7 +180,7 @@ public class MappingTree implements Serializable {
 
         @Override
         public void setRecordRoot(QName recordRoot) {
-            this.recordRoot = qName != null && qName.equals(recordRoot); 
+            this.recordRoot = qName != null && qName.equals(recordRoot);
         }
 
         @Override
@@ -167,7 +221,7 @@ public class MappingTree implements Serializable {
 
         @Override
         public int getIndex(TreeNode treeNode) {
-            QNameNode qNameNode = (QNameNode)treeNode;
+            QNameNode qNameNode = (QNameNode) treeNode;
             return children.indexOf(qNameNode);
         }
 
@@ -191,22 +245,12 @@ public class MappingTree implements Serializable {
                 return tag;
             }
             else if (!qName.getPrefix().isEmpty()) {
-                return qName.getPrefix() + ':' + qName.getLocalPart();
+                return qName.getPrefix() + '_' + qName.getLocalPart();
             }
             else {
                 return qName.getLocalPart();
             }
         }
-    }
-
-    public static MappingTree create(String rootTag) {
-        return new MappingTree(new QNameNode(rootTag));
-    }
-
-    public static MappingTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
-        QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
-        root.tag = rootTag;
-        return new MappingTree(root);
     }
 
     private static QNameNode createSubtree(List<Statistics> statisticsList, QNamePath path, QName recordRoot, QNameNode parent) {

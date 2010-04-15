@@ -98,6 +98,9 @@
                 <#if metaDescription??>
                     <meta name="description" content="${metaDescription}"/>
                 </#if>
+                <#if metaCanonicalUrl??>
+                    <link rel="canonical" href="${metaCanonicalUrl}" />
+                </#if>
             <#break>
         <#case "myeuropeana.html">
             <#assign pageId = "me"/>

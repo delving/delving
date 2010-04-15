@@ -26,21 +26,7 @@ import eu.europeana.sip.xml.AnalysisParser;
 import org.apache.log4j.Logger;
 
 import javax.xml.namespace.QName;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -119,13 +105,17 @@ public class RecentFileSets {
     }
 
     private class FileSetImpl implements FileSet {
-        private File inputFile, statisticsFile, mappingFile, recordRootFile;
+        private File inputFile, statisticsFile, mappingFile, recordRootFile, outputFile;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
             this.statisticsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".statistics");
             this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
             this.recordRootFile = new File(inputFile.getParentFile(), inputFile.getName() + ".record");
+            this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
+            if (outputFile.exists()) {
+                outputFile.delete();
+            }
         }
 
         @Override
@@ -159,6 +149,11 @@ public class RecentFileSets {
         @Override
         public InputStream getInputStream() throws FileNotFoundException {
             return new FileInputStream(inputFile);
+        }
+
+        @Override
+        public OutputStream getOutputStream() throws FileNotFoundException {
+            return new FileOutputStream(outputFile, true);
         }
 
         @Override
@@ -223,7 +218,7 @@ public class RecentFileSets {
                 StringBuilder qNameString = new StringBuilder();
                 int ch;
                 while ((ch = in.read()) >= 0) {
-                    qNameString.append((char)ch);
+                    qNameString.append((char) ch);
                 }
                 in.close();
                 try {

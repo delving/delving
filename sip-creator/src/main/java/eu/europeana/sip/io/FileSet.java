@@ -27,6 +27,7 @@ import javax.xml.namespace.QName;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -44,6 +45,8 @@ public interface FileSet {
     void remove();
 
     InputStream getInputStream() throws FileNotFoundException;
+
+    OutputStream getOutputStream() throws FileNotFoundException;
 
     public interface AnalysisListener {
 

@@ -157,7 +157,7 @@ class MainProcessor(object):
 
     def flush_all(self):
         cursor = connection.cursor()
-        if 'mysql' in cursor.db.__module__:
+        if self.db_is_mysql():
             sql = 'TRUNCATE %s'
         else:
             sql = 'TRUNCATE %s CASCADE'
@@ -176,6 +176,10 @@ class MainProcessor(object):
 
     def drop_all(self):
         cursor = connection.cursor()
+        if self.db_is_mysql():
+            sql = 'DROP TABLE %s'
+        else:
+            sql = 'DROP TABLE %s CASCADE'
         for table in ('base_item_mdrecord',
                       'base_item_requestmdrecord',
                       'dummy_ingester_aggregator',
@@ -187,9 +191,11 @@ class MainProcessor(object):
                       'process_monitor_processmonitoring',
                       ):
             try:
-                cursor.execute('DROP TABLE %s' % table)
+                cursor.execute(sql % table)
             except:
                 print 'Failed to remove %s' % table
+
+        cursor.execute('commit')
         return True
 
     def clear_pids(self):
@@ -201,6 +207,13 @@ class MainProcessor(object):
                       'plug_uris_urisource',
                       ):
             cursor.execute('UPDATE %s SET pid=0' % table)
+
+    def db_is_mysql(self):
+        cursor = connection.cursor()
+        if 'mysql' in cursor.db.__module__:
+            return True
+        else:
+            return False
 
 
 """

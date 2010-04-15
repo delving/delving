@@ -48,6 +48,10 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
         if (!entered.endsWith(prefix)) { // todo: do this check in advance?
             return null;
         }
+        if (null == originalElements) {
+            LOG.error("originalElements is null");
+            return null;
+        }
         entered = entered.substring(entered.lastIndexOf(DEFAULT_PREFIX) + DEFAULT_PREFIX.length());
         List<String> remaining = new ArrayList<String>();
         for (String inList : originalElements) {

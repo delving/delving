@@ -39,6 +39,8 @@
    <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
 </#if>
 
+<#assign metaCanonicalUrl = uri />
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 
@@ -137,7 +139,8 @@
            <!-- AddThis Button BEGIN -->
                     <#assign  showthislang = locale>
                        <a class="addthis_button"
-                          href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36">
+                          href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36"
+                          addthis:url="${uri}">
                          <img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                         <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
                         <script type="text/javascript">

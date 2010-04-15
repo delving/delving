@@ -17,6 +17,15 @@ public class RememberMeServices extends PersistentTokenBasedRememberMeServices {
     }
 
     @Override
+    protected void cancelCookie(HttpServletRequest request, HttpServletResponse response) {
+        logger.debug("Cancelling cookie");
+        Cookie cookie = new Cookie(SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    @Override
     public void setCookie(String [] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
         String cookieValue = encodeCookie(tokens);
         Cookie cookie = new Cookie(SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY, cookieValue);

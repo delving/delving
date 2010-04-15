@@ -3,15 +3,6 @@
 {% block content %}
 
 <h2>Problems</h2>
-  <table border="1">
-    <th>Name</th>
-    <th>Count</th>
-    {% for key, problem in problems.items %}
-      <tr>
-        <td>{{ key }}</td>
-        <td>{{ problem.count }}</td>
-      </tr>
-    {% endfor %}
-    </table>
+{% include "plug_uris/snippets/tbl_errors_by_kind.html" %}
 
 {% endblock %}
