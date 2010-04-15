@@ -57,7 +57,7 @@ public class AnalyzerPanel extends JPanel {
     private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(15, 15, 15, 15);
     private Logger log = Logger.getLogger(getClass());
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
-    private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel());
+    private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel()); // todo: inform about available nodes
     private JLabel statsTitle = new JLabel("Statistics", JLabel.CENTER);
 
     private JTable statsTable;
@@ -291,9 +291,19 @@ public class AnalyzerPanel extends JPanel {
         }
     }
 
+    /**
+     * Listen to me if you want to get informed about the latest available nodes
+     */
+    interface Listener {
+        void updateAvailableNodes(List<String> nodes);
+    }
+
     private void setMappingTree(MappingTree mappingTree) {
         List<String> variables = new ArrayList<String>();
         mappingTree.getVariables(variables);
+        if (null != groovyEditor) {
+            groovyEditor.updateAvailableNodes(variables);
+        }
         for (String variable : variables) {
             log.info(variable);
         }

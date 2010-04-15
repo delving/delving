@@ -25,21 +25,14 @@ import eu.europeana.sip.io.FileSet;
 import eu.europeana.sip.io.GroovyService;
 import org.apache.log4j.Logger;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.xml.namespace.QName;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -48,7 +41,7 @@ import java.awt.event.KeyEvent;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class GroovyEditor extends JPanel {
+public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
@@ -57,7 +50,7 @@ public class GroovyEditor extends JPanel {
     private JTextArea outputArea = new JTextArea();
     private CompileTimer compileTimer;
     private GroovyService groovyService;
-    private java.util.List<String> _groovyNodes;
+    private List<String> availableNodes;
 
     public GroovyEditor() {
         super(new BorderLayout());
@@ -104,7 +97,7 @@ public class GroovyEditor extends JPanel {
                         codeArea.requestFocus();
                 }
                 compileTimer.triggerSoon();
-                java.util.List<String> remaining = autoComplete.complete(event, _groovyNodes);
+                java.util.List<String> remaining = autoComplete.complete(event, availableNodes);
                 autoCompleteDialog.updateElements(remaining);
                 autoCompleteDialog.updateLocation(codeArea.getCaret().getMagicCaretPosition(), event.getComponent().getLocationOnScreen());
             }
@@ -152,6 +145,11 @@ public class GroovyEditor extends JPanel {
         String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
         LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
         return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
+    }
+
+    @Override
+    public void updateAvailableNodes(java.util.List<String> nodes) {
+        this.availableNodes = nodes;
     }
 
     private class CompileTimer implements ActionListener {

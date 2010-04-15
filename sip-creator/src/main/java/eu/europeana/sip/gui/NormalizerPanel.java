@@ -76,7 +76,9 @@ public class NormalizerPanel extends JPanel {
                 nodesWritten++;
                 memoryLabel.setText(String.format("Free %sMB/Available %sMB", Runtime.getRuntime().freeMemory() / MEGABYTE, (Runtime.getRuntime().maxMemory() / MEGABYTE)));
                 Logger.getRootLogger().info(String.format("Written so far [%dKB] ; [%d nodes]%n", bytesWritten / KILOBYTE, nodesWritten));
-                progressDialog.setProgress(nodesWritten, bytesWritten);
+                if (null != progressDialog) {
+                    progressDialog.setProgress(nodesWritten, bytesWritten);
+                }
             }
             catch (IOException e) {
                 LOG.error("Error writing to outputStream", e);
@@ -150,15 +152,6 @@ public class NormalizerPanel extends JPanel {
         );
     }
 
-//    private JPanel createaWest() {
-//        list.setCellRenderer(new CellRenderer());
-//        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//        JPanel p = new JPanel(new BorderLayout());
-//        p.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
-//        p.add(createSouthWest(), BorderLayout.SOUTH);
-//        return p;
-//    }
-
     private JPanel createWest() {
         JPanel p = new JPanel(new GridLayout(0, 1));
         p.add(progressLabel);
@@ -206,7 +199,7 @@ public class NormalizerPanel extends JPanel {
 //            list.setEnabled(true);
             logPanel.flush();
 //            normalizer = null;
-        }     
+        }
     };
 
     public void setFileSet(FileSet fileSet) {
