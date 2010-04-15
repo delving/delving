@@ -4,7 +4,7 @@
     <#if idBeanList?? && fullViewUrl??>
         <#list idBeanList as idBean>
             <url>
-                <loc>${fullViewUrl}?uri=${idBean.europeanaUri}</loc>
+                <loc>${idBean.europeanaUri}</loc>
 <#--                <lastmod>${idBean.timestamp?string("yyyy-MM-dd")}</lastmod> -->
                 <changefreq>monthly</changefreq>
             </url>
