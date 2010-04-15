@@ -106,8 +106,10 @@ public class GroovyService {
         executor.execute(new NextRecordFetcher());
     }
 
-    public void normalize() throws FileNotFoundException {
-        executor.execute(new Normalizer());
+    public Normalizer normalize() throws FileNotFoundException {
+        Normalizer normalizer = new Normalizer();
+        executor.execute(normalizer);
+        return normalizer;
     }
 
     private class NextRecordFetcher implements Runnable {
@@ -124,8 +126,9 @@ public class GroovyService {
         }
     }
 
-    private class Normalizer implements Runnable {
+    public class Normalizer implements Runnable {
 
+        private boolean running = true;
         private boolean nodesAvailable = true;
         private int nodeCount;
 
@@ -143,12 +146,18 @@ public class GroovyService {
             );
         }
 
+        public void abort() {
+            running = false;
+        }
+
         @Override
         public void run() {
             try {
-                while (nodesAvailable) {
+                while (nodesAvailable && running) {
                     GroovyNode node = normalizationParser.nextRecord();
-                    compile(node);
+                    if (null != node) {
+                        compile(node);
+                    }
                     nodeCount++;
                 }
             }
@@ -218,7 +227,7 @@ public class GroovyService {
 
         public void setMapping(String mapping) {
             this.mapping = mapping;
-            run();
+            run(); // todo: fix
             executor.execute(new MappingSaver(mapping));
         }
 
@@ -260,7 +269,7 @@ public class GroovyService {
         @Override
         public void nodeAvailable(GroovyNode groovyNode) {
             binding.setVariable(INPUT, groovyNode);
-            run();
+            run(); // todo: fix
         }
 
         public Binding createBinding() {

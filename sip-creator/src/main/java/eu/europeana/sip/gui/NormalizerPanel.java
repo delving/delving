@@ -23,7 +23,6 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.FileSet;
 import eu.europeana.sip.io.GroovyService;
-import eu.europeana.sip.reference.Normalizer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -54,10 +53,13 @@ public class NormalizerPanel extends JPanel {
     private JLabel memoryLabel = new JLabel("Memory", JLabel.CENTER);
     private JButton abort = new JButton("Abort");
     private LogPanel logPanel = new LogPanel();
-    private Normalizer normalizer;
-    private static final Logger LOG = Logger.getLogger(Normalizer.class);
+    private static final Logger LOG = Logger.getLogger(NormalizerPanel.class);
     private static long bytesWritten;
     private static long nodesWritten;
+
+    private ProgressDialog progressDialog;
+
+    private NormalizerPanel instance;
 
     private GroovyService groovyService = new GroovyService(new GroovyService.Listener() {
 
@@ -74,6 +76,7 @@ public class NormalizerPanel extends JPanel {
                 nodesWritten++;
                 memoryLabel.setText(String.format("Free %sMB/Available %sMB", Runtime.getRuntime().freeMemory() / MEGABYTE, (Runtime.getRuntime().maxMemory() / MEGABYTE)));
                 Logger.getRootLogger().info(String.format("Written so far [%dKB] ; [%d nodes]%n", bytesWritten / KILOBYTE, nodesWritten));
+                progressDialog.setProgress(nodesWritten, bytesWritten);
             }
             catch (IOException e) {
                 LOG.error("Error writing to outputStream", e);
@@ -83,7 +86,8 @@ public class NormalizerPanel extends JPanel {
 
     public NormalizerPanel() {
         super(new BorderLayout());
-        Logger.getRootLogger().addAppender(logPanel.createAppender(Normalizer.LOG_LAYOUT));
+        this.instance = this;
+//        Logger.getRootLogger().addAppender(logPanel.createAppender(Normalizer.LOG_LAYOUT));
         add(createWest(), BorderLayout.WEST);
         add(logPanel, BorderLayout.CENTER);
         wireUp();
@@ -104,12 +108,39 @@ public class NormalizerPanel extends JPanel {
             }
         });
         normalize.addActionListener(
+
                 new ActionListener() {
+
+                    GroovyService.Normalizer normalizer;
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            groovyService.normalize();
+                            progressDialog = new ProgressDialog("Normalize", "Normalized",
+                                    new ProgressDialog.Listener() {
+
+                                        @Override
+                                        public void abort() {
+                                            progressDialog.setVisible(false);
+                                            normalizer.abort();
+                                        }
+
+                                        @Override
+                                        public JFrame getFrame() {
+                                            return (JFrame) SwingUtilities.getWindowAncestor(instance);
+                                        }
+                                    }
+                            );
+                            progressDialog.setVisible(true);
+                            normalizer = groovyService.normalize();
+                            abort.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    if (normalizer != null) {
+                                        normalizer.abort();
+                                    }
+                                }
+                            });
                         }
                         catch (FileNotFoundException exception) {
                             Logger.getRootLogger().error("Error writing to file", exception);
@@ -117,15 +148,6 @@ public class NormalizerPanel extends JPanel {
                     }
                 }
         );
-
-        abort.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (normalizer != null) {
-                    normalizer.abort();
-                }
-            }
-        });
     }
 
 //    private JPanel createaWest() {
@@ -183,8 +205,8 @@ public class NormalizerPanel extends JPanel {
             abort.setEnabled(false);
 //            list.setEnabled(true);
             logPanel.flush();
-            normalizer = null;
-        }
+//            normalizer = null;
+        }     
     };
 
     public void setFileSet(FileSet fileSet) {

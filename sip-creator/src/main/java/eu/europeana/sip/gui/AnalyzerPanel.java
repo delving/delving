@@ -26,21 +26,7 @@ import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import org.apache.log4j.Logger;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -51,17 +37,12 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,8 +68,11 @@ public class AnalyzerPanel extends JPanel {
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
 
+    private AnalyzerPanel instance;
+
     public AnalyzerPanel() {
         super(new BorderLayout());
+        this.instance = this;
         createStatsTable();
         this.statsTitle.setFont(new Font("Serif", Font.BOLD, 20));
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -132,7 +116,20 @@ public class AnalyzerPanel extends JPanel {
                                 SwingUtilities.invokeAndWait(new Runnable() {
                                     @Override
                                     public void run() {
-                                        progressDialog = new ProgressDialog();
+                                        progressDialog = new ProgressDialog("Analyze", "Analyzed",
+                                                new ProgressDialog.Listener() {
+
+                                                    @Override
+                                                    public void abort() {
+                                                        abort = true;
+                                                    }
+
+                                                    @Override
+                                                    public JFrame getFrame() {
+                                                        return (JFrame) SwingUtilities.getWindowAncestor(instance);
+                                                    }
+                                                }
+                                        );
                                         progressDialog.setVisible(true);
                                     }
                                 });
@@ -145,7 +142,7 @@ public class AnalyzerPanel extends JPanel {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    progressDialog.setRecordsProcessed(recordNumber);
+                                    progressDialog.setProgress(recordNumber);
                                 }
                             });
                         }
@@ -227,10 +224,10 @@ public class AnalyzerPanel extends JPanel {
                                 public void actionPerformed(ActionEvent e) {
                                     MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
                                     QName recordRoot = node.getQName();
-                                    DefaultTreeModel tm = (DefaultTreeModel)statisticsJTree.getModel();
+                                    DefaultTreeModel tm = (DefaultTreeModel) statisticsJTree.getModel();
                                     int count = MappingTree.setRecordRoot(tm, recordRoot);
                                     if (count != 1) {
-                                        JOptionPane.showConfirmDialog(AnalyzerPanel.this, "Expected one record root, got "+count);
+                                        JOptionPane.showConfirmDialog(AnalyzerPanel.this, "Expected one record root, got " + count);
                                     }
                                     else {
                                         groovyEditor.setRecordRoot(recordRoot);
@@ -317,46 +314,5 @@ public class AnalyzerPanel extends JPanel {
 
     public void setFileMenuEnablement(FileMenu.Enablement fileMenuEnablement) {
         this.fileMenuEnablement = fileMenuEnablement;
-    }
-
-    private Frame getFrame() {
-        Component component = this;
-        while (!(component instanceof Frame)) {
-            component = component.getParent();
-        }
-        return (Frame) component;
-    }
-
-    private class ProgressDialog extends JDialog {
-        private DecimalFormat format = new DecimalFormat("#########");
-        private static final String LABEL_PROMPT = "XML Elements Analyzed: ";
-        private JLabel label = new JLabel(LABEL_PROMPT + "None so far");
-        private JButton button = new JButton("Abort Analysis");
-
-        private ProgressDialog() {
-            super(getFrame(), "Analysis", false);
-            getContentPane().add(createContent());
-            pack();
-            setLocationRelativeTo(AnalyzerPanel.this);
-        }
-
-        private Component createContent() {
-            JPanel p = new JPanel(new BorderLayout(5, 5));
-            p.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-            label.setFont(new Font("Serif", Font.BOLD, 24));
-            p.add(label, BorderLayout.CENTER);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    abort = true;
-                }
-            });
-            p.add(button, BorderLayout.SOUTH);
-            return p;
-        }
-
-        public void setRecordsProcessed(long recordNumber) {
-            label.setText(LABEL_PROMPT + format.format(recordNumber / 1000) + "k");
-        }
     }
 }
