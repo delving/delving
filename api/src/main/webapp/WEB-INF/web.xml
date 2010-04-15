@@ -35,31 +35,11 @@
 
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/annotation/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*.html</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*.srw</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*.rdf</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*.rss</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*.ajax</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>*.xml</url-pattern>
+        <url-pattern>/spring_security_login</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
@@ -99,17 +79,7 @@
         <session-timeout>30</session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file></welcome-file>
     </welcome-file-list>
-
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error.html</location>
-    </error-page>
-
-    <error-page>
-        <exception-type>org.springframework.security.ui.rememberme.CookieTheftException</exception-type>
-        <location>/remember-me-theft.html</location>
-    </error-page>
 
 </web-app>

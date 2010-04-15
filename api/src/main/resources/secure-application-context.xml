@@ -58,9 +58,15 @@
 
     <http auto-config="true" create-session="never">
         <intercept-url pattern="/annotation/**" access="ROLE_USER"/>
-        <form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
-        <logout logout-url="/logout.html" logout-success-url="/logout-success.html"/>
-        <remember-me token-repository-ref="tokenRepositoryService" />
+        <form-login/>
+        <logout/>
+        <remember-me services-ref="rememberMeServices" key="europeanaKey"/>
     </http>
 
+    <beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
+        <beans:property name="userDetailsService" ref="daoUserDetailsService"/>
+        <beans:property name="tokenRepository" ref="tokenRepositoryService" />
+        <beans:property name="key" value="europeanaKey"/>
+    </beans:bean>
+    
 </beans:beans>

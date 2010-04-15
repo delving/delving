@@ -48,7 +48,14 @@
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
         <logout logout-url="/logout.html" invalidate-session="true" logout-success-url="/logout-success.html"/>
-        <remember-me token-repository-ref="tokenRepositoryService" />
+        <!--<remember-me token-repository-ref="tokenRepositoryService" />-->
+        <remember-me services-ref="rememberMeServices" key="europeanaKey"/>
     </http>
+
+    <beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
+        <beans:property name="userDetailsService" ref="daoUserDetailsService"/>
+        <beans:property name="tokenRepository" ref="tokenRepositoryService" />
+        <beans:property name="key" value="europeanaKey"/>
+    </beans:bean>
 
 </beans:beans>

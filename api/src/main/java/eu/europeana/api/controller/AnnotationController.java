@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -66,6 +67,11 @@ public class AnnotationController {
 
     @Autowired
     private AnnotationDao annotationDao;
+
+    @RequestMapping
+    public ModelAndView legend() {
+        return ControllerUtil.createModelAndViewPage("annotation");
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/{type}/{europeanaUri}", params = "!predecessor", method = RequestMethod.POST)
