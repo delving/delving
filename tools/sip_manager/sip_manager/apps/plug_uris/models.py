@@ -153,10 +153,14 @@ class UriManager(models.Manager):
         cursor = connection.cursor()
         if hasattr(cursor, 'db'):
             # if DEBUG=True its found here...
-            b = 'mysql' in cursor.db.__module__
+            look_at = cursor.db
         else:
             # Otherwise we find it here
-            b = 'mysql' in cursor.__module__
+            look_at = cursor
+        if hasattr(look_at, 'mysql'):
+            b = True
+        else:
+            b = False
         return b
 
     def base_sql(self, source_id, count=False):
