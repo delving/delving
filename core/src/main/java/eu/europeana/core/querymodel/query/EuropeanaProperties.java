@@ -49,7 +49,7 @@ public class EuropeanaProperties extends Properties {
             }
             inputStream = getInputFromFile(europeanaProperties);
             if (inputStream == null) {
-                log.info("System property 'europeana.properties' not found, checking environment.");
+                log.info("System property 'europeana.properties' not found, checking environment for EUROPEANA_PROPERTIES.");
                 europeanaProperties = System.getenv("EUROPEANA_PROPERTIES");
                 if (europeanaProperties != null) {
                     log.info("Found env property 'EUROPEANA_PROPERTIES', resolved to " + new File(europeanaProperties).getCanonicalPath());

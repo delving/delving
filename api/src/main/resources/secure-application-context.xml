@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2007 EDL FOUNDATION
+  ~
+  ~  Licensed under the EUPL, Version 1.1 or as soon they
+  ~  will be approved by the European Commission - subsequent
+  ~  versions of the EUPL (the "Licence");
+  ~  you may not use this work except in compliance with the
+  ~  Licence.
+  ~  You may obtain a copy of the Licence at:
+  ~
+  ~  http://ec.europa.eu/idabc/eupl
+  ~
+  ~  Unless required by applicable law or agreed to in
+  ~  writing, software distributed under the Licence is
+  ~  distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~  express or implied.
+  ~  See the Licence for the specific language governing
+  ~  permissions and limitations under the Licence.
+  -->
+<beans:beans
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns="http://www.springframework.org/schema/security"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.0.xsd
+        ">
+
+    <beans:import resource="classpath:/core-application-context.xml"/>
+
+    <beans:bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <beans:property name="messageConverters">
+            <beans:list>
+                <beans:bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <beans:property name="supportedMediaTypes">
+                        <beans:list>
+                            <beans:value>text/plain;charset=UTF-8</beans:value>
+                            <beans:value>application/xml;charset=UTF-8</beans:value>
+                        </beans:list>
+                    </beans:property>
+                </beans:bean>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider user-service-ref="daoUserDetailsService">
+            <password-encoder hash="sha"/>
+        </authentication-provider>
+    </authentication-manager>
+
+    <http auto-config="true" create-session="never">
+        <intercept-url pattern="/annotation/**" access="ROLE_USER"/>
+        <form-login/>
+        <logout/>
+        <remember-me services-ref="rememberMeServices" key="europeanaKey"/>
+    </http>
+
+    <beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
+        <beans:property name="userDetailsService" ref="daoUserDetailsService"/>
+        <beans:property name="tokenRepository" ref="tokenRepositoryService" />
+        <beans:property name="key" value="europeanaKey"/>
+    </beans:bean>
+    
+</beans:beans>

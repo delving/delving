@@ -62,19 +62,19 @@
         <li class="${showAll}">
             <a href="${thisPage}?${typeUrl}&amp;view=${view}"><em><@spring.message 'All_t' /> </em></a></li>
         <li class="${showText}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:text&amp;tab=text&amp;view=${view}"><em><@spring.message 'Texts_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:text&amp;tab=text&amp;view=${view}" rel="nofollow"><em><@spring.message 'Texts_t' />
                 <@print_tab_count showAll showText textCount />
                 </em></a></li>
         <li class="${showImage}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:image&amp;tab=image&amp;view=${view}"><em><@spring.message 'Images_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:image&amp;tab=image&amp;view=${view}" rel="nofollow"><em><@spring.message 'Images_t' />
                 <@print_tab_count showAll showImage imageCount />
             </em></a></li>
         <li class="${showVideo}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:video&amp;tab=video&amp;view=${view}"><em><@spring.message 'Videos_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:video&amp;tab=video&amp;view=${view}" rel="nofollow"><em><@spring.message 'Videos_t' />
                 <@print_tab_count showAll showVideo videoCount />
             </em></a></li>
         <li class="${showSound}">
-            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:sound&amp;tab=sound&amp;view=${view}"><em><@spring.message 'Sounds_t' />
+            <a href="${thisPage}?${typeUrl}&amp;qf=TYPE:sound&amp;tab=sound&amp;view=${view}" rel="nofollow"><em><@spring.message 'Sounds_t' />
                 <@print_tab_count showAll showSound audioCount />
             </em></a></li>
     </ul>
@@ -162,7 +162,7 @@
         <#list row as cell>
         <td valign="bottom" width="25%" class="${cell.type}">
             <div class="brief-thumb-container">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="full-doc.html?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
                          <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" height="110"/>
                     <#else>
@@ -199,7 +199,7 @@
     <tr>
         <td valign="top" width="80">
             <div class="brief-thumb-container-listview">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="full-doc.html?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true"><img class="thumb" id="thumb_${cell.index}" align="middle"
                                               src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                                               alt="<@spring.message 'AltMoreInfo_t' />" height="50"/>
@@ -213,7 +213,7 @@
         <td class="${cell.type}">
             <div>
                 <h3>
-                    <a class="fg-gray" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd"><@stringLimiter "${cell.title}" "250"/></a>
+                    <a class="fg-gray" href="full-doc.html?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd"><@stringLimiter "${cell.title}" "250"/></a>
                 </h3>
                 <#-- without labels -->
                 <#if !cell.creator[0]?matches(" ")>${cell.creator}<br/></#if>

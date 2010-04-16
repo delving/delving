@@ -63,7 +63,7 @@
                 </div>
 <#--            </td>
             <td valign="top">-->
-                <div id="item-detail" class="grid_6 omega">
+                <div id="item-detail" class="grid_9 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />

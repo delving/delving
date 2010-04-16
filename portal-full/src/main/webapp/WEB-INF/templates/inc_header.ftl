@@ -61,7 +61,15 @@
             </script>
             </#if>
                 <script type="text/javascript" src="js/results.js"></script>
-                <title>Europeana - Search results</title>
+                <#if metaTitle??>
+                    <title>${metaTitle?js_string}</title>
+                <#else>
+                    <title>Europeana - Search results</title>
+                </#if>
+                <#if metaDescription??>
+                    <meta name="description" content="${metaDescription?js_string}"/>
+                </#if>
+                <meta name="robots" content="noindex"/>
             <#break>
         <#case "full-doc.html">
         <#assign pageId = "fd"/>
@@ -76,7 +84,23 @@
             </#if>
                 <script type="text/javascript" src="js/jquery.validate.js"></script>
                 <script type="text/javascript" src="js/results.js"></script>
-                <title>Europeana - Search results</title>
+                <#if metaTitle??>
+                    <title>${metaTitle}</title>
+                <#else>
+                    <title>Europeana - Search results</title>
+                </#if>
+                <#-- only pages with title are indexed -->
+                <#if metaTitle?? && metaTitle?length &gt; 3>
+                    <meta name="robots" content="nofollow"/>
+                <#else>    
+                    <meta name="robots" content="noindex, nofollow"/>
+                </#if>
+                <#if metaDescription??>
+                    <meta name="description" content="${metaDescription}"/>
+                </#if>
+                <#if metaCanonicalUrl??>
+                    <link rel="canonical" href="${metaCanonicalUrl}" />
+                </#if>
             <#break>
         <#case "myeuropeana.html">
             <#assign pageId = "me"/>
@@ -124,7 +148,12 @@
             <#break>
         <#case "sitemap.html">
             <#assign pageId = "sm">
-        <title>Europeana - Sitemap</title>
+            <#if metaTitle??>
+                 <title>Europeana - Sitemap: ${metaTitle?xhtml}</title>
+            <#else>
+                 <title>Europeana - Sitemap</title>
+            </#if>
+            <meta name="robots" content="noindex"/>
             <#break>
         <#case "thought-lab.html">
             <link rel="alternate" href="brief-doc.rss?query=mozart"  type="application/rss+xml" title="" id="gallery" />

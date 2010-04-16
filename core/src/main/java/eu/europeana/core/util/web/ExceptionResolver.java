@@ -75,6 +75,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("request", ControllerUtil.formatFullRequestUrl(request));
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", cacheUrl);
+                model.put("agent", request.getHeader("User-Agent"));
+                model.put("referer", request.getHeader("referer"));
                 model.put(EmailSender.SUBJECT, queryProblem.getFragment());
                 if (!debugMode) { // don't send email in debugMode
                     emailSender.sendEmail(model);

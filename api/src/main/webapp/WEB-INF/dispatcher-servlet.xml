@@ -30,8 +30,13 @@
        http://www.springframework.org/schema/context/spring-context-3.0.xsd
        ">
 
+    <import resource="classpath:/secure-application-context.xml"/>
 
     <context:component-scan base-package="eu.europeana.api.controller"/>
+
+    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">-->
+        <!--<property name="defaultContentType" value="text/plain"/>-->
+    <!--</bean>-->
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
@@ -49,7 +54,7 @@
         <property name="exposeRequestAttributes" value="false"/>
         <property name="requestContextAttribute" value="requestContext"/>
     </bean>
-    
+
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
 
     <bean id="localeChangeInterceptor" class="eu.europeana.core.util.web.LocaleChangeInterceptor">
@@ -63,6 +68,7 @@
     </bean>
 
     <bean id="annotationMapper" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="useDefaultSuffixPattern" value="false"/>
         <property name="interceptors">
             <list>
                 <ref bean="localeChangeInterceptor"/>
@@ -77,5 +83,7 @@
         <property name="fileEncodings" value="UTF-8"/>
         <property name="defaultEncoding" value="UTF-8"/>
     </bean>
+
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver"/>
 
 </beans>

@@ -85,54 +85,12 @@ public class ControllerUtil {
         return url;
     }
 
-    public static int getStartRow(HttpServletRequest request) {
-        String startValue = request.getParameter("start");
-        if (startValue == null) {
-            startValue = request.getParameter("startRecord");
-        }
-        return getShiftedStartRow(startValue);
-    }
-
-    public static int getRows(HttpServletRequest request) {
-        String rowsString = getParameter(request, "rows");
-        if (rowsString == null) {
-            rowsString = getParameter(request, "maximumRecords");
-        }
-        if (rowsString != null) {
-            return Integer.parseInt(rowsString);
-        }
-        else {
-            return -1;
-        }
-    }
-
     public static String getParameter(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
         if (value == null || value.trim().length() == 0) {
             return null;
         }
         return value;
-    }
-
-    public static String getExpectedParameter(HttpServletRequest request, String name) {
-        String value = getParameter(request, name);
-        if (value == null) {
-            throw new IllegalArgumentException("Expected parameter " + name);
-        }
-        return value;
-    }
-
-    private static int getShiftedStartRow(String startRowParameter) {
-        if (startRowParameter != null) {
-            try {
-                int s = Integer.parseInt(startRowParameter);
-                return s - 1;
-            }
-            catch (NumberFormatException nfe) {
-                // ignore;
-            }
-        }
-        return 0;
     }
 
     public static Language getLocale(HttpServletRequest request) {

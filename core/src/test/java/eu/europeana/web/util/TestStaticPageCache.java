@@ -32,9 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test the utility classes
@@ -70,13 +68,13 @@ public class TestStaticPageCache {
 
     @After
     public void thatsIt() {
-//        delete(root);
+        delete(root);
     }
 
     @Test
     public void fetches() throws IOException {
-        assertNotNull(staticPageCache.getPage(PAGE_NAMES[1], LANGUAGES[1]));
-        assertNull(staticPageCache.getPage("booger", LANGUAGES[1]));
+        assertNotNull(staticPageCache.getPage(null, PAGE_NAMES[1], LANGUAGES[1]));
+        assertNull(staticPageCache.getPage(null, "booger", LANGUAGES[1]));
     }
 
     private void createFile(String pageName, Language language) throws FileNotFoundException {

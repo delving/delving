@@ -29,6 +29,18 @@
 </#if>
 <#-- Removed ?url('utf-8') from query assignment -->
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
+<#-- page title and description -->
+<#assign metaTitle = result.fullDoc.dcTitle[0]?xhtml />
+<#assign metaDescription = result.fullDoc.dcDescription[0]?xhtml />
+<#if metaDescription?length &lt; 10>
+     <#assign metaDescription = result.fullDoc.dcTermsAlternative[0]?xhtml />
+</#if>
+<#if metaDescription?length &gt; 200>
+   <#assign metaDescription = metaDescription?substring(0, 200) + "..."/>
+</#if>
+
+<#assign metaCanonicalUrl = uri />
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 
@@ -47,10 +59,28 @@
 <div class="yui-g" id="display">
 
 <div id="breadcrumb">
-    <#if query?exists>
+    <#if pagination??>
     <ul>
+        <#if !query?starts_with("europeana_uri:")>
         <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-        <li><strong><a href="#">${query?replace("%20"," ")?html}</a></strong></li>
+        <#list pagination.breadcrumbs as crumb><#if !crumb.last>
+        <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+        <#else>
+        <li><strong>${crumb.display?html}</strong></li>
+        </#if></#list>
+        <#else>
+        <li class="first">
+
+            <@spring.message 'ViewingRelatedItems_t' />
+            <#assign match = result.fullDoc />
+            <a href="full-doc.html?&amp;uri=${match.id}">
+                <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                </#if>
+            </a>
+
+        </li>
+        </#if>
     </ul>
     <#else> <ul>
         <li>&#160;</li>
@@ -109,7 +139,8 @@
            <!-- AddThis Button BEGIN -->
                     <#assign  showthislang = locale>
                        <a class="addthis_button"
-                          href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36">
+                          href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36"
+                          addthis:url="${uri}">
                          <img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                         <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
                         <script type="text/javascript">

@@ -35,7 +35,10 @@
     </#if>
 </#list>
 
+<#-- page title -->
+<#assign metaTitle = query?xhtml + " - Europeana Search " />
 <#assign servletUrl = servletUrl/>
+<#assign enableRefinedSearch="true"/>
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl">
 

@@ -47,7 +47,7 @@ public class QueryAnalyzer {
     }
 
     public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
-            String[] terms = query.split("\\s+");
+        String[] terms = query.split("\\s+");
         for (String term : terms) {
             if (BOOLEAN_KEYWORDS.contains(term)) {
                 return QueryType.ADVANCED_QUERY;
@@ -154,31 +154,17 @@ public class QueryAnalyzer {
         return sanitize(queryString.toString());
     }
 
-    public String createRefineSearch(Map<String, String[]> params) throws EuropeanaQueryException {
-        String newQuery;
+    public String createRefineSearchFilterQuery(Map<String, String[]> params) throws EuropeanaQueryException {
         String refineQuery = params.get("rq")[0];
-        String originalQuery = params.get("query")[0];
-        if (refineQuery.trim().length() > 0 && originalQuery.trim().length() > 0) {
-            QueryType refineQueryType = findSolrQueryType(refineQuery);
-            QueryType originalQueryType = findSolrQueryType(originalQuery);
-            if (refineQueryType == QueryType.SIMPLE_QUERY && originalQueryType == QueryType.SIMPLE_QUERY) {
-                newQuery = MessageFormat.format("{0} {1}", originalQuery, refineQuery);
-            }
-            else if (refineQueryType != QueryType.SIMPLE_QUERY && originalQueryType == QueryType.SIMPLE_QUERY) {
-                newQuery = MessageFormat.format("{0} AND ({1})", originalQuery, refineQuery);
-            }
-            else if (refineQueryType == QueryType.SIMPLE_QUERY && originalQueryType != QueryType.SIMPLE_QUERY) {
-                newQuery = MessageFormat.format("({0}) AND {1}", originalQuery, refineQuery);
+        // check length
+        String newQuery = "";
+        if (refineQuery.trim().length() > 0) {
+            if (refineQuery.contains(":")) {
+                newQuery = MessageFormat.format("{0}", refineQuery);
             }
             else {
-                newQuery = MessageFormat.format("({0}) AND ({1})", originalQuery, refineQuery);
+                newQuery = MessageFormat.format("text:\"{0}\"", sanitize(refineQuery));
             }
-        }
-        else if (originalQuery.trim().length() > 0) {
-            newQuery = originalQuery;
-        }
-        else {
-            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
         }
         return sanitize(newQuery);
     }

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Stats by urisource{% endblock %}
+
+{% block content %}
+
+<h2>Summary</h2>
+
+Images done: {{ summary.imgs_ok }}<br>
+Images waiting to be processed: {{ summary.imgs_waiting }}<br>
+Images with problems: {{ summary.imgs_bad }}<br>
+
+<h2>Grouped by uri source</h2>
+
+{% include "plug_uris/snippets/tbl_stats_by_source.html" %}
+
+{% endblock %}
+
+
+{% comment %}
+{% endcomment %}

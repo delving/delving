@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Stats one request{% endblock %}
+
+{% block content %}
+
+<a href="{% url uri_stats_idx %}">Statistics</a>
+
+<h2>{{ request }}</h2>
+
+
+<h3>Grouped by mimetype</h3>
+<table border="1">
+      <th>mimetype</th>
+      <th>Good</th>
+      <th>Bad</th>
+    {% for lbl, mime_result in mime_results.items %}
+    <tr>
+        <td>{{ lbl }}</td>
+        <td>{{ mime_result.ok }}</td>
+        <td>{{ mime_result.bad }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+<h3>Grouped by error</h3>
+<table border="1">
+      <th>Error</th>
+      <th>Count</th>
+    {% for error, count in err_by_reason.items %}
+    <tr>
+        <td>{{ error }}</td>
+        <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+<h3>Grouped by webserver</h3>
+<table border="1">
+      <th>name or ip</th>
+      <th>items</th>
+    {% for webserver in webservers %}
+    <tr>
+        <td>{{ webserver.0 }}</td>
+        <td>{{ webserver.2 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+{% comment %}
+{% endcomment %}

@@ -64,6 +64,8 @@
         <url>http://www.europeana.eu</url>
     </organization>
     <build>
+        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
         <extensions>
@@ -116,6 +118,27 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Spec.class</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -187,17 +210,7 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>asm</groupId>-->
-                    <!--<artifactId>asm</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>asm</groupId>-->
-                    <!--<artifactId>asm-attrs</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
+            <artifactId>hibernate-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -206,6 +219,10 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
         </dependency>
         <dependency>
             <groupId>concurrent</groupId>
@@ -275,11 +292,6 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.osuosl.srw</groupId>-->
-        <!--<artifactId>srw_lucene</artifactId>-->
-        <!--&lt;!&ndash;suppress MavenModelInspection &ndash;&gt;-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
@@ -292,9 +304,20 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>asm</groupId>-->
-            <!--<artifactId>asm</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -21,25 +21,18 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.io.FileSet;
 import eu.europeana.sip.io.GroovyService;
-import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.log4j.Logger;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import javax.xml.namespace.QName;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
+import java.util.List;
 
 /**
  * The GroovyEditor for creating live Groovy snippets
@@ -48,35 +41,79 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class GroovyEditor extends JPanel implements GroovyService.Listener {
+public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
-
 
     private JEditorPane codeArea = new JEditorPane();
     private JTextArea outputArea = new JTextArea();
     private CompileTimer compileTimer;
     private GroovyService groovyService;
+    private List<String> availableNodes;
 
-    public GroovyEditor(GroovyService.BindingSource bindingSource) {
+    public GroovyEditor() {
         super(new BorderLayout());
-        DefaultSyntaxKit.initKit();
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
-        this.groovyService = new GroovyService(bindingSource, this);
+        this.groovyService = new GroovyService(new GroovyService.Listener() {
+            @Override
+            public void setMapping(final String groovyCode) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        codeArea.setText(groovyCode);
+                        compileTimer.triggerSoon();
+                    }
+                });
+            }
+
+            @Override
+            public void setResult(final String result) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        outputArea.setText(result);
+                    }
+                });
+            }
+        });
         this.compileTimer = new CompileTimer();
         this.codeArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
+                switch (event.getKeyCode()) {
+                    case KeyEvent.VK_SPACE:
+                        if (event.getModifiers() == KeyEvent.CTRL_MASK && validatePrefix(codeArea.getCaretPosition())) {
+                            autoCompleteDialog.setVisible(true);
+                            autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
+                        }
+                        return;
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_DOWN:
+                        autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
+                        break;
+                    default:
+                        codeArea.requestFocus();
+                }
                 compileTimer.triggerSoon();
+                autoCompleteDialog.updateElements(autoComplete.complete(event, availableNodes));
+                autoCompleteDialog.updateLocation(codeArea.getCaret().getMagicCaretPosition(), event.getComponent().getLocationOnScreen());
             }
         });
         codeArea.setContentType("text/groovy");
     }
 
-    public void setGroovyFile(File groovyFile) {
-        groovyService.setGroovyFile(groovyFile);
+    public void setFileSet(FileSet fileSet) {
+        groovyService.setFileSet(fileSet);
+    }
+
+    public void setRecordRoot(QName recordRoot) {
+        groovyService.setRecordRoot(recordRoot);
+    }
+
+    public void nextRecord() {
+        groovyService.nextRecord();
     }
 
     private JComponent createSplitPane() {
@@ -93,48 +130,67 @@ public class GroovyEditor extends JPanel implements GroovyService.Listener {
         return split;
     }
 
-    public void triggerExecution() {
-        compileTimer.timer.restart();
+    private void updateCodeArea(int caretPositon, Object selectedItem) {
+        String begin = codeArea.getText().substring(0, caretPositon);
+        String end = codeArea.getText().substring(caretPositon);
+        codeArea.setText(begin + selectedItem + end);
+    }
+
+    public boolean validatePrefix(int caretPosition) {
+        String text = codeArea.getText();
+        if (text.length() < AutoComplete.DEFAULT_PREFIX.length()) {
+            return false;
+        }
+        String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
+        LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
+        return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
     }
 
     @Override
-    public void loadComplete(final String groovyCode) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                codeArea.setText(groovyCode);
-                compileTimer.triggerSoon();
-            }
-        });
-    }
-
-    @Override
-    public void compilationResult(final String result) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                outputArea.setText(result);
-            }
-        });
+    public void updateAvailableNodes(java.util.List<String> nodes) {
+        this.availableNodes = nodes;
     }
 
     private class CompileTimer implements ActionListener {
-
         private Timer timer = new Timer(VALIDATION_DELAY, this);
 
         @Override
         public void actionPerformed(ActionEvent e) {
             timer.stop();
-            groovyService.setGroovyCode(codeArea.getText());
+            groovyService.setMapping(codeArea.getText());
         }
 
         public void triggerSoon() {
             timer.restart();
         }
-
     }
+
+    private final AutoComplete autoComplete = new AutoCompleteImpl(
+            new AutoCompleteImpl.Listener() {
+                @Override
+                public void cancelled() {
+                    autoCompleteDialog.setVisible(false);
+                }
+            }
+    );
+
+    private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
+            new AutoCompleteDialog.Listener() {
+                @Override
+                public void itemSelected(Object selectedItem) {
+                    updateCodeArea(codeArea.getCaretPosition(), selectedItem);
+                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
+                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
+                    }
+                }
+            },
+            codeArea
+    );
+
     @Override
     public String toString() {
         return "GroovyEditor";
     }
+
+
 }

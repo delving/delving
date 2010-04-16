@@ -48,83 +48,107 @@ import eu.europeana.frontend.FrontendTestUtil;
  * @author Borys Omelayenko
  */
 @Ignore
-public class IntegrationTests implements Iterable<PageToTest> {
+public class IntegrationTests implements Iterable<TestClientFixture> {
 
 
 	private static BrowserVersion[] browsers = {
-
 		BrowserVersion.FIREFOX_3,
 		BrowserVersion.INTERNET_EXPLORER_7,
 		BrowserVersion.INTERNET_EXPLORER_8
 	};
 
-	List<PageToTest> list = new ArrayList<PageToTest>();
+	List<TestClientFixture> list = new ArrayList<TestClientFixture>();
 
-    private static IntegrationTests tests = null;
-	public static IntegrationTests portals() throws Exception {
-		if (tests == null) {
-			tests = new IntegrationTests();
+	private static IntegrationTests singleSetup;
+	public static IntegrationTests singleSetup() {
+		if (singleSetup == null) {
+			singleSetup = new IntegrationTests(false, false);
 		}
-		return tests;
+		return singleSetup;
 	}
-	
-	private IntegrationTests() throws Exception {
-		// list of pages
-		String url = null;
+	private static IntegrationTests multiBrowserSetup;
+	public static IntegrationTests multiBrowserSetup() {
+		if (multiBrowserSetup == null) {
+			multiBrowserSetup = new IntegrationTests(false, true);
+		}
+		return multiBrowserSetup;		
+	}
+	private static IntegrationTests multiLingualSetup;
+	public static IntegrationTests multiLingualSetup() {
+		if (multiLingualSetup == null) {
+			multiLingualSetup = new IntegrationTests(true, true);
+		}
+		return multiLingualSetup;		
+	}
 
-		try {
-			for (BrowserVersion browser : browsers) {
+	private IntegrationTests(boolean multilingual, boolean multibrowser) {
+		// list of pages
+		for (BrowserVersion browser : browsers) {
+			for (String url : FrontendTestUtil.portalUrls()) {
 				// get page
 				WebClient webClient = new WebClient(browser);
 				webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 				webClient.setJavaScriptEnabled(true);
-				
-				url = FrontendTestUtil.testPortalUrl();
-				HtmlPage page = webClient.getPage(url);
+
+
+				HtmlPage page;
+				try {
+					page = webClient.getPage(url);
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException("On url " + url, e);
+				}
 
 				// get languages
 				List<String> languages = new ArrayList<String>();
 				languages.add(null);
-				
+
 				List<HtmlElement> options = page.getElementByName("dd_lang").getElementsByTagName("option");
 				for (HtmlElement option : options) {
 					if (option.getAttribute("value").length() == 2) {
 						languages.add(option.getAttribute("value"));
 					}
 				}
-				
+
 				// get pages
 				for (String lang : languages) {
-					list.add(new PageToTest(page, lang, url, browser));	
-				}
-				
+					list.add(new TestClientFixture(page, lang, url, browser));	
+					
+					// stop after first language
+					if (!multilingual) {
+						break;
+					}
+				}					
 			}
-		} catch (IOException e) {
-			throw new IOException("On url " + url, e);
+
+			// stop after first browser
+			if (!multibrowser) {
+				break;
+			}
 		}
 
-		if (list.size() > 30 * browsers.length) {
-			throw new IOException("Too many languages: " + list.size());
+		if (list.size() > 30 * browsers.length * FrontendTestUtil.portalUrls().size()) {
+			throw new RuntimeException("Too many languages: " + list.size());
 		}
 
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterator<PageToTest> iterator() {
+	public Iterator<TestClientFixture> iterator() {
 		return new AbstractIteratorDecorator(list.iterator()) {
 
 			@Override
 			public Object next() {
-				PageToTest page = (PageToTest) super.next();
+				TestClientFixture page = (TestClientFixture) super.next();
 				HtmlSelect inputByName = page.getPage().getElementByName("dd_lang");
 				HtmlPage langPage = page.getPage();
 				if (page.getLang() != null) {
 					langPage = (HtmlPage)inputByName.setSelectedAttribute(page.getLang(), true);
 				}
-				return new PageToTest(langPage, page.getLang(), page.getUrl(), page.getBrowser());
+				return new TestClientFixture(langPage, page.getLang(), page.getUrl(), page.getBrowser());
 			}
-			
+
 		};
 	}
 

@@ -24,7 +24,7 @@ public class Breadcrumb {
         this.display = display;
     }
 
-    public void flagAsLast() {
+    private void flagAsLast() {
         this.last = true;
     }
 
@@ -36,7 +36,7 @@ public class Breadcrumb {
         return href;
     }
 
-    public boolean getLast() {
+    public boolean isLast() {
         return last;
     }
 
@@ -44,7 +44,10 @@ public class Breadcrumb {
         return "<a href=\"" + href + "\">" + display + "</a>";
     }
 
-    public static List<Breadcrumb> createList(SolrQuery solrQuery) {
+    public static List<Breadcrumb> createList(SolrQuery solrQuery) throws EuropeanaQueryException {
+        if (solrQuery.getQuery() == null) {
+            throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString());
+        }
         List<Breadcrumb> breadcrumbs = new ArrayList<Breadcrumb>();
         String prefix = "query=" + encode(solrQuery.getQuery());
         breadcrumbs.add(new Breadcrumb(prefix, solrQuery.getQuery()));
@@ -54,13 +57,15 @@ public class Breadcrumb {
                 StringBuilder out = new StringBuilder(prefix);
                 int count = walk;
                 for (String facetTerm : SolrQueryUtil.getFilterQueriesWithoutPhrases(solrQuery)) {
-                    int colon = facetTerm.indexOf(":");
-                    String facetName = facetTerm.substring(0, colon);
-                    String facetValue = facetTerm.substring(colon + 1);
-                    appendToURI(out, facetName, facetValue);
-                    if (count-- == 0) {
-                        breadcrumbs.add(new Breadcrumb(out.toString(), facetName + ":" + facetValue));
-                        break;
+                    if (facetTerm.contains(":")) {
+                        int colon = facetTerm.indexOf(":");
+                        String facetName = facetTerm.substring(0, colon);
+                        String facetValue = facetTerm.substring(colon + 1);
+                        appendToURI(out, facetName, facetValue);
+                        if (count-- == 0) {
+                            breadcrumbs.add(new Breadcrumb(out.toString(), facetName + ":" + facetValue));
+                            break;
+                        }
                     }
                 }
             }
