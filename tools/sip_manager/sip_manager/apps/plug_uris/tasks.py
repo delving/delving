@@ -375,7 +375,7 @@ class UriValidateSave(SipProcess):
 
 
     def save_object(self, itm):
-        if self.uri.mime_type == 'text/html':
+        if self.uri.mime_type.find('text/') > -1:
             return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
 
         for bad_groups in ('audio','video'):
