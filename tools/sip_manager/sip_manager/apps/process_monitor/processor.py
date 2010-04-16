@@ -71,6 +71,9 @@ class MainProcessor(object):
         return
 
     def run2(self):
+        """
+        Main loop inside a Ctrl-C
+        """
         # First run all init tasks once
         print
         print 'Running init plugins'
@@ -82,31 +85,39 @@ class MainProcessor(object):
         print
         print 'Commencing operations'
         while True:
-            # First run all simple tasks once
-            for task_group in (self.tasks_simple, self.tasks_heavy):
-                for taskClass in task_group:
-                    if self.system_is_occupied():
-                        break
-                    if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
-                        # For the moment try slow starting, just one thread per run
-                        # this way load builds up more slowly and should keep
-                        # within reasonable limits.
-                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
-                        """
-                        while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                            # Continue to start new threads as long as they
-                            # find something to work on
-                            #print '*** started thread for', taskClass.__name__
-                            pass
-                        """
-                    else:
-                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+            if not self.system_is_occupied():
+                self.run3()
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
             #print 'sleeping a while'
             time.sleep(PROCESS_SLEEP_TIME)
         return True
+
+    def run3(self):
+        """
+        Main loop after checking system load
+        """
+        # First run all simple tasks once
+        for task_group in (self.tasks_simple, self.tasks_heavy):
+            for taskClass in task_group:
+                if self.system_is_occupied():
+                    break
+                if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
+                    # For the moment try slow starting, just one thread per run
+                    # this way load builds up more slowly and should keep
+                    # within reasonable limits.
+                    taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+                    """
+                    while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                        # Continue to start new threads as long as they
+                        # find something to work on
+                        #print '*** started thread for', taskClass.__name__
+                        pass
+                    """
+                else:
+                    taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+        return
 
 
     def system_is_occupied(self):

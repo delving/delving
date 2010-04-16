@@ -34,9 +34,37 @@ from apps.dummy_ingester.models import Request
 
 import models
 
+"""
+eta_history = []
+
+def delta_waiting():
+    global eta_history
+    t0 = time.time()
+    waiting = uri_summary(){'imgs_waiting'}
+    if eta_history:
+        latest_t, latest_waiting = eta_history[0]
+        oldest_t, oldest_waiting = eta_history[-1]
+    else:
+        return -1
+    if (t0 - latest_t) > 10:
+        eta_history.insert(0, (t0, waiting))
+    eta_history.insert((t0, waiting), 0)
+    t0, old_waiting = eta_history.pop
+    percent_done = float(step) / self._task_steps * 100
+    elapsed_time = time.time() - self._task_time_start
+    eta_t_from_now = int(elapsed_time / ((percent_done / 100) or 0.001))
+    eta = self._task_time_start + eta_t_from_now
+    if (eta - time.time()) < SHOW_DATE_LIMIT:
+        eta_s = time.strftime('%H:%M:%S', time.localtime(eta))
+    else:
+        eta_s = time.strftime('%m-%d %H:%M:%S', time.localtime(eta))
+
+
+"""
+
 def statistics(request):
     return render_to_response("plug_uris/statistics.html", {
-        "summary": uri_summary(),})
+        'summary': uri_summary(),})
 
 def stats_req_lst(request):
     sql_waiting = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_CREATED,
