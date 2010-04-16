@@ -244,6 +244,8 @@ class ReqUri(models.Model):
     """
     req = models.ForeignKey(Request)
     uri = models.ForeignKey(Uri)
+    # Dummy field if nothing here table isnt created
+    #i = models.IntegerField(default=0, blank=True)
 
     def __unicode__(self):
         return self.req.__unicode__()

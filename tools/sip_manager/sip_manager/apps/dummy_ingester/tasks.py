@@ -218,7 +218,7 @@ class RequestParseNew(SipProcess):
                     full_path = os.path.join(dirpath, filename)
                     mtime = os.path.getmtime(full_path)
                     time_created = datetime.datetime.fromtimestamp(mtime)
-                    if self.current_request.time_created == time_created:
+                    if str(time_created).find(str(self.current_request.time_created)) == 0:
                         found = True
                         ret = full_path
                         break
