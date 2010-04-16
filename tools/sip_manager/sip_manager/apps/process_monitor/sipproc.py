@@ -38,7 +38,7 @@ import models
 # are cached within the module
 TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
 SIP_LOG_FILE = settings.SIP_LOG_FILE
-URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
+MAX_SYSTEM_LOAD = settings.MAX_SYSTEM_LOAD
 
 
 SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
@@ -198,15 +198,15 @@ class SipProcess(object):
         "dont start new tasks when load is high."
         r1 = r5 = r15 = False
         load_1, load_5, load_15 = os.getloadavg()
-        if load_1 >= URIVALIDATE_MAX_LOAD:
+        if load_1 >= MAX_SYSTEM_LOAD:
             r1 = True
-        if load_5 >= URIVALIDATE_MAX_LOAD:
+        if load_5 >= MAX_SYSTEM_LOAD:
             r5 = True
-        if load_15 >= URIVALIDATE_MAX_LOAD:
+        if load_15 >= MAX_SYSTEM_LOAD:
             r15 = True
 
         if r1 or r5 or r15:
-            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 2)
+            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 8)
             return r1, r5, r15
         else:
             return False

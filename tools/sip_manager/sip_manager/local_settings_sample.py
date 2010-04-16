@@ -84,8 +84,8 @@ PROCESS_SLEEP_TIME = 60
 SIP_PROCESS_DBG_LVL = 7
 
 
-# If one minute load is over this, new tasks wont be started
-URIVALIDATE_MAX_LOAD = 2.0
+# If system load is over this, new tasks wont be started
+MAX_SYSTEM_LOAD = 2.0
 
 
 
