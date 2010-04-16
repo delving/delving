@@ -117,11 +117,28 @@ def stats_by_req(request, sreq_id=0):
         webservers.append((srv_name, srv_id, items))
     webservers.sort()
 
+    #
+    # Bad by reason
+    #
+    err_by_reason = {}
+    for err_code in models.URI_ERR_CODES.keys():
+        if err_code == models.URIE_NO_ERROR:
+            continue
+        sql = ["SELECT COUNT(*)"]
+        sql.append("FROM plug_uris_uri u, plug_uris_requri ur")
+        sql.append("WHERE ur.req_id=%i" % req_id)
+        sql.append("AND u.id=ur.uri_id AND u.err_code=%i" % err_code)
+        cursor1.execute(' '.join(sql))
+        count = cursor1.fetchone()[0]
+        if not count:
+            continue
+        err_by_reason[models.URI_ERR_CODES[err_code]] = count
     return render_to_response("plug_uris/stats_by_request.html",
                               {
                                   'request': request,
                                   'mime_results': mime_results,
                                   'webservers': webservers,
+                                  'err_by_reason': err_by_reason,
                               })
 
 def stats_by_uri(request, order_by=''):

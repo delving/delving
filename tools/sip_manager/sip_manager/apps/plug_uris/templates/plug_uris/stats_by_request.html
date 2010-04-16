@@ -37,6 +37,22 @@
     {% endfor %}
 </table>
 
+<h3>Grouped by error</h3>
+
+<table border="1">
+      <th>Error</th>
+      <th>Count</th>
+    {% for error, count in err_by_reason.items %}
+    <tr>
+        <td>{{ error }}</td>
+        <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+
+
 
 
 
