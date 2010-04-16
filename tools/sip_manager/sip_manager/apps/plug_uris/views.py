@@ -68,15 +68,32 @@ def stats_req_lst(request):
 
 
 def stats_by_req(request, sreq_id=0):
+    req_id = int(sreq_id)
+    request = models.Request.objects.filter(pk=req_id)[0]
+    cursor1 = connection.cursor()
+    cursor2 = connection.cursor()
+
+    #
+    # Unprocessed
+    #
     """
     SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u
     WHERE ur.uri_id=u.id and ur.req_id=1
     """
-    req_id = int(sreq_id)
-    request = models.Request.objects.filter(pk=req_id)
-    cursor1 = connection.cursor()
-    cursor2 = connection.cursor()
-    cursor1.execute("SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u WHERE ur.uri_id=u.id and ur.req_id=%i" % req_id)
+    sql = ["SELECT COUNT(*) FROM plug_uris_requri ur, plug_uris_uri u"]
+    sql.append("WHERE ur.req_id=%i AND u.id=ur.uri_id" % req_id)
+    sql.append("AND u.status=%i" % models.URIS_CREATED)
+    sql.append("AND u.err_code=%i" % models.URIE_NO_ERROR)
+    cursor1.execute(' '.join(sql))
+    waiting = cursor1.fetchone()[0]
+    #
+    # Status by mimetype
+    #
+    """
+    SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u
+    WHERE ur.uri_id=u.id and ur.req_id=1
+    """
+    cursor1.execute("SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u WHERE ur.req_id=%i AND u.id=ur.uri_id" % req_id)
     sql_ok = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_COMPLETED,
                                                      models.URIE_NO_ERROR)]
     sql_err = ["AND u.err_code>0"]
@@ -135,6 +152,7 @@ def stats_by_req(request, sreq_id=0):
         err_by_reason[models.URI_ERR_CODES[err_code]] = count
     return render_to_response("plug_uris/stats_by_request.html",
                               {
+                                  'waiting': waiting,
                                   'request': request,
                                   'mime_results': mime_results,
                                   'webservers': webservers,

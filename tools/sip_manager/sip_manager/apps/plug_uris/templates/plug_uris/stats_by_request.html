@@ -6,10 +6,11 @@
 
 <a href="{% url uri_stats_idx %}">Statistics</a>
 
-<h3>{{ request }}</h3>
+<h2>{{ request }}</h2>
+
+Not processed: {{ waiting }}
 
 <h3>Grouped by mimetype</h3>
-
 <table border="1">
       <th>mimetype</th>
       <th>Good</th>
@@ -24,21 +25,7 @@
 </table>
 
 
-<h3>Grouped by webserver</h3>
-
-<table border="1">
-      <th>name or ip</th>
-      <th>items</th>
-    {% for webserver in webservers %}
-    <tr>
-        <td>{{ webserver.0 }}</td>
-        <td>{{ webserver.2 }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
 <h3>Grouped by error</h3>
-
 <table border="1">
       <th>Error</th>
       <th>Count</th>
@@ -46,6 +33,19 @@
     <tr>
         <td>{{ error }}</td>
         <td>{{ count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+<h3>Grouped by webserver</h3>
+<table border="1">
+      <th>name or ip</th>
+      <th>items</th>
+    {% for webserver in webservers %}
+    <tr>
+        <td>{{ webserver.0 }}</td>
+        <td>{{ webserver.2 }}</td>
     </tr>
     {% endfor %}
 </table>
