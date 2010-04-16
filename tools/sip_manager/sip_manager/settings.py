@@ -109,9 +109,9 @@ except:
 
 
 try:
-    URIVALIDATE_MAX_LOAD
+    MAX_SYSTEM_LOAD
 except:
-    URIVALIDATE_MAX_LOAD = 2.0
+    MAX_SYSTEM_LOAD = 2.0
 
 
 #
