@@ -78,19 +78,6 @@ def stats_by_req(request, sreq_id=0):
     cursor2 = connection.cursor()
 
     #
-    # Unprocessed
-    #
-    """
-    SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u
-    WHERE ur.uri_id=u.id and ur.req_id=1
-    """
-    sql = ["SELECT COUNT(*) FROM plug_uris_requri ur, plug_uris_uri u"]
-    sql.append("WHERE ur.req_id=%i AND u.id=ur.uri_id" % req_id)
-    sql.append("AND u.status=%i" % models.URIS_CREATED)
-    sql.append("AND u.err_code=%i" % models.URIE_NO_ERROR)
-    cursor1.execute(' '.join(sql))
-    waiting = cursor1.fetchone()[0]
-    #
     # Status by mimetype
     #
     """
@@ -156,7 +143,6 @@ def stats_by_req(request, sreq_id=0):
         err_by_reason[models.URI_ERR_CODES[err_code]] = count
     return render_to_response("plug_uris/stats_by_request.html",
                               {
-                                  'waiting': waiting,
                                   'request': request,
                                   'mime_results': mime_results,
                                   'webservers': webservers,
