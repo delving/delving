@@ -209,11 +209,15 @@ class MainProcessor(object):
             cursor.execute('UPDATE %s SET pid=0 WHERE pid>0' % table)
 
     def db_is_mysql(self):
+        # This will be uggly...
         cursor = connection.cursor()
-        if 'mysql' in cursor.db.__module__:
-            return True
+        if hasattr(cursor, 'db'):
+            # if DEBUG=True its found here...
+            b = 'mysql' in cursor.db.__module__
         else:
-            return False
+            # Otherwise we find it here
+            b = 'mysql' in cursor.__module__
+        return b
 
 
 """
