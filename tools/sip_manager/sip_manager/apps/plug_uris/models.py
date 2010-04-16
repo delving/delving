@@ -33,6 +33,7 @@ from django.db import models, connection
 #from utils import glob_consts
 
 from apps.base_item.models import MdRecord
+from apps.dummy_ingester.models import Request
 
 from utils.gen_utils import dict_2_django_choice
 
@@ -236,3 +237,15 @@ class Uri(models.Model):
     def __unicode__(self):
         return self.url
 
+
+class ReqUri(models.Model):
+    """
+    Lists all uris by request
+    """
+    req = models.ForeignKey(Request)
+    uri = models.ForeignKey(Uri)
+    # Dummy field if nothing here table isnt created
+    #i = models.IntegerField(default=0, blank=True)
+
+    def __unicode__(self):
+        return self.req.__unicode__()

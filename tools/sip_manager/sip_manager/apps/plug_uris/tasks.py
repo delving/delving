@@ -105,7 +105,13 @@ HTTPH_K_TRANS_ENC = 'transfer-encoding'
 HTTPH_CHUNKED = 'chunked'
 
 
-#CONVERT_COMMAND = 'convert -colorspace RGB -normalize'
+"""
+convert options that might be of interest to auto optimize images:
+ -normalize
+ -auto-level
+ -contrast-stretch
+ -linear-stretch
+"""
 CONVERT_COMMAND = 'convert -colorspace RGB'
 
 
@@ -225,6 +231,7 @@ class UriCreate(SipProcess):
         #dom = parseString(mdr.source_data)
         for tag, itype in (('<europeana:object>',models.URIT_OBJECT),
                            ('isShownAt>', models.URIT_SHOWNAT),
+                           ('isShownBy>', models.URIT_SHOWNBY),
                            ):
             url = self.find_tag(tag, mdr.source_data)
             if url:
@@ -241,6 +248,13 @@ class UriCreate(SipProcess):
             uri_source.save()
         uri = models.Uri(mdr=mdr, item_type=itype, url=url, uri_source=uri_source)
         uri.save()
+
+        #
+        # Do a mapping request - uri (to speed up statistics)
+        #
+        for req_md in base_item.RequestMdRecord.objects.filter(md_record=mdr):
+            req_uri = models.ReqUri(req=req_md.request, uri=uri)
+            req_uri.save()
         return True
 
     def find_tag(self, tag, source_data):
@@ -361,7 +375,7 @@ class UriValidateSave(SipProcess):
 
 
     def save_object(self, itm):
-        if self.uri.mime_type == 'text/html':
+        if self.uri.mime_type.find('text/') > -1:
             return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
 
         for bad_groups in ('audio','video'):

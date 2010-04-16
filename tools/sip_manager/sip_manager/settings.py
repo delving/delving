@@ -210,8 +210,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.databrowse',
-    'dajaxice',
-    'dajax',
+    #'dajaxice',
+    #'dajax',
 
     'apps.base_item',
     'apps.dummy_ingester',

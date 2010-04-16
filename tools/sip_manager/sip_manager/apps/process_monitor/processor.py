@@ -112,8 +112,10 @@ class MainProcessor(object):
     def system_is_occupied(self):
         "dont start new tasks when load is high."
         load_1, load_5, load_15 = os.getloadavg()
-        if load_1 > URIVALIDATE_MAX_LOAD:
-            return True
+        for load in (load_1, load_5, load_15):
+            if load >= URIVALIDATE_MAX_LOAD:
+                print '== load too high', load_1, load_5, load_15
+                return True
         return False
 
 
@@ -167,6 +169,7 @@ class MainProcessor(object):
                       'dummy_ingester_dataset',
                       'dummy_ingester_provider',
                       'dummy_ingester_request',
+                      'plug_uris_requri',
                       'plug_uris_uri',
                       'plug_uris_urisource',
                       'process_monitor_processmonitoring',
@@ -186,6 +189,7 @@ class MainProcessor(object):
                       'dummy_ingester_dataset',
                       'dummy_ingester_provider',
                       'dummy_ingester_request',
+                      'plug_uris_requri',
                       'plug_uris_uri',
                       'plug_uris_urisource',
                       'process_monitor_processmonitoring',
@@ -206,14 +210,18 @@ class MainProcessor(object):
                       'plug_uris_uri',
                       'plug_uris_urisource',
                       ):
-            cursor.execute('UPDATE %s SET pid=0' % table)
+            cursor.execute('UPDATE %s SET pid=0 WHERE pid>0' % table)
 
     def db_is_mysql(self):
+        # This will be uggly...
         cursor = connection.cursor()
-        if 'mysql' in cursor.db.__module__:
-            return True
+        if hasattr(cursor, 'db'):
+            # if DEBUG=True its found here...
+            b = 'mysql' in cursor.db.__module__
         else:
-            return False
+            # Otherwise we find it here
+            b = 'mysql' in cursor.__module__
+        return b
 
 
 """

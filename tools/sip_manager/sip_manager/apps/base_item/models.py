@@ -82,7 +82,7 @@ class MdRecord(models.Model):
     time_created = models.DateTimeField(auto_now_add=True,editable=False)
     time_last_change = models.DateTimeField(auto_now_add=True,editable=False)
 
-    pid = models.FloatField(default=0) # what process 'owns' this item
+    pid = models.FloatField(default=0,db_index=True) # what process 'owns' this item
     uniqueness_hash = models.CharField(max_length=100)
     Enrichment_done = models.BooleanField(default=False)
 
