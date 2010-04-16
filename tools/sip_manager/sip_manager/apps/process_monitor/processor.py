@@ -103,8 +103,6 @@ class MainProcessor(sipproc.SipProcess):
         # First run all simple tasks once
         for task_group in (self.tasks_simple, self.tasks_heavy):
             for taskClass in task_group:
-                if self.system_is_occupied():
-                    break
                 if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
                     # For the moment try slow starting, just one thread per run
                     # this way load builds up more slowly and should keep

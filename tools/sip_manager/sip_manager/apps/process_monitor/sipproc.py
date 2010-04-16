@@ -196,12 +196,20 @@ class SipProcess(object):
 
     def system_is_occupied(self):
         "dont start new tasks when load is high."
+        r1 = r5 = r15 = False
         load_1, load_5, load_15 = os.getloadavg()
-        for load in (load_1, load_5, load_15):
-            if load >= URIVALIDATE_MAX_LOAD:
-                print '== load too high', load_1, load_5, load_15
-                return True
-        return False
+        if load_1 >= URIVALIDATE_MAX_LOAD:
+            r1 = True
+        if load_5 >= URIVALIDATE_MAX_LOAD:
+            r5 = True
+        if load_15 >= URIVALIDATE_MAX_LOAD:
+            r15 = True
+
+        if r1 or r5 or r15:
+            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 2)
+            return r1, r5, r15
+        else:
+            return False
 
 
     # ==========   Must be overloaded   ====================
@@ -308,12 +316,21 @@ class SipProcess(object):
         A number param is sent to task_progess()
         a string param is used directly."""
         if self._task_show_time + self.TASK_PROGRESS_TIME < time.time():
-            if terminate_on_high_load and self.system_is_occupied():
+            high_load = self.system_is_occupied()
+            if terminate_on_high_load and high_load:
                 # It wouldnt make sense to terminate all processes
                 # instead do a randomiztion and a kill percentage
-                if random.randint(0,100) > 90:
-                    self.log('Terminating proc %s due to load' % self.pid, 2)
+                load_1, load_5, load_15 = high_load
+                if load_15:
                     raise SipSystemOverLoaded('terminating task due to high load')
+                elif load_5:
+                    if random.randint(1,10) > 5:
+                        self.log('== Terminating proc %s due to load' % self.pid, 2)
+                        raise SipSystemOverLoaded('terminating task due to high load')
+                elif load_1:
+                    if random.randint(1,100) >= 95:
+                        self.log('== Terminating proc %s due to load' % self.pid, 2)
+                        raise SipSystemOverLoaded('terminating task due to high load')
             if progress:
                 if isinstance(progress, int):
                     self.task_progress(progress)

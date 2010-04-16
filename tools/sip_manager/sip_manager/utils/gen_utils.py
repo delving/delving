@@ -54,7 +54,7 @@ def __db_is_mysql():
     else:
         # Otherwise we find it here
         look_at = cursor
-    if hasattr(look_at, 'mysql'):
+    if look_at.__str__().find('mysql') > -1:
         b = True
     else:
         b = False
