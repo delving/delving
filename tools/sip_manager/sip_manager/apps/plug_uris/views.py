@@ -117,7 +117,6 @@ def stats_by_req(request, sreq_id=0):
         srv_id = int(row[0])
         srv_name = row[1]
         sql = ["SELECT COUNT(*) FROM plug_uris_requri ur, plug_uris_uri u"]
-        #sql.append("WHERE ur.req_id=11 AND u.id=ur.uri_id AND u.uri_source_id=60
         sql.append("WHERE u.uri_source_id=%i" % srv_id)
         sql.append("AND ur.uri_id=u.id AND ur.req_id=%i" % req_id)
         cursor2.execute(' '.join(sql))

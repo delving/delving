@@ -111,9 +111,10 @@ class MainProcessor(object):
 
     def system_is_occupied(self):
         "dont start new tasks when load is high."
-        #load_1, load_5, load_15 = os.getloadavg()
-        for load in os.getloadavg():
+        load_1, load_5, load_15 = os.getloadavg()
+        for load in (load_1, load_5, load_15):
             if load >= URIVALIDATE_MAX_LOAD:
+                print '== load too high', load_1, load_5, load_15
                 return True
         return False
 
