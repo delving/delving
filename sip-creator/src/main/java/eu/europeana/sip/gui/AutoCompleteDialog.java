@@ -5,6 +5,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 /**
@@ -20,6 +22,7 @@ public class AutoCompleteDialog extends JFrame {
     private JComboBox jComboBox = new JComboBox();
 
     interface Listener {
+
         void itemSelected(Object selectedItem);
     }
 
@@ -32,6 +35,31 @@ public class AutoCompleteDialog extends JFrame {
 
     private void init() {
         jComboBox.setEditable(true);
+        jComboBox.getEditor().getEditorComponent().addKeyListener(
+                new KeyAdapter() {
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        switch (e.getKeyCode()) {
+                            case KeyEvent.VK_ESCAPE: {
+                                setVisible(false);
+                                parent.requestFocus();
+                            }
+                        }
+                    }
+                }
+        );
+        jComboBox.addItemListener(
+                new ItemListener() {
+
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        if (ItemEvent.SELECTED == e.getStateChange()) {
+                            listener.itemSelected(e.getItem());
+                        }
+                    }
+                }
+        );
         setUndecorated(true);
     }
 
@@ -52,29 +80,12 @@ public class AutoCompleteDialog extends JFrame {
             parent.requestFocus();
             return;
         }
-        if (!isVisible()) {
-            setVisible(true);
-        }
         jComboBox.setModel(new DefaultComboBoxModel(availableElements.toArray()));
-        jComboBox.setVisible(true);
-        jComboBox.setPopupVisible(true);
-        jComboBox.addItemListener(
-                new ItemListener() {
-
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        selectItem(e);
-                    }
-                }
-        );
+        setVisible(true);
+        setSize(new Dimension(300, 20));
     }
 
     public void requestFocus(Point lastCaretPosition) {
         this.lastCaretPosition = lastCaretPosition;
-        jComboBox.setPopupVisible(true);
-    }
-
-    private void selectItem(ItemEvent inputEvent) {
-        listener.itemSelected(inputEvent.getItem());
     }
 }

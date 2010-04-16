@@ -67,19 +67,6 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
         if (validate(entered)) {
             keyBuffer.append(entered.getKeyChar());
         }
-        switch (entered.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-            case KeyEvent.VK_ESCAPE:
-                keyBuffer.setLength(0);
-                listener.cancelled();
-                return null;
-            case KeyEvent.VK_BACK_SPACE:
-                if (keyBuffer.length() <= 0) {
-                    listener.cancelled();
-                    return null;
-                }
-                keyBuffer.setLength(keyBuffer.length() - 1);
-        }
         return complete(keyBuffer.toString(), originalElements);
     }
 }

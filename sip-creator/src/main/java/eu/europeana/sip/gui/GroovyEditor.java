@@ -83,6 +83,10 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
             @Override
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
+                    case KeyEvent.VK_ESCAPE:
+                        autoCompleteDialog.setVisible(false);
+                        codeArea.requestFocus();
+                        break;
                     case KeyEvent.VK_SPACE:
                         if (event.getModifiers() == KeyEvent.CTRL_MASK && validatePrefix(codeArea.getCaretPosition())) {
                             autoCompleteDialog.setVisible(true);
@@ -179,9 +183,6 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
                 @Override
                 public void itemSelected(Object selectedItem) {
                     updateCodeArea(codeArea.getCaretPosition(), selectedItem);
-                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
-                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
-                    }
                 }
             },
             codeArea
