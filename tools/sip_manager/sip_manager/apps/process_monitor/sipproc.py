@@ -23,6 +23,7 @@
 """
 
 import os
+import random
 import subprocess
 import threading
 import time
@@ -33,8 +34,11 @@ from django.conf import settings
 import models
 
 
+# Since looking up in settings takes some extra cpu, important settings
+# are cached within the module
 TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
 SIP_LOG_FILE = settings.SIP_LOG_FILE
+URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
 
 
 SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
@@ -46,6 +50,8 @@ RUNNING_EXECUTORS = []
 class SipProcessException(Exception):
     pass
 
+class SipSystemOverLoaded(Exception):
+    pass
 
 
 
@@ -107,7 +113,10 @@ class SipProcess(object):
         else:
             if not self.do_prepare():
                 return
-            ret = self.run_it(*args, **kwargs)
+            try:
+                ret = self.run_it(*args, **kwargs)
+            except SipSystemOverLoaded:
+                ret = False
 
         if not self.runs_in_thread and self.is_prepared:
             self.process_cleanup()
@@ -126,7 +135,7 @@ class SipProcess(object):
                                                )
             self.pm.save()
             f = float(self.pm.pk)
-            while f > 1:
+            while f >= 1:
                 f = f/10
             self.pid = self.pm.pid = self.pid + f
             self.pm.save()
@@ -164,6 +173,7 @@ class SipProcess(object):
             pass
         raise SipProcessException(msg)
 
+
     def process_cleanup(self):
         global RUNNING_EXECUTORS
         self.log('  Finished task  -----   %s' % self.short_name(), 8)
@@ -182,6 +192,16 @@ class SipProcess(object):
         db.reset_queries()
         db.connection.close()
         return
+
+
+    def system_is_occupied(self):
+        "dont start new tasks when load is high."
+        load_1, load_5, load_15 = os.getloadavg()
+        for load in (load_1, load_5, load_15):
+            if load >= URIVALIDATE_MAX_LOAD:
+                print '== load too high', load_1, load_5, load_15
+                return True
+        return False
 
 
     # ==========   Must be overloaded   ====================
@@ -218,7 +238,10 @@ class SipProcess(object):
     def thread_wrapper(self, *args, **kwargs):
         mthd = args[0]
         args = args[1:]
-        mthd(*args, **kwargs)
+        try:
+            mthd(*args, **kwargs)
+        except SipSystemOverLoaded:
+            pass
         self.process_cleanup()
 
 
@@ -279,12 +302,18 @@ class SipProcess(object):
         self._task_show_time = 0
 
 
-    def task_time_to_show(self, progress=''):
+    def task_time_to_show(self, progress='', terminate_on_high_load=False):
         """Either use as a bool check, or give a param directly.
 
         A number param is sent to task_progess()
         a string param is used directly."""
         if self._task_show_time + self.TASK_PROGRESS_TIME < time.time():
+            if terminate_on_high_load and self.system_is_occupied():
+                # It wouldnt make sense to terminate all processes
+                # instead do a randomiztion and a kill percentage
+                if random.randint(0,100) > 90:
+                    self.log('Terminating proc %s due to load' % self.pid, 2)
+                    raise SipSystemOverLoaded('terminating task due to high load')
             if progress:
                 if isinstance(progress, int):
                     self.task_progress(progress)

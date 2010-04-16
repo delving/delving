@@ -33,7 +33,7 @@ import django.db
 from django.core import exceptions
 from django.conf import settings
 
-from apps.process_monitor.sipproc import SipProcess
+from apps.process_monitor.sipproc import SipProcess, SipSystemOverLoaded
 from apps.base_item import models as base_item
 
 from utils.gen_utils import calculate_hash
@@ -180,6 +180,9 @@ class RequestParseNew(SipProcess):
             elif line: # skip empty lines
                 record.append(line)
             line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
+
+            # we dont alow this one to terminate on high load, since it would be
+            # very expensive to restart this
             self.task_time_to_show(record_count)
         f.close()
         request.status = models.REQS_INIT

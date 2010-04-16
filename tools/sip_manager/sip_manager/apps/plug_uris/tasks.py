@@ -80,7 +80,7 @@ from django.db import connection
 from django.conf import settings
 
 from apps.base_item import models as base_item
-from apps.process_monitor.sipproc import SipProcess
+from apps.process_monitor.sipproc import SipProcess, SipSystemOverLoaded
 
 from utils.gen_utils import calculate_hash
 
@@ -221,7 +221,7 @@ class UriCreate(SipProcess):
                                   base_item.MDRS_PROCESSING):
                 continue # never touch bad / completed items
             self.handle_md_record(mdr)
-            self.task_time_to_show(record_count)
+            self.task_time_to_show(record_count, terminate_on_high_load=True)
         return True
 
     def handle_md_record(self, mdr):
@@ -317,7 +317,12 @@ class UriValidateSave(SipProcess):
 
             self.release_item(models.Uri, uri_id)
 
-            self.task_time_to_show(record_count)
+            try:
+                self.task_time_to_show(record_count, terminate_on_high_load=True)
+            except SipSystemOverLoaded:
+                 # Terminate in a controled fashion so we can do cleanup
+                break
+
 
             if record_count > current_count:
                 # More items has turned up since we started this loop,
@@ -325,6 +330,7 @@ class UriValidateSave(SipProcess):
                 # we should terminate now, and things will continue on next call
                 # to this plugin
                 break
+
         self.release_item(models.UriSource, self.urisource.pk)
         return True
 

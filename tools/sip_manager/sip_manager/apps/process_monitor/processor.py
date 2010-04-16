@@ -32,6 +32,8 @@ import time
 from django.conf import settings
 from django.db import connection
 
+from utils.gen_utils import db_is_mysql
+
 import sipproc
 
 
@@ -40,24 +42,24 @@ import sipproc
 PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
 PLUGIN_FILTER = settings.PLUGIN_FILTER
 SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
-URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
 
 
-class MainProcessor(object):
+class MainProcessor(sipproc.SipProcess):
 
     def __init__(self, options):
+        super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
         self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
         self.tasks_simple = [] # list of all tasks found
         self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
         if options['flush-all']:
-            self.flush_all()
+            self.cmd_flush_all()
             sys.exit(0)
         elif options['drop-all']:
-            self.drop_all()
+            self.cmd_drop_all()
             sys.exit(0)
         elif options['clear-pids']:
-            self.clear_pids()
+            self.cmd_clear_pids()
             sys.exit(0)
         self.find_tasks()
 
@@ -120,14 +122,6 @@ class MainProcessor(object):
         return
 
 
-    def system_is_occupied(self):
-        "dont start new tasks when load is high."
-        load_1, load_5, load_15 = os.getloadavg()
-        for load in (load_1, load_5, load_15):
-            if load >= URIVALIDATE_MAX_LOAD:
-                print '== load too high', load_1, load_5, load_15
-                return True
-        return False
 
 
     """
@@ -168,9 +162,9 @@ class MainProcessor(object):
         print 'done!'
 
 
-    def flush_all(self):
+    def cmd_flush_all(self):
         cursor = connection.cursor()
-        if self.db_is_mysql():
+        if db_is_mysql:
             sql = 'TRUNCATE %s'
         else:
             sql = 'TRUNCATE %s CASCADE'
@@ -188,9 +182,9 @@ class MainProcessor(object):
             cursor.execute(sql % table)
         return True
 
-    def drop_all(self):
+    def cmd_drop_all(self):
         cursor = connection.cursor()
-        if self.db_is_mysql():
+        if db_is_mysql:
             sql = 'DROP TABLE %s'
         else:
             sql = 'DROP TABLE %s CASCADE'
@@ -213,7 +207,7 @@ class MainProcessor(object):
         cursor.execute('commit')
         return True
 
-    def clear_pids(self):
+    def cmd_clear_pids(self):
         cursor = connection.cursor()
         cursor.execute('TRUNCATE process_monitor_processmonitoring')
         for table in ('base_item_mdrecord',
@@ -222,18 +216,6 @@ class MainProcessor(object):
                       'plug_uris_urisource',
                       ):
             cursor.execute('UPDATE %s SET pid=0 WHERE pid>0' % table)
-
-    def db_is_mysql(self):
-        # This will be uggly...
-        cursor = connection.cursor()
-        if hasattr(cursor, 'db'):
-            # if DEBUG=True its found here...
-            b = 'mysql' in cursor.db.__module__
-        else:
-            # Otherwise we find it here
-            b = 'mysql' in cursor.__module__
-        return b
-
 
 """
   Request actions

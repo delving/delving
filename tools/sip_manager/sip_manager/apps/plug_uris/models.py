@@ -35,7 +35,7 @@ from django.db import models, connection
 from apps.base_item.models import MdRecord
 from apps.dummy_ingester.models import Request
 
-from utils.gen_utils import dict_2_django_choice
+from utils.gen_utils import dict_2_django_choice, db_is_mysql
 
 
 
@@ -141,27 +141,9 @@ LIMIT_COUNT = 200
 
 
 class UriManager(models.Manager):
-    STORAGE_IS_MYSQL = None
 
     def __init__(self, *args, **kwargs):
-        if self.STORAGE_IS_MYSQL == None:
-            self.STORAGE_IS_MYSQL = self.is_it_mysql()
         super(UriManager, self).__init__(*args, **kwargs)
-
-    def is_it_mysql(self):
-        # This will be uggly...
-        cursor = connection.cursor()
-        if hasattr(cursor, 'db'):
-            # if DEBUG=True its found here...
-            look_at = cursor.db
-        else:
-            # Otherwise we find it here
-            look_at = cursor
-        if hasattr(look_at, 'mysql'):
-            b = True
-        else:
-            b = False
-        return b
 
     def base_sql(self, source_id, count=False):
         if count:
@@ -189,7 +171,7 @@ class UriManager(models.Manager):
         sql = self.base_sql(source_id)
         cursor = connection.cursor()
 
-        if self.STORAGE_IS_MYSQL:
+        if db_is_mysql:
             limit_syntax = "LIMIT %i,%i"
         else:
             limit_syntax = "OFFSET %i LIMIT %i"

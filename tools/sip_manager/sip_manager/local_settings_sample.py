@@ -81,7 +81,7 @@ PROCESS_SLEEP_TIME = 60
 
 
 # Limits amount of logging output
-SIP_PROCESS_DBG_LVL = 3
+SIP_PROCESS_DBG_LVL = 7
 
 
 # If one minute load is over this, new tasks wont be started
