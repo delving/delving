@@ -101,7 +101,7 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
                         codeArea.requestFocus();
                 }
                 compileTimer.triggerSoon();
-                autoCompleteDialog.updateElements(autoComplete.complete(event, availableNodes));
+                autoCompleteDialog.updateElements(event, availableNodes);
                 autoCompleteDialog.updateLocation(codeArea.getCaret().getMagicCaretPosition(), event.getComponent().getLocationOnScreen());
             }
         });
@@ -168,15 +168,6 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
             timer.restart();
         }
     }
-
-    private final AutoComplete autoComplete = new AutoCompleteImpl(
-            new AutoCompleteImpl.Listener() {
-                @Override
-                public void cancelled() {
-                    autoCompleteDialog.setVisible(false);
-                }
-            }
-    );
 
     private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
             new AutoCompleteDialog.Listener() {
