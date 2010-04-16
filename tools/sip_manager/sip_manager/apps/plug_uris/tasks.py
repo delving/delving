@@ -489,7 +489,7 @@ class UriValidateSave(SipProcess):
                                   '%s%s' % (base_fname, ext))
         cmd = [CONVERT_COMMAND]
         cmd.append('-resize 200x')
-        cmd.append(org_fname)
+        cmd.append('%s[0]' % org_fname)
         cmd.append(fname_full)
         output = self.cmd_execute1(cmd)
         if output:
@@ -506,7 +506,7 @@ class UriValidateSave(SipProcess):
                                    '%s%s' % (base_fname, ext))
         cmd = [CONVERT_COMMAND]
         cmd.append('-resize x110')
-        cmd.append(org_fname)
+        cmd.append('%s[0]' % org_fname)
         cmd.append(fname_brief)
         output = self.cmd_execute1(cmd)
         if output:
