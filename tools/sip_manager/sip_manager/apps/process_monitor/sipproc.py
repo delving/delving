@@ -328,7 +328,7 @@ class SipProcess(object):
                         self.log('== Terminating proc %s due to load' % self.pid, 2)
                         raise SipSystemOverLoaded('terminating task due to high load')
                 elif load_1:
-                    if random.randint(1,100) >= 95:
+                    if random.randint(1,10) > 9:
                         self.log('== Terminating proc %s due to load' % self.pid, 2)
                         raise SipSystemOverLoaded('terminating task due to high load')
             if progress:
