@@ -34,8 +34,13 @@ import views
 
 urlpatterns = patterns('',
 
-    url(r'^statistics/(?P<order_by>\S+)/$', views.statistics, name='uri_stats'),
-    url(r'^statistics/$', views.statistics, name='uri_stats'),
+    url(r'^statistics/$', views.statistics, name='uri_stats_idx'),
+
+    url(r'^stats_reqs/$', views.stats_req_lst, name='uri_stats_req'),
+    url(r'^stats_by_reqs/(?P<sreq_id>\d+)/$', views.stats_by_req, name='uri_stats_by_req'),
+
+    url(r'^stats_uri/(?P<order_by>\S+)/$', views.stats_by_uri, name='uri_stats'),
+    url(r'^stats_uri/$', views.stats_by_uri, name='uri_stats'),
 
     url(r'^problems/(?P<source_id>\S+)/$', views.problems, name='uri_problems'),
     url(r'^problems/$', views.problems, name='uri_problems'),

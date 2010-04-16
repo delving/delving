@@ -206,7 +206,7 @@ class MainProcessor(object):
                       'plug_uris_uri',
                       'plug_uris_urisource',
                       ):
-            cursor.execute('UPDATE %s SET pid=0' % table)
+            cursor.execute('UPDATE %s SET pid=0 WHERE pid>0' % table)
 
     def db_is_mysql(self):
         cursor = connection.cursor()

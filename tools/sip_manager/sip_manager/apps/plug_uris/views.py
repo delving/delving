@@ -27,13 +27,86 @@
 
 # Create your views here.
 
-
+from django.db import connection
 from django.shortcuts import render_to_response, get_object_or_404
 
+from apps.dummy_ingester.models import Request
 
 import models
 
-def statistics(request, order_by=''):
+def statistics(request):
+    return render_to_response("plug_uris/statistics.html", {
+        "summary": uri_summary(),})
+
+def stats_req_lst(request):
+    lst = []
+    for req in  models.ReqUri.objects.values('req').distinct():
+        req_id = req['req']
+        lst.append({'request':Request.objects.get(pk=req_id),
+                   'count': models.ReqUri.objects.filter(req__pk=req_id).count()})
+
+    return render_to_response("plug_uris/stats_all_requests.html", {
+        'requests': lst,})
+
+
+def stats_by_req(request, sreq_id=0):
+    """
+    SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u
+    WHERE ur.uri_id=u.id and ur.req_id=1
+    """
+    req_id = int(sreq_id)
+    request = models.Request.objects.filter(pk=req_id)
+    cursor1 = connection.cursor()
+    cursor2 = connection.cursor()
+    cursor1.execute("SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u WHERE ur.uri_id=u.id and ur.req_id=%i" % req_id)
+    sql_ok = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_COMPLETED,
+                                                     models.URIE_NO_ERROR)]
+    sql_err = ["AND u.err_code>0"]
+    mime_results = {}
+    for row in cursor1.fetchall():
+        mime_type = row[0]
+        if not mime_type:
+            continue
+        sql = ["SELECT COUNT(*)"]
+        sql.append("FROM plug_uris_requri ur, plug_uris_uri u")
+        sql.append("WHERE ur.req_id=%i" % req_id)
+        sql.append("AND ur.uri_id=u.id AND u.mime_type LIKE '%s'" % mime_type)
+        cursor2.execute(' '.join(sql + sql_ok))
+        itm_ok = cursor2.fetchone()[0]
+        cursor2.execute(' '.join(sql + sql_err))
+        itm_bad = cursor2.fetchone()[0]
+        mime_results[mime_type] = {'ok': itm_ok,
+                                   'bad': itm_bad}
+
+    #
+    # Generate list of webservers for this request
+    #
+    sql = ["SELECT DISTINCT us.id, us.name_or_ip"]
+    sql.append("FROM plug_uris_requri ur, plug_uris_uri u, plug_uris_urisource us")
+    sql.append("WHERE ur.req_id=%i" % req_id)
+    sql.append("AND ur.uri_id=u.id AND us.id=u.uri_source_id")
+    cursor1.execute(' '.join(sql))
+    webservers = []
+    for row in cursor1.fetchall():
+        srv_id = int(row[0])
+        srv_name = row[1]
+        sql = ["SELECT COUNT(*) FROM plug_uris_requri ur, plug_uris_uri u"]
+        #sql.append("WHERE ur.req_id=11 AND u.id=ur.uri_id AND u.uri_source_id=60
+        sql.append("WHERE u.uri_source_id=%i" % srv_id)
+        sql.append("AND ur.uri_id=u.id AND ur.req_id=%i" % req_id)
+        cursor2.execute(' '.join(sql))
+        items = cursor2.fetchone()[0]
+        webservers.append((srv_name, srv_id, items))
+    webservers.sort()
+
+    return render_to_response("plug_uris/stats_by_request.html",
+                              {
+                                  'request': request,
+                                  'mime_results': mime_results,
+                                  'webservers': webservers,
+                              })
+
+def stats_by_uri(request, order_by=''):
     if order_by:
         if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
             if request.session.get('sortkey','').find(order_by)==1:
@@ -46,13 +119,6 @@ def statistics(request, order_by=''):
     else:
         p_order_by = 'name_or_ip'
     request.session['sortkey'] = p_order_by
-
-    # Summary
-
-    imgs_ok = models.Uri.objects.filter(status=models.URIS_COMPLETED).count()
-    imgs_waiting = models.Uri.objects.filter(status=models.URIS_CREATED,err_code=models.URIE_NO_ERROR).count()
-    imgs_bad = models.Uri.objects.exclude(err_code=models.URIE_NO_ERROR).count()
-
 
     sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
     sql_table_join = "AND uri_source_id=plug_uris_urisource.id"
@@ -69,12 +135,9 @@ def statistics(request, order_by=''):
         'imgs_waiting':sql_img_waiting,
         #'eta':sql,
         }).order_by(p_order_by)
-        #'imgs_ok':'status = %i' % models.URIS_COMPLETED})
-    return render_to_response("plug_uris/statistics.html", {
+    return render_to_response("plug_uris/stats_uri_source.html", {
         "uri_sources":uri_sources,
-        "summary": {"imgs_ok": imgs_ok,
-                    "imgs_waiting": imgs_waiting,
-                    "imgs_bad": imgs_bad},})
+        "summary": uri_summary(),})
 
 
 def problems(request, source_id=-1):
@@ -99,6 +162,19 @@ def problems(request, source_id=-1):
     return render_to_response('plug_uris/problems.html', {
         'urisource': urisource,
         'problems': problems})
+
+
+
+def uri_summary():
+    imgs_ok = models.Uri.objects.filter(status=models.URIS_COMPLETED).count()
+    imgs_waiting = models.Uri.objects.filter(status=models.URIS_CREATED,
+                                             item_type=models.URIT_OBJECT,
+                                             err_code=models.URIE_NO_ERROR).count()
+    imgs_bad = models.Uri.objects.exclude(err_code=models.URIE_NO_ERROR).count()
+    return {"imgs_ok": imgs_ok,
+            "imgs_waiting": imgs_waiting,
+            "imgs_bad": imgs_bad}
+
 
 
 def index(request):
