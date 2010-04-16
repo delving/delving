@@ -134,10 +134,12 @@ class SipProcess(object):
                                                #task_label=self.SHORT_DESCRIPTION
                                                )
             self.pm.save()
-            f = float(self.pm.pk)
-            while f >= 1:
-                f = f/10
-            self.pid = self.pm.pid = self.pid + f
+
+            sub_pid = float(self.pm.pk) / 10000
+            while sub_pid >= 1:
+                # make sure the subpid is under 1
+                sub_pid = sub_pid / 10
+            self.pid = self.pm.pid =  self.pid + sub_pid
             self.pm.save()
             self.task_starting(self.SHORT_DESCRIPTION)
             self.is_prepared = True
