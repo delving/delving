@@ -39,11 +39,29 @@ def statistics(request):
         "summary": uri_summary(),})
 
 def stats_req_lst(request):
+    sql_ok = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_COMPLETED,
+                                                     models.URIE_NO_ERROR)]
+    sql_err = ["AND u.err_code>0"]
+    cursor = connection.cursor()
     lst = []
     for req in  models.ReqUri.objects.values('req').distinct():
         req_id = req['req']
+
+        sql = ["SELECT COUNT(*)"]
+        sql.append("FROM plug_uris_requri ur, plug_uris_uri u")
+        sql.append("WHERE ur.req_id=%i" % req_id)
+        sql.append("AND u.id=ur.uri_id")
+
+        cursor.execute(' '.join(sql + sql_ok))
+        itm_ok = cursor.fetchone()[0]
+        cursor.execute(' '.join(sql + sql_err))
+        itm_bad = cursor.fetchone()[0]
+
         lst.append({'request':Request.objects.get(pk=req_id),
-                   'count': models.ReqUri.objects.filter(req__pk=req_id).count()})
+                   'count': models.ReqUri.objects.filter(req__pk=req_id).count(),
+                   'itm_ok': itm_ok,
+                   'itm_bad': itm_bad,
+                   })
 
     return render_to_response("plug_uris/stats_all_requests.html", {
         'requests': lst,})

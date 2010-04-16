@@ -11,10 +11,14 @@
 <table border="1">
       <th>Name</th>
       <th>Count</th>
+      <th>Verified</th>
+      <th>Bad images</th>
     {% for req_info in requests %}
     <tr>
         <td><a href="{% url uri_stats_by_req req_info.request.pk %}">{{ req_info.request }}</a></td>
         <td>{{ req_info.count }}</td>
+        <td>{{ req_info.itm_ok }}</td>
+        <td>{{ req_info.itm_bad }}</td>
     </tr>
     {% endfor %}
 </table>
