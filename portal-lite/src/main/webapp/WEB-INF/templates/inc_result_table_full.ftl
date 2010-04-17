@@ -28,7 +28,7 @@
         <@stringLimiter "${tl}" "150"/>
     </h5>
 
-                <div class="grid_4 alpha" id="img-full">
+                <div class="grid_5 alpha" id="img-full">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
@@ -44,17 +44,17 @@
                              class="full" alt="Image title: ${result.fullDoc.dcTitle[0]}" />
                         <#else>
                             <script>
-                                function checkSize(h){
-                                    if (h > 300) {
-                                        h = 400;
-                                        document.getElementById("imgview").height=h;
+                                function checkSize(w){
+                                    if (w > 325) {
+                                        w = 325;
+                                        document.getElementById("imgview").width=w;
                                     }
                                 }
                             </script>
                             <img src="${result.fullDoc.thumbnails[0]}"
                                  alt="Image title: ${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
-                                 onload="checkSize(this.height);"
+                                 onload="checkSize(this.width);"
                                  onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}')"
                                  alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
                              />
@@ -63,7 +63,7 @@
                 </div>
 <#--            </td>
             <td valign="top">-->
-                <div id="item-detail" class="grid_8 omega">
+                <div id="item-detail" class="grid_7 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
