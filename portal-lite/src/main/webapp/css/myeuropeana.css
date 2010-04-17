@@ -24,19 +24,20 @@ table.tbl-list {
     overflow-x: hidden;
     overflow-y: auto;
      /*max-height: 300px;*/
+    border-collapse: separate;
 }
 .tbl-list td {
-    padding: 4px;
+    padding: 0px;
     border-bottom: 1px solid #eaeaea;
 }
 .tbl-list .item-img {
     width: 40px;
 }
 
-.tbl-list .item-info p {
-    font-size: 85%;
+.tbl-list .item-info  {
+    border-bottom: 1px solid #ccc;
 }
-.tbl-list .item-info p em {
+.tbl-list .item-info em {
     font-weight: bold;
 }
 .tbl-list .del-button {

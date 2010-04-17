@@ -1,15 +1,24 @@
 body {
 /*background: #eaeaea url(../images/960/white_bg.gif) top center repeat-y;*/
+
 }
 
 a:link, a:active {
-    color: #249aa6;
+    color: #154273;
 }
 
-a:visited, a:hover {
-    color: #0f757e;
+a:visited {
+    color: #696969;
 }
-
+a:hover {
+    color: #0162CD;
+}
+/*p {*/
+    /*text-align: left;*/
+/*}*/
+.inner {
+    padding: 10px;
+}
 #container {
     overflow: hidden;
     margin-top: 20px;
@@ -24,15 +33,39 @@ a:visited, a:hover {
     overflow: hidden;
 }
 
+.page {
+    -moz-box-shadow:3px 3px 4px #BBBBBB;
+    background:none repeat scroll 0 0 #fff;
+    border-left: 1px solid #f1f1f1;
+    border-bottom:1px solid #BBBBBB;
+    border-right:1px solid #BBBBBB;
+    margin-right:7px;
+    padding:5;
+}
+
 #main.home {
     text-align: center;
 }
-
+#text-home {
+    text-align: left;
+}
 #top-bar {
     text-align: right;
+    background: #046f96;
+    color: #ccffff;
 }
 
-#top-bar, #search, #breadcrumbs, #objTypes, .pagination {
+#top-bar a:link, #top-bar a:visited, #top-bar a:active {
+    color: #fff;
+}
+#top-bar a:hover {
+    color: #f1f1f1;
+}
+/*#top-bar, #search, #breadcrumbs, #objTypes, .pagination {*/
+    /*margin-bottom: 40px;*/
+/*}*/
+
+#objTypes, .pagination {
     margin-bottom: 40px;
 }
 
@@ -42,6 +75,12 @@ a:visited, a:hover {
 
 #logo-home {
     margin: 40px 0 20px;
+}
+
+#search {
+    background: #f1f1f1;
+    height: 80px;
+    line-height: 60px;
 }
 
 #search_simple input.txt-input {
@@ -121,6 +160,11 @@ a:visited, a:hover {
 /* breadcrumb
 =======================*/
 
+#breadcrumbs {
+    background: #EDF3FE;
+    height: 42px;
+    line-height: 22px;
+}
 #breadcrumbs ul {
     margin: 0;
     padding: 0;
@@ -283,10 +327,10 @@ table caption {
 
 #item-detail h5 {
     background: none;
-    border-bottom: solid 4px #ccc;
+    border-bottom: solid 1px #ccc;
     color: #333;
     margin: 0 0 10px 0;
-    padding: 0 0 0 30px;
+    padding: 0 0 10px 30px;
 }
 
 #item-detail h5.SOUND {
@@ -315,7 +359,7 @@ table caption {
     position: relative;
     text-align: center;
     zoom: 1;
-    color: #cc6600;
+    color: #154273;
 }
 
 .fg-button .ui-icon {
@@ -613,7 +657,7 @@ button.fg-button, input.fg-button {
 }
 
 .provider {
-    color: #ff6600;
+    color: #696969;
 }
 
 .ui-dialog {
@@ -622,3 +666,13 @@ button.fg-button, input.fg-button {
     height: 200px;
 }
 
+.ui-widget {
+    font-size: 0.95em;
+}
+
+.fg-red {
+    color: firebrick;
+}
+#msg-save-tag, #msg-send-email, #msg-save-search {
+    color: green;  
+}

@@ -117,33 +117,37 @@
 <div id="sidebar" class="grid_3">
 
     <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <h1>ICN</h1>
+            <a href="index.html" title="ICN"><img src="images/logo-small.png" alt="ICN Home"/></a>
     </div>
 
     <div id="facet-list">
-        <#include "inc_facets_lists.ftl"/>
+            <#include "inc_facets_lists.ftl"/>
     </div>
 
 </div>
 
 <div id="main" class="grid_9">
 
+
     <div id="top-bar">
         <@userbar/>
-        <#include "language_select.ftl">
     </div>
 
     <div class="clear"></div>
+
+    <div class="">
 
     <div id="search">
+        <div class="inner">
             <@SearchForm "search_result"/>
+        </div>
     </div>
 
     <div class="clear"></div>
 
-
     <div id="breadcrumbs">
+        <div class="inner">
         <ul>
             <#if !result.matchDoc??>
                 <li class="first"><@spring.message 'MatchesFor_t' />:</li>
@@ -166,16 +170,21 @@
             </li>
             </#if>
         </ul>
+        </div>
     </div>
 
     <div class="clear"></div>
 
+    <div class="inner">
+
     <div id="objTypes">
-        <div>
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-        </div>
-        <@typeTabs_plain/>
-        <@viewSelect/>
+ 
+            <div>
+                <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+            </div>
+            <@typeTabs_plain/>
+            <@viewSelect/>
+
     </div>
 
     <div class="clearfix"></div>
@@ -188,12 +197,15 @@
 
     <#include "inc_result_table_brief.ftl"/>
 
-    <div class="clearfix"></div>
+
 
     <div class="pagination">
         <@resultnav_styled/>
     </div>
 
+    <div class="clearfix"></div>
+
+     </div>
 </div>
 
 

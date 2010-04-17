@@ -90,7 +90,7 @@ function sendEmail(objId){
                 document.getElementById("friendEmail").value = "";
            },
            error: function(msg) {
-                sr.innerHTML = "<span class='fg-red'>"+msgEmailSendFail+"<span>";
+                //sr.innerHTML = "<span class='fg-red'>"+msgEmailSendFail+"<span>";
            }
          });
     }

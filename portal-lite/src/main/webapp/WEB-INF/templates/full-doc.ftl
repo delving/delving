@@ -34,8 +34,8 @@
 
 <div id="sidebar" class="grid_3">
     <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <h1>ICN</h1>
+            <a href="index.html" title="ICN"><img src="images/logo-small.png" alt="ICN Home"/></a>
     </div>
 
     <div id="facet-list">
@@ -48,18 +48,20 @@
 
     <div id="top-bar">
         <@userbar/>
-        <#include "language_select.ftl">
     </div>
 
     <div class="clear"></div>
 
     <div id="search">
+        <div class="inner">
             <@SearchForm "search_result"/>
+        </div>         
     </div>
 
     <div class="clear"></div>
 
    <div id="breadcrumbs">
+       <div class="inner">
         <#if query?exists>
         <ul>
             <li class="first"><@spring.message 'MatchesFor_t' />:</li>
@@ -69,10 +71,11 @@
             <li>&#160;</li>
         </ul>
         </#if>
+       </div>
     </div>
 
     <div class="clear"></div>
-
+<div class="inner">
     <div class="pagination fg-buttonset">
 
     <#assign uiClassStatePrev = ""/>
@@ -126,7 +129,7 @@
     <div id="item-detail">
         <#include "inc_result_table_full.ftl"/>
     </div>
-
+         </div>
 </div>
 
 <#include "inc_footer.ftl"/>
