@@ -113,6 +113,7 @@
 </#macro>
 
 <#macro userbar>
+    <div class="inner">
     <ul>
         <#if !user??>
         <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
@@ -150,19 +151,21 @@
         </#if>
         </#if>
     </ul>
+    <#include "language_select.ftl">
+</div>
 </#macro>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <#-- favicon_red.ico is also available -->
     <link rel="shortcut icon" href="/portal/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.custom.css"/>
     <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
 
-    <script type="text/javascript" src="js/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/jquery.toggleElements.js"></script>
     <script type="text/javascript" src="js/jquery.validate.js"></script>
@@ -176,7 +179,7 @@
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
-    <title>Open-Europeana - Homepage</title>
+    <title>Instituut Collectie Nederland</title>
     <#break>
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
@@ -196,7 +199,7 @@
         });
 
     </script>
-    <title>Open-Europeana - Search results</title>
+    <title>Instituut Collectie Nederland - Search results</title>
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
@@ -210,7 +213,7 @@
         var msgEmailValid = "<@spring.message 'EnterValidEmail_t' />";
     </script>
     </#if>
-    <title>Open-Europeana - Search results</title>
+    <title>Instituut Collectie Nederland - Search results</title>
     <#break>
     <#case "myeuropeana.html">
     <#assign pageId = "me"/>
@@ -220,7 +223,7 @@
             $("#savedItems").tabs({ cookie: { expires: 30 } });
         });
     </script>
-    <title>Open-Europeana - My Open-Europeana</title>
+    <title>Instituut Collectie Nederland - My Open-Europeana</title>
     <#break>
     <#case "exception.html">
     <title>Europeana - Exception</title>
@@ -246,22 +249,22 @@
             });
         });
     </script>
-    <title>Open-Europeana - Login</title>
+    <title>Instituut Collectie Nederland - Login</title>
     <#break>
     <#case "logout.html">
     <#assign pageId = "lo"/>
-    <title>Open-Europeana - Logout</title>
+    <title>Instituut Collectie Nederland - Logout</title>
     <#break>
     <#case "register.html">
     <#assign pageId = "rg"/>
-    <title>Open-Europeana - Registration</title>
+    <title>Instituut Collectie Nederland - Registration</title>
     <#break>
     <#case "forgotPassword.html">
     <#assign pageId = "fp"/>
-    <title>Open-Europeana - Forgot Password</title>
+    <title>Instituut Collectie Nederland - Forgot Password</title>
     <#break>
     <#case "register-success.html">
-    <title>Open-Europeana - Registration continued</title>
+    <title>Instituut Collectie Nederland - Registration continued</title>
     <#break>
     </#switch>
 

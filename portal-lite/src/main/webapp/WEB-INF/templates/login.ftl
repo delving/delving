@@ -8,8 +8,8 @@
 <div id="sidebar" class="grid_3">
 
     <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <h1>ICN</h1>
+            <a href="index.html" title="ICN"><img src="images/logo-small.png" alt="ICN Home"/></a>
     </div>
 
 </div>
@@ -18,7 +18,6 @@
 
     <div id="top-bar">
         <@userbar/>
-        <#include "language_select.ftl">
     </div>
 
     <div class="clear"></div>
@@ -72,7 +71,7 @@
         <fieldset>
             <legend></legend>
             <label for="email"><@spring.message 'EmailAddress_t' /></label>
-            <input id="register_email" type='text' name='email' value='' accept-charset="UTF-8">
+            <input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8">
             <input id="register" name="submit_button" type="submit" value="<@spring.message 'Register_t' />"
                    class="button"/>
 
@@ -136,7 +135,7 @@
                 <@spring.message 'PleaseFollowTheLinkProvided_t' />.  <!-- TODO change message -->
             </p>
             </#if>
-            <#if failureForgotFormat>
+            <#if failureForgotFormat??>
             <p class="failure">
                 <@spring.message 'Error_t' />!<br/><@spring.message 'EmailFormatError_t' />.
             </p>

@@ -5,7 +5,6 @@
 
 <div id="top-bar" class="grid_12">
     <@userbar/>
-    <#include "language_select.ftl">
 </div>
 
 <div class="clear"></div>
@@ -15,9 +14,16 @@
 
 
     <div class="grid_12">
-            <img src="images/logo.png" id="logo-home" alt="Delving"/>
+        <img src="images/logo.png" id="logo-home" alt="ICN"/>
     </div>
-
+    <div class="grid_6 prefix_3 suffix_3" id="text-home">
+        <p>
+        Het ICN werkt aan het ontsluiten van de Digitale Collectie Nederland. De collecties van een groeiend aantal Nederlandse musea, de collectie van het Instituut Collectie Nederland, maar ook thematische en regionale verzamelingen worden daartoe binnen ŽŽn omgeving bijeengebracht.
+        </p>
+        <p>
+        Deze site is een ÔProof of ConceptÕ waarin gebruik wordt gemaakt van de open source versie van het Europeana framework (<a href="http://www.delving.eu" target="_blank">Delving</a>).
+        </p>
+    </div>
     <div class="grid_12">
 
          <noscript>
@@ -27,9 +33,11 @@
                 </div>
             </div>
         </noscript>
-
+     <div id="search">
+       <div class="inner">
         <@SearchForm "search_home"/>
-
+        </div>
+     </div>
     </div>
 
 

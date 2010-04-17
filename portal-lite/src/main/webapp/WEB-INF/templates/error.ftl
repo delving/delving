@@ -14,8 +14,8 @@
 <div id="sidebar" class="grid_3">
 
     <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <h1>ICN</h1>
+            <a href="index.html" title="ICN"><img src="images/logo-small.png" alt="ICN Home"/></a>
     </div>
 
 </div>

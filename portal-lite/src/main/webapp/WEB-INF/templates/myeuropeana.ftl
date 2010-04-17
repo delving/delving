@@ -19,8 +19,8 @@
 <div id="sidebar" class="grid_3">
 
     <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <h1>ICN</h1>
+            <a href="index.html" title="ICN"><img src="images/logo-small.png" alt="ICN Home"/></a>
     </div>
 
 </div>
@@ -29,13 +29,14 @@
 
     <div id="top-bar">
         <@userbar/>
-        <#include "language_select.ftl">
     </div>
 
     <div class="clear"></div>
 
     <div id="search">
+        <div class="inner">
             <@SearchForm "search_result"/>
+        </div>
     </div>
 
     <div class="clear"></div>
@@ -91,11 +92,14 @@
                                             </a>
                                         </td>
                                         <td valign="top" class="item-info">
-                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}"><strong><@stringLimiter "${item.title}" "50"/></strong></a>
-                                            <p>
-                                            creator: <em>${item.author}</em></p><p>
-                                                <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
-                                                </p>
+                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}">
+                                                <strong><@stringLimiter "${item.title}" "50"/></strong>
+                                            </a>
+                                            <br/>
+                                            creator: <em>${item.author}</em>
+                                            <br/>
+                                            <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
+                                            <br/><br/>
                                         </td>
                                         <td width="60"><button  onclick="removeRequest('SavedItem',${item.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
                                     </tr>
