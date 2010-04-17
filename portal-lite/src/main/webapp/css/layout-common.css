@@ -31,6 +31,7 @@ a:hover {
 #main {
     background: transparent;
     overflow: hidden;
+    /*min-height: 500px;*/
 }
 
 .page {
@@ -678,4 +679,7 @@ button.fg-button, input.fg-button {
 }
 #footer #delving{
     float: right;
+}
+#login-div, #register-div, #request-password {
+    margin-top: 20px;
 }
