@@ -4,14 +4,13 @@
 
 INSTALL="mvn clean install -Dmaven.test.skip=true"
 PACKAGE="mvn clean package -Dmaven.test.skip=true"
-BUILD_ALL=false
+BUILD_ALL=true
 
 # Installation of jar is m2 repository
 cd definitions; $INSTALL
 cd ../core; $INSTALL
 
 # Packaging of War files
-cd ../portal-full; $PACKAGE
 cd ../portal-lite; $PACKAGE
 if [[ BUILD_ALL ]]; then
 	#statements
