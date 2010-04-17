@@ -18,7 +18,7 @@
     </div>
     <div class="grid_6 prefix_3 suffix_3" id="text-home">
         <p>
-        Het ICN werkt aan het ontsluiten van de Digitale Collectie Nederland. De collecties van een groeiend aantal Nederlandse musea, de collectie van het Instituut Collectie Nederland, maar ook thematische en regionale verzamelingen worden daartoe binnen één omgeving bijeengebracht.
+        Het ICN werkt aan het ontsluiten van de Digitale Collectie Nederland. De collecties van een groeiend aantal Nederlandse musea, de collectie van het Instituut Collectie Nederland, maar ook thematische en regionale verzamelingen worden daartoe binnen &eacute;&eacute;n omgeving bijeengebracht.
         </p>
         <p>
         Deze site is een 'Proof of Concept' waarin gebruik wordt gemaakt van de open source versie van het Europeana framework (<a href="http://www.delving.eu" target="_blank">Delving</a>).
