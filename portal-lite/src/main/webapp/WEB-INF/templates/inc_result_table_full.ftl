@@ -28,7 +28,7 @@
         <@stringLimiter "${tl}" "150"/>
     </h5>
 
-                <div class="grid_3 alpha" id="img-full">
+                <div class="grid_4 alpha" id="img-full">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
@@ -46,7 +46,7 @@
                             <script>
                                 function checkSize(h){
                                     if (h > 300) {
-                                        h = 200;
+                                        h = 400;
                                         document.getElementById("imgview").height=h;
                                     }
                                 }
@@ -63,7 +63,7 @@
                 </div>
 <#--            </td>
             <td valign="top">-->
-                <div id="item-detail" class="grid_9 omega">
+                <div id="item-detail" class="grid_8 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
