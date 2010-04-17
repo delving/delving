@@ -676,3 +676,6 @@ button.fg-button, input.fg-button {
 #msg-save-tag, #msg-send-email, #msg-save-search {
     color: green;  
 }
+#footer #delving{
+    float: right;
+}
