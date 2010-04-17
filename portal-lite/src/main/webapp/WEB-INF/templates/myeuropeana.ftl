@@ -62,10 +62,10 @@
                                 <h4><@spring.message 'EmailAddress_t'/>:</h4>
                                 <p>${user.email}</p>
 
-                            <#if user.firstName?exists>
+                            <#if user.firstName??>
                                 First name: ${user.firstName}
                             </#if>
-                            <#if user.lastName?exists>
+                            <#if user.lastName??>
                                 Last name: ${user.lastName}
                             </#if>
 
@@ -105,7 +105,7 @@
                                     </tr>
                                 </#list>
 
-                            <#else/>
+                            <#else>
                                 <tr><td><@spring.message 'NoSavedItems_t'/></td></tr>
                             </#if>
                         </table>
@@ -122,7 +122,7 @@
                                         <td width="60"><button onclick="removeRequest('SavedSearch',${search.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
                                     </tr>
                                 </#list>
-                            <#else/>
+                            <#else>
                                 <tr><td><@spring.message 'NoSavedSearches_t'/></td></tr>
                             </#if>
                         </table>

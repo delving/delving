@@ -8,12 +8,6 @@
 <#assign imageCount = 0 />
 <#assign videoCount = 0 />
 <#assign audioCount = 0 />
-<#assign showLanguage = 0 />
-<#assign showYear = 0 />
-<#assign showType = 0 />
-<#assign showProvider = 0 />
-<#assign showCountry = 0 />
-<#assign showUserTags = 0 />
 <#assign next = nextQueryFacets>
 <#assign breadcrumbs = breadcrumbs/>
 <#assign seq = briefDocs/>
@@ -178,7 +172,7 @@
     <div class="inner">
 
     <div id="objTypes">
- 
+
             <div>
                 <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
             </div>

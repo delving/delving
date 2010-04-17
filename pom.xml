@@ -199,7 +199,7 @@
                         <europeana.test.external.host>${europeana.test.external.host}</europeana.test.external.host>
                     </systemPropertyVariables>
                 </configuration>
-            </plugin>
+            </plugin>                                                              
         </plugins>
     </build>
     <dependencies>
