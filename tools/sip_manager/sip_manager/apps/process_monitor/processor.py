@@ -214,7 +214,7 @@ class MainProcessor(sipproc.SipProcess):
                       'plug_uris_uri',
                       'plug_uris_urisource',
                       ):
-            cursor.execute('UPDATE %s SET pid=0 WHERE pid>0' % table)
+            cursor.execute('UPDATE %s SET pid=0 WHERE pid NOT 0' % table)
 
 """
   Request actions
