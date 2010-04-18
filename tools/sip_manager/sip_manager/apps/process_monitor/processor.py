@@ -87,39 +87,36 @@ class MainProcessor(sipproc.SipProcess):
         print
         print 'Commencing operations'
         while True:
-            busy, loads = self.system_is_occupied()
-            if not busy:
-                self.run3()
+            busy = False
+            # First run all simple tasks once
+            for task_group in (self.tasks_simple, self.tasks_heavy):
+                if busy:
+                    break
+                for taskClass in task_group:
+                    busy, loads = self.system_is_occupied()
+                    if busy:
+                        break
+                    if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
+                        # For the moment try slow starting, just one thread per run
+                        # this way load builds up more slowly and should keep
+                        # within reasonable limits.
+                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+                        """
+                        while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                            # Continue to start new threads as long as they
+                            # find something to work on
+                            #print '*** started thread for', taskClass.__name__
+                            pass
+                        """
+                    else:
+                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
             #print 'sleeping a while'
             time.sleep(PROCESS_SLEEP_TIME)
         return True
-
-    def run3(self):
-        """
-        Main loop after checking system load
-        """
-        # First run all simple tasks once
-        for task_group in (self.tasks_simple, self.tasks_heavy):
-            for taskClass in task_group:
-                if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
-                    # For the moment try slow starting, just one thread per run
-                    # this way load builds up more slowly and should keep
-                    # within reasonable limits.
-                    taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
-                    """
-                    while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                        # Continue to start new threads as long as they
-                        # find something to work on
-                        #print '*** started thread for', taskClass.__name__
-                        pass
-                    """
-                else:
-                    taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
-        return
-
 
 
 

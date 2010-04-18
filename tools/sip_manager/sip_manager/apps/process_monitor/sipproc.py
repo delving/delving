@@ -216,12 +216,12 @@ class SipProcess(object):
             if r15:
                 log_lvl = 2
             else:
-                log_lvl = 8
+                log_lvl = 7
             self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), log_lvl)
-            status = True
+            busy = True
         else:
-            status = False
-        return status, (r1, r5, r15)
+            bust = False
+        return busy, (r1, r5, r15)
 
 
     # ==========   Must be overloaded   ====================
