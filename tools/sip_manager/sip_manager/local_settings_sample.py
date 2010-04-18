@@ -41,16 +41,17 @@ SIP_OBJ_FILES = '/Volumes/JacBook/SIP_object_files'
 #
 # Optional settings - What is given here is the default, if you dont plan
 #                     to change it, not needed to included in your local_settings.py
-#
+#                     If a given optional is not specified, the default will be used
+#                     and printed out
 
 # This controlls if django should be run in debug mode, it gives more detailed
 # error mesages when testing webpages...
-DEBUG = False
+#DEBUG = False/True
 
 
 # If we allow processor to run in multithreaded
 # If set to False, all plugins are run sequentaly in a single-threded way
-THREADING_PLUGINS = True
+# THREADING_PLUGINS = False/True
 
 
 # If this is True (default) the IMPORT_SCAN_TREE is asumed to be structured
@@ -58,7 +59,7 @@ THREADING_PLUGINS = True
 # tree, files with extention .xml found in a directory named output_xml will be
 # parsed.
 # If this is False, any .xml file found will be parsed
-TREE_IS_INGESTION_SVN = True
+#TREE_IS_INGESTION_SVN = True/False
 
 
 # Mostly a temporary setting, if this is True, the pre version 0.7 version
@@ -69,28 +70,28 @@ TREE_IS_INGESTION_SVN = True
 #  original/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895
 #  FULL_DOC/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895.jpg
 #  BRIEF_DOC/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895.jpg
-OLD_STYLE_IMAGE_NAMES = False
+#OLD_STYLE_IMAGE_NAMES = True/False
 
 
-# how often plugins should report what is happening
-TASK_PROGRESS_INTERVALL = 15
+# how often plugins should report what is happening (seconds)
+#TASK_PROGRESS_INTERVALL =
 
 
-# How often we check for new tasks
-PROCESS_SLEEP_TIME = 60
+# How often we check for new tasks (seconds)
+#PROCESS_SLEEP_TIME =
 
 
-# Limits amount of logging output
-SIP_PROCESS_DBG_LVL = 7
+# Limits amount of logging output (1-9)
+#SIP_PROCESS_DBG_LVL =
 
 
 # If system load is over this, new tasks wont be started
 # either a single float, or (prefered three values for 1, 5 and 15 min load)
-MAX_LOAD_NEW_TASKS = (2.0, 1.8,  1.7)
+#MAX_LOAD_NEW_TASKS =
 
 # If system load is over this, tasks will be terminated
 # either a single float, or (prefered three values for 1, 5 and 15 min load)
-MAX_LOAD_RUNNING_TASKS = (2.5, 2.2, 2.0)
+#MAX_LOAD_RUNNING_TASKS =
 
 
 
