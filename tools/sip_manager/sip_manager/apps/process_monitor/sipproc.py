@@ -328,24 +328,8 @@ class SipProcess(object):
         A number param is sent to task_progess()
         a string param is used directly."""
         if self._task_show_time + self.TASK_PROGRESS_TIME < time.time():
-            busy, loads = self.system_is_occupied(check_to_start_new_task=False)
-            if terminate_on_high_load and busy:
-                # It wouldnt make sense to terminate all processes
-                # instead do a randomiztion and a kill percentage
-                # also we leave the last task running until we hit the load15
-                # ceiling
-                task_count = models.ProcessMonitoring.objects.count()
-                load_1, load_5, load_15 = loads
-                if load_15:
-                    raise SipSystemOverLoaded('terminating task due to high load')
-                elif load_5:
-                    if (task_count > 1) and (random.randint(1,10) > 5):
-                        self.log('== Terminating proc %s due to load' % self.pid, 2)
-                        raise SipSystemOverLoaded('terminating task due to high load')
-                elif load_1:
-                    if (task_count > 1) and (random.randint(1,10) > 9):
-                        self.log('== Terminating proc %s due to load' % self.pid, 2)
-                        raise SipSystemOverLoaded('terminating task due to high load')
+            if terminate_on_high_load:
+                self.do_terminate_on_high_load()
             if progress:
                 if isinstance(progress, int):
                     self.task_progress(progress)
@@ -360,6 +344,32 @@ class SipProcess(object):
         else:
             b = False
         return b
+
+
+    def do_terminate_on_high_load(self):
+        busy, loads = self.system_is_occupied(check_to_start_new_task=False)
+        if not busy:
+            return
+        # It wouldnt make sense to terminate all processes
+        # instead do a randomiztion and a kill percentage
+        # also we leave the last task running until we hit the load15
+        # ceiling
+        task_count = models.ProcessMonitoring.objects.count()
+        load_1, load_5, load_15 = loads
+        if load_15:
+            # at this level allways terminate
+            raise SipSystemOverLoaded('terminating task due to high load', 2)
+        elif load_5:
+            # 50% propab
+            if (task_count > 1) and (random.randint(1,10) > 5):
+                self.log('== Terminating proc %s due to load' % self.pid, 2)
+                raise SipSystemOverLoaded('terminating task due to high load')
+        elif load_1:
+            # 2 * task_count % , max 20 propab
+            if (task_count > 1) and (random.randint(1,100) <= min(20,(2 * task_count))):
+                self.log('== Terminating proc %s due to load' % self.pid, 2)
+                raise SipSystemOverLoaded('terminating task due to high load')
+
 
 
     def task_progress(self, step):
