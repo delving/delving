@@ -213,7 +213,11 @@ class SipProcess(object):
             r15 = True
 
         if r1 or r5 or r15:
-            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 2)
+            if r15:
+                log_lvl = 2
+            else:
+                log_lvl = 8
+            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), log_lvl)
             status = True
         else:
             status = False
