@@ -154,6 +154,8 @@ class RequestParseNew(SipProcess):
                                  'About to parse for ese records')
         if not request:
             return False # Failed to take control of it
+        request.status = models.REQS_INIT
+        request.save()
 
         self.current_request = request # make it available without params for other modules
         full_path = self.find_file()
@@ -186,7 +188,7 @@ class RequestParseNew(SipProcess):
             # very expensive to restart this
             self.task_time_to_show(record_count)
         f.close()
-        request.status = models.REQS_INIT
+        request.status = models.REQS_IMPORTED
         request.save()
         self.release_item(models.Request, request.pk)
         return True

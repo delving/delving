@@ -225,11 +225,7 @@ class SipProcess(object):
             r15 = True
 
         if r1 or r5 or r15:
-            if r15:
-                log_lvl = 2
-            else:
-                log_lvl = 7
-            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), log_lvl)
+            self.log('  load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 8)
             busy = True
         else:
             busy = False
@@ -368,21 +364,21 @@ class SipProcess(object):
         # ceiling
         task_count = models.ProcessMonitoring.objects.count()
         load_1, load_5, load_15 = loads
-        msg = 'Terminating task %s due to high load' % self.pid
+        msg = 'Terminating task %s due to high load' % self.pm.pk
         if load_15:
             # at this level allways terminate
             self.log('== %s 15' % msg, 2)
-            raise SipSystemOverLoaded('%s 15' % msg, 2)
+            raise SipSystemOverLoaded('%s 15' % msg)
         elif load_5:
             # 50% propab
             if (task_count > 1) and (random.randint(1,10) > 5):
                 self.log('== %s 5' % msg, 2)
-                raise SipSystemOverLoaded('%s 5' % msg, 2)
+                raise SipSystemOverLoaded('%s 5' % msg)
         elif load_1:
             # 3 * task_count % , max 20 propab
             if (task_count > 1) and (random.randint(1,100) <= min(20,(3 * task_count))):
                 self.log('== %s 1' % msg, 2)
-                raise SipSystemOverLoaded('%s 1' % msg, 2)
+                raise SipSystemOverLoaded('%s 1' % msg)
 
 
 
