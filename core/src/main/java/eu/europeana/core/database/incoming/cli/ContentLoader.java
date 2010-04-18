@@ -82,6 +82,7 @@ public class ContentLoader {
         eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         repository = (ImportRepository) context.getBean("normalizedImportRepository");
+
     }
 
     public void setSimultaneousJobs(int simultaneousJobs) {
@@ -130,7 +131,7 @@ public class ContentLoader {
 
     private static boolean isSorlRunning() {
         try {
-            SolrServer server = new CommonsHttpSolrServer("http://localhost:8983/solr/");
+            SolrServer server = new CommonsHttpSolrServer("http://kurikoer.org:8080/solr/");
             SolrPingResponse response = server.ping();
             return response.getResponse().get("status").toString().equalsIgnoreCase("ok");
         }
