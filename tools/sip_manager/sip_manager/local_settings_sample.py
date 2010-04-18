@@ -85,8 +85,12 @@ SIP_PROCESS_DBG_LVL = 7
 
 
 # If system load is over this, new tasks wont be started
-MAX_SYSTEM_LOAD = 2.0
+# either a single float, or (prefered three values for 1, 5 and 15 min load)
+MAX_LOAD_NEW_TASKS = (2.0, 1.8,  1.7)
 
+# If system load is over this, tasks will be terminated
+# either a single float, or (prefered three values for 1, 5 and 15 min load)
+MAX_LOAD_RUNNING_TASKS = (2.5, 2.2, 2.0)
 
 
 

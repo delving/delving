@@ -87,7 +87,8 @@ class MainProcessor(sipproc.SipProcess):
         print
         print 'Commencing operations'
         while True:
-            if not self.system_is_occupied():
+            busy, loads = self.system_is_occupied()
+            if not busy:
                 self.run3()
             if self.single_run:
                 print 'Single run, aborting after one run-through'

@@ -38,7 +38,8 @@ import models
 # are cached within the module
 TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
 SIP_LOG_FILE = settings.SIP_LOG_FILE
-MAX_SYSTEM_LOAD = settings.MAX_SYSTEM_LOAD
+MAX_LOAD_NEW_TASKS = settings.MAX_LOAD_NEW_TASKS
+MAX_LOAD_RUNNING_TASKS = settings.MAX_LOAD_RUNNING_TASKS
 
 
 SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
@@ -196,22 +197,27 @@ class SipProcess(object):
         return
 
 
-    def system_is_occupied(self):
+    def system_is_occupied(self, check_to_start_new_task=True):
         "dont start new tasks when load is high."
         r1 = r5 = r15 = False
+        if check_to_start_new_task:
+            limit1, limit5, limit15 = MAX_LOAD_NEW_TASKS
+        else:
+            limit1, limit5, limit15 = MAX_LOAD_RUNNING_TASKS
         load_1, load_5, load_15 = os.getloadavg()
-        if load_1 >= MAX_SYSTEM_LOAD:
+        if load_1 >= limit1:
             r1 = True
-        if load_5 >= MAX_SYSTEM_LOAD:
+        if load_5 >= limit5:
             r5 = True
-        if load_15 >= MAX_SYSTEM_LOAD:
+        if load_15 >= limit15:
             r15 = True
 
         if r1 or r5 or r15:
-            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 8)
-            return r1, r5, r15
+            self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), 2)
+            status = True
         else:
-            return False
+            status = False
+        return status, (r1, r5, r15)
 
 
     # ==========   Must be overloaded   ====================
@@ -318,19 +324,22 @@ class SipProcess(object):
         A number param is sent to task_progess()
         a string param is used directly."""
         if self._task_show_time + self.TASK_PROGRESS_TIME < time.time():
-            high_load = self.system_is_occupied()
-            if terminate_on_high_load and high_load:
+            busy, loads = self.system_is_occupied(check_to_start_new_task=False)
+            if terminate_on_high_load and busy:
                 # It wouldnt make sense to terminate all processes
                 # instead do a randomiztion and a kill percentage
-                load_1, load_5, load_15 = high_load
+                # also we leave the last task running until we hit the load15
+                # ceiling
+                task_count = models.ProcessMonitoring.objects.count()
+                load_1, load_5, load_15 = loads
                 if load_15:
                     raise SipSystemOverLoaded('terminating task due to high load')
                 elif load_5:
-                    if random.randint(1,10) > 5:
+                    if (task_count > 1) and (random.randint(1,10) > 5):
                         self.log('== Terminating proc %s due to load' % self.pid, 2)
                         raise SipSystemOverLoaded('terminating task due to high load')
                 elif load_1:
-                    if random.randint(1,10) > 9:
+                    if (task_count > 1) and (random.randint(1,10) > 9):
                         self.log('== Terminating proc %s due to load' % self.pid, 2)
                         raise SipSystemOverLoaded('terminating task due to high load')
             if progress:

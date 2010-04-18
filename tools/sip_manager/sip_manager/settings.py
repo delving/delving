@@ -109,9 +109,40 @@ except:
 
 
 try:
-    MAX_SYSTEM_LOAD
+    MAX_LOAD_NEW_TASKS
 except:
-    MAX_SYSTEM_LOAD = 2.0
+    MAX_LOAD_NEW_TASKS = (2.0, 1.8,  1.7)
+try:
+    float(MAX_LOAD_NEW_TASKS)
+    MAX_LOAD_NEW_TASKS = (MAX_LOAD_NEW_TASKS,
+                          MAX_LOAD_NEW_TASKS,
+                          MAX_LOAD_NEW_TASKS)
+except:
+    try:
+        a,b,c = MAX_LOAD_NEW_TASKS
+        float(a)
+        float(b)
+        float(c)
+    except:
+        raise exceptions.ImproperlyConfigured('MAX_LOAD_NEW_TASKS must be a float or a tupple of three floats - see local_settings_sample.py')
+
+try:
+    MAX_LOAD_RUNNING_TASKS
+except:
+    MAX_LOAD_RUNNING_TASKS = (2.5, 2.2, 2.0)
+try:
+    float(MAX_LOAD_RUNNING_TASKS)
+    MAX_LOAD_RUNNING_TASKS = (MAX_LOAD_RUNNING_TASKS,
+                              MAX_LOAD_RUNNING_TASKS,
+                              MAX_LOAD_RUNNING_TASKS)
+except:
+    try:
+        a,b,c = MAX_LOAD_RUNNING_TASKS
+        float(a)
+        float(b)
+        float(c)
+    except:
+        raise exceptions.ImproperlyConfigured('MAX_LOAD_RUNNING_TASKS must be a float or a tupple of three floats - see local_settings_sample.py')
 
 
 #
