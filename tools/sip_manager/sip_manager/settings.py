@@ -72,53 +72,53 @@ try:
     DEBUG
 except:
     DEBUG = False
-    print 'Using default value for DEBUG:', DEBUG
+    print 'Using default value for DEBUG =', DEBUG
 
 try:
     THREADING_PLUGINS
 except:
     THREADING_PLUGINS = True
-    print 'Using default value for THREADING_PLUGINS:', THREADING_PLUGINS
+    print 'Using default value for THREADING_PLUGINS =', THREADING_PLUGINS
 
 
 try:
     TREE_IS_INGESTION_SVN
 except:
     TREE_IS_INGESTION_SVN = True
-    print 'Using default value for TREE_IS_INGESTION_SVN:', TREE_IS_INGESTION_SVN
+    print 'Using default value for TREE_IS_INGESTION_SVN =', TREE_IS_INGESTION_SVN
 
 try:
     OLD_STYLE_IMAGE_NAMES
 except:
     OLD_STYLE_IMAGE_NAMES = False
-    print 'Using default value for OLD_STYLE_IMAGE_NAMES:', OLD_STYLE_IMAGE_NAMES
+    print 'Using default value for OLD_STYLE_IMAGE_NAMES =', OLD_STYLE_IMAGE_NAMES
 
 
 try:
     TASK_PROGRESS_INTERVALL
 except:
     TASK_PROGRESS_INTERVALL = 15
-    print 'Using default value for TASK_PROGRESS_INTERVALL:', TASK_PROGRESS_INTERVALL
+    print 'Using default value for TASK_PROGRESS_INTERVALL =', TASK_PROGRESS_INTERVALL
 
 try:
     PROCESS_SLEEP_TIME
 except:
     PROCESS_SLEEP_TIME = 60
-    print 'Using default value for PROCESS_SLEEP_TIME:', PROCESS_SLEEP_TIME
+    print 'Using default value for PROCESS_SLEEP_TIME =', PROCESS_SLEEP_TIME
 
 
 try:
     SIP_PROCESS_DBG_LVL
 except:
     SIP_PROCESS_DBG_LVL = 7
-    print 'Using default value for SIP_PROCESS_DBG_LVL:', SIP_PROCESS_DBG_LVL
+    print 'Using default value for SIP_PROCESS_DBG_LVL =', SIP_PROCESS_DBG_LVL
 
 
 try:
     MAX_LOAD_NEW_TASKS
 except:
     MAX_LOAD_NEW_TASKS = (1.9, 1.8,  1.7)
-    print 'Using default value for MAX_LOAD_NEW_TASKS:', MAX_LOAD_NEW_TASKS
+    print 'Using default value for MAX_LOAD_NEW_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_NEW_TASKS
 try:
     float(MAX_LOAD_NEW_TASKS)
     MAX_LOAD_NEW_TASKS = (MAX_LOAD_NEW_TASKS,
@@ -138,7 +138,7 @@ try:
     MAX_LOAD_RUNNING_TASKS
 except:
     MAX_LOAD_RUNNING_TASKS = (2.5, 2.2, 2.0)
-    print 'Using default value for MAX_LOAD_RUNNING_TASKS:', MAX_LOAD_RUNNING_TASKS
+    print 'Using default value for MAX_LOAD_RUNNING_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_RUNNING_TASKS
 try:
     float(MAX_LOAD_RUNNING_TASKS)
     MAX_LOAD_RUNNING_TASKS = (MAX_LOAD_RUNNING_TASKS,

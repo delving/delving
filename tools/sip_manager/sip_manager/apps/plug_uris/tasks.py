@@ -66,6 +66,7 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 
 import datetime
 import os
+import random
 import sys
 import time
 import urllib2
@@ -138,6 +139,7 @@ else:
 
 
 class UriPepareStorageDirs(SipProcess):
+    SHORT_DESCRIPTION = 'Creates storage dirs'
     INIT_PLUGIN = True
     PLUGIN_TAXES_DISK_IO = True
 
@@ -198,7 +200,7 @@ class UriCreate(SipProcess):
         self.cursor.execute(
             "SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL")
         if self.cursor.rowcount:
-            self.initial_message = 'Creating new uris for %i records' % self.cursor.rowcount
+            self.initial_message = 'Found %i records' % self.cursor.rowcount
             return True
         else:
             return False
@@ -274,17 +276,24 @@ class UriValidateSave(SipProcess):
     IS_THREADABLE = True
 
     def prepare(self):
-        urisources = models.UriSource.objects.filter(pid=0)
+
+        urisources = models.UriSource.objects.filter(pid=0).values('pk')
         if not urisources:
             return False
 
+        # in order to not try the same urisource all the time when one task
+        # previously was terminated due to high load, we randomize the order
+        lst = urisources._result_cache[:]
+        random.shuffle(lst)
+
         self.urisource = None
-        for urisource in urisources:
+        for d in lst:
+            urisource_id = d['pk']
             # Loop over available sources, see if any of them has pending jobs
-            if models.Uri.objects.new_by_source_count(urisource.pk):
+            if models.Uri.objects.new_by_source_count(urisource_id):
                 # found one!  lets work on it
-                self.urisource = urisource
-                self.initial_message = 'Checking urls for %s' % self.urisource.name_or_ip
+                self.urisource = models.UriSource.objects.filter(pk=urisource_id)[0]
+                self.initial_message = self.urisource.name_or_ip
                 break
 
         if not self.urisource:

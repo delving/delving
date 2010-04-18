@@ -40,6 +40,7 @@ TASK_PROGRESS_INTERVALL = settings.TASK_PROGRESS_INTERVALL
 SIP_LOG_FILE = settings.SIP_LOG_FILE
 MAX_LOAD_NEW_TASKS = settings.MAX_LOAD_NEW_TASKS
 MAX_LOAD_RUNNING_TASKS = settings.MAX_LOAD_RUNNING_TASKS
+DJANGO_DEBUG = settings.DEBUG
 
 
 SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
@@ -94,7 +95,7 @@ class SipProcess(object):
         self.pid = os.getpid()
         self.runs_in_thread = False
         self.is_prepared = False
-        self.task_show_log_lvl = 7 # normal level for showing task progress
+        self.task_show_log_lvl = 5 # normal level for showing task progress
         self.initial_message = '' # if set during prepare() will be used for first progress
 
 
@@ -107,7 +108,7 @@ class SipProcess(object):
             if self.short_name() not in RUNNING_EXECUTORS:
                 if not self.do_prepare():
                     return
-                self.log('++++++ Starting executor %s (%i)' % (self.short_name(), self.pm.pk), 8)
+                self.log('++++++ Starting executor %s - %i' % (self.short_name(), self.pm.pk), 8)
                 RUNNING_EXECUTORS.append(self.short_name())
                 ret = self.run_in_thread(self.run_it, *args, **kwargs)
             else:
@@ -129,7 +130,7 @@ class SipProcess(object):
         b = self.prepare()
         if b:
             "Do this once prepare has indicated something to be done."
-            self.log('starting task    +++++   %s   +++++' % self.short_name(), 8)
+            self.log('Initializing task    +++++   %s   +++++' % self.short_name(), 8)
             self.pm = models.ProcessMonitoring(pid=self.pid,
                                                plugin_module = self.__class__.__module__,
                                                plugin_name = self.__class__.__name__,
@@ -143,8 +144,11 @@ class SipProcess(object):
                 sub_pid = sub_pid / 10
             self.pid = self.pm.pid =  self.pid + sub_pid
             self.pm.save()
-            msg = '++ Starting task: %s' % self.initial_message or self.SHORT_DESCRIPTION
-            self.task_starting(msg)
+            self.task_starting(self.short_descr(), display=False)
+            self.log('++ Starting task: %s %s - %i' % (self.short_name(),
+                                                       self.initial_message,
+                                                       self.pm.pk),
+                     self.task_show_log_lvl + 1)
             self.is_prepared = True
         return b
 
@@ -181,7 +185,11 @@ class SipProcess(object):
 
     def process_cleanup(self):
         global RUNNING_EXECUTORS
-        self.log('  Finished task  -----   %s' % self.short_name(), 8)
+        self.log('-- Finishing task: %s %s - %i' % (self.short_name(),
+                                                    self.initial_message,
+                                                    self.pm.pk),
+                     self.task_show_log_lvl + 1)
+
         pm_id = self.pm.pk
         self.pm.delete()
         if self.runs_in_thread and (self.short_name() in RUNNING_EXECUTORS):
@@ -189,13 +197,15 @@ class SipProcess(object):
             # running executor if we are terminating due to this executor
             # already running.
             # a running executor will set runs_in_thread True
-            self.log('------- terminating executor %s (%i)' % (self.short_name(), pm_id), 8)
+            self.log('------- terminating executor %s - %i' % (self.short_name(), pm_id), 9)
             RUNNING_EXECUTORS.remove(self.short_name())
 
         # Theese clean up cached queries if settings.DEBUG = True
         # otherwise does nothing
-        db.reset_queries()
-        db.connection.close()
+        if DJANGO_DEBUG:
+            db.reset_queries()
+            db.connection.close()
+        self.log('  Finished task  -----   %s' % self.short_name(), 9)
         return
 
 
