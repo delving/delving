@@ -78,14 +78,14 @@ class MainProcessor(sipproc.SipProcess):
         """
         # First run all init tasks once
         print
-        print 'Running init plugins'
+        print ' =====   Running init plugins   ====='
         for taskClass in self.tasks_init:
             tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
             print '\t%s' % tc.short_name()
             tc.run()
 
         print
-        print 'Commencing operations'
+        print ' =====   Commencing operations   ====='
         while True:
             busy = False
             # First run all simple tasks once
@@ -125,7 +125,7 @@ class MainProcessor(sipproc.SipProcess):
 
     """
     def find_tasks(self):
-        print 'Scanning for plugins'
+        print ' =====   Scanning for plugins   ====='
         for app in settings.INSTALLED_APPS:
             if not app.find('apps') == 0:
                 continue

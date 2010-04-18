@@ -95,6 +95,7 @@ class SipProcess(object):
         self.runs_in_thread = False
         self.is_prepared = False
         self.task_show_log_lvl = 7 # normal level for showing task progress
+        self.initial_message = '' # if set during prepare() will be used for first progress
 
 
     def run(self, *args, **kwargs):
@@ -142,7 +143,7 @@ class SipProcess(object):
                 sub_pid = sub_pid / 10
             self.pid = self.pm.pid =  self.pid + sub_pid
             self.pm.save()
-            self.task_starting(self.SHORT_DESCRIPTION)
+            self.task_starting(self.initial_message or self.SHORT_DESCRIPTION)
             self.is_prepared = True
         return b
 

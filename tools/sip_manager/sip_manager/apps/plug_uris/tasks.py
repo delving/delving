@@ -198,6 +198,7 @@ class UriCreate(SipProcess):
         self.cursor.execute(
             "SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL")
         if self.cursor.rowcount:
+            self.initial_message = 'Creating new uris for %i records' % self.cursor.rowcount
             return True
         else:
             return False
@@ -283,6 +284,7 @@ class UriValidateSave(SipProcess):
             if models.Uri.objects.new_by_source_count(urisource.pk):
                 # found one!  lets work on it
                 self.urisource = urisource
+                self.initial_message = 'Checking urls for %s' % self.urisource.name_or_ip
                 break
 
         if not self.urisource:
