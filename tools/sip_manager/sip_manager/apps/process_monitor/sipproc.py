@@ -220,7 +220,7 @@ class SipProcess(object):
             self.log('== load too high: %0.2f %0.2f %0.2f' % (load_1, load_5, load_15), log_lvl)
             busy = True
         else:
-            bust = False
+            busy = False
         return busy, (r1, r5, r15)
 
 
