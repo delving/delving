@@ -143,7 +143,8 @@ class SipProcess(object):
                 sub_pid = sub_pid / 10
             self.pid = self.pm.pid =  self.pid + sub_pid
             self.pm.save()
-            self.task_starting(self.initial_message or self.SHORT_DESCRIPTION)
+            msg = '++ Starting task: %s' % self.initial_message or self.SHORT_DESCRIPTION
+            self.task_starting(msg)
             self.is_prepared = True
         return b
 
