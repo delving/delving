@@ -358,17 +358,17 @@ class SipProcess(object):
         load_1, load_5, load_15 = loads
         if load_15:
             # at this level allways terminate
-            raise SipSystemOverLoaded('terminating task due to high load', 2)
+            raise SipSystemOverLoaded('terminating task due to high load 15', 2)
         elif load_5:
             # 50% propab
             if (task_count > 1) and (random.randint(1,10) > 5):
                 self.log('== Terminating proc %s due to load' % self.pid, 2)
-                raise SipSystemOverLoaded('terminating task due to high load')
+                raise SipSystemOverLoaded('terminating task due to high load 5')
         elif load_1:
             # 2 * task_count % , max 20 propab
             if (task_count > 1) and (random.randint(1,100) <= min(20,(2 * task_count))):
                 self.log('== Terminating proc %s due to load' % self.pid, 2)
-                raise SipSystemOverLoaded('terminating task due to high load')
+                raise SipSystemOverLoaded('terminating task due to high load 1')
 
 
 
