@@ -36,7 +36,6 @@
                 <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
             </#if>
             <a class="advanced-search" href="advancedsearch.html" onclick="toggleObject('search_simple');toggleObject('search_advanced');return false;" title="Advanced Search"><@spring.message 'AdvancedSearch_t' /></a>
-            <label
         </form>
     </div>
 
