@@ -145,7 +145,7 @@ class RequestParseNew(SipProcess):
 
         # in order not to grab control to long, just handle one request on each call to this
         self.request_id = request.id
-        self.initial_message = 'About to parse for ese records in ' % request.file_name
+        self.initial_message = 'About to parse for ese records in %s' % request.file_name
         return True
 
 
