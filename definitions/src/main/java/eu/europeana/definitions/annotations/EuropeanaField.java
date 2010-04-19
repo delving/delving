@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.annotation;
+package eu.europeana.definitions.annotations;
 
 /**
  * Reveal information from the annotated bean field
@@ -30,19 +30,14 @@ package eu.europeana.core.querymodel.annotation;
 
 public interface EuropeanaField {
 
+    String getLocalName();
+
     /**
      * How does its name begin?
      * @return the first part
      */
 
     String getPrefix();
-
-    /**
-     * How does the name end?
-     * @return the second part
-     */
-
-    String getName();
 
     /**
      * A combination of prefix and name, separated by underscore
@@ -86,8 +81,4 @@ public interface EuropeanaField {
     boolean isEuropeanaObject();
 
     boolean isEuropeanaType();
-
-    String getIndexName();
-
-    String getSolrFieldName();
 }

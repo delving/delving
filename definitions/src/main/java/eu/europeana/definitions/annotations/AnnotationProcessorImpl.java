@@ -19,11 +19,8 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.annotation;
+package eu.europeana.definitions.annotations;
 
-import org.apache.log4j.Logger;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,11 +38,10 @@ import java.util.Set;
  */
 
 public class AnnotationProcessorImpl implements AnnotationProcessor {
-    private Logger log = Logger.getLogger(getClass());
     private Set<EuropeanaFieldImpl> facetFields = new HashSet<EuropeanaFieldImpl>();
     private Set<EuropeanaFieldImpl> solrFields = new HashSet<EuropeanaFieldImpl>();
     private Set<EuropeanaFieldImpl> mappableFields = new HashSet<EuropeanaFieldImpl>();
-    private String [] facetFieldStrings;
+    private String[] facetFieldStrings;
     private List<String> solrFieldList;
     private Map<Class<?>, EuropeanaBean> beanMap = new HashMap<Class<?>, EuropeanaBean>();
     private HashMap<String, String> facetMap = new HashMap<String, String>();
@@ -82,7 +78,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         if (solrFieldList == null) {
             solrFieldList = new ArrayList<String>();
             for (EuropeanaFieldImpl solrField : solrFields) {
-                solrFieldList.add(solrField.getSolrFieldName());
+                solrFieldList.add(solrField.getFieldNameString());
             }
         }
         return solrFieldList;
@@ -115,11 +111,10 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
     private void processAnnotations(Class<?> c) {
         if (!beanMap.containsKey(c)) {
-            log.info("Processing "+c.getCanonicalName());
-            EuropeanaBeanImpl europeanaBean = new EuropeanaBeanImpl(c);
+            EuropeanaBeanImpl europeanaBean = new EuropeanaBeanImpl();
             Class<?> clazz = c;
             while (clazz != Object.class) {
-                for (Field field : clazz.getDeclaredFields()) {
+                for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
                     if (!Modifier.isTransient(field.getModifiers())) {
                         EuropeanaFieldImpl europeanaField = new EuropeanaFieldImpl(field);
                         if (europeanaField.isFacet()) {
@@ -170,13 +165,8 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 //    }
 
     private static class EuropeanaBeanImpl implements EuropeanaBean {
-        private Class<?> beanClass;
         private Set<EuropeanaField> fields = new HashSet<EuropeanaField>();
-        private String [] fieldStrings;
-
-        private EuropeanaBeanImpl(Class<?> beanClass) {
-            this.beanClass = beanClass;
-        }
+        private String[] fieldStrings;
 
         @Override
         public Set<EuropeanaField> getFields() {
@@ -189,7 +179,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                 fieldStrings = new String[fields.size()];
                 int index = 0;
                 for (EuropeanaField europeanaField : fields) {
-                    fieldStrings[index] = europeanaField.getName();
+                    fieldStrings[index] = europeanaField.getFieldNameString();
                     index++;
                 }
             }
@@ -202,25 +192,20 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     private static class EuropeanaFieldImpl implements EuropeanaField {
-        private Field field;
+        private java.lang.reflect.Field field;
         private Europeana europeanaAnnotation;
-        private org.apache.solr.client.solrj.beans.Field fieldAnnotation;
         private Solr solrAnnotation;
         private String fieldNameString;
 
-        private EuropeanaFieldImpl(Field field) {
+        private EuropeanaFieldImpl(java.lang.reflect.Field field) {
             this.field = field;
             europeanaAnnotation = field.getAnnotation(Europeana.class);
-            fieldAnnotation = field.getAnnotation(org.apache.solr.client.solrj.beans.Field.class);
             solrAnnotation = field.getAnnotation(Solr.class);
             if (europeanaAnnotation == null) {
-                throw new IllegalStateException("Field must have @Europeana annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
-            }
-            if (fieldAnnotation == null) {
-                throw new IllegalStateException("Field must have solrj @Field annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
+                throw new IllegalStateException("Field must have @Europeana annotation: " + field.getDeclaringClass().getName() + "." + field.getName());
             }
             if (solrAnnotation == null) {
-                throw new IllegalStateException("Field must have solrj @Solr annotation: "+field.getDeclaringClass().getName()+"."+field.getName());
+                throw new IllegalStateException("Field must have solrj @Solr annotation: " + field.getDeclaringClass().getName() + "." + field.getName());
             }
         }
 
@@ -230,37 +215,16 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                 return europeanaAnnotation.facetPrefix();
             }
             else {
-                return solrAnnotation.namespace();
+                return solrAnnotation.prefix();
             }
         }
 
         @Override
-        public String getName() {
-            String name = fieldAnnotation.value();
-            if (name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
+        public String getLocalName() {
+            String name = solrAnnotation.localName();
+            if (name.isEmpty()) {
                 name = field.getName();
             }
-            return name;
-        }
-
-        @Override
-        public String getIndexName() {
-            String name = solrAnnotation.name();
-            if (name.isEmpty()) {
-                name = fieldAnnotation.value();
-                if (name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
-                    name = field.getName();
-                }
-            }
-            return name;
-        }
-
-        @Override
-        public String getSolrFieldName() {
-            String name = fieldAnnotation.value();
-                if (name.equals(org.apache.solr.client.solrj.beans.Field.DEFAULT)) {
-                    name = field.getName();
-                }
             return name;
         }
 
@@ -268,10 +232,10 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         public String getFieldNameString() {
             if (fieldNameString == null) {
                 if (europeanaAnnotation.facet() || getPrefix().isEmpty()) {
-                    fieldNameString = getName();
+                    fieldNameString = getLocalName();
                 }
                 else {
-                    fieldNameString = getPrefix()+'_'+getIndexName();
+                    fieldNameString = getPrefix() + '_' + getLocalName();
                 }
             }
             return fieldNameString;
@@ -289,7 +253,12 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
 
         @Override
         public String getFacetName() {
-            return fieldAnnotation.value();
+            if (europeanaAnnotation.facet()) {
+                return field.getName().toUpperCase();
+            }
+            else {
+                return field.getName();
+            }
         }
 
         @Override

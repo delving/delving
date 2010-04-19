@@ -1,10 +1,14 @@
 package eu.europeana.core.querymodel.query;
 
-import eu.europeana.core.querymodel.annotation.QueryAnalyzer;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
