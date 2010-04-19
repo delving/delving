@@ -3,8 +3,6 @@ package eu.europeana.sip.gui;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Provides a set of GUI elements to create basic mappings. Detected ESE elements can
@@ -14,11 +12,10 @@ import java.util.TreeMap;
  */
 public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
-    private Map<String, String> data;
+    private Object[][] data = new Object[][]{};
 
-    public MappingsPanel(Map<String, String> detectedItems) {
+    public MappingsPanel() {
         super(new BorderLayout());
-        this.data = detectedItems;
         init();
     }
 
@@ -36,7 +33,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
             @Override
             public int getRowCount() {
-                return data.size();
+                return data.length;
             }
 
             @Override
@@ -51,28 +48,13 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
             @Override
             public Object getValueAt(int rowIndex, int columnIndex) {
-                Object[] entries = data.entrySet().toArray();
-                Map.Entry entry = (Map.Entry) entries[rowIndex];
-                if (columnIndex == 0) {
-                    return entry.getKey();
-                }
-                else if (columnIndex == 1) {
-                    return entry.getValue();
-                }
-                else if (columnIndex == 2) {
-                    return true; // todo: not in list
-                }
-                else {
-                    throw new IndexOutOfBoundsException("Invalid index specified");
-                }
+                return data[rowIndex][columnIndex];
             }
 
             @Override
-            public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-                if (columnIndex == 2) {
-                    // todo: change value
-                    fireTableCellUpdated(rowIndex, columnIndex);
-                }
+            public void setValueAt(Object value, int rowIndex, int columnIndex) {
+                data[rowIndex][columnIndex] = value;
+                fireTableCellUpdated(rowIndex, columnIndex);
             }
 
             @Override
@@ -104,11 +86,11 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
     @Override
     public void updateAvailableNodes(java.util.List<String> nodes) {
-        Map<String, String> map = new TreeMap<String, String>();
-        for (String node : nodes) {
-            map.put(node, node);
+        int counter = 0;
+        data = new Object[nodes.size()][];
+        for (String s : nodes) {
+            data[counter] = new Object[]{s, s, true};
+            counter++;
         }
-        System.out.printf("Update!%n");
-        this.data = map;
     }
 }

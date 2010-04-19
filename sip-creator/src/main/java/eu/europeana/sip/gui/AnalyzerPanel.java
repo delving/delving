@@ -69,7 +69,7 @@ public class AnalyzerPanel extends JPanel {
     private GroovyEditor groovyEditor = new GroovyEditor();
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
-    private MappingsPanel mappingsPanel = new MappingsPanel(new TreeMap<String, String>());
+    private MappingsPanel mappingsPanel = new MappingsPanel();
 
     private AnalyzerPanel instance;
 
