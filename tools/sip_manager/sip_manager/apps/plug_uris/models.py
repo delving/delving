@@ -28,9 +28,7 @@
 from django.core import exceptions
 from django.db import models, connection
 
-#from django.contrib import admin
 
-#from utils import glob_consts
 
 from apps.base_item.models import MdRecord
 from apps.dummy_ingester.models import Request

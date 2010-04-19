@@ -34,7 +34,7 @@ from django.db import connection
 
 from utils.gen_utils import db_is_mysql
 
-import sipproc
+import sip_task
 
 
 # Since looking up in settings takes some extra cpu, important settings
@@ -44,7 +44,7 @@ PLUGIN_FILTER = settings.PLUGIN_FILTER
 SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
 
 
-class MainProcessor(sipproc.SipTask):
+class MainProcessor(sip_task.SipTask):
 
     def __init__(self, options):
         super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
@@ -98,20 +98,10 @@ class MainProcessor(sipproc.SipTask):
                     busy, loads = self.system_is_occupied()
                     if busy:
                         break
-                    if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
-                        # For the moment try slow starting, just one thread per run
-                        # this way load builds up more slowly and should keep
-                        # within reasonable limits.
-                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
-                        """
-                        while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                            # Continue to start new threads as long as they
-                            # find something to work on
-                            #print '*** started thread for', taskClass.__name__
-                            pass
-                        """
-                    else:
-                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+                    if taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                        # it was started
+                        busy = True # indication to break out of outer loop
+                        break
 
             if self.single_run:
                 print 'Single run, aborting after one run-through'

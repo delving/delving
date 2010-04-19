@@ -6,39 +6,43 @@ from django.core import exceptions
 
 
 try:
-    DATABASE_ENGINE
+    DATABASES
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_ENGINE - see local_settings_sample.py')
+    # old style single database
+    try:
+        DATABASE_ENGINE
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_ENGINE - see local_settings_sample.py')
 
 
-try:
-    DATABASE_NAME
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_NAME - see local_settings_sample.py')
+    try:
+        DATABASE_NAME
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_NAME - see local_settings_sample.py')
 
 
-try:
-    DATABASE_USER
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_USER - see local_settings_sample.py')
+    try:
+        DATABASE_USER
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_USER - see local_settings_sample.py')
 
 
-try:
-    DATABASE_PASSWORD
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PASSWORD - see local_settings_sample.py')
+    try:
+        DATABASE_PASSWORD
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PASSWORD - see local_settings_sample.py')
 
 
-try:
-    DATABASE_HOST
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_HOST - see local_settings_sample.py')
+    try:
+        DATABASE_HOST
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_HOST - see local_settings_sample.py')
 
 
-try:
-    DATABASE_PORT
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PORT - see local_settings_sample.py')
+    try:
+        DATABASE_PORT
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PORT - see local_settings_sample.py')
 
 
 try:

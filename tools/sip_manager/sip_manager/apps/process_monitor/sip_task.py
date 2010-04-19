@@ -76,7 +76,7 @@ class SipTask(object): #SipProcess(object):
 
     INIT_PLUGIN = False  # If True, is run (once) before normal plugins
 
-    EXECUTOR_STYLE = False # Limited threading, at the most one instance of a class
+    #EXECUTOR_STYLE = False # Limited threading, at the most one instance of a class
                            # marked with this is started in a thread,
                            # but no more are started until the running executor
                            # has terminated
@@ -112,23 +112,17 @@ class SipTask(object): #SipProcess(object):
 
     def run(self, *args, **kwargs):
         global RUNNING_EXECUTORS
+        if (self.THREAD_MODE == SIPT_SINGLE) and (self.short_name() in RUNNING_EXECUTORS):
+            return
+
         ret = False
-        if self.short_name() == 'RequestParseNew':
-            pass
-        if self.EXECUTOR_STYLE:
-            if self.short_name() not in RUNNING_EXECUTORS:
-                if not self.do_prepare():
-                    return
-                self.log('++++++ Starting executor %s - %i' % (self.short_name(), self.pm.pk), 8)
-                RUNNING_EXECUTORS.append(self.short_name())
-                ret = self.run_in_thread(self.run_it, *args, **kwargs)
-            else:
-                pass
-        else:
-            if not self.do_prepare():
-                return
+
+        if self.do_prepare():
             try:
-                ret = self.run_it(*args, **kwargs)
+                if self.THREAD_MODE in (SIPT_SINGLE, SIPT_THREADABLE):
+                    ret = self.run_in_thread(self.run_it, *args, **kwargs)
+                else:
+                    ret = self.run_it(*args, **kwargs)
             except SipSystemOverLoaded:
                 ret = False
 
@@ -155,6 +149,9 @@ class SipTask(object): #SipProcess(object):
                 sub_pid = sub_pid / 10
             self.pid = self.pm.pid =  self.pid + sub_pid
             self.pm.save()
+            if settings.THREADING_PLUGINS and self.THREAD_MODE == SIPT_SINGLE:
+                RUNNING_EXECUTORS.append(self.short_name())
+                self.log('++++++ Starting executor %s - %i' % (self.short_name(), self.pm.pk), 8)
             self.task_starting(self.short_descr(), display=False)
             self.log('++ Starting task: %s %s - %i' % (self.short_name(),
                                                        self.initial_message,
@@ -203,6 +200,7 @@ class SipTask(object): #SipProcess(object):
 
         pm_id = self.pm.pk
         self.pm.delete()
+
         if self.runs_in_thread and (self.short_name() in RUNNING_EXECUTORS):
             # the runs_in_thread check is needed, to avoid removing an actual
             # running executor if we are terminating due to this executor
@@ -217,7 +215,6 @@ class SipTask(object): #SipProcess(object):
             db.reset_queries()
             db.connection.close()
         self.log('  Finished task  -----   %s' % self.short_name(), 9)
-        return
 
 
     def system_is_occupied(self, check_to_start_new_task=True):

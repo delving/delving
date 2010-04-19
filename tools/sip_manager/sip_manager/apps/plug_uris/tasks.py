@@ -81,7 +81,7 @@ from django.db import connection
 from django.conf import settings
 
 from apps.base_item import models as base_item
-from apps.process_monitor.sipproc import SipProcess, SipSystemOverLoaded
+from apps.process_monitor import sip_task
 
 from utils.gen_utils import calculate_hash
 
@@ -138,7 +138,7 @@ else:
     REL_DIR_BRIEF = 'BRIEF_DOC'
 
 
-class UriPepareStorageDirs(SipProcess):
+class UriPepareStorageDirs(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Creates storage dirs'
     INIT_PLUGIN = True
     PLUGIN_TAXES_DISK_IO = True
@@ -187,9 +187,9 @@ class UriPepareStorageDirs(SipProcess):
                     os.mkdir(new_dir)
 
 
-class UriCreate(SipProcess):
+class UriCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Create new uri records'
-    EXECUTOR_STYLE = True
+    THREAD_MODE = sip_task.SIPT_SINGLE
 
     def prepare(self):
         self.cursor = connection.cursor()
@@ -270,10 +270,10 @@ class UriCreate(SipProcess):
 
 
 
-class UriValidateSave(SipProcess):
+class UriValidateSave(sip_task.SipTask):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
-    IS_THREADABLE = True
+    THREAD_MODE = sip_task.SIPT_THREADABLE
 
     def prepare(self):
 
@@ -306,14 +306,10 @@ class UriValidateSave(SipProcess):
         # We must mark this item early, before possible threading kicks in
         # otherwise we might find it again before the thread actually starts
         # to work on the current set
-        if not self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source'):
+        self.urisource = self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source')
+        if not self.urisource:
             return False
 
-        self.run_in_thread(self.do_one_source)
-        return True
-
-
-    def do_one_source(self):
         current_count = models.Uri.objects.new_by_source_count(self.urisource.pk)
         self.task_starting('', current_count, display=False)
         record_count = 0
@@ -452,7 +448,7 @@ class UriValidateSave(SipProcess):
 
     def set_urierr(self, code, msg=''):
         if code not in models.URI_ERR_CODES:
-            raise SipProcessException('set_urierr called with invalid errcode')
+            raise SipTaskException('set_urierr called with invalid errcode')
         self.uri.err_code = code
         if msg:
             self.uri.err_msg = msg
@@ -530,7 +526,7 @@ class UriValidateSave(SipProcess):
 
     def remove_file(self, full_path):
         if not SIP_OBJ_FILES in full_path:
-            raise SipProcessException('Attempt to remove illegal filename: %s' % full_path)
+            raise SipTaskException('Attempt to remove illegal filename: %s' % full_path)
         try:
             os.remove(full_path)
         except OSError:
@@ -582,7 +578,7 @@ class UriValidateSave(SipProcess):
 
 
 
-class UriCleanup(SipProcess):
+class UriCleanup(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Remove uri records no longer having a request'
 
     def run_it(self):
@@ -590,7 +586,7 @@ class UriCleanup(SipProcess):
         return True
 
 
-class UriFileTreeMonitor(SipProcess):
+class UriFileTreeMonitor(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Walks file tree and finds orphan files'
 
     def run_it(self):
