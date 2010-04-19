@@ -40,7 +40,6 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-
 public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
 
     public final static int VALIDATION_DELAY = 500;
@@ -96,6 +95,8 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
                     case KeyEvent.VK_UP:
                     case KeyEvent.VK_DOWN:
                         autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
+                        break;
+                    case KeyEvent.VK_ENTER:
                         break;
                     default:
                         codeArea.requestFocus();

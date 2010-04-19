@@ -45,6 +45,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A Graphical interface for analysis
@@ -67,6 +69,7 @@ public class AnalyzerPanel extends JPanel {
     private GroovyEditor groovyEditor = new GroovyEditor();
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
+    private MappingsPanel mappingsPanel = new MappingsPanel(new TreeMap<String, String>());
 
     private AnalyzerPanel instance;
 
@@ -166,12 +169,22 @@ public class AnalyzerPanel extends JPanel {
     }
 
     private Component createMappingPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(groovyEditor, BorderLayout.CENTER);
-        p.add(createNextButton(), BorderLayout.NORTH);
-        p.setPreferredSize(new Dimension(500, 800));
-        return p;
+        JTabbedPane mappingPane = new JTabbedPane();
+        mappingPane.addTab("Source", groovyEditor);
+        Map<String, String> map = new TreeMap<String, String>();
+        map.put("dc_date", "dc_date");
+        map.put("dc_title", "dc_title");
+        mappingPane.addTab("Mappings", mappingsPanel);
+        return mappingPane;
     }
+
+//    private Component createMappingPanel() {
+//        JPanel p = new JPanel(new BorderLayout());
+//        p.add(groovyEditor, BorderLayout.CENTER);
+//        p.add(createNextButton(), BorderLayout.NORTH);
+//        p.setPreferredSize(new Dimension(500, 800));
+//        return p;
+//    }
 
     private JComponent createNextButton() {
 //        nextRecordButton.setEnabled(false);
@@ -303,6 +316,9 @@ public class AnalyzerPanel extends JPanel {
         mappingTree.getVariables(variables);
         if (null != groovyEditor) {
             groovyEditor.updateAvailableNodes(variables);
+        }
+        if (null != mappingsPanel) {
+            mappingsPanel.updateAvailableNodes(variables);
         }
         for (String variable : variables) {
             log.info(variable);

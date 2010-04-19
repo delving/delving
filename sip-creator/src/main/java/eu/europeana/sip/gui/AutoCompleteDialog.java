@@ -18,16 +18,8 @@ public class AutoCompleteDialog extends JFrame {
 
     private Listener listener;
     private JTextComponent parent;
-    private Point lastCaretPosition;
     private JComboBox jComboBox = new JComboBox();
-    private final AutoComplete autoComplete = new AutoCompleteImpl(
-            new AutoCompleteImpl.Listener() {
-                @Override
-                public void cancelled() {
-                    // todo: clean up
-                }
-            }
-    );
+    private final AutoComplete autoComplete = new AutoCompleteImpl();
 
     interface Listener {
 
@@ -50,7 +42,8 @@ public class AutoCompleteDialog extends JFrame {
                     public void keyPressed(KeyEvent e) {
                         switch (e.getKeyCode()) {
                             case KeyEvent.VK_ESCAPE: {
-                                finished(false);
+                                setVisible(false);
+                                autoComplete.cancelled();
                             }
                         }
                     }
@@ -63,17 +56,13 @@ public class AutoCompleteDialog extends JFrame {
                     public void itemStateChanged(ItemEvent e) {
                         if (ItemEvent.SELECTED == e.getStateChange()) {
                             listener.itemSelected(e.getItem());
-                            finished(true);
+                            setVisible(false);
+                            autoComplete.cleared();
                         }
                     }
                 }
         );
         setUndecorated(true);
-    }
-
-    private void finished(boolean success) {
-        setVisible(false);
-        parent.requestFocus();
     }
 
     public void updateLocation(Point caretLocation, Point editorLocation) {
@@ -90,7 +79,6 @@ public class AutoCompleteDialog extends JFrame {
     public void updateElements(KeyEvent event, List<String> availableElements) { // todo: delegate to autoComplete
         availableElements = autoComplete.complete(event, availableElements);
         if (null == availableElements) {
-            // todo: cancel
             setVisible(false);
             parent.requestFocus();
             return;
@@ -101,6 +89,6 @@ public class AutoCompleteDialog extends JFrame {
     }
 
     public void requestFocus(Point lastCaretPosition) {
-        this.lastCaretPosition = lastCaretPosition;
+        Point lastCaretPosition1 = lastCaretPosition;
     }
 }
