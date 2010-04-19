@@ -44,7 +44,7 @@ PLUGIN_FILTER = settings.PLUGIN_FILTER
 SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
 
 
-class MainProcessor(sipproc.SipProcess):
+class MainProcessor(sipproc.SipTask):
 
     def __init__(self, options):
         super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
@@ -86,8 +86,8 @@ class MainProcessor(sipproc.SipProcess):
 
         print
         print ' =====   Commencing operations   ====='
-        print 'Tastk start limits', settings.MAX_LOAD_NEW_TASKS
-        print 'Task kill limits', settings.MAX_LOAD_RUNNING_TASKS
+        print 'Tastk start limits  = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_NEW_TASKS
+        print 'Task kill limits    = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_RUNNING_TASKS
         while True:
             busy = False
             # First run all simple tasks once

@@ -49,17 +49,24 @@ SHOW_DATE_LIMIT = 60 * 60 * 20 # etas further than this will display date
 RUNNING_EXECUTORS = []
 
 
-class SipProcessException(Exception):
+class SipTaskException(Exception):
     pass
 
 class SipSystemOverLoaded(Exception):
     pass
 
 
+# Run mode for a task
+SIPT_THREADABLE = 'threadale' # Can be run in multiple instances
+SIPT_SINGLE = 'one thread' # one instance can be run whilst the monitor continues
+SIPT_NOT = 'not threadable' # no threading, monitor should wait for this to complete
 
-class SipProcess(object):
+SIP_THREAD_STYLES = (SIPT_NOT, SIPT_SINGLE, SIPT_THREADABLE)
+
+
+class SipTask(object): #SipProcess(object):
     """
-    This is the baseclass for sip processes
+    This is the baseclass for sip Tasks
 
     each subclass should define a run() that does the actual work
 
@@ -74,7 +81,9 @@ class SipProcess(object):
                            # but no more are started until the running executor
                            # has terminated
 
-    IS_THREADABLE = False # Indicates this plugin is threadable
+    THREAD_MODE = SIPT_NOT # Indicates if ths task can be run in multiple
+                           # instances or not
+    #IS_THREADABLE = False # Indicates this plugin is threadable
                           # and will be called repeatedly until it returns False
                           # a True result means that a thread was spawned.
 
@@ -91,6 +100,8 @@ class SipProcess(object):
 
     def __init__(self, debug_lvl=2, run_once=False):
         self.debug_lvl = debug_lvl
+        if self.THREAD_MODE not in (SIP_THREAD_STYLES):
+            raise SipTaskException('Invalid THREAD_MODE')
         self.run_once = run_once # if true plugin should exit after one runthrough
         self.pid = os.getpid()
         self.runs_in_thread = False
@@ -180,7 +191,7 @@ class SipProcess(object):
         for pm in pms:
             # TODO: a process failed, flag it, and remove its lock
             pass
-        raise SipProcessException(msg)
+        raise SipTaskException(msg)
 
 
     def process_cleanup(self):
@@ -237,7 +248,7 @@ class SipProcess(object):
     def run_it(self):
         msg = 'run_it() must be implemented!'
         print '******', msg
-        raise SipProcessException(msg)
+        raise SipTaskException(msg)
 
 
     # ==========   Can be overloaded   ====================
