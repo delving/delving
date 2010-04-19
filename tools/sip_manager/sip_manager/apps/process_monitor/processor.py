@@ -86,6 +86,8 @@ class MainProcessor(sipproc.SipProcess):
 
         print
         print ' =====   Commencing operations   ====='
+        print 'Tastk start limits', settings.MAX_LOAD_NEW_TASKS
+        print 'Task kill limits', settings.MAX_LOAD_RUNNING_TASKS
         while True:
             busy = False
             # First run all simple tasks once
