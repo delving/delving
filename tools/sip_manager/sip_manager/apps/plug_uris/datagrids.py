@@ -4,19 +4,17 @@ from djblets.datagrid.grids import Column, DataGrid
 
 import models
 
-"""
+COL_NAME = 'name'
+COL_WAITING = 'waiting'
+COL_OK = 'imgs_ok'
+COL_BAD = 'imgs_bad'
 
-COL_NAME = 'Name'
-COL_WAITING = 'Waiting'
-COL_OK = 'Ok'
-COL_BAD = 'Bad'
-
-class UriSourcesDataGridNot(DataGrid):
-    idd = Column("id", sortable=True)
+class UriSourcesDataGrid(DataGrid):
+    #idd = Column("id", sortable=True)
     name = Column(COL_NAME, sortable=True)
     waiting = Column(COL_WAITING, sortable=True)
-    ok = Column(COL_OK, sortable=True)
-    bad = Column(COL_BAD, sortable=True)
+    imgs_ok = Column(COL_OK, sortable=True)
+    imgs_bad = Column(COL_BAD, sortable=True)
 
     def __init__(self, request):
         sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
@@ -31,14 +29,13 @@ class UriSourcesDataGridNot(DataGrid):
         DataGrid.__init__(self, request,
                           models.UriSource.objects.extra(select={
                               'imgs_ok':sql_img_ok,
-                              'imgs_bad': sql_img_bad,
+                              #'imgs_bad': sql_img_bad,
                               'imgs_waiting':sql_img_waiting,
                               #'eta':sql,
                               }), "Uri sources")
         #DataGrid.__init__(self, request, User.objects.filter(is_active=True), "Users")
         self.default_sort = [COL_NAME]
         self.default_columns = [COL_NAME, COL_WAITING, COL_OK, COL_BAD]
-"""
 
 
 
@@ -46,7 +43,7 @@ COL_PID = 'pid'
 COL_NAME_IP = 'name_or_ip'
 
 
-class UriSourcesDataGrid(DataGrid):
+class UriSourcesDataGrid2(DataGrid):
     pid = Column(COL_PID, sortable=True)
     name_or_ip = Column(COL_NAME_IP, sortable=True)
 
