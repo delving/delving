@@ -45,6 +45,18 @@ SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
 
 
 class MainProcessor(sip_task.SipTask):
+    ALL_TABLES = [('base_item_mdrecord', True),
+                  ('base_item_requestmdrecord', False),
+                  ('dummy_ingester_aggregator', False),
+                  ('dummy_ingester_dataset', False),
+                  ('dummy_ingester_provider', False),
+                  ('dummy_ingester_request', True),
+                  ('log_errlog', False),
+                  ('plug_uris_requri', False),
+                  ('plug_uris_uri', True),
+                  ('plug_uris_urisource', True),
+                  ('process_monitor_processmonitoring', False)]
+
 
     def __init__(self, options):
         super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
@@ -88,6 +100,7 @@ class MainProcessor(sip_task.SipTask):
         print ' =====   Commencing operations   ====='
         print 'Tastk start limits  = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_NEW_TASKS
         print 'Task kill limits    = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_RUNNING_TASKS
+        idle_count = 0
         while True:
             busy = False
             # First run all simple tasks once
@@ -101,12 +114,17 @@ class MainProcessor(sip_task.SipTask):
                     if taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
                         # it was started
                         busy = True # indication to break out of outer loop
+                        idle_count = 0
                         break
 
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
-            #print 'sleeping a while'
+            if not busy:
+                idle_count += 1
+            if SIP_PROCESS_DBG_LVL > 7 or idle_count > 10: # dont indicate idling too often...
+                idle_count = 0
+                print ' nothing to do for the moment...'
             time.sleep(PROCESS_SLEEP_TIME)
         return True
 
@@ -156,17 +174,7 @@ class MainProcessor(sip_task.SipTask):
             sql = 'TRUNCATE %s'
         else:
             sql = 'TRUNCATE %s CASCADE'
-        for table in ('base_item_mdrecord',
-                      'base_item_requestmdrecord',
-                      'dummy_ingester_aggregator',
-                      'dummy_ingester_dataset',
-                      'dummy_ingester_provider',
-                      'dummy_ingester_request',
-                      'plug_uris_requri',
-                      'plug_uris_uri',
-                      'plug_uris_urisource',
-                      'process_monitor_processmonitoring',
-                      ):
+        for table, has_pid in self.ALL_TABLES:
             cursor.execute(sql % table)
         return True
 
@@ -176,17 +184,7 @@ class MainProcessor(sip_task.SipTask):
             sql = 'DROP TABLE %s'
         else:
             sql = 'DROP TABLE %s CASCADE'
-        for table in ('base_item_mdrecord',
-                      'base_item_requestmdrecord',
-                      'dummy_ingester_aggregator',
-                      'dummy_ingester_dataset',
-                      'dummy_ingester_provider',
-                      'dummy_ingester_request',
-                      'plug_uris_requri',
-                      'plug_uris_uri',
-                      'plug_uris_urisource',
-                      'process_monitor_processmonitoring',
-                      ):
+        for table, has_pid in self.ALL_TABLES:
             try:
                 cursor.execute(sql % table)
             except:
@@ -198,12 +196,9 @@ class MainProcessor(sip_task.SipTask):
     def cmd_clear_pids(self):
         cursor = connection.cursor()
         cursor.execute('TRUNCATE process_monitor_processmonitoring')
-        for table in ('base_item_mdrecord',
-                      'dummy_ingester_request',
-                      'plug_uris_uri',
-                      'plug_uris_urisource',
-                      ):
-            cursor.execute('UPDATE %s SET pid=0 WHERE pid > 0' % table)
+        for table, has_pid in self.ALL_TABLES:
+            if has_pid:
+                cursor.execute('UPDATE %s SET pid=0 WHERE pid > 0' % table)
         cursor.execute('commit')
 
 """

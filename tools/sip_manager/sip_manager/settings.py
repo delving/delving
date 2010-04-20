@@ -262,6 +262,7 @@ INSTALLED_APPS = (
     'apps.plug_uris',
     'apps.process_monitor',
 
+    'apps.log',
     'apps.statistics',
 )
 

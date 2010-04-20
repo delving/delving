@@ -252,3 +252,8 @@ def index(request):
                                       pid=0).order_by('-uri_source')
 
     return render_to_response('plug_uris/index.html', {'uri':uris[0]})
+
+
+
+
+

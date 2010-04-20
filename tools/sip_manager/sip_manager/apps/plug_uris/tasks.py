@@ -81,6 +81,7 @@ from django.db import connection
 from django.conf import settings
 
 from apps.base_item import models as base_item
+from apps.log import models as log
 from apps.process_monitor import sip_task
 
 from utils.gen_utils import calculate_hash
@@ -187,6 +188,8 @@ class UriPepareStorageDirs(sip_task.SipTask):
                     os.mkdir(new_dir)
 
 
+
+
 class UriCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Create new uri records'
     THREAD_MODE = sip_task.SIPT_SINGLE
@@ -197,8 +200,11 @@ class UriCreate(sip_task.SipTask):
         #   Finding MdRecords with no matching Uri items, since all MdRecords
         #   contains uri this indicates that this item is not processed
         # TODO: In desperate need of optimization!
-        self.cursor.execute(
-            "SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL")
+        sql = ["SELECT DISTINCT m.id FROM base_item_mdrecord m"]
+        sql.append("LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id")
+        sql.append("WHERE u.mdr_id IS NULL and m.status NOT LIKE %i" % base_item.MDRS_BROKEN)
+        self.cursor.execute(' '.join(sql))
+
         if self.cursor.rowcount:
             self.initial_message = 'Found %i records' % self.cursor.rowcount
             return True
@@ -214,6 +220,7 @@ class UriCreate(sip_task.SipTask):
                 break
             record_count += 1
             mdr_id = result[0]
+            # Normaly we wont change the mdr, so we dont need to lock it
             mdrs = base_item.MdRecord.objects.filter(pk=mdr_id,pid=0)
             if not mdrs:
                 # we know it exists, so must be busy, leave it for later processing
@@ -238,10 +245,29 @@ class UriCreate(sip_task.SipTask):
                            ):
             url = self.find_tag(tag, mdr.source_data)
             if url:
-                break
+                self.handle_uri(mdr, itype, url)
+                break # DEBUG for the moment abort as soon as we have at least one
+                      # uri, since we need one to indicate this mdrecord is
+                      # processed, remove this once we actually want to verify
+                      # all the uris
         if not url:
+            el = log.ErrLog(err_code=log.LOGE_NO_URIS,
+                            msg = 'MdRecord with no uris',
+                            item_id = 'MdRecord %i' % mdr.pk,
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
+            mdr_l = self.grab_item(base_item.MdRecord, mdr.pk, wait=10)
+            if not mdr_l:
+                raise sip_task.SipTaskException('Mdr %i missing any uri, failed to lock mdr' % mdr.pk)
+            mdr_l.status = base_item.MDRS_BROKEN
+            mdr_l.save()
+            self.release_item(base_item.MdRecord, mdr_l.pk)
             return False
+        return True
 
+
+    def handle_uri(self, mdr, itype, url):
         srvr_name = urlparse.urlsplit(url).netloc.lower()
         uri_sources = models.UriSource.objects.filter(name_or_ip=srvr_name)
         if uri_sources:
@@ -260,13 +286,13 @@ class UriCreate(sip_task.SipTask):
             req_uri.save()
         return True
 
+
     def find_tag(self, tag, source_data):
         parts = source_data.split(tag)
         if len(parts) == 1:
             return None
         url = parts[1].split('<')[0]
         return url
-
 
 
 
@@ -436,9 +462,11 @@ class UriValidateSave(sip_task.SipTask):
         else:
             return self.generate_images_pil(base_fname, org_fname)
 
+
     def file_name_from_hash(self, url_hash):
         fname = '%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
         return fname
+
 
     def file_name_from_hash_old_style(self, url_hash):
         "Old style (<= 0.6 release) way of generating filenames from hash."

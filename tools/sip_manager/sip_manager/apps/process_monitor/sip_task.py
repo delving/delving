@@ -282,23 +282,29 @@ class SipTask(object): #SipProcess(object):
 
 
     # ==========   Pid locking mechanisms   ====================
-    def grab_item(self, cls, pk, task_description):
+    def grab_item(self, cls, pk, task_description='', wait=0):
         """Locks item to current pid, if successfull, returns updated item,
         otherwise returns None. Once the item is locked, nobody else but
         the locking process may modify it.
 
-        It is reconended to use the returned object, instead of a possible earlier incarnation of it"""
-        try:
-            item = cls.objects.filter(pk=pk)[0]
-        except:
-            # item is gone, nothing cant be locked so fail
-            return None
+        if wait is given, this method will try to lock the item for that amount of time.
 
-        if not item.pid:
+        It is recomended to use the returned object, instead of a possible earlier incarnation of it"""
+        t0 = time.time()
+        while True:
+            try:
+                item = cls.objects.filter(pk=pk)[0]
+            except:
+                item = None
+            if item or (t0 + wait < time.time()):
+                break # timeout!
+
+        if item and (not item.pid):
             item.pid = self.pid
             item.save()
-            self.pm.task_label=task_description
-            self.pm.save()
+            if task_description:
+                self.pm.task_label=task_description
+                self.pm.save()
             return item
         else:
             # item exists but is already taken
