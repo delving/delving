@@ -44,7 +44,7 @@
   <li><a href="privacy.html" class="${PrivacyCurrent}"><@spring.message 'Privacy_t' /></a></li>
   <li><a href="languagepolicy.html" class="${LanguagePolicyCurrent}"><@spring.message 'LanguagePolicy_t' /></a></li>
   <li><a href="contact.html" class="${ContactCurrent}"><span  class="fg-red"><@spring.message 'Contacts_t' /> | <@spring.message 'SendUsFeedback_t' /></span></a></li>
-  <li class="signoff"><@spring.message 'FundedBy_t' /><img src="images/eu-flag.gif" alt="icon-european union flag"/></li>
+  <li class="signoff"><@spring.message 'FundedBy_t' /><img src="/${portalName}/images/eu-flag.gif" alt="icon-european union flag"/></li>
 </ul>
 
 <#-- Google Analytics -->

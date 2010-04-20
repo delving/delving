@@ -60,7 +60,7 @@ ${newStr}
 
     <div id="loading">
         <b>Loading images</b><br/>
-        <img src="images/loading.gif" width="208" height="13" alt="loading"/>
+        <img src="/${portalName}/images/loading.gif" width="208" height="13" alt="loading"/>
     </div>
 
     <div id="images">

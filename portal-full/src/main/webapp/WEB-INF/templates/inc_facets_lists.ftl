@@ -126,10 +126,10 @@
             <div id="msg-save-search" class="msg-hide fg-pink"></div>
         </div>
         <div id="infoText">
-            <img src="images/item-page.gif" width="35" alt="default image for texts"/>
-            <img src="images/item-image.gif" width="35" alt="default image for images"/>
-            <img src="images/item-video.gif" width="35" alt="default image for videos"/>
-            <img src="images/item-sound.gif" width="35" alt="default image for sounds"/>
+            <img src="/${portalName}/images/item-page.gif" width="35" alt="default image for texts"/>
+            <img src="/${portalName}/images/item-image.gif" width="35" alt="default image for images"/>
+            <img src="/${portalName}/images/item-video.gif" width="35" alt="default image for videos"/>
+            <img src="/${portalName}/images/item-sound.gif" width="35" alt="default image for sounds"/>
             <br />
             No image? Click through the colour block to see the item.  We are still loading...
         </div>

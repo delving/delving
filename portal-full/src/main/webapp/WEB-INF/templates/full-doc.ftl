@@ -104,7 +104,7 @@
         <#if pagination??>
             <#if pagination.returnToResults??>
                 <a href="${pagination.returnToResults?html}">
-                    <img src="images/arr-up.gif" hspace="5" width="7" height="9"
+                    <img src="/${portalName}/images/arr-up.gif" hspace="5" width="7" height="9"
                          alt="click to return to results page"/>
                     <span><@spring.message 'ReturnToResults_t' /></span>
                 </a>
@@ -117,14 +117,14 @@
             <li>
                 <#if pagination.previous>
                 <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.previousInt?c}&amp;uri=${pagination.previousUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}">
-                    <img src="images/arr-left.gif" alt="previous button" hspace="5" width="9" height="7" title="click here for previous item"/>
+                    <img src="/${portalName}/images/arr-left.gif" alt="previous button" hspace="5" width="9" height="7" title="click here for previous item"/>
                 </a>
                 </#if>
             </li>
             <li>
                 <#if pagination.next>
                 <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.nextInt?c}&amp;uri=${pagination.nextUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}">
-                    <img src="images/arr-right.gif" alt="next button" hspace="5" width="9" height="7" title="click here for next item"/>
+                    <img src="/${portalName}/images/arr-right.gif" alt="next button" hspace="5" width="9" height="7" title="click here for next item"/>
                 </a>
                 </#if>
             </li>
@@ -142,7 +142,7 @@
                        <a class="addthis_button"
                           href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36"
                           addthis:url="${uri}">
-                         <img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
+                         <img src="/${portalName}/images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                         <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
                         <script type="text/javascript">
                             var addthis_config = {

@@ -102,7 +102,7 @@
             </div>
         </div>
         <div class="yui-b">
-           <a href="index.html"><img src="images/logo-sm.gif" alt="logo Europeana think culture" title="logo Europeana think culture" /></a>
+           <a href="index.html"><img src="/${portalName}/images/logo-sm.gif" alt="logo Europeana think culture" title="logo Europeana think culture" /></a>
         </div>
    </div>
    <div id="ft">

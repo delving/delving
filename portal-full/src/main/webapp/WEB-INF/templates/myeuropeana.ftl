@@ -134,7 +134,7 @@
                                                     addthis:title="Europeana Object"
                                                </#if>
                                              >
-                                             <img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
+                                             <img src="/${portalName}/images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                                             <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
                                             <script type="text/javascript">
                                                 var addthis_config = {
