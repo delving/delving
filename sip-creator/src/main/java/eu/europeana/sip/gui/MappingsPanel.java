@@ -69,7 +69,16 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
             @Override
             public void fireTableCellUpdated(int row, int column) {
-                System.out.printf("->[%d,%d] %10s%n", row, column, getValueAt(row, column)); // todo: implement
+                String value = getValueAt(row, 0).toString();
+                String variable = value.substring(value.lastIndexOf("_") + 1);
+                String snippet = String.format("for ($%s in %s) {%n    %s $%s;%n}%n%n", variable, value, variable, variable);
+                if ((Boolean) getValueAt(row, column)) {
+                    JOptionPane.showMessageDialog(null, snippet, "Adding code", JOptionPane.YES_OPTION);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, snippet, "Removing code", JOptionPane.YES_OPTION);
+                }
+
             }
         });
         jTable.setFillsViewportHeight(true);
@@ -77,8 +86,6 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     }
 
     private void init() {
-        JButton create = new JButton("create");
-        add(create, BorderLayout.SOUTH);
         JScrollPane foundElementsContainer = new JScrollPane(constructTable());
         add(foundElementsContainer);
         add(foundElementsContainer, BorderLayout.CENTER);

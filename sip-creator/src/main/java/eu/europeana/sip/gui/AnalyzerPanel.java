@@ -45,8 +45,6 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * A Graphical interface for analysis
@@ -171,9 +169,6 @@ public class AnalyzerPanel extends JPanel {
     private Component createMappingPanel() {
         JTabbedPane mappingPane = new JTabbedPane();
         mappingPane.addTab("Source", groovyEditor);
-        Map<String, String> map = new TreeMap<String, String>();
-        map.put("dc_date", "dc_date");
-        map.put("dc_title", "dc_title");
         mappingPane.addTab("Mappings", mappingsPanel);
         return mappingPane;
     }
