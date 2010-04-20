@@ -102,6 +102,12 @@ message.cache.seconds=60
 log4j.xml=/tmp/log4j.xml
 
 #
+# This is the name of the webapp used to prefix any urls in the freeMarker templates to images, css, and javascript files.
+#
+portal.name = portal
+
+
+#
 # Where the image annotation tool can be found. If this property is set a
 # link will be created in the actions sidebar of the full-doc view.
 #

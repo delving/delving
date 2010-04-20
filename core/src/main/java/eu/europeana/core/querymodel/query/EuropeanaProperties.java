@@ -139,6 +139,7 @@ public class EuropeanaProperties extends Properties {
             "static.page.path",
             "message.resource",
             "message.cache.seconds",
-            "log4j.xml"
+            "log4j.xml",
+            "portal.name"
     };
 }
