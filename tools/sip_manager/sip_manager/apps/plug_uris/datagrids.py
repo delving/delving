@@ -4,12 +4,14 @@ from djblets.datagrid.grids import Column, DataGrid
 
 import models
 
+"""
+
 COL_NAME = 'Name'
 COL_WAITING = 'Waiting'
 COL_OK = 'Ok'
 COL_BAD = 'Bad'
 
-class UserDataGrid(DataGrid):
+class UriSourcesDataGridNot(DataGrid):
     idd = Column("id", sortable=True)
     name = Column(COL_NAME, sortable=True)
     waiting = Column(COL_WAITING, sortable=True)
@@ -36,3 +38,19 @@ class UserDataGrid(DataGrid):
         #DataGrid.__init__(self, request, User.objects.filter(is_active=True), "Users")
         self.default_sort = [COL_NAME]
         self.default_columns = [COL_NAME, COL_WAITING, COL_OK, COL_BAD]
+"""
+
+
+
+COL_PID = 'pid'
+COL_NAME_IP = 'name_or_ip'
+
+
+class UriSourcesDataGrid(DataGrid):
+    pid = Column(COL_PID, sortable=True)
+    name_or_ip = Column(COL_NAME_IP, sortable=True)
+
+    def __init__(self, request):
+        DataGrid.__init__(self, request, models.UriSource.objects.all(), "UriSources")
+        self.default_sort = [COL_NAME_IP]
+        self.default_columns = [COL_NAME_IP, COL_PID]

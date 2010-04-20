@@ -36,6 +36,8 @@ urlpatterns = patterns('',
 
     url(r'^statistics/$', views.statistics, name='uri_stats_idx'),
 
+    url(r'^dg1/$', views.dg1, name='uri_dg1'),
+
     url(r'^stats_reqs/$', views.stats_req_lst, name='uri_stats_req'),
     url(r'^stats_by_reqs/(?P<sreq_id>\d+)/$', views.stats_by_req, name='uri_stats_by_req'),
 

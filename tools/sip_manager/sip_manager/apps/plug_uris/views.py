@@ -32,9 +32,16 @@ from django.shortcuts import render_to_response, get_object_or_404
 
 from apps.dummy_ingester.models import Request
 
+from datagrids import UriSourcesDataGrid
 import models
 
+
 """
+
+myapp/datagrid.html
+
+
+reviews/dashboard.html
 eta_history = []
 
 def delta_waiting():
@@ -61,6 +68,9 @@ def delta_waiting():
 
 
 """
+
+def dg1(request, template_name='plug_uris/datagrid1.html'):
+    return UriSourcesDataGrid(request).render_to_response(template_name)
 
 def statistics(request):
     return render_to_response("plug_uris/statistics.html", {

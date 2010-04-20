@@ -257,6 +257,8 @@ INSTALLED_APPS = (
     #'dajaxice',
     #'dajax',
 
+    'djblets.datagrid',
+
     'apps.base_item',
     'apps.dummy_ingester',
     'apps.plug_uris',
