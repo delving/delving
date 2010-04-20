@@ -101,12 +101,12 @@
     <div class="viewselect">
         <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table"><img src="images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list"><img src="images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table"><img src="/${portalName}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list"><img src="/${portalName}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
 
         <#else>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table"><img src="images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list"><img src="images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table"><img src="/${portalName}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list"><img src="/${portalName}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
 
         </#if>
         </#if>
@@ -127,12 +127,12 @@
             </#list>
             <#if pagination.previous>
             <li>
-                <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"><img src="images/arr-left.gif" hspace="5" width="9" height="7" alt="<@spring.message 'AltPreviousPage_t' />"/></a>
+                <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"><img src="/${portalName}/images/arr-left.gif" hspace="5" width="9" height="7" alt="<@spring.message 'AltPreviousPage_t' />"/></a>
             </li>
             </#if>
             <#if pagination.next>
             <li>
-                <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"><img src="images/arr-right.gif" hspace="5" width="9" height="7" alt="<@spring.message 'AltNextPage_t' />"/></a>
+                <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"><img src="/${portalName}/images/arr-right.gif" hspace="5" width="9" height="7" alt="<@spring.message 'AltNextPage_t' />"/></a>
             </li>
             </#if>
         </ul>
@@ -141,7 +141,7 @@
        <#-- <a href="#" onclick="window.print();"><img src="images/btn-print.gif" alt="<@spring.message 'AltPrint_t' />" vspace="4"/></a>-->
            <!-- AddThis Button BEGIN -->
         <#assign  showthislang = locale>
-           <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36"><img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
+           <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36"><img src="/${portalName}/images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
            <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
             <script type="text/javascript">
                 var addthis_config = {
@@ -248,7 +248,7 @@
     </noscript>
     <div id="loading">
         <b>Loading images</b><br/>
-        <img src="images/loading.gif" width="208" height="13" alt="loading"/>
+        <img src="/${portalName}/images/loading.gif" width="208" height="13" alt="loading"/>
     </div>
     <div id="images">
         <#list seq as briefDoc>

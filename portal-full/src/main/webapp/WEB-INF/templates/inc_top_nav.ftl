@@ -35,7 +35,7 @@
     </div>
 </#if>
 
-<div  style="position:absolute; top:20px;left: <#if thisPage != "index.html">-20px;<#else>20px;</#if> width: 80px; height: 80px;"><img src="images/beta.gif" alt="we are in beta!!!"/></div>
+<div  style="position:absolute; top:20px;left: <#if thisPage != "index.html">-20px;<#else>20px;</#if> width: 80px; height: 80px;"><img src="/${portalName}/images/beta.gif" alt="we are in beta!!!"/></div>
 
 
 <ul id="mainNav">

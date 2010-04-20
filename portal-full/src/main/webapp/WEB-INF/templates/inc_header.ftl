@@ -1,5 +1,6 @@
 <#-- also change useCache in bob-new.ftl, it does not inherit it from the header -->
 <#assign useCache = "true">
+<#assign portalName = portalName>
 <#if RequestParameters.useCache??><#assign useCache = "${RequestParameters.useCache}"/></#if>
 <#-- used for grabbing locale based includes and images -->
 <#-- locale also used on homepage for language based announcements/disclaimers -->
@@ -25,31 +26,31 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <#-- favicon_red.ico is also available -->
-    <link rel="shortcut icon" href="/portal/favicon.ico"/>
+    <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
 
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>
-    	<link rel="stylesheet" type="text/css" href="css/epf-common.css"/>
-    	<script type="text/javascript" src="js/jquery-1.4.1.js"></script>
-    	<script type="text/javascript" src="js/jquery.toggleElements.js"></script>
-    	<script type="text/javascript" src="js/jquery.cookie.js"></script>
-    	<script type="text/javascript" src="js/js_utilities.js"></script>
+    	<link rel="stylesheet" type="text/css" href="/${portalName}/css/epf-common.css"/>
+    	<script type="text/javascript" src="/${portalName}/js/jquery-1.4.1.js"></script>
+    	<script type="text/javascript" src="/${portalName}/js/jquery.toggleElements.js"></script>
+    	<script type="text/javascript" src="/${portalName}/js/jquery.cookie.js"></script>
+    	<script type="text/javascript" src="/${portalName}/js/js_utilities.js"></script>
     <#switch thisPage>
         <#case "index.html">
             <#assign pageId = "in"/>
-               	<link rel="stylesheet" type="text/css" href="css/jquery.jcarousel.css"/>
-            	<script type="text/javascript" src="js/jquery.jcarousel.js"></script>
-            	<script type="text/javascript" src="js/index.js"></script>
+               	<link rel="stylesheet" type="text/css" href="/${portalName}/css/jquery.jcarousel.css"/>
+            	<script type="text/javascript" src="/${portalName}/js/jquery.jcarousel.js"></script>
+            	<script type="text/javascript" src="/${portalName}/js/index.js"></script>
                 <title>Europeana - Homepage</title>
             <#break>
         <#case "advancedsearch.html">
                 <#assign pageId = "adv"/>
                 <#assign bodyId = "advancedsearch"/>
-                    <link rel="stylesheet" type="text/css" href="css/index.css"/>
-                    <link rel="stylesheet" type="text/css" href="css/jquery.jcarousel.css"/>
-                    <script type="text/javascript" src="js/jquery.jcarousel.js"></script>
-                    <script type="text/javascript" src="js/index.js"></script>
+                    <link rel="stylesheet" type="text/css" href="/${portalName}/css/index.css"/>
+                    <link rel="stylesheet" type="text/css" href="/${portalName}/css/jquery.jcarousel.css"/>
+                    <script type="text/javascript" src="/${portalName}/js/jquery.jcarousel.js"></script>
+                    <script type="text/javascript" src="/${portalName}/js/index.js"></script>
                     <title>Europeana - Advanced Search</title>
                 <#break>
         <#case "brief-doc.html">
@@ -60,7 +61,7 @@
                 var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
             </script>
             </#if>
-                <script type="text/javascript" src="js/results.js"></script>
+                <script type="text/javascript" src="/${portalName}/js/results.js"></script>
                 <#if metaTitle??>
                     <title>${metaTitle?js_string}</title>
                 <#else>
@@ -82,8 +83,8 @@
                 var msgEmailValid = "<@spring.message 'EnterValidEmail_t' />";
             </script>
             </#if>
-                <script type="text/javascript" src="js/jquery.validate.js"></script>
-                <script type="text/javascript" src="js/results.js"></script>
+                <script type="text/javascript" src="/${portalName}/js/jquery.validate.js"></script>
+                <script type="text/javascript" src="/${portalName}/js/results.js"></script>
                 <#if metaTitle??>
                     <title>${metaTitle}</title>
                 <#else>
@@ -92,7 +93,7 @@
                 <#-- only pages with title are indexed -->
                 <#if metaTitle?? && metaTitle?length &gt; 3>
                     <meta name="robots" content="nofollow"/>
-                <#else>    
+                <#else>
                     <meta name="robots" content="noindex, nofollow"/>
                 </#if>
                 <#if metaDescription??>
@@ -104,10 +105,10 @@
             <#break>
         <#case "myeuropeana.html">
             <#assign pageId = "me"/>
-                <link rel="stylesheet" href="css/myeuropeana.css" type="text/css">
-                <script type="text/javascript" src="js/ui.core.js"></script>
-                <script type="text/javascript" src="js/ui.tabs.js"></script>
-                <script type="text/javascript" src="js/myEuropeana.js"></script>
+                <link rel="stylesheet" href="/${portalName}/css/myeuropeana.css" type="text/css">
+                <script type="text/javascript" src="/${portalName}/js/ui.core.js"></script>
+                <script type="text/javascript" src="/${portalName}/js/ui.tabs.js"></script>
+                <script type="text/javascript" src="/${portalName}/js/myEuropeana.js"></script>
                 <title>Europeana - My Europeana</title>
             <#break>
         <#case "exception.html">
@@ -115,29 +116,29 @@
             <#break>
         <#case "login.html">
             <#assign pageId = "li"/>
-                <link rel="stylesheet" href="css/login-register.css" type="text/css"/>
-                <script type="text/javascript" src="js/login.js"></script>
-                <script type="text/javascript" src="js/jquery.validate.js"></script>
+                <link rel="stylesheet" href="/${portalName}/css/login-register.css" type="text/css"/>
+                <script type="text/javascript" src="/${portalName}/js/login.js"></script>
+                <script type="text/javascript" src="/${portalName}/js/jquery.validate.js"></script>
                 <title>Europeana - Login</title>
             <#break>
         <#case "logout.html">
                 <#assign  pageId = "lo"/>
-               <link rel="stylesheet" href="css/login-register.css" type="text/css"/>
+               <link rel="stylesheet" href="/${portalName}/css/login-register.css" type="text/css"/>
                 <title>Europeana - Logout</title>
             <#break>
         <#case "register.html">
                 <#assign  pageId = "rg"/>
-                <link rel="stylesheet" href="css/login-register.css" type="text/css"/>
+                <link rel="stylesheet" href="/${portalName}/css/login-register.css" type="text/css"/>
                 <title>Europeana - Registration</title>
             <#break>
         <#case "forgotPassword.html">
                 <#assign  pageId = "fp"/>
-                <link rel="stylesheet" href="css/login-register.css" type="text/css"/>
+                <link rel="stylesheet" href="/${portalName}/css/login-register.css" type="text/css"/>
                 <title>Europeana - Forgot Password</title>
             <#break>
         <#case "register-success.html">
                  <#assign  pageId = "rs"/>
-                <link rel="stylesheet" href="css/login-register.css" type="text/css"/>
+                <link rel="stylesheet" href="/${portalName}/css/login-register.css" type="text/css"/>
                 <title>Europeana - Registration continued</title>
             <#break>
         <#case "year-grid.html">
@@ -156,7 +157,7 @@
             <meta name="robots" content="noindex"/>
             <#break>
         <#case "thought-lab.html">
-            <link rel="alternate" href="brief-doc.rss?query=mozart"  type="application/rss+xml" title="" id="gallery" />
+            <link rel="alternate" href="/${portalName}/brief-doc.rss?query=mozart"  type="application/rss+xml" title="" id="gallery" />
             <script type="text/javascript" src="http://lite.piclens.com/current/piclens.js"></script>
             <title>Europeana - Thought lab</title>
             <#break>
@@ -164,13 +165,13 @@
             <#assign bodyId = "contact"/>
                 <#assign  pageId = "co"/>
                 <title>Europeana - Contact/Feedback</title>
-                <script type="text/javascript" src="js/contact.js"></script>
-                <link rel="stylesheet" href="css/contact.css" type="text/css"/>
+                <script type="text/javascript" src="/${portalName}/js/contact.js"></script>
+                <link rel="stylesheet" href="/${portalName}/css/contact.css" type="text/css"/>
             <#break>
         <#case "partners.html">
             <#assign pageId = "pa"/>
             <title>Europeana - Partners</title>
-            <link rel="stylesheet" href="css/partners.css" type="text/css"/>
+            <link rel="stylesheet" href="/${portalName}/css/partners.css" type="text/css"/>
             <#break>
         <#case "aboutus.html">
             <#assign pageId = "au"/>
@@ -182,10 +183,10 @@
     </#switch>
 
         <!--[if gte IE 6]>
-        <link rel="stylesheet" type="text/css" href="css/ie6.css" />
+        <link rel="stylesheet" type="text/css" href="/${portalName}/css/ie6.css" />
         <![endif]-->
         <!--[if gte IE 7]>
-        <link rel="stylesheet" type="text/css" href="css/ie7.css" />
+        <link rel="stylesheet" type="text/css" href="/${portalName}/css/ie7.css" />
         <![endif]-->
 
 </head>
