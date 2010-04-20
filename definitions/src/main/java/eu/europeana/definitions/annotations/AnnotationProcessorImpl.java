@@ -254,8 +254,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         @Override
         public String getFacetName() {
             if (europeanaAnnotation.facet()) {
-                if (!solrAnnotation.localName().equalsIgnoreCase("")) {
-                    String s = solrAnnotation.localName();
+                if (!solrAnnotation.localName().isEmpty()) {
                     return solrAnnotation.localName().toUpperCase();
                 }
                 else {
