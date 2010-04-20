@@ -1,8 +1,16 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
+import eu.europeana.core.querymodel.annotation.EuropeanaField;
+import eu.europeana.core.querymodel.beans.AllFieldBean;
+import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.beans.FullBean;
+import eu.europeana.core.querymodel.beans.IdBean;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Provides a set of GUI elements to create basic mappings. Detected ESE elements can
@@ -13,6 +21,16 @@ import java.awt.*;
 public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
     private Object[][] data = new Object[][]{};
+    java.util.List<Class<?>> list = new ArrayList<Class<?>>();
+    AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
+
+    {
+        list.add(IdBean.class);
+        list.add(BriefBean.class);
+        list.add(FullBean.class);
+        list.add(AllFieldBean.class);
+        annotationProcessor.setClasses(list);
+    }
 
     public MappingsPanel() {
         super(new BorderLayout());
@@ -70,6 +88,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             @Override
             public void fireTableCellUpdated(int row, int column) {
                 String value = getValueAt(row, 0).toString();
+                // todo: create snippet from GroovyService.createGroovyLoop() and store in GroovyMappingFile
                 String variable = value.substring(value.lastIndexOf("_") + 1);
                 String snippet = String.format("for ($%s in %s) {%n    %s $%s;%n}%n%n", variable, value, variable, variable);
                 if ((Boolean) getValueAt(row, column)) {
@@ -78,11 +97,21 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
                 else {
                     JOptionPane.showMessageDialog(null, snippet, "Removing code", JOptionPane.YES_OPTION);
                 }
-
             }
         });
         jTable.setFillsViewportHeight(true);
         return jTable;
+    }
+
+    private boolean isMappable(String v) {
+        v = v.substring(v.lastIndexOf(".") + 1); // stripping prefix
+        for (Object value : annotationProcessor.getMappableFields()) {
+            EuropeanaField field = (EuropeanaField) value;
+            if (v.equals(field.getFacetName()) && field.isMappable()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void init() {
@@ -96,7 +125,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         int counter = 0;
         data = new Object[nodes.size()][];
         for (String s : nodes) {
-            data[counter] = new Object[]{s, s, true};
+            data[counter] = new Object[]{s, s, isMappable(s)};
             counter++;
         }
     }

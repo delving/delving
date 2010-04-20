@@ -60,6 +60,11 @@ public class GroovyService {
     private String mapping;
     private CompilationRunner compilationRunner = new CompilationRunner();
 
+    public static String generateGroovyLoop(String field) {
+        String variable = field.substring(field.lastIndexOf("_") + 1); // todo: fix this
+        return String.format("for ($%s in %s) {%n    %s $%s;%n}%n%n", variable, field, variable, variable);
+    }
+
     public interface CompilationListener {
         void nodeAvailable(GroovyNode groovyNode);
     }
