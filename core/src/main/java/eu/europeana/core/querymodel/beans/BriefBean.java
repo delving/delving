@@ -61,7 +61,7 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     @Field("TYPE")
     @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "type", briefDoc = true, type = true)
-    @Solr(fieldType = "string")
+    @Solr(localName = "type", fieldType = "string")
     String[] docType;
 
     @Field("LANGUAGE")

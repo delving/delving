@@ -22,12 +22,7 @@
 package eu.europeana.definitions.annotations;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Interpret the annotations in the beans which define the search model, and
@@ -179,7 +174,12 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                 fieldStrings = new String[fields.size()];
                 int index = 0;
                 for (EuropeanaField europeanaField : fields) {
-                    fieldStrings[index] = europeanaField.getFieldNameString();
+                    if (europeanaField.isFacet()) {
+                        fieldStrings[index] = europeanaField.getFacetName();
+                    }
+                    else {
+                        fieldStrings[index] = europeanaField.getFieldNameString();
+                    }
                     index++;
                 }
             }
@@ -254,7 +254,13 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         @Override
         public String getFacetName() {
             if (europeanaAnnotation.facet()) {
-                return field.getName().toUpperCase();
+                if (!solrAnnotation.localName().equalsIgnoreCase("")) {
+                    String s = solrAnnotation.localName();
+                    return solrAnnotation.localName().toUpperCase();
+                }
+                else {
+                    return field.getName().toUpperCase();
+                }
             }
             else {
                 return field.getName();
