@@ -13,43 +13,49 @@
     <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
 </#if>
 
-
 <#macro show_result_table seq>
 <table id="multi" summary="gallery view all search results" border="0">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
+    <#assign  blockwidth ="25%">
+    <#-- if the result is less than 4 change the width of the table cell so that it does not stretch across the page -->
+    <#if (row?size < 4)>
+       <#assign  blockwidth ="250">
+    </#if> 
     <tr>
         <#list row as cell>
-        <td valign="bottom" width="25%" class="${cell.type}">
+        <td valign="bottom" width="${blockwidth}" class="${cell.type}">
             <div class="brief-thumb-container">
                 <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
-                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" height="110"/>
+                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" onerror="showDefaultSmall(this,'${cell.type}')" height="110"/>
                     <#else>
                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cell.thumbnail}" alt="Click for more information" height="110" onerror="showDefaultSmall(this,'${cell.type}')"/>
                     </#if>
                 </a>
             </div>
-            <h6>
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
-                    <@stringLimiter "${cell.title}" "40"/>
-                </a>
-            </h6>
-            <ul>
-                <#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
-                <li><@stringLimiter "${cell.creator}" "120"/></li>
-                </#if></#if>
-                <#if cell.year != ""><#if cell.year != "0000">
-                <li>${cell.year}</li>
-                </#if></#if>
-                <#if cell.provider != "">
-                <#assign pr = cell.provider />
-                <#if pr?length &gt; 80>
-                <#assign pr = cell.provider?substring(0, 80) + "..."/>
-                </#if>
-                <li title="${cell.provider}"><span class="provider">${pr}</span></li>
-                </#if>
-            </ul>
+            <div class="brief-content-container">
+                <h6>
+                    <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                        <@stringLimiter "${cell.title}" "40"/>
+                    </a>
+                </h6>
+                <ul>
+                    <#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
+                    <li><@stringLimiter "${cell.creator}" "120"/></li>
+                    </#if></#if>
+                    <#if cell.year != ""><#if cell.year != "0000">
+                    <li>${cell.year}</li>
+                    </#if></#if>
+                    <#if cell.provider != "">
+                    <#assign pr = cell.provider />
+                    <#if pr?length &gt; 80>
+                    <#assign pr = cell.provider?substring(0, 80) + "..."/>
+                    </#if>
+                    <li title="${cell.provider}"><span class="provider">${pr}</span></li>
+                    </#if>
+                </ul>
+            </div>
         </td>
         </#list>
     </tr>

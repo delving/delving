@@ -65,7 +65,19 @@ $(document).ready(function() {
      });
 
     // style all the submit and button elements.
-    $(document).find("input[type=submit],input[type=reset],button").addClass("fg-button ui-state-default ui-corner-all");
+
+    var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");
+        buttons.addClass("fg-button ui-state-default ui-corner-all");
+// Todo: when icons added FF does not render them in the desired position
+//        buttons.filter(".btn-search")
+//                .addClass("fg-button-icon-right")
+//                .append("<span class='ui-icon ui-icon-search'></span>");
+//        buttons.filter(".btn-add")
+//                .addClass("fg-button-icon-right")
+//                .append("<span class='ui-icon ui-icon-tag'></span>");
+//        buttons.filter(".btn-email")
+//                .addClass("fg-button-icon-right")
+//                .append("<span class='ui-icon ui-icon-mail-closed'></span>");
     // ui button hover states
 	$(function(){
 		//all hover and click logic for buttons

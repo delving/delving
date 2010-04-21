@@ -5,23 +5,27 @@
 
 <#include "inc_header.ftl">
 
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+    </div>
+
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
-<div id="main" class="grid_9">
+<div id="main" class="grid_9 prefix_3">
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
 
     <div id="login-div" class="grid_3 alpha login-register">
 
@@ -72,7 +76,7 @@
         <fieldset>
             <legend></legend>
             <label for="email"><@spring.message 'EmailAddress_t' /></label>
-            <input id="register_email" type='text' name='email' value='' accept-charset="UTF-8">
+            <input id="register_email" type='text' name='email' id='email' value='' accept-charset="UTF-8">
             <input id="register" name="submit_button" type="submit" value="<@spring.message 'Register_t' />"
                    class="button"/>
 
@@ -89,8 +93,8 @@
         <#--</p>-->
 
         <#-- TODO: This error message is not removed once a correct form entry is made -->
-         <#if failureFormat??>
-            <div class="ui-wideget">
+         <#if failureFormat>
+            <div class="ui-widget">
                 <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
                     <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
                     <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailFormatError_t' />.
@@ -102,7 +106,7 @@
         <#--<p class="failure">-->
             <#--<@spring.message 'Error_t' />!<br/><@spring.message 'EmailAlreadyRegistered_t' />.-->
         <#--</p>-->
-            <div class="ui-wideget">
+            <div class="ui-widget">
                 <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
                     <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
                     <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.

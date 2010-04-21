@@ -22,80 +22,17 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
-<#--<#list result.facets as facet>
-    <#if facet.type="TYPE">
-        <#list facet.counts as type>
-            <#if type.value = "IMAGE">
-                <#assign imageCount = type.count />
-            </#if>
-            <#if type.value = "TEXT">
-                <#assign textCount = type.count />
-            </#if>
-            <#if type.value = "VIDEO">
-                <#assign videoCount = type.count />
-            </#if>
-            <#if type.value = "SOUND">
-                <#assign audioCount = type.count />
-            </#if>
-        </#list>
-    </#if>
-</#list>
-<#list next as facet>
-    <#if facet.type="TYPE">
-        <#list facet.links as type>
-            <#if type.value = "IMAGE">
-                <#assign IMAGEUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:TEXT", "")?replace("&qf=TYPE:SOUND", "")/>
-            </#if>
-            <#if type.value = "TEXT">
-                <#assign TEXTUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
-            </#if>
-            <#if type.value = "VIDEO">
-                <#assign VIDEOUrl = type.url?replace("&qf=TYPE:TEXT","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
-            </#if>
-            <#if type.value = "SOUND">
-                <#assign audioUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:TEXT", "")/>
-            </#if>
-        </#list>
-    </#if>
-</#list>
-
-<#list next as facet>
-    <#if facet.type="TYPE">
-        <#list facet.links as type>
-            <#if type.remove><#assign showType = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="YEAR">
-        <#list facet.links as date>
-            <#if date.remove><#assign showYear = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="LANGUAGE">
-        <#list facet.links as lang>
-            <#if lang.remove><#assign showLanguage = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="PROVIDER">
-        <#list facet.links as provider>
-            <#if provider.remove><#assign showProvider = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="COUNTRY">
-        <#list facet.links as country>
-            <#if country.remove><#assign showCountry = 1 /></#if>
-        </#list>
-    </#if>
-    <#if facet.type="USERTAGS">
-        <#list facet.links as userTags>
-            <#if userTags.remove><#assign showUserTags = 1 /></#if>
-        </#list>
-    </#if>
-</#list>
-<#assign servletUrl = servletUrl/>-->
-
 
 <#-- image tab class assignation -->
-<#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
+
+<#assign tab = ""/>
+<#assign showAll = ""/>
+<#assign showText = ""/>
+<#assign showImage = ""/>
+<#assign showVideo = ""/>
+<#assign showSound = ""/>
+<#assign showText = ""/>
+
 <#if RequestParameters.tab?exists>
 <#assign tab = RequestParameters.tab/>
 <#switch RequestParameters.tab>
@@ -109,94 +46,109 @@
     <#assign showAll = "ui-state-active"/>
 </#if>
 
-
-
-
 <#include "inc_header.ftl">
 
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
-    <div id="facet-list">
-        <#include "inc_facets_lists.ftl"/>
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+        
     </div>
 
 </div>
+
+<div class="clear"></div>
 
 <div id="main" class="grid_9">
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-            <@SearchForm "search_result"/>
-    </div>
-
-    <div class="clear"></div>
+    <div class="page">
 
 
-    <div id="breadcrumbs">
-        <ul>
-            <#if !result.matchDoc??>
-                <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-                <#list breadcrumbs as crumb>
-                    <#if !crumb.last>
-                        <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
-                    <#else>
-                        <li><strong>${crumb.display?html}</strong></li>
-                    </#if>
-                </#list>
-            <#else>
-                <li class="first">
-                <@spring.message 'ViewingRelatedItems_t' />
-                <#assign match = result.matchDoc/>
-                <a href="full-doc.html?&amp;uri=${match.id}">
-                    <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                    <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                    </#if>
-                </a>
-            </li>
-            </#if>
-        </ul>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="objTypes">
-        <div>
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+        <div id="breadcrumbs">
+            <div class="inner">
+            <ul>
+                <#if !result.matchDoc??>
+                    <li class="first"><@spring.message 'MatchesFor_t' />:</li>
+                    <#list breadcrumbs as crumb>
+                        <#if !crumb.last>
+                            <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                        <#else>
+                            <li><strong>${crumb.display?html}</strong></li>
+                        </#if>
+                    </#list>
+                <#else>
+                    <li class="first">
+                    <@spring.message 'ViewingRelatedItems_t' />
+                    <#assign match = result.matchDoc/>
+                    <a href="full-doc.html?&amp;uri=${match.id}">
+                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                        </#if>
+                    </a>
+                </li>
+                </#if>
+            </ul>
+            </div>
         </div>
-        <@typeTabs_plain/>
-        <@viewSelect/>
+
+        <div class="clear"></div>
+
+        <div class="inner">
+
+            <div id="objTypes">
+                <div>
+                <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+                </div>
+                <@typeTabs_plain/>
+                <@viewSelect/>
+            </div>
+
+            <div class="clear"></div>
+
+            <div class="pagination">
+                <@resultnav_styled/>
+            </div>
+
+            <div class="clear"></div>
+
+            <#include "inc_result_table_brief.ftl"/>
+
+            <div class="clear"></div>
+
+            <div class="pagination">
+                <@resultnav_styled/>
+            </div>
+
+        </div>
+
     </div>
+</div>
 
-    <div class="clearfix"></div>
+<div id="sidebar" class="grid_3">
 
-    <div class="pagination">
-        <@resultnav_styled/>
-    </div>
+         <div id="search">
+            <div class="inner">
+                <@SearchForm "search_result"/>
+            </div>
+        </div>  
 
-    <div class="clearfix"></div>
-
-    <#include "inc_result_table_brief.ftl"/>
-
-    <div class="clearfix"></div>
-
-    <div class="pagination">
-        <@resultnav_styled/>
+    <div id="facet-list">
+        <div class="inner">
+        <#include "inc_facets_lists.ftl"/>
+            </div>
     </div>
 
 </div>
-
-
 
 
 

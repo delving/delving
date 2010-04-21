@@ -74,7 +74,8 @@
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
-            <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
+            <#--<input id="submit_search" type="submit" class="btn-search" value="<@spring.message 'Search_t' />" /><br/>-->
+            <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button><br/>
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
     </div>
@@ -113,6 +114,7 @@
 </#macro>
 
 <#macro userbar>
+<#include "language_select.ftl">
     <ul>
         <#if !user??>
         <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
@@ -150,6 +152,7 @@
         </#if>
         </#if>
     </ul>
+
 </#macro>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

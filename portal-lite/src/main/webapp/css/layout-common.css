@@ -1,13 +1,15 @@
 body {
-/*background: #eaeaea url(../images/960/white_bg.gif) top center repeat-y;*/
+  /*background: #e5e5e5 url(../images/bg-body.png) top left repeat-x;;*/
 }
-
+h1, h2, h3, h4, h5, h6 {
+    clear: both;
+}
 a:link, a:active {
-    color: #249aa6;
+    color: #0f757e;
 }
 
 a:visited, a:hover {
-    color: #0f757e;
+    color: #249aa6;
 }
 
 #container {
@@ -15,25 +17,34 @@ a:visited, a:hover {
     margin-top: 20px;
 }
 
-#sidebar {
-    min-width: 215px;
+.inner {
+    padding: 1em;
+    overflow: hidden;
 }
+
+#header {
+    overlow: hidden;
+    height: 80px;
+    margin-bottom: 1em;
+}
+
 
 #main {
     background: transparent;
     overflow: hidden;
 }
 
-#main.home {
-    text-align: center;
-}
-
-#top-bar {
-    text-align: right;
-}
-
-#top-bar, #search, #breadcrumbs, #objTypes, .pagination {
-    margin-bottom: 40px;
+.page {
+  position: relative;
+  padding: 0;
+  background: #fff;
+  -moz-box-shadow: 3px 3px 4px #bbb;
+  -webkit-box-shadow: 3px 3px 4px #bbb;
+  box-shadow: 3px 3px 4px #bbb;
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin-right: 7px;
+  margin-bottom: 7px;
 }
 
 #identity h1 {
@@ -41,38 +52,60 @@ a:visited, a:hover {
 }
 
 #logo-home {
-    margin: 40px 0 20px;
+    margin: 80px 0 40px;
 }
 
-#search_simple input.txt-input {
-    width: 350px;
-    border: 1px solid #cccccc;
-    height: 20px;
+#search {
+    background: #edf3f3;
+    overflow: hidden;
 }
 
-/*.search_home {*/
-/*margin-top: 120px;*/
+/*#search_simple input.txt-input {*/
+    /*width: 165px;*/
+    /*border: 1px solid #cccccc;*/
+    /*height: 20px;*/
 /*}*/
+.btn-search {
+    background: #ef9527;
+    color: #fff;
+}
+
+#search_simple.search_home input.txt-input {
+    width: 450px;
+}
+
 #search_advanced {
     background: #fff;
 }
-
-#top-bar ul, #footer ul, .breadcrumb ul, #navResultTabs ul, .nav ul {
+input[type=text], input[type=password]{
+    border: 1px solid #ccc;
+    height: 1.85em;
+}
+#top-bar {
+    text-align: right;
+    /*background: #edf3f3;*/
+    overflow: hidden;
+}
+#top-bar select {
+    float:right;
+}
+#top-bar ul, .breadcrumb ul  {
     list-style: none;
-    margin: 0 0 0 0;
-    padding: 0 0 0 0;
+    margin: 0;
+    padding: 0;
     position: relative;
 }
 
-#top-bar li, #footer li, .breadcrumb li, #navResultTabs li, .nav li {
-    float: left;
+#top-bar li, .breadcrumb li{
+    float: right;
     margin: 0;
-    padding: 0 10px 0 0;
+    padding: 0 1em 0 0;
     list-style: none;
+    diplay: inline;
 }
 
 #facet-list {
-    margin-top: 50px;
+    /*margin-top: 50px;*/
 }
 
 #facet-list h4 {
@@ -86,8 +119,8 @@ a:visited, a:hover {
     color: #555;
     margin: 0 0 10px 0;
     font-size: 1em;
-    font-weight: normal;
-    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+    /*border-bottom: 1px solid #ccc;*/
 }
 
 #facet-list h6 {
@@ -120,6 +153,11 @@ a:visited, a:hover {
 
 /* breadcrumb
 =======================*/
+
+#breadcrumbs {
+    background: #edf3f3;
+    overflow: hidden; 
+}
 
 #breadcrumbs ul {
     margin: 0;
@@ -155,7 +193,7 @@ a:visited, a:hover {
     cursor: default;
     color: #333;
     text-decoration: none;
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
     margin-right: 10px;
 }
 
@@ -169,8 +207,7 @@ a:visited, a:hover {
 
 /* pagination */
 .pagination {
-    text-align: left;
-    padding: 0;
+    margin: 0.5em 0;
 }
 
 /* objTypes */
@@ -247,7 +284,7 @@ table caption {
     font-weight: 500;
     font-size: 1.25em;
     color: #000;
-    margin: 0 0 8px 0;
+    margin: 0 0 .3em 0;
     padding: 0;
 }
 
@@ -259,34 +296,52 @@ table caption {
 
 #multi ul li {
     margin: 0;
-    padding: 0; /*display: inline-block;*/
+    padding: 0;
+    /*display: inline-block;*/
     color: #555;
     line-height: 1.25em;
 }
 
 #multi td {
     padding: 0 8px 20px 0;
+    /*max-width: 25%;*/
 }
 
 #multi td p {
     margin: 0;
     color: #555;
 }
-
+.brief-thumb-container {
+    background: #e5e5e5;
+    overflow: hidden;
+    text-align: center;
+    padding: 0.5em;
+    /*min-height: 100px;*/
+ }
+.brief-thumb-container img{
+    border: 4px solid #fff;
+ }
+.brief-content-container {
+    /*border: 1px solid #e5e5e5;*/
+    padding: .5em;
+    min-height: 75px;
+}
 /* table wraps item detail / img and text
 ================================================*/
 #item-detail #img-full {
     overflow-x: hidden;
     overflow-y: hidden;
-    text-align: center;
+    text-align: left;
+    margin: 0;
+    padding: 0;
 }
 
 #item-detail h5 {
     background: none;
-    border-bottom: solid 4px #ccc;
+    border-bottom: solid 1px #ccc;
     color: #333;
     margin: 0 0 10px 0;
-    padding: 0 0 0 30px;
+    padding: 0 0 10px 30px;
 }
 
 #item-detail h5.SOUND {
@@ -308,14 +363,15 @@ table caption {
 /* UI Button styles */
 .fg-button {
     outline: 0;
-    margin: 0 4px 0 0;
-    padding: .3em 0.5em;
+    margin: 0 4px .5em 0;
+    padding: .35em 0.5em;
     text-decoration: none !important;
     cursor: pointer;
     position: relative;
     text-align: center;
+    text-transform: uppercase;
     zoom: 1;
-    color: #cc6600;
+    /*color: #cc6600;*/
 }
 
 .fg-button .ui-icon {
@@ -350,12 +406,16 @@ button.fg-button, input.fg-button {
     margin-left: 0;
 }
 
-.fg-button-icon-right .ui-icon {
+a.fg-button-icon-right .ui-icon {
     left: auto;
     right: .2em;
     margin-left: 0;
 }
-
+button.fg-button-icon-right .ui-icon {
+     left: auto;
+    right: 1em;
+    margin-left: 0;   
+}
 .fg-button-icon-solo {
     display: block;
     width: 8px;
@@ -363,10 +423,6 @@ button.fg-button, input.fg-button {
 }
 
 /* solo icon buttons must have block properties for the text-indent to work */
-
-.fg-buttonset {
-    float: left;
-}
 
 .fg-buttonset .fg-button {
     float: left;
@@ -419,7 +475,7 @@ button.fg-button, input.fg-button {
         color: #333;
         padding-left: 8px;
         height: 30px;
-        background: #fff url(../images/togglerc.gif) center right no-repeat;
+        background: transparent url(../images/togglerc.gif) center right no-repeat;
 
     }
 
@@ -427,21 +483,21 @@ button.fg-button, input.fg-button {
         color: #000;
         padding-left: 8px;
         height: 30px;
-        background: #fff url(../images/togglerch.gif) center right no-repeat;
+        background: transparent url(../images/togglerch.gif) center right no-repeat;
     }
 
     .toggler-opened {
         color: #333;
         padding-left: 8px;
         height: 30px;
-        background: #fff url(../images/togglero.gif) center right no-repeat;
+        background: transparent url(../images/togglero.gif) center right no-repeat;
     }
 
     .toggler-opened:hover {
         color: #000;
         padding-left: 8px;
         height: 30px;
-        background: #fff url(../images/toggleroh.gif) center right no-repeat;
+        background: transparent url(../images/toggleroh.gif) center right no-repeat;
 
     }
 
@@ -458,7 +514,7 @@ button.fg-button, input.fg-button {
     .toggler-c-opened {
         margin: -10px 0px 10px 0px;
         padding: 4px;
-        background: #fff;
+        background: transparent;
     }
 
 }
