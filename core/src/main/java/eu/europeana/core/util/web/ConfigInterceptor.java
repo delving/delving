@@ -39,6 +39,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{europeanaProperties['cacheUrl']}")
     private String cacheUrl;
 
+    @Value("#{europeanaProperties['portal.name']}")
+    private String portalName;
+
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
@@ -46,6 +49,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("debug", Boolean.valueOf(debug));
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));
             modelAndView.addObject("cacheUrl", cacheUrl);
+            modelAndView.addObject("portalName", portalName);
         }
     }
 }

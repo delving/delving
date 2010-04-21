@@ -159,19 +159,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <#-- favicon_red.ico is also available -->
-    <link rel="shortcut icon" href="/portal/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
-    <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
+    <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/css/reset-text-grid.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/css/jquery-ui-1.7.2.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/css/layout-common.css"/>
 
-    <script type="text/javascript" src="js/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.js"></script>
-    <script type="text/javascript" src="js/jquery.cookie.js"></script>
-    <script type="text/javascript" src="js/jquery.toggleElements.js"></script>
-    <script type="text/javascript" src="js/jquery.validate.js"></script>
-    <script type="text/javascript" src="js/js_utilities.js"></script>
-    <script type="text/javascript" src="js/results.js"></script>
-    <script type="text/javascript" src="js/myEuropeana.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery-1.4.1.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery.toggleElements.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/js_utilities.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/results.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/myEuropeana.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>

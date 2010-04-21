@@ -74,7 +74,7 @@
             </bean>
         </property>
         <property name="startDelay" value="#{europeanaProperties['trigger.startDelay']}"/>
-        <property name="repeatInterval" value="#{europeanaProperties['trigger.repeatInterval1']}"/>
+        <property name="repeatInterval" value="#{europeanaProperties['trigger.repeatInterval']}"/>
     </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

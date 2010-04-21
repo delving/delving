@@ -22,8 +22,8 @@
                     showRandomSlogan();
                 </script>
                 <noscript>
-                    <img src="images/think_culture_logo_top_2.gif" alt="logo Europeana think culture" title="logo Europeana think culture" />
-                    <img src="images/think_culture_fr.gif" alt="slogan Europeana think culture" title="slogan Europeana think culture" />
+                    <img src="/${portalName}/images/think_culture_logo_top_2.gif" alt="logo Europeana think culture" title="logo Europeana think culture" />
+                    <img src="/${portalName}/images/think_culture_fr.gif" alt="slogan Europeana think culture" title="slogan Europeana think culture" />
                 </noscript>
            </div>
             <div class="yui-u" id="primary-content-second">
@@ -80,7 +80,7 @@
                     <#assign  showthislang = locale>
                        <a class="addthis_button" addthis:url="http://www.europeana.eu/portal/images/think_culture_logo_top_4.jpg"
                           href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4b4f08de468caf36">
-                         <img src="images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
+                         <img src="/${portalName}/images/sharethis/sm-share-${showthislang}.gif" alt="Bookmark and Share" style="border:0"/></a>
                         <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4b4f08de468caf36"></script>
                         <script type="text/javascript">
                             var addthis_config = {
