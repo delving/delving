@@ -108,7 +108,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         v = v.substring(v.lastIndexOf(".") + 1); // stripping prefix
         for (Object value : annotationProcessor.getMappableFields()) {
             EuropeanaField field = (EuropeanaField) value;
-            if (v.equals(field.getFacetName()) && field.isMappable()) {
+            if (v.equals(field.getFieldNameString()) && field.isMappable()) {
                 return true;
             }
         }
