@@ -65,7 +65,8 @@ public class AnalyzerPanel extends JPanel {
     private DefaultTableColumnModel statisticsTableColumnModel;
     private FileMenu.Enablement fileMenuEnablement;
     private ProgressDialog progressDialog;
-    private GroovyEditor groovyEditor = new GroovyEditor();
+    private JTextArea outputArea = new JTextArea();
+    private GroovyEditor groovyEditor = new GroovyEditor(outputArea);
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
     private MappingsPanel mappingsPanel = new MappingsPanel(new GroovyMappingImpl(), new MappingsPanel.Listener() {

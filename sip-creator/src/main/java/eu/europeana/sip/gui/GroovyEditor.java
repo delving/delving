@@ -46,7 +46,7 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
 
     private JEditorPane codeArea = new JEditorPane();
-    private JTextArea outputArea = new JTextArea();
+    private JTextArea outputArea;
     private CompileTimer compileTimer;
     private GroovyService groovyService;
     private List<String> availableNodes;
@@ -56,8 +56,9 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
         compileTimer.triggerSoon();
     }
 
-    public GroovyEditor() {
+    public GroovyEditor(final JTextArea outputArea) {
         super(new BorderLayout());
+        this.outputArea = outputArea;
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
         this.groovyService = new GroovyService(new GroovyService.Listener() {
