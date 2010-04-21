@@ -62,7 +62,7 @@ public class GroovyService {
 
     public static String generateGroovyLoop(String field) {
         String variable = field.substring(field.lastIndexOf("_") + 1); // todo: fix this
-        return String.format("for ($%s in %s) {%n    %s $%s;%n}%n%n", variable, field, variable, variable);
+        return String.format("\tfor ($%s in %s) {%n\t\t%s $%s;%n\t}%n%n", variable, field, variable, variable);
     }
 
     public interface CompilationListener {

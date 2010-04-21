@@ -17,19 +17,19 @@ public class GroovyMappingFileImpl implements GroovyMappingFile {
 
     private final static Logger LOG = Logger.getLogger(GroovyMappingFileImpl.class);
     private final static String TEMP_EXTENSION = ".temp.xml";
+    private final static String NEXT_NODE_IDENTIFIER = "// ===";
+    private final static String FILE_HEADER = "// *** Europeana Mapping File ***%neuropeana.record {%n%n";
+    private final static String FILE_FOOTER = "%n} // *** EOF ***";
+
+    private final File file;
 
     private FileOutputStream fileOutputStream;
     private LineNumberReader lineNumberReader;
-    private final File file;
 
     public GroovyMappingFileImpl(File file) {
         this.file = file;
     }
 
-    /**
-     * Search for the delimiter, and grab the snippet
-     * todo: refactor
-     */
     @Override
     public String findNode(Delimiter delimiter) throws IOException {
         StringBuffer node = new StringBuffer();
@@ -37,14 +37,13 @@ public class GroovyMappingFileImpl implements GroovyMappingFile {
         String line;
         while (null != (line = lineNumberReader.readLine())) {
             if (line.contains(delimiter.toString())) {
-                node.append(line).append(String.format("%n"));
-                lineNumberReader.mark((int) file.length());
+                node.append(String.format("%s%n", line));
                 while (null != (line = lineNumberReader.readLine())) {
-                    if (line.contains("// ===")) {
+                    if (line.contains(NEXT_NODE_IDENTIFIER)) {
                         lineNumberReader.close();
                         return node.toString();
                     }
-                    node.append(line).append(String.format("%n"));
+                    node.append(String.format("%s%n", line));
                 }
                 return node.toString();
             }
@@ -59,58 +58,54 @@ public class GroovyMappingFileImpl implements GroovyMappingFile {
      */
     @Override
     public Delimiter storeNode(Delimiter delimiter, String node) throws IOException {
-        if (null == fileOutputStream) {
-            fileOutputStream = new FileOutputStream(file);
+        if (!file.exists()) {
+            createFile(file);
         }
         if (null != findNode(delimiter)) {
             deleteNode(delimiter);
+            LOG.info(String.format("Snippet for delimiter %s already exists, removing it", delimiter));
         }
-        fileOutputStream.write(delimiter.getBytes(), 0, delimiter.getBytes().length);
-        fileOutputStream.write(String.format("%n").getBytes());
-        fileOutputStream.write(node.getBytes(), 0, node.getBytes().length);
+        if (null == fileOutputStream) {
+            fileOutputStream = new FileOutputStream(file, true);
+        }
+        fileOutputStream.write(String.format("\t%s%n", delimiter).getBytes());
+        fileOutputStream.write(String.format("%s", node).getBytes());
+        fileOutputStream.close();
+        fileOutputStream = null;
         return delimiter;
     }
 
-    /**
-     * todo: refactor
-     */
+    private void createFile(File file) throws IOException {
+        file = new File(file.getName());
+        fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(String.format(FILE_HEADER).getBytes());
+        fileOutputStream.close();
+        fileOutputStream = null;
+    }
+
     @Override
     public boolean deleteNode(Delimiter delimiter) throws IOException {
         if (null == findNode(delimiter)) {
             return false;
         }
         File tempFile = new File(file.getName() + TEMP_EXTENSION);
-        if (tempFile.exists()) {
-            tempFile.delete();
-            LOG.info(String.format("%s deleted", tempFile.getAbsoluteFile()));
-        }
         fileOutputStream = new FileOutputStream(tempFile);
         String line;
         lineNumberReader = new LineNumberReader(new FileReader(file));
         while (null != (line = lineNumberReader.readLine())) {
             if (line.contains(delimiter.toString())) {
-                LOG.info(String.format("DELETE %s", line));
-                lineNumberReader.mark((int) file.length());
                 while (null != (line = lineNumberReader.readLine())) {
-                    if (line.contains("// ===")) {
+                    if (line.contains(NEXT_NODE_IDENTIFIER)) {
                         break;
                     }
-                    LOG.info(String.format("DELETE %s", line));
                 }
             }
             if (line != null) {
-                fileOutputStream.write(line.getBytes(), 0, line.length());
+                fileOutputStream.write(String.format("%s%n", line).getBytes());
             }
-            fileOutputStream.write(String.format("%n").getBytes());
         }
         fileOutputStream.close();
-        file.delete();
-        tempFile.renameTo(file);
-        return true;
-    }
-
-    @Override
-    public void close() throws IOException {
-        fileOutputStream.close();
+        fileOutputStream = null;
+        return file.delete() && tempFile.renameTo(file);
     }
 }

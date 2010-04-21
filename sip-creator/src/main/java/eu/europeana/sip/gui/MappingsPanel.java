@@ -7,10 +7,15 @@ import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.io.GroovyMappingFile;
+import eu.europeana.sip.io.GroovyMappingFileImpl;
+import eu.europeana.sip.io.GroovyService;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -22,8 +27,9 @@ import java.util.ArrayList;
 public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
     private Object[][] data = new Object[][]{};
-    java.util.List<Class<?>> list = new ArrayList<Class<?>>();
-    AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
+    private java.util.List<Class<?>> list = new ArrayList<Class<?>>();
+    private AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
+    private GroovyMappingFile groovyMappingFile = new GroovyMappingFileImpl(new File("test.mapping"));
 
     {
         list.add(IdBean.class);
@@ -72,7 +78,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
             @Override
             public void setValueAt(Object value, int rowIndex, int columnIndex) {
-                data[rowIndex][columnIndex] = value;
+                    data[rowIndex][columnIndex] = value;
                 fireTableCellUpdated(rowIndex, columnIndex);
             }
 
@@ -89,14 +95,16 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             @Override
             public void fireTableCellUpdated(int row, int column) {
                 String value = getValueAt(row, 0).toString();
-                // todo: create snippet from GroovyService.createGroovyLoop() and store in GroovyMappingFile
-                String variable = value.substring(value.lastIndexOf("_") + 1);
-                String snippet = String.format("for ($%s in %s) {%n    %s $%s;%n}%n%n", variable, value, variable, variable);
-                if ((Boolean) getValueAt(row, column)) {
-                    JOptionPane.showMessageDialog(null, snippet, "Adding code", JOptionPane.YES_OPTION);
+                try {
+                    if ((Boolean) getValueAt(row, column)) {
+                        groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(value), GroovyService.generateGroovyLoop(value));
+                    }
+                    else {
+                        groovyMappingFile.deleteNode(new GroovyMappingFile.Delimiter(value));
+                    }
                 }
-                else {
-                    JOptionPane.showMessageDialog(null, snippet, "Removing code", JOptionPane.YES_OPTION);
+                catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, "Error saving snippet " + e.getMessage());
                 }
             }
         });

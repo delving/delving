@@ -37,10 +37,6 @@ public interface GroovyMappingFile {
             this.id = String.format(DELIMITER, id);
         }
 
-        public byte[] getBytes() {
-            return id.getBytes();
-        }
-
         @Override
         public String toString() {
             return id;
@@ -74,11 +70,4 @@ public interface GroovyMappingFile {
      * @throws IOException error while deleting from file
      */
     boolean deleteNode(Delimiter delimiter) throws IOException;
-
-    /**
-     * Close the file;
-     *
-     * @throws java.io.IOException error while closing file
-     */
-    void close() throws IOException;
 }

@@ -30,7 +30,7 @@ public class TestGroovyMappingFile {
 
     @Before
     public void setUp() throws FileNotFoundException {
-        groovyMappingFile = new GroovyMappingFileImpl(new File("Somefile.xml"));
+        groovyMappingFile = new GroovyMappingFileImpl(new File("Somefile.mapping"));
         list.add(IdBean.class);
         list.add(BriefBean.class);
         list.add(FullBean.class);
@@ -41,15 +41,13 @@ public class TestGroovyMappingFile {
     @Test
     public void testStoreAll() throws IOException {
         for (EuropeanaField europeanaField : annotationProcessor.getMappableFields()) {
-            groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(europeanaField.getFacetName()), GroovyService.generateGroovyLoop(europeanaField.getFacetName()));
+            groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(europeanaField.getFieldNameString()), GroovyService.generateGroovyLoop(europeanaField.getFieldNameString()));
         }
-        groovyMappingFile.close();
     }
 
     @Test
     public void testStore() throws IOException {
         groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
-        groovyMappingFile.close();
         System.out.printf("Stored%n%s%n%s%n", new GroovyMappingFile.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
     }
 
