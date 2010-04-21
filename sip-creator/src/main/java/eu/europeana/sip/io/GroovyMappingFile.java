@@ -28,7 +28,7 @@ public interface GroovyMappingFile {
     /**
      * Separate the records with this delimiter.
      */
-    class Delimiter implements Serializable {
+    class Delimiter implements Serializable, Comparable<Delimiter> {
 
         private final static String DELIMITER = "// === MAPPING(%s) ===";
         private String id;
@@ -40,6 +40,21 @@ public interface GroovyMappingFile {
         @Override
         public String toString() {
             return id;
+        }
+
+        @Override
+        public int hashCode() {
+            return id.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return id.equals(obj);
+        }
+
+        @Override
+        public int compareTo(Delimiter o) {
+            return o.toString().compareTo(id);
         }
     }
 
@@ -70,4 +85,11 @@ public interface GroovyMappingFile {
      * @throws IOException error while deleting from file
      */
     boolean deleteNode(Delimiter delimiter) throws IOException;
+
+    /**
+     * Save all nodes to the file
+     *
+     * @throws java.io.IOException Error while saving to file
+     */
+    void persist() throws IOException;
 }

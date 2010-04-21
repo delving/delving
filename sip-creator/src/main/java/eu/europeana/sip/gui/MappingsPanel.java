@@ -14,6 +14,8 @@ import eu.europeana.sip.io.GroovyService;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +44,22 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     public MappingsPanel() {
         super(new BorderLayout());
         init();
+        JButton saveButton = new JButton("save");
+        saveButton.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            groovyMappingFile.persist();
+                        }
+                        catch (IOException e1) {
+                            e1.printStackTrace();  // todo: handle catch
+                        }
+                    }
+                }
+        );
+        add(saveButton, BorderLayout.SOUTH);
     }
 
     /**
@@ -78,7 +96,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
             @Override
             public void setValueAt(Object value, int rowIndex, int columnIndex) {
-                    data[rowIndex][columnIndex] = value;
+                data[rowIndex][columnIndex] = value;
                 fireTableCellUpdated(rowIndex, columnIndex);
             }
 
