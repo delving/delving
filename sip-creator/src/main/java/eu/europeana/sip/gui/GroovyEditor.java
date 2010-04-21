@@ -51,6 +51,11 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
     private GroovyService groovyService;
     private List<String> availableNodes;
 
+    public void updateCodeArea(String groovyCode) {
+        codeArea.setText(groovyCode);
+        compileTimer.triggerSoon();
+    }
+
     public GroovyEditor() {
         super(new BorderLayout());
         add(createSplitPane());

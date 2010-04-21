@@ -23,7 +23,7 @@ import java.io.Serializable;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public interface GroovyMappingFile {
+public interface GroovyMapping {
 
     /**
      * Separate the records with this delimiter.
@@ -89,7 +89,8 @@ public interface GroovyMappingFile {
     /**
      * Save all nodes to the file
      *
+     * @return the generated groovy code
      * @throws java.io.IOException Error while saving to file
      */
-    void persist() throws IOException;
+    StringBuffer createMapping() throws IOException;
 }

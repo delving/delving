@@ -22,6 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.FileSet;
+import eu.europeana.sip.io.GroovyMappingImpl;
 import eu.europeana.sip.mapping.MappingTree;
 import eu.europeana.sip.mapping.Statistics;
 import org.apache.log4j.Logger;
@@ -67,7 +68,13 @@ public class AnalyzerPanel extends JPanel {
     private GroovyEditor groovyEditor = new GroovyEditor();
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
-    private MappingsPanel mappingsPanel = new MappingsPanel();
+    private MappingsPanel mappingsPanel = new MappingsPanel(new GroovyMappingImpl(), new MappingsPanel.Listener() {
+
+        @Override
+        public void mappingCreated(StringBuffer mapping) {
+            groovyEditor.updateCodeArea(mapping.toString());
+        }
+    });
 
     private AnalyzerPanel instance;
 
@@ -168,18 +175,18 @@ public class AnalyzerPanel extends JPanel {
 
     private Component createMappingPanel() {
         JTabbedPane mappingPane = new JTabbedPane();
-        mappingPane.addTab("Source", groovyEditor);
+        mappingPane.addTab("Source", createSourcePanel());
         mappingPane.addTab("Mappings", mappingsPanel);
         return mappingPane;
     }
 
-//    private Component createMappingPanel() {
-//        JPanel p = new JPanel(new BorderLayout());
-//        p.add(groovyEditor, BorderLayout.CENTER);
-//        p.add(createNextButton(), BorderLayout.NORTH);
-//        p.setPreferredSize(new Dimension(500, 800));
-//        return p;
-//    }
+    private Component createSourcePanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.add(groovyEditor, BorderLayout.CENTER);
+        p.add(createNextButton(), BorderLayout.NORTH);
+        p.setPreferredSize(new Dimension(500, 800));
+        return p;
+    }
 
     private JComponent createNextButton() {
 //        nextRecordButton.setEnabled(false);

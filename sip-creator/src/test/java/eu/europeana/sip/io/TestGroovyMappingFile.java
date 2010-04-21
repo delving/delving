@@ -9,14 +9,13 @@ import eu.europeana.definitions.annotations.EuropeanaField;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test the GroovyMappingFile
+ * Test the GroovyMapping
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
@@ -24,13 +23,13 @@ public class TestGroovyMappingFile {
 
     private final static String TEST_FIELD = "dc_relation";
 
-    private GroovyMappingFile groovyMappingFile;
+    private GroovyMapping groovyMapping;
     private AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
     List<Class<?>> list = new ArrayList<Class<?>>();
 
     @Before
     public void setUp() throws FileNotFoundException {
-        groovyMappingFile = new GroovyMappingFileImpl(new File("Somefile.mapping"));
+        groovyMapping = new GroovyMappingImpl();
         list.add(IdBean.class);
         list.add(BriefBean.class);
         list.add(FullBean.class);
@@ -41,24 +40,24 @@ public class TestGroovyMappingFile {
     @Test
     public void testStoreAll() throws IOException {
         for (EuropeanaField europeanaField : annotationProcessor.getMappableFields()) {
-            groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(europeanaField.getFieldNameString()), GroovyService.generateGroovyLoop(europeanaField.getFieldNameString()));
+            groovyMapping.storeNode(new GroovyMapping.Delimiter(europeanaField.getFieldNameString()), GroovyService.generateGroovyLoop(europeanaField.getFieldNameString()));
         }
     }
 
     @Test
     public void testStore() throws IOException {
-        groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
-        System.out.printf("Stored%n%s%n%s%n", new GroovyMappingFile.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
+        groovyMapping.storeNode(new GroovyMapping.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
+        System.out.printf("Stored%n%s%n%s%n", new GroovyMapping.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
     }
 
     @Test
     public void testRetrieve() throws IOException {
-        String node = groovyMappingFile.findNode(new GroovyMappingFile.Delimiter(TEST_FIELD));
+        String node = groovyMapping.findNode(new GroovyMapping.Delimiter(TEST_FIELD));
         System.out.printf("The following node has been found%n%s%n", node);
     }
 
     @Test
     public void testDelete() throws IOException {
-        groovyMappingFile.deleteNode(new GroovyMappingFile.Delimiter(TEST_FIELD));
+        groovyMapping.deleteNode(new GroovyMapping.Delimiter(TEST_FIELD));
     }
 }

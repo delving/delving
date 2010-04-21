@@ -7,8 +7,7 @@ import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.io.GroovyMappingFile;
-import eu.europeana.sip.io.GroovyMappingFileImpl;
+import eu.europeana.sip.io.GroovyMapping;
 import eu.europeana.sip.io.GroovyService;
 
 import javax.swing.*;
@@ -16,7 +15,6 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -31,7 +29,8 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     private Object[][] data = new Object[][]{};
     private java.util.List<Class<?>> list = new ArrayList<Class<?>>();
     private AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-    private GroovyMappingFile groovyMappingFile = new GroovyMappingFileImpl(new File("test.mapping"));
+    private GroovyMapping groovyMapping;
+    private Listener listener;
 
     {
         list.add(IdBean.class);
@@ -41,8 +40,14 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         annotationProcessor.setClasses(list);
     }
 
-    public MappingsPanel() {
+    interface Listener {
+        void mappingCreated(StringBuffer mapping);
+    }
+
+    public MappingsPanel(final GroovyMapping groovyMapping, final Listener listener) {
         super(new BorderLayout());
+        this.groovyMapping = groovyMapping;
+        this.listener = listener;
         init();
         JButton saveButton = new JButton("save");
         saveButton.addActionListener(
@@ -51,7 +56,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            groovyMappingFile.persist();
+                            listener.mappingCreated(groovyMapping.createMapping());
                         }
                         catch (IOException e1) {
                             e1.printStackTrace();  // todo: handle catch
@@ -60,6 +65,12 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
                 }
         );
         add(saveButton, BorderLayout.SOUTH);
+    }
+
+    private void init() {
+        JScrollPane foundElementsContainer = new JScrollPane(constructTable());
+        add(foundElementsContainer);
+        add(foundElementsContainer, BorderLayout.CENTER);
     }
 
     /**
@@ -115,10 +126,10 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
                 String value = getValueAt(row, 0).toString();
                 try {
                     if ((Boolean) getValueAt(row, column)) {
-                        groovyMappingFile.storeNode(new GroovyMappingFile.Delimiter(value), GroovyService.generateGroovyLoop(value));
+                        groovyMapping.storeNode(new GroovyMapping.Delimiter(value), GroovyService.generateGroovyLoop(value));
                     }
                     else {
-                        groovyMappingFile.deleteNode(new GroovyMappingFile.Delimiter(value));
+                        groovyMapping.deleteNode(new GroovyMapping.Delimiter(value));
                     }
                 }
                 catch (IOException e) {
@@ -135,16 +146,16 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         for (Object value : annotationProcessor.getMappableFields()) {
             EuropeanaField field = (EuropeanaField) value;
             if (v.equals(field.getFieldNameString()) && field.isMappable()) {
+                try {
+                    groovyMapping.storeNode(new GroovyMapping.Delimiter("input." + v), GroovyService.generateGroovyLoop("input." + v));  // todo: hardcoded prefix
+                }
+                catch (IOException e) {
+                    e.printStackTrace();  // todo: handle catch
+                }
                 return true;
             }
         }
         return false;
-    }
-
-    private void init() {
-        JScrollPane foundElementsContainer = new JScrollPane(constructTable());
-        add(foundElementsContainer);
-        add(foundElementsContainer, BorderLayout.CENTER);
     }
 
     @Override
