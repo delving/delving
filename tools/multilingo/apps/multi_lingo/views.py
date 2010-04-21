@@ -34,9 +34,13 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
+import django.template.loader
+
 from rosetta.poutil import find_pos
 
+from dataexp import get_tarball
 
+from utils import PORTAL_PREFIX
 
 HTML_EXT = '.html'
 PROP_URL_NAME = 'message_keys/messages'
@@ -52,11 +56,13 @@ def find_templates():
             continue
         if fname == 'prop_file.html':
             continue
-        templates.append(fname.split(HTML_EXT)[0])
+        templates.append('%s%s' % (PORTAL_PREFIX, fname.split(HTML_EXT)[0]))
     return templates
 
 _templates = find_templates()
 
+def export_content(request):
+    data = get_tarball(_templates)
 
 def langCheck(lang):
     """
@@ -85,6 +91,10 @@ def best_match_template(pname):
             break
     return r
 
+
+
+from django.template.loader import render_to_string
+
 def show_page(request, lang=''):
     # if language is changed in dropdown, let POST param override url derived
     # lang selection
@@ -104,6 +114,12 @@ def show_page(request, lang=''):
         return HttpResponseRedirect(reverse(template, args=(content['lang'],)))
 
     # Map url to template
+    a  = django.template.loader.get_template('pages/newcontent.html')
+
+    rendered = render_to_string('pages/newcontent.html',
+                                content,
+                                context_instance=RequestContext(request))
+
     return render_to_response('pages/%s.html' % template, content,
                               context_instance=RequestContext(request))
 
