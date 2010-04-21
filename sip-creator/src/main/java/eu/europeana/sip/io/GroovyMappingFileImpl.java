@@ -24,37 +24,49 @@ public class GroovyMappingFileImpl implements GroovyMappingFile {
 
     private final File file;
 
-    private LineNumberReader lineNumberReader;
     private Map<Delimiter, String> snippets = new TreeMap<Delimiter, String>();
 
     public GroovyMappingFileImpl(File file) {
         this.file = file;
+        if (file.exists()) {
+            try {
+                load();
+            }
+            catch (IOException e) {
+                e.printStackTrace();  // todo: handle catch
+            }
+        }
     }
 
-    private String load(Delimiter delimiter) throws IOException {
-        StringBuffer node = new StringBuffer();
-        lineNumberReader = new LineNumberReader(new FileReader(file));
+    private void load() throws IOException { // todo: broken, skips delimiters
+        LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));
         String line;
+        String delimiter;
+        StringBuffer snippet = new StringBuffer();
         while (null != (line = lineNumberReader.readLine())) {
-            if (line.contains(delimiter.toString())) {
-                node.append(String.format("%s%n", line));
+            if (line.contains(NEXT_NODE_IDENTIFIER)) {
+                LOG.info(String.format("Found ID %s%n", line));
+                //snippet.append(String.format("%s%n", line));
+                delimiter = line;
                 while (null != (line = lineNumberReader.readLine())) {
-                    if (line.contains(NEXT_NODE_IDENTIFIER)) {
-                        lineNumberReader.close();
-                        return node.toString();
+                    if (line.contains(NEXT_NODE_IDENTIFIER) || line.contains("EOF")) {
+                        LOG.info(String.format("Next node or EOF found, break%n"));
+                        break;
                     }
-                    node.append(String.format("%s%n", line));
+                    LOG.info(String.format("Appending to snippet %s%n", snippet));
+                    LOG.info(String.format("Line : %s%n", line));
+                    snippet.append(String.format("%s%n", line));
                 }
-                return node.toString();
+                snippets.put(new Delimiter(delimiter), snippet.toString());
             }
         }
         lineNumberReader.close();
-        return line;
+        LOG.info(String.format("Loaded %d snippets%n", snippets.size()));
     }
 
     @Override
     public String findNode(Delimiter delimiter) throws IOException {
-        System.out.printf("Find > %s%n", delimiter);
+        LOG.info(String.format("Find > %s%n", delimiter));
         return snippets.get(delimiter);
     }
 
@@ -65,25 +77,26 @@ public class GroovyMappingFileImpl implements GroovyMappingFile {
     @Override
     public Delimiter storeNode(Delimiter delimiter, String node) throws IOException {
         if (snippets.containsKey(delimiter)) {
+            LOG.info(String.format("Overwriting %s%n", delimiter));
             snippets.remove(delimiter);
         }
+        LOG.info(String.format("Storing %s%n", delimiter));
         snippets.put(delimiter, node);
-        System.out.printf("Stored in snippets<> %d%n", snippets.size());
-        for (Map.Entry entry : snippets.entrySet()) {
-            System.out.printf("%s:%s%n", entry.getKey(), entry.getValue());
-        }
         return delimiter;
     }
 
 
     @Override
     public boolean deleteNode(Delimiter delimiter) throws IOException {
-        System.out.printf("Removing %s%n", delimiter);
+        LOG.info(String.format("Removing %s%n", delimiter));
         return null != snippets.remove(delimiter);
     }
 
     @Override
     public void persist() throws IOException {
+        if (file.exists()) {
+            file.delete();
+        }
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(String.format(FILE_HEADER).getBytes());
         for (Map.Entry entries : snippets.entrySet()) {
@@ -91,5 +104,6 @@ public class GroovyMappingFileImpl implements GroovyMappingFile {
         }
         fileOutputStream.write(String.format(FILE_FOOTER).getBytes());
         fileOutputStream.close();
+        LOG.info(String.format("Saved successfully to %s%n", file.getAbsoluteFile()));
     }
 }
