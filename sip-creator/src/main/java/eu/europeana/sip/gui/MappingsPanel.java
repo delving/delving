@@ -1,11 +1,12 @@
 package eu.europeana.sip.gui;
 
-import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
-import eu.europeana.core.querymodel.annotation.EuropeanaField;
+
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.core.querymodel.beans.BriefBean;
 import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
+import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.definitions.annotations.EuropeanaField;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
