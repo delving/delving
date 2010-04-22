@@ -37,11 +37,12 @@ a:hover {
 .page {
     -moz-box-shadow:3px 3px 4px #BBBBBB;
     background:none repeat scroll 0 0 #fff;
-    border-left: 1px solid #f1f1f1;
+    /*border-left: 1px solid #f1f1f1;*/
     border-bottom:1px solid #BBBBBB;
     border-right:1px solid #BBBBBB;
     margin-right:7px;
     padding:5;
+    margin-bottom: 20px;
 }
 
 #main.home {
@@ -79,7 +80,7 @@ a:hover {
 }
 
 #search {
-    background: #f1f1f1;
+    background: #e5e5e5;
     height: 80px;
     line-height: 60px;
 }
@@ -318,6 +319,22 @@ table caption {
     color: #555;
 }
 
+.brief-thumb-container {
+    background: #e5e5e5;
+    overflow: hidden;
+    text-align: center;
+    padding: 0.5em;
+ }
+
+.brief-thumb-container img{
+    border: 4px solid #fff;
+ }
+.brief-content-container {
+    /*border: 1px solid #e5e5e5;*/
+    padding: .5em;
+    min-height: 75px;
+}
+
 /* table wraps item detail / img and text
 ================================================*/
 #item-detail #img-full {
@@ -469,7 +486,7 @@ button.fg-button, input.fg-button {
     }
 
     .toggler-closed:hover {
-        color: #000;
+        color: #0162CD;
         padding-left: 8px;
         height: 30px;
         background: #fff url(../images/togglerch.gif) center right no-repeat;
@@ -483,7 +500,7 @@ button.fg-button, input.fg-button {
     }
 
     .toggler-opened:hover {
-        color: #000;
+        color: #0162CD;
         padding-left: 8px;
         height: 30px;
         background: #fff url(../images/toggleroh.gif) center right no-repeat;
@@ -659,6 +676,7 @@ button.fg-button, input.fg-button {
 
 .provider {
     color: #696969;
+    font-weight: bold;
 }
 
 .ui-dialog {

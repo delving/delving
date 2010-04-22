@@ -121,7 +121,7 @@
 
 </div>
 
-<div id="main" class="grid_9">
+<div id="main" class="grid_9 page">
 
 
     <div id="top-bar">
@@ -129,8 +129,6 @@
     </div>
 
     <div class="clear"></div>
-
-    <div class="">
 
     <div id="search">
         <div class="inner">
@@ -165,6 +163,7 @@
             </#if>
         </ul>
         </div>
+        <div class="clear"></div>
     </div>
 
     <div class="clear"></div>

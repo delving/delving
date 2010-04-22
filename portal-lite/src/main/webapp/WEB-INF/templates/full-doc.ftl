@@ -44,7 +44,7 @@
 </div>
 
 
-<div id="main" class="grid_9">
+<div id="main" class="grid_9 page">
 
     <div id="top-bar">
     <@userbar/>
@@ -96,6 +96,7 @@
     </div>
 
     <div class="clear"></div>
+
     <div class="inner">
         <div class="pagination fg-buttonset">
 
@@ -150,6 +151,8 @@
         <div id="item-detail">
             <#include "inc_result_table_full.ftl"/>
         </div>
+
+        <div class="clear"></div>
     </div>
 </div>
 
