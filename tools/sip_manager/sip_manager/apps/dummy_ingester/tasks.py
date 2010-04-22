@@ -108,6 +108,8 @@ class RequestCreate(sip_task.SipTask):
                 continue
 
             for filename in filenames:
+                if filename not in ('03908_Ag_FR_MCC_enluminures_out.xml'):
+                    continue
                 if os.path.splitext(filename)[1] != '.xml':
                     continue
                 # if we are scanning the ingestion svn avoid things like 'dddd.sample.xml'
@@ -145,7 +147,8 @@ class RequestCreate(sip_task.SipTask):
 
 class RequestParseNew(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Parse new Requests'
-    THREAD_MODE = sip_task.SIPT_SINGLE
+    #THREAD_MODE = sip_task.SIPT_SINGLE
+    THREAD_MODE = sip_task.SIPT_THREADABLE
 
     def prepare(self):
         try:
