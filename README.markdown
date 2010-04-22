@@ -109,7 +109,7 @@ permissions and limitations under the Licence.
 
 [http://ec.europa.eu/idabc/eupl]: http://ec.europa.eu/idabc/eupl "EUPL license"
 [delving]: https://github.com/kiivihal/delving "delving github repository"
-[delving-downloads]: https://github.com/kiivihal/open-europeana/downloads "delving downloads"
+[delving-downloads]: https://github.com/kiivihal/delving/downloads "delving downloads"
 [github]: http://www.github.com "github.com"
 [europeanalabs-svn]: http://www.europeanalabs.eu/svn/europeana/trunk "europeana labs SVN repository"
 [europeanalabs]: http://www.europeanalabs.eu "europeanaLabs.eu"
