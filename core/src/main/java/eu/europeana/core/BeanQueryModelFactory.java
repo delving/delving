@@ -125,11 +125,14 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
-        if (params.get("uri") == null) {
+    public FullBeanView getFullResultView(Map<String, String[]> params, String uri) throws EuropeanaQueryException, SolrServerException {
+         String europeanaUri = uri;
+         if (europeanaUri == null && params.get("uri") == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
-        String europeanaUri = params.get("uri")[0];
+        if (europeanaUri == null) {
+            europeanaUri = params.get("uri")[0];
+        }
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());

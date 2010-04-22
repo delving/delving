@@ -49,17 +49,17 @@
             <#--</div>-->
 
             <h5><@spring.message 'Actions_t' />:</h5>
-            <#if user??>				
+            <#if user??>
 
                 <p class="linetop">
                     <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToMyEuropeana_t' /></a>
                     <div id="msg-save-item" class="msg-hide"></div>
                 </p>
-                
-                <#if result.fullDoc.europeanaType == "IMAGE">		            
+
+                <#if result.fullDoc.europeanaType == "IMAGE">
                 	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-	                    <p class="linetop">	                	
-		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>              
+	                    <p class="linetop">
+		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
 		                </p>
 	                </#if>
                 </#if>
@@ -88,13 +88,13 @@
         <#else>
             <div class="related-links">
                 <p>
-                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
                 </p>
                 <p>
-                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
                 </p>
                 <p>
-                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
                 </p>
             </div>
 

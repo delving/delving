@@ -13,7 +13,7 @@
 
     <div id="identity">
             <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
 </div>
@@ -31,7 +31,7 @@
         <br />
         <p>
             The link you used to complete registration is invalid or has expired.
-            Please <a href="login.html">register your email again</a> to finish registration.
+            Please <a href="/${portalName}/login.html">register your email again</a> to finish registration.
         </p>
 
 </div>

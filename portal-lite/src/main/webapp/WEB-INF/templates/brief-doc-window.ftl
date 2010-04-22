@@ -118,7 +118,7 @@
 
     <div id="identity">
             <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
     <div id="facet-list">
@@ -158,7 +158,7 @@
                 <li class="first">
                 <@spring.message 'ViewingRelatedItems_t' />
                 <#assign match = result.matchDoc/>
-                <a href="full-doc.html?&amp;uri=${match.id}">
+                <a href="/${portalName}/full-doc.html?&amp;uri=${match.id}">
                     <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                     </#if>

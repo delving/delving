@@ -9,7 +9,7 @@
 
     <div id="identity">
             <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
 </div>
@@ -114,9 +114,9 @@
     Registration is not enabled yet.
     </#if>
  </div>
-   
 
-    
+
+
     <#if failureForgotFormat || failureForgotDoesntExist || forgotSuccess>
     <div id="request-password" class="grid_3 omega login-register">
     <#else >
