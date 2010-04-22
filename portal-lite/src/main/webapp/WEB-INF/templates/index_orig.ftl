@@ -15,7 +15,7 @@
 
 
     <div class="grid_12">
-            <img src="images/logo.png" id="logo-home" alt="Delving"/>
+            <img src="/${portalName}/images/logo.png" id="logo-home" alt="Delving"/>
     </div>
 
     <div class="grid_12">

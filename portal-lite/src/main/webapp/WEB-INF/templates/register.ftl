@@ -16,7 +16,7 @@
 
     <div id="identity">
             <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
 </div>
@@ -31,7 +31,7 @@
     <div class="login-register">
                 <h1><@spring.message 'Register_t' /></h1>
 
-                <form id="regForm" action="register.html" method="post">
+                <form id="regForm" action="/${portalName}/register.html" method="post">
 
                     <input type="hidden" name="token" value="${command.token}" />
                     <input type="hidden" name="email" value="${command.email}" />

@@ -77,7 +77,7 @@ public class ResultController {
         }
 
         // get results
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
+        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params, null);
 
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(template);
