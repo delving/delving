@@ -19,11 +19,9 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.annotation;
+package eu.europeana.core.querymodel.query;
 
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.QueryProblem;
-import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
 
 import java.text.MessageFormat;
 import java.util.Map;

@@ -29,7 +29,7 @@ from django.conf.urls.defaults import url, patterns
 #from views import find_templates, show_page, prop_page, PROP_URL_NAME
 import views
 
-
+PORTAL_PREFIX = '' #portal/'
 
 def global_environ(request):
     """Insert some additional information into the template context
@@ -53,9 +53,12 @@ def urls():
     lst = []
 
     for template in views.find_templates():
-        lst.append( (r'^%s/$' % template, views.show_page) )
-        lst.append( (r'^%s.html$' % template, views.show_page) )
-        lst.append(url(r'^%s_(?P<lang>\w+).html$' % template,
+        # by basename
+        lst.append( (r'^%s%s/$' % (PORTAL_PREFIX, template), views.show_page) )
+        # as base .html
+        lst.append( (r'^%s%s.html$' % (PORTAL_PREFIX, template), views.show_page) )
+        # with languagename
+        lst.append(url(r'^%s%s_(?P<lang>\w+).html$' % (PORTAL_PREFIX, template),
                        views.show_page,
                        name=template))
     lst.append(url(r'^%s_(?P<lang>\w+).properties$' % views.PROP_URL_NAME,

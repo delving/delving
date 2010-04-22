@@ -28,10 +28,10 @@ import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.ImportFileState;
 import eu.europeana.core.database.incoming.cache.ObjectCache;
-import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
-import eu.europeana.core.querymodel.annotation.EuropeanaBean;
-import eu.europeana.core.querymodel.annotation.EuropeanaField;
 import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.definitions.annotations.EuropeanaBean;
+import eu.europeana.definitions.annotations.EuropeanaField;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
@@ -54,7 +54,12 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -420,7 +425,7 @@ public class ESEImporterImpl implements ESEImporter {
         private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
             EuropeanaField field = null;
             for (EuropeanaField recordField : getEuropeanaBean().getFields()) {
-                if (recordField.getPrefix().equals(prefix) && recordField.getIndexName().equals(localName)) {
+                if (recordField.getPrefix().equals(prefix) && recordField.getLocalName().equals(localName)) {
                     field = recordField;
                     break;
                 }

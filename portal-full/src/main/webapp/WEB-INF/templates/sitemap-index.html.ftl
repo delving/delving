@@ -10,7 +10,7 @@
         <div id="yui-main">
             <div class="yui-b">
                 <div class="yui-g" id="mainContent">
-                    <h1><@spring.message 'Collections_t' /></h1>
+                    <h1><@spring.message 'Contributors_t' /></h1>
                     
                     <div id="secondaryContent">
 

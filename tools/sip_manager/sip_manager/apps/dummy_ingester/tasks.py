@@ -33,7 +33,7 @@ import django.db
 from django.core import exceptions
 from django.conf import settings
 
-from apps.process_monitor.sipproc import SipProcess
+from apps.process_monitor import sip_task
 from apps.base_item import models as base_item
 
 from utils.gen_utils import calculate_hash
@@ -47,22 +47,26 @@ IMPORT_SCAN_TREE = settings.IMPORT_SCAN_TREE
 REC_START = '<record>'
 REC_STOP = '</record>'
 
+LAST_INGEST_EXAMINATION = 0
 
-class RequestCreate(SipProcess):
+class RequestCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Checking file tree for new requests'
-    EXECUTOR_STYLE = True
+    THREAD_MODE = sip_task.SIPT_SINGLE
 
-    already_parsed = {}
+    REQUESTS = {}
+    ALREADY_PARSED = {}
 
     def __init__(self, *args, **kwargs):
         self.skip_dirs = ['error', 'to-import', 'to-import-cache-only',
                           'to-import-no-cache', 'uploading', '.svn']
         super(RequestCreate, self).__init__(*args, **kwargs)
         self.default_task_show_log_lvl = self.task_show_log_lvl
-        self.task_show_log_lvl = 9 # to try to avoid shoing initial task progress
-                                   # will be reset to normal if we actually do something
+        self.new_requests = {}
 
-    def run_it(self):
+    def prepare(self):
+        global LAST_INGEST_EXAMINATION
+        if (LAST_INGEST_EXAMINATION + 60) > time.time():
+            return
         """
         Dirs to be scanned:
             finished
@@ -83,7 +87,6 @@ class RequestCreate(SipProcess):
             uploading
         """
         skip_trees = [] # if we find a subtree that shouldnt be followed like .svn dont dive into it
-        i_found = i_added = 0
         for dirpath, dirnames, filenames in os.walk(IMPORT_SCAN_TREE):
             if dirpath == IMPORT_SCAN_TREE:
                 continue # we dont want this one to end up in skip_trees, that would be lonely...
@@ -105,6 +108,8 @@ class RequestCreate(SipProcess):
                 continue
 
             for filename in filenames:
+                if filename not in ('03908_Ag_FR_MCC_enluminures_out.xml'):
+                    continue
                 if os.path.splitext(filename)[1] != '.xml':
                     continue
                 # if we are scanning the ingestion svn avoid things like 'dddd.sample.xml'
@@ -112,29 +117,38 @@ class RequestCreate(SipProcess):
                     # extra check needed for using ingestion svn tree
                     continue
 
-                i_found += 1
                 full_path = os.path.join(dirpath, filename)
                 mtime = os.path.getmtime(full_path)
-                #if not (self.already_parsed.has_key(full_path) and self.already_parsed[full_path] == mtime):
-                #    # we dont bother with files we have already checked
-                request, was_created = models.Request.objects.get_or_create_from_file(full_path)
-                if was_created:
-                    self.task_show_log_lvl = self.default_task_show_log_lvl
-                    self.task_force_progress_timeout()
-                    self.log('Added request %s' % filename, 3)
-                    i_added += 1
-                if request:
-                    self.already_parsed[full_path] = mtime
-                self.task_time_to_show('%i / %i' % (i_added, i_found))
+                if self.ALREADY_PARSED.has_key(full_path) and self.ALREADY_PARSED[full_path] == mtime:
+                    continue # already got this one
+                self.new_requests[full_path] = mtime
+        if self.new_requests:
+            self.initial_message = 'found %i new ingestion files' % len(self.new_requests)
+        LAST_INGEST_EXAMINATION = time.time()
+        return self.new_requests
+
+
+
+    def run_it(self):
+        #if not (self.already_parsed.has_key(full_path) and self.already_parsed[full_path] == mtime):
+        #    # we dont bother with files we have already checked
+        for full_path in self.new_requests.keys():
+            request, was_created = models.Request.objects.get_or_create_from_file(full_path)
+            if was_created:
+                self.ALREADY_PARSED[full_path] = self.new_requests[full_path] # save mtime
+                self.task_force_progress_timeout()
+                self.task_time_to_show('Added request %s' % os.path.split(full_path)[1],
+                                       terminate_on_high_load=True)
         return True
 
 
 
 
 
-class RequestParseNew(SipProcess):
+class RequestParseNew(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Parse new Requests'
-    EXECUTOR_STYLE = True
+    #THREAD_MODE = sip_task.SIPT_SINGLE
+    THREAD_MODE = sip_task.SIPT_THREADABLE
 
     def prepare(self):
         try:
@@ -145,6 +159,7 @@ class RequestParseNew(SipProcess):
 
         # in order not to grab control to long, just handle one request on each call to this
         self.request_id = request.id
+        self.initial_message = request.file_name
         return True
 
 
@@ -153,6 +168,8 @@ class RequestParseNew(SipProcess):
                                  'About to parse for ese records')
         if not request:
             return False # Failed to take control of it
+        request.status = models.REQS_INIT
+        request.save()
 
         self.current_request = request # make it available without params for other modules
         full_path = self.find_file()
@@ -180,9 +197,12 @@ class RequestParseNew(SipProcess):
             elif line: # skip empty lines
                 record.append(line)
             line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
+
+            # we dont alow this one to terminate on high load, since it would be
+            # very expensive to restart this
             self.task_time_to_show(record_count)
         f.close()
-        request.status = models.REQS_INIT
+        request.status = models.REQS_IMPORTED
         request.save()
         self.release_item(models.Request, request.pk)
         return True

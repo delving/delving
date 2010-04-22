@@ -22,9 +22,13 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.FileSet;
+import eu.europeana.sip.io.RecentFileSets;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
 
 /**
  * The main GUI class for the sip creator
@@ -45,7 +49,24 @@ public class SipCreatorGUI extends JFrame {
         tabs.addTab("Normalizer", normalizerPanel);
         getContentPane().add(tabs);
         setJMenuBar(createMenuBar());
-        setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize(new Dimension((int) Math.round(d.getWidth() * .8), (int) Math.round(d.getHeight() * .8)));
+        tabs.addKeyListener(
+                new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if (KeyEvent.ALT_MASK == e.getModifiers() && KeyEvent.VK_L == e.getKeyCode()) {
+                            RecentFileSets recentFiles = new RecentFileSets(new File("."));
+                            if (0 < recentFiles.getList().size()) {
+                                FileSet fileSet = recentFiles.getList().get(0);
+                                analyzerPanel.setFileSet(fileSet);
+                                normalizerPanel.setFileSet(fileSet);
+                            }
+                        }
+                    }
+                }
+        );
+        tabs.requestFocus();
     }
 
     private JMenuBar createMenuBar() {

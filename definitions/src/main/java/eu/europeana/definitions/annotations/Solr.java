@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.annotation;
+package eu.europeana.definitions.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -40,9 +40,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Solr {
 
-    String namespace() default "";  // overrides Field value
+    String prefix() default "";  // overrides Field value
 
-    String name() default "";       // overrides Field value
+    String localName() default "";       // overrides Field value
 
     // Solr Schema stuff
 

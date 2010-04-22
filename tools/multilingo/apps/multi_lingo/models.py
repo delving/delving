@@ -28,8 +28,9 @@ import shutil
 import time
 import codecs
 
+from django.conf import settings
 from django.db import models
-from django.contrib import admin
+from django.core.files.storage import FileSystemStorage
 
 from views import PROP_TEMPLATE
 
@@ -136,39 +137,24 @@ admin.site.register(PortalProperties, PortalPropertiesAdmin)
 
 
 
-TITLE_CHOICES = (
-    ('MR', 'Mr.'),
-    ('MRS', 'Mrs.'),
-    ('MS', 'Ms.'),
-)
 
-
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-    title = models.CharField(max_length=3, choices=TITLE_CHOICES)
-    birth_date = models.DateField(blank=True, null=True)
-
-    def __unicode__(self):
-        return self.name
+this_dir = os.path.split(__file__)[0]
+fs = FileSystemStorage(location=os.path.join(this_dir, 'templates'))
 
 
 
-class Publisher(models.Model):
-    name = models.CharField(max_length=30)
-    address = models.CharField(max_length=50)
-    city = models.CharField(max_length=60)
-    state_province = models.CharField(max_length=30)
-    country = models.CharField(max_length=50)
-    website = models.URLField()
+class TranslatePage(models.Model):
+    """
+    A page that should be translated
+    """
+    file_name = models.FileField(upload_to='pages2', storage=fs)
+    time_created = models.DateTimeField(auto_now_add=True,editable=False)
 
     def __unicode__(self):
-        return self.name
+        return self.file_name.name
 
-    class Meta:
-        ordering = ["-name"]
+"""
 
-class Book(models.Model):
-    title = models.CharField(max_length=100)
-    authors = models.ManyToManyField('Author')
-    publisher = models.ForeignKey(Publisher)
-    publication_date = models.DateField()
+Submitta - dir med tidsstempel
+
+"""

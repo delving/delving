@@ -32,7 +32,9 @@ import time
 from django.conf import settings
 from django.db import connection
 
-import sipproc
+from utils.gen_utils import db_is_mysql
+
+import sip_task
 
 
 # Since looking up in settings takes some extra cpu, important settings
@@ -40,24 +42,36 @@ import sipproc
 PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
 PLUGIN_FILTER = settings.PLUGIN_FILTER
 SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
-URIVALIDATE_MAX_LOAD = settings.URIVALIDATE_MAX_LOAD
 
 
-class MainProcessor(object):
+class MainProcessor(sip_task.SipTask):
+    ALL_TABLES = [('base_item_mdrecord', True),
+                  ('base_item_requestmdrecord', False),
+                  ('dummy_ingester_aggregator', False),
+                  ('dummy_ingester_dataset', False),
+                  ('dummy_ingester_provider', False),
+                  ('dummy_ingester_request', True),
+                  ('log_errlog', False),
+                  ('plug_uris_requri', False),
+                  ('plug_uris_uri', True),
+                  ('plug_uris_urisource', True),
+                  ('process_monitor_processmonitoring', False)]
+
 
     def __init__(self, options):
+        super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
         self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
         self.tasks_simple = [] # list of all tasks found
         self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
         if options['flush-all']:
-            self.flush_all()
+            self.cmd_flush_all()
             sys.exit(0)
         elif options['drop-all']:
-            self.drop_all()
+            self.cmd_drop_all()
             sys.exit(0)
         elif options['clear-pids']:
-            self.clear_pids()
+            self.cmd_clear_pids()
             sys.exit(0)
         self.find_tasks()
 
@@ -71,52 +85,49 @@ class MainProcessor(object):
         return
 
     def run2(self):
+        """
+        Main loop inside a Ctrl-C
+        """
         # First run all init tasks once
         print
-        print 'Running init plugins'
+        print ' =====   Running init plugins   ====='
         for taskClass in self.tasks_init:
             tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
             print '\t%s' % tc.short_name()
             tc.run()
 
         print
-        print 'Commencing operations'
+        print ' =====   Commencing operations   ====='
+        print 'Tastk start limits  = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_NEW_TASKS
+        print 'Task kill limits    = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_RUNNING_TASKS
+        idle_count = 0
         while True:
+            busy = False
             # First run all simple tasks once
             for task_group in (self.tasks_simple, self.tasks_heavy):
+                if busy:
+                    break
                 for taskClass in task_group:
-                    if self.system_is_occupied():
+                    busy, loads = self.system_is_occupied()
+                    if busy:
                         break
-                    if settings.THREADING_PLUGINS and taskClass.IS_THREADABLE:
-                        # For the moment try slow starting, just one thread per run
-                        # this way load builds up more slowly and should keep
-                        # within reasonable limits.
-                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
-                        """
-                        while taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                            # Continue to start new threads as long as they
-                            # find something to work on
-                            #print '*** started thread for', taskClass.__name__
-                            pass
-                        """
-                    else:
-                        taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run()
+                    if taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                        # it was started
+                        busy = True # indication to break out of outer loop
+                        idle_count = 0
+                        break
+
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
-            #print 'sleeping a while'
+            if not busy:
+                idle_count += 1
+            if SIP_PROCESS_DBG_LVL > 7 or idle_count > 10: # dont indicate idling too often...
+                idle_count = 0
+                print ' nothing to do for the moment...'
             time.sleep(PROCESS_SLEEP_TIME)
         return True
 
-
-    def system_is_occupied(self):
-        "dont start new tasks when load is high."
-        load_1, load_5, load_15 = os.getloadavg()
-        for load in (load_1, load_5, load_15):
-            if load >= URIVALIDATE_MAX_LOAD:
-                print '== load too high', load_1, load_5, load_15
-                return True
-        return False
 
 
     """
@@ -124,7 +135,7 @@ class MainProcessor(object):
 
     """
     def find_tasks(self):
-        print 'Scanning for plugins'
+        print ' =====   Scanning for plugins   ====='
         for app in settings.INSTALLED_APPS:
             if not app.find('apps') == 0:
                 continue
@@ -157,43 +168,23 @@ class MainProcessor(object):
         print 'done!'
 
 
-    def flush_all(self):
+    def cmd_flush_all(self):
         cursor = connection.cursor()
-        if self.db_is_mysql():
+        if db_is_mysql:
             sql = 'TRUNCATE %s'
         else:
             sql = 'TRUNCATE %s CASCADE'
-        for table in ('base_item_mdrecord',
-                      'base_item_requestmdrecord',
-                      'dummy_ingester_aggregator',
-                      'dummy_ingester_dataset',
-                      'dummy_ingester_provider',
-                      'dummy_ingester_request',
-                      'plug_uris_requri',
-                      'plug_uris_uri',
-                      'plug_uris_urisource',
-                      'process_monitor_processmonitoring',
-                      ):
+        for table, has_pid in self.ALL_TABLES:
             cursor.execute(sql % table)
         return True
 
-    def drop_all(self):
+    def cmd_drop_all(self):
         cursor = connection.cursor()
-        if self.db_is_mysql():
+        if db_is_mysql:
             sql = 'DROP TABLE %s'
         else:
             sql = 'DROP TABLE %s CASCADE'
-        for table in ('base_item_mdrecord',
-                      'base_item_requestmdrecord',
-                      'dummy_ingester_aggregator',
-                      'dummy_ingester_dataset',
-                      'dummy_ingester_provider',
-                      'dummy_ingester_request',
-                      'plug_uris_requri',
-                      'plug_uris_uri',
-                      'plug_uris_urisource',
-                      'process_monitor_processmonitoring',
-                      ):
+        for table, has_pid in self.ALL_TABLES:
             try:
                 cursor.execute(sql % table)
             except:
@@ -202,27 +193,13 @@ class MainProcessor(object):
         cursor.execute('commit')
         return True
 
-    def clear_pids(self):
+    def cmd_clear_pids(self):
         cursor = connection.cursor()
         cursor.execute('TRUNCATE process_monitor_processmonitoring')
-        for table in ('base_item_mdrecord',
-                      'dummy_ingester_request',
-                      'plug_uris_uri',
-                      'plug_uris_urisource',
-                      ):
-            cursor.execute('UPDATE %s SET pid=0 WHERE pid>0' % table)
-
-    def db_is_mysql(self):
-        # This will be uggly...
-        cursor = connection.cursor()
-        if hasattr(cursor, 'db'):
-            # if DEBUG=True its found here...
-            b = 'mysql' in cursor.db.__module__
-        else:
-            # Otherwise we find it here
-            b = 'mysql' in cursor.__module__
-        return b
-
+        for table, has_pid in self.ALL_TABLES:
+            if has_pid:
+                cursor.execute('UPDATE %s SET pid=0 WHERE pid > 0' % table)
+        cursor.execute('commit')
 
 """
   Request actions

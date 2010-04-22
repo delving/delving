@@ -66,6 +66,7 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 
 import datetime
 import os
+import random
 import sys
 import time
 import urllib2
@@ -80,7 +81,8 @@ from django.db import connection
 from django.conf import settings
 
 from apps.base_item import models as base_item
-from apps.process_monitor.sipproc import SipProcess
+from apps.log import models as log
+from apps.process_monitor import sip_task
 
 from utils.gen_utils import calculate_hash
 
@@ -137,7 +139,8 @@ else:
     REL_DIR_BRIEF = 'BRIEF_DOC'
 
 
-class UriPepareStorageDirs(SipProcess):
+class UriPepareStorageDirs(sip_task.SipTask):
+    SHORT_DESCRIPTION = 'Creates storage dirs'
     INIT_PLUGIN = True
     PLUGIN_TAXES_DISK_IO = True
 
@@ -185,9 +188,11 @@ class UriPepareStorageDirs(SipProcess):
                     os.mkdir(new_dir)
 
 
-class UriCreate(SipProcess):
+
+
+class UriCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Create new uri records'
-    EXECUTOR_STYLE = True
+    THREAD_MODE = sip_task.SIPT_SINGLE
 
     def prepare(self):
         self.cursor = connection.cursor()
@@ -195,9 +200,13 @@ class UriCreate(SipProcess):
         #   Finding MdRecords with no matching Uri items, since all MdRecords
         #   contains uri this indicates that this item is not processed
         # TODO: In desperate need of optimization!
-        self.cursor.execute(
-            "SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL")
+        sql = ["SELECT DISTINCT m.id FROM base_item_mdrecord m"]
+        sql.append("LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id")
+        sql.append("WHERE u.mdr_id IS NULL and m.status NOT LIKE %i" % base_item.MDRS_BROKEN)
+        self.cursor.execute(' '.join(sql))
+
         if self.cursor.rowcount:
+            self.initial_message = 'Found %i records' % self.cursor.rowcount
             return True
         else:
             return False
@@ -211,6 +220,7 @@ class UriCreate(SipProcess):
                 break
             record_count += 1
             mdr_id = result[0]
+            # Normaly we wont change the mdr, so we dont need to lock it
             mdrs = base_item.MdRecord.objects.filter(pk=mdr_id,pid=0)
             if not mdrs:
                 # we know it exists, so must be busy, leave it for later processing
@@ -221,7 +231,7 @@ class UriCreate(SipProcess):
                                   base_item.MDRS_PROCESSING):
                 continue # never touch bad / completed items
             self.handle_md_record(mdr)
-            self.task_time_to_show(record_count)
+            self.task_time_to_show(record_count, terminate_on_high_load=True)
         return True
 
     def handle_md_record(self, mdr):
@@ -235,10 +245,29 @@ class UriCreate(SipProcess):
                            ):
             url = self.find_tag(tag, mdr.source_data)
             if url:
-                break
+                self.handle_uri(mdr, itype, url)
+                break # DEBUG for the moment abort as soon as we have at least one
+                      # uri, since we need one to indicate this mdrecord is
+                      # processed, remove this once we actually want to verify
+                      # all the uris
         if not url:
+            el = log.ErrLog(err_code=log.LOGE_NO_URIS,
+                            msg = 'MdRecord with no uris',
+                            item_id = 'MdRecord %i' % mdr.pk,
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
+            mdr_l = self.grab_item(base_item.MdRecord, mdr.pk, wait=10)
+            if not mdr_l:
+                raise sip_task.SipTaskException('Mdr %i missing any uri, failed to lock mdr' % mdr.pk)
+            mdr_l.status = base_item.MDRS_BROKEN
+            mdr_l.save()
+            self.release_item(base_item.MdRecord, mdr_l.pk)
             return False
+        return True
 
+
+    def handle_uri(self, mdr, itype, url):
         srvr_name = urlparse.urlsplit(url).netloc.lower()
         uri_sources = models.UriSource.objects.filter(name_or_ip=srvr_name)
         if uri_sources:
@@ -257,6 +286,7 @@ class UriCreate(SipProcess):
             req_uri.save()
         return True
 
+
     def find_tag(self, tag, source_data):
         parts = source_data.split(tag)
         if len(parts) == 1:
@@ -266,23 +296,30 @@ class UriCreate(SipProcess):
 
 
 
-
-class UriValidateSave(SipProcess):
+class UriValidateSave(sip_task.SipTask):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
-    IS_THREADABLE = True
+    THREAD_MODE = sip_task.SIPT_THREADABLE
 
     def prepare(self):
-        urisources = models.UriSource.objects.filter(pid=0)
+
+        urisources = models.UriSource.objects.filter(pid=0).values('pk')
         if not urisources:
             return False
 
+        # in order to not try the same urisource all the time when one task
+        # previously was terminated due to high load, we randomize the order
+        lst = urisources._result_cache[:]
+        random.shuffle(lst)
+
         self.urisource = None
-        for urisource in urisources:
+        for d in lst:
+            urisource_id = d['pk']
             # Loop over available sources, see if any of them has pending jobs
-            if models.Uri.objects.new_by_source_count(urisource.pk):
+            if models.Uri.objects.new_by_source_count(urisource_id):
                 # found one!  lets work on it
-                self.urisource = urisource
+                self.urisource = models.UriSource.objects.filter(pk=urisource_id)[0]
+                self.initial_message = self.urisource.name_or_ip
                 break
 
         if not self.urisource:
@@ -295,14 +332,10 @@ class UriValidateSave(SipProcess):
         # We must mark this item early, before possible threading kicks in
         # otherwise we might find it again before the thread actually starts
         # to work on the current set
-        if not self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source'):
+        self.urisource = self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source')
+        if not self.urisource:
             return False
 
-        self.run_in_thread(self.do_one_source)
-        return True
-
-
-    def do_one_source(self):
         current_count = models.Uri.objects.new_by_source_count(self.urisource.pk)
         self.task_starting('', current_count, display=False)
         record_count = 0
@@ -317,7 +350,12 @@ class UriValidateSave(SipProcess):
 
             self.release_item(models.Uri, uri_id)
 
-            self.task_time_to_show(record_count)
+            try:
+                self.task_time_to_show(record_count, terminate_on_high_load=True)
+            except SipSystemOverLoaded:
+                 # Terminate in a controled fashion so we can do cleanup
+                break
+
 
             if record_count > current_count:
                 # More items has turned up since we started this loop,
@@ -325,6 +363,7 @@ class UriValidateSave(SipProcess):
                 # we should terminate now, and things will continue on next call
                 # to this plugin
                 break
+
         self.release_item(models.UriSource, self.urisource.pk)
         return True
 
@@ -423,9 +462,11 @@ class UriValidateSave(SipProcess):
         else:
             return self.generate_images_pil(base_fname, org_fname)
 
+
     def file_name_from_hash(self, url_hash):
         fname = '%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
         return fname
+
 
     def file_name_from_hash_old_style(self, url_hash):
         "Old style (<= 0.6 release) way of generating filenames from hash."
@@ -435,7 +476,7 @@ class UriValidateSave(SipProcess):
 
     def set_urierr(self, code, msg=''):
         if code not in models.URI_ERR_CODES:
-            raise SipProcessException('set_urierr called with invalid errcode')
+            raise SipTaskException('set_urierr called with invalid errcode')
         self.uri.err_code = code
         if msg:
             self.uri.err_msg = msg
@@ -483,7 +524,7 @@ class UriValidateSave(SipProcess):
                                   '%s%s' % (base_fname, ext))
         cmd = [CONVERT_COMMAND]
         cmd.append('-resize 200x')
-        cmd.append(org_fname)
+        cmd.append('%s[0]' % org_fname)
         cmd.append(fname_full)
         output = self.cmd_execute1(cmd)
         if output:
@@ -500,7 +541,7 @@ class UriValidateSave(SipProcess):
                                    '%s%s' % (base_fname, ext))
         cmd = [CONVERT_COMMAND]
         cmd.append('-resize x110')
-        cmd.append(org_fname)
+        cmd.append('%s[0]' % org_fname)
         cmd.append(fname_brief)
         output = self.cmd_execute1(cmd)
         if output:
@@ -513,7 +554,7 @@ class UriValidateSave(SipProcess):
 
     def remove_file(self, full_path):
         if not SIP_OBJ_FILES in full_path:
-            raise SipProcessException('Attempt to remove illegal filename: %s' % full_path)
+            raise SipTaskException('Attempt to remove illegal filename: %s' % full_path)
         try:
             os.remove(full_path)
         except OSError:
@@ -565,7 +606,7 @@ class UriValidateSave(SipProcess):
 
 
 
-class UriCleanup(SipProcess):
+class UriCleanup(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Remove uri records no longer having a request'
 
     def run_it(self):
@@ -573,7 +614,7 @@ class UriCleanup(SipProcess):
         return True
 
 
-class UriFileTreeMonitor(SipProcess):
+class UriFileTreeMonitor(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Walks file tree and finds orphan files'
 
     def run_it(self):

@@ -43,3 +43,21 @@ def calculate_hash(item):
     """
     r_hash = hashlib.sha256(item.upper()).hexdigest().upper()
     return r_hash
+
+
+def __db_is_mysql():
+    from django.db import connection
+    cursor = connection.cursor()
+    if hasattr(cursor, 'db'):
+        # if DEBUG=True its found here...
+        look_at = cursor.db
+    else:
+        # Otherwise we find it here
+        look_at = cursor
+    if look_at.__str__().find('mysql') > -1:
+        b = True
+    else:
+        b = False
+    return b
+
+db_is_mysql = __db_is_mysql()

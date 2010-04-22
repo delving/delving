@@ -1,23 +1,8 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-
-
-# Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
-
-
-
-#viewtest starts
-from django.views.generic import list_detail
-from mysite.books.models import Publisher
-
-publisher_info = {
-    "queryset" : Publisher.objects.all(),
-}
-#viewtest ends
-
 
 import apps.multi_lingo
 
@@ -27,6 +12,7 @@ import apps.multi_lingo
 
 urlpatterns = patterns('',
     url(r'^$',apps.multi_lingo.views.index_page),
+    url(r'^export$',apps.multi_lingo.views.export_content,name='ml-export'),
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -36,10 +22,6 @@ urlpatterns = patterns('',
 
     url(r'^reload_templates/', apps.multi_lingo.views.reload_templates,
         name='reload-templates'),
-
-    #viewtest starts
-    (r'^publishers/$', list_detail.object_list, publisher_info)
-    #viewtest ends
 
 )
 
@@ -51,11 +33,12 @@ if settings.DELIVER_STATIC_MEDIA:
         media_url = media_url[1:]
     if media_url[-1] == '/':
         media_url = media_url[:-1]
+
     urlpatterns += patterns('django.views.static',
-    (r'^%s/(?P<path>.*)$' % media_url,
-        'serve', {
-        'document_root': settings.MEDIA_ROOT,
-        'show_indexes': True }),)
+                            (r'^%s/(?P<path>.*)$' % media_url,
+                             'serve', {
+                                 'document_root': settings.MEDIA_ROOT,
+                                 'show_indexes': True }),)
 
 if 'rosetta' in settings.INSTALLED_APPS:
     urlpatterns += patterns('',
