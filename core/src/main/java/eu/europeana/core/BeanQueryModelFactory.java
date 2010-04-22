@@ -53,6 +53,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -74,7 +75,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private AnnotationProcessor annotationProcessor;
     private UserDao dashboardDao;
 
-//    @Autowired
+    @Value("#{europeanaProperties['portal.name']}")
+    public void setPortalName(String portalName) {
+        this.portalName = portalName;
+    }
+
+    //    @Autowired
 //    @Qualifier("solrSelectServer")
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
