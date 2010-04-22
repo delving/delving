@@ -6,7 +6,7 @@ $(document).ready(function() {
     function removeRequest(className, id){
         $.ajax({
            type: "POST",
-           url: "remove.ajax",
+           url: "/portal/remove.ajax",
            data: "className="+className+"&id="+id,
            success: function(msg){
                 window.location.reload();
@@ -20,7 +20,7 @@ $(document).ready(function() {
     function saveRequest(className, id){
         $.ajax({
            type: "POST",
-           url: "save.ajax",
+           url: "/portal/save.ajax",
            data: "className="+className+"&id="+id,
            success: function(msg){
                 window.location.reload();

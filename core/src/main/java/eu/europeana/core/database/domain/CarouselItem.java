@@ -170,6 +170,7 @@ public class CarouselItem implements Serializable {
     public BriefDoc getDoc() {
         return new BriefDoc() {
             private int index;
+            private String fullDocUrl;
 
             @Override
             public void setIndex(int index) {
@@ -177,8 +178,18 @@ public class CarouselItem implements Serializable {
             }
 
             @Override
+            public void setFullDocUrl(String fullDocUrl) {
+                this.fullDocUrl = fullDocUrl;
+            }
+
+            @Override
             public int getIndex() {
                 return index;
+            }
+
+            @Override
+            public String getFullDocUrl() {
+                return fullDocUrl;  
             }
 
             @Override

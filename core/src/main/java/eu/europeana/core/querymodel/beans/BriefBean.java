@@ -38,6 +38,7 @@ import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
 public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
+    transient String fullDocUrl;
 
     @Europeana(validation = ValidationLevel.ESE_PLUS_REQUIRED)
     @Solr(prefix = "europeana", localName = "europeanaCollectionName", multivalued = false, required = true)
@@ -90,8 +91,18 @@ public class BriefBean extends IdBean implements BriefDoc {
     }
 
     @Override
+    public String getFullDocUrl() {
+        return fullDocUrl;
+    }
+
+    @Override
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public void setFullDocUrl(String fullDocUrl) {
+        this.fullDocUrl = fullDocUrl;
     }
 
     @Override

@@ -9,17 +9,9 @@
     <#if RequestParameters.useCache??>
         <#assign useCache = "${RequestParameters.useCache}"/>
     </#if>
-    <#if startPage??><#assign startPage = startPage/></#if>
-    <#if RequestParameters.view??> <#assign view = "${RequestParameters.view}"/></#if>
-    <#if format??><#assign format = format/></#if>
     <#if pagination??>
         <#assign pagination = pagination/>
         <#assign queryStringForPaging = pagination.queryStringForPaging />
-    </#if>
-    <#if queryStringForPaging??>
-        <#assign defaultQueryParams = "full-doc.html?"+queryStringForPaging+"&start="+pagination.docIdWindow.offset?c+"&uri="+result.fullDoc.id+"&view="+view />
-        <#else>
-            <#assign defaultQueryParams = "full-doc.html?uri="+result.fullDoc.id />
     </#if>
     <#if result.fullDoc.dcTitle[0]?length &gt; 110>
         <#assign postTitle = result.fullDoc.dcTitle[0]?substring(0, 110)?url('utf-8') + "..."/>

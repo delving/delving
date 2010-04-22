@@ -15,7 +15,7 @@
 
     <div id="identity">
             <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Delving"><img src="images/logo-small.png" alt="Delving Home"/></a>
+            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
 </div>
