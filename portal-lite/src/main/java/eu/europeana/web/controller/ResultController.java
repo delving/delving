@@ -39,6 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -73,7 +74,7 @@ public class ResultController {
         boolean srwFormat = format != null && format.equals("srw");
 
         // get results
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params, null);
+        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
 
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
@@ -96,14 +97,17 @@ public class ResultController {
             @PathVariable String collId, @PathVariable String recordHash,
             HttpServletRequest request
     ) throws Exception {
-        final Map params = request.getParameterMap();
+        Map params = request.getParameterMap();
         String format = (String) params.get("format");
         boolean srwFormat = format != null && format.equals("srw");
+
         String uri = "http://www.europeana.eu/resolve/record/" + collId + "/" + recordHash;
-        params.put("uri", uri);
+        Map fullParams = new HashMap<String, String[]>();
+        fullParams.putAll(params);
+        fullParams.put("uri", new String[]{uri});
 
         // get results
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params, uri);
+        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(fullParams);
 
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");

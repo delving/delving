@@ -1,4 +1,9 @@
 <#import "spring.ftl" as spring >
+<#if portalName??>
+    <#assign portalName = portalName/>
+    <#--<#else>-->
+        <#--<#assign portalName = "portal"/>-->
+</#if>
 <#if user??>
     <#assign user = user/>
 </#if>
