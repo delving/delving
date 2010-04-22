@@ -71,7 +71,7 @@ public class ResultController {
         boolean srwFormat = format != null && format.equals("srw");
 
         // get results
-        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params, null);
+        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
 
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");

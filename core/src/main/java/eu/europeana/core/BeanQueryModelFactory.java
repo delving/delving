@@ -125,14 +125,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Override
-    public FullBeanView getFullResultView(Map<String, String[]> params, String uri) throws EuropeanaQueryException, SolrServerException {
-         String europeanaUri = uri;
-         if (europeanaUri == null && params.get("uri") == null) {
+    public FullBeanView getFullResultView(Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
+        if (params.get("uri") == null) {
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_URL.toString()); // Expected uri query parameter
         }
-        if (europeanaUri == null) {
-            europeanaUri = params.get("uri")[0];
-        }
+        String europeanaUri = params.get("uri")[0];
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("europeana_uri:\"" + europeanaUri + "\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
@@ -170,15 +167,15 @@ public class BeanQueryModelFactory implements QueryModelFactory {
      * Get records from Sorl for a particular collection for the siteMap.
      *
      * @param europeanaCollectionName the europeana collectionName as stored in the EuropeanaCollection Domain object
-     * @param rowsReturned number of rows to be returned from Solr
-     * @param pageNumber which page of the sitemap per collection will be returned.
+     * @param rowsReturned            number of rows to be returned from Solr
+     * @param pageNumber              which page of the sitemap per collection will be returned.
      * @return list of IdBeans
      * @throws EuropeanaQueryException
      * @throws SolrServerException
      */
     @Override
-    public SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException  {
-        SolrQuery solrQuery = new SolrQuery("PROVIDER:\""+europeanaCollectionName + "\"");
+    public SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException {
+        SolrQuery solrQuery = new SolrQuery("PROVIDER:\"" + europeanaCollectionName + "\"");
         solrQuery.setRows(rowsReturned);
         solrQuery.setFields("europeana_uri", "timestamp");
         solrQuery.setStart(pageNumber * rowsReturned);
@@ -267,7 +264,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                             break;
                         }
                     }
-                    facetLogs.put(facetField.getName(), out.toString().substring(0, out.toString().length() -1));
+                    facetLogs.put(facetField.getName(), out.toString().substring(0, out.toString().length() - 1));
                 }
             }
             return facetLogs;
