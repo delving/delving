@@ -158,7 +158,7 @@
                 <li class="first">
                 <@spring.message 'ViewingRelatedItems_t' />
                 <#assign match = result.matchDoc/>
-                <a href="/${portalName}/full-doc.html?&amp;uri=${match.id}">
+                <a href="${match.fullDocUrl}">
                     <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                     </#if>
@@ -388,12 +388,12 @@
     <div id="viewselect" style="float:right">
         <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
 
         <#else>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
 
         </#if>
         </#if>

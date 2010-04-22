@@ -39,8 +39,10 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,14 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private QueryAnalyzer queryAnalyzer;
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
+    private String portalName;
     private UserDao dashboardDao;
+
+
+    @Value("#{europeanaProperties['portal.name']}")
+    public void setPortalName(String portalName) {
+        this.portalName = portalName;
+    }
 
     @Autowired
     @Qualifier("solrSelectServer")
@@ -241,6 +250,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 List<BriefBean> briefBeanList = solrServer.getBinder().getBeans(BriefBean.class, matchDoc);
                 if (briefBeanList.size() > 0) {
                     briefDoc = briefBeanList.get(0);
+                    String europeanaId = createFullDocUrl(briefDoc.getId());
+                    briefDoc.setFullDocUrl(europeanaId);
                 }
             }
             return briefDoc;
@@ -296,13 +307,18 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
     }
 
-    static List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList) {
+    private List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList) {
         Integer start = solrQuery.getStart();
         int index = start == null ? 1 : start + 1;
         for (BriefDoc briefDoc : briefDocList) {
             briefDoc.setIndex(index++);
+            briefDoc.setFullDocUrl(createFullDocUrl(briefDoc.getId()));
         }
         return briefDocList;
+    }
+
+    private String createFullDocUrl(String europeanaId) {
+        return MessageFormat.format("/{0}{1}.html", portalName, europeanaId.replaceAll("http://www.europeana.eu/resolve", ""));
     }
 
     private class FullBeanViewImpl implements FullBeanView {

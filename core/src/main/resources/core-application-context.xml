@@ -171,6 +171,8 @@
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>
 
+    <bean id="docIdWindowPager" class="eu.europeana.core.querymodel.query.DocIdWindowPagerImpl"/> 
+
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="#{europeanaProperties['smtp.host']}"/>
         <property name="username" value="#{europeanaProperties['smtp.username']}"/>

@@ -8,9 +8,9 @@
                         <td width="45" valign="top">
                             <div class="related-thumb-container">
                                 <#if queryStringForPaging??>
-                                    <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
+                                    <a href='${doc.fullDocUrl}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index?c}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab='>
                                  <#else>
-                                    <a href="full-doc.html?uri=${doc.id}">
+                                    <a href="${doc.fullDocUrl}">
                                  </#if>
                                  <#if useCache="true">
                                     <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>
@@ -24,9 +24,9 @@
 
                         <td class="item-titles" valign="top" width="130">
                             <#if queryStringForPaging??>
-                            <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
+                            <a href='${doc.fullDocUrl}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "50"/></a>
                             <#else>
-                            <a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
+                            <a href="${doc.fullDocUrl}"><@stringLimiter "${doc.title}" "50"/></a>
                             </#if>
                         </td>
                     </tr>
@@ -34,7 +34,7 @@
                     </#list>
                     <#if result.relatedItems?size &gt; max>
                     <tr>
-                        <td id="see-all" colspan="2"><a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
+                        <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
                     </tr>
                     </#if>
                 </table>

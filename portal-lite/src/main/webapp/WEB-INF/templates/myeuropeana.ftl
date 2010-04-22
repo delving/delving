@@ -61,10 +61,10 @@
                                 <h4><@spring.message 'EmailAddress_t'/>:</h4>
                                 <p>${user.email}</p>
 
-                            <#if user.firstName?exists>
+                            <#if user.firstName??>
                                 First name: ${user.firstName}
                             </#if>
-                            <#if user.lastName?exists>
+                            <#if user.lastName??>
                                 Last name: ${user.lastName}
                             </#if>
 
@@ -78,7 +78,7 @@
                                 <#list user.savedItems as item>
                                     <tr>
                                         <td valign="top" class="item-img">
-                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}">
+                                            <a href='/${portalName}/${item.europeanaId.europeanaUri?replace("http://www.europeana.eu/resolve/", "")}.html'>
                                              <#if useCache="true">
                                                 <img class="thumb" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                              <#--<#else>-->
@@ -91,7 +91,7 @@
                                             </a>
                                         </td>
                                         <td valign="top" class="item-info">
-                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}"><strong><@stringLimiter "${item.title}" "50"/></strong></a>
+                                            <a href='/${portalName}/${item.europeanaId.europeanaUri?replace("http://www.europeana.eu/resolve/", "")}.html'><strong><@stringLimiter "${item.title}" "50"/></strong></a>
                                             <p>
                                             creator: <em>${item.author}</em></p><p>
                                                 <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
@@ -112,7 +112,7 @@
                                 <#list user.savedSearches as search>
                                     <tr>
                                         <td valign="top" class="item-info">
-                                            <a href="brief-doc.html?${search.query}">${search.queryString}</a>
+                                            <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a>
                                             <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
                                         </td>
                                         <td width="60"><button onclick="removeRequest('SavedSearch',${search.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
@@ -150,7 +150,8 @@
                                          </#if>
                                      </td>
                                      <td valign="top" class="item-info">
-                                         <a href="full-doc.html?uri=${tag.europeanaUri}">${tag.title}</a><br/>
+
+                                         <a href='/${portalName}/${tag.europeanaUri?replace("http://www.europeana.eu/resolve/", "")}.html'>${tag.title}</a><br/>
                                          <p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>
                                      </td>
                                      <td width="60"><button onclick="removeRequest('SocialTag',${tag.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
