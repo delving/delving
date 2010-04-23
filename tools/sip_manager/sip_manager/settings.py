@@ -210,12 +210,13 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '%s/media/' % proj_root
-
+MEDIA_ROOT = '%s/media' % proj_root
+print '*** MEDIA_ROOT', MEDIA_ROOT
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://jacwork:8000/media/'
+MEDIA_URL = '/static_media/'
+print '*** MEDIA_URL', MEDIA_URL
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -257,8 +258,8 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     #'dajaxice',
     #'dajax',
-    'djblets.datagrid',
-    'djblets.util',
+    #'djblets.datagrid',
+    #'djblets.util',
 
     'apps.sipmanager',
     'apps.dummy_ingester',
