@@ -16,32 +16,28 @@
 
 </script>
 
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    </div>
+
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
+
 <div id="main" class="grid_9">
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-            <@SearchForm "search_result"/>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="myeuropeana">
-            <h1>My Europeana</h1>
 
                <div id="savedItems">
                     <ul>
@@ -164,10 +160,17 @@
                             <tr><td><@spring.message 'NoSavedTags_t'/></td></tr>
                         </#if>
                     </table>
-
-                </div>
             </div>
 </div>
-	    <#include "inc_footer.ftl"/>
+</div>
+
+<div id="sidebar">
+    <div id="search">
+        <div class="inner">
+            <@SearchForm "search_result"/>
+        </div>
+    </div>
+</div>
+<#include "inc_footer.ftl"/>
 
 </#compress>
