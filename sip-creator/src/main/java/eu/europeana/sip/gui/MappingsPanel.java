@@ -7,6 +7,7 @@ import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.definitions.annotations.ValidationLevel;
 import eu.europeana.sip.io.GroovyMapping;
 import eu.europeana.sip.io.GroovyService;
 
@@ -19,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * Provides a set of GUI elements to create basic mappings. Detected ESE elements can
@@ -32,8 +34,8 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     private java.util.List<Class<?>> list = new ArrayList<Class<?>>();
     private AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
     private GroovyMapping groovyMapping;
-    private Listener listener;
-    private java.util.List<String> nodes;
+    private JComboBox additionalFields;
+    private JComboBox mappableFields;
 
     {
         list.add(IdBean.class);
@@ -41,13 +43,25 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         list.add(FullBean.class);
         list.add(AllFieldBean.class);
         annotationProcessor.setClasses(list);
+        Vector<String> additionals = new Vector<String>();
+        additionals.add("- no mapping -");
+        Vector<String> required = new Vector<String>();
+        required.add("- no mapping -");
+        for (EuropeanaField field : annotationProcessor.getFields(ValidationLevel.ESE_PLUS_REQUIRED)) {
+            additionals.add("input." + field.getFieldNameString());
+        }
+        for (EuropeanaField field : annotationProcessor.getFields(ValidationLevel.ESE_REQUIRED)) {
+            required.add("input." + field.getFieldNameString());
+        }
+        additionalFields = new JComboBox(additionals);
+        mappableFields = new JComboBox(required);
     }
 
     private class MappablesTab extends JPanel {
 
         private MappablesTab() {
             super(new BorderLayout());
-            add(new JScrollPane(constructMappableTable()), BorderLayout.CENTER);
+            add(new JScrollPane(constructMappableTable(mappableFields)), BorderLayout.CENTER);
         }
     }
 
@@ -55,7 +69,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
         private AdditionalsTab() {
             super(new BorderLayout());
-            add(new JScrollPane(constructMappableTable()), BorderLayout.CENTER);
+            add(new JScrollPane(constructMappableTable(additionalFields)), BorderLayout.CENTER);
         }
     }
 
@@ -64,9 +78,10 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
      * in the middle. The third column is containing a checkbox where the mapping can be accepted
      * or ignored during normalization.
      *
+     * @param comboBox which combobox to render
      * @return The table
      */
-    private JTable constructMappableTable() {
+    private JTable constructMappableTable(JComboBox comboBox) {
         final JTable jTable = new JTable(new DefaultTableModel() {
 
             String[] columnNames = {"Source", "Target", "Normalize?"};
@@ -129,32 +144,8 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         jTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jTable.getColumnModel().getColumn(0).setCellRenderer(new SourceFieldRenderer());
         jTable.setDefaultEditor(SourceField.class, new SourceFieldEditor());
-        jTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(new Object[]{"- no mapping -"}))); // todo: retrieve from nodes
+        jTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(comboBox)); // todo: retrieve from nodes
         return jTable;
-    }
-
-    private class ComboboxEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private JComboBox jComboBox;
-        private String val;
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            return (Component) value;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return jComboBox;
-        }
-    }
-
-    private class ComboboxCellRenderer implements TableCellRenderer {
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            return (Component) value;
-        }
     }
 
     private class SourceFieldRenderer implements TableCellRenderer {
@@ -204,7 +195,6 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         mappingsTabs.addTab("Additionals", new AdditionalsTab());
         add(mappingsTabs, BorderLayout.CENTER);
         this.groovyMapping = groovyMapping;
-        this.listener = listener;
         JButton saveButton = new JButton("save");
         saveButton.addActionListener(
                 new ActionListener() {
@@ -252,6 +242,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -259,7 +250,6 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     public void updateAvailableNodes(java.util.List<String> nodes) {
         int counter = 0;
         data = new Object[nodes.size()][];
-        this.nodes = nodes;
         JComboBox availableNodes = new JComboBox(nodes.toArray());
         availableNodes.setOpaque(false);
         for (String s : nodes) {
