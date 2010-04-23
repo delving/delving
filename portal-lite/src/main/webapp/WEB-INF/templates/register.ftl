@@ -12,21 +12,27 @@
 </#if>
 <#include "spring_form_macros.ftl"/>
 <#include "inc_header.ftl"/>
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/logo-small.png" alt="Delving Home"/></a>
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    </div>
+
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
 <div id="main" class="grid_9">
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
 
     <div class="login-register">
                 <h1><@spring.message 'Register_t' /></h1>
@@ -89,8 +95,11 @@
 
                 </form>
         </div>
-	    <#include "inc_footer.ftl"/>
+
 </div>
+
+ <#include "inc_footer.ftl"/>
+
 <#macro formCheckbox path attributes="">
     <@spring.bind path />
     <#assign id="${spring.status.expression}">

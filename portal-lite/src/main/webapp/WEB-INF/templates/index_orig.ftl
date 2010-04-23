@@ -15,7 +15,7 @@
 
 
     <div class="grid_6 prefix_3 suffix_3">
-        <img src="images/logo.png" id="logo-home" alt="Delving"/>
+        <img src="/${portalName}/images/logo.png" id="logo-home" alt="Delving"/>
          <noscript>
             <div class="ui-widget grid_5 alpha">
                 <div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin-top: 20px;">

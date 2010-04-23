@@ -13,7 +13,7 @@
                 + result.fullDoc.dcTermsConformsTo + result.fullDoc.dcTermsHasFormat />
 <#assign moreArr = indentifierArr + publisherArr + provenanceArr + arrsubj + typeArr + relationsArr />
 
-     <h5 class="${result.fullDoc.europeanaType}">
+     <h4 class="${result.fullDoc.europeanaType}">
         <#assign tl = "">
         <#if !model.fullDoc.dcTitle[0]?matches(" ")>
             <#assign tl= result.fullDoc.dcTitle[0]>
@@ -26,7 +26,7 @@
          </#if>
         </#if>
         <@stringLimiter "${tl}" "150"/>
-    </h5>
+    </h4>
 
                 <div class="grid_5 alpha" id="img-full">
                     <#assign imageRef = "#"/>

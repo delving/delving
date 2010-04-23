@@ -80,6 +80,7 @@ a:visited, a:hover {
 input[type=text], input[type=password]{
     border: 1px solid #ccc;
     height: 1.85em;
+    width: 150px;
 }
 #top-bar {
     text-align: right;
@@ -316,8 +317,8 @@ table caption {
     overflow: hidden;
     text-align: center;
     padding: 0.5em;
-    /*min-height: 100px;*/
  }
+
 .brief-thumb-container img{
     border: 4px solid #fff;
  }
@@ -336,34 +337,33 @@ table caption {
     padding: 0;
 }
 
-#item-detail h5 {
-    background: none;
+#item-detail h4 {
     border-bottom: solid 1px #ccc;
-    color: #333;
+    /*color: #333;*/
     margin: 0 0 10px 0;
-    padding: 0 0 10px 30px;
+    padding: .15em 0 .25em 30px;
 }
 
-#item-detail h5.SOUND {
+#item-detail h4.SOUND {
     background: url(../images/icon-sound.gif) left top no-repeat;
 }
 
-#item-detail h5.TEXT {
+#item-detail h4.TEXT {
     background: url(../images/icon-page.gif) left top no-repeat;
 }
 
-#item-detail h5.VIDEO {
+#item-detail h4.VIDEO {
     background: url(../images/icon-video.gif) left top no-repeat;
 }
 
-#item-detail h5.IMAGE {
+#item-detail h4.IMAGE {
     background: url(../images/icon-image.gif) left top no-repeat;
 }
 
 /* UI Button styles */
 .fg-button {
     outline: 0;
-    margin: 0 4px .5em 0;
+    margin: 0 4px 0 0;
     padding: .35em 0.5em;
     text-decoration: none !important;
     cursor: pointer;
