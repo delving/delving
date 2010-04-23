@@ -134,6 +134,8 @@ class MainProcessor(sip_task.SipTask):
 
             if self.task_throttling():
                 t = max(PROCESS_SLEEP_TIME, 60)
+                if SIP_PROCESS_DBG_LVL > 5:
+                    print '... throtled waiting'
             else:
                 t = PROCESS_SLEEP_TIME
             time.sleep(t)
