@@ -152,8 +152,10 @@ class RequestCreate(sip_task.SipTask):
 
 class RequestParseNew(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Parse new Requests'
-    #THREAD_MODE = sip_task.SIPT_SINGLE
-    THREAD_MODE = sip_task.SIPT_THREADABLE
+    PLUGIN_TAXES_CPU = True
+
+    THREAD_MODE = sip_task.SIPT_SINGLE
+    #THREAD_MODE = sip_task.SIPT_THREADABLE
 
     def prepare(self):
         try:

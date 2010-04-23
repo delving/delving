@@ -113,9 +113,10 @@ class MainProcessor(sip_task.SipTask):
                         break
                     if taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
                         # it was started
-                        busy = True # indication to break out of outer loop
+                        # should we allow one or more plugs / sleep period?
+                        # if no set busy = True here
+                        #busy = True
                         idle_count = 0
-                        break
 
             if self.single_run:
                 print 'Single run, aborting after one run-through'

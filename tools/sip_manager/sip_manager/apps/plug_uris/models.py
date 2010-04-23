@@ -207,7 +207,7 @@ class Uri(models.Model):
     mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
     uri_source = models.ForeignKey(UriSource)
     pid = models.FloatField(default=0, db_index=True) # what process 'owns' this item
-    url = models.CharField(max_length=450)
+    url = models.CharField(max_length=1250)
     url_hash = models.CharField(max_length=64,default='')
     content_hash = models.CharField(max_length=64,default='')
     err_code = models.IntegerField(choices=dict_2_django_choice(URI_ERR_CODES),
