@@ -21,8 +21,7 @@
 
  Created by: Jacob Lundqvist (Jacob.Lundqvist@gmail.com)
 
- Maintains and runs tasks
-
+ server runner
 """
 
 from optparse import make_option
