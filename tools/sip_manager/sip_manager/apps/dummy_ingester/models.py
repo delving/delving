@@ -236,13 +236,21 @@ class RequestManager(models.Manager):
             item = self.model.objects.filter(pk=pk)[0]
             was_created = False
         else:
-            cmd = 'awk -F "<record>" \'{s+=(NF-1)} END {print s}\' %s' % full_path
-            try:
-                rec_count = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].strip() or 0
-            except:
-                rec_count = 0
+            # How I hate this, for just a few files awk fails on a few files
+            # try it again with the much slower grep
+            for cmd in ('awk -F "<record>" \'{s+=(NF-1)} END {print s}\' %s' % full_path,
+                        'grep "<record>" %s | wc -l' % full_path):
+                try:
+                    s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).communicate()[0].strip() or 0
+                    rec_count = int(s)
+                except:
+                    rec_count = 0
+                if rec_count > 0:
+                    break
+
             kwargs = {'data_set': data_set,
                       'file_name': file_name,
+                      'full_path': full_path,
                       'record_count': rec_count,
                       'time_created': time_created
                       }
@@ -264,6 +272,7 @@ class Request(models.Model):
     # we dont store path, find it by os.walk and check time_stamp
     file_name = models.CharField(max_length=200,
                                  help_text='relative filename, dont store path, system will find it with os.walk() and timestamp...')
+    full_path = models.CharField(max_length=250)
     time_created = models.DateTimeField(editable=False)
     pid = models.FloatField(default=0) # what process 'owns' this item
     err_msg = models.CharField(max_length=200, blank=True)

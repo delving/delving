@@ -177,7 +177,7 @@ class SipTask(object): #SipProcess(object):
 
 
     def error_log(self, msg):
-        print self.short_name(), msg
+        print '*** %s %s' % (self.short_name(), msg)
 
 
     def abort_process(self, msg):

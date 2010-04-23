@@ -49,9 +49,12 @@ REC_STOP = '</record>'
 
 LAST_INGEST_EXAMINATION = 0
 
+
+REQUEST_CREATE_FIRST_RUN = True
 class RequestCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Checking file tree for new requests'
     THREAD_MODE = sip_task.SIPT_SINGLE
+
 
     REQUESTS = {}
     ALREADY_PARSED = {}
@@ -64,7 +67,10 @@ class RequestCreate(sip_task.SipTask):
         self.new_requests = {}
 
     def prepare(self):
-        global LAST_INGEST_EXAMINATION
+        global LAST_INGEST_EXAMINATION, REQUEST_CREATE_FIRST_RUN
+        if REQUEST_CREATE_FIRST_RUN:
+            self.log('First traversal of ingestion tree - this might take a while...', 2)
+            REQUEST_CREATE_FIRST_RUN = False
         if (LAST_INGEST_EXAMINATION + 60) > time.time():
             return
         """
@@ -108,8 +114,6 @@ class RequestCreate(sip_task.SipTask):
                 continue
 
             for filename in filenames:
-                if filename not in ('03908_Ag_FR_MCC_enluminures_out.xml'):
-                    continue
                 if os.path.splitext(filename)[1] != '.xml':
                     continue
                 # if we are scanning the ingestion svn avoid things like 'dddd.sample.xml'
@@ -120,7 +124,7 @@ class RequestCreate(sip_task.SipTask):
                 full_path = os.path.join(dirpath, filename)
                 mtime = os.path.getmtime(full_path)
                 if self.ALREADY_PARSED.has_key(full_path) and self.ALREADY_PARSED[full_path] == mtime:
-                    continue # already got this one
+                    continue # already g ot this one
                 self.new_requests[full_path] = mtime
         if self.new_requests:
             self.initial_message = 'found %i new ingestion files' % len(self.new_requests)
@@ -172,31 +176,28 @@ class RequestParseNew(sip_task.SipTask):
         request.save()
 
         self.current_request = request # make it available without params for other modules
-        full_path = self.find_file()
-        if not full_path:
-            return self.request_failure('Cant find file %s for Request %i' % (
-                request.file_name, request.pk))
+        if not self.verify_file():
+            # verify has already logged the error, so just exit
+            return False
 
-        self.log('Parsing ese file for records: %s' % full_path, 1)
-        f = open(full_path, 'r')
-        record = []
+        self.log('Parsing ese file for records: %s' % self.current_request.full_path, 1)
         self.task_starting('Reading ESE records from file (req:%i)' % request.pk,request.record_count)
-        line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
+        record = []
         record_count = 0
-        while line:
+        f = open(self.current_request.full_path, 'r')
+        for raw_line in f:
+            line = raw_line[:-1].strip() # skip lf and other pre/post whitespace
             if line == REC_START:
                 record = []
                 record_count += 1
             elif line == REC_STOP:
-                record.sort()
+                #record.sort()
                 # start and stop tags shouldnt be sorted so add them after
                 record.insert(0, REC_START)
                 record.append(REC_STOP)
-
                 self.add_record(record, request)
             elif line: # skip empty lines
                 record.append(line)
-            line = f.readline()[:-1].strip() # skip lf and other pre/post whitespace
 
             # we dont alow this one to terminate on high load, since it would be
             # very expensive to restart this
@@ -227,32 +228,24 @@ class RequestParseNew(sip_task.SipTask):
         r_m.save()
 
 
-    def find_file(self):
-        ret = ''
-        found = False
-        for dirpath, dirnames, filenames in os.walk(IMPORT_SCAN_TREE):
-            if found:
-                break
-            for filename in filenames:
-                if filename == self.current_request.file_name:
-                    full_path = os.path.join(dirpath, filename)
-                    mtime = os.path.getmtime(full_path)
-                    time_created = datetime.datetime.fromtimestamp(mtime)
-                    if str(time_created).find(str(self.current_request.time_created)) == 0:
-                        found = True
-                        ret = full_path
-                        break
-                    pass
-            pass
-        return ret
+    def verify_file(self):
+        if not os.path.exists(self.current_request.full_path):
+            return self.request_failure('File not found')
+        mtime = os.path.getmtime(self.current_request.full_path)
+        time_created = datetime.datetime.fromtimestamp(mtime)
+        if str(time_created).find(str(self.current_request.time_created)) != 0:
+            return self.request_failure('File was modified')
+        return True
 
 
     def request_failure(self, msg):
+        req_id = self.current_request.pk
         self.current_request.status = models.REQS_ABORTED
+        self.current_request.err_msg = msg
         self.current_request.save()
         self.release_item(models.Request, self.current_request.pk)
         self.current_request = None
-        self.error_log(msg)
+        self.error_log('%s [id %i]' % (msg, req_id))
         return False # propagate error
 
 
