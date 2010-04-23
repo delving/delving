@@ -60,6 +60,9 @@ class SipSystemOverLoaded(Exception):
 # Last time a task was terminated
 LAST_TASK_TERMINATION = 0
 
+# we only try to kill tasks this often (seconds)
+KILL_INTERVALL = 30
+
 # Run mode for a task
 SIPT_THREADABLE = 'threadale' # Can be run in multiple instances
 SIPT_SINGLE = 'one thread' # one instance can be run whilst the monitor continues
@@ -381,6 +384,10 @@ class SipTask(object): #SipProcess(object):
         global LAST_TASK_TERMINATION
         busy, loads = self.system_is_occupied(check_to_start_new_task=False)
         if not busy:
+            return
+
+        if (LAST_TASK_TERMINATION + KILL_INTERVALL) > time.time():
+            # only try to kill if not KILL_INTERVALL seconds have passed since last kill
             return
 
         # It wouldnt make sense to terminate all processes
