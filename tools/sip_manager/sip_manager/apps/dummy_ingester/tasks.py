@@ -116,7 +116,7 @@ class RequestCreate(sip_task.SipTask):
             for filename in filenames:
                 if os.path.splitext(filename)[1] != '.xml':
                     continue
-                
+
                 # if we are scanning the ingestion svn avoid things like 'dddd.sample.xml'
                 if TREE_IS_INGESTION_SVN and os.path.splitext(os.path.splitext(filename)[0])[1] != '':
                     # extra check needed for using ingestion svn tree
@@ -139,8 +139,8 @@ class RequestCreate(sip_task.SipTask):
         #    # we dont bother with files we have already checked
         for full_path in self.new_requests.keys():
             request, was_created = models.Request.objects.get_or_create_from_file(full_path)
+            self.ALREADY_PARSED[full_path] = self.new_requests[full_path] # save mtime
             if was_created:
-                self.ALREADY_PARSED[full_path] = self.new_requests[full_path] # save mtime
                 self.task_force_progress_timeout()
                 self.task_time_to_show('Added request %s' % os.path.split(full_path)[1],
                                        terminate_on_high_load=True)
