@@ -56,6 +56,10 @@ class SipSystemOverLoaded(Exception):
     pass
 
 
+
+# Last time a task was terminated
+LAST_TASK_TERMINATION = 0
+
 # Run mode for a task
 SIPT_THREADABLE = 'threadale' # Can be run in multiple instances
 SIPT_SINGLE = 'one thread' # one instance can be run whilst the monitor continues
@@ -374,9 +378,12 @@ class SipTask(object): #SipProcess(object):
 
 
     def do_terminate_on_high_load(self):
+        global LAST_TASK_TERMINATION
         busy, loads = self.system_is_occupied(check_to_start_new_task=False)
         if not busy:
             return
+
+        LAST_TASK_TERMINATION = time.time()
         # It wouldnt make sense to terminate all processes
         # instead do a randomiztion and a kill percentage
         # also we leave the last task running until we hit the load15

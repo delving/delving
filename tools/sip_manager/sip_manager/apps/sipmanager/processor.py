@@ -44,6 +44,8 @@ PLUGIN_FILTER = settings.PLUGIN_FILTER
 SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
 
 
+TASK_THROTTLE_TIME = 330
+
 class MainProcessor(sip_task.SipTask):
     ALL_TABLES = [('base_item_mdrecord', True),
                   ('base_item_requestmdrecord', False),
@@ -115,7 +117,10 @@ class MainProcessor(sip_task.SipTask):
                         # it was started
                         # should we allow one or more plugs / sleep period?
                         # if no set busy = True here
-                        #busy = True
+                        if self.task_throttling():
+                            # If we recently terminated a task, do slow starting,
+                            # just one task per timeslot
+                            busy = True
                         idle_count = 0
 
             if self.single_run:
@@ -126,9 +131,23 @@ class MainProcessor(sip_task.SipTask):
             if SIP_PROCESS_DBG_LVL > 7 or idle_count > 10: # dont indicate idling too often...
                 idle_count = 0
                 print ' nothing to do for the moment...'
-            time.sleep(PROCESS_SLEEP_TIME)
+
+            if self.task_throttling():
+                t = max(PROCESS_SLEEP_TIME, 60)
+            else:
+                t = PROCESS_SLEEP_TIME
+            time.sleep(t)
+
         return True
 
+
+    def task_throttling(self):
+        "Indicate a reasent task kill."
+        if (sip_task.LAST_TASK_TERMINATION + TASK_THROTTLE_TIME) > time.time():
+            b = True
+        else:
+            b = False
+        return b
 
 
     """
