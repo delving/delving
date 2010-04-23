@@ -218,6 +218,10 @@ class MainProcessor(sip_task.SipTask):
     def cmd_clear_pids(self):
         cursor = connection.cursor()
         cursor.execute('TRUNCATE %s_processmonitoring' % __name__.split('.')[-2])
+
+        # Clear request in progress
+        cursor.execute('UPDATE dummy_ingester_request SET status=0 WHERE status=1')
+
         for table, has_pid in self.ALL_TABLES:
             if has_pid:
                 cursor.execute('UPDATE %s SET pid=0 WHERE pid > 0' % table)
