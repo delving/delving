@@ -116,8 +116,7 @@ class RequestCreate(sip_task.SipTask):
             for filename in filenames:
                 if os.path.splitext(filename)[1] != '.xml':
                     continue
-                if filename.find('903') != 2:
-                    continue
+                
                 # if we are scanning the ingestion svn avoid things like 'dddd.sample.xml'
                 if TREE_IS_INGESTION_SVN and os.path.splitext(os.path.splitext(filename)[0])[1] != '':
                     # extra check needed for using ingestion svn tree
