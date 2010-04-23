@@ -14,7 +14,7 @@ import java.util.TreeMap;
 public class GroovyMappingImpl implements GroovyMapping {
 
     private final static Logger LOG = Logger.getLogger(GroovyMappingImpl.class);
-    private final static String FILE_HEADER = "// *** Europeana Mapping File ***%neuropeana.record {%n%n";
+    private final static String FILE_HEADER = "// *** Europeana Mapping File ***%noutput.record {%n%n";
     private final static String FILE_FOOTER = "} // *** EOF ***%n";
 
     private Map<Delimiter, String> snippets = new TreeMap<Delimiter, String>();
