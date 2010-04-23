@@ -22,19 +22,16 @@
 package eu.europeana.sip.io;
 
 import eu.europeana.sip.xml.GroovyNode;
+import eu.europeana.sip.xml.MappingScriptBinding;
 import eu.europeana.sip.xml.NormalizationParser;
-import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
-import groovy.xml.MarkupBuilder;
-import groovy.xml.NamespaceBuilder;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
 import javax.xml.namespace.QName;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -65,10 +62,6 @@ public class GroovyService {
         return String.format("\tfor ($%s in %s) {%n\t\t%s $%s;%n\t}%n", variable, field, variable, variable);
     }
 
-    public interface CompilationListener {
-        void nodeAvailable(GroovyNode groovyNode);
-    }
-
     public interface Listener {
         void setMapping(String mapping);
 
@@ -94,7 +87,6 @@ public class GroovyService {
     public void compile(GroovyNode groovyNode) {
         this.record = groovyNode;
         compilationRunner.setMapping(mapping);
-        compilationRunner.nodeAvailable(groovyNode);
     }
 
     public void setMapping(String mapping) {
@@ -111,12 +103,6 @@ public class GroovyService {
         executor.execute(new NextRecordFetcher());
     }
 
-    public Normalizer normalize() throws FileNotFoundException {
-        Normalizer normalizer = new Normalizer();
-        executor.execute(normalizer);
-        return normalizer;
-    }
-
     private class NextRecordFetcher implements Runnable {
 
         @Override
@@ -124,47 +110,6 @@ public class GroovyService {
             try {
                 record = normalizationParser.nextRecord();
                 setMapping(fileSet.getMapping());
-            }
-            catch (Exception e) {
-                listener.setResult(e.toString()); // todo
-            }
-        }
-    }
-
-    public class Normalizer implements Runnable {
-
-        private boolean running = true;
-        private boolean nodesAvailable = true;
-        private int nodeCount;
-
-        {
-            normalizationParser.setListener(
-                    new NormalizationParser.Listener() {
-
-                        @Override
-                        public void finished(boolean success) {
-                            nodesAvailable = false;
-                            LOG.info(String.format("Fetched %d records", nodeCount));  // todo: compare this with written nodes
-                        }
-                    }
-
-            );
-        }
-
-        public void abort() {
-            running = false;
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (nodesAvailable && running) {
-                    GroovyNode node = normalizationParser.nextRecord();
-                    if (null != node) {
-                        compile(node);
-                    }
-                    nodeCount++;
-                }
             }
             catch (Exception e) {
                 listener.setResult(e.toString()); // todo
@@ -218,21 +163,12 @@ public class GroovyService {
         }
     }
 
-    private class CompilationRunner implements Runnable, CompilationListener {
-
-        private static final String INPUT = "input";
-        private static final String OUTPUT = "output";
-        private static final String DC = "dc";
-        private static final String DCTERMS = "dcterms";
-        private static final String EUROPEANA = "europeana";
-
+    private class CompilationRunner implements Runnable {
         private StringWriter writer = new StringWriter();
-        private Binding binding = createBinding();
         private String mapping;
 
         public void setMapping(String mapping) {
             this.mapping = mapping;
-            run(); // todo: fix
             executor.execute(new MappingSaver(mapping));
         }
 
@@ -242,8 +178,9 @@ public class GroovyService {
                 throw new NullPointerException("Mapping can't be null");
             }
             try {
-                Binding binding = createBinding();
-                new GroovyShell(binding).evaluate(mapping);
+                MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
+                mappingScriptBinding.setRecord(record);
+                new GroovyShell(mappingScriptBinding).evaluate(mapping);
                 sendResult(writer.toString());
                 writer.getBuffer().setLength(0);
             }
@@ -269,24 +206,6 @@ public class GroovyService {
 
         private void sendResult(String result) {
             listener.setResult(result);
-        }
-
-        @Override
-        public void nodeAvailable(GroovyNode groovyNode) {
-            binding.setVariable(INPUT, groovyNode);
-            run(); // todo: fix
-        }
-
-        public Binding createBinding() {
-            MarkupBuilder builder = new MarkupBuilder(writer);
-            NamespaceBuilder xmlns = new NamespaceBuilder(builder);
-            Binding binding = new Binding();
-            binding.setVariable(INPUT, record);
-            binding.setVariable(OUTPUT, builder);
-            binding.setVariable(DC, xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
-            binding.setVariable(DCTERMS, xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
-            binding.setVariable(EUROPEANA, xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
-            return binding;
         }
     }
 

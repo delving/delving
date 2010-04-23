@@ -22,18 +22,23 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.GroovyService;
+import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -43,56 +48,33 @@ import java.io.IOException;
  */
 
 public class NormalizerPanel extends JPanel {
-    private static final long MEGABYTE = 1024L * 1024L;
-    private static final long KILOBYTE = 1024L;
-    private static String newLine = (null != System.getProperty("line.separator")) ? System.getProperty("line.separator") : "\n";
-
-    private JButton normalize = new JButton("Normalize");
+    private static final Logger LOG = Logger.getLogger(NormalizerPanel.class);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private JButton normalizeButton = new JButton("Normalize");
     private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
     private JLabel progressLabel = new JLabel("Make your choice", JLabel.CENTER);
     private JLabel memoryLabel = new JLabel("Memory", JLabel.CENTER);
     private JButton abort = new JButton("Abort");
     private LogPanel logPanel = new LogPanel();
-    private static final Logger LOG = Logger.getLogger(NormalizerPanel.class);
-    private static long bytesWritten;
-    private static long nodesWritten;
-
-    private ProgressDialog progressDialog;
-
-    private NormalizerPanel instance;
-
-    private GroovyService groovyService = new GroovyService(new GroovyService.Listener() {
-
-        @Override
-        public void setMapping(String mapping) {
-
-        }
-
-        @Override
-        public void setResult(String result) {
-            try {
-                groovyService.getFileSet().getOutputStream().write((result + newLine).getBytes(), 0, result.getBytes().length); // todo: exceptions are also written
-                bytesWritten += result.getBytes().length;
-                nodesWritten++;
-                memoryLabel.setText(String.format("Free %sMB/Available %sMB", Runtime.getRuntime().freeMemory() / MEGABYTE, (Runtime.getRuntime().maxMemory() / MEGABYTE)));
-                Logger.getRootLogger().info(String.format("Written so far [%dKB] ; [%d nodes]%n", bytesWritten / KILOBYTE, nodesWritten));
-                if (null != progressDialog) {
-                    progressDialog.setProgress(nodesWritten, bytesWritten);
-                }
-            }
-            catch (IOException e) {
-                LOG.error("Error writing to outputStream", e);
-            }
-        }
-    });
+    private FileSet fileSet;
+    private Normalizer normalizer;
 
     public NormalizerPanel() {
         super(new BorderLayout());
-        this.instance = this;
 //        Logger.getRootLogger().addAppender(logPanel.createAppender(Normalizer.LOG_LAYOUT));
         add(createWest(), BorderLayout.WEST);
         add(logPanel, BorderLayout.CENTER);
         wireUp();
+    }
+
+    public void setFileSet(FileSet fileSet) {
+        this.fileSet = fileSet;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                normalizeButton.setEnabled(true);
+            }
+        });
     }
 
     private void wireUp() {
@@ -109,54 +91,27 @@ public class NormalizerPanel extends JPanel {
                 }
             }
         });
-        normalize.addActionListener(
-
-                new ActionListener() {
-
-                    GroovyService.Normalizer normalizer;
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            progressDialog = new ProgressDialog("Normalize", "Normalized",
-                                    new ProgressDialog.Listener() {
-
-                                        @Override
-                                        public void abort() {
-                                            progressDialog.setVisible(false);
-                                            normalizer.abort();
-                                        }
-
-                                        @Override
-                                        public JFrame getFrame() {
-                                            return (JFrame) SwingUtilities.getWindowAncestor(instance);
-                                        }
-                                    }
-                            );
-                            progressDialog.setVisible(true);
-                            normalizer = groovyService.normalize();
-                            abort.addActionListener(new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    if (normalizer != null) {
-                                        normalizer.abort();
-                                    }
-                                }
-                            });
-                        }
-                        catch (FileNotFoundException exception) {
-                            Logger.getRootLogger().error("Error writing to file", exception);
-                        }
-                    }
+        normalizeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                normalize();
+            }
+        });
+        abort.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (normalizer != null) {
+                    normalizer.abort();
                 }
-        );
+            }
+        });
     }
 
     private JPanel createWest() {
         JPanel p = new JPanel(new GridLayout(0, 1));
         p.add(progressLabel);
         p.add(memoryLabel);
-        p.add(normalize);
+        p.add(normalizeButton);
         abort.setEnabled(false);
         p.add(abort);
         debugLevel.setHorizontalAlignment(JCheckBox.CENTER);
@@ -164,37 +119,10 @@ public class NormalizerPanel extends JPanel {
         return p;
     }
 
-//    private static class ProfileListModel extends AbstractListModel {
-//        private static final long serialVersionUID = 939393939;
-//        private List<File> list;
-//
-//        public ProfileListModel(File sourceRoot) {
-//            list = Normalizer.getSourcesWithProfiles(sourceRoot);
-//        }
-//
-//        @Override
-//        public int getSize() {
-//            return list.size();
-//        }
-//
-//        @Override
-//        public Object getElementAt(int index) {
-//            return list.get(index);
-//        }
-//    }
-//
-//    private static class CellRenderer extends DefaultListCellRenderer {
-//        @Override
-//        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-//            File file = (File) value;
-//            return super.getListCellRendererComponent(list, file.getName(), index, isSelected, cellHasFocus);
-//        }
-//    }
-
     private Runnable finalAct = new Runnable() {
         @Override
         public void run() {
-            normalize.setEnabled(true);
+            normalizeButton.setEnabled(true);
             abort.setEnabled(false);
 //            list.setEnabled(true);
             logPanel.flush();
@@ -202,7 +130,14 @@ public class NormalizerPanel extends JPanel {
         }
     };
 
-    public void setFileSet(FileSet fileSet) {
-        groovyService.setFileSet(fileSet);
+    private void normalize() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                normalizeButton.setEnabled(false);
+            }
+        });
+        normalizer = new Normalizer(fileSet);
+        executor.execute(normalizer);
     }
 }
