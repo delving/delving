@@ -383,7 +383,6 @@ class SipTask(object): #SipProcess(object):
         if not busy:
             return
 
-        LAST_TASK_TERMINATION = time.time()
         # It wouldnt make sense to terminate all processes
         # instead do a randomiztion and a kill percentage
         # also we leave the last task running until we hit the load15
@@ -394,16 +393,19 @@ class SipTask(object): #SipProcess(object):
         if load_15:
             # at this level allways terminate
             self.log('== %s 15' % msg, 2)
+            LAST_TASK_TERMINATION = time.time()
             raise SipSystemOverLoaded('%s 15' % msg)
         elif load_5:
             # 50% propab
             if (task_count > 1) and (random.randint(1,10) > 5):
                 self.log('== %s 5' % msg, 2)
+                LAST_TASK_TERMINATION = time.time()
                 raise SipSystemOverLoaded('%s 5' % msg)
         elif load_1:
             # 3 * task_count % , max 20 propab
             if (task_count > 1) and (random.randint(1,100) <= min(20,(3 * task_count))):
                 self.log('== %s 1' % msg, 2)
+                LAST_TASK_TERMINATION = time.time()
                 raise SipSystemOverLoaded('%s 1' % msg)
 
 
