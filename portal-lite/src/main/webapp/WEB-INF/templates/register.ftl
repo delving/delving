@@ -31,17 +31,17 @@
 
 </div>
 
-<div id="main" class="grid_9">
-
+<div id="main" class="grid_11 prefix_1">
 
     <div class="login-register">
                 <h1><@spring.message 'Register_t' /></h1>
 
-                <form id="regForm" action="register.html" method="post">
+                <form id="regForm" action="/${portalName}/register.html" method="post">
 
                     <input type="hidden" name="token" value="${command.token}" />
                     <input type="hidden" name="email" value="${command.email}" />
 
+                    
                     <fieldset id="pt1">
 
                         <legend><span>Step </span>1. <span>: Email details</span> </legend>
@@ -95,11 +95,8 @@
 
                 </form>
         </div>
-
+	    <#include "inc_footer.ftl"/>
 </div>
-
- <#include "inc_footer.ftl"/>
-
 <#macro formCheckbox path attributes="">
     <@spring.bind path />
     <#assign id="${spring.status.expression}">

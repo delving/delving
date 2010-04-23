@@ -35,7 +35,7 @@
                     <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
                     </#if>
-                       <a href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                       <a href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                           target="_blank"
                           alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
                           >
@@ -199,7 +199,7 @@
                             <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
                         </#if>
                         <a
-                            href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                            href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                             target="_blank"
                             alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
                             title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"

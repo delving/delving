@@ -21,12 +21,11 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl;
-import eu.europeana.core.querymodel.annotation.QueryAnalyzer;
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.core.querymodel.beans.BriefBean;
 import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
+import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

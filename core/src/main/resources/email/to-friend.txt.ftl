@@ -3,7 +3,7 @@
 
 Hello ${email},
 
-Here is a link to a Europeana cultural treasure:
+Here is a link to a Delving cultural treasure:
 ${uri}
 
 Sent by ${user.email}

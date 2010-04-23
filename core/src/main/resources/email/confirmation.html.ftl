@@ -2,7 +2,7 @@
 
 <body>
 
-<p>Welcome to My Europeana </p>
+<p>Welcome to Delving</p>
 
 <p>Please click on the following link to confirm your registration:<br />
 
@@ -10,7 +10,7 @@
 
 <p>Many thanks,<br />
 <br/>
-The Europeana Team</p>
+The Delving Team</p>
 
 </body>
 

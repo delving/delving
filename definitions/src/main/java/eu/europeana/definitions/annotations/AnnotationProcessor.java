@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.annotation;
+package eu.europeana.definitions.annotations;
 
 import java.util.HashMap;
 import java.util.List;

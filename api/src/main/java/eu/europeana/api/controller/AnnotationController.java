@@ -160,16 +160,16 @@ public class AnnotationController {
     
     @ExceptionHandler({Throwable.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void unknownProblem(Exception e) {
+    public String unknownProblem(Exception e) {
         log.warn("problem", e);
+        return e.toString();
     }
 
     private User getUser() throws UserNotFoundException {
         User user = ControllerUtil.getUser();
-// todo: work out the security for API
-//        if (user == null) {
-//            throw new UserNotFoundException();
-//        }
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
         return user;
     }
 }

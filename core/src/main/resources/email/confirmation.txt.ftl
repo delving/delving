@@ -1,9 +1,9 @@
-Welcome to My Europeana
+Welcome to Delving
 
 Please click on the following link to confirm your registration:
 
 ${url}
 
 Many thanks,
-The Europeana Team
+The Delving Team
 

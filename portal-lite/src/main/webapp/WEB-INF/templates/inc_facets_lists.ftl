@@ -12,7 +12,7 @@
         <#switch facet.type>
             <#case "LANGUAGE">
                 <#if facet.links?size &gt; 0>
-                   <#if showLanguage = 1><#assign togglerClass="toggler-c-opened"/></#if>
+                   <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
                    <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message 'ByLanguage_t' /> ">
                    <noscript><h4><@spring.message 'ByLanguage_t' />:</h4></noscript>
                    <#assign columsize = 2>
@@ -20,7 +20,7 @@
                    <#break/>
             <#case "YEAR">
                 <#if facet.links?size &gt; 0>
-                    <#if showYear = 1><#assign togglerClass="toggler-c-opened"/></#if>
+                    <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
                    <div class="toggler-c ${togglerClass}>" title="<@spring.message 'Bydate_t' />">
                    <noscript><h4><@spring.message 'Bydate_t' />:</h4></noscript>
                    <#assign columsize = 2>
@@ -28,7 +28,7 @@
                <#break/>
             <#case "TYPE">
                 <#if facet.links?size &gt; 0>
-                <#if showType = 1><#assign togglerClass="toggler-c-opened"/></#if>
+                <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
                <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
                <#assign columsize = 2>
@@ -36,7 +36,7 @@
                <#break/>
             <#case "PROVIDER">
                 <#if facet.links?size &gt; 0>
-                <#if showProvider = 1><#assign togglerClass="toggler-c-opened"/></#if>
+                <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'ByProvider_t' />">
                <noscript><h4><@spring.message 'ByProvider_t' />:</h4></noscript>
                <#assign columsize = 1>
@@ -44,7 +44,7 @@
                <#break/>
             <#case "COUNTRY">
                 <#if facet.links?size &gt; 0>
-                <#if showCountry = 1><#assign togglerClass="toggler-c-opened"/></#if>
+                <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'ByCountry_t' />">
                    <noscript><h4><@spring.message 'ByCountry_t' />:</h4></noscript>
                    <#assign columsize = 1>

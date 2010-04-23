@@ -1,6 +1,6 @@
 package eu.europeana.core.querymodel.query
 
-import _root_.eu.europeana.core.querymodel.annotation._
+import _root_.scala.collection.JavaConversions._
 import _root_.java.util.Date
 import _root_.org.apache.solr.client.solrj.beans.Field
 import _root_.eu.europeana.core.querymodel.beans.{AllFieldBean, FullBean, BriefBean, IdBean}
@@ -9,6 +9,8 @@ import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.Spec
 import _root_.org.scalatest.junit.JUnitRunner
 import collection.mutable.ListBuffer
+import eu.europeana.definitions.annotations.{Solr, Europeana, AnnotationProcessorImpl}
+
 /**
  *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -24,7 +26,7 @@ class AnnotationProcessorSpec extends Spec with ShouldMatchers {
       val beanClasses = new ListBuffer[Class[_]] += ((new IdBean).getClass, (new BriefBean).getClass, (new FullBean).getClass, (new AllFieldBean).getClass)
       val mockBeans = new ListBuffer[Class[_]] += ((new MockAnnotatedBean).getClass)
       val processor = new AnnotationProcessorImpl
-      processor setClasses mockBeans
+//      processor.setClasses(beanClasses)
 
       it("should give EuropeanaBeans for each class") {
         beanClasses.foreach {
@@ -73,13 +75,13 @@ class AnnotationProcessorSpec extends Spec with ShouldMatchers {
 class MockAnnotatedBean {
 
   @Europeana(briefDoc = true, id = true)
-  @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
+  @Solr(prefix = "europeana", localName= "uri", multivalued = false, required = true)
   @Field("europeana_uri")
   @scala.reflect.BeanProperty
   val europeanaUri: String = "europeanaUri"
 
   @Europeana()
-  @Solr(name = "timestamp", multivalued = false, defaultValue = "NOW")
+  @Solr(localName = "timestamp", multivalued = false, defaultValue = "NOW")
   @Field("timestamp")
   @scala.reflect.BeanProperty
   val timestamp = new Date

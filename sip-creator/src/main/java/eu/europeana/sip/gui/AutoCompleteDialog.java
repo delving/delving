@@ -5,6 +5,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 /**
@@ -16,10 +18,11 @@ public class AutoCompleteDialog extends JFrame {
 
     private Listener listener;
     private JTextComponent parent;
-    private Point lastCaretPosition;
     private JComboBox jComboBox = new JComboBox();
+    private final AutoComplete autoComplete = new AutoCompleteImpl();
 
     interface Listener {
+
         void itemSelected(Object selectedItem);
     }
 
@@ -32,6 +35,33 @@ public class AutoCompleteDialog extends JFrame {
 
     private void init() {
         jComboBox.setEditable(true);
+        jComboBox.getEditor().getEditorComponent().addKeyListener(
+                new KeyAdapter() {
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        switch (e.getKeyCode()) {
+                            case KeyEvent.VK_ESCAPE: {
+                                setVisible(false);
+                                autoComplete.cancelled();
+                            }
+                        }
+                    }
+                }
+        );
+        jComboBox.addItemListener(
+                new ItemListener() {
+
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        if (ItemEvent.SELECTED == e.getStateChange()) {
+                            listener.itemSelected(e.getItem());
+                            setVisible(false);
+                            autoComplete.cleared();
+                        }
+                    }
+                }
+        );
         setUndecorated(true);
     }
 
@@ -46,35 +76,19 @@ public class AutoCompleteDialog extends JFrame {
         setLocation(point);
     }
 
-    public void updateElements(List<String> availableElements) {
+    public void updateElements(KeyEvent event, List<String> availableElements) { // todo: delegate to autoComplete
+        availableElements = autoComplete.complete(event, availableElements);
         if (null == availableElements) {
             setVisible(false);
             parent.requestFocus();
             return;
         }
-        if (!isVisible()) {
-            setVisible(true);
-        }
         jComboBox.setModel(new DefaultComboBoxModel(availableElements.toArray()));
-        jComboBox.setVisible(true);
-        jComboBox.setPopupVisible(true);
-        jComboBox.addItemListener(
-                new ItemListener() {
-
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        selectItem(e);
-                    }
-                }
-        );
+        setVisible(true);
+        setSize(new Dimension(300, 20));
     }
 
     public void requestFocus(Point lastCaretPosition) {
-        this.lastCaretPosition = lastCaretPosition;
-        jComboBox.setPopupVisible(true);
-    }
-
-    private void selectItem(ItemEvent inputEvent) {
-        listener.itemSelected(inputEvent.getItem());
+        Point lastCaretPosition1 = lastCaretPosition;
     }
 }

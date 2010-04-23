@@ -40,20 +40,25 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-
 public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
 
     private JEditorPane codeArea = new JEditorPane();
-    private JTextArea outputArea = new JTextArea();
+    private JTextArea outputArea;
     private CompileTimer compileTimer;
     private GroovyService groovyService;
     private List<String> availableNodes;
 
-    public GroovyEditor() {
+    public void updateCodeArea(String groovyCode) {
+        codeArea.setText(groovyCode);
+        compileTimer.triggerSoon();
+    }
+
+    public GroovyEditor(final JTextArea outputArea) {
         super(new BorderLayout());
+        this.outputArea = outputArea;
         add(createSplitPane());
         outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
         this.groovyService = new GroovyService(new GroovyService.Listener() {
@@ -83,6 +88,10 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
             @Override
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
+                    case KeyEvent.VK_ESCAPE:
+                        autoCompleteDialog.setVisible(false);
+                        codeArea.requestFocus();
+                        break;
                     case KeyEvent.VK_SPACE:
                         if (event.getModifiers() == KeyEvent.CTRL_MASK && validatePrefix(codeArea.getCaretPosition())) {
                             autoCompleteDialog.setVisible(true);
@@ -93,11 +102,13 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
                     case KeyEvent.VK_DOWN:
                         autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
                         break;
+                    case KeyEvent.VK_ENTER:
+                        break;
                     default:
                         codeArea.requestFocus();
                 }
                 compileTimer.triggerSoon();
-                autoCompleteDialog.updateElements(autoComplete.complete(event, availableNodes));
+                autoCompleteDialog.updateElements(event, availableNodes);
                 autoCompleteDialog.updateLocation(codeArea.getCaret().getMagicCaretPosition(), event.getComponent().getLocationOnScreen());
             }
         });
@@ -165,23 +176,11 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
         }
     }
 
-    private final AutoComplete autoComplete = new AutoCompleteImpl(
-            new AutoCompleteImpl.Listener() {
-                @Override
-                public void cancelled() {
-                    autoCompleteDialog.setVisible(false);
-                }
-            }
-    );
-
     private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
             new AutoCompleteDialog.Listener() {
                 @Override
                 public void itemSelected(Object selectedItem) {
                     updateCodeArea(codeArea.getCaretPosition(), selectedItem);
-                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
-                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
-                    }
                 }
             },
             codeArea

@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.annotation;
+package eu.europeana.definitions.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -137,5 +137,5 @@ public @interface Europeana {
      * @return the validation level of a certain field
      */
 
-    ValidationLevel validation() default ValidationLevel.EseOptional;
+    ValidationLevel validation() default ValidationLevel.ESE_OPTIONAL;
 }

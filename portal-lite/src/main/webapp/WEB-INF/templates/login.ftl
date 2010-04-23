@@ -24,7 +24,7 @@
 
 </div>
 
-<div id="main" class="grid_9 prefix_3">
+<div id="main" class="grid_10 prefix_2">
 
 
     <div id="login-div" class="grid_3 alpha login-register">
@@ -75,8 +75,8 @@
         <input type="hidden" name="submit_login" value="Register"/>
         <fieldset>
             <legend></legend>
-            <label for="email"><@spring.message 'EmailAddress_t' /></label>
-            <input id="register_email" type='text' name='email' id='email' value='' accept-charset="UTF-8">
+            <label for="register_email"><@spring.message 'EmailAddress_t' /></label>
+            <input id="register_email" type='text' name='email' value='' accept-charset="UTF-8">
             <input id="register" name="submit_button" type="submit" value="<@spring.message 'Register_t' />"
                    class="button"/>
 
@@ -118,9 +118,9 @@
     Registration is not enabled yet.
     </#if>
  </div>
-   
 
-    
+
+
     <#if failureForgotFormat || failureForgotDoesntExist || forgotSuccess>
     <div id="request-password" class="grid_3 omega login-register">
     <#else >

@@ -120,7 +120,7 @@
         <property name="maxRetries" value="#{europeanaProperties['solr.retries']}"/>
     </bean>
 
-    <bean id="annotationProcessor" class="eu.europeana.core.querymodel.annotation.AnnotationProcessorImpl">
+    <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
         <property name="classes">
             <util:list>
                 <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
@@ -144,11 +144,12 @@
         </property>
     </bean>
 
-    <bean id="queryAnalyser" class="eu.europeana.core.querymodel.annotation.QueryAnalyzer">
+    <bean id="queryAnalyser" class="eu.europeana.core.querymodel.query.QueryAnalyzer">
         <property name="annotationProcessor" ref="annotationProcessor"/>
     </bean>
 
     <bean id="beanQueryModelFactory" class="eu.europeana.core.BeanQueryModelFactory">
+        <property name="solrServer" ref="solrSelectServer"/>
         <property name="briefBean">
                 <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
         </property>
@@ -170,6 +171,8 @@
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>
+
+    <bean id="docIdWindowPager" class="eu.europeana.core.querymodel.query.DocIdWindowPagerImpl"/> 
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="#{europeanaProperties['smtp.host']}"/>

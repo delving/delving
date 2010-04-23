@@ -8,6 +8,7 @@ import org.apache.solr.common.SolrDocumentList;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,20 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String startPage;
     private String query;
     private String returnToResults;
+    private String nextFullDocUrl;
+    private String previousFullDocUrl;
     private String pageId;
+    private String format;
+    private String siwa;
     private String tab;
     private List<Breadcrumb> breadcrumbs;
+
+//    @Value("#{europeanaProperties['portal.name']}")
+    private String portalName = "portal"; // must be injected later
+
+    public void setPortalName(String portalName) {
+        this.portalName = portalName;
+    }
 
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
     public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException, EuropeanaQueryException {
@@ -50,6 +62,12 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         int numFound = (int) response.getNumFound();
         setNextAndPrevious(pager, fullDocUriInt, list, offset, numFound);
         pager.docIdWindow = new DocIdWindowImpl(list, offset, numFound);
+        if (pager.hasNext) {
+            pager.setNextFullDocUrl(httpParameters);
+        }
+        if (pager.hasPrevious) {
+            pager.setPreviousFullDocUrl(httpParameters);
+        }
         return pager;
     }
 
@@ -62,6 +80,8 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         pager.startPage = fetchParameter(httpParameters, "startPage", "1");
         pager.tab = fetchParameter(httpParameters, "tab", "all");
         pager.pageId = fetchParameter(httpParameters, "pageId", "");
+        pager.format = fetchParameter(httpParameters, "format", "");
+        pager.siwa = fetchParameter(httpParameters, "siwa", "");
         if (pager.pageId != null) {
             pager.setReturnToResults(httpParameters);
         }
@@ -115,7 +135,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     /**
      * This method queries the SolrSearch engine to get a QueryResponse with 3 DocIds
-     *
+     * <p/>
      * This method does not have to be Unit Tested
      *
      * @param originalBriefSolrQuery
@@ -138,7 +158,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private void setReturnToResults(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
         if (pageId.equalsIgnoreCase("brd")) {
-            out.append("brief-doc.html?");
+            out.append(MessageFormat.format("/{0}/brief-doc.html?", portalName));
             out.append("query=").append(encode(query));
             final String[] filterQueries = httpParameters.get("qf");
             if (filterQueries != null) {
@@ -148,7 +168,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             }
         }
         else if (pageId.equalsIgnoreCase("yg")) {
-            out.append("year-grid.html?");
+            out.append(MessageFormat.format("/{0}/year-grid.html?", portalName));
             if (query.length() > 4) {
                 String userQueryString = query.replaceFirst("^\\d{4}", "").trim();
                 out.append("query=").append(encode(userQueryString)).append("&");
@@ -161,10 +181,70 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             view = "table";
         }
         out.append("&view=").append(view);
+        if (!tab.isEmpty()) {
+            out.append("&tab=").append(tab);
+        }
+        if (!format.isEmpty()) {
+            out.append("&format=").append(format);
+        }
+        if (!siwa.isEmpty()) {
+            out.append("&siwa=").append(siwa);
+        }
+        returnToResults = out.toString();
+    }
+
+    private void setNextFullDocUrl(Map<String, String[]> httpParameters) {
+        StringBuilder out = new StringBuilder();
+        out.append(MessageFormat.format("/{0}{1}.html?", portalName, nextUri.replaceAll("http://www.europeana.eu/resolve", "")));
+        out.append("query=").append(encode(query));
+        final String[] filterQueries = httpParameters.get("qf");
+        if (filterQueries != null) {
+            for (String filterQuery : filterQueries) {
+                out.append("&qf=").append(filterQuery);
+            }
+        }
+        out.append("&start=").append(nextInt);
+        out.append("&startPage=").append(startPage);
+        out.append("&pageId=").append(pageId);
+        String view = fetchParameter(httpParameters, "view", "");
+        if (view.isEmpty()) {
+            view = "table";
+        }
+        out.append("&view=").append(view);
+        if (!tab.isEmpty()) {
+            out.append("&tab=").append(tab);
+        }
+        if (!format.isEmpty()) {
+            out.append("&format=").append(format);
+        }
+        if (!siwa.isEmpty()) {
+            out.append("&siwa=").append(siwa);
+        }
+        nextFullDocUrl = out.toString();
+    }
+
+    private void setPreviousFullDocUrl(Map<String, String[]> httpParameters) {
+        StringBuilder out = new StringBuilder();
+        out.append(MessageFormat.format("/{0}{1}.html?", portalName, previousUri.replaceAll("http://www.europeana.eu/resolve", "")));
+        out.append("query=").append(encode(query));
+        final String[] filterQueries = httpParameters.get("qf");
+        if (filterQueries != null) {
+            for (String filterQuery : filterQueries) {
+                out.append("&qf=").append(filterQuery);
+            }
+        }
+        out.append("&start=").append(previousInt);
+        out.append("&startPage=").append(startPage);
+        out.append("&pageId=").append(pageId);
+        String view = fetchParameter(httpParameters, "view", "");
+        if (view.isEmpty()) {
+            view = "table";
+        }
+        out.append("&view=").append(view);
         if (tab.isEmpty()) {
             out.append("&tab=").append(tab);
         }
-        returnToResults = out.toString();
+        previousFullDocUrl = out.toString();
     }
 
     private void setQueryStringForPaging(SolrQuery solrQuery, String startPage) {
@@ -235,6 +315,16 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public String getFullDocUri() {
         return fullDocUri;
+    }
+
+    @Override
+    public String getNextFullDocUrl() {
+        return nextFullDocUrl;
+    }
+
+    @Override
+    public String getPreviousFullDocUrl() {
+        return previousFullDocUrl;
     }
 
     @Override

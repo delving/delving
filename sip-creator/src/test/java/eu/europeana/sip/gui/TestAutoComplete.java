@@ -11,14 +11,7 @@ import java.util.List;
  */
 public class TestAutoComplete {
 
-    private AutoComplete autoComplete = new AutoCompleteImpl(
-            new AutoCompleteImpl.Listener() {
-
-                @Override
-                public void cancelled() {
-                }
-            }
-    );
+    private AutoComplete autoComplete = new AutoCompleteImpl();
     private List<String> original = new ArrayList<String>();
 
     @Before

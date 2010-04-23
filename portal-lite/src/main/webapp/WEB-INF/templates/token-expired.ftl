@@ -31,7 +31,7 @@
         <br />
         <p>
             The link you used to complete registration is invalid or has expired.
-            Please <a href="login.html">register your email again</a> to finish registration.
+            Please <a href="/${portalName}/login.html">register your email again</a> to finish registration.
         </p>
 
 </div>

@@ -13,6 +13,7 @@
     <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
 </#if>
 
+
 <#macro show_result_table seq>
 <table id="multi" summary="gallery view all search results" border="0">
     <caption>Results</caption>
@@ -21,40 +22,40 @@
     <#-- if the result is less than 4 change the width of the table cell so that it does not stretch across the page -->
     <#if (row?size < 4)>
        <#assign  blockwidth ="250">
-    </#if> 
+    </#if>
     <tr>
         <#list row as cell>
         <td valign="bottom" width="${blockwidth}" class="${cell.type}">
             <div class="brief-thumb-container">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
-                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" onerror="showDefaultSmall(this,'${cell.type}')" height="110"/>
+                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" height="110"/>
                     <#else>
                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cell.thumbnail}" alt="Click for more information" height="110" onerror="showDefaultSmall(this,'${cell.type}')"/>
                     </#if>
                 </a>
             </div>
             <div class="brief-content-container">
-                <h6>
-                    <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
-                        <@stringLimiter "${cell.title}" "40"/>
-                    </a>
-                </h6>
-                <ul>
-                    <#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
-                    <li><@stringLimiter "${cell.creator}" "120"/></li>
-                    </#if></#if>
-                    <#if cell.year != ""><#if cell.year != "0000">
-                    <li>${cell.year}</li>
-                    </#if></#if>
-                    <#if cell.provider != "">
-                    <#assign pr = cell.provider />
-                    <#if pr?length &gt; 80>
-                    <#assign pr = cell.provider?substring(0, 80) + "..."/>
-                    </#if>
-                    <li title="${cell.provider}"><span class="provider">${pr}</span></li>
-                    </#if>
-                </ul>
+            <h6>
+                <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                    <@stringLimiter "${cell.title}" "40"/>
+                </a>
+            </h6>
+            <ul>
+                <#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
+                <li><@stringLimiter "${cell.creator}" "120"/></li>
+                </#if></#if>
+                <#if cell.year != ""><#if cell.year != "0000">
+                <li>${cell.year}</li>
+                </#if></#if>
+                <#if cell.provider != "">
+                <#assign pr = cell.provider />
+                <#if pr?length &gt; 80>
+                <#assign pr = cell.provider?substring(0, 80) + "..."/>
+                </#if>
+                <li title="${cell.provider}"><span class="provider">${pr}</span></li>
+                </#if>
+            </ul>
             </div>
         </td>
         </#list>
@@ -69,7 +70,7 @@
     <tr>
         <td valign="top" width="50">
             <div class="brief-thumb-container-listview">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true"><img class="thumb" id="thumb_${cell.index}" align="middle"
                                               src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                                               alt="<@spring.message 'AltMoreInfo_t' />" height="50"/>
@@ -82,7 +83,7 @@
         </td>
         <td class="${cell.type} ">
                 <h6>
-                    <a class="fg-gray" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                    <a class="fg-gray" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>
@@ -110,7 +111,7 @@
     </noscript>
     <div id="loading">
         <b>Loading images</b><br/>
-        <img src="images/loading.gif" width="208" height="13" alt="loading"/>
+        <img src="/${portalName}/images/loading.gif" width="208" height="13" alt="loading"/>
     </div>
     <div id="images">
         <#list seq as briefDoc>

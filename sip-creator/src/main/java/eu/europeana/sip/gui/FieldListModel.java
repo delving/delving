@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.core.querymodel.annotation.AnnotationProcessor;
-import eu.europeana.core.querymodel.annotation.EuropeanaField;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.definitions.annotations.EuropeanaField;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;

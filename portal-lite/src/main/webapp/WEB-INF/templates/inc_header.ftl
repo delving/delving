@@ -1,4 +1,9 @@
 <#import "spring.ftl" as spring >
+<#if portalName??>
+    <#assign portalName = portalName/>
+    <#--<#else>-->
+        <#--<#assign portalName = "portal"/>-->
+</#if>
 <#if user??>
     <#assign user = user/>
 </#if>
@@ -70,7 +75,7 @@
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
@@ -81,7 +86,7 @@
     </div>
 
     <div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">
-       <form method="get" action="brief-doc.html" accept-charset="UTF-8">
+       <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
         <table>
@@ -117,18 +122,18 @@
 <#include "language_select.ftl">
     <ul>
         <#if !user??>
-        <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
-                href="login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a>
+        <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
+                href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a>
         </li>
         </#if>
         <#if user??>
         <li>
             <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-                href="logout.html"><@spring.message 'LogOut_t' /></a>
+                href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
         </li>
         <#if user.savedItems?exists>
         <li>
-            <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
+            <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
                 <@spring.message 'SavedItems_t' />
             </a>
             (<span id="savedItemsCount">${user.savedItems?size}</span>)
@@ -136,7 +141,7 @@
         </#if>
         <#if user.savedSearches?exists>
         <li>
-            <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
+            <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
                 <@spring.message 'SavedSearches_t' />
             </a>
             (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
@@ -144,7 +149,7 @@
         </#if>
         <#if user.socialTags?exists>
         <li>
-            <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
+            <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
                 <@spring.message 'SavedTags_t' />
             </a>
             (<span id="savedTagsCount">${user.socialTags?size}</span>)
@@ -199,7 +204,7 @@
         });
 
     </script>
-    <title>Open-Europeana - Search results</title>
+    <title>Delving - Search results</title>
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
@@ -213,7 +218,7 @@
         var msgEmailValid = "<@spring.message 'EnterValidEmail_t' />";
     </script>
     </#if>
-    <title>Open-Europeana - Search results</title>
+    <title>Delving - Search results</title>
     <#break>
     <#case "myeuropeana.html">
     <#assign pageId = "me"/>
@@ -223,7 +228,7 @@
             $("#savedItems").tabs({ cookie: { expires: 30 } });
         });
     </script>
-    <title>Open-Europeana - My Open-Europeana</title>
+    <title>Delving - My Open-Europeana</title>
     <#break>
     <#case "exception.html">
     <title>Europeana - Exception</title>
@@ -249,22 +254,22 @@
             });
         });
     </script>
-    <title>Open-Europeana - Login</title>
+    <title>Delving - Login</title>
     <#break>
     <#case "logout.html">
     <#assign pageId = "lo"/>
-    <title>Open-Europeana - Logout</title>
+    <title>Delving - Logout</title>
     <#break>
     <#case "register.html">
     <#assign pageId = "rg"/>
-    <title>Open-Europeana - Registration</title>
+    <title>Delving - Registration</title>
     <#break>
     <#case "forgotPassword.html">
     <#assign pageId = "fp"/>
-    <title>Open-Europeana - Forgot Password</title>
+    <title>Delving - Forgot Password</title>
     <#break>
     <#case "register-success.html">
-    <title>Open-Europeana - Registration continued</title>
+    <title>Delving - Registration continued</title>
     <#break>
     </#switch>
 

@@ -21,26 +21,26 @@
 
 package eu.europeana.web.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.solr.client.solrj.SolrQuery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.FullBeanView;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Annotation-based handling of result pages
@@ -57,10 +57,10 @@ public class ResultController {
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-       
+
     @Value("#{europeanaProperties['image.annotation.tool.base.url']}")
     private String imageAnnotationToolBaseUrl;
-    
+
     @RequestMapping("/full-doc.html")
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocHtml(
@@ -75,6 +75,39 @@ public class ResultController {
 
         // get results
         final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
+
+        // create ModelAndView
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
+        page.addObject("result", fullResultView);
+        if (fullResultView.getDocIdWindowPager() != null) {
+            page.addObject("pagination", fullResultView.getDocIdWindowPager());
+        }
+        if (format != null && format.equalsIgnoreCase("labels")) {
+            page.addObject("format", format);
+        }
+        page.addObject("uri", uri);
+        page.addObject("imageAnnotationToolBaseUrl",imageAnnotationToolBaseUrl);
+        clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
+        return page;
+    }
+
+    @RequestMapping("/record/{collId}/{recordHash}.html")
+    @SuppressWarnings("unchecked")
+    public ModelAndView fullDocRest(
+            @PathVariable String collId, @PathVariable String recordHash,
+            HttpServletRequest request
+    ) throws Exception {
+        Map params = request.getParameterMap();
+        String format = (String) params.get("format");
+        boolean srwFormat = format != null && format.equals("srw");
+
+        String uri = "http://www.europeana.eu/resolve/record/" + collId + "/" + recordHash;
+        Map fullParams = new HashMap<String, String[]>();
+        fullParams.putAll(params);
+        fullParams.put("uri", new String[]{uri});
+
+        // get results
+        final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(fullParams);
 
         // create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");

@@ -20,7 +20,6 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
 
     private String prefix;
     private int offSet;
-    private Listener listener;
 
     @Override
     public void itemSelected(Object selectedItem) {
@@ -28,12 +27,7 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
         LOG.debug("Item selected and keyBuffer emptied ; " + selectedItem);
     }
 
-    interface Listener {
-        public void cancelled();
-    }
-
-    public AutoCompleteImpl(Listener listener) {
-        this.listener = listener;
+    public AutoCompleteImpl() {
         this.offSet = DEFAULT_OFFSET;
         this.prefix = DEFAULT_PREFIX;
     }
@@ -67,19 +61,16 @@ public class AutoCompleteImpl implements AutoComplete, AutoCompleteDialog.Listen
         if (validate(entered)) {
             keyBuffer.append(entered.getKeyChar());
         }
-        switch (entered.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-            case KeyEvent.VK_ESCAPE:
-                keyBuffer.setLength(0);
-                listener.cancelled();
-                return null;
-            case KeyEvent.VK_BACK_SPACE:
-                if (keyBuffer.length() <= 0) {
-                    listener.cancelled();
-                    return null;
-                }
-                keyBuffer.setLength(keyBuffer.length() - 1);
-        }
         return complete(keyBuffer.toString(), originalElements);
+    }
+
+    @Override
+    public void cleared() {
+        keyBuffer.setLength(0);
+    }
+
+    @Override
+    public void cancelled() {
+        keyBuffer.setLength(0);
     }
 }

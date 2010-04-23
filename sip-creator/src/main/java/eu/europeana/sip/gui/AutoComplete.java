@@ -35,4 +35,15 @@ public interface AutoComplete {
      * @return A list with the remaining elements after filtering on entered String
      */
     public List<String> complete(KeyEvent entered, List<String> originalElements);
+
+
+    /**
+     * AutoComplete has finished correctly.
+     */
+    public void cleared();
+
+    /**
+     * AutoComplete has been cancelled.
+     */
+    public void cancelled();
 }           

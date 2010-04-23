@@ -22,17 +22,80 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
+<#--<#list result.facets as facet>
+    <#if facet.type="TYPE">
+        <#list facet.counts as type>
+            <#if type.value = "IMAGE">
+                <#assign imageCount = type.count />
+            </#if>
+            <#if type.value = "TEXT">
+                <#assign textCount = type.count />
+            </#if>
+            <#if type.value = "VIDEO">
+                <#assign videoCount = type.count />
+            </#if>
+            <#if type.value = "SOUND">
+                <#assign audioCount = type.count />
+            </#if>
+        </#list>
+    </#if>
+</#list>
+<#list next as facet>
+    <#if facet.type="TYPE">
+        <#list facet.links as type>
+            <#if type.value = "IMAGE">
+                <#assign IMAGEUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:TEXT", "")?replace("&qf=TYPE:SOUND", "")/>
+            </#if>
+            <#if type.value = "TEXT">
+                <#assign TEXTUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
+            </#if>
+            <#if type.value = "VIDEO">
+                <#assign VIDEOUrl = type.url?replace("&qf=TYPE:TEXT","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:SOUND", "")/>
+            </#if>
+            <#if type.value = "SOUND">
+                <#assign audioUrl = type.url?replace("&qf=TYPE:VIDEO","")?replace("&qf=TYPE:IMAGE", "")?replace("&qf=TYPE:TEXT", "")/>
+            </#if>
+        </#list>
+    </#if>
+</#list>
+
+<#list next as facet>
+    <#if facet.type="TYPE">
+        <#list facet.links as type>
+            <#if type.remove><#assign showType = 1 /></#if>
+        </#list>
+    </#if>
+    <#if facet.type="YEAR">
+        <#list facet.links as date>
+            <#if date.remove><#assign showYear = 1 /></#if>
+        </#list>
+    </#if>
+    <#if facet.type="LANGUAGE">
+        <#list facet.links as lang>
+            <#if lang.remove><#assign showLanguage = 1 /></#if>
+        </#list>
+    </#if>
+    <#if facet.type="PROVIDER">
+        <#list facet.links as provider>
+            <#if provider.remove><#assign showProvider = 1 /></#if>
+        </#list>
+    </#if>
+    <#if facet.type="COUNTRY">
+        <#list facet.links as country>
+            <#if country.remove><#assign showCountry = 1 /></#if>
+        </#list>
+    </#if>
+    <#if facet.type="USERTAGS">
+        <#list facet.links as userTags>
+            <#if userTags.remove><#assign showUserTags = 1 /></#if>
+        </#list>
+    </#if>
+</#list>
+<#assign servletUrl = servletUrl/>-->
+
 
 <#-- image tab class assignation -->
-
-<#assign tab = ""/>
-<#assign showAll = ""/>
-<#assign showText = ""/>
-<#assign showImage = ""/>
-<#assign showVideo = ""/>
-<#assign showSound = ""/>
-<#assign showText = ""/>
-
+<#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
 <#if RequestParameters.tab?exists>
 <#assign tab = RequestParameters.tab/>
 <#switch RequestParameters.tab>
@@ -45,6 +108,9 @@
 <#else>
     <#assign showAll = "ui-state-active"/>
 </#if>
+
+
+
 
 <#include "inc_header.ftl">
 
@@ -62,94 +128,83 @@
                 <@userbar/>
             </div>
         </div>
-        
+
     </div>
 
 </div>
 
 <div class="clear"></div>
 
-<div id="main" class="grid_9">
+<div id="main" class="grid_9 page">
 
-    <div class="page">
-
-
-        <div id="breadcrumbs">
-            <div class="inner">
-            <ul>
-                <#if !result.matchDoc??>
-                    <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-                    <#list breadcrumbs as crumb>
-                        <#if !crumb.last>
-                            <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
-                        <#else>
-                            <li><strong>${crumb.display?html}</strong></li>
-                        </#if>
-                    </#list>
-                <#else>
-                    <li class="first">
-                    <@spring.message 'ViewingRelatedItems_t' />
-                    <#assign match = result.matchDoc/>
-                    <a href="full-doc.html?&amp;uri=${match.id}">
-                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                        </#if>
-                    </a>
-                </li>
-                </#if>
-            </ul>
-            </div>
-        </div>
-
-        <div class="clear"></div>
-
+    <div id="breadcrumbs">
         <div class="inner">
-
-            <div id="objTypes">
-                <div>
-                <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-                </div>
-                <@typeTabs_plain/>
-                <@viewSelect/>
+        <ul>
+            <#if !result.matchDoc??>
+                <li class="first"><@spring.message 'MatchesFor_t' />:</li>
+                <#list breadcrumbs as crumb>
+                    <#if !crumb.last>
+                        <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                    <#else>
+                        <li><strong>${crumb.display?html}</strong></li>
+                    </#if>
+                </#list>
+            <#else>
+                <li class="first">
+                <@spring.message 'ViewingRelatedItems_t' />
+                <#assign match = result.matchDoc/>
+                <a href="${match.fullDocUrl}">
+                    <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                    <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                    </#if>
+                </a>
+            </li>
+            </#if>
+        </ul>
             </div>
+    </div>
 
-            <div class="clear"></div>
+    <div class="clear"></div>
 
-            <div class="pagination">
-                <@resultnav_styled/>
-            </div>
+    <div class="inner">
 
-            <div class="clear"></div>
-
-            <#include "inc_result_table_brief.ftl"/>
-
-            <div class="clear"></div>
-
-            <div class="pagination">
-                <@resultnav_styled/>
-            </div>
-
+    <div id="objTypes">
+        <div>
+        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
         </div>
+        <@typeTabs_plain/>
+        <@viewSelect/>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="pagination">
+        <@resultnav_styled/>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <#include "inc_result_table_brief.ftl"/>
+
+    <div class="clearfix"></div>
+
+    <div class="pagination">
+        <@resultnav_styled/>
+    </div>
 
     </div>
+
 </div>
+
+
 
 <div id="sidebar" class="grid_3">
-
-         <div id="search">
-            <div class="inner">
-                <@SearchForm "search_result"/>
-            </div>
-        </div>  
-
+    <div class="inner">
     <div id="facet-list">
-        <div class="inner">
         <#include "inc_facets_lists.ftl"/>
-            </div>
     </div>
-
+    </div>
 </div>
-
 
 
 
@@ -340,12 +395,12 @@
     <div id="viewselect" style="float:right">
         <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
 
         <#else>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
 
         </#if>
         </#if>

@@ -28,6 +28,7 @@ package eu.europeana.core.querymodel.query;
 
 public interface BriefDoc { // if multiple-> show first
     int getIndex();
+    String getFullDocUrl();
     String getId();
     String getTitle();
     String getThumbnail();
@@ -38,4 +39,5 @@ public interface BriefDoc { // if multiple-> show first
     DocType getType();
 
     void setIndex(int index);
+    void setFullDocUrl(String fullDocUrl);
 }
