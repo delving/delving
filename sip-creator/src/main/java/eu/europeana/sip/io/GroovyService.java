@@ -59,7 +59,7 @@ public class GroovyService {
 
     public static String generateGroovyLoop(String field) {
         String variable = field.substring(field.lastIndexOf(".") + 1); // todo: fix this
-        return String.format("\tfor ($%s in %s) {%n\t\t%s $%s;%n\t}%n", variable, field, variable.replace("_", "."), variable);
+        return String.format("\tfor ($%s in input.%s) {%n\t\t%s $%s;%n\t}%n", variable, field, variable.replace("_", "."), variable);
     }
 
     public interface Listener {

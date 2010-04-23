@@ -234,7 +234,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             EuropeanaField field = (EuropeanaField) value;
             if (v.equals(field.getFieldNameString()) && field.isMappable()) {
                 try {
-                    groovyMapping.storeNode(new GroovyMapping.Delimiter(v), GroovyService.generateGroovyLoop("input." + v));  // todo: hardcoded prefix
+                    groovyMapping.storeNode(new GroovyMapping.Delimiter(v), GroovyService.generateGroovyLoop(v));
                 }
                 catch (IOException e) {
                     e.printStackTrace();  // todo: handle catch
