@@ -11,7 +11,9 @@ import eu.europeana.sip.io.GroovyMapping;
 import eu.europeana.sip.io.GroovyService;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +33,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     private AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
     private GroovyMapping groovyMapping;
     private Listener listener;
+    private java.util.List<String> nodes;
 
     {
         list.add(IdBean.class);
@@ -40,37 +43,20 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         annotationProcessor.setClasses(list);
     }
 
-    interface Listener {
-        void mappingCreated(StringBuffer mapping);
+    private class MappablesTab extends JPanel {
+
+        private MappablesTab() {
+            super(new BorderLayout());
+            add(new JScrollPane(constructMappableTable()), BorderLayout.CENTER);
+        }
     }
 
-    public MappingsPanel(final GroovyMapping groovyMapping, final Listener listener) {
-        super(new BorderLayout());
-        this.groovyMapping = groovyMapping;
-        this.listener = listener;
-        init();
-        JButton saveButton = new JButton("save");
-        saveButton.addActionListener(
-                new ActionListener() {
+    private class AdditionalsTab extends JPanel {
 
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            listener.mappingCreated(groovyMapping.createMapping());
-                        }
-                        catch (IOException e1) {
-                            e1.printStackTrace();  // todo: handle catch
-                        }
-                    }
-                }
-        );
-        add(saveButton, BorderLayout.SOUTH);
-    }
-
-    private void init() {
-        JScrollPane foundElementsContainer = new JScrollPane(constructTable());
-        add(foundElementsContainer);
-        add(foundElementsContainer, BorderLayout.CENTER);
+        private AdditionalsTab() {
+            super(new BorderLayout());
+            add(new JScrollPane(constructMappableTable()), BorderLayout.CENTER);
+        }
     }
 
     /**
@@ -80,10 +66,10 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
      *
      * @return The table
      */
-    private JTable constructTable() {
-        JTable jTable = new JTable(new AbstractTableModel() {
+    private JTable constructMappableTable() {
+        final JTable jTable = new JTable(new DefaultTableModel() {
 
-            String[] columnNames = {"ESE", "ESE+", "Normalize?"};
+            String[] columnNames = {"Source", "Target", "Normalize?"};
 
             @Override
             public int getRowCount() {
@@ -118,17 +104,19 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return getValueAt(rowIndex, columnIndex) instanceof Boolean;
+                Object o = getValueAt(rowIndex, columnIndex);
+                return o instanceof String || o instanceof Boolean || o instanceof SourceField || o instanceof JComboBox;
             }
 
             @Override
             public void fireTableCellUpdated(int row, int column) {
-                String value = getValueAt(row, 0).toString();
                 try {
-                    if ((Boolean) getValueAt(row, column)) {
+                    if ((Boolean) getValueAt(row, 2)) {
+                        String value = getValueAt(row, 1).toString();
                         groovyMapping.storeNode(new GroovyMapping.Delimiter(value), GroovyService.generateGroovyLoop(value));
                     }
                     else {
+                        String value = getValueAt(row, 1).toString();
                         groovyMapping.deleteNode(new GroovyMapping.Delimiter(value));
                     }
                 }
@@ -138,7 +126,116 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             }
         });
         jTable.setFillsViewportHeight(true);
+        jTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jTable.getColumnModel().getColumn(0).setCellRenderer(new SourceFieldRenderer());
+        jTable.setDefaultEditor(SourceField.class, new SourceFieldEditor());
+        jTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(new Object[]{"- no mapping -"}))); // todo: retrieve from nodes
         return jTable;
+    }
+
+    private class ComboboxEditor extends AbstractCellEditor implements TableCellEditor {
+
+        private JComboBox jComboBox;
+        private String val;
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            return (Component) value;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return jComboBox;
+        }
+    }
+
+    private class ComboboxCellRenderer implements TableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return (Component) value;
+        }
+    }
+
+    private class SourceFieldRenderer implements TableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return (Component) value;
+        }
+    }
+
+    private class SourceFieldEditor extends AbstractCellEditor implements TableCellEditor {
+        private SourceField sourceField;
+
+        @Override
+        public Object getCellEditorValue() {
+            return sourceField;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row, int column) {
+            this.sourceField = (SourceField) value;
+            sourceField.getjButton().setToolTipText("Add extractor");
+            sourceField.getjButton().addActionListener(
+                    new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            System.out.printf("Inserting after %d for total %d%n", row, table.getModel().getRowCount());
+                            // todo: add new row
+//                           ((DefaultTableModel) table.getModel()).insertRow(row, new Object[] {"abc", "def", true});
+                        }
+                    }
+            );
+            return sourceField;
+        }
+    }
+
+
+    interface Listener {
+        void mappingCreated(StringBuffer mapping);
+    }
+
+    public MappingsPanel(final GroovyMapping groovyMapping, final Listener listener) {
+        super(new BorderLayout());
+        JTabbedPane mappingsTabs = new JTabbedPane();
+        mappingsTabs.addTab("Mappables", new MappablesTab());
+        mappingsTabs.addTab("Additionals", new AdditionalsTab());
+        add(mappingsTabs, BorderLayout.CENTER);
+        this.groovyMapping = groovyMapping;
+        this.listener = listener;
+        JButton saveButton = new JButton("save");
+        saveButton.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            listener.mappingCreated(groovyMapping.createMapping());
+                        }
+                        catch (IOException e1) {
+                            e1.printStackTrace();  // todo: handle catch
+                        }
+                    }
+                }
+        );
+        add(saveButton, BorderLayout.SOUTH);
+    }
+
+    private class SourceField extends JPanel {
+
+        private JButton jButton = new JButton("+");
+
+        public JButton getjButton() {
+            return jButton;
+        }
+
+        private SourceField(String name) {
+            super(new BorderLayout());
+            add(new JLabel(name), BorderLayout.CENTER);
+            add(jButton, BorderLayout.EAST);
+        }
     }
 
     private boolean isMappable(String v) {
@@ -162,8 +259,16 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     public void updateAvailableNodes(java.util.List<String> nodes) {
         int counter = 0;
         data = new Object[nodes.size()][];
+        this.nodes = nodes;
+        JComboBox availableNodes = new JComboBox(nodes.toArray());
+        availableNodes.setOpaque(false);
         for (String s : nodes) {
-            data[counter] = new Object[]{s, s, isMappable(s)};
+            if (isMappable(s)) {
+                data[counter] = new Object[]{new SourceField(s), s, isMappable(s)};
+            }
+            else {
+                data[counter] = new Object[]{new SourceField(s), s, isMappable(s)};
+            }
             counter++;
         }
     }

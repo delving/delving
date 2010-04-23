@@ -31,6 +31,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class EuropeanaUriHasher {
     private static final String RESOLVABLE_URI = "http://www.europeana.eu/resolve/record/";
 
