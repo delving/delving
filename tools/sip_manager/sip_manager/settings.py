@@ -260,10 +260,10 @@ INSTALLED_APPS = (
     'djblets.datagrid',
     'djblets.util',
 
-    'apps.base_item',
+    'apps.sipmanager',
     'apps.dummy_ingester',
+    'apps.base_item',
     'apps.plug_uris',
-    'apps.process_monitor',
 
     'apps.log',
     'apps.statistics',

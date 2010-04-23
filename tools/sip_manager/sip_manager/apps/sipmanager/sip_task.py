@@ -348,10 +348,13 @@ class SipTask(object): #SipProcess(object):
         """Either use as a bool check, or give a param directly.
 
         A number param is sent to task_progess()
-        a string param is used directly."""
+        a string param is used directly.
+
+        remember if terminate_on_high_load=True a SipSystemOverLoaded exception
+        will be triggered on high load, you need to catch that in you code
+        if you need to do any cleanup
+        """
         if self._task_show_time + self.TASK_PROGRESS_TIME < time.time():
-            if terminate_on_high_load:
-                self.do_terminate_on_high_load()
             if progress:
                 if isinstance(progress, int):
                     self.task_progress(progress)
@@ -363,6 +366,8 @@ class SipTask(object): #SipProcess(object):
                                                self.pm.id), 7)
             self._task_show_time = time.time()
             b = True
+            if terminate_on_high_load:
+                self.do_terminate_on_high_load()
         else:
             b = False
         return b

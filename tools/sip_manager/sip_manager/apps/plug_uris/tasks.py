@@ -82,7 +82,7 @@ from django.conf import settings
 
 from apps.base_item import models as base_item
 from apps.log import models as log
-from apps.process_monitor import sip_task
+from apps.sipmanager import sip_task
 
 from utils.gen_utils import calculate_hash
 

@@ -79,37 +79,84 @@ class ProviderManager(models.Manager):
                             }
 
 
-    def get_or_create(self, name_code, file_name, aggregator):
+    def get_or_create(self, file_name):
+        aggregator_nc, provider_nc = self.get_agg_prov_name_codes(file_name)
+
+        aggregator, created = Aggregator.objects.get_or_create(name_code=aggregator_nc)
+        if created:
+            aggregator.name = AUTOGEN_NAME
+            aggregator.save()
+
         cursor = connection.cursor()
-        cursor.execute("SELECT id FROM %s_provider WHERE name_code='%s'" % (__name__.split('.')[-2], name_code))
+        sql = ["SELECT id FROM %s" % self.model._meta.db_table]
+        sql.append("WHERE aggregator_id = '%s'" % aggregator.pk)
+        sql.append("AND name_code='%s'" % provider_nc)
+        cursor.execute(' '.join(sql))
         if cursor.rowcount:
             # this can so not fail - i just refuse to do errorhandling for this call
-            item = self.model.objects.filter(name_code=name_code)[0]
-            was_created = False
+            item = self.model.objects.get(pk=cursor.fetchone()[0])
+            created = False
         else:
-            try:
-                sanitized_file_name = os.path.splitext(file_name)[0].replace('__','_')
-                s = sanitized_file_name.split('_')[1].upper()
-                item_type = self.PROVIDER_TYPE_LOOKUP[s]
-                country_idx = 2
-            except:
-                item_type = 1
-                country_idx= 1
-            try:
-                country = sanitized_file_name.split('_')[country_idx]
-                if len(country) > 2:
-                    raise
-            except:
-                country = '??'
-            try:
-                name = ' '.join(sanitized_file_name.split('_')[country_idx+1:])
-            except:
-                name = AUTOGEN_NAME
-            item = self.model(aggregator=aggregator, name_code=name_code,
+            item_type, country, name = self.get_filename_info(file_name)
+            item = self.model(aggregator=aggregator, name_code=provider_nc,
                               name=name, item_type=item_type, country=country)
             item.save()
-            was_created = True
-        return item, was_created
+            created = True
+        return item, created
+
+    def get_agg_prov_name_codes(self, file_name):
+        rel_fname = os.path.split(file_name)[1]
+        try:
+            int(file_name[:5]) # we use it as string but check that it is an int...
+            aggregator_nc = file_name[:2]
+            provider_nc = file_name[2:5]
+        except:
+            aggregator_nc = 'XX'
+            provider_nc = 'XXX'
+        return aggregator_nc, provider_nc
+
+
+    def get_filename_info(self, file_name):
+        rel_fname = os.path.split(file_name)[1]
+        try:
+            sanitized_file_name = os.path.splitext(file_name)[0].replace('__','_')
+            s = sanitized_file_name.split('_')[1].upper()
+            item_type = self.PROVIDER_TYPE_LOOKUP[s]
+            country_idx = 2
+        except:
+            item_type = 1
+            country_idx= 1
+
+        try:
+            country = sanitized_file_name.split('_')[country_idx]
+            if len(country) > 2:
+                raise
+        except:
+            country = '??'
+
+        try:
+            name = ' '.join(sanitized_file_name.split('_')[country_idx+1:])
+        except:
+            name = AUTOGEN_NAME
+
+        while self.last_part_nr(name):
+            name = ' '.join(name.split()[:-1])
+            if not name:
+                name = AUTOGEN_NAME
+
+        return item_type, country, name
+
+
+    def last_part_nr(self, name):
+        last_word = name.split()[-1]
+        try:
+            int(last_word)
+            was_numeric = True
+        except:
+            was_numeric = False
+        return was_numeric
+
+
 
 
 class Provider(models.Model):
@@ -138,33 +185,18 @@ DAST_TYPES = {
     DAST_ESE: 'ESE',
     }
 
-
 class DataSetManager(models.Manager):
 
     def get_or_create(self, file_name):
         cursor = connection.cursor()
-        cursor.execute("SELECT id FROM %s_dataset WHERE name_code LIKE '%s'" % (
-            __name__.split('.')[-2], file_name))
+        cursor.execute("SELECT id FROM %s WHERE name_code LIKE '%s'" % (
+            self.model._meta.db_table, file_name))
         if cursor.rowcount:
             # this can so not fail - i just refuse to do errorhandling for this call
             item = self.model.objects.filter(name_code=file_name)[0]
             was_created = False
         else:
-
-            try:
-                int(file_name[:5]) # we use it as string but check that it is an int...
-                aggregator_nc = file_name[:2]
-                provider_nc = file_name[2:5]
-            except:
-                aggregator_nc = 'XX'
-                provider_nc = 'XXX'
-
-            aggregator, was_created = Aggregator.objects.get_or_create(
-                name_code=aggregator_nc, name=AUTOGEN_NAME)
-
-            provider, was_created = Provider.objects.get_or_create(
-                provider_nc, file_name, aggregator)
-
+            provider, was_created = Provider.objects.get_or_create(file_name)
             item = self.model(provider=provider, name_code=file_name,
                               name=AUTOGEN_NAME, language='??')
             item.save()
@@ -222,7 +254,7 @@ class RequestManager(models.Manager):
         mtime = os.path.getmtime(full_path)
         time_created = datetime.datetime.fromtimestamp(mtime)
 
-        lst = ["SELECT id FROM %s_request" % __name__.split('.')[-2] ]
+        lst = ["SELECT id FROM %s" % self.model._meta.db_table ]
         lst.append("WHERE data_set_id=%i" % data_set.pk)
         lst.append("AND file_name='%s'" % file_name)
         lst.append("AND time_created='%s'" % time_created)

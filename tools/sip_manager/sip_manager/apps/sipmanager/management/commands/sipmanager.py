@@ -28,7 +28,7 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand
 
-from apps.process_monitor.processor import MainProcessor
+from apps.sipmanager.processor import MainProcessor
 
 
 class Command(BaseCommand):

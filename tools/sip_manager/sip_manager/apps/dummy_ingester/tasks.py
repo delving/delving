@@ -33,7 +33,7 @@ import django.db
 from django.core import exceptions
 from django.conf import settings
 
-from apps.process_monitor import sip_task
+from apps.sipmanager import sip_task
 from apps.base_item import models as base_item
 
 from utils.gen_utils import calculate_hash
@@ -115,6 +115,8 @@ class RequestCreate(sip_task.SipTask):
 
             for filename in filenames:
                 if os.path.splitext(filename)[1] != '.xml':
+                    continue
+                if filename.find('903') != 2:
                     continue
                 # if we are scanning the ingestion svn avoid things like 'dddd.sample.xml'
                 if TREE_IS_INGESTION_SVN and os.path.splitext(os.path.splitext(filename)[0])[1] != '':

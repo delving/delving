@@ -55,7 +55,7 @@ class MainProcessor(sip_task.SipTask):
                   ('plug_uris_requri', False),
                   ('plug_uris_uri', True),
                   ('plug_uris_urisource', True),
-                  ('process_monitor_processmonitoring', False)]
+                  ('%s_processmonitoring' % __name__.split('.')[-2], False)]
 
 
     def __init__(self, options):
@@ -195,7 +195,7 @@ class MainProcessor(sip_task.SipTask):
 
     def cmd_clear_pids(self):
         cursor = connection.cursor()
-        cursor.execute('TRUNCATE process_monitor_processmonitoring')
+        cursor.execute('TRUNCATE %s_processmonitoring' % __name__.split('.')[-2])
         for table, has_pid in self.ALL_TABLES:
             if has_pid:
                 cursor.execute('UPDATE %s SET pid=0 WHERE pid > 0' % table)

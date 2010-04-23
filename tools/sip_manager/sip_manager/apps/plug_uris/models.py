@@ -148,7 +148,7 @@ class UriManager(models.Manager):
             s = 'COUNT(u.id)'
         else:
             s = 'u.id'
-        lst = ["SELECT %s FROM %s_uri u" % (s, __name__.split('.')[-2])]
+        lst = ["SELECT %s FROM %s u" % (s, self.model._meta.db_table)]
         lst.append("WHERE u.status=%i" % URIS_CREATED)
         lst.append("AND uri_source_id=%i" % source_id)
         lst.append("AND err_code=%i" % URIE_NO_ERROR)
