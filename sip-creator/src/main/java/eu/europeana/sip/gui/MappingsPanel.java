@@ -48,10 +48,10 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         Vector<String> required = new Vector<String>();
         required.add("- no mapping -");
         for (EuropeanaField field : annotationProcessor.getFields(ValidationLevel.ESE_PLUS_REQUIRED)) {
-            additionals.add("input." + field.getFieldNameString());
+            additionals.add(field.getFieldNameString());
         }
         for (EuropeanaField field : annotationProcessor.getFields(ValidationLevel.ESE_REQUIRED)) {
-            required.add("input." + field.getFieldNameString());
+            required.add(field.getFieldNameString());
         }
         additionalFields = new JComboBox(additionals);
         mappableFields = new JComboBox(required);
@@ -234,7 +234,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             EuropeanaField field = (EuropeanaField) value;
             if (v.equals(field.getFieldNameString()) && field.isMappable()) {
                 try {
-                    groovyMapping.storeNode(new GroovyMapping.Delimiter("input." + v), GroovyService.generateGroovyLoop("input." + v));  // todo: hardcoded prefix
+                    groovyMapping.storeNode(new GroovyMapping.Delimiter(v), GroovyService.generateGroovyLoop("input." + v));  // todo: hardcoded prefix
                 }
                 catch (IOException e) {
                     e.printStackTrace();  // todo: handle catch
@@ -253,12 +253,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         JComboBox availableNodes = new JComboBox(nodes.toArray());
         availableNodes.setOpaque(false);
         for (String s : nodes) {
-            if (isMappable(s)) {
-                data[counter] = new Object[]{new SourceField(s), s, isMappable(s)};
-            }
-            else {
-                data[counter] = new Object[]{new SourceField(s), s, isMappable(s)};
-            }
+            data[counter] = new Object[]{new SourceField(s), s.substring(s.lastIndexOf(".") + 1), isMappable(s)};
             counter++;
         }
     }
