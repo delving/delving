@@ -22,7 +22,12 @@
 package eu.europeana.definitions.annotations;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Interpret the annotations in the beans which define the search model, and
@@ -66,6 +71,17 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     @Override
     public Set<? extends EuropeanaField> getMappableFields() {
         return mappableFields;
+    }
+
+    @Override
+    public Set<? extends EuropeanaField> getFields(ValidationLevel validationLevel) {
+        Set<EuropeanaFieldImpl> fields = new HashSet<EuropeanaFieldImpl>();
+        for (EuropeanaFieldImpl field : solrFields) {
+            if (field.getValidationLevel() == validationLevel) {
+                fields.add(field);
+            }
+        }
+        return fields;
     }
 
     @Override
@@ -269,6 +285,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         @Override
         public String getFacetPrefix() {
             return europeanaAnnotation.facetPrefix();
+        }
+
+        @Override
+        public ValidationLevel getValidationLevel() {
+            return europeanaAnnotation.validation();
         }
 
         @Override
