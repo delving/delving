@@ -199,6 +199,11 @@
 
 
 <div id="sidebar" class="grid_3">
+     <div id="search">
+        <div class="inner">
+            <@SearchForm "search_result"/>
+        </div>
+    </div>
     <div class="inner">
     <div id="facet-list">
         <#include "inc_facets_lists.ftl"/>

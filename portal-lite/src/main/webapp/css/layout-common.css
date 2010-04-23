@@ -34,6 +34,10 @@ a:visited, a:hover {
     overflow: hidden;
 }
 
+#main.home {
+    text-align:center;
+}
+
 .page {
   position: relative;
   padding: 0;
@@ -207,9 +211,9 @@ input[type=text], input[type=password]{
 }
 
 /* pagination */
-.pagination {
-    margin: 0.5em 0;
-}
+/*.pagination {*/
+    /*margin: 0.5em 0 0 0;*/
+/*}*/
 
 /* objTypes */
 #objTypes {
@@ -341,7 +345,7 @@ table caption {
     border-bottom: solid 1px #ccc;
     /*color: #333;*/
     margin: 0 0 10px 0;
-    padding: .15em 0 .25em 30px;
+    padding: 0 0 .25em 30px;
 }
 
 #item-detail h4.SOUND {

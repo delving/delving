@@ -79,8 +79,8 @@
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
-            <#--<input id="submit_search" type="submit" class="btn-search" value="<@spring.message 'Search_t' />" /><br/>-->
-            <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button><br/>
+            <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button>
+            <br/>
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
     </div>

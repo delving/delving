@@ -85,11 +85,11 @@
 
     <div class="clear"></div>
 
-            <div class="inner">
+
 
     <div class="pagination fg-buttonset">
 
-
+   <div class="inner">
 
     <#assign uiClassStatePrev = ""/>
     <#assign uiClassStateNext = ""/>
@@ -134,13 +134,13 @@
         </#if>
 
     </#if>
-
+   </div>
     </div>
 
     <div class="clear"></div>
 
     <div id="item-detail">
-
+      <div class="inner">
         <#include "inc_result_table_full.ftl"/>
 
     </div>
@@ -155,11 +155,14 @@
             <@SearchForm "search_result"/>
         </div>
     </div>
+    
     <div id="facet-list">
         <div class="inner">
             <#include "inc_related_content.ftl"/>
         </div>
     </div>
+
+
 </div>
 
 <#include "inc_footer.ftl"/>
