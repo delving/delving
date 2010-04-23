@@ -192,9 +192,8 @@ class RequestParseNew(sip_task.SipTask):
             line = raw_line[:-1].strip() # skip lf and other pre/post whitespace
             if line == REC_START:
                 record = []
-                record_count += 1
             elif line == REC_STOP:
-                #record.sort()
+                record_count += 1
                 # start and stop tags shouldnt be sorted so add them after
                 record.insert(0, REC_START)
                 record.append(REC_STOP)
@@ -207,6 +206,7 @@ class RequestParseNew(sip_task.SipTask):
             self.task_time_to_show(record_count)
         f.close()
         request.status = models.REQS_IMPORTED
+        request.record_count = record_count # update with actual count
         request.save()
         self.release_item(models.Request, request.pk)
         return True
