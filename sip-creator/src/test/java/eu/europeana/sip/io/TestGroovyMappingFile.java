@@ -40,14 +40,14 @@ public class TestGroovyMappingFile {
     @Test
     public void testStoreAll() throws IOException {
         for (EuropeanaField europeanaField : annotationProcessor.getMappableFields()) {
-            groovyMapping.storeNode(new GroovyMapping.Delimiter(europeanaField.getFieldNameString()), GroovyService.generateGroovyLoop(europeanaField.getFieldNameString()));
+            groovyMapping.storeNode(new GroovyMapping.Delimiter(String.format("%s:%s", europeanaField.getFieldNameString(), europeanaField.getFieldNameString())), GroovyService.generateGroovyLoop("src", europeanaField.getFieldNameString()));
         }
     }
 
     @Test
     public void testStore() throws IOException {
-        groovyMapping.storeNode(new GroovyMapping.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
-        System.out.printf("Stored%n%s%n%s%n", new GroovyMapping.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop(TEST_FIELD));
+        groovyMapping.storeNode(new GroovyMapping.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop("src", TEST_FIELD));
+        System.out.printf("Stored%n%s%n%s%n", new GroovyMapping.Delimiter(TEST_FIELD), GroovyService.generateGroovyLoop("src", TEST_FIELD));
     }
 
     @Test

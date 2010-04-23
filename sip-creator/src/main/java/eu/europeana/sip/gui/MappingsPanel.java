@@ -36,6 +36,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     private GroovyMapping groovyMapping;
     private JComboBox additionalFields;
     private JComboBox mappableFields;
+    private static final String NO_MAPPING = "- no mapping -";
 
     {
         list.add(IdBean.class);
@@ -44,9 +45,9 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         list.add(AllFieldBean.class);
         annotationProcessor.setClasses(list);
         Vector<String> additionals = new Vector<String>();
-        additionals.add("- no mapping -");
+        additionals.add(NO_MAPPING);
         Vector<String> required = new Vector<String>();
-        required.add("- no mapping -");
+        required.add(NO_MAPPING);
         for (EuropeanaField field : annotationProcessor.getFields(ValidationLevel.ESE_PLUS_REQUIRED)) {
             additionals.add(field.getFieldNameString());
         }
@@ -126,13 +127,13 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             @Override
             public void fireTableCellUpdated(int row, int column) {
                 try {
-                    if ((Boolean) getValueAt(row, 2)) {
-                        String value = getValueAt(row, 1).toString();
-                        groovyMapping.storeNode(new GroovyMapping.Delimiter(value), GroovyService.generateGroovyLoop(value));
+                    String target = getValueAt(row, 1).toString();
+                    String source = getValueAt(row, 0).toString();
+                    if ((Boolean) getValueAt(row, 2) && !NO_MAPPING.equals(target)) {
+                        groovyMapping.storeNode(new GroovyMapping.Delimiter(String.format("%s:%s", source, target)), GroovyService.generateGroovyLoop(source, target));
                     }
                     else {
-                        String value = getValueAt(row, 1).toString();
-                        groovyMapping.deleteNode(new GroovyMapping.Delimiter(value));
+                        groovyMapping.deleteNode(new GroovyMapping.Delimiter(String.format("%s:%s", source, target)));
                     }
                 }
                 catch (IOException e) {
@@ -216,6 +217,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
     private class SourceField extends JPanel {
 
         private JButton jButton = new JButton("+");
+        private String name;
 
         public JButton getjButton() {
             return jButton;
@@ -223,8 +225,14 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
 
         private SourceField(String name) {
             super(new BorderLayout());
+            this.name = name;
             add(new JLabel(name), BorderLayout.CENTER);
             add(jButton, BorderLayout.EAST);
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
@@ -234,7 +242,7 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
             EuropeanaField field = (EuropeanaField) value;
             if (v.equals(field.getFieldNameString()) && field.isMappable()) {
                 try {
-                    groovyMapping.storeNode(new GroovyMapping.Delimiter(v), GroovyService.generateGroovyLoop(v));
+                    groovyMapping.storeNode(new GroovyMapping.Delimiter(String.format("%s:%s", v, v)), GroovyService.generateGroovyLoop(v, v));
                 }
                 catch (IOException e) {
                     e.printStackTrace();  // todo: handle catch
@@ -242,7 +250,6 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -253,7 +260,12 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         JComboBox availableNodes = new JComboBox(nodes.toArray());
         availableNodes.setOpaque(false);
         for (String s : nodes) {
-            data[counter] = new Object[]{new SourceField(s), s.substring(s.lastIndexOf(".") + 1), isMappable(s)};
+            if (isMappable(s)) {
+                data[counter] = new Object[]{new SourceField(s.substring(s.lastIndexOf(".") + 1)), s.substring(s.lastIndexOf(".") + 1), isMappable(s)};
+            }
+            else {
+                data[counter] = new Object[]{new SourceField(s.substring(s.lastIndexOf(".") + 1)), NO_MAPPING, isMappable(s)};
+            }
             counter++;
         }
     }
