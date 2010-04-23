@@ -352,7 +352,7 @@ class UriValidateSave(sip_task.SipTask):
 
             try:
                 self.task_time_to_show(record_count, terminate_on_high_load=True)
-            except SipSystemOverLoaded:
+            except sip_task.SipSystemOverLoaded:
                  # Terminate in a controled fashion so we can do cleanup
                 break
 
