@@ -58,7 +58,7 @@
         <#if !query?starts_with("europeana_uri:")>
         <li class="first"><@spring.message 'MatchesFor_t' />:</li>
         <#list pagination.breadcrumbs as crumb><#if !crumb.last>
-        <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+        <li><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
         <#else>
         <li><strong>${crumb.display?html}</strong></li>
         </#if></#list>
