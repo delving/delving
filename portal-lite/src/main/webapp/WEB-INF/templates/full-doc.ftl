@@ -5,17 +5,10 @@
 <#assign view = "table"/>
 <#assign thisPage = "full-doc.html"/>
 <#compress>
-<#if startPage??><#assign startPage = startPage/></#if>
-<#if RequestParameters.view??> <#assign view = "${RequestParameters.view}"/></#if>
 <#if format??><#assign format = format/></#if>
 <#if pagination??>
     <#assign pagination = pagination/>
     <#assign queryStringForPaging = pagination.queryStringForPaging />
-</#if>
-<#if queryStringForPaging??>
-    <#assign defaultQueryParams = "full-doc.html?"+queryStringForPaging+"&start="+pagination.docIdWindow.offset?c+"&uri="+result.fullDoc.id+"&view="+view />
-<#else>
-    <#assign defaultQueryParams = "full-doc.html?uri="+result.fullDoc.id />
 </#if>
 <#if result.fullDoc.dcTitle[0]?length &gt; 110>
     <#assign postTitle = result.fullDoc.dcTitle[0]?substring(0, 110)?url('utf-8') + "..."/>
@@ -34,8 +27,8 @@
 
 <div id="sidebar" class="grid_3">
     <div id="identity">
-            <h1>Europeana Lite</h1>
-            <a href="index.html" title="Europeana lite"><img src="images/europeana_open_logo_small.jpg" alt="European Open Source"/></a>
+            <h1>Delving</h1>
+            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
     <div id="facet-list">
@@ -60,16 +53,35 @@
     <div class="clear"></div>
 
    <div id="breadcrumbs">
-        <#if query?exists>
-        <ul>
-            <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-            <li><strong><a href="#">${query?replace("%20"," ")?html}</a></strong></li>
-        </ul>
-        <#else> <ul>
-            <li>&#160;</li>
-        </ul>
+       <#if pagination??>
+    <ul>
+        <#if !query?starts_with("europeana_uri:")>
+        <li class="first"><@spring.message 'MatchesFor_t' />:</li>
+        <#list pagination.breadcrumbs as crumb><#if !crumb.last>
+        <li><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+        <#else>
+        <li><strong>${crumb.display?html}</strong></li>
+        </#if></#list>
+        <#else>
+        <li class="first">
+
+            <@spring.message 'ViewingRelatedItems_t' />
+            <#assign match = result.fullDoc />
+                <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
+            <a href="full-doc.html?&amp;uri=${match.id}">
+                <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                </#if>
+            </a>
+
+        </li>
         </#if>
-    </div>
+    </ul>
+    <#else> <ul>
+        <li>&#160;</li>
+    </ul>
+    </#if>
+   </div>
 
     <div class="clear"></div>
 
@@ -84,12 +96,12 @@
         <#if !pagination.previous>
             <#assign uiClassStatePrev = "ui-state-disabled">
         <#else>
-            <#assign urlPrevious = "full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.previousInt?c}&amp;uri=${pagination.previousUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}"/>
+            <#assign urlPrevious = pagination.previousFullDocUrl/>
         </#if>
         <#if !pagination.next>
             <#assign uiClassStateNext = "ui-state-disabled">
         <#else>
-            <#assign urlNext = "full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.nextInt?c}&amp;uri=${pagination.nextUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}"/>
+            <#assign urlNext = pagination.nextFullDocUrl/>
         </#if>
         <a
         href="${urlPrevious}"
