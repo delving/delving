@@ -4,9 +4,11 @@ from utils.gen_utils import dict_2_django_choice
 
 
 LOGE_NO_URIS = 1
+LOGE_IMG_CONV_WARN = 2
 
 LOG_ERR_CODES = {
     LOGE_NO_URIS : 'no uris',
+    LOGE_IMG_CONV_WARN: 'image convert warning'
     }
 
 class ErrLog(models.Model):

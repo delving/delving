@@ -544,12 +544,20 @@ class UriValidateSave(sip_task.SipTask):
         cmd.append('-resize 200x')
         cmd.append('%s[0]' % org_fname)
         cmd.append(fname_full)
-        output = self.cmd_execute1(cmd)
-        if output:
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode:
             self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate FULL_DOC\ncmd output %s' % output)
+            return self.set_urierr(models.URIE_OBJ_CONVERT_ERROR,
+                                   'Failed to generate FULL_DOC\ncmd output %s%s' % (stdout,stderr))
+        if stdout or stderr:
+            el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                            msg = 'FULL_DOC %s %s' % (stdout, stderr),
+                            item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
         self.uri_state(models.URIS_FULL_GENERATED)
+
 
         if OLD_STYLE_IMAGE_NAMES:
             ext = '.BRIEF_DOC.jpg'
@@ -561,11 +569,18 @@ class UriValidateSave(sip_task.SipTask):
         cmd.append('-resize x110')
         cmd.append('%s[0]' % org_fname)
         cmd.append(fname_brief)
-        output = self.cmd_execute1(cmd)
-        if output:
-            self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate BRIEF_DOC\ncmd output %s' % output)
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode:
+            self.remove_file(fname_brief)
+            return self.set_urierr(models.URIE_OBJ_CONVERT_ERROR,
+                                   'Failed to generate BRIEF_DOC\ncmd output %s%s' % (stdout,stderr))
+        if stdout or stderr:
+            el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                            msg = 'BRIEF_DOC %s %s' % (stdout, stderr),
+                            item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
 
