@@ -457,7 +457,16 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to save original')
         self.uri_state(models.URIS_ORG_SAVED)
 
-        # TODO use "file" to log filetype for document
+        # Identify & store actual filetype
+        retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
+        if retcode:
+            msg = 'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
+            return self.set_urierr(models.URIE_OTHER_ERROR,
+                                   'Failed to identify file type\n%s' % msg)
+        f_type = stdout.split(org_fname)[-1].strip()
+        if f_type[0] == ':':
+            f_type = f_type[1:].strip()
+        self.uri.file_type = f_type
 
         if USE_IMAGE_MAGIC:
             return self.generate_images_magic(base_fname, org_fname)

@@ -450,21 +450,30 @@ class SipTask(object): #SipProcess(object):
 
     def cmd_execute1(self, cmd):
         "Returns 0 on success, or error message on failure."
+        result = 0
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode or stdout or stderr:
+            result = 'retcode: %s' % retcode
+            if stdout:
+                result += '\nstdout: %s' % stdout
+            if stderr:
+                result += '\nstderr: %s' % stderr
+        return result
+
+
+    def cmd_execute_output(self, cmd):
+        "Returns retcode,stdout,stderr."
         if isinstance(cmd, (list, tuple)):
             cmd = ' '.join(cmd)
         try:
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = p.communicate()
-            result = p.returncode
-            if result or stdout or stderr:
-                result = 'retcode: %s' % result
-                if stdout:
-                    result += '\nstdout: %s' % stdout
-                if stderr:
-                    result += '\nstderr: %s' % stderr
+            retcode = p.returncode
         except:
-            result = 'cmd_execute() exception - shouldnt normally happen'
-        return result
+            retcode = 1
+            stderr = 'cmd_execute() exception - shouldnt normally happen'
+        return retcode, stdout, stderr
+
 
 
 

@@ -205,6 +205,7 @@ class Uri(models.Model):
     item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
                                  default = URIT_OBJECT, db_index=True)
     mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
+    file_type = models.CharField(max_length=150, blank=True)
     uri_source = models.ForeignKey(UriSource)
     pid = models.FloatField(default=0, db_index=True) # what process 'owns' this item
     url = models.CharField(max_length=1250)
