@@ -96,6 +96,7 @@ def stats_req_lst(request):
         #whops this would count all item types - not what we want here...
         #count =  models.ReqUri.objects.filter(req__pk=req_id).count()
         cursor.execute(' '.join(sql))
+        count = cursor.fetchone()[0]
         cursor.execute(' '.join(sql + sql_ok))
         itm_ok = cursor.fetchone()[0]
         cursor.execute(' '.join(sql + sql_err))
