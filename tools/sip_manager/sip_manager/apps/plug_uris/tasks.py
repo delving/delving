@@ -457,6 +457,8 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to save original')
         self.uri_state(models.URIS_ORG_SAVED)
 
+        # TODO use "file" to log filetype for document
+
         if USE_IMAGE_MAGIC:
             return self.generate_images_magic(base_fname, org_fname)
         else:

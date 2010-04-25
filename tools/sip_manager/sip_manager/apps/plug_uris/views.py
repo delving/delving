@@ -91,6 +91,7 @@ def stats_req_lst(request):
         sql.append("FROM plug_uris_requri ur, plug_uris_uri u")
         sql.append("WHERE ur.req_id=%i" % req_id)
         sql.append("AND u.id=ur.uri_id")
+        sql.append("AND u.item_type=%i" % models.URIT_OBJECT)
 
         count =  models.ReqUri.objects.filter(req__pk=req_id).count()
         cursor.execute(' '.join(sql + sql_ok))
