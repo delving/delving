@@ -32,7 +32,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 
 from apps.dummy_ingester.models import Request
 
-from datagrids import UriSourcesDataGrid
+#from datagrids import UriSourcesDataGrid
 import models
 
 
