@@ -457,6 +457,7 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to save original')
         self.uri_state(models.URIS_ORG_SAVED)
 
+
         # Identify & store actual filetype
         retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
         if retcode:
@@ -467,6 +468,12 @@ class UriValidateSave(sip_task.SipTask):
         if f_type[0] == ':':
             f_type = f_type[1:].strip()
         self.uri.file_type = f_type
+
+
+        if f_type.lower().find('html') > -1:
+            # mime_type was image, content was webpage...
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
+
 
         if USE_IMAGE_MAGIC:
             return self.generate_images_magic(base_fname, org_fname)
