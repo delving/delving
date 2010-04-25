@@ -136,6 +136,7 @@ def stats_by_req(request, sreq_id=0):
         sql.append("FROM plug_uris_requri ur, plug_uris_uri u")
         sql.append("WHERE ur.req_id=%i" % req_id)
         sql.append("AND ur.uri_id=u.id AND u.mime_type LIKE '%s'" % mime_type)
+        sql.append("AND u.item_type=%i" % models.URIT_OBJECT)
         cursor2.execute(' '.join(sql + sql_ok))
         itm_ok = cursor2.fetchone()[0]
         cursor2.execute(' '.join(sql + sql_err))
