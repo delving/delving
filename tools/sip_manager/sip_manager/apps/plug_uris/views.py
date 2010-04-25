@@ -126,7 +126,12 @@ def stats_by_req(request, sreq_id=0):
     SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u
     WHERE ur.uri_id=u.id and ur.req_id=1
     """
-    cursor1.execute("SELECT DISTINCT u.mime_type FROM plug_uris_requri ur, plug_uris_uri u WHERE ur.req_id=%i AND u.id=ur.uri_id" % req_id)
+    sql = ["SELECT DISTINCT u.mime_type"]
+    sql.append("FROM plug_uris_requri ur, plug_uris_uri u")
+    sql.append("WHERE ur.req_id=%i" % req_id)
+    sql.append("AND u.id=ur.uri_id")
+    sql.append("AND u.item_type=%i" % models.URIT_OBJECT)
+    cursor1.execute(' '.join(sql))
     sql_ok = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_COMPLETED,
                                                      models.URIE_NO_ERROR)]
     sql_err = ["AND u.err_code>0"]
@@ -153,7 +158,9 @@ def stats_by_req(request, sreq_id=0):
     sql = ["SELECT DISTINCT us.id, us.name_or_ip"]
     sql.append("FROM plug_uris_requri ur, plug_uris_uri u, plug_uris_urisource us")
     sql.append("WHERE ur.req_id=%i" % req_id)
-    sql.append("AND ur.uri_id=u.id AND us.id=u.uri_source_id")
+    sql.append("AND u.id=ur.uri_id")
+    sql.append("AND u.item_type=%i" % models.URIT_OBJECT)
+    sql.append("AND us.id=u.uri_source_id")
     cursor1.execute(' '.join(sql))
     webservers = []
     for row in cursor1.fetchall():
@@ -161,6 +168,7 @@ def stats_by_req(request, sreq_id=0):
         srv_name = row[1]
         sql = ["SELECT COUNT(*) FROM plug_uris_requri ur, plug_uris_uri u"]
         sql.append("WHERE u.uri_source_id=%i" % srv_id)
+        sql.append("AND u.item_type=%i" % models.URIT_OBJECT)
         sql.append("AND ur.uri_id=u.id AND ur.req_id=%i" % req_id)
         cursor2.execute(' '.join(sql))
         items = cursor2.fetchone()[0]
