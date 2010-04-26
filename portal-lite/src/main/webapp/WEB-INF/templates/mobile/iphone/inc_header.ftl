@@ -117,7 +117,7 @@
 
     <#if pageId != "in">
         <#if pageId == "bd">
-            <div id="leftnav"><a href="index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a></div>
+            <div id="leftnav"><a href="/${portalName}/index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a></div>
             <#elseif pageId == "fd">
                 <div id="leftnav">
                 <#-- on the full doc, we provide a link back to the result page with the appropriate icon -->
@@ -133,7 +133,7 @@
                             </#switch>
                         </a>
                     </#if>
-                    <a href="index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a>
+                    <a href="/${portalName}/index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a>
                 </div>
         </#if>
         <#else>

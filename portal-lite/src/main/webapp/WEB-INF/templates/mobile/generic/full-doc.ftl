@@ -22,22 +22,22 @@
     <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
     <#include "../inc_header.ftl">
 <div id="logo">
-	<a href="index.html"><img src="mobile/images/logo_slogan.png" alt="Logo"/></a>
+	<a href="/${portalName}/index.html"><img src="/${portalName}/mobile/images/logo_slogan.png" alt="Logo"/></a>
 </div>
 <div id="viewselectnav">
                     <#if pagination?? && pagination.returnToResults?? && view?? && query?? && query?length &gt; 0 >
                         <a href="${pagination.returnToResults?html}">
                             <#switch view>
                                 <#case "text_only"><img class="titleresultnav"
-                                                        src="mobile/images/text_only.gif"/><#break/>
+                                                        src="/${portalName}/mobile/images/text_only.gif"/><#break/>
                                 <#case "image_only"><img class="titleresultnav"
-                                                         src="mobile/images/image_only.gif"/><#break/>
+                                                         src="/${portalName}/mobile/images/image_only.gif"/><#break/>
                                 <#default><#case "mixed"><img class="titleresultnav"
-                                                              src="mobile/images/mixed.gif"/><#break/>
+                                                              src="/${portalName}/mobile/images/mixed.gif"/><#break/>
                             </#switch>
                         </a>
                     </#if>
-                    <a href="index.html"><img alt="home" src="mobile/iwebkit/images/home.png" style="height: 16px" /></a>
+                    <a href="/${portalName}/index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png" style="height: 16px" /></a>
 </div>
 
 <div id="content">

@@ -6,11 +6,11 @@
 
 <center>
 <div id="logo">
-	<a href="index.html">
+	<a href="/${portalName}/index.html">
 	   <#if device_screen_width?? && 320 <= device_screen_width >
-	        <img src="mobile/images/logo_slogan.png" alt="Logo"/>
+	        <img src="/${portalName}/mobile/images/logo_slogan.png" alt="Logo"/>
 	    <#else>
-	        <img src="mobile/images/logo_connect.png" alt="Logo"/>
+	        <img src="/${portalName}/mobile/images/logo_connect.png" alt="Logo"/>
 	    </#if>
 	</a>
 </div>
@@ -32,7 +32,7 @@
     <@treasures />
 </div>
 <div id="new_in_europeana">
- <a href="new-content.html"><@spring.message 'NewContent_t' /></a> <img src="mobile/images/arrowright.gif" />
+ <a href="/${portalName}/new-content.html"><@spring.message 'NewContent_t' /></a> <img src="/${portalName}/mobile/images/arrowright.gif" />
 </div>
 
 <#-- this is useful for debugging

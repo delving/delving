@@ -49,7 +49,7 @@
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75"
@@ -69,11 +69,11 @@
         <#assign x = x + 100>
 		    <#if carouselItem_index <=12 && x <= device_screen_width> <#-- we only want to see a maximum of 12 items, otherwise page-load will be too slow -->
                 <#assign doc = carouselItem.doc/>
-                <a href="full-doc.html?uri=${doc.id}">
+                <a href="${doc.fullDocUrl}">
 				<#if useCache="true">
                     <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&size=BRIEF_DOC&type=${doc.type}"
                         <#if is_IEMobile?? && is_IEMobile = true>
-                            onload="resizeIEMobile(this,80,113)" 
+                            onload="resizeIEMobile(this,80,113)"
                         </#if>
                     />
                 <#else>
@@ -127,19 +127,19 @@
 	<#if queryStringForPresentation?exists>
     	<#switch view>
     		<#case "text_only">
-      			<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=mixed"><img src="mobile/images/mixed.gif" /></a>
-				<a class="buttonpressed" href="${thisPage}?${queryStringForPresentation?html}&amp;view=text_only"><img src="mobile/images/text_only.gif" /></a>
-				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=image_only"><img src="mobile/images/image_only.gif" /></a>
+      			<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=mixed"><img src="/${portalName}/mobile/images/mixed.gif" /></a>
+				<a class="buttonpressed" href="${thisPage}?${queryStringForPresentation?html}&amp;view=text_only"><img src="/${portalName}/mobile/images/text_only.gif" /></a>
+				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=image_only"><img src="/${portalName}/mobile/images/image_only.gif" /></a>
     		<#break/>
     		<#case "image_only">
-      			<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=mixed"><img src="mobile/images/mixed.gif" /></a>
-				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=text_only"><img src="mobile/images/text_only.gif" /></a>
-				<a class="buttonpressed" href="${thisPage}?${queryStringForPresentation?html}&amp;view=image_only"><img src="mobile/images/image_only.gif" /></a>
+      			<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=mixed"><img src="/${portalName}/mobile/images/mixed.gif" /></a>
+				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=text_only"><img src="/${portalName}/mobile/images/text_only.gif" /></a>
+				<a class="buttonpressed" href="${thisPage}?${queryStringForPresentation?html}&amp;view=image_only"><img src="/${portalName}/mobile/images/image_only.gif" /></a>
     		<#break/>
     		<#default>
-      			<a class="buttonpressed" href="${thisPage}?${queryStringForPresentation?html}&amp;view=mixed"><img src="mobile/images/mixed.gif" /></a>
-				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=text_only"><img src="mobile/images/text_only.gif" /></a>
-				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=image_only"><img src="mobile/images/image_only.gif" /></a>
+      			<a class="buttonpressed" href="${thisPage}?${queryStringForPresentation?html}&amp;view=mixed"><img src="/${portalName}/mobile/images/mixed.gif" /></a>
+				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=text_only"><img src="/${portalName}/mobile/images/text_only.gif" /></a>
+				<a href="${thisPage}?${queryStringForPresentation?html}&amp;view=image_only"><img src="/${portalName}/mobile/images/image_only.gif" /></a>
     		<#break/>
 		</#switch>
 	</#if>
@@ -209,11 +209,11 @@
 <#macro resultnavigation>
 <#if pagination??>
     <#if pagination.previous>
-        <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.previousInt?c}&amp;uri=${pagination.previousUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}" class="pagination">&lt;</a>
+        <a href="${pagination.previousFullDocUrl}" class="pagination">&lt;</a>
     </#if>
     &#160;&#160;
     <#if pagination.next>
-        <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.nextInt?c}&amp;uri=${pagination.nextUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}" class="pagination">&gt;</a>
+        <a href="${pagination.nextFullDocUrl}" class="pagination">&gt;</a>
     </#if>
 </#if>
 </#macro>
