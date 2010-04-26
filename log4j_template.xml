@@ -7,15 +7,14 @@
             <param name="ConversionPattern" value="%d{ABSOLUTE} %t %-5p %C{1}:%L - %m%n"/>
         </layout>
     </appender>
-    <appender name="clickStreamLogger" class="org.apache.log4j.RollingFileAppender">
+    <appender name="clickStreamLogger" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="File" value="/export/log/ClickStreamLogger.log"/>
-        <param name="MaxBackupIndex" value="50"/>
-        <param name="MaxFileSize" value="25MB"/>
-        <param name="append" value="true" />
-        <param name="encoding" value="UTF-8" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true"/>
+        <param name="Threshold" value="INFO"/>
+        <param name="encoding" value="UTF-8"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <!-- The log message pattern -->
-           <param name="ConversionPattern" value="%m%n"/>
+            <param name="ConversionPattern" value="%d{HH:mm:ss:SSS} %m%n"/>
         </layout>
     </appender>
     <logger name="eu.europeana.core.util.web.ClickStreamLoggerImpl" additivity="false"> <!-- set to false in production -->
