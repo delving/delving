@@ -1,25 +1,3 @@
-<#--
-<#assign MyEuropeanaCurrent = ""/>
-<#assign CommunitiesCurrent = ""/>
-<#assign PartnersCurrent = ""/>
-<#assign TimelineCurrent = ""/>
-<#assign ThoughtLabCurrent = ""/>
-<#if thisPage?exists>
-    <#switch thisPage>
-        <#case "index.html">
-            <#break>
-        <#case "brief-doc.html">
-            <#break>
-        <#case "myeuropeana.html">
-            <#assign MyEuropeanaCurrent = "current"/><#break>
-        <#default>
-            <#break>
-    </#switch>
-</#if>-->
-
-
-     <#-- <a href="myeuropeana.html"><@spring.message 'MyEuropeana_t' /></a>-->
-
       <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
           <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
           <option value="ca">Catal&#224; (ca)</option>

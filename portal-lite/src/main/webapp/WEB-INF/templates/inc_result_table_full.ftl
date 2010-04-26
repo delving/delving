@@ -61,8 +61,6 @@
                         </#if>
                     </a>
                 </div>
-<#--            </td>
-            <td valign="top">-->
                 <div id="item-detail" class="grid_9 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
@@ -189,23 +187,6 @@
                                 </#if>
                             </p>
                         </#if>
-                    <p>
-                        <#assign UrlRef = "#"/>
-                        <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
-                            <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
-                        <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
-                            <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
-                        </#if>
-                        <a
-                            href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
-                            target="_blank"
-                            alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                            title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                        >
-                            <@spring.message 'ViewInOriginalContext_t' />
-                        </a>
-
-                    </p>
                     <#-- check if there is more content, if so show 'more' link and render content -->
                     <#if isNonEmpty(moreArr) >
                     <p id="morelink">
@@ -275,9 +256,22 @@
 
                     </div>
                     </#if>
+                       <p>
+                        <#assign UrlRef = "#"/>
+                        <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
+                            <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
+                        <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
+                            <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
+                        </#if>
+                        <a
+                            href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                            target="_blank"
+                            alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                            title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                        >
+                            <@spring.message 'ViewInOriginalContext_t' />
+                        </a>
+
+                    </p>
                 </#if>
                 </div>
-<#--
- </td>
-        </tr>
-    </table>  -->
