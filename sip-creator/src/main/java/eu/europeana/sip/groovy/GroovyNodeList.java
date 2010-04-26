@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.xml;
+package eu.europeana.sip.groovy;
 
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovySystem;

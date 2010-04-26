@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.mapping;
+package eu.europeana.sip.model;
 
 import javax.xml.namespace.QName;
 import java.io.Serializable;

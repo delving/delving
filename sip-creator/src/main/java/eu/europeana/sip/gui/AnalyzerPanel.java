@@ -21,24 +21,46 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.GroovyMappingImpl;
-import eu.europeana.sip.mapping.MappingTree;
-import eu.europeana.sip.mapping.Statistics;
+import eu.europeana.sip.groovy.GroovyMapping;
+import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.Statistics;
+import eu.europeana.sip.model.StatisticsTableModel;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTree;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -58,7 +80,7 @@ public class AnalyzerPanel extends JPanel {
     private static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder(15, 15, 15, 15);
     private Logger log = Logger.getLogger(getClass());
     private JLabel title = new JLabel("Document Structure", JLabel.CENTER);
-    private JTree statisticsJTree = new JTree(MappingTree.create("No Document Loaded").createTreeModel()); // todo: inform about available nodes
+    private JTree statisticsJTree = new JTree(AnalysisTree.create("No Document Loaded").createTreeModel()); // todo: inform about available nodes
     private JLabel statsTitle = new JLabel("Statistics", JLabel.CENTER);
 
     private JTable statsTable;
@@ -69,7 +91,7 @@ public class AnalyzerPanel extends JPanel {
     private GroovyEditor groovyEditor = new GroovyEditor(outputArea);
     private JButton nextRecordButton = new JButton("Next");
     private boolean abort = false;
-    private MappingsPanel mappingsPanel = new MappingsPanel(new GroovyMappingImpl(), new MappingsPanel.Listener() {
+    private MappingsPanel mappingsPanel = new MappingsPanel(new GroovyMapping(), new MappingsPanel.Listener() {
 
         @Override
         public void mappingCreated(StringBuffer mapping) {
@@ -102,7 +124,7 @@ public class AnalyzerPanel extends JPanel {
                 fileSet.analyze(new FileSet.AnalysisListener() {
                     @Override
                     public void success(List<Statistics> statistics) {
-                        setMappingTree(MappingTree.create(statistics, fileSet.getName(), recordRoot));
+                        setMappingTree(AnalysisTree.create(statistics, fileSet.getName(), recordRoot));
                         fileMenuEnablement.enable(true);
                         if (progressDialog != null) {
                             progressDialog.setVisible(false);
@@ -165,7 +187,7 @@ public class AnalyzerPanel extends JPanel {
                 });
             }
             else {
-                setMappingTree(MappingTree.create(statistics, fileSet.getName(), recordRoot));
+                setMappingTree(AnalysisTree.create(statistics, fileSet.getName(), recordRoot));
             }
             groovyEditor.setFileSet(fileSet);
         }
@@ -221,7 +243,7 @@ public class AnalyzerPanel extends JPanel {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
                 TreePath path = event.getPath();
-                MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
+                AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 setStatistics(node.getStatistics());
             }
         });
@@ -238,10 +260,10 @@ public class AnalyzerPanel extends JPanel {
                             delimiterMenuItem.addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                    MappingTree.Node node = (MappingTree.Node) path.getLastPathComponent();
+                                    AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                                     QName recordRoot = node.getQName();
                                     DefaultTreeModel tm = (DefaultTreeModel) statisticsJTree.getModel();
-                                    int count = MappingTree.setRecordRoot(tm, recordRoot);
+                                    int count = AnalysisTree.setRecordRoot(tm, recordRoot);
                                     if (count != 1) {
                                         JOptionPane.showConfirmDialog(AnalyzerPanel.this, "Expected one record root, got " + count);
                                     }
@@ -289,7 +311,7 @@ public class AnalyzerPanel extends JPanel {
         statisticsTableColumnModel.addColumn(new TableColumn(2));
         statisticsTableColumnModel.getColumn(2).setHeaderValue("Value");
         statisticsTableColumnModel.getColumn(2).setPreferredWidth(300);
-        statsTable = new JTable(new StatisticsCounterTableModel(null), statisticsTableColumnModel);
+        statsTable = new JTable(new StatisticsTableModel(null), statisticsTableColumnModel);
         statsTable.getTableHeader().setReorderingAllowed(false);
         statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
@@ -297,12 +319,12 @@ public class AnalyzerPanel extends JPanel {
     private void setStatistics(Statistics statistics) {
         if (statistics == null) {
             statsTitle.setText("Statistics");
-            statsTable.setModel(new StatisticsCounterTableModel(null));
+            statsTable.setModel(new StatisticsTableModel(null));
             statsTable.setColumnModel(statisticsTableColumnModel);
         }
         else {
             statsTitle.setText("Statistics for \"" + statistics.getPath().getLastNodeString() + "\"");
-            statsTable.setModel(new StatisticsCounterTableModel(statistics.getCounters()));
+            statsTable.setModel(new StatisticsTableModel(statistics.getCounters()));
             statsTable.setColumnModel(statisticsTableColumnModel);
         }
     }
@@ -314,9 +336,9 @@ public class AnalyzerPanel extends JPanel {
         void updateAvailableNodes(List<String> nodes);
     }
 
-    private void setMappingTree(MappingTree mappingTree) {
+    private void setMappingTree(AnalysisTree analysisTree) {
         List<String> variables = new ArrayList<String>();
-        mappingTree.getVariables(variables);
+        analysisTree.getVariables(variables);
         if (null != groovyEditor) {
             groovyEditor.updateAvailableNodes(variables);
         }
@@ -326,22 +348,51 @@ public class AnalyzerPanel extends JPanel {
         for (String variable : variables) {
             log.info(variable);
         }
-        TreeModel treeModel = mappingTree.createTreeModel();
+        TreeModel treeModel = analysisTree.createTreeModel();
         statisticsJTree.setModel(treeModel);
-        expandEmptyNodes((MappingTree.Node) treeModel.getRoot());
+        expandEmptyNodes((AnalysisTree.Node) treeModel.getRoot());
     }
 
-    private void expandEmptyNodes(MappingTree.Node node) {
+    private void expandEmptyNodes(AnalysisTree.Node node) {
         if (node.getStatistics() == null) {
             TreePath path = node.getTreePath();
             statisticsJTree.expandPath(path);
         }
-        for (MappingTree.Node childNode : node.getChildNodes()) {
+        for (AnalysisTree.Node childNode : node.getChildNodes()) {
             expandEmptyNodes(childNode);
         }
     }
 
     public void setFileMenuEnablement(FileMenu.Enablement fileMenuEnablement) {
         this.fileMenuEnablement = fileMenuEnablement;
+    }
+
+    private class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {
+        private Font normalFont, thickFont;
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree jTree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
+            AnalysisTree.Node node = (AnalysisTree.Node) value;
+            label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
+            if (node.isRecordRoot()) {
+                label.setForeground(Color.RED);
+            }
+            return label;
+        }
+
+        private Font getNormalFont() {
+            if (normalFont == null) {
+                normalFont = super.getFont();
+            }
+            return normalFont;
+        }
+
+        private Font getThickFont() {
+            if (thickFont == null) {
+                thickFont = new Font(getNormalFont().getFontName(), Font.BOLD, getNormalFont().getSize());
+            }
+            return thickFont;
+        }
     }
 }

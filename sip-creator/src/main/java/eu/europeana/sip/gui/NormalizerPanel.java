@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
+import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

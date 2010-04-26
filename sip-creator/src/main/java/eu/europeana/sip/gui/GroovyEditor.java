@@ -21,13 +21,21 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.GroovyService;
+import eu.europeana.sip.groovy.GroovyService;
+import eu.europeana.sip.model.FileSet;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.xml.namespace.QName;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;

@@ -1,4 +1,4 @@
-package eu.europeana.sip.io;
+package eu.europeana.sip.model;
 
 import eu.europeana.core.querymodel.beans.AllFieldBean;
 import eu.europeana.core.querymodel.beans.BriefBean;
@@ -6,6 +6,8 @@ import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.groovy.GroovyMapping;
+import eu.europeana.sip.groovy.GroovyService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +31,7 @@ public class TestGroovyMappingFile {
 
     @Before
     public void setUp() throws FileNotFoundException {
-        groovyMapping = new GroovyMappingImpl();
+        groovyMapping = new GroovyMapping();
         list.add(IdBean.class);
         list.add(BriefBean.class);
         list.add(FullBean.class);

@@ -19,7 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.mapping;
+package eu.europeana.sip.model;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -42,7 +42,7 @@ import java.util.Vector;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class MappingTree implements Serializable {
+public class AnalysisTree implements Serializable {
     private static final long serialVersionUID = -15171971879119571L;
     private QNameNode root;
 
@@ -61,33 +61,33 @@ public class MappingTree implements Serializable {
     }
 
     public static int setRecordRoot(DefaultTreeModel model, QName recordRoot) {
-        MappingTree.Node node = (MappingTree.Node) model.getRoot();
+        AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
         return setRecordRoot(node, recordRoot);
     }
 
-    private static int setRecordRoot(MappingTree.Node node, QName recordRoot) {
+    private static int setRecordRoot(AnalysisTree.Node node, QName recordRoot) {
         node.setRecordRoot(recordRoot);
         int sum = 0;
         if (node.isRecordRoot()) {
             sum++;
         }
-        for (MappingTree.Node child : node.getChildNodes()) {
+        for (AnalysisTree.Node child : node.getChildNodes()) {
             sum += setRecordRoot(child, recordRoot);
         }
         return sum;
     }
 
-    public static MappingTree create(String rootTag) {
-        return new MappingTree(new QNameNode(rootTag));
+    public static AnalysisTree create(String rootTag) {
+        return new AnalysisTree(new QNameNode(rootTag));
     }
 
-    public static MappingTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
+    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
         QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
         root.tag = rootTag;
-        return new MappingTree(root);
+        return new AnalysisTree(root);
     }
 
-    private MappingTree(QNameNode root) {
+    private AnalysisTree(QNameNode root) {
         this.root = root;
     }
 

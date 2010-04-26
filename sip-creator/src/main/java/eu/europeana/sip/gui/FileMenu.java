@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.RecentFileSets;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.RecentFileSets;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;

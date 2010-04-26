@@ -19,14 +19,28 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.io;
+package eu.europeana.sip.model;
 
-import eu.europeana.sip.mapping.Statistics;
 import eu.europeana.sip.xml.AnalysisParser;
 import org.apache.log4j.Logger;
 
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

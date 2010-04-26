@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.mapping.QNamePath;
-import eu.europeana.sip.mapping.Statistics;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.QNamePath;
+import eu.europeana.sip.model.Statistics;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;

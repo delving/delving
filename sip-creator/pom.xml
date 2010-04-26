@@ -72,11 +72,11 @@
             <artifactId>groovy-all</artifactId>
             <version>1.7.1</version>
         </dependency>
-        <dependency>
-            <groupId>jsyntaxpane</groupId>
-            <artifactId>jsyntaxpane</artifactId>
-            <version>0.9.5-b29</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>jsyntaxpane</groupId>-->
+            <!--<artifactId>jsyntaxpane</artifactId>-->
+            <!--<version>0.9.5-b29</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

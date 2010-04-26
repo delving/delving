@@ -32,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
  */
 
 @Deprecated
-public class EuropeanaUriHasher {
+public class URIHasher {
     private static final String RESOLVABLE_URI = "http://www.europeana.eu/resolve/record/";
 
     public static String createEuropeanaUri(String collectionId, String value) {

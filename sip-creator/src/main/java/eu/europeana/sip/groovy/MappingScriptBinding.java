@@ -1,4 +1,4 @@
-package eu.europeana.sip.xml;
+package eu.europeana.sip.groovy;
 
 import groovy.lang.Binding;
 import groovy.xml.MarkupBuilder;

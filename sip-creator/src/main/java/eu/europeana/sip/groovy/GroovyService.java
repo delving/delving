@@ -19,11 +19,10 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.io;
+package eu.europeana.sip.groovy;
 
-import eu.europeana.sip.xml.GroovyNode;
-import eu.europeana.sip.xml.MappingScriptBinding;
-import eu.europeana.sip.xml.NormalizationParser;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.xml.MetadataParser;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
 import org.apache.log4j.Logger;
@@ -50,7 +49,7 @@ public class GroovyService {
 
     private final Logger LOG = Logger.getLogger(this.getClass().getName());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private NormalizationParser normalizationParser;
+    private MetadataParser metadataParser;
     private FileSet fileSet;
     private GroovyNode record;
     private Listener listener;
@@ -73,14 +72,10 @@ public class GroovyService {
 
     public void setFileSet(FileSet fileSet) {
         this.fileSet = fileSet;
-        normalizationParser = null;
+        metadataParser = null;
         record = null;
         LOG.info("set file set to " + fileSet);
         executor.execute(new FileSetLoader());
-    }
-
-    public FileSet getFileSet() {
-        return fileSet;
     }
 
     public void compile(GroovyNode groovyNode) {
@@ -107,7 +102,7 @@ public class GroovyService {
         @Override
         public void run() {
             try {
-                record = normalizationParser.nextRecord();
+                record = metadataParser.nextRecord();
                 setMapping(fileSet.getMapping());
             }
             catch (Exception e) {
@@ -141,11 +136,11 @@ public class GroovyService {
             try {
                 QName recordRoot = fileSet.getRecordRoot();
                 LOG.info("got record root " + recordRoot);
-                if (normalizationParser != null) {
-                    normalizationParser.close();
+                if (metadataParser != null) {
+                    metadataParser.close();
                 }
-                normalizationParser = new NormalizationParser(fileSet.getInputStream(), recordRoot);
-                record = normalizationParser.nextRecord();
+                metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot);
+                record = metadataParser.nextRecord();
                 LOG.info("set up normalization parser, got first record " + record);
                 String mapping = fileSet.getMapping();
                 LOG.info("got mapping");

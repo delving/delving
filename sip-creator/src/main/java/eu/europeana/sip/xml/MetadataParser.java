@@ -21,6 +21,8 @@
 
 package eu.europeana.sip.xml;
 
+import eu.europeana.sip.groovy.GroovyNode;
+import eu.europeana.sip.groovy.GroovyNodeList;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -40,7 +42,7 @@ import java.util.Stack;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class NormalizationParser {
+public class MetadataParser {
     private Logger logger = Logger.getLogger(getClass());
     private InputStream inputStream;
     private XMLStreamReader2 input;
@@ -55,7 +57,7 @@ public class NormalizationParser {
         this.listener = listener;
     }
 
-    public NormalizationParser(InputStream inputStream, QName recordRoot) throws XMLStreamException {
+    public MetadataParser(InputStream inputStream, QName recordRoot) throws XMLStreamException {
         this.inputStream = inputStream;
         this.recordRoot = recordRoot;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();

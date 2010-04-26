@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.mapping.MappingTree;
+import eu.europeana.sip.model.AnalysisTree;
 
 import javax.swing.JLabel;
 import javax.swing.JTree;
@@ -42,7 +42,7 @@ public class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {
     @Override
     public Component getTreeCellRendererComponent(JTree jTree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         JLabel label = (JLabel) super.getTreeCellRendererComponent(jTree, value, selected, expanded, leaf, row, hasFocus);
-        MappingTree.Node node = (MappingTree.Node) value;
+        AnalysisTree.Node node = (AnalysisTree.Node) value;
         label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
         if (node.isRecordRoot()) {
             label.setForeground(Color.RED);

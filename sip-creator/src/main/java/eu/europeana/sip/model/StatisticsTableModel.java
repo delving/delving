@@ -19,9 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.gui;
-
-import eu.europeana.sip.mapping.Statistics;
+package eu.europeana.sip.model;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
@@ -32,10 +30,10 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class StatisticsCounterTableModel extends AbstractTableModel {
+public class StatisticsTableModel extends AbstractTableModel {
     private List<? extends Statistics.Counter> counterList;
 
-    public StatisticsCounterTableModel(List<? extends Statistics.Counter> counterList) {
+    public StatisticsTableModel(List<? extends Statistics.Counter> counterList) {
         this.counterList = counterList;
     }
 

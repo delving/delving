@@ -19,9 +19,7 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.io;
-
-import eu.europeana.sip.mapping.Statistics;
+package eu.europeana.sip.model;
 
 import javax.xml.namespace.QName;
 import java.io.FileNotFoundException;

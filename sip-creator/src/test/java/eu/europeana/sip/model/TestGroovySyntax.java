@@ -1,4 +1,4 @@
-package eu.europeana.sip.mapping;
+package eu.europeana.sip.model;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;

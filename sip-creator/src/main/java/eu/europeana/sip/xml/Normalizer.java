@@ -21,7 +21,9 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.io.FileSet;
+import eu.europeana.sip.groovy.GroovyNode;
+import eu.europeana.sip.groovy.MappingScriptBinding;
+import eu.europeana.sip.model.FileSet;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import org.apache.log4j.Logger;
@@ -57,7 +59,7 @@ public class Normalizer implements Runnable {
             String mapping = fileSet.getMapping();
             Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
-            NormalizationParser parser = new NormalizationParser(inputStream, recordRoot);
+            MetadataParser parser = new MetadataParser(inputStream, recordRoot);
             GroovyShell shell = new GroovyShell(mappingScriptBinding);
             Script script = shell.parse(mapping);
             script.setBinding(mappingScriptBinding);

@@ -4,7 +4,7 @@ import java.security.MessageDigest
 
 /**
  * Store a key to a field for Solr
- * Replaces EuropeanaUriHasher.java
+ * Replaces URIHasher.java
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
