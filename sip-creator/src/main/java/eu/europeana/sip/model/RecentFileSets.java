@@ -291,13 +291,18 @@ public class RecentFileSets {
 
         @Override
         public void setRecordRoot(QName qname) {
-            try {
-                Writer out = new FileWriter(recordRootFile);
-                out.write(qname.toString());
-                out.close();
+            if (qname == null) {
+                recordRootFile.delete();
             }
-            catch (IOException e) {
-                exceptionHandler.failure(e);
+            else {
+                try {
+                    Writer out = new FileWriter(recordRootFile);
+                    out.write(qname.toString());
+                    out.close();
+                }
+                catch (IOException e) {
+                    exceptionHandler.failure(e);
+                }
             }
         }
 

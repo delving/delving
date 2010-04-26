@@ -22,16 +22,14 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
@@ -44,7 +42,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
@@ -58,8 +55,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * A Graphical interface for analysis
@@ -125,7 +120,10 @@ public class AnalysisPanel extends JPanel {
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scroll = new JScrollPane(statisticsJTree);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll, BorderLayout.CENTER);
+        selectRecordRootButton.setEnabled(false);
         p.add(selectRecordRootButton, BorderLayout.SOUTH);
         return p;
     }
@@ -140,6 +138,8 @@ public class AnalysisPanel extends JPanel {
         statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
         JScrollPane scroll = new JScrollPane(statsTable);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         tablePanel.add(scroll, BorderLayout.CENTER);
         p.add(tablePanel, BorderLayout.CENTER);
         return p;
@@ -162,6 +162,8 @@ public class AnalysisPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Variables"));
         JList list = new JList(sipModel.getVariablesListModel());
         JScrollPane scroll = new JScrollPane(list);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll, BorderLayout.CENTER);
         return p;
     }
@@ -214,42 +216,52 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = event.getPath();
                 AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 sipModel.selectNode(node);
+                selectRecordRootButton.setEnabled(node.getStatistics() == null);
             }
         });
-        statisticsJTree.addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        if (e.isPopupTrigger()) {
-                            final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
-                            statisticsJTree.setSelectionPath(path);
-                            JPopupMenu delimiterPopup = new JPopupMenu();
-                            JMenuItem delimiterMenuItem = new JMenuItem("Set as delimiter");
-                            delimiterMenuItem.addActionListener(new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
-                                    QName recordRoot = node.getQName();
-                                    DefaultTreeModel tm = (DefaultTreeModel) statisticsJTree.getModel();
-                                    int count = AnalysisTree.setRecordRoot(tm, recordRoot);
-                                    if (count != 1) {
-                                        JOptionPane.showConfirmDialog(AnalysisPanel.this, "Expected one record root, got " + count);
-                                    }
-                                    else {
-                                        tm.reload(node);
-                                    }
-                                }
-                            });
-                            delimiterPopup.add(delimiterMenuItem);
-                            delimiterPopup.show(statisticsJTree, e.getX(), e.getY());
-                        }
-                    }
-
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
-                    }
-                }
-        );
+        selectRecordRootButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TreePath path = statisticsJTree.getSelectionPath();
+                QNameNode node = (QNameNode) path.getLastPathComponent();
+                QName recordRoot = node.getQName();
+                sipModel.setRecordRoot(recordRoot);
+            }
+        });
+//        statisticsJTree.addMouseListener(
+//                new MouseAdapter() {
+//                    @Override
+//                    public void mousePressed(MouseEvent e) {
+//                        if (e.isPopupTrigger()) {
+//                            final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
+//                            statisticsJTree.setSelectionPath(path);
+//                            JPopupMenu delimiterPopup = new JPopupMenu();
+//                            JMenuItem delimiterMenuItem = new JMenuItem("Set as delimiter");
+//                            delimiterMenuItem.addActionListener(new ActionListener() {
+//                                @Override
+//                                public void actionPerformed(ActionEvent e) {
+//                                    AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
+//                                    QName recordRoot = node.getQName();
+//                                    DefaultTreeModel tm = (DefaultTreeModel) statisticsJTree.getModel();
+//                                    int count = AnalysisTree.setRecordRoot(tm, recordRoot);
+//                                    if (count != 1) {
+//                                        JOptionPane.showConfirmDialog(AnalysisPanel.this, "Expected one record root, got " + count);
+//                                    }
+//                                    else {
+//                                        tm.reload(node);
+//                                    }
+//                                }
+//                            });
+//                            delimiterPopup.add(delimiterMenuItem);
+//                            delimiterPopup.show(statisticsJTree, e.getX(), e.getY());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void mouseReleased(MouseEvent e) {
+//                    }
+//                }
+//        );
     }
 
     private class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {

@@ -91,7 +91,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public void setRecordRoot(QName recordRoot) {
-        this.recordRoot = qName != null && qName.equals(recordRoot);
+        this.recordRoot = recordRoot == null ? false : qName != null && qName.equals(recordRoot);
     }
 
     @Override

@@ -81,7 +81,10 @@ public class SipModel {
     public void setFileSet(FileSet fileSet) throws IOException {
         this.fileSet = fileSet;
         setStatisticsList(fileSet.getStatistics());
-        setRecordRoot(fileSet.getRecordRoot());
+        setRecordRootInternal(fileSet.getRecordRoot());
+        statisticsTableModel.setCounterList(null);
+        variableListModel.setList(null);
+
         // todo: remove
         try {
             codeDocument.insertString(0, "Code", null);
@@ -90,6 +93,8 @@ public class SipModel {
         catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
+        // todo: remove
+
         for (FileSetListener fileSetListener : fileSetListeners) {
             fileSetListener.updatedFileSet();
         }
@@ -124,18 +129,14 @@ public class SipModel {
         if (node.getStatistics() != null) {
             statisticsTableModel.setCounterList(node.getStatistics().getCounters());
         }
+        else {
+            statisticsTableModel.setCounterList(null);
+        }
     }
 
     public void setRecordRoot(QName recordRoot) {
-        this.recordRoot = recordRoot;
-        if (recordRoot != null) {
-            List<String> variables = new ArrayList<String>();
-            analysisTree.getVariables(variables);
-            variableListModel.setList(variables);
-        }
-        else {
-            variableListModel.setList(null);
-        }
+        setRecordRootInternal(recordRoot);
+        fileSet.setRecordRoot(recordRoot);
     }
 
     public TableModel getStatisticsTableModel() {
@@ -172,6 +173,20 @@ public class SipModel {
     }
 
     // === privates
+
+    private void setRecordRootInternal(QName recordRoot) {
+        this.recordRoot = recordRoot;
+        AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot);
+        // todo: which ones have changed and can we notify swing?
+        if (recordRoot != null) {
+            List<String> variables = new ArrayList<String>();
+            analysisTree.getVariables(variables);
+            variableListModel.setList(variables);
+        }
+        else {
+            variableListModel.setList(null);
+        }
+    }
 
     private void setStatisticsList(List<Statistics> statisticsList) {
         this.statisticsList = statisticsList;
