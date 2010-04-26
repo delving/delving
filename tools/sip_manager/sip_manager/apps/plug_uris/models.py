@@ -231,11 +231,11 @@ class ReqUri(models.Model):
     uri = models.ForeignKey(Uri)
 
     source_id = models.IntegerField(default=0, blank=True)
-    item_type = models.IntegerField()
+    item_type = models.IntegerField(db_index=True)
     mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
     file_type = models.CharField(max_length=150, blank=True)
-    status  = models.IntegerField(default=URIS_CREATED)
-    err_code = models.IntegerField(default=URIE_NO_ERROR)
+    status  = models.IntegerField(default=URIS_CREATED,db_index=True)
+    err_code = models.IntegerField(default=URIE_NO_ERROR,db_index=True)
 
     # Dummy field if nothing here table isnt created
     #i = models.IntegerField(default=0, blank=True)
