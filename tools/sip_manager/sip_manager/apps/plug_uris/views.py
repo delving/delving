@@ -108,7 +108,7 @@ def stats_by_req(request, sreq_id=0):
     request = models.Request.objects.filter(pk=req_id)[0]
 
     #
-    # Status by mimetype
+    # Grouped by mimetype
     #
     q_all = Q(req=req_id, item_type=models.URIT_OBJECT)
     qs_all = models.ReqUri.objects.filter(q_all)
@@ -121,21 +121,14 @@ def stats_by_req(request, sreq_id=0):
         qs_mime = qs_all.filter(mime_type=mime_type)
         itm_ok = qs_mime.filter(Q_OK).count()
         itm_bad = qs_mime.filter(Q_BAD).count()
-        mime_results.append({'name':mime_type, 'ok': itm_ok, 'bad': itm_bad})
+        mime_results.append({'name':mime_type,
+                             'ok': itm_ok,
+                             'bad': itm_bad,
+                             'ratio': s_calc_ratio(itm_ok, itm_bad),
+                             })
 
     #
-    # Generate list of webservers for this request
-    #
-    webservers = []
-    for row in qs_all.values_list('source_id').distinct().order_by('source_id'):
-        srv_id = int(row[0])
-        srv_name = models.UriSource.objects.get(pk=srv_id)
-        items = qs_all.filter(source_id=srv_id).count()
-        webservers.append((srv_name, srv_id, items))
-    webservers.sort()
-
-    #
-    # Bad by reason
+    # Grouped by error
     #
     err_by_reason = {}
     for err_code in models.URI_ERR_CODES.keys():
@@ -145,13 +138,41 @@ def stats_by_req(request, sreq_id=0):
         if not count:
             continue
         err_by_reason[models.URI_ERR_CODES[err_code]] = count
+
+    #
+    # Grouped by webserver
+    #
+    webservers = []
+    for row in qs_all.values_list('source_id').distinct().order_by('source_id'):
+        srv_id = int(row[0])
+        srv_name = models.UriSource.objects.get(pk=srv_id)
+        qs_webserver = qs_all.filter(source_id=srv_id)
+        items = qs_webserver.count()
+        good = qs_webserver.filter(Q_OK).count()
+        bad = qs_webserver.filter(Q_BAD).count()
+        webservers.append({'name': srv_name,
+                           'srv_id': srv_id,
+                           'count' :items,
+                           'good': good,
+                           'bad': bad,
+                           'ratio': s_calc_ratio(good, bad),
+                           })
+
     return render_to_response("plug_uris/stats_by_request.html",
                               {
                                   'request': request,
                                   'mime_results': mime_results,
-                                  'webservers': webservers,
                                   'err_by_reason': err_by_reason,
+                                  'webservers': webservers,
                               })
+
+
+def s_calc_ratio(good, bad):
+    return '%0.2f' % calc_ratio(good, bad)
+
+def calc_ratio(good, bad):
+    return 100-bad/float(good or 0.001) * 100
+
 
 def stats_by_uri(request, order_by=''):
     if order_by:
