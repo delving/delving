@@ -41,7 +41,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
     private static final long serialVersionUID = 2187793718415968490L;
     private static final int MAXIMUM_LENGTH = 100;
     private QNamePath path;
-    private int total;
+    private long total;
     private Map<String, CounterImpl> counterMap = new TreeMap<String, CounterImpl>();
 
     public Statistics(QNamePath path) {
@@ -57,11 +57,18 @@ public class Statistics implements Comparable<Statistics>, Serializable {
             counterMap.put(value, counter = new CounterImpl(value));
         }
         counter.increment();
+    }
+
+    public void recordOccurrence() {
         total++;
     }
 
     public QNamePath getPath() {
         return path;
+    }
+
+    public long getTotal() {
+        return total;
     }
 
     public void trim() {

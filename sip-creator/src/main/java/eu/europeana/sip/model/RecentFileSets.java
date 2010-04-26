@@ -120,6 +120,8 @@ public class RecentFileSets {
 
     private class FileSetImpl implements FileSet {
         private File inputFile, statisticsFile, mappingFile, recordRootFile, outputFile;
+        private ExceptionHandler exceptionHandler;
+        private AnalysisParser analysisParser;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
@@ -130,6 +132,11 @@ public class RecentFileSets {
             if (outputFile.exists()) {
                 outputFile.delete();
             }
+        }
+
+        @Override
+        public void setExceptionHandler(ExceptionHandler handler) {
+            this.exceptionHandler = handler;
         }
 
         @Override
@@ -161,95 +168,137 @@ public class RecentFileSets {
         }
 
         @Override
-        public InputStream getInputStream() throws FileNotFoundException {
-            return new FileInputStream(inputFile);
+        public InputStream getInputStream() {
+            try {
+                return new FileInputStream(inputFile);
+            }
+            catch (FileNotFoundException e) {
+                exceptionHandler.failure(e);
+            }
+            return null;
         }
 
         @Override
-        public OutputStream getOutputStream() throws FileNotFoundException {
-            return new FileOutputStream(outputFile, true);
+        public OutputStream getOutputStream() {
+            try {
+                return new FileOutputStream(outputFile, true);
+            }
+            catch (FileNotFoundException e) {
+                exceptionHandler.failure(e);
+            }
+            return null;
         }
 
         @Override
-        public void analyze(AnalysisListener analysisListener) {
-            AnalysisParser parser = new AnalysisParser(this, analysisListener);
-            executor.submit(parser);
+        public void analyze(AnalysisParser.Listener listener) {
+            analysisParser = new AnalysisParser(this, listener);
+            executor.submit(analysisParser);
+        }
+
+        @Override
+        public void abortAnalysis() {
+            if (analysisParser != null) {
+                analysisParser.abort();
+            }
+        }
+
+        @Override
+        public boolean hasStatistics() {
+            return statisticsFile.exists();
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public List<Statistics> getStatistics() throws IOException {
+        public List<Statistics> getStatistics() {
             if (statisticsFile.exists()) {
-                ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(statisticsFile)));
-                List<Statistics> statisticsList = null;
                 try {
-                    statisticsList = (List<Statistics>) in.readObject();
-                }
-                catch (ClassNotFoundException e) {
-                    throw new IOException("Cannot read the statistics list", e);
-                }
-                in.close();
-                return statisticsList;
-            }
-            else {
-                return null;
-            }
-        }
-
-        @Override
-        public void setStatistics(List<Statistics> statisticsList) throws IOException {
-            ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(statisticsFile)));
-            out.writeObject(statisticsList);
-            out.close();
-        }
-
-        @Override
-        public String getMapping() throws IOException {
-            if (mappingFile.exists()) {
-                BufferedReader in = new BufferedReader(new FileReader(mappingFile));
-                StringBuilder mapping = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    mapping.append(line).append('\n');
-                }
-                in.close();
-                return mapping.toString();
-            }
-            return "";
-        }
-
-        @Override
-        public void setMapping(String mapping) throws IOException {
-            FileWriter out = new FileWriter(mappingFile);
-            out.write(mapping);
-            out.close();
-        }
-
-        @Override
-        public QName getRecordRoot() throws IOException {
-            if (recordRootFile.exists()) {
-                Reader in = new FileReader(recordRootFile);
-                StringBuilder qNameString = new StringBuilder();
-                int ch;
-                while ((ch = in.read()) >= 0) {
-                    qNameString.append((char) ch);
-                }
-                in.close();
-                try {
-                    return QName.valueOf(qNameString.toString());
+                    ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(statisticsFile)));
+                    List<Statistics> statisticsList = (List<Statistics>) in.readObject();
+                    in.close();
+                    return statisticsList;
                 }
                 catch (Exception e) {
-                    recordRootFile.delete();
+                    exceptionHandler.failure(e);
                 }
             }
             return null;
         }
 
         @Override
-        public void setRecordRoot(QName qname) throws IOException {
-            Writer out = new FileWriter(recordRootFile);
-            out.write(qname.toString());
-            out.close();
+        public void setStatistics(List<Statistics> statisticsList) {
+            try {
+                ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(statisticsFile)));
+                out.writeObject(statisticsList);
+                out.close();
+            }
+            catch (IOException e) {
+                exceptionHandler.failure(e);
+            }
+        }
+
+        @Override
+        public String getMapping() {
+            if (mappingFile.exists()) {
+                try {
+                    BufferedReader in = new BufferedReader(new FileReader(mappingFile));
+                    StringBuilder mapping = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        mapping.append(line).append('\n');
+                    }
+                    in.close();
+                    return mapping.toString();
+                }
+                catch (IOException e) {
+                    exceptionHandler.failure(e);
+                }
+            }
+            return "";
+        }
+
+        @Override
+        public void setMapping(String mapping) {
+            try {
+                FileWriter out = new FileWriter(mappingFile);
+                out.write(mapping);
+                out.close();
+            }
+            catch (IOException e) {
+                exceptionHandler.failure(e);
+            }
+        }
+
+        @Override
+        public QName getRecordRoot() {
+            if (recordRootFile.exists()) {
+                StringBuilder qNameString = new StringBuilder();
+                try {
+                    Reader in = new FileReader(recordRootFile);
+                    int ch;
+                    while ((ch = in.read()) >= 0) {
+                        qNameString.append((char) ch);
+                    }
+                    in.close();
+                    return QName.valueOf(qNameString.toString());
+                }
+                catch (IOException e) {
+                    recordRootFile.delete();
+                    exceptionHandler.failure(e);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void setRecordRoot(QName qname) {
+            try {
+                Writer out = new FileWriter(recordRootFile);
+                out.write(qname.toString());
+                out.close();
+            }
+            catch (IOException e) {
+                exceptionHandler.failure(e);
+            }
         }
 
         public String toString() {

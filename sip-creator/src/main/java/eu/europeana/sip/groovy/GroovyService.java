@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
@@ -120,13 +119,8 @@ public class GroovyService {
 
         @Override
         public void run() {
-            try {
-                fileSet.setRecordRoot(recordRoot);
-                setMapping(fileSet.getMapping());
-            }
-            catch (IOException e) {
-                LOG.error("Error persisting snippet", e);
-            }
+            fileSet.setRecordRoot(recordRoot);
+            setMapping(fileSet.getMapping());
         }
     }
 
@@ -212,12 +206,7 @@ public class GroovyService {
 
         @Override
         public void run() {
-            try {
-                fileSet.setMapping(mapping);
-            }
-            catch (IOException e) {
-                LOG.error("Error persisting snippet", e);
-            }
+            fileSet.setMapping(mapping);
         }
 
     }

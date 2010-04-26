@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -32,10 +32,16 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * A Graphical interface for analysis
@@ -49,7 +55,7 @@ public class MappingPanel extends JPanel {
     private JButton createMappingButton = new JButton("Create Mapping");
     private JComboBox converterChoice = new JComboBox(new Object[]{"Converter One", "Converter Two"});
     private JTextArea groovyCodeArea = new JTextArea();
-    private GroovyEditor groovyEditor = new GroovyEditor(groovyCodeArea);
+    private JList variablesList, mappingList, fieldList;
 
     public MappingPanel(SipModel sipModel) {
         super(new GridBagLayout());
@@ -78,17 +84,47 @@ public class MappingPanel extends JPanel {
         gbc.gridy++;
         gbc.weighty = 0.8;
         add(createGroovyPanel(), gbc);
+        wireUp();
     }
 
-    public void setFileSet(final FileSet fileSet) {
-        groovyEditor.setFileSet(fileSet);
+    private void wireUp() {
+        createMappingButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // todo: implement
+            }
+        });
+        converterChoice.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                // todo: implement
+            }
+        });
+        variablesList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // todo: implement
+            }
+        });
+        fieldList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // todo: implement
+            }
+        });
+        mappingList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                // todo: implement
+            }
+        });
     }
 
     private JPanel createInputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Input Variables"));
-        JList list = new JList(new Object[]{"input", "variables"});
-        JScrollPane scroll = new JScrollPane(list);
+        variablesList = new JList(sipModel.getVariablesListModel());
+        JScrollPane scroll = new JScrollPane(variablesList);
         p.add(scroll);
         return p;
     }
@@ -96,8 +132,9 @@ public class MappingPanel extends JPanel {
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Variables"));
-        JList list = new JList(new Object[]{"output", "variables"});
-        JScrollPane scroll = new JScrollPane(list);
+        fieldList = new JList(sipModel.getFieldListModel());
+        fieldList.setCellRenderer(new FieldListModel.CellRenderer());
+        JScrollPane scroll = new JScrollPane(fieldList);
         p.add(scroll);
         return p;
     }
@@ -105,8 +142,8 @@ public class MappingPanel extends JPanel {
     private JPanel createMappingListPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Mappings"));
-        JList list = new JList(new Object[]{"one mapping", "another"});
-        JScrollPane scroll = new JScrollPane(list);
+        mappingList = new JList(new Object[]{"one mapping", "another"});
+        JScrollPane scroll = new JScrollPane(mappingList);
         p.add(scroll);
         return p;
     }

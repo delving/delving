@@ -23,7 +23,6 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.SipModel;
-import org.apache.log4j.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -37,6 +36,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
@@ -67,23 +69,27 @@ import java.awt.event.MouseEvent;
  */
 
 public class AnalysisPanel extends JPanel {
-    private Logger log = Logger.getLogger(getClass());
-
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
+    private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private JButton selectRecordRootButton = new JButton("Select Record Root");
     private JButton analyzeButton = new JButton("Perform Analysis");
-    private JLabel recordCountLabel = new JLabel("???????? Elements Processed", JLabel.CENTER);
+    private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
     private JTree statisticsJTree;
     private JTable statsTable;
     private FileMenu.Enablement fileMenuEnablement;
     private boolean abort = false;
-
     private SipModel sipModel;
 
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
+        this.sipModel.addFileSetListener(new SipModel.FileSetListener() {
+            @Override
+            public void updatedFileSet() {
+                setElementsProcessed(AnalysisPanel.this.sipModel.getElementCount());
+            }
+        });
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.gridy = 0;
@@ -110,57 +116,12 @@ public class AnalysisPanel extends JPanel {
         this.fileMenuEnablement = fileMenuEnablement;
     }
 
-//    public void setFileSet(final FileSet fileSet) {
-//        try {
-//            final QName recordRoot = fileSet.getRecordRoot();
-//            List<Statistics> statistics = fileSet.getStatistics();
-//            if (statistics == null) {
-//                abort = false;
-//                fileMenuEnablement.enable(false);
-//                fileSet.analyze(new FileSet.AnalysisListener() {
-//                    @Override
-//                    public void success(List<Statistics> statistics) {
-//                        setMappingTree(AnalysisTree.create(statistics, fileSet.getName(), recordRoot));
-//                        fileMenuEnablement.enable(true);
-//                    }
-//
-//                    @Override
-//                    public void failure(Exception exception) {
-//                        JOptionPane.showMessageDialog(AnalysisPanel.this, "Error analyzing file : '" + exception.getMessage() + "'");
-//                        fileMenuEnablement.enable(true);
-//                    }
-//
-//                    @Override
-//                    public void progress(final long recordNumber) {
-//                        SwingUtilities.invokeLater(new Runnable() {
-//                            @Override
-//                            public void run() {
-////                                    progressDialog.setProgress(recordNumber);
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public boolean abort() {
-//                        return abort;
-//                    }
-//
-//                });
-//            }
-//            else {
-//                setMappingTree(AnalysisTree.create(statistics, fileSet.getName(), recordRoot));
-//            }
-//        }
-//        catch (IOException e) {
-//            JOptionPane.showMessageDialog(null, "Error analyzing file : '" + e.getMessage() + "'");
-//        }
-//    }
-
     private JPanel createTreePanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Document Structure"));
         statisticsJTree = new JTree(sipModel.getAnalysisTreeModel());
+        statisticsJTree.getModel().addTreeModelListener(new Expander());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scroll = new JScrollPane(statisticsJTree);
@@ -206,12 +167,44 @@ public class AnalysisPanel extends JPanel {
     }
 
     private JPanel createProgress() {
+        analyzeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sipModel.analyze(new SipModel.AnalysisListener() {
+
+                    @Override
+                    public void finished(boolean success) {
+                        fileMenuEnablement.enable(true);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                setElementsProcessed(sipModel.getElementCount());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void analysisProgress(final long elementCount) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                setElementsProcessed(elementCount);
+                            }
+                        });
+                    }
+                });
+            }
+        });
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
         p.add(analyzeButton, BorderLayout.WEST);
-        p.add(recordCountLabel, BorderLayout.CENTER);
+        p.add(elementCountLabel, BorderLayout.CENTER);
         p.add(abortButton, BorderLayout.EAST);
         return p;
+    }
+
+    private void setElementsProcessed(long count) {
+        elementCountLabel.setText(String.format(ELEMENTS_PROCESSED, count));
     }
 
     private void wireUpTree() {
@@ -259,22 +252,6 @@ public class AnalysisPanel extends JPanel {
         );
     }
 
-    // todo: when to do this?
-
-    private void expandEmptyNodes() {
-        expandEmptyNodes((AnalysisTree.Node) sipModel.getAnalysisTreeModel().getRoot());
-    }
-
-    private void expandEmptyNodes(AnalysisTree.Node node) {
-        if (node.getStatistics() == null) {
-            TreePath path = node.getTreePath();
-            statisticsJTree.expandPath(path);
-        }
-        for (AnalysisTree.Node childNode : node.getChildNodes()) {
-            expandEmptyNodes(childNode);
-        }
-    }
-
     private class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {
         private Font normalFont, thickFont;
 
@@ -301,6 +278,44 @@ public class AnalysisPanel extends JPanel {
                 thickFont = new Font(getNormalFont().getFontName(), Font.BOLD, getNormalFont().getSize());
             }
             return thickFont;
+        }
+    }
+
+    private class Expander implements TreeModelListener, Runnable {
+
+        @Override
+        public void treeNodesChanged(TreeModelEvent e) {
+            System.out.println("nc");
+        }
+
+        @Override
+        public void treeNodesInserted(TreeModelEvent e) {
+            System.out.println("ni");
+        }
+
+        @Override
+        public void treeNodesRemoved(TreeModelEvent e) {
+            System.out.println("nr");
+        }
+
+        @Override
+        public void treeStructureChanged(TreeModelEvent e) {
+            System.out.println("sc");
+            SwingUtilities.invokeLater(this);
+        }
+
+        public void run() {
+            expandEmptyNodes((AnalysisTree.Node) statisticsJTree.getModel().getRoot());
+        }
+
+        private void expandEmptyNodes(AnalysisTree.Node node) {
+            if (node.getStatistics() == null) {
+                TreePath path = node.getTreePath();
+                statisticsJTree.expandPath(path);
+            }
+            for (AnalysisTree.Node childNode : node.getChildNodes()) {
+                expandEmptyNodes(childNode);
+            }
         }
     }
 }

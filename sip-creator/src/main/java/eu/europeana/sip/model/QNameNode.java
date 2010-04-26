@@ -144,6 +144,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
     @Override
     public boolean isLeaf() {
         return statistics != null;
+//        return statistics == null || !statistics.getCounters().isEmpty();
     }
 
     @Override

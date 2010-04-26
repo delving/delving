@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.xml.AnalysisParser;
+
 import javax.xml.namespace.QName;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -36,39 +36,38 @@ import java.util.List;
 
 public interface FileSet {
 
+    interface ExceptionHandler {
+        void failure(Exception exception);
+    }
+
+    void setExceptionHandler(ExceptionHandler handler);
+
     String getName();
 
     void setMostRecent();
 
     void remove();
 
-    InputStream getInputStream() throws FileNotFoundException;
+    InputStream getInputStream();
 
-    OutputStream getOutputStream() throws FileNotFoundException;
+    OutputStream getOutputStream();
 
-    public interface AnalysisListener {
+    void analyze(AnalysisParser.Listener listener);
 
-        void success(List<Statistics> list);
+    void abortAnalysis();
 
-        void failure(Exception exception);
+    boolean hasStatistics();
 
-        void progress(long recordNumber);
+    List<Statistics> getStatistics();
 
-        boolean abort();
-    }
+    void setStatistics(List<Statistics> statisticsList);
 
-    void analyze(AnalysisListener analysisListener);
+    String getMapping();
 
-    List<Statistics> getStatistics() throws IOException;
+    void setMapping(String mapping);
 
-    void setStatistics(List<Statistics> statisticsList) throws IOException;
+    QName getRecordRoot();
 
-    String getMapping() throws IOException;
-
-    void setMapping(String mapping) throws IOException;
-
-    QName getRecordRoot() throws IOException;
-
-    void setRecordRoot(QName qname) throws IOException;
+    void setRecordRoot(QName qname);
 
 }

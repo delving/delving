@@ -49,12 +49,26 @@ public class AnalysisParser implements Runnable {
     private final Logger LOG = Logger.getLogger(getClass());
     private QNamePath path = new QNamePath();
     private Map<QNamePath, Statistics> statisticsMap = new TreeMap<QNamePath, Statistics>();
-    private FileSet.AnalysisListener listener;
+    private Listener listener;
     private FileSet fileSet;
+    private boolean abort;
 
-    public AnalysisParser(FileSet fileSet, FileSet.AnalysisListener listener) {
+    public interface Listener {
+
+        void success(List<Statistics> list);
+
+        void failure(Exception exception);
+
+        void progress(long elementCount);
+    }
+
+    public AnalysisParser(FileSet fileSet, Listener listener) {
         this.fileSet = fileSet;
         this.listener = listener;
+    }
+
+    public void abort() {
+        abort = true;
     }
 
     @Override
@@ -68,7 +82,7 @@ public class AnalysisParser implements Runnable {
             XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(getClass().getName(), fileSet.getInputStream());
             StringBuilder text = new StringBuilder();
             long count = 0;
-            while (!listener.abort()) {
+            while (!abort) {
                 switch (input.getEventType()) {
                     case XMLEvent.START_DOCUMENT:
                         LOG.info("Starting document");
@@ -125,14 +139,14 @@ public class AnalysisParser implements Runnable {
 
     private void recordValue(String value) {
         value = value.trim();
-        if (value.isEmpty()) {
-            return;
-        }
         Statistics statistics = statisticsMap.get(path);
-        if (statistics == null) {
-            QNamePath key = new QNamePath(path);
-            statisticsMap.put(key, statistics = new Statistics(key));
+        if (!value.isEmpty()) {
+            if (statistics == null) {
+                QNamePath key = new QNamePath(path);
+                statisticsMap.put(key, statistics = new Statistics(key));
+            }
+            statistics.recordValue(value);
+            statistics.recordOccurrence(); // todo: move outside the if
         }
-        statistics.recordValue(value);
     }
 }
