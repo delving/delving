@@ -55,19 +55,19 @@ function showDefaultLarge(rType,obj,iType){
         switch(iType)
         {
         case "TEXT":
-          obj.src="images/item-page-large.gif";
+          obj.src="/portal/images/item-page-large.gif";
           break;
         case "IMAGE":
-          obj.src="images/item-image-large.gif";
+          obj.src="/portal/images/item-image-large.gif";
           break;
         case "VIDEO":
-          obj.src="images/item-video-large.gif";
+          obj.src="/portal/images/item-video-large.gif";
           break;
         case "SOUND":
-          obj.src="images/item-sound-large.gif";
+          obj.src="/portal/images/item-sound-large.gif";
           break;
         default:
-          obj.src="images/item-page-large.gif";
+          obj.src="/portal/images/item-page-large.gif";
         }
     }
 }
