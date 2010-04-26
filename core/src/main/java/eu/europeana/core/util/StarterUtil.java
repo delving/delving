@@ -94,7 +94,7 @@ public class StarterUtil {
     }
 
     private static boolean isAITRoot(File here) {
-        return checkFor(here, "annotation-middleware", "image-annotation-frontend");
+        return checkFor(here, "image-annotation-frontend");
     }
 
     private static boolean isEuropeanaRoot(File here) {
@@ -118,7 +118,9 @@ public class StarterUtil {
     }
 
     private static boolean checkFor(String name, File[] subdirs) {
-        for (File subdir : subdirs) {
+        if(subdirs==null) return false;
+        
+    	for (File subdir : subdirs) {
             if (subdir.getName().equals(name)) {
                 return true;
             }
