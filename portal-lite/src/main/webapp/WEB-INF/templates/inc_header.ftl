@@ -1,9 +1,5 @@
 <#import "spring.ftl" as spring >
-<#if portalName??>
-    <#assign portalName = portalName/>
-    <#--<#else>-->
-        <#--<#assign portalName = "portal"/>-->
-</#if>
+<#assign portalName = portalName/>
 <#if user??>
     <#assign user = user/>
 </#if>
@@ -129,7 +125,7 @@
             <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
                 href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
         </li>
-        <#if user.savedItems?exists>
+        <#if user.savedItems??>
         <li>
             <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
                 <@spring.message 'SavedItems_t' />
@@ -137,7 +133,7 @@
             (<span id="savedItemsCount">${user.savedItems?size}</span>)
         </li>
         </#if>
-        <#if user.savedSearches?exists>
+        <#if user.savedSearches??>
         <li>
             <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
                 <@spring.message 'SavedSearches_t' />
@@ -145,7 +141,7 @@
             (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
         </li>
         </#if>
-        <#if user.socialTags?exists>
+        <#if user.socialTags??>
         <li>
             <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
                 <@spring.message 'SavedTags_t' />

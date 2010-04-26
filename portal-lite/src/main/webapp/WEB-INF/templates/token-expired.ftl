@@ -1,9 +1,9 @@
 <#import "spring.ftl" as spring />
 <#assign query = ""/>
-<#if RequestParameters.view?exists>
+<#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
-<#if RequestParameters.query?exists>
+<#if RequestParameters.query??>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
 <#include "spring_form_macros.ftl"/>
