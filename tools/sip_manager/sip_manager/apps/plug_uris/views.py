@@ -171,7 +171,10 @@ def s_calc_ratio(good, bad):
     return '%0.2f' % calc_ratio(good, bad)
 
 def calc_ratio(good, bad):
-    return 100-bad/float(good or 0.001) * 100
+    if not good:
+        # avoid divide by zero
+        return 0.0
+    return 100-bad/float(good) * 100
 
 
 def stats_by_uri(request, order_by=''):
