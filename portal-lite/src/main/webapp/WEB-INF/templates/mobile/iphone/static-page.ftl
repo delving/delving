@@ -2,7 +2,7 @@
 <#assign pageId = "sp"/>
 <#assign thisPage = "static-page.html"/>
 <#include "inc_header.ftl"/>
-    <div id="leftnav"><a href="index.html"><img alt="home" src="mobile/iwebkit/images/home.png"/></a></div>
+    <div id="leftnav"><a href="/${portalName}/index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a></div>
 </div>
 <script>
 // JavaScript Document

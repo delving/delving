@@ -18,7 +18,7 @@
 
 <#list seq as cell>
 <li class="withimage">
-	<a id="${cell.type}_gradientitem" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+	<a id="${cell.type}_gradientitem" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
 
 	<#if useCache="true">
 		<img src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
@@ -62,7 +62,7 @@
 <#macro show_result_list seq>
 <#list seq as cell>
  <li class="textonly">
-	<a id="${cell.type}item" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+	<a id="${cell.type}item" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
 		<strong>${cell.title}</strong><br />
 		<#if !cell.creator[0]?matches(" ")>${cell.creator}<br/></#if>
 		<#if !cell.year?matches(" ")><#if cell.year != "0000">${cell.year}<br/></#if></#if>
@@ -78,9 +78,9 @@
 <li class="imageonly">
  <div id="imagelist">
    <#list seq as briefDoc>
-		<a class="imageresult" id="${briefDoc.type}item" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${briefDoc.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${briefDoc.id}&amp;view=${view}&amp;pageId=brd">
+		<a class="imageresult" id="${briefDoc.type}item" href="${briefDoc.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${briefDoc.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
 			<#if useCache="true">
-				<img src="${cacheUrl}uri=${briefDoc.thumbnail}&amp;size=BRIEF_DOC&amp;type=${briefDoc.type}" 
+				<img src="${cacheUrl}uri=${briefDoc.thumbnail}&amp;size=BRIEF_DOC&amp;type=${briefDoc.type}"
 				    <#if is_IEMobile?? && is_IEMobile = true>
                         onload="resizeIEMobile(this,80,113)"
                     </#if>

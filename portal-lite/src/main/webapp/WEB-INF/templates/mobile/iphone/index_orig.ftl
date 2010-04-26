@@ -5,7 +5,7 @@
 <#include "inc_header.ftl">
 
 <div class="searchbox">
-	<form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+	<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
 		<fieldset>
 			<input type="hidden" name="start" value="1" />
 			<input type="hidden" name="view" value="${view}" />
@@ -22,8 +22,8 @@
 <div id="content">
 	<ul class="pageitem">
 		<li class="textbox" id="welcome">
-			<img src="mobile/images/logo_connect.png" alt="Logo"/>
-			<strong><@spring.message 'ThisIsEuropeana_t' />...</strong> 
+			<img src="/${portalName}/mobile/images/logo_connect.png" alt="Logo"/>
+			<strong><@spring.message 'ThisIsEuropeana_t' />...</strong>
 			<@spring.message 'APlaceToShareIdeas_t' />
 		</li>
 
@@ -43,10 +43,10 @@
 	        </li>
         </#if>
 
-		<li class="menu"><a href="new-content.html">
+		<li class="menu"><a href="/${portalName}/new-content.html">
 			<span class="name"><@spring.message 'NewContent_t' /></span><span class="arrow"></span></a>
 		</li>
-		
+
 		 <li class="select">
 		 	<#include "../../language_select.ftl" >
 	        <span class="arrow"></span>
