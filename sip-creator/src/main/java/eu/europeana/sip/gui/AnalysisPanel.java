@@ -72,7 +72,6 @@ public class AnalysisPanel extends JPanel {
     private JButton abortButton = new JButton("Abort");
     private JTree statisticsJTree;
     private JTable statsTable;
-    private FileMenu.Enable fileMenuEnable;
     private boolean abort = false;
     private SipModel sipModel;
 
@@ -99,10 +98,6 @@ public class AnalysisPanel extends JPanel {
         gbc.gridx = 1;
         add(createProgress(), gbc);
         wireUp();
-    }
-
-    public void setFileMenuEnablement(FileMenu.Enable fileMenuEnable) {
-        this.fileMenuEnable = fileMenuEnable;
     }
 
     private JPanel createTreePanel() {
@@ -175,7 +170,6 @@ public class AnalysisPanel extends JPanel {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                fileMenuEnable.enable(true);
                                 analyzeButton.setEnabled(true);
                                 setElementsProcessed(sipModel.getElementCount());
                             }
@@ -197,6 +191,7 @@ public class AnalysisPanel extends JPanel {
         abortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                sipModel.abortAnalyze();
                 analyzeButton.setEnabled(true);
             }
         });

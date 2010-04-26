@@ -84,7 +84,6 @@ public class SipCreatorGUI extends JFrame {
                 }
             }
         });
-        analysisPanel.setFileMenuEnablement(fileMenu.getEnable());
         bar.add(fileMenu);
         return bar;
     }

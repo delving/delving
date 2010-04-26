@@ -27,7 +27,6 @@ import eu.europeana.sip.model.RecentFileSets;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -50,29 +49,11 @@ public class FileMenu extends JMenu {
         boolean select(FileSet fileSet);
     }
 
-    public interface Enable {
-        void enable(boolean enabled);
-    }
-
     public FileMenu(Component parent, SelectListener selectListener) {
         super("File");
         this.parent = parent;
         this.selectListener = selectListener;
         refresh();
-    }
-
-    public Enable getEnable() {
-        return new Enable() {
-            @Override
-            public void enable(final boolean enabled) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        FileMenu.this.setEnabled(false);
-                    }
-                });
-            }
-        };
     }
 
     private void refresh() {

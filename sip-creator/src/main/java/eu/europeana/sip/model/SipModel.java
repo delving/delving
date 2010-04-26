@@ -119,6 +119,10 @@ public class SipModel {
         });
     }
 
+    public void abortAnalyze() {
+        fileSet.abortAnalysis();
+    }
+
     public TreeModel getAnalysisTreeModel() {
         return analysisTreeModel;
     }
