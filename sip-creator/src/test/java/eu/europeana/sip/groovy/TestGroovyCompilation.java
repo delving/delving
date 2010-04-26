@@ -3,6 +3,7 @@ package eu.europeana.sip.groovy;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import org.junit.Ignore;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,8 @@ import static java.lang.System.out;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
+
+@Ignore 
 public class TestGroovyCompilation {
 
     public TestGroovyCompilation() {

@@ -86,15 +86,6 @@ public class SipCreatorGUI extends JFrame {
         return bar;
     }
 
-//    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
-//        List<Class<?>> classes = new ArrayList<Class<?>>();
-//        classes.add(beanClass);
-//        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-//        annotationProcessor.setClasses(classes);
-//        return annotationProcessor;
-//    }
-//
-
     public static void main(String[] args) {
         SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
         sipCreatorGUI.setVisible(true);
