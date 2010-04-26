@@ -28,6 +28,7 @@
 # Create your views here.
 
 from django.db import connection
+from django.db.models import Q
 from django.shortcuts import render_to_response, get_object_or_404
 
 from apps.dummy_ingester.models import Request
@@ -35,6 +36,9 @@ from apps.dummy_ingester.models import Request
 #from datagrids import UriSourcesDataGrid
 import models
 
+
+Q_OK = Q(status=models.URIS_COMPLETED, err_code=models.URIE_NO_ERROR)
+Q_BAD = ~Q(err_code=models.URIE_NO_ERROR)
 
 """
 
@@ -77,6 +81,167 @@ def statistics(request):
         'summary': uri_summary(),})
 
 def stats_req_lst(request):
+    lst = []
+    for req in  models.ReqUri.objects.values('req').distinct():
+        req_id = req['req']
+        q_all = Q(req=req_id, item_type=models.URIT_OBJECT)
+        qs_all = models.ReqUri.objects.filter(q_all)
+        count = qs_all.count()
+        #itm_ok = models.ReqUri.objects.filter(q_all, Q_OK).count()
+        itm_ok = qs_all.filter(Q_OK).count()
+        #itm_bad = models.ReqUri.objects.filter(q_all, Q_BAD).count()
+        itm_bad = qs_all.filter(Q_BAD).count()
+        waiting = count - itm_ok - itm_bad
+        lst.append({'request':Request.objects.get(pk=req_id),
+                   'count': count,
+                   'waiting': waiting,
+                   'ok': itm_ok,
+                   'bad': itm_bad,
+                   })
+
+    return render_to_response("plug_uris/stats_all_requests.html", {
+        'requests': lst,})
+
+
+def stats_by_req(request, sreq_id=0):
+    req_id = int(sreq_id)
+    request = models.Request.objects.filter(pk=req_id)[0]
+
+    #
+    # Status by mimetype
+    #
+    q_all = Q(req=req_id, item_type=models.URIT_OBJECT)
+    qs_all = models.ReqUri.objects.filter(q_all)
+
+    mime_results = []
+    for row in qs_all.values_list('mime_type').distinct().order_by('mime_type'):
+        mime_type = row[0]
+        if not mime_type:
+            continue # not set for this item
+        qs_mime = qs_all.filter(mime_type=mime_type)
+        itm_ok = qs_mime.filter(Q_OK).count()
+        itm_bad = qs_mime.filter(Q_BAD).count()
+        mime_results.append({'name':mime_type, 'ok': itm_ok, 'bad': itm_bad})
+
+    #
+    # Generate list of webservers for this request
+    #
+    webservers = []
+    for row in qs_all.values_list('source_id').distinct().order_by('source_id'):
+        srv_id = int(row[0])
+        srv_name = models.UriSource.objects.get(pk=srv_id)
+        items = qs_all.filter(source_id=srv_id).count()
+        webservers.append((srv_name, srv_id, items))
+    webservers.sort()
+
+    #
+    # Bad by reason
+    #
+    err_by_reason = {}
+    for err_code in models.URI_ERR_CODES.keys():
+        if err_code == models.URIE_NO_ERROR:
+            continue
+        count = qs_all.filter(err_code=err_code).count()
+        if not count:
+            continue
+        err_by_reason[models.URI_ERR_CODES[err_code]] = count
+    return render_to_response("plug_uris/stats_by_request.html",
+                              {
+                                  'request': request,
+                                  'mime_results': mime_results,
+                                  'webservers': webservers,
+                                  'err_by_reason': err_by_reason,
+                              })
+
+def stats_by_uri(request, order_by=''):
+    if order_by:
+        if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
+            if request.session.get('sortkey','').find(order_by)==1:
+                # that is if it was a -key we change it to key
+                p_order_by = order_by
+            else:
+                p_order_by = '-%s' % order_by
+        else:
+            p_order_by = 'name_or_ip'
+    else:
+        p_order_by = 'name_or_ip'
+    request.session['sortkey'] = p_order_by
+
+    sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
+    sql_table_join = "AND uri_source_id=plug_uris_urisource.id"
+
+    sql_img_ok = "%s status=%i %s" % (sel_common, models.URIS_COMPLETED, sql_table_join)
+    sql_img_waiting = "%s status=%i AND item_type=%i AND err_code=%i %s" % (
+        sel_common, models.URIS_CREATED, models.URIT_OBJECT, models.URIE_NO_ERROR, sql_table_join)
+    sql_img_bad = "%s err_code > %i %s" % (sel_common, models.URIE_NO_ERROR, sql_table_join)
+
+    sql = "SELECT task_eta FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid"
+    uri_sources = models.UriSource.objects.extra(select={
+        'imgs_ok':sql_img_ok,
+        'imgs_bad': sql_img_bad,
+        'imgs_waiting':sql_img_waiting,
+        #'eta':sql,
+        }).order_by(p_order_by)
+    return render_to_response("plug_uris/stats_uri_source.html", {
+        "uri_sources":uri_sources,
+        "summary": uri_summary(),})
+
+
+def problems(request, source_id=-1):
+    try:
+        urisource = models.UriSource.objects.get(pk=source_id)
+    except:
+        urisource = None
+    problems = {}
+    for k in models.URI_ERR_CODES:
+        if k == models.URIE_NO_ERROR:
+            continue
+        uri_filter = {'err_code': k}
+        if urisource:
+            uri_filter['uri_source'] = urisource
+        count = models.Uri.objects.filter(**uri_filter).count()
+        if not count:
+            continue
+        problems[models.URI_ERR_CODES[k]] = {
+            'err_code': k,
+            'count': count,
+        }
+    return render_to_response('plug_uris/problems.html', {
+        'urisource': urisource,
+        'problems': problems})
+
+
+
+def uri_summary():
+    imgs_ok = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
+                                           status=models.URIS_COMPLETED,
+                                           ).count()
+    imgs_waiting = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
+                                                 status=models.URIS_CREATED).count()
+    imgs_bad = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT).exclude(err_code=models.URIE_NO_ERROR).count()
+    return {"imgs_ok": imgs_ok,
+            "imgs_waiting": imgs_waiting,
+            "imgs_bad": imgs_bad}
+
+
+
+
+def index(request):
+    uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
+                                      pid=0).order_by('-uri_source')
+
+    return render_to_response('plug_uris/index.html', {'uri':uris[0]})
+
+
+
+
+
+
+#
+# Obsolete
+#
+
+def OLD_stats_req_lst(request):
     sql_waiting = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_CREATED,
                                                      models.URIE_NO_ERROR)]
     sql_ok = ["AND u.status=%i AND u.err_code=%i" % (models.URIS_COMPLETED,
@@ -113,7 +278,8 @@ def stats_req_lst(request):
         'requests': lst,})
 
 
-def stats_by_req(request, sreq_id=0):
+
+def Old_stats_by_req(request, sreq_id=0):
     req_id = int(sreq_id)
     request = models.Request.objects.filter(pk=req_id)[0]
     cursor1 = connection.cursor()
@@ -199,66 +365,9 @@ def stats_by_req(request, sreq_id=0):
                                   'err_by_reason': err_by_reason,
                               })
 
-def stats_by_uri(request, order_by=''):
-    if order_by:
-        if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
-            if request.session.get('sortkey','').find(order_by)==1:
-                # that is if it was a -key we change it to key
-                p_order_by = order_by
-            else:
-                p_order_by = '-%s' % order_by
-        else:
-            p_order_by = 'name_or_ip'
-    else:
-        p_order_by = 'name_or_ip'
-    request.session['sortkey'] = p_order_by
-
-    sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
-    sql_table_join = "AND uri_source_id=plug_uris_urisource.id"
-
-    sql_img_ok = "%s status=%i %s" % (sel_common, models.URIS_COMPLETED, sql_table_join)
-    sql_img_waiting = "%s status=%i AND item_type=%i AND err_code=%i %s" % (
-        sel_common, models.URIS_CREATED, models.URIT_OBJECT, models.URIE_NO_ERROR, sql_table_join)
-    sql_img_bad = "%s err_code > %i %s" % (sel_common, models.URIE_NO_ERROR, sql_table_join)
-
-    sql = "SELECT task_eta FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid"
-    uri_sources = models.UriSource.objects.extra(select={
-        'imgs_ok':sql_img_ok,
-        'imgs_bad': sql_img_bad,
-        'imgs_waiting':sql_img_waiting,
-        #'eta':sql,
-        }).order_by(p_order_by)
-    return render_to_response("plug_uris/stats_uri_source.html", {
-        "uri_sources":uri_sources,
-        "summary": uri_summary(),})
 
 
-def problems(request, source_id=-1):
-    try:
-        urisource = models.UriSource.objects.get(pk=source_id)
-    except:
-        urisource = None
-    problems = {}
-    for k in models.URI_ERR_CODES:
-        if k == models.URIE_NO_ERROR:
-            continue
-        uri_filter = {'err_code': k}
-        if urisource:
-            uri_filter['uri_source'] = urisource
-        count = models.Uri.objects.filter(**uri_filter).count()
-        if not count:
-            continue
-        problems[models.URI_ERR_CODES[k]] = {
-            'err_code': k,
-            'count': count,
-        }
-    return render_to_response('plug_uris/problems.html', {
-        'urisource': urisource,
-        'problems': problems})
-
-
-
-def uri_summary():
+def OLD_uri_summary():
     imgs_ok = models.Uri.objects.filter(status=models.URIS_COMPLETED).count()
     imgs_waiting = models.Uri.objects.filter(status=models.URIS_CREATED,
                                              item_type=models.URIT_OBJECT,
@@ -267,16 +376,3 @@ def uri_summary():
     return {"imgs_ok": imgs_ok,
             "imgs_waiting": imgs_waiting,
             "imgs_bad": imgs_bad}
-
-
-
-def index(request):
-    uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
-                                      pid=0).order_by('-uri_source')
-
-    return render_to_response('plug_uris/index.html', {'uri':uris[0]})
-
-
-
-
-

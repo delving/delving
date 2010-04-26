@@ -202,8 +202,8 @@ class UriCreate(sip_task.SipTask):
         # TODO: In desperate need of optimization!
         sql = ["SELECT DISTINCT m.id FROM base_item_mdrecord m"]
         sql.append("LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id")
-        sql.append("WHERE u.mdr_id IS NULL and m.status NOT LIKE %i" % base_item.MDRS_BROKEN)
-        self.cursor.execute(' '.join(sql))
+        sql.append("WHERE u.mdr_id IS NULL and m.status != %i" % base_item.MDRS_BROKEN)
+        self.cursor.execute(" ".join(sql))
 
         if self.cursor.rowcount:
             self.initial_message = 'Found %i records' % self.cursor.rowcount
@@ -282,7 +282,10 @@ class UriCreate(sip_task.SipTask):
         # Do a mapping request - uri (to speed up statistics)
         #
         for req_md in base_item.RequestMdRecord.objects.filter(md_record=mdr):
-            req_uri = models.ReqUri(req=req_md.request, uri=uri)
+            req_uri = models.ReqUri(req=req_md.request,
+                                    uri=uri,
+                                    source_id=uri.uri_source.pk,
+                                    item_type=uri.item_type)
             req_uri.save()
         return True
 
@@ -509,12 +512,21 @@ class UriValidateSave(sip_task.SipTask):
             self.uri.status = models.URIS_FAILED
 
         self.uri.save()
+        for requri in models.ReqUri.objects.filter(uri=self.uri):
+            requri.err_code=code
+            requri.save()
         return False # propagate error
 
 
     def uri_state(self, state):
         self.uri.status = state
         self.uri.save()
+        for requri in models.ReqUri.objects.filter(uri=self.uri):
+            requri.status=state
+            requri.item_type = self.uri.item_type
+            requri.mime_type = self.uri.mime_type
+            requri.file_type = self.uri.file_type
+            requri.save()
 
 
     #--------------   ImageMagic utility methods   ----------------------------

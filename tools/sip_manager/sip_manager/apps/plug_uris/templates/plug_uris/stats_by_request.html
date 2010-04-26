@@ -15,9 +15,9 @@
     <th>mimetype</th>
     <th>Good</th>
     <th>Bad</th>
-    {% for lbl, mime_result in mime_results.items %}
+    {% for mime_result in mime_results %}
       <tr>
-        <td>{{ lbl }}</td>
+        <td>{{ mime_result.name }}</td>
         <td>{{ mime_result.ok }}</td>
         <td>{{ mime_result.bad }}</td>
       </tr>
