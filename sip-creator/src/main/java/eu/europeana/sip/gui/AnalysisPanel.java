@@ -72,19 +72,13 @@ public class AnalysisPanel extends JPanel {
     private JButton abortButton = new JButton("Abort");
     private JTree statisticsJTree;
     private JTable statsTable;
-    private FileMenu.Enablement fileMenuEnablement;
+    private FileMenu.Enable fileMenuEnable;
     private boolean abort = false;
     private SipModel sipModel;
 
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
-        this.sipModel.addFileSetListener(new SipModel.FileSetListener() {
-            @Override
-            public void updatedFileSet() {
-                setElementsProcessed(AnalysisPanel.this.sipModel.getElementCount());
-            }
-        });
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.gridy = 0;
@@ -104,11 +98,11 @@ public class AnalysisPanel extends JPanel {
         gbc.gridwidth = 2;
         gbc.gridx = 1;
         add(createProgress(), gbc);
-        wireUpTree();
+        wireUp();
     }
 
-    public void setFileMenuEnablement(FileMenu.Enablement fileMenuEnablement) {
-        this.fileMenuEnablement = fileMenuEnablement;
+    public void setFileMenuEnablement(FileMenu.Enable fileMenuEnable) {
+        this.fileMenuEnable = fileMenuEnable;
     }
 
     private JPanel createTreePanel() {
@@ -172,14 +166,17 @@ public class AnalysisPanel extends JPanel {
         analyzeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                analyzeButton.setEnabled(false);
+                abortButton.setEnabled(true);
                 sipModel.analyze(new SipModel.AnalysisListener() {
 
                     @Override
                     public void finished(boolean success) {
-                        fileMenuEnablement.enable(true);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
+                                fileMenuEnable.enable(true);
+                                analyzeButton.setEnabled(true);
                                 setElementsProcessed(sipModel.getElementCount());
                             }
                         });
@@ -197,6 +194,12 @@ public class AnalysisPanel extends JPanel {
                 });
             }
         });
+        abortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                analyzeButton.setEnabled(true);
+            }
+        });
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
         p.add(analyzeButton, BorderLayout.WEST);
@@ -209,7 +212,15 @@ public class AnalysisPanel extends JPanel {
         elementCountLabel.setText(String.format(ELEMENTS_PROCESSED, count));
     }
 
-    private void wireUpTree() {
+    private void wireUp() {
+        sipModel.addFileSetListener(new SipModel.FileSetListener() {
+            @Override
+            public void updatedFileSet() {
+                setElementsProcessed(sipModel.getElementCount());
+                analyzeButton.setEnabled(true);
+                abortButton.setEnabled(true);
+            }
+        });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent event) {
@@ -228,40 +239,6 @@ public class AnalysisPanel extends JPanel {
                 sipModel.setRecordRoot(recordRoot);
             }
         });
-//        statisticsJTree.addMouseListener(
-//                new MouseAdapter() {
-//                    @Override
-//                    public void mousePressed(MouseEvent e) {
-//                        if (e.isPopupTrigger()) {
-//                            final TreePath path = statisticsJTree.getPathForLocation(e.getX(), e.getY());
-//                            statisticsJTree.setSelectionPath(path);
-//                            JPopupMenu delimiterPopup = new JPopupMenu();
-//                            JMenuItem delimiterMenuItem = new JMenuItem("Set as delimiter");
-//                            delimiterMenuItem.addActionListener(new ActionListener() {
-//                                @Override
-//                                public void actionPerformed(ActionEvent e) {
-//                                    AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
-//                                    QName recordRoot = node.getQName();
-//                                    DefaultTreeModel tm = (DefaultTreeModel) statisticsJTree.getModel();
-//                                    int count = AnalysisTree.setRecordRoot(tm, recordRoot);
-//                                    if (count != 1) {
-//                                        JOptionPane.showConfirmDialog(AnalysisPanel.this, "Expected one record root, got " + count);
-//                                    }
-//                                    else {
-//                                        tm.reload(node);
-//                                    }
-//                                }
-//                            });
-//                            delimiterPopup.add(delimiterMenuItem);
-//                            delimiterPopup.show(statisticsJTree, e.getX(), e.getY());
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void mouseReleased(MouseEvent e) {
-//                    }
-//                }
-//        );
     }
 
     private class AnalysisTreeCellRenderer extends DefaultTreeCellRenderer {
@@ -297,22 +274,18 @@ public class AnalysisPanel extends JPanel {
 
         @Override
         public void treeNodesChanged(TreeModelEvent e) {
-            System.out.println("nc");
         }
 
         @Override
         public void treeNodesInserted(TreeModelEvent e) {
-            System.out.println("ni");
         }
 
         @Override
         public void treeNodesRemoved(TreeModelEvent e) {
-            System.out.println("nr");
         }
 
         @Override
         public void treeStructureChanged(TreeModelEvent e) {
-            System.out.println("sc");
             SwingUtilities.invokeLater(this);
         }
 

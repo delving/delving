@@ -35,7 +35,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,17 +73,18 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar bar = new JMenuBar();
         FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
-            public void select(FileSet fileSet) {
-                try {
+            public boolean select(FileSet fileSet) {
+                if (!fileSet.isValid()) {
+                    return false;
+                }
+                else {
                     fileSet.setExceptionHandler(new PopupExceptionHandler());
                     sipModel.setFileSet(fileSet);
-                }
-                catch (IOException e) {
-                    JOptionPane.showConfirmDialog(SipCreatorGUI.this, "Unable to use file set");
+                    return true;
                 }
             }
         });
-        analysisPanel.setFileMenuEnablement(fileMenu.getEnablement());
+        analysisPanel.setFileMenuEnablement(fileMenu.getEnable());
         bar.add(fileMenu);
         return bar;
     }
@@ -103,7 +103,7 @@ public class SipCreatorGUI extends JFrame {
     private class PopupExceptionHandler implements FileSet.ExceptionHandler {
         @Override
         public void failure(Exception exception) {
-            JOptionPane.showConfirmDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
+            JOptionPane.showMessageDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
             log.warn("Problem", exception);
         }
     }

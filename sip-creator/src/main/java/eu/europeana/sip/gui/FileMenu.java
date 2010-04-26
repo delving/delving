@@ -25,7 +25,6 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecentFileSets;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
@@ -33,6 +32,7 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Set;
 
 /**
  * The menu for handling files
@@ -43,16 +43,14 @@ import java.io.File;
 
 public class FileMenu extends JMenu {
     private Component parent;
-    private Action loadFile = new LoadNewFileAction();
     private RecentFileSets recentFiles = new RecentFileSets(new File("."));
-    private JMenu recentFilesMenu = new JMenu("Recent Files");
     private SelectListener selectListener;
 
     public interface SelectListener {
-        void select(FileSet fileSet);
+        boolean select(FileSet fileSet);
     }
 
-    public interface Enablement {
+    public interface Enable {
         void enable(boolean enabled);
     }
 
@@ -60,24 +58,35 @@ public class FileMenu extends JMenu {
         super("File");
         this.parent = parent;
         this.selectListener = selectListener;
-        this.add(loadFile);
-        refreshRecentFilesMenu();
-        this.add(recentFilesMenu);
+        refresh();
     }
 
-    public Enablement getEnablement() {
-        return new Enablement() {
+    public Enable getEnable() {
+        return new Enable() {
             @Override
             public void enable(final boolean enabled) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        loadFile.setEnabled(enabled);
-                        recentFilesMenu.setEnabled(enabled);
+                        FileMenu.this.setEnabled(false);
                     }
                 });
             }
         };
+    }
+
+    private void refresh() {
+        removeAll();
+        add(new LoadNewFileAction(new File("/")));
+        addSeparator();
+        Set<File> directories = recentFiles.getDirectories();
+        for (File directory : directories) {
+            add(new LoadNewFileAction(directory));
+        }
+        addSeparator();
+        for (FileSet fileSet : recentFiles.getList()) {
+            add(new LoadRecentFileSetAction(fileSet));
+        }
     }
 
     private class LoadNewFileAction extends AbstractAction {
@@ -85,8 +94,9 @@ public class FileMenu extends JMenu {
         private static final long serialVersionUID = -6398521298905842613L;
         private JFileChooser chooser = new JFileChooser("XML File");
 
-        private LoadNewFileAction() {
-            super("Load");
+        private LoadNewFileAction(File directory) {
+            super("Open File from "+directory.getAbsolutePath());
+            chooser.setCurrentDirectory(directory);
             chooser.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
@@ -107,6 +117,7 @@ public class FileMenu extends JMenu {
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
                 FileSet fileSet = recentFiles.select(file);
+                refresh();
                 selectListener.select(fileSet);
             }
         }
@@ -117,22 +128,20 @@ public class FileMenu extends JMenu {
         private FileSet fileSet;
 
         private LoadRecentFileSetAction(FileSet fileSet) {
-            super("Load " + fileSet.getName());
+            super(fileSet.getName());
             this.fileSet = fileSet;
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            fileSet.setMostRecent();
-            refreshRecentFilesMenu();
-            selectListener.select(fileSet);
+            if (selectListener.select(fileSet)) {
+                fileSet.setMostRecent();
+            }
+            else {
+                recentFiles.remove(fileSet);
+            }
+            refresh();
         }
     }
 
-    private void refreshRecentFilesMenu() {
-        recentFilesMenu.removeAll();
-        for (FileSet fileSet : recentFiles.getList()) {
-            recentFilesMenu.add(new LoadRecentFileSetAction(fileSet));
-        }
-    }
 }

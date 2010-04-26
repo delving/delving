@@ -42,8 +42,10 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,15 +74,7 @@ public class RecentFileSets {
     }
 
     public FileSet select(File inputFile) {
-        Iterator<FileSetImpl> walk = recent.iterator();
-        FileSetImpl fileSet = null;
-        while (walk.hasNext()) {
-            FileSetImpl next = walk.next();
-            if (next.getName().equals(inputFile.getAbsolutePath())) {
-                fileSet = next;
-                walk.remove();
-            }
-        }
+        FileSetImpl fileSet = removeFileSet(inputFile);
         if (fileSet != null) {
             recent.add(0, fileSet);
         }
@@ -97,8 +91,45 @@ public class RecentFileSets {
         return fileSet;
     }
 
+    private FileSetImpl removeFileSet(File inputFile) {
+        Iterator<FileSetImpl> walk = recent.iterator();
+        FileSetImpl fileSet = null;
+        while (walk.hasNext()) {
+            FileSetImpl next = walk.next();
+            if (next.getName().equals(inputFile.getName())) {
+                fileSet = next;
+                walk.remove();
+            }
+        }
+        return fileSet;
+    }
+
+    public void remove(FileSet fileSet) {
+        Iterator<FileSetImpl> walk = recent.iterator();
+        while (walk.hasNext()) {
+            FileSetImpl next = walk.next();
+            if (next.getName().equals(fileSet.getName())) {
+                walk.remove();
+            }
+        }
+        try {
+            saveList();
+        }
+        catch (IOException e) {
+            LOG.warn("Unable to save recent files list", e);
+        }
+    }
+
     public List<? extends FileSet> getList() {
         return recent;
+    }
+
+    public Set<File> getDirectories() {
+        Set<File> directories = new HashSet<File>();
+        for (FileSet set : recent) {
+            directories.add(set.getDirectory());
+        }
+        return directories;
     }
 
     private void loadList() throws IOException {
@@ -112,7 +143,7 @@ public class RecentFileSets {
     private void saveList() throws IOException {
         FileWriter out = new FileWriter(listFile);
         for (FileSetImpl set : recent) {
-            out.write(set.getName());
+            out.write(set.getAbsolutePath());
             out.write('\n');
         }
         out.close();
@@ -141,7 +172,12 @@ public class RecentFileSets {
 
         @Override
         public String getName() {
-            return inputFile.getAbsolutePath();
+            return inputFile.getName();
+        }
+
+        @Override
+        public boolean isValid() {
+            return inputFile.exists();
         }
 
         @Override
@@ -165,6 +201,11 @@ public class RecentFileSets {
             catch (IOException e) {
                 LOG.warn("Unable to save recent files list", e);
             }
+        }
+
+        @Override
+        public File getDirectory() {
+            return inputFile.getParentFile();
         }
 
         @Override
@@ -308,6 +349,10 @@ public class RecentFileSets {
 
         public String toString() {
             return getName();
+        }
+
+        public String getAbsolutePath() {
+            return inputFile.getAbsolutePath();
         }
     }
 }

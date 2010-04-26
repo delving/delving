@@ -24,6 +24,7 @@ package eu.europeana.sip.model;
 import eu.europeana.sip.xml.AnalysisParser;
 
 import javax.xml.namespace.QName;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -44,9 +45,13 @@ public interface FileSet {
 
     String getName();
 
+    boolean isValid();
+
     void setMostRecent();
 
     void remove();
+
+    File getDirectory();
 
     InputStream getInputStream();
 

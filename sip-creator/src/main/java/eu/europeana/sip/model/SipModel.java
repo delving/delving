@@ -32,7 +32,6 @@ import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -78,12 +77,11 @@ public class SipModel {
         this.fieldListModel = new FieldListModel(annotationProcessor);
     }
 
-    public void setFileSet(FileSet fileSet) throws IOException {
+    public void setFileSet(FileSet fileSet) {
         this.fileSet = fileSet;
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
         statisticsTableModel.setCounterList(null);
-        variableListModel.setList(null);
 
         // todo: remove
         try {
@@ -137,6 +135,10 @@ public class SipModel {
     public void setRecordRoot(QName recordRoot) {
         setRecordRootInternal(recordRoot);
         fileSet.setRecordRoot(recordRoot);
+    }
+
+    public boolean hasStatistics() {
+        return statisticsList != null;
     }
 
     public TableModel getStatisticsTableModel() {
