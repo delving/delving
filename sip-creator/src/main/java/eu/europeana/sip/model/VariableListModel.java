@@ -21,16 +21,12 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -39,27 +35,31 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class FieldListModel extends AbstractListModel {
+public class VariableListModel extends AbstractListModel {
     private static final long serialVersionUID = 939393939;
-    private List<EuropeanaField> list;
+    private List<String> list;
 
-    public FieldListModel(AnnotationProcessor annotationProcessor) {
-        this.list = new ArrayList<EuropeanaField>(annotationProcessor.getMappableFields());
-        Collections.sort(list, new Comparator<EuropeanaField>() {
-            @Override
-            public int compare(EuropeanaField field0, EuropeanaField field1) {
-                return field0.getFieldNameString().compareTo(field1.getFieldNameString());
-            }
-        });
+    public void setList(List<String> list) {
+        int size = getSize();
+        this.list = null;
+        fireIntervalRemoved(this, 0, size);
+        this.list = list;
+        fireIntervalAdded(this, 0, getSize());
     }
 
     @Override
     public int getSize() {
+        if (list == null) {
+            return 0;
+        }
         return list.size();
     }
 
     @Override
     public Object getElementAt(int index) {
+        if (list == null) {
+            return "UNKNOWN";
+        }
         return list.get(index);
     }
 

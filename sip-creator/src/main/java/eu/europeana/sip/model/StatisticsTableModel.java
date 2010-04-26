@@ -31,10 +31,15 @@ import java.util.List;
  */
 
 public class StatisticsTableModel extends AbstractTableModel {
+
     private List<? extends Statistics.Counter> counterList;
 
-    public StatisticsTableModel(List<? extends Statistics.Counter> counterList) {
+    public void setCounterList(List<? extends Statistics.Counter> counterList) {
+        int rows = getRowCount();
+        this.counterList = null;
+        fireTableRowsDeleted(0, rows);
         this.counterList = counterList;
+        fireTableRowsInserted(0, getRowCount());
     }
 
     @Override
@@ -52,16 +57,21 @@ public class StatisticsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int col) {
-        Statistics.Counter counter = counterList.get(row);
-        switch (col) {
-            case 0:
-                return counter.getPercentage();
-            case 1:
-                return counter.getCount();
-            case 2:
-                return counter.getValue();
-            default:
-                throw new IllegalArgumentException();
+        if (counterList == null) {
+            return "UNKNOWN";
+        }
+        else {
+            Statistics.Counter counter = counterList.get(row);
+            switch (col) {
+                case 0:
+                    return counter.getPercentage();
+                case 1:
+                    return counter.getCount();
+                case 2:
+                    return counter.getValue();
+                default:
+                    throw new IllegalArgumentException();
+            }
         }
     }
 }

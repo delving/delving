@@ -28,13 +28,11 @@ import javax.swing.tree.TreePath;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.Vector;
 
 /**
  * A tree representing the statistics gathered
@@ -65,6 +63,31 @@ public class AnalysisTree implements Serializable {
         return setRecordRoot(node, recordRoot);
     }
 
+    public static AnalysisTree create(String rootTag) {
+        return new AnalysisTree(new QNameNode(rootTag));
+    }
+
+    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
+        QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
+        root.setTag(rootTag);
+        return new AnalysisTree(root);
+    }
+
+    public TreeModel createTreeModel() {
+        return new DefaultTreeModel(root, true);
+    }
+
+    public void getVariables(List<String> variables) {
+        Stack<String> stack = new Stack<String>();
+        getVariables(root, false, stack, variables);
+    }
+
+    // ==== privates
+
+    private AnalysisTree(QNameNode root) {
+        this.root = root;
+    }
+
     private static int setRecordRoot(AnalysisTree.Node node, QName recordRoot) {
         node.setRecordRoot(recordRoot);
         int sum = 0;
@@ -75,29 +98,6 @@ public class AnalysisTree implements Serializable {
             sum += setRecordRoot(child, recordRoot);
         }
         return sum;
-    }
-
-    public static AnalysisTree create(String rootTag) {
-        return new AnalysisTree(new QNameNode(rootTag));
-    }
-
-    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
-        QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
-        root.tag = rootTag;
-        return new AnalysisTree(root);
-    }
-
-    private AnalysisTree(QNameNode root) {
-        this.root = root;
-    }
-
-    public TreeModel createTreeModel() {
-        return new DefaultTreeModel(root, true);
-    }
-
-    public void getVariables(List<String> variables) {
-        Stack<String> stack = new Stack<String>();
-        getVariables(root, false, stack, variables);
     }
 
     private static void getVariables(QNameNode node, boolean withinRecord, Stack<String> stack, List<String> variables) {
@@ -123,133 +123,12 @@ public class AnalysisTree implements Serializable {
             }
         }
         else {
-            for (QNameNode child : node.children) {
+            for (QNameNode child : node.getChildren()) {
                 getVariables(child, withinRecord, stack, variables);
             }
         }
         if (withinRecord) {
             stack.pop();
-        }
-    }
-
-    private static class QNameNode implements Node, Serializable {
-        private static final long serialVersionUID = -8362212829296408316L;
-        private QNameNode parent;
-        private List<QNameNode> children = new ArrayList<QNameNode>();
-        private String tag;
-        private QName qName;
-        private boolean recordRoot;
-        private Statistics statistics;
-
-        private QNameNode(String tag) {
-            this.tag = tag;
-        }
-
-        private QNameNode(QNameNode parent, QName qName, boolean recordRoot) {
-            this.parent = parent;
-            this.qName = qName;
-            this.recordRoot = recordRoot;
-        }
-
-        private QNameNode(QNameNode parent, Statistics statistics) {
-            this.parent = parent;
-            this.statistics = statistics;
-            this.qName = statistics.getPath().peek();
-        }
-
-        public void setStatistics(Statistics statistics) {
-            this.statistics = statistics;
-        }
-
-        @Override
-        public Statistics getStatistics() {
-            return statistics;
-        }
-
-        @Override
-        public TreePath getTreePath() {
-            List<QNameNode> list = new ArrayList<QNameNode>();
-            compilePathList(list);
-            return new TreePath(list.toArray());
-        }
-
-        @Override
-        public QName getQName() {
-            return qName;
-        }
-
-        @Override
-        public void setRecordRoot(QName recordRoot) {
-            this.recordRoot = qName != null && qName.equals(recordRoot);
-        }
-
-        @Override
-        public boolean isRecordRoot() {
-            return recordRoot;
-        }
-
-        @Override
-        public Iterable<? extends Node> getChildNodes() {
-            return children;
-        }
-
-        private void compilePathList(List<QNameNode> list) {
-            if (parent != null) {
-                parent.compilePathList(list);
-            }
-            list.add(this);
-        }
-
-        public void add(QNameNode child) {
-            children.add(child);
-        }
-
-        @Override
-        public TreeNode getChildAt(int index) {
-            return children.get(index);
-        }
-
-        @Override
-        public int getChildCount() {
-            return children.size();
-        }
-
-        @Override
-        public TreeNode getParent() {
-            return parent;
-        }
-
-        @Override
-        public int getIndex(TreeNode treeNode) {
-            QNameNode qNameNode = (QNameNode) treeNode;
-            return children.indexOf(qNameNode);
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-            return !children.isEmpty();
-        }
-
-        @Override
-        public boolean isLeaf() {
-            return statistics != null;
-        }
-
-        @Override
-        public Enumeration children() {
-            return new Vector<QNameNode>(children).elements();
-        }
-
-        public String toString() {
-            if (qName == null) {
-                return tag;
-            }
-            else if (!qName.getPrefix().isEmpty()) {
-                return qName.getPrefix() + '_' + qName.getLocalPart();
-            }
-            else {
-                return qName.getLocalPart();
-            }
         }
     }
 

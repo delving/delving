@@ -39,7 +39,7 @@ import java.util.Vector;
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
+public class MappingsPanel extends JPanel {
 
     private Object[][] data = new Object[][]{};
     private java.util.List<Class<?>> list = new ArrayList<Class<?>>();
@@ -264,7 +264,6 @@ public class MappingsPanel extends JPanel implements AnalyzerPanel.Listener {
         return false;
     }
 
-    @Override
     public void updateAvailableNodes(java.util.List<String> nodes) {
         int counter = 0;
         data = new Object[nodes.size()][];

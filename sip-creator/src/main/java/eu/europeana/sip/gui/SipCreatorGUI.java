@@ -22,16 +22,13 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.RecentFileSets;
+import eu.europeana.sip.model.SipModel;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.File;
+import java.io.IOException;
 
 /**
  * The main GUI class for the sip creator
@@ -41,35 +38,22 @@ import java.io.File;
  */
 
 public class SipCreatorGUI extends JFrame {
-    private AnalyzerPanel analyzerPanel = new AnalyzerPanel();
-    private NormalizerPanel normalizerPanel = new NormalizerPanel();
+    private SipModel sipModel = new SipModel();
+    private AnalysisPanel analysisPanel = new AnalysisPanel(sipModel);
+    private MappingPanel mappingPanel = new MappingPanel(sipModel);
+    private NormPanel normPanel = new NormPanel(sipModel);
 
     public SipCreatorGUI() {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analyzer", analyzerPanel);
-        tabs.addTab("Normalizer", normalizerPanel);
+        tabs.addTab("Analyzer", analysisPanel);
+        tabs.addTab("Mapping", mappingPanel);
+        tabs.addTab("Normalizer", normPanel);
         getContentPane().add(tabs);
         setJMenuBar(createMenuBar());
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(new Dimension((int) Math.round(d.getWidth() * .8), (int) Math.round(d.getHeight() * .8)));
-        tabs.addKeyListener(
-                new KeyAdapter() {
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        if (KeyEvent.ALT_MASK == e.getModifiers() && KeyEvent.VK_L == e.getKeyCode()) {
-                            RecentFileSets recentFiles = new RecentFileSets(new File("."));
-                            if (0 < recentFiles.getList().size()) {
-                                FileSet fileSet = recentFiles.getList().get(0);
-                                analyzerPanel.setFileSet(fileSet);
-                                normalizerPanel.setFileSet(fileSet);
-                            }
-                        }
-                    }
-                }
-        );
-        tabs.requestFocus();
+        setSize(1024, 768);
+//        setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 
     private JMenuBar createMenuBar() {
@@ -77,11 +61,15 @@ public class SipCreatorGUI extends JFrame {
         FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
             public void select(FileSet fileSet) {
-                analyzerPanel.setFileSet(fileSet);
-                normalizerPanel.setFileSet(fileSet);
+                try {
+                    sipModel.setFileSet(fileSet);
+                }
+                catch (IOException e) {
+                    JOptionPane.showConfirmDialog(SipCreatorGUI.this, "Unable to use file set");
+                }
             }
         });
-        analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
+        analysisPanel.setFileMenuEnablement(fileMenu.getEnablement());
         bar.add(fileMenu);
         return bar;
     }
