@@ -36,7 +36,7 @@ from apps.dummy_ingester.models import Request
 #from datagrids import UriSourcesDataGrid
 import models
 
-
+Q_OBJECT = Q(item_type=models.URIT_OBJECT)
 Q_OK = Q(status=models.URIS_COMPLETED, err_code=models.URIE_NO_ERROR)
 Q_BAD = ~Q(err_code=models.URIE_NO_ERROR)
 
@@ -110,8 +110,7 @@ def stats_by_req(request, sreq_id=0):
     #
     # Grouped by mimetype
     #
-    q_all = Q(req=req_id, item_type=models.URIT_OBJECT)
-    qs_all = models.ReqUri.objects.filter(q_all)
+    qs_all = models.ReqUri.objects.filter(Q_OBJECT, req=req_id)
 
     mime_results = []
     for row in qs_all.values_list('mime_type').distinct().order_by('mime_type'):
@@ -167,16 +166,6 @@ def stats_by_req(request, sreq_id=0):
                               })
 
 
-def s_calc_ratio(good, bad):
-    return '%0.2f' % calc_ratio(good, bad)
-
-def calc_ratio(good, bad):
-    if not good:
-        # avoid divide by zero
-        return 0.0
-    return 100-bad/float(good) * 100
-
-
 def stats_by_uri(request, order_by=''):
     if order_by:
         if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
@@ -191,21 +180,23 @@ def stats_by_uri(request, order_by=''):
         p_order_by = 'name_or_ip'
     request.session['sortkey'] = p_order_by
 
-    sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
-    sql_table_join = "AND uri_source_id=plug_uris_urisource.id"
+    qs_all = models.ReqUri.objects.filter(Q_OBJECT)
 
-    sql_img_ok = "%s status=%i %s" % (sel_common, models.URIS_COMPLETED, sql_table_join)
-    sql_img_waiting = "%s status=%i AND item_type=%i AND err_code=%i %s" % (
-        sel_common, models.URIS_CREATED, models.URIT_OBJECT, models.URIE_NO_ERROR, sql_table_join)
-    sql_img_bad = "%s err_code > %i %s" % (sel_common, models.URIE_NO_ERROR, sql_table_join)
+    uri_sources = []
+    web_servers = models.UriSource.objects.values_list('name_or_ip', 'pk').order_by('name_or_ip')
+    for name, source_id in web_servers:
+        qs_web_server = qs_all.filter(source_id=source_id)
+        count = qs_web_server.count()
+        good = qs_web_server.filter(Q_OK).count()
+        bad = qs_web_server.filter(Q_BAD).count()
+        waiting = count - good - bad
+        uri_sources.append({'name': name,
+                            'id':source_id,
+                            'waiting': waiting,
+                            'good': good,
+                            'bad': bad,
+                            'ratio': s_calc_ratio(good, bad)})
 
-    sql = "SELECT task_eta FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid"
-    uri_sources = models.UriSource.objects.extra(select={
-        'imgs_ok':sql_img_ok,
-        'imgs_bad': sql_img_bad,
-        'imgs_waiting':sql_img_waiting,
-        #'eta':sql,
-        }).order_by(p_order_by)
     return render_to_response("plug_uris/stats_uri_source.html", {
         "uri_sources":uri_sources,
         "summary": uri_summary(),})
@@ -258,6 +249,20 @@ def index(request):
 
 
 
+
+
+#
+# Util funcs
+#
+
+def s_calc_ratio(good, bad):
+    return '%0.2f' % calc_ratio(good, bad)
+
+def calc_ratio(good, bad):
+    if not good:
+        # avoid divide by zero
+        return 0
+    return 100-bad/float(good) * 100
 
 
 
@@ -400,3 +405,36 @@ def OLD_uri_summary():
     return {"imgs_ok": imgs_ok,
             "imgs_waiting": imgs_waiting,
             "imgs_bad": imgs_bad}
+def OLD_stats_by_uri(request, order_by=''):
+    if order_by:
+        if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
+            if request.session.get('sortkey','').find(order_by)==1:
+                # that is if it was a -key we change it to key
+                p_order_by = order_by
+            else:
+                p_order_by = '-%s' % order_by
+        else:
+            p_order_by = 'name_or_ip'
+    else:
+        p_order_by = 'name_or_ip'
+    request.session['sortkey'] = p_order_by
+
+    sel_common = "SELECT COUNT(*) FROM plug_uris_uri WHERE"
+    sql_table_join = "AND uri_source_id=plug_uris_urisource.id"
+
+    sql_img_ok = "%s status=%i %s" % (sel_common, models.URIS_COMPLETED, sql_table_join)
+    sql_img_waiting = "%s status=%i AND item_type=%i AND err_code=%i %s" % (
+        sel_common, models.URIS_CREATED, models.URIT_OBJECT, models.URIE_NO_ERROR, sql_table_join)
+    sql_img_bad = "%s err_code > %i %s" % (sel_common, models.URIE_NO_ERROR, sql_table_join)
+
+    sql = "SELECT task_eta FROM process_monitor_processmonitoring where pid=plug_uris_urisource.pid"
+    uri_sources = models.UriSource.objects.extra(select={
+        'imgs_ok':sql_img_ok,
+        'imgs_bad': sql_img_bad,
+        'imgs_waiting':sql_img_waiting,
+        #'eta':sql,
+        }).order_by(p_order_by)
+
+    return render_to_response("plug_uris/stats_uri_source.html", {
+        "uri_sources":uri_sources,
+        "summary": uri_summary(),})
