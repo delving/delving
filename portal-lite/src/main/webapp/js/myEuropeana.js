@@ -36,18 +36,18 @@ $(document).ready(function() {
         switch(iType)
         {
         case "TEXT":
-          obj.src="images/item-page.gif";
+          obj.src="/portal/images/item-page.gif";
           break;
         case "IMAGE":
-          obj.src="images/item-image.gif";
+          obj.src="/portal/images/item-image.gif";
           break;
         case "VIDEO":
-          obj.src="images/item-video.gif";
+          obj.src="/portal/images/item-video.gif";
           break;
         case "SOUND":
-          obj.src="images/item-sound.gif";
+          obj.src="/portal/images/item-sound.gif";
           break;
         default:
-          obj.src="images/item-page.gif";
+          obj.src="/portal/images/item-page.gif";
         }
      }
