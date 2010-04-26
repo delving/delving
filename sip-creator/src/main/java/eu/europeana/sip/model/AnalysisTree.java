@@ -22,7 +22,6 @@
 package eu.europeana.sip.model;
 
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.namespace.QName;
@@ -73,8 +72,8 @@ public class AnalysisTree implements Serializable {
         return new AnalysisTree(root);
     }
 
-    public TreeModel createTreeModel() {
-        return new DefaultTreeModel(root, true);
+    public Node getRoot() {
+        return root;
     }
 
     public void getVariables(List<String> variables) {

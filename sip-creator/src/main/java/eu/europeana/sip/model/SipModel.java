@@ -53,6 +53,11 @@ public class SipModel {
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
 
+    public SipModel() {
+        analysisTree = AnalysisTree.create("No Document Selected");
+        analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
+    }
+
     public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
         this.fieldListModel = new FieldListModel(annotationProcessor);
     }
@@ -62,6 +67,13 @@ public class SipModel {
         this.statistics = fileSet.getStatistics();
         this.recordRoot = fileSet.getRecordRoot();
         if (recordRoot != null) {
+            if (statistics != null) {
+                analysisTree = AnalysisTree.create(statistics, fileSet.getName(), recordRoot);
+            }
+            else {
+                analysisTree = AnalysisTree.create("Analysis not yet performed"); 
+            }
+            analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
             List<String> variables = new ArrayList<String>();
             analysisTree.getVariables(variables);
             variableListModel.setList(variables);
@@ -77,13 +89,7 @@ public class SipModel {
     }
 
     public TreeModel getAnalysisTreeModel() {
-        if (statistics == null) {
-            return AnalysisTree.create("No Document Loaded").createTreeModel();
-        }
-        else {
-            analysisTree = AnalysisTree.create(statistics, fileSet.getName(), recordRoot);
-            return analysisTree.createTreeModel();
-        }
+        return analysisTreeModel;
     }
 
     public void selectNode(AnalysisTree.Node node) {

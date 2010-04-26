@@ -43,7 +43,6 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.namespace.QName;
@@ -70,13 +69,12 @@ import java.awt.event.MouseEvent;
 public class AnalysisPanel extends JPanel {
     private Logger log = Logger.getLogger(getClass());
 
-    private static final Dimension PREFERRED_SIZE = new Dimension(400, 700);
+    private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
+    private JButton selectRecordRootButton = new JButton("Select Record Root");
     private JButton analyzeButton = new JButton("Perform Analysis");
-    private JLabel recordCountLabel = new JLabel("???????? Records Processed");
+    private JLabel recordCountLabel = new JLabel("???????? Elements Processed", JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
-
-    private JTree statisticsJTree = new JTree(AnalysisTree.create("No Document Loaded").createTreeModel());
-
+    private JTree statisticsJTree;
     private JTable statsTable;
     private FileMenu.Enablement fileMenuEnablement;
     private boolean abort = false;
@@ -93,15 +91,17 @@ public class AnalysisPanel extends JPanel {
         gbc.weighty = 0.99;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
+        gbc.gridheight = 2;
         add(createTreePanel(), gbc);
+        gbc.gridheight = 1;
         gbc.gridx++;
-        add(createStatsSelectPanel(), gbc);
+        add(createStatisticsPanel(), gbc);
         gbc.gridx++;
         add(createVariablesPanel(), gbc);
-        gbc.weighty = 0.01;
-        gbc.gridwidth = 3;
-        gbc.gridx = 0;
         gbc.gridy++;
+        gbc.weighty = 0.01;
+        gbc.gridwidth = 2;
+        gbc.gridx = 1;
         add(createProgress(), gbc);
         wireUpTree();
     }
@@ -158,17 +158,20 @@ public class AnalysisPanel extends JPanel {
 
     private JPanel createTreePanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Document Structure"));
+        statisticsJTree = new JTree(sipModel.getAnalysisTreeModel());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         JScrollPane scroll = new JScrollPane(statisticsJTree);
-        scroll.setPreferredSize(PREFERRED_SIZE);
         p.add(scroll, BorderLayout.CENTER);
+        p.add(selectRecordRootButton, BorderLayout.SOUTH);
         return p;
     }
 
-    private JPanel createStatsSelectPanel() {
+    private JPanel createStatisticsPanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
         JPanel tablePanel = new JPanel(new BorderLayout());
         statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
@@ -176,7 +179,6 @@ public class AnalysisPanel extends JPanel {
         statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
         JScrollPane scroll = new JScrollPane(statsTable);
-        scroll.setPreferredSize(PREFERRED_SIZE);
         tablePanel.add(scroll, BorderLayout.CENTER);
         p.add(tablePanel, BorderLayout.CENTER);
         return p;
@@ -195,19 +197,20 @@ public class AnalysisPanel extends JPanel {
 
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout());
+        p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Variables"));
         JList list = new JList(sipModel.getVariablesListModel());
         JScrollPane scroll = new JScrollPane(list);
-        scroll.setPreferredSize(PREFERRED_SIZE);
         p.add(scroll, BorderLayout.CENTER);
         return p;
     }
 
     private JPanel createProgress() {
-        JPanel p = new JPanel();
-        p.add(analyzeButton);
-        p.add(recordCountLabel);
-        p.add(abortButton);
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
+        p.add(analyzeButton, BorderLayout.WEST);
+        p.add(recordCountLabel, BorderLayout.CENTER);
+        p.add(abortButton, BorderLayout.EAST);
         return p;
     }
 
@@ -256,10 +259,10 @@ public class AnalysisPanel extends JPanel {
         );
     }
 
-    private void setMappingTree(AnalysisTree analysisTree) {
-        TreeModel treeModel = analysisTree.createTreeModel();
-        statisticsJTree.setModel(treeModel);
-        expandEmptyNodes((AnalysisTree.Node) treeModel.getRoot());
+    // todo: when to do this?
+
+    private void expandEmptyNodes() {
+        expandEmptyNodes((AnalysisTree.Node) sipModel.getAnalysisTreeModel().getRoot());
     }
 
     private void expandEmptyNodes(AnalysisTree.Node node) {
