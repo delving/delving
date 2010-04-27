@@ -19,24 +19,25 @@ class Generator {
           "Verbatim": new Verbatim()
   ]
 
-  static class Verbatim implements Converter {
+}
 
-    boolean applicable(FieldMapping fieldMapping) {
-      return "1:1".equals(fieldMapping.getArgumentPattern())
-    }
+class Verbatim implements Converter {
 
-    List generateCode(FieldMapping fieldMapping) {
-      String input = fieldMapping.getFromVariables()[0]
-      String output = fieldMapping.getToFields()[0]
-      return [
-              "for (x in ${input}) {",
-              "   ${output} x",
-              "}"
-      ]
-    }
+  boolean applicable(FieldMapping fieldMapping) {
+    return "1:1".equals(fieldMapping.getArgumentPattern())
+  }
 
-    String toString() {
-      return 'Verbatim'
-    }
+  List generateCode(FieldMapping fieldMapping) {
+    String input = fieldMapping.getFromVariables()[0]
+    String output = fieldMapping.getToFields()[0]
+    return [
+            "for (x in ${input}) {",
+            "   ${output} x",
+            "}"
+    ]
+  }
+
+  String toString() {
+    return 'Verbatim'
   }
 }
