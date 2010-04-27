@@ -188,17 +188,18 @@ def stats_by_uri(request, order_by=''):
     web_servers = models.UriSource.objects.values_list('name_or_ip', 'pk').order_by('name_or_ip')
     for name, source_id in web_servers:
         qs_web_server = qs_all.filter(source_id=source_id)
-        count = qs_web_server.count()
+        img_count = qs_web_server.count()
+        if not img_count:
+            continue # only display if request if any images
         good = qs_web_server.filter(Q_OK).count()
         bad = qs_web_server.filter(Q_BAD).count()
-        waiting = count - good - bad
-        if waiting or good or bad:
-            uri_sources.append({'name': name,
-                                'id':source_id,
-                                'waiting': waiting,
-                                'good': good,
-                                'bad': bad,
-                                'ratio': s_calc_ratio_bad(good, bad)})
+        waiting = img_count - good - bad
+        uri_sources.append({'name': name,
+                            'id':source_id,
+                            'waiting': waiting,
+                            'good': good,
+                            'bad': bad,
+                            'ratio': s_calc_ratio_bad(good, bad)})
 
     return render_to_response("plug_uris/stats_uri_source.html", {
         "uri_sources":uri_sources,
