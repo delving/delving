@@ -125,7 +125,7 @@ def stats_by_req(request, sreq_id=0):
         mime_results.append({'name':mime_type,
                              'ok': itm_ok,
                              'bad': itm_bad,
-                             'ratio': s_calc_ratio(itm_ok, itm_bad),
+                             'ratio': s_calc_ratio_bad(itm_ok, itm_bad),
                              })
 
     #
@@ -156,7 +156,7 @@ def stats_by_req(request, sreq_id=0):
                            'count' :items,
                            'good': good,
                            'bad': bad,
-                           'ratio': s_calc_ratio(good, bad),
+                           'ratio': s_calc_ratio_bad(good, bad),
                            })
 
     return render_to_response("plug_uris/stats_by_request.html",
@@ -198,7 +198,7 @@ def stats_by_uri(request, order_by=''):
                                 'waiting': waiting,
                                 'good': good,
                                 'bad': bad,
-                                'ratio': s_calc_ratio(good, bad)})
+                                'ratio': s_calc_ratio_bad(good, bad)})
 
     return render_to_response("plug_uris/stats_uri_source.html", {
         "uri_sources":uri_sources,
@@ -258,13 +258,19 @@ def index(request):
 # Util funcs
 #
 
+def s_calc_ratio_bad(good, bad):
+    s = '%0.2f' % (100 - calc_ratio(bad, good))
+    return s
+
 def s_calc_ratio(part, whole):
-    return '%0.2f' % calc_ratio(part, whole)
+    s = '%0.2f' % calc_ratio(part, whole)
+    return s
 
 def calc_ratio(part, whole):
     if not part:
         # avoid divide by zero
         return 0
-    return 100 - (part/float(whole)) * 100
+    f =  (part/float(whole)) * 100
+    return f
 
 
