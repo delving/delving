@@ -193,7 +193,6 @@ class UriPepareStorageDirs(sip_task.SipTask):
 class UriCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Create new uri records'
     THREAD_MODE = sip_task.SIPT_SINGLE
-    PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
         self.cursor = connection.cursor()
