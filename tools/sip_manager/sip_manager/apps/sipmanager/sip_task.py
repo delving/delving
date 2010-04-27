@@ -113,6 +113,9 @@ class SipTask(object): #SipProcess(object):
     PRIORITY = SIP_PRIO_NORMAL
 
     # If instances is a positive nr only this many instances may run
+    # mostly relevant for multithreaded plugins that dont accept to be disabled
+    # on high load - we dont want to many such beasts running,
+    # if unlimited they will eventually steal the system and bring it down ;)
     INSTANCES = 0
 
 

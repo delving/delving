@@ -189,12 +189,13 @@ def stats_by_uri(request, order_by=''):
         good = qs_web_server.filter(Q_OK).count()
         bad = qs_web_server.filter(Q_BAD).count()
         waiting = count - good - bad
-        uri_sources.append({'name': name,
-                            'id':source_id,
-                            'waiting': waiting,
-                            'good': good,
-                            'bad': bad,
-                            'ratio': s_calc_ratio(good, bad)})
+        if waiting or good or bad:
+            uri_sources.append({'name': name,
+                                'id':source_id,
+                                'waiting': waiting,
+                                'good': good,
+                                'bad': bad,
+                                'ratio': s_calc_ratio(good, bad)})
 
     return render_to_response("plug_uris/stats_uri_source.html", {
         "uri_sources":uri_sources,
