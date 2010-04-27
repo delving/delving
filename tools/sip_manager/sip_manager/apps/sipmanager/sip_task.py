@@ -70,6 +70,11 @@ SIPT_NOT = 'not threadable' # no threading, monitor should wait for this to comp
 
 SIP_THREAD_STYLES = (SIPT_NOT, SIPT_SINGLE, SIPT_THREADABLE)
 
+SIP_PRIO_LOW = 8
+SIP_PRIO_NORMAL = 5
+SIP_PRIO_HIGH = 2
+
+SIP_PRIOS = (SIP_PRIO_LOW, SIP_PRIO_NORMAL, SIP_PRIO_HIGH)
 
 class SipTask(object): #SipProcess(object):
     """
@@ -105,10 +110,16 @@ class SipTask(object): #SipProcess(object):
     TASK_PROGRESS_TIME = TASK_PROGRESS_INTERVALL
 
 
+    PRIORITY = SIP_PRIO_NORMAL
+
+
     def __init__(self, debug_lvl=2, run_once=False):
         self.debug_lvl = debug_lvl
-        if self.THREAD_MODE not in (SIP_THREAD_STYLES):
+        if self.THREAD_MODE not in SIP_THREAD_STYLES:
             raise SipTaskException('Invalid THREAD_MODE')
+        if self.PRIORITY not in SIP_PRIOS:
+            raise SipTaskException('Invalid PRIORITY')
+
         self.run_once = run_once # if true plugin should exit after one runthrough
         self.pid = os.getpid()
         self.runs_in_thread = False

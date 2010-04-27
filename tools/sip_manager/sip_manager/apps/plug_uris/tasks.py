@@ -193,6 +193,7 @@ class UriPepareStorageDirs(sip_task.SipTask):
 class UriCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Create new uri records'
     THREAD_MODE = sip_task.SIPT_SINGLE
+    PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
         self.cursor = connection.cursor()
@@ -303,6 +304,7 @@ class UriValidateSave(sip_task.SipTask):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
     THREAD_MODE = sip_task.SIPT_THREADABLE
+    PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
 

@@ -64,8 +64,7 @@ class MainProcessor(sip_task.SipTask):
         super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
         self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
-        self.tasks_simple = [] # list of all tasks found
-        self.tasks_heavy = [] # resourcs hogs, careful with multitasking them...
+        self.tasks = [] # list of all tasks found
         if options['flush-all']:
             self.cmd_flush_all()
             sys.exit(0)
@@ -105,23 +104,20 @@ class MainProcessor(sip_task.SipTask):
         idle_count = 0
         while True:
             busy = False
-            # First run all simple tasks once
-            for task_group in (self.tasks_simple, self.tasks_heavy):
+            for task in self.tasks:
+                busy, loads = self.system_is_occupied()
                 if busy:
                     break
-                for taskClass in task_group:
-                    busy, loads = self.system_is_occupied()
-                    if busy:
+                if task(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                    idle_count = 0
+                    # it was started
+                    # should we allow one or more plugs / sleep period?
+                    # if no set busy = True here
+                    if self.task_throttling():
+                        # If we recently terminated a task, do slow starting,
+                        # just one task per timeslot
+                        busy = True
                         break
-                    if taskClass(debug_lvl=SIP_PROCESS_DBG_LVL).run():
-                        # it was started
-                        # should we allow one or more plugs / sleep period?
-                        # if no set busy = True here
-                        if self.task_throttling():
-                            # If we recently terminated a task, do slow starting,
-                            # just one task per timeslot
-                            busy = True
-                        idle_count = 0
 
             if self.single_run:
                 print 'Single run, aborting after one run-through'
@@ -158,35 +154,38 @@ class MainProcessor(sip_task.SipTask):
     """
     def find_tasks(self):
         print ' =====   Scanning for plugins   ====='
+        tasks = []
         for app in settings.INSTALLED_APPS:
             if not app.find('apps') == 0:
                 continue
             try:
                 exec('from %s.tasks import task_list' % app )
-                print ' %s:' % app,
-                for task in task_list:
-                    print task.__name__,
-                    if task.INIT_PLUGIN:
-                        self.tasks_init.append(task)
-                        continue
-                    if PLUGIN_FILTER and not task.__name__ in PLUGIN_FILTER:
-                        # we dont ever want to prevent task inits to run...
-                        continue
-                    resource_hog = False
-                    if task.PLUGIN_TAXES_CPU:
-                        resource_hog = True
-                    if task.PLUGIN_TAXES_DISK_IO:
-                        resource_hog = True
-                    if task.PLUGIN_TAXES_NET_IO:
-                        resource_hog = True
-                    if resource_hog:
-                        self.tasks_heavy.append(task)
-                    else:
-                        self.tasks_simple.append(task)
-                print
             except ImportError as inst:
                 if inst.args[0].find('No module named ') != 0:
                     raise inst
+                continue
+            print ' %s:' % app,
+            for task in task_list:
+                print task.__name__,
+                if task.INIT_PLUGIN:
+                    self.tasks_init.append(task)
+                    continue
+                if PLUGIN_FILTER and not task.__name__ in PLUGIN_FILTER:
+                    # we dont ever want to prevent task inits to run...
+                    continue
+                resource_hog = False
+                if task.PLUGIN_TAXES_CPU:
+                    resource_hog = True
+                if task.PLUGIN_TAXES_DISK_IO:
+                    resource_hog = True
+                if task.PLUGIN_TAXES_NET_IO:
+                    resource_hog = True
+                tasks.append((task.PRIORITY, task))
+            print
+
+        tasks.sort()
+        for pri, task in tasks:
+            self.tasks.append(task)
         print 'done!'
 
 

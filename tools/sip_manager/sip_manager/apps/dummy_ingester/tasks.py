@@ -153,6 +153,7 @@ class RequestCreate(sip_task.SipTask):
 class RequestParseNew(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Parse new Requests'
     PLUGIN_TAXES_CPU = True
+    PRIORITY = sip_task.SIP_PRIO_LOW
 
     #THREAD_MODE = sip_task.SIPT_SINGLE
     THREAD_MODE = sip_task.SIPT_THREADABLE
@@ -184,7 +185,7 @@ class RequestParseNew(sip_task.SipTask):
             return False
 
         self.log('Parsing ese file for records: %s' % self.current_request.full_path, 1)
-        self.task_starting('Reading ESE records from file (req:%i)' % request.pk,request.record_count)
+        self.task_starting('Reading ESE records from file %s (req:%i)' % (request.file_name, request.pk),request.record_count)
         record = []
         record_count = 0
         f = open(self.current_request.full_path, 'r')
