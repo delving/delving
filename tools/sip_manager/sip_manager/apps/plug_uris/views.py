@@ -267,9 +267,9 @@ def s_calc_ratio(part, whole):
     return s
 
 def calc_ratio(part, whole):
-    if not part:
+    if not whole:
         # avoid divide by zero
-        return 0
+        return 100
     f =  (part/float(whole)) * 100
     return f
 
