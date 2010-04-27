@@ -158,6 +158,8 @@ class RequestParseNew(sip_task.SipTask):
     #THREAD_MODE = sip_task.SIPT_SINGLE
     THREAD_MODE = sip_task.SIPT_THREADABLE
 
+    INSTANCES = 3
+
     def prepare(self):
         try:
             request = models.Request.objects.filter(status=models.REQS_PRE,

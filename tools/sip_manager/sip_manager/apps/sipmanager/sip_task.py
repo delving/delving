@@ -109,8 +109,12 @@ class SipTask(object): #SipProcess(object):
     # how often task status should be updated
     TASK_PROGRESS_TIME = TASK_PROGRESS_INTERVALL
 
-
+    # tasks are sorted in priority order
     PRIORITY = SIP_PRIO_NORMAL
+
+    # If instances is a positive nr only this many instances may run
+    INSTANCES = 0
+
 
 
     def __init__(self, debug_lvl=2, run_once=False):
@@ -134,6 +138,9 @@ class SipTask(object): #SipProcess(object):
             return
 
         ret = False
+
+        if self.instance_limit_reached():
+            return ret
 
         if self.do_prepare():
             try:
@@ -298,6 +305,14 @@ class SipTask(object): #SipProcess(object):
             pass
         self.process_cleanup()
 
+
+    def instance_limit_reached(self):
+        if self.INSTANCES < 1:
+            return False # we dont limit instances
+        i = models.ProcessMonitoring.objects.filter(plugin_name=self.short_name()).count()
+        if i >= self.INSTANCES:
+            return True # instance limit reached
+        return False
 
     # ==========   Pid locking mechanisms   ====================
     def grab_item(self, cls, pk, task_description='', wait=0):
