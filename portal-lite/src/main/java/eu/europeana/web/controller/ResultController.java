@@ -86,7 +86,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        page.addObject("imageAnnotationToolBaseUrl",imageAnnotationToolBaseUrl);
+        page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }
@@ -119,7 +119,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        page.addObject("imageAnnotationToolBaseUrl",imageAnnotationToolBaseUrl);
+        page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }
@@ -153,6 +153,25 @@ public class ResultController {
         return page;
     }
 
+    @SuppressWarnings({"unchecked"})
+    @RequestMapping("/comparator.html")
+    public ModelAndView searchComparator(HttpServletRequest request) throws EuropeanaQueryException, UnsupportedEncodingException {
+
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        solrQuery.setIncludeScore(true);
+        solrQuery.setShowDebugInfo(true);
+        solrQuery.setQueryType("clean_dismax");
+        solrQuery.setParam("qf", "title^1.1");
+        solrQuery.setParam("mm", "2&lt;-1 5&lt;-2 6&lt;90%");
+        BriefBeanView defaultBriefBeanView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
+
+        ModelAndView page = ControllerUtil.createModelAndViewPage("search-comparator");
+        page.addObject("defaultView", defaultBriefBeanView);
+
+        return page;
+    }
+
+
 //    <prop key="/brief-doc.rss">briefDocController</prop>
 //    <prop key="/brief-doc.rdf">briefDocController</prop>
 //    <prop key="/brief-doc.srw">briefDocController</prop>
@@ -175,9 +194,11 @@ public class ResultController {
         String redirectLink;
         if (isShownAt != null) {
             redirectLink = isShownAt;
-        } else if (isShownBy != null) {
+        }
+        else if (isShownBy != null) {
             redirectLink = isShownBy;
-        } else {
+        }
+        else {
             throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
         }
         String logString = MessageFormat.format("outlink={0}, provider={2}, europeana_id={1}", redirectLink, europeanaId, provider);

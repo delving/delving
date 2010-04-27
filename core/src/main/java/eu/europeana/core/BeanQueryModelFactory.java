@@ -437,19 +437,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private SolrQuery copySolrQuery(SolrQuery solrQuery) {
-        SolrQuery dCopy = new SolrQuery();
-        dCopy.setQuery(solrQuery.getQuery());
-        dCopy.setStart(solrQuery.getStart());
-        dCopy.setQueryType(solrQuery.getQueryType());
-        dCopy.setRows(solrQuery.getRows());
-        //todo do you need to add any more copies
-        if (solrQuery.getFacetFields() != null) {
-            dCopy.setFacet(true);
-            dCopy.setFacetMinCount(solrQuery.getFacetMinCount());
-            dCopy.setFacetLimit(solrQuery.getFacetLimit());
-            dCopy.addFacetField(solrQuery.getFacetFields());
-            dCopy.setFields(solrQuery.getFields());
-        }
+        SolrQuery dCopy = solrQuery.getCopy();
         dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, annotationProcessor.getFacetMap()));
         return dCopy;
     }
