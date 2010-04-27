@@ -265,6 +265,6 @@ def calc_ratio(part, whole):
     if not part:
         # avoid divide by zero
         return 0
-    return 100 - (whole/float(part)) * 100
+    return 100 - (part/float(whole)) * 100
 
 
