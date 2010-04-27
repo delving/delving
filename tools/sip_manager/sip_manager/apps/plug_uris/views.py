@@ -265,6 +265,6 @@ def calc_ratio(good, bad):
     if not good:
         # avoid divide by zero
         return 0
-    return 100-bad/float(good) * 100
+    return 100 - (bad/float(good)) * 100
 
 
