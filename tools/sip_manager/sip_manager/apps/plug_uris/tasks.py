@@ -202,7 +202,7 @@ class UriCreate(sip_task.SipTask):
         # TODO: In desperate need of optimization!
         sql = ["SELECT DISTINCT m.id FROM base_item_mdrecord m"]
         sql.append("LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id")
-        sql.append("WHERE u.mdr_id IS NULL and m.status != %i" % base_item.MDRS_BROKEN)
+        sql.append("WHERE u.mdr_id IS NULL and m.status != %i LIMIT 25000" % base_item.MDRS_BROKEN)
         self.cursor.execute(" ".join(sql))
 
         if self.cursor.rowcount:
