@@ -22,7 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.groovy.Conversion;
+import eu.europeana.sip.convert.Generator;
 import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.SipModel;
@@ -35,6 +35,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -43,8 +44,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * A Graphical interface for analysis
@@ -55,8 +54,9 @@ import java.awt.event.ItemListener;
 
 public class MappingPanel extends JPanel {
     private SipModel sipModel;
-    private JButton createMappingButton = new JButton("Create Mapping");
-    private JComboBox conversionChoice = new JComboBox(Conversion.values());
+    private JButton createMappingButton = new JButton("<html><center>Create<br>Mapping");
+    private JButton removeMappingButton = new JButton("Remove Selected Mapping");
+    private JComboBox conversionChoice = new JComboBox(Generator.MAP.keySet().toArray());
     private JTextArea groovyCodeArea = new JTextArea();
     private JList variablesList, mappingList, fieldList;
 
@@ -64,26 +64,39 @@ public class MappingPanel extends JPanel {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
-        gbc.weightx = 0.3;
+        gbc.insets = new Insets(5, 15, 5, 15);
         gbc.fill = GridBagConstraints.BOTH;
+        // input panel
         gbc.gridx = gbc.gridy = 0;
+        gbc.weightx = 0.3;
         gbc.weighty = 0.8;
         add(createInputPanel(), gbc);
+        // converter choice
         gbc.gridy++;
         gbc.weighty = 0.1;
-        add(createMappingButton, gbc);
+        add(createConverterChoice(), gbc);
+        // output panel
         gbc.gridy++;
         gbc.weighty = 0.8;
         add(createOutputPanel(), gbc);
+        // create mapping button
+        gbc.gridx++;
+        gbc.gridy = 0;
+        gbc.weightx = 0.1;
+        gbc.gridheight = 3;
+        add(createMappingButton, gbc);
+        gbc.gridheight = 1;
+        // field mapping panel
         gbc.gridx++;
         gbc.gridy = 0;
         gbc.weightx = 0.7;
         gbc.weighty = 0.8;
         add(createFieldMappingListPanel(), gbc);
+        // remove mapping button
         gbc.gridy++;
         gbc.weighty = 0.1;
-        add(createConverterChoice(), gbc);
+        add(removeMappingButton, gbc);
+        // groovy panel
         gbc.gridy++;
         gbc.weighty = 0.8;
         add(createGroovyPanel(), gbc);
@@ -94,38 +107,38 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldMapping fieldMapping = new FieldMapping((Conversion) conversionChoice.getSelectedItem());
+                FieldMapping fieldMapping = new FieldMapping(conversionChoice.getSelectedItem().toString());
                 for (Object variable : variablesList.getSelectedValues()) {
                     fieldMapping.addFromVariable((String) variable);
                 }
                 for (Object field : fieldList.getSelectedValues()) {
-                    fieldMapping.addToField(((EuropeanaField)field).getFieldNameString());
+                    fieldMapping.addToField(((EuropeanaField) field).getFieldNameString());
                 }
+                fieldMapping.generateCode();
                 sipModel.addFieldMapping(fieldMapping);
+                mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
             }
         });
-        conversionChoice.addItemListener(new ItemListener() {
+        removeMappingButton.addActionListener(new ActionListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
-                // todo: implement
-            }
-        });
-        variablesList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                // todo: implement
-            }
-        });
-        fieldList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                // todo: implement
+            public void actionPerformed(ActionEvent e) {
+                FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
+                if (fieldMapping != null) {
+                    sipModel.removeFieldMapping(fieldMapping);
+                }
             }
         });
         mappingList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                // todo: implement
+                FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
+                if (fieldMapping != null) {
+                    StringBuilder out = new StringBuilder();
+                    for (String codeLine : fieldMapping.getCodeLines()) {
+                        out.append(codeLine).append('\n');
+                    }
+                    groovyCodeArea.setText(out.toString());
+                }
             }
         });
     }
@@ -157,6 +170,7 @@ public class MappingPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
         mappingList = new JList(sipModel.getFieldMappingListModel());
+        mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scroll = new JScrollPane(mappingList);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -174,6 +188,7 @@ public class MappingPanel extends JPanel {
     private JPanel createGroovyPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
+        groovyCodeArea.setEditable(false);
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll);
         return p;

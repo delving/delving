@@ -18,17 +18,18 @@
  *  See the Licence for the specific language governing
  *  permissions and limitations under the Licence.
  */
+
 package eu.europeana.sip.groovy;
 
+import java.util.List;
+
 /**
- * todo: javadoc
+ * The interface that converters have to implement
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public enum Conversion {
-    VERBATIM,
-    CONTEXTUALIZE,
-    EXTRACT_YEAR,
-
+public interface Converter {
+    boolean applicable(FieldMapping fieldMapping);
+    List generateCode(FieldMapping fieldMapping);
 }

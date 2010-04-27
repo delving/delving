@@ -38,7 +38,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -90,6 +89,7 @@ public class NormPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Input Record"));
         JTextArea area = new JTextArea(sipModel.getInputDocument());
+        area.setEditable(false);
         p.add(scroll(area), BorderLayout.CENTER);
         p.add(createInputButtons(), BorderLayout.SOUTH);
         return p;
@@ -110,7 +110,7 @@ public class NormPanel extends JPanel {
                 sipModel.nextRecord();
             }
         });
-        JPanel p = new JPanel(new GridLayout(1, 0, 5, 5));
+        JPanel p = new JPanel();
         p.add(rewind);
         p.add(next);
         return p;
@@ -120,6 +120,7 @@ public class NormPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
         JTextArea area = new JTextArea(sipModel.getCodeDocument());
+        area.setEditable(false);
         p.add(scroll(area));
         return p;
     }
@@ -128,6 +129,7 @@ public class NormPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
         JTextArea area = new JTextArea(sipModel.getOutputDocument());
+        area.setEditable(false);
         p.add(scroll(area));
         return p;
     }

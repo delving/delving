@@ -21,6 +21,8 @@
 
 package eu.europeana.sip.groovy;
 
+import eu.europeana.sip.convert.Generator;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -36,26 +38,24 @@ import java.util.regex.Pattern;
  */
 
 public class FieldMapping {
-    private static final Pattern REGEX = Pattern.compile("^([^{]+)\\{([^}]+)\\}\\{([^}]+)\\}$");
-    private Conversion conversion;
+    private static final Pattern FULL_PATTERN = Pattern.compile("^([^{]+)\\{([^}]+)\\}\\{([^}]+)\\}$");
+    private String converterName;
     private List<String> fromVariables = new ArrayList<String>();
     private List<String> toFields = new ArrayList<String>();
     private List<String> codeLines = new ArrayList<String>();
 
     public FieldMapping(String string) {
-        Matcher matcher = REGEX.matcher(string);
-        if (!matcher.find()) {
-            throw new RuntimeException("No match for ["+string+"]");
+        Matcher matcher = FULL_PATTERN.matcher(string);
+        if (matcher.find()) {
+            converterName = matcher.group(1);
+            String from = matcher.group(2);
+            String to = matcher.group(3);
+            fromVariables.addAll(Arrays.asList(from.split(",")));
+            toFields.addAll(Arrays.asList(to.split(",")));
         }
-        conversion = Conversion.valueOf(matcher.group(1));
-        String from = matcher.group(2);
-        String to = matcher.group(3);
-        fromVariables.addAll(Arrays.asList(from.split(",")));
-        toFields.addAll(Arrays.asList(to.split(",")));
-    }
-
-    public FieldMapping(Conversion conversion) {
-        this.conversion = conversion;
+        else {
+            this.converterName = string;
+        }
     }
 
     public void addFromVariable(String fromVariable) {
@@ -70,8 +70,8 @@ public class FieldMapping {
         codeLines.add(codeLine);
     }
 
-    public Conversion getConversion() {
-        return conversion;
+    public String getConverterName() {
+        return converterName;
     }
 
     public List<String> getFromVariables() {
@@ -86,8 +86,22 @@ public class FieldMapping {
         return codeLines;
     }
 
+    @SuppressWarnings("unchecked")
+    public void generateCode() {
+        codeLines.clear();
+        Converter converter = Generator.getConverter(converterName);
+        List lines = converter.generateCode(this);
+        for (Object line : lines) {
+            codeLines.add(line.toString());
+        }
+    }
+
+    public String getArgumentPattern() {
+        return fromVariables.size()+":"+toFields.size();
+    }
+
     public String toString() {
-        StringBuilder out = new StringBuilder(conversion+"{");
+        StringBuilder out = new StringBuilder(converterName+"{");
         Iterator<String> walk = fromVariables.iterator();
         while (walk.hasNext()) {
             out.append(walk.next());
