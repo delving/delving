@@ -190,6 +190,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         if (!siwa.isEmpty()) {
             out.append("&siwa=").append(siwa);
         }
+        out.append("&rtr=true");
         returnToResults = out.toString();
     }
 

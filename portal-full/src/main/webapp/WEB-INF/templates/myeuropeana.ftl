@@ -88,7 +88,7 @@
                                     <tr>
                                         <td valign="top" class="item-img">
                                             <#if !item.europeanaId.orphan>
-                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}">
+                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}&bt=savedItem">
                                                 <#if useCache="true">
                                                     <img class="thumb" align="middle"
                                                      src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC"
@@ -102,7 +102,7 @@
                                         </td>
                                         <td valign="top" class="item-info">
                                            <#if !item.europeanaId.orphan>
-                                                <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}"><strong><@stringLimiter "${item.title}" "50"/></strong></a>
+                                                <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}&bt=savedItem"><strong><@stringLimiter "${item.title}" "50"/></strong></a>
                                                 <p>
                                                     creator: <em>${item.author}</em></p>
                                                 <p>
@@ -175,7 +175,7 @@
                                 <#list user.savedSearches as search>
                                 <tr>
                                     <td valign="top" class="item-info">
-                                        <a href="brief-doc.html?${search.query}">${search.queryString}</a>
+                                        <a href="brief-doc.html?${search.query}&bt=savedSearch">${search.queryString}</a>
                                         <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
                                         <div class="ui-widget ui-error" id="removeRequestMessage-${search.id?string("0")}" style="display:none">
                                             <p><strong>An error occured.</strong> The item could not be removed</p>
@@ -230,7 +230,7 @@
                                           <#if !tag.europeanaId.orphan>
                                             <#if tag.europeanaObject??>
                                             <#if useCache = "true">
-                                                <img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC"
+                                                <img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC&bt=savedTag"
                                                  alt="Click for more information" width="25" onerror="showDefault(this,'${tag.docType}')"/>
                                             </#if>
                                              </#if>
