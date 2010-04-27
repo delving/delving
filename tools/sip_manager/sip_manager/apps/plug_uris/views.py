@@ -98,6 +98,7 @@ def stats_req_lst(request):
                     'waiting': waiting,
                     'ok': itm_ok,
                     'bad': itm_bad,
+                    'ratio': s_calc_ratio(itm_ok, count),
                     })
 
     return render_to_response("plug_uris/stats_all_requests.html", {
