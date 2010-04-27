@@ -313,12 +313,11 @@ class UriValidateSave(sip_task.SipTask):
 
         # in order to not try the same urisource all the time when one task
         # previously was terminated due to high load, we randomize the order
-        lst = urisources._result_cache[:]
+        lst = [p['pk'] for p in urisources]
         random.shuffle(lst)
 
         self.urisource = None
-        for d in lst:
-            urisource_id = d['pk']
+        for urisource_id in lst:
             # Loop over available sources, see if any of them has pending jobs
             if models.Uri.objects.new_by_source_count(urisource_id):
                 # found one!  lets work on it

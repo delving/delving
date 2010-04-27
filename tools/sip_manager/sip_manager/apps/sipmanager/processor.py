@@ -104,11 +104,12 @@ class MainProcessor(sip_task.SipTask):
         idle_count = 0
         while True:
             busy = False
-            for task in self.tasks:
+            for taskClass in self.tasks:
                 busy, loads = self.system_is_occupied()
                 if busy:
                     break
-                if task(debug_lvl=SIP_PROCESS_DBG_LVL).run():
+                task = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
+                if task.run():
                     idle_count = 0
                     # it was started
                     # should we allow one or more plugs / sleep period?
