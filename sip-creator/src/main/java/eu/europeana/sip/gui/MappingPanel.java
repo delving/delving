@@ -77,7 +77,7 @@ public class MappingPanel extends JPanel {
         gbc.gridy = 0;
         gbc.weightx = 0.7;
         gbc.weighty = 0.8;
-        add(createMappingListPanel(), gbc);
+        add(createFieldMappingListPanel(), gbc);
         gbc.gridy++;
         gbc.weighty = 0.1;
         add(createConverterChoice(), gbc);
@@ -122,28 +122,34 @@ public class MappingPanel extends JPanel {
 
     private JPanel createInputPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Input Variables"));
-        variablesList = new JList(sipModel.getVariablesListModel());
+        p.setBorder(BorderFactory.createTitledBorder("Unmapped Variables"));
+        variablesList = new JList(sipModel.getUnmappedVariablesListModel());
         JScrollPane scroll = new JScrollPane(variablesList);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll);
         return p;
     }
 
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Output Variables"));
-        fieldList = new JList(sipModel.getFieldListModel());
+        p.setBorder(BorderFactory.createTitledBorder("Unmapped Fields"));
+        fieldList = new JList(sipModel.getUnmappedFieldListModel());
         fieldList.setCellRenderer(new FieldListModel.CellRenderer());
         JScrollPane scroll = new JScrollPane(fieldList);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll);
         return p;
     }
 
-    private JPanel createMappingListPanel() {
+    private JPanel createFieldMappingListPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Mappings"));
-        mappingList = new JList(new Object[]{"one mapping", "another"});
+        p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
+        mappingList = new JList(sipModel.getFieldMappingListModel());
         JScrollPane scroll = new JScrollPane(mappingList);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll);
         return p;
     }

@@ -22,6 +22,8 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.AnalysisParser;
 
 import javax.swing.ListModel;
@@ -43,14 +45,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public class SipModel {
-    private FieldListModel fieldListModel;
     private FileSet fileSet;
     private List<Statistics> statisticsList;
     private AnalysisTree analysisTree;
+    private RecordMapping recordMapping;
     private QName recordRoot;
     private DefaultTreeModel analysisTreeModel;
+    private FieldListModel fieldListModel;
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
+    private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private List<FileSetListener> fileSetListeners = new CopyOnWriteArrayList<FileSetListener>();
@@ -81,11 +85,11 @@ public class SipModel {
         this.fileSet = fileSet;
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
+        setRecordMapping(fileSet.getMapping());
         statisticsTableModel.setCounterList(null);
 
         // todo: remove
         try {
-            codeDocument.insertString(0, "Code", null);
             outputDocument.insertString(0, "Output", null);
         }
         catch (BadLocationException e) {
@@ -166,8 +170,39 @@ public class SipModel {
         return fieldListModel;
     }
 
+    public ListModel getUnmappedFieldListModel() {
+        return fieldListModel.createUnmapped(fieldMappingListModel);
+    }
+
     public ListModel getVariablesListModel() {
         return variableListModel;
+    }
+
+    public ListModel getUnmappedVariablesListModel() {
+        return variableListModel.createUnmapped(fieldMappingListModel);
+    }
+
+    public String getRecordMappingString() {
+        if (recordMapping == null) {
+            return "";
+        }
+        else {
+            return recordMapping.toString();
+        }
+    }
+
+    public void addFieldMapping(FieldMapping fieldMapping) {
+        recordMapping.getFieldMappings().add(fieldMapping);
+        setRecordMapping(recordMapping.getCode());
+    }
+
+    public void removeFieldMapping(FieldMapping fieldMapping) {
+        recordMapping.getFieldMappings().remove(fieldMapping);
+        setRecordMapping(recordMapping.getCode());
+    }
+
+    public ListModel getFieldMappingListModel() {
+        return fieldMappingListModel;
     }
 
     public Document getCodeDocument() {
@@ -180,6 +215,19 @@ public class SipModel {
 
     // === privates
 
+    private void setRecordMapping(String recordMappingString) {
+        recordMapping = new RecordMapping(recordMappingString);
+        int docLength = codeDocument.getLength();
+        try {
+            codeDocument.remove(0, docLength);
+            codeDocument.insertString(0, recordMapping.getCode(), null);
+        }
+        catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+        fieldMappingListModel.setList(recordMapping.getFieldMappings());
+    }
+
     private void setRecordRootInternal(QName recordRoot) {
         this.recordRoot = recordRoot;
         AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot);
@@ -187,10 +235,10 @@ public class SipModel {
         if (recordRoot != null) {
             List<String> variables = new ArrayList<String>();
             analysisTree.getVariables(variables);
-            variableListModel.setList(variables);
+            variableListModel.setVariableList(variables);
         }
         else {
-            variableListModel.setList(null);
+            variableListModel.setVariableList(null);
         }
     }
 

@@ -23,10 +23,14 @@ package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.groovy.FieldMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,12 +44,11 @@ import java.util.List;
  */
 
 public class FieldListModel extends AbstractListModel {
-    private static final long serialVersionUID = 939393939;
-    private List<EuropeanaField> list;
+    private List<EuropeanaField> europeanaFieldList;
 
     public FieldListModel(AnnotationProcessor annotationProcessor) {
-        this.list = new ArrayList<EuropeanaField>(annotationProcessor.getMappableFields());
-        Collections.sort(list, new Comparator<EuropeanaField>() {
+        this.europeanaFieldList = new ArrayList<EuropeanaField>(annotationProcessor.getMappableFields());
+        Collections.sort(europeanaFieldList, new Comparator<EuropeanaField>() {
             @Override
             public int compare(EuropeanaField field0, EuropeanaField field1) {
                 return field0.getFieldNameString().compareTo(field1.getFieldNameString());
@@ -53,14 +56,21 @@ public class FieldListModel extends AbstractListModel {
         });
     }
 
+    public ListModel createUnmapped(FieldMappingListModel fieldMappingListModel) {
+        Unmapped unmapped = new Unmapped(fieldMappingListModel.getList());
+        fieldMappingListModel.addListDataListener(unmapped);
+        this.addListDataListener(unmapped);
+        return unmapped;
+    }
+
     @Override
     public int getSize() {
-        return list.size();
+        return europeanaFieldList.size();
     }
 
     @Override
     public Object getElementAt(int index) {
-        return list.get(index);
+        return europeanaFieldList.get(index);
     }
 
     public static class CellRenderer extends DefaultListCellRenderer {
@@ -71,4 +81,54 @@ public class FieldListModel extends AbstractListModel {
         }
     }
 
+    public class Unmapped extends AbstractListModel implements ListDataListener {
+        private List<FieldMapping> fieldMappingList;
+        private List<EuropeanaField> unmappedFields = new ArrayList<EuropeanaField>();
+
+        public Unmapped(List<FieldMapping> fieldMappingList) {
+            this.fieldMappingList = fieldMappingList;
+        }
+
+        @Override
+        public int getSize() {
+            return unmappedFields.size();
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            return unmappedFields.get(index);
+        }
+
+        @Override
+        public void intervalAdded(ListDataEvent e) {
+            refresh();
+        }
+
+        @Override
+        public void intervalRemoved(ListDataEvent e) {
+            refresh();
+        }
+
+        @Override
+        public void contentsChanged(ListDataEvent e) {
+            refresh();
+        }
+
+        private void refresh() {
+            int sizeBefore = getSize();
+            unmappedFields.clear();
+            fireIntervalRemoved(this, 0, sizeBefore);
+            nextVariable: for (EuropeanaField field : europeanaFieldList) {
+                for (FieldMapping fieldMapping : fieldMappingList) {
+                    for (String mappedField : fieldMapping.getToFields()) {
+                        if (mappedField.equals(field.getFieldNameString())) {
+                            continue nextVariable;
+                        }
+                    }
+                }
+                unmappedFields.add(field);
+            }
+            fireIntervalAdded(this, 0, getSize());
+        }
+    }
 }

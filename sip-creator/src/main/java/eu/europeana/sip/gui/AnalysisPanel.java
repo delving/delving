@@ -35,6 +35,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -265,7 +266,7 @@ public class AnalysisPanel extends JPanel {
         }
     }
 
-    private class Expander implements TreeModelListener, Runnable {
+    private class Expander implements TreeModelListener {
 
         @Override
         public void treeNodesChanged(TreeModelEvent e) {
@@ -281,11 +282,13 @@ public class AnalysisPanel extends JPanel {
 
         @Override
         public void treeStructureChanged(TreeModelEvent e) {
-            SwingUtilities.invokeLater(this);
-        }
-
-        public void run() {
-            expandEmptyNodes((AnalysisTree.Node) statisticsJTree.getModel().getRoot());
+            Timer timer = new Timer(500, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    expandEmptyNodes((AnalysisTree.Node) statisticsJTree.getModel().getRoot());
+                }
+            });
+            timer.start();
         }
 
         private void expandEmptyNodes(AnalysisTree.Node node) {
