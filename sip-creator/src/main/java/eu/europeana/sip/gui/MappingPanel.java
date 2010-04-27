@@ -133,11 +133,7 @@ public class MappingPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    StringBuilder out = new StringBuilder();
-                    for (String codeLine : fieldMapping.getCodeLines()) {
-                        out.append(codeLine).append('\n');
-                    }
-                    groovyCodeArea.setText(out.toString());
+                    groovyCodeArea.setText(fieldMapping.getCodeForDisplay());
                 }
             }
         });

@@ -206,14 +206,14 @@ public class SipModel {
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         recordMapping.getFieldMappings().add(fieldMapping);
-        String code = recordMapping.getCode();
+        String code = recordMapping.getCodeForPersistence();
         setRecordMapping(code);
         fileSet.setMapping(code);
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         recordMapping.getFieldMappings().remove(fieldMapping);
-        String code = recordMapping.getCode();
+        String code = recordMapping.getCodeForPersistence();
         setRecordMapping(code);
         fileSet.setMapping(code);
     }
@@ -263,7 +263,7 @@ public class SipModel {
     private void setRecordMapping(String recordMappingString) {
         recordMapping = new RecordMapping(recordMappingString);
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, recordMappingString));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, recordMapping.getCodeForDisplay()));
         compileCode();
     }
 
@@ -341,7 +341,7 @@ public class SipModel {
         private StringWriter writer = new StringWriter();
 
         private CompilationRunner() {
-            this.code = recordMapping.getCode();
+            this.code = recordMapping.getCodeForPersistence();
         }
 
         @Override

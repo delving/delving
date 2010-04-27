@@ -96,6 +96,24 @@ public class FieldMapping {
         }
     }
 
+    public String getCodeForDisplay() {
+        StringBuilder out = new StringBuilder();
+        int indent = 0;
+        for (String codeLine : codeLines) {
+            if (codeLine.endsWith("}")) {
+                indent--;
+            }
+            for (int walk = 0; walk<indent; walk++) {
+                out.append("   ");
+            }
+            out.append(codeLine).append('\n');
+            if (codeLine.endsWith("{")) {
+                indent++;
+            }
+        }
+        return out.toString();
+    }
+
     public String getArgumentPattern() {
         return fromVariables.size()+":"+toFields.size();
     }
@@ -120,4 +138,5 @@ public class FieldMapping {
         out.append("}");
         return out.toString();
     }
+
 }
