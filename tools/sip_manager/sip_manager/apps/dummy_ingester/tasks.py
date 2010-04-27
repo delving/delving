@@ -181,7 +181,7 @@ class RequestParseNew(sip_task.SipTask):
         request.status = models.REQS_INIT
         request.save()
 
-        self.current_request = request # make it available without params for other modules
+        self.current_request = request # save it for later use
         if not self.verify_file():
             # verify has already logged the error, so just exit
             return False

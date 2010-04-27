@@ -35,6 +35,7 @@ from django.db import connection
 from utils.gen_utils import db_is_mysql
 
 import sip_task
+import models
 
 
 # Since looking up in settings takes some extra cpu, important settings
@@ -103,6 +104,7 @@ class MainProcessor(sip_task.SipTask):
         print 'Task kill limits    = (%0.1f, %0.1f, %0.1f)' % settings.MAX_LOAD_RUNNING_TASKS
         idle_count = 0
         while True:
+            new_task_started = False
             busy = False
             for taskClass in self.tasks:
                 busy, loads = self.system_is_occupied()
@@ -110,7 +112,7 @@ class MainProcessor(sip_task.SipTask):
                     break
                 task = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
                 if task.run():
-                    idle_count = 0
+                    new_task_started = True
                     # it was started
                     # should we allow one or more plugs / sleep period?
                     # if no set busy = True here
@@ -123,11 +125,17 @@ class MainProcessor(sip_task.SipTask):
             if self.single_run:
                 print 'Single run, aborting after one run-through'
                 break # only run once
-            if not busy:
-                idle_count += 1
-            if SIP_PROCESS_DBG_LVL > 7 or idle_count > 10: # dont indicate idling too often...
+
+
+            if new_task_started:
                 idle_count = 0
-                print ' nothing to do for the moment...'
+            else:
+                idle_count += 1
+            if SIP_PROCESS_DBG_LVL > 1 or idle_count > 10: # dont indicate idling too often...
+                idle_count = 0
+                if not models.ProcessMonitoring.objects.all().count():
+                    print ' nothing to do for the moment...'
+
 
             if self.task_throttling():
                 t = max(PROCESS_SLEEP_TIME, 60)
