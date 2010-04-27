@@ -148,7 +148,7 @@ public class SitemapController {
 		return mavPage;
 	}
 
-	@RequestMapping("/europeana-sitemap.html")
+	@RequestMapping("/europeana-contributors.html")
 	public ModelAndView handleCollections(
 			HttpServletRequest request
 	) throws SolrServerException, EuropeanaQueryException {

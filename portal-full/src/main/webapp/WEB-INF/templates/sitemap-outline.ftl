@@ -45,7 +45,7 @@
                                 <li><a href="accessibility.html"><@spring.message 'Accessibility_t' /></a></li>
                                 <li><a href="sitemap.html"><@spring.message 'Sitemap_t' /></a></li>
                                 <li><a href="termsofservice.html"><@spring.message 'TermsAndConditions_t' /></a>
-                                <li><a href="europeana-sitemap.html"><@spring.message 'Contributors_t' /></a></li>
+                                <li><a href="europeana-contributors.html"><@spring.message 'Contributors_t' /></a></li>
                                 <#-- <ul class="sub">
                                     <li><a href="termsofservice.html">Copyright</a></li>
                                     <li><a href="termsofservice.html">Permitted use</a></li>
