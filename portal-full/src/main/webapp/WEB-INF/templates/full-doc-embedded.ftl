@@ -45,11 +45,10 @@
 
 <#include "inc_header.ftl">
 
-<div id="wrapper">
-    <table border="0" cellspacing="1" cellpadding="1" width="200px" summary="results - item detail">
+<div id="wrapper" style="margin:5px">
+    <table border="0" cellspacing="1" cellpadding="5" style="border:1px solid darkorange; max-width=220px; width="220px" summary="results - item detail">
         <tr>
-            <td>
-                <div style="width:200px; max-height: 400px; overflow-x:hidden; overflow-y:hidden; scrolling: none;  text-align:center; ">
+            <td colspan="3">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
@@ -73,13 +72,12 @@
                         </#if>
 
                     </a>
-                </div>
                </td>
            </tr>
            <tr>    
-            <td>
+            <td colspan="3">
                 <div about="${result.fullDoc.id}" style="max-width:200px">
-                    <h2 class="${result.fullDoc.europeanaType}">
+                    <h2 style="font: 100% sans-serif; max-width:200px;">
                         <#assign tl = "">
                         <#if !model.fullDoc.dcTitle[0]?matches(" ")>
                             <#assign tl= result.fullDoc.dcTitle[0]>
@@ -87,9 +85,9 @@
                             <#assign tl=result.fullDoc.dcTermsAlternative[0]>
                         <#else>
                             <#assign tl = result.fullDoc.dcDescription[0] />
-                            <#if tl?length &gt; 50>
-                                <#assign tl = result.fullDoc.dcDescription[0]?substring(0, 50) + "..."/>
                          </#if>
+                         <#if tl?length &gt; 30>
+                                <#assign tl = tl?substring(0, 30) + "..."/>
                         </#if>
                         ${tl}
                     </h2>
@@ -97,7 +95,6 @@
             </td>
            </tr>
            <tr>
-           <table>
             <#assign max=3/><!-- max shown in list -->
             <#list result.relatedItems as doc>
             <#if doc_index &gt; 2><#break/></#if>
@@ -115,7 +112,11 @@
                             </a>
                 </td>
             </#list>
-            </table>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align:right;font-size:80%;">
+             <@spring.message 'FindOutMore_t'/> <a href="${uri}" style="background-color:darkorange;color:white;text-decoration:none;padding-left:3px;padding-right:1px;">Europeana.eu</a>
+            </td>
         </tr>
     </table>
     </div>
