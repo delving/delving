@@ -29,15 +29,16 @@ import org.apache.log4j.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,8 +60,6 @@ public class NormPanel extends JPanel {
     private SipModel sipModel;
     private JButton normalizeButton = new JButton("Normalize");
     private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
-    private JLabel progressLabel = new JLabel("Make your choice", JLabel.CENTER);
-    private JLabel memoryLabel = new JLabel("Memory", JLabel.CENTER);
     private JButton abort = new JButton("Abort");
     private Normalizer normalizer;
 
@@ -90,28 +89,55 @@ public class NormPanel extends JPanel {
     private JPanel createInputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Input Record"));
-        JList list = new JList(new Object[]{"input", "record"});
-        JScrollPane scroll = new JScrollPane(list);
-        p.add(scroll);
+        JTextArea area = new JTextArea(sipModel.getInputDocument());
+        p.add(scroll(area), BorderLayout.CENTER);
+        p.add(createInputButtons(), BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel createInputButtons() {
+        JButton rewind = new JButton("Rewind");
+        rewind.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sipModel.firstRecord();
+            }
+        });
+        JButton next = new JButton("Next");
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sipModel.nextRecord();
+            }
+        });
+        JPanel p = new JPanel(new GridLayout(1, 0, 5, 5));
+        p.add(rewind);
+        p.add(next);
         return p;
     }
 
     private JPanel createCodePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea outputArea = new JTextArea(sipModel.getCodeDocument());
-        JScrollPane scroll = new JScrollPane(outputArea);
-        p.add(scroll);
+        JTextArea area = new JTextArea(sipModel.getCodeDocument());
+        p.add(scroll(area));
         return p;
     }
 
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea outputArea = new JTextArea(sipModel.getOutputDocument());
-        JScrollPane scroll = new JScrollPane(outputArea);
-        p.add(scroll);
+        JTextArea area = new JTextArea(sipModel.getOutputDocument());
+        p.add(scroll(area));
         return p;
+    }
+
+    private JScrollPane scroll(JComponent content) {
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setPreferredSize(new Dimension(300, 800));
+        return scroll;
     }
 
     private JPanel createNormalizePanel() {

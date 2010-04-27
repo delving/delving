@@ -23,6 +23,7 @@ package eu.europeana.sip.groovy;
 
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.xml.MetadataParser;
+import eu.europeana.sip.xml.MetadataRecord;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
 import org.apache.log4j.Logger;
@@ -50,7 +51,7 @@ public class GroovyService {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private MetadataParser metadataParser;
     private FileSet fileSet;
-    private GroovyNode record;
+    private MetadataRecord record;
     private Listener listener;
     private String mapping;
     private CompilationRunner compilationRunner = new CompilationRunner();
@@ -77,8 +78,8 @@ public class GroovyService {
         executor.execute(new FileSetLoader());
     }
 
-    public void compile(GroovyNode groovyNode) {
-        this.record = groovyNode;
+    public void compile(MetadataRecord record) {
+        this.record = record;
         compilationRunner.setMapping(mapping);
     }
 

@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.groovy.GroovyNode;
 import eu.europeana.sip.groovy.MappingScriptBinding;
 import eu.europeana.sip.model.FileSet;
 import groovy.lang.GroovyShell;
@@ -63,7 +62,7 @@ public class Normalizer implements Runnable {
             GroovyShell shell = new GroovyShell(mappingScriptBinding);
             Script script = shell.parse(mapping);
             script.setBinding(mappingScriptBinding);
-            GroovyNode record;
+            MetadataRecord record;
             int count = 0;
             running = true;
             while ((record = parser.nextRecord()) != null && running) {

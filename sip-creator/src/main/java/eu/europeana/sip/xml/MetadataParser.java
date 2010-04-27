@@ -22,7 +22,6 @@
 package eu.europeana.sip.xml;
 
 import eu.europeana.sip.groovy.GroovyNode;
-import eu.europeana.sip.groovy.GroovyNodeList;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -47,15 +46,6 @@ public class MetadataParser {
     private InputStream inputStream;
     private XMLStreamReader2 input;
     private QName recordRoot;
-    private Listener listener;
-
-    public interface Listener {
-        void finished(boolean success);
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
 
     public MetadataParser(InputStream inputStream, QName recordRoot) throws XMLStreamException {
         this.inputStream = inputStream;
@@ -69,13 +59,13 @@ public class MetadataParser {
     }
 
     @SuppressWarnings("unchecked")
-    public GroovyNode nextRecord() throws XMLStreamException, IOException {
+    public MetadataRecord nextRecord() throws XMLStreamException, IOException {
+        MetadataRecord metadataRecord = null;
         GroovyNode rootNode = null;
         Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
         StringBuilder value = new StringBuilder();
         boolean withinRecord = false;
-        boolean finishedRecord = false;
-        while (!finishedRecord) {
+        while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
                     logger.info("Starting document");
@@ -122,7 +112,7 @@ public class MetadataParser {
                 case XMLEvent.END_ELEMENT:
                     if (input.getName().equals(recordRoot)) {
                         withinRecord = false;
-                        finishedRecord = true;
+                        metadataRecord = new MetadataRecord(rootNode);
                     }
                     if (withinRecord) {
                         GroovyNode node = nodeStack.pop();
@@ -135,9 +125,6 @@ public class MetadataParser {
                     break;
                 case XMLEvent.END_DOCUMENT: {
                     logger.info("Ending document");
-                    if (null != listener) {
-                        listener.finished(true);
-                    }
                     break;
                 }
             }
@@ -147,30 +134,7 @@ public class MetadataParser {
             }
             input.next();
         }
-        StringBuilder recordPrinted = new StringBuilder();
-//        printRecord(rootNode, recordPrinted, 0);
-//        logger.info("Read record :\n" + recordPrinted);
-        return rootNode;
-    }
-
-    private void printRecord(GroovyNode node, StringBuilder out, int depth) {
-        if (node.value() instanceof GroovyNodeList) {
-            for (int walk = 0; walk < depth; walk++) {
-                out.append(' ');
-            }
-            GroovyNodeList list = (GroovyNodeList) node.value();
-            out.append(node.name()).append("\n");
-            for (Object member : list) {
-                GroovyNode childNode = (GroovyNode) member;
-                printRecord(childNode, out, depth + 1);
-            }
-        }
-        else {
-            for (int walk = 0; walk < depth; walk++) {
-                out.append(' ');
-            }
-            out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
-        }
+        return metadataRecord;
     }
 
     public void close() {

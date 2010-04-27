@@ -27,6 +27,7 @@ import eu.europeana.sip.model.RecentFileSets;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -54,6 +55,14 @@ public class FileMenu extends JMenu {
         this.parent = parent;
         this.selectListener = selectListener;
         refresh();
+        if (!recentFiles.getList().isEmpty()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    FileMenu.this.selectListener.select(recentFiles.getList().get(0));
+                }
+            });
+        }
     }
 
     private void refresh() {

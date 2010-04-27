@@ -23,10 +23,19 @@ package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.MappingScriptBinding;
 import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.AnalysisParser;
+import eu.europeana.sip.xml.MetadataParser;
+import eu.europeana.sip.xml.MetadataRecord;
+import groovy.lang.GroovyShell;
+import groovy.lang.MissingPropertyException;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
+import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
+import org.codehaus.groovy.syntax.SyntaxException;
 
 import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -34,9 +43,15 @@ import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This model is behind the whole sip creator, as a facade for all the models related to a FileSet
@@ -45,6 +60,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public class SipModel {
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private FileSet fileSet;
     private List<Statistics> statisticsList;
     private AnalysisTree analysisTree;
@@ -55,9 +71,12 @@ public class SipModel {
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel();
+    private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private List<FileSetListener> fileSetListeners = new CopyOnWriteArrayList<FileSetListener>();
+    private MetadataParser metadataParser;
+    private MetadataRecord metadataRecord;
 
     public interface FileSetListener {
         void updatedFileSet();
@@ -65,6 +84,7 @@ public class SipModel {
 
     public interface AnalysisListener {
         void finished(boolean success);
+
         void analysisProgress(long elementCount);
     }
 
@@ -86,17 +106,10 @@ public class SipModel {
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
         setRecordMapping(fileSet.getMapping());
+        if (recordRoot != null) {
+            createMetadataParser();
+        }
         statisticsTableModel.setCounterList(null);
-
-        // todo: remove
-        try {
-            outputDocument.insertString(0, "Output", null);
-        }
-        catch (BadLocationException e) {
-            throw new RuntimeException(e);
-        }
-        // todo: remove
-
         for (FileSetListener fileSetListener : fileSetListeners) {
             fileSetListener.updatedFileSet();
         }
@@ -209,6 +222,30 @@ public class SipModel {
         return fieldMappingListModel;
     }
 
+    public void firstRecord() {
+        createMetadataParser();
+    }
+
+    public void nextRecord() {
+        if (metadataParser != null) {
+            try {
+                metadataRecord = metadataParser.nextRecord();
+                SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
+                compileCode();
+            }
+            catch (XMLStreamException e) {
+                throw new RuntimeException(e); // todo: handle this better
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e); // todo: handle this better
+            }
+        }
+    }
+
+    public Document getInputDocument() {
+        return inputDocument;
+    }
+
     public Document getCodeDocument() {
         return codeDocument;
     }
@@ -219,17 +256,15 @@ public class SipModel {
 
     // === privates
 
+    private void compileCode() {
+        executor.execute(new CompilationRunner());
+    }
+
     private void setRecordMapping(String recordMappingString) {
         recordMapping = new RecordMapping(recordMappingString);
-        int docLength = codeDocument.getLength();
-        try {
-            codeDocument.remove(0, docLength);
-            codeDocument.insertString(0, recordMapping.getCode(), null);
-        }
-        catch (BadLocationException e) {
-            throw new RuntimeException(e);
-        }
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, recordMappingString));
+        compileCode();
     }
 
     private void setRecordRootInternal(QName recordRoot) {
@@ -258,5 +293,86 @@ public class SipModel {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
+    }
+
+    private void createMetadataParser() {
+        if (metadataParser != null) {
+            metadataParser.close();
+            metadataParser = null;
+        }
+        try {
+            metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot);
+            metadataRecord = metadataParser.nextRecord();
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
+            compileCode();
+        }
+        catch (XMLStreamException e) {
+            throw new RuntimeException(e); // todo: handle this better
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e); // todo: handle this better
+        }
+    }
+
+    private static class DocumentSetter implements Runnable {
+        private Document document;
+        private String content;
+
+        private DocumentSetter(Document document, String content) {
+            this.document = document;
+            this.content = content;
+        }
+
+        @Override
+        public void run() {
+            int docLength = document.getLength();
+            try {
+                document.remove(0, docLength);
+                document.insertString(0, content, null);
+            }
+            catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private class CompilationRunner implements Runnable {
+        private String code;
+        private StringWriter writer = new StringWriter();
+
+        private CompilationRunner() {
+            this.code = recordMapping.getCode();
+        }
+
+        @Override
+        public void run() {
+            try {
+                MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
+                mappingScriptBinding.setRecord(metadataRecord);
+                new GroovyShell(mappingScriptBinding).evaluate(code);
+                compilationComplete(writer.toString());
+            }
+            catch (MissingPropertyException e) {
+                compilationComplete("Missing Property: " + e.getProperty());
+            }
+            catch (MultipleCompilationErrorsException e) {
+                StringBuilder out = new StringBuilder();
+                for (Object o : e.getErrorCollector().getErrors()) {
+                    SyntaxErrorMessage message = (SyntaxErrorMessage) o;
+                    SyntaxException se = message.getCause();
+                    out.append(String.format("Line %d Column %d: %s%n", se.getLine(), se.getStartColumn(), se.getOriginalMessage()));
+                }
+                compilationComplete(out.toString());
+            }
+            catch (Exception e) {
+                StringWriter writer = new StringWriter();
+                e.printStackTrace(new PrintWriter(writer));
+                compilationComplete(writer.toString());
+            }
+        }
+
+        private void compilationComplete(String result) {
+            SwingUtilities.invokeLater(new DocumentSetter(outputDocument, result));
+        }
     }
 }

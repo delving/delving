@@ -1,5 +1,6 @@
 package eu.europeana.sip.groovy;
 
+import eu.europeana.sip.xml.MetadataRecord;
 import groovy.lang.Binding;
 import groovy.xml.MarkupBuilder;
 import groovy.xml.NamespaceBuilder;
@@ -28,7 +29,7 @@ public class MappingScriptBinding extends Binding {
         setVariable(EUROPEANA, xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
     }
 
-    public void setRecord(GroovyNode record) {
-        setVariable(INPUT, record);
+    public void setRecord(MetadataRecord record) {
+        setVariable(INPUT, record.getRootNode());
     }
 }
