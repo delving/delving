@@ -66,4 +66,9 @@ public class MetadataRecord {
             out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
         }
     }
+
+    public static String sanitize(String name) {
+        return name.replace("-", "_");
+    }
+
 }

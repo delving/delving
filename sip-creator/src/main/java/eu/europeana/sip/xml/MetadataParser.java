@@ -84,10 +84,10 @@ public class MetadataParser {
                         }
                         String nodeName;
                         if (null == input.getPrefix()) {
-                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getLocalName();
+                            nodeName = input.getName().equals(recordRoot) ? "input" : MetadataRecord.sanitize(input.getLocalName());
                         }
                         else {
-                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + input.getLocalName();
+                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + MetadataRecord.sanitize(input.getLocalName());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) {
@@ -145,4 +145,5 @@ public class MetadataParser {
             logger.error("closing", e);
         }
     }
+
 }

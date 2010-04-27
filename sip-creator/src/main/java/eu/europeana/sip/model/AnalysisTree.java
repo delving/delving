@@ -21,6 +21,8 @@
 
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.xml.MetadataRecord;
+
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -110,7 +112,7 @@ public class AnalysisTree implements Serializable {
                 Iterator<String> tagWalk = stack.iterator();
                 while (tagWalk.hasNext()) {
                     String tag = tagWalk.next();
-                    out.append(tag);
+                    out.append(MetadataRecord.sanitize(tag));
                     if (tagWalk.hasNext()) {
                         out.append('.');
                     }
