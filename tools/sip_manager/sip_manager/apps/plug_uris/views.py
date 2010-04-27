@@ -86,18 +86,19 @@ def stats_req_lst(request):
         q_all = Q(req=req_id, item_type=models.URIT_OBJECT)
         qs_all = models.ReqUri.objects.filter(q_all)
         count = qs_all.count()
+        if not count:
+            continue # only display if request if any images
         #itm_ok = models.ReqUri.objects.filter(q_all, Q_OK).count()
         itm_ok = qs_all.filter(Q_OK).count()
         #itm_bad = models.ReqUri.objects.filter(q_all, Q_BAD).count()
         itm_bad = qs_all.filter(Q_BAD).count()
         waiting = count - itm_ok - itm_bad
-        if count:
-            lst.append({'request':Request.objects.get(pk=req_id),
-                        'count': count,
-                        'waiting': waiting,
-                        'ok': itm_ok,
-                        'bad': itm_bad,
-                        })
+        lst.append({'request':Request.objects.get(pk=req_id),
+                    'count': count,
+                    'waiting': waiting,
+                    'ok': itm_ok,
+                    'bad': itm_bad,
+                    })
 
     return render_to_response("plug_uris/stats_all_requests.html", {
         'requests': lst,})
