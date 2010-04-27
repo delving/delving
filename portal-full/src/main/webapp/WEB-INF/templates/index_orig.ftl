@@ -48,7 +48,7 @@
                             <#list carouselItems as carouselItem>
                                 <#assign doc = carouselItem.doc/>
                                 <li class="category_${doc.type}">
-                                    <a href="full-doc.html?uri=${doc.id}">
+                                    <a href="full-doc.html?uri=${doc.id}&bt=carousel">
                                     	<#assign title = ""/>
                                         <#if doc.title??>
                                          	<#assign title = doc.title />
@@ -95,7 +95,7 @@
                         <h4><@spring.message 'PeopleAreCurrentlyThinkingAbout_t' />:</h4>
                     <ul class="people-talk">
                         <#list proposedSearchTerms as searchTerm>
-                            <li><a href="brief-doc.html?query=${searchTerm.proposedSearchTerm}">${searchTerm.proposedSearchTerm}</a></li>
+                            <li><a href="brief-doc.html?query=${searchTerm.proposedSearchTerm}&bt=pacta">${searchTerm.proposedSearchTerm}</a></li>
                         </#list>
                     </ul>
                 </div>

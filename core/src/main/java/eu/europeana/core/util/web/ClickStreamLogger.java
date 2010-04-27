@@ -79,8 +79,13 @@ public interface ClickStreamLogger {
 
         // search related actions
         BRIEF_RESULT,
-        BRIEF_RESULT_BROWSE,
+        BRIEF_RESULT_FROM_PACTA,
+        BRIEF_RESULT_FROM_SAVED_SEARCH,
         FULL_RESULT,
+        FULL_RESULT_FROM_CAROUSEL,
+        FULL_RESULT_FROM_SAVED_ITEM,
+        FULL_RESULT_FROM_SAVED_TAG,
+        FULL_RESULT_FROM_YEAR_GRID,
         MORE_LIKE_THIS,
         RETURN_TO_RESULTS,
         REDIRECT_OUTLINK,

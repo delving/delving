@@ -69,11 +69,11 @@ ${newStr}
         <#assign title><@stringLimiter "${briefDoc.getTitle()}" "80"/></#assign>
         <#if useCache="true">
             <img class="flow" src="${cacheUrl}type=${briefDoc.type}&amp;uri=${briefDoc.thumbnail}&amp;size=FULL_DOC"
-                 longdesc='full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index?c}&amp;pageId=yg&amp;tab=&amp;startPage=${startPage}&amp;query=${query}'
+                 longdesc='full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index?c}&amp;pageId=yg&amp;tab=&amp;startPage=${startPage}&amp;query=${query}&bt=bob'
                  alt="${title?html}"/>
             <#else>
                 <img class="flow" src="${briefDoc.thumbnail}"
-                     longdesc="full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index?c}&amp;pageId=yg&amp;startPage=${startPage}&amp;query=${query}"
+                     longdesc="full-doc.html?uri=${briefDoc.id}&amp;start=${briefDoc.index?c}&amp;pageId=yg&amp;startPage=${startPage}&amp;query=${query}&bt=bob"
                      alt="${title?html}" onerror="showDefault(this,'${briefDoc.type}');"/>
         </#if>
 
