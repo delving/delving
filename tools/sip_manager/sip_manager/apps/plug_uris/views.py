@@ -91,12 +91,13 @@ def stats_req_lst(request):
         #itm_bad = models.ReqUri.objects.filter(q_all, Q_BAD).count()
         itm_bad = qs_all.filter(Q_BAD).count()
         waiting = count - itm_ok - itm_bad
-        lst.append({'request':Request.objects.get(pk=req_id),
-                   'count': count,
-                   'waiting': waiting,
-                   'ok': itm_ok,
-                   'bad': itm_bad,
-                   })
+        if count:
+            lst.append({'request':Request.objects.get(pk=req_id),
+                        'count': count,
+                        'waiting': waiting,
+                        'ok': itm_ok,
+                        'bad': itm_bad,
+                        })
 
     return render_to_response("plug_uris/stats_all_requests.html", {
         'requests': lst,})
