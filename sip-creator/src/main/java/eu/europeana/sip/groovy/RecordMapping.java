@@ -31,11 +31,11 @@ import java.util.List;
  */
 
 public class RecordMapping {
-    private static final String MAPPING_PREFIX = "//<<<";
-    private static final String MAPPING_SUFFIX = "//>>>";
+    private static final String INDENT = "   ";
+    private static final String MAPPING_PREFIX = INDENT + "//<<<";
+    private static final String MAPPING_SUFFIX = INDENT + "//>>>";
     private static final String RECORD_PREFIX = "output.record { // Mapping Builder";
     private static final String RECORD_SUFFIX = "} // Mapping Builder";
-    private static final String INDENT = "   ";
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
 
     public RecordMapping(List<FieldMapping> fieldMappings) {
@@ -56,7 +56,7 @@ public class RecordMapping {
                 }
             }
             else {
-                if (fieldMapping !=  null) {
+                if (fieldMapping != null) {
                     if (line.startsWith(INDENT)) {
                         line = line.substring(INDENT.length());
                     }
@@ -74,10 +74,11 @@ public class RecordMapping {
         StringBuilder out = new StringBuilder();
         out.append(RECORD_PREFIX).append('\n');
         for (FieldMapping mapping : fieldMappings) {
-            out.append(mapping.toString()).append('\n');
+            out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
             for (String codeLine : mapping.getCodeLines()) {
-                out.append(INDENT).append(codeLine).append('\n');
+                out.append(INDENT).append(INDENT).append(codeLine).append('\n');
             }
+            out.append(MAPPING_SUFFIX).append('\n');
         }
         out.append(RECORD_SUFFIX).append('\n');
         return out.toString();

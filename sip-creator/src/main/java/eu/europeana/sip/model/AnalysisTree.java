@@ -50,16 +50,16 @@ public class AnalysisTree implements Serializable {
 
         QName getQName();
 
-        void setRecordRoot(QName recordRoot);
+        boolean setRecordRoot(QName recordRoot);
 
         boolean isRecordRoot();
 
         Iterable<? extends Node> getChildNodes();
     }
 
-    public static int setRecordRoot(DefaultTreeModel model, QName recordRoot) {
+    public static void setRecordRoot(DefaultTreeModel model, QName recordRoot, List<Node> changedNodes) {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
-        return setRecordRoot(node, recordRoot);
+        setRecordRoot(node, recordRoot, changedNodes);
     }
 
     public static AnalysisTree create(String rootTag) {
@@ -87,16 +87,13 @@ public class AnalysisTree implements Serializable {
         this.root = root;
     }
 
-    private static int setRecordRoot(AnalysisTree.Node node, QName recordRoot) {
-        node.setRecordRoot(recordRoot);
-        int sum = 0;
-        if (node.isRecordRoot()) {
-            sum++;
+    private static void setRecordRoot(AnalysisTree.Node node, QName recordRoot, List<Node> changedNodes) {
+        if (node.setRecordRoot(recordRoot)) {
+            changedNodes.add(node);
         }
         for (AnalysisTree.Node child : node.getChildNodes()) {
-            sum += setRecordRoot(child, recordRoot);
+            setRecordRoot(child, recordRoot, changedNodes);
         }
-        return sum;
     }
 
     private static void getVariables(QNameNode node, boolean withinRecord, Stack<String> stack, List<String> variables) {

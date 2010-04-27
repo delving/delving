@@ -21,6 +21,9 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.groovy.Conversion;
+import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.SipModel;
 
@@ -53,7 +56,7 @@ import java.awt.event.ItemListener;
 public class MappingPanel extends JPanel {
     private SipModel sipModel;
     private JButton createMappingButton = new JButton("Create Mapping");
-    private JComboBox converterChoice = new JComboBox(new Object[]{"Converter One", "Converter Two"});
+    private JComboBox conversionChoice = new JComboBox(Conversion.values());
     private JTextArea groovyCodeArea = new JTextArea();
     private JList variablesList, mappingList, fieldList;
 
@@ -91,10 +94,17 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // todo: implement
+                FieldMapping fieldMapping = new FieldMapping((Conversion) conversionChoice.getSelectedItem());
+                for (Object variable : variablesList.getSelectedValues()) {
+                    fieldMapping.addFromVariable((String) variable);
+                }
+                for (Object field : fieldList.getSelectedValues()) {
+                    fieldMapping.addToField(((EuropeanaField)field).getFieldNameString());
+                }
+                sipModel.addFieldMapping(fieldMapping);
             }
         });
-        converterChoice.addItemListener(new ItemListener() {
+        conversionChoice.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 // todo: implement
@@ -157,7 +167,7 @@ public class MappingPanel extends JPanel {
     private JPanel createConverterChoice() {
         JPanel p = new JPanel(new BorderLayout());
         p.add(new JLabel("Converter:", JLabel.RIGHT), BorderLayout.WEST);
-        p.add(converterChoice, BorderLayout.CENTER);
+        p.add(conversionChoice, BorderLayout.CENTER);
         return p;
     }
 

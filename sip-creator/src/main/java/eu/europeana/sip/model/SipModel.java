@@ -193,12 +193,16 @@ public class SipModel {
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         recordMapping.getFieldMappings().add(fieldMapping);
-        setRecordMapping(recordMapping.getCode());
+        String code = recordMapping.getCode();
+        setRecordMapping(code);
+        fileSet.setMapping(code);
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         recordMapping.getFieldMappings().remove(fieldMapping);
-        setRecordMapping(recordMapping.getCode());
+        String code = recordMapping.getCode();
+        setRecordMapping(code);
+        fileSet.setMapping(code);
     }
 
     public ListModel getFieldMappingListModel() {
@@ -230,8 +234,11 @@ public class SipModel {
 
     private void setRecordRootInternal(QName recordRoot) {
         this.recordRoot = recordRoot;
-        AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot);
-        // todo: which ones have changed and can we notify swing?
+        List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
+        AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot, changedNodes);
+        for (AnalysisTree.Node node : changedNodes) {
+            analysisTreeModel.nodeChanged(node);
+        }
         if (recordRoot != null) {
             List<String> variables = new ArrayList<String>();
             analysisTree.getVariables(variables);
