@@ -77,7 +77,7 @@
            <tr>    
             <td colspan="3">
                 <div about="${result.fullDoc.id}" style="max-width:200px">
-                    <h2 style="font: 100% sans-serif; max-width:200px;">
+                    <h2 style="font: 100% sans-serif; max-width:200px; margin: 3px;text-align:left;">
                         <#assign tl = "">
                         <#if !model.fullDoc.dcTitle[0]?matches(" ")>
                             <#assign tl= result.fullDoc.dcTitle[0]>
@@ -91,6 +91,10 @@
                         </#if>
                         ${tl}
                     </h2>
+                    <#-- DC SOURCE     ------------------------------------------------------------------------------- ->
+                    <#assign sourceArr = result.fullDoc.dcSource[0] />
+                    <p style="text-align:left; padding-left:3px;"><strong><@spring.message 'dc_source_t' />:</strong>${sourceArr}</p>
+                    -->
                 </div>
             </td>
            </tr>
@@ -105,9 +109,9 @@
                             <a rel="rdfs:seeAlso" resource="${doc.id}" href="full-doc.html?uri=${doc.id}">
                          </#if>
                          <#if useCache="true">
-                            <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>
+                            <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" height="40"/>
                         <#else>
-                            <img src="${doc.thumbnail}" alt="Click here to view related item" width="40" onerror="showDefault(this,'${doc.type}','full')"/>
+                            <img src="${doc.thumbnail}" alt="Click here to view related item" height="40" onerror="showDefault(this,'${doc.type}','full')"/>
                         </#if>
                             </a>
                 </td>
