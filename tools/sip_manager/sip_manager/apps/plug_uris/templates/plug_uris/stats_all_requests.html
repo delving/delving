@@ -14,6 +14,7 @@
       <th>Waiting</th>
       <th>Verified</th>
       <th>Bad images</th>
+      <th>Ratio</th>
     {% for req_info in requests %}
     <tr>
         <td><a href="{% url uri_stats_by_req req_info.request.pk %}">{{ req_info.request }}</a></td>
@@ -21,6 +22,7 @@
         <td>{{ req_info.waiting }}</td>
         <td>{{ req_info.ok }}</td>
         <td>{{ req_info.bad }}</td>
+        <td>{{ req_info.ratio }}</td>
     </tr>
     {% endfor %}
 </table>
