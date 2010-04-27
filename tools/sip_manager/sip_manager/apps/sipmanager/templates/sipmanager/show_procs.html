@@ -20,8 +20,8 @@
         <td>{{ proc.task_label }}</td>
         <td>{{ proc.task_progress }}</td>
         <td>{{ proc.task_eta }}</td>
-        <td>{{ proc.time_created|date:'y-m-d' }} {{ proc.time_created|time:'H:i:s' }}</td>
-        <td>{{ proc.last_change|date:'y-m-d' }} {{ proc.last_change|time:'H:i:s' }}</td>
+        <td>{{ proc.time_created|date:'m-d' }} {{ proc.time_created|time:'H:i:s' }}</td>
+        <td>{{ proc.last_change|date:'m-d' }} {{ proc.last_change|time:'H:i:s' }}</td>
     </tr>
     {% endfor %}
 </table>
