@@ -114,7 +114,8 @@ public class VariableListModel extends AbstractListModel {
             int sizeBefore = getSize();
             unmappedVariables.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            nextVariable: for (String variable : variableList) {
+            nextVariable:
+            for (String variable : variableList) {
                 for (FieldMapping fieldMapping : fieldMappingList) {
                     for (String mappedVariable : fieldMapping.getFromVariables()) {
                         if (mappedVariable.equals(variable)) {

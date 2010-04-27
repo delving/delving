@@ -274,14 +274,11 @@ public class SipModel {
         for (AnalysisTree.Node node : changedNodes) {
             analysisTreeModel.nodeChanged(node);
         }
+        List<String> variables = new ArrayList<String>();
         if (recordRoot != null) {
-            List<String> variables = new ArrayList<String>();
             analysisTree.getVariables(variables);
-            variableListModel.setVariableList(variables);
         }
-        else {
-            variableListModel.setVariableList(null);
-        }
+        variableListModel.setVariableList(variables);
     }
 
     private void setStatisticsList(List<Statistics> statisticsList) {
