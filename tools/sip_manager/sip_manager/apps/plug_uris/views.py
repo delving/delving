@@ -85,20 +85,20 @@ def stats_req_lst(request):
         req_id = req['req']
         q_all = Q(req=req_id, item_type=models.URIT_OBJECT)
         qs_all = models.ReqUri.objects.filter(q_all)
-        count = qs_all.count()
-        if not count:
+        img_count = qs_all.count()
+        if not img_count:
             continue # only display if request if any images
         #itm_ok = models.ReqUri.objects.filter(q_all, Q_OK).count()
         itm_ok = qs_all.filter(Q_OK).count()
         #itm_bad = models.ReqUri.objects.filter(q_all, Q_BAD).count()
         itm_bad = qs_all.filter(Q_BAD).count()
-        waiting = count - itm_ok - itm_bad
+        waiting = img_count - itm_ok - itm_bad
         lst.append({'request':Request.objects.get(pk=req_id),
-                    'count': count,
+                    'count': img_count,
                     'waiting': waiting,
                     'ok': itm_ok,
                     'bad': itm_bad,
-                    'ratio': s_calc_ratio(itm_ok, count),
+                    'ratio': s_calc_ratio(itm_ok, img_count),
                     })
 
     return render_to_response("plug_uris/stats_all_requests.html", {
@@ -258,13 +258,13 @@ def index(request):
 # Util funcs
 #
 
-def s_calc_ratio(good, bad):
-    return '%0.2f' % calc_ratio(good, bad)
+def s_calc_ratio(part, whole):
+    return '%0.2f' % calc_ratio(part, whole)
 
-def calc_ratio(good, bad):
-    if not good:
+def calc_ratio(part, whole):
+    if not part:
         # avoid divide by zero
         return 0
-    return 100 - (bad/float(good)) * 100
+    return 100 - (whole/float(part)) * 100
 
 
