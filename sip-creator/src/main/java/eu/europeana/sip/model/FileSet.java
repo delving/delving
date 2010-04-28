@@ -21,8 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.AnalysisParser;
-
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.InputStream;
@@ -52,12 +50,6 @@ public interface FileSet {
     InputStream getInputStream();
 
     OutputStream getOutputStream();
-
-    void analyze(AnalysisParser.Listener listener);
-
-    void abortAnalysis();
-
-    boolean hasStatistics();
 
     List<Statistics> getStatistics();
 

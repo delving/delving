@@ -95,6 +95,7 @@ public class MappingPanel extends JPanel {
         // remove mapping button
         gbc.gridy++;
         gbc.weighty = 0.1;
+        removeMappingButton.setEnabled(false);
         add(removeMappingButton, gbc);
         // groovy panel
         gbc.gridy++;
@@ -134,9 +135,11 @@ public class MappingPanel extends JPanel {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
                     groovyCodeArea.setText(fieldMapping.getCodeForDisplay());
+                    removeMappingButton.setEnabled(true);
                 }
                 else {
                     groovyCodeArea.setText("");
+                    removeMappingButton.setEnabled(false);
                 }
             }
         });

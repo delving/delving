@@ -62,6 +62,7 @@ public class SipModel {
     private FileSet fileSet;
     private ExceptionHandler exceptionHandler;
     private List<Statistics> statisticsList;
+    private AnalysisParser analysisParser;
     private AnalysisTree analysisTree;
     private RecordMapping recordMapping;
     private QName recordRoot;
@@ -110,10 +111,7 @@ public class SipModel {
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
         setRecordMapping(fileSet.getMapping());
-        if (recordRoot != null) {
-            createMetadataParser();
-        }
-        statisticsTableModel.setCounterList(null);
+        createMetadataParser();
         for (FileSetListener fileSetListener : fileSetListeners) {
             fileSetListener.updatedFileSet();
         }
@@ -121,33 +119,40 @@ public class SipModel {
 
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();
-        fileSet.analyze(new AnalysisParser.Listener() {
+        abortAnalyze();
+        this.analysisParser = new AnalysisParser(fileSet, new AnalysisParser.Listener() {
 
             @Override
-            public void success(List<Statistics> list) {
-                checkUtilityThread();
-                setStatisticsList(list);
+            public void success(final List<Statistics> list) {
                 listener.finished(true);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setStatisticsList(list);
+                    }
+                });
             }
 
             @Override
             public void failure(Exception exception) {
-                checkUtilityThread();
                 listener.finished(false);
                 exceptionHandler.failure(exception);
             }
 
             @Override
             public void progress(long elementCount) {
-                checkUtilityThread();
                 listener.analysisProgress(elementCount);
             }
         });
+        executor.execute(analysisParser);
     }
 
     public void abortAnalyze() {
         checkSwingThread();
-        fileSet.abortAnalysis();
+        if (analysisParser != null) {
+            analysisParser.abort();
+            analysisParser = null;
+        }
     }
 
     public TreeModel getAnalysisTreeModel() {
@@ -269,7 +274,6 @@ public class SipModel {
             analysisTree.getVariables(variables);
         }
         variableListModel.setVariableList(variables);
-        fieldMappingListModel.clear();
     }
 
     private void setStatisticsList(List<Statistics> statisticsList) {
@@ -282,6 +286,7 @@ public class SipModel {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
+        statisticsTableModel.setCounterList(null);
     }
 
     private void createMetadataParser() {
@@ -290,14 +295,15 @@ public class SipModel {
             metadataParser.close();
             metadataParser = null;
         }
-        try {
-            metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot);
-            metadataRecord = metadataParser.nextRecord();
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
-            compileCode();
-        }
-        catch (Exception e) {
-            exceptionHandler.failure(e);
+        if (recordRoot != null) {
+            try {
+                metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot);
+                nextRecord();
+                compileCode();
+            }
+            catch (Exception e) {
+                exceptionHandler.failure(e);
+            }
         }
     }
 

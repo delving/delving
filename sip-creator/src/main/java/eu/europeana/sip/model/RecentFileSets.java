@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.AnalysisParser;
 import org.apache.log4j.Logger;
 
 import javax.xml.namespace.QName;
@@ -46,8 +45,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Hold on to the recent files, maintaing their ordering
@@ -56,7 +53,6 @@ import java.util.concurrent.Executors;
  */
 
 public class RecentFileSets {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Logger LOG = Logger.getLogger(getClass());
     private File listFile;
     private List<FileSetImpl> recent = new ArrayList<FileSetImpl>();
@@ -152,7 +148,6 @@ public class RecentFileSets {
     private class FileSetImpl implements FileSet {
         private File inputFile, statisticsFile, mappingFile, recordRootFile, outputFile;
         private ExceptionHandler exceptionHandler;
-        private AnalysisParser analysisParser;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
@@ -228,26 +223,6 @@ public class RecentFileSets {
                 exceptionHandler.failure(e);
             }
             return null;
-        }
-
-        @Override
-        public void analyze(AnalysisParser.Listener listener) {
-            abortAnalysis();
-            analysisParser = new AnalysisParser(this, listener);
-            executor.submit(analysisParser);
-        }
-
-        @Override
-        public void abortAnalysis() {
-            if (analysisParser != null) {
-                analysisParser.abort();
-                analysisParser = null;
-            }
-        }
-
-        @Override
-        public boolean hasStatistics() {
-            return statisticsFile.exists();
         }
 
         @Override
