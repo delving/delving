@@ -232,6 +232,7 @@ public class RecentFileSets {
 
         @Override
         public void analyze(AnalysisParser.Listener listener) {
+            abortAnalysis();
             analysisParser = new AnalysisParser(this, listener);
             executor.submit(analysisParser);
         }
@@ -240,6 +241,7 @@ public class RecentFileSets {
         public void abortAnalysis() {
             if (analysisParser != null) {
                 analysisParser.abort();
+                analysisParser = null;
             }
         }
 

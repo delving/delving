@@ -37,10 +37,6 @@ import java.util.List;
 
 public interface FileSet {
 
-    interface ExceptionHandler {
-        void failure(Exception exception);
-    }
-
     void setExceptionHandler(ExceptionHandler handler);
 
     String getName();

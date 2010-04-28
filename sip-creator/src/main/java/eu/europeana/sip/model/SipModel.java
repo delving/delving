@@ -43,8 +43,6 @@ import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -62,6 +60,7 @@ import java.util.concurrent.Executors;
 public class SipModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private FileSet fileSet;
+    private ExceptionHandler exceptionHandler;
     private List<Statistics> statisticsList;
     private AnalysisTree analysisTree;
     private RecordMapping recordMapping;
@@ -93,6 +92,10 @@ public class SipModel {
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
     }
 
+    public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
+
     public void addFileSetListener(FileSetListener fileSetListener) {
         fileSetListeners.add(fileSetListener);
     }
@@ -102,6 +105,7 @@ public class SipModel {
     }
 
     public void setFileSet(FileSet fileSet) {
+        checkSwingThread();
         this.fileSet = fileSet;
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
@@ -116,27 +120,33 @@ public class SipModel {
     }
 
     public void analyze(final AnalysisListener listener) {
+        checkSwingThread();
         fileSet.analyze(new AnalysisParser.Listener() {
 
             @Override
             public void success(List<Statistics> list) {
+                checkUtilityThread();
                 setStatisticsList(list);
                 listener.finished(true);
             }
 
             @Override
             public void failure(Exception exception) {
+                checkUtilityThread();
                 listener.finished(false);
+                exceptionHandler.failure(exception);
             }
 
             @Override
             public void progress(long elementCount) {
+                checkUtilityThread();
                 listener.analysisProgress(elementCount);
             }
         });
     }
 
     public void abortAnalyze() {
+        checkSwingThread();
         fileSet.abortAnalysis();
     }
 
@@ -145,6 +155,7 @@ public class SipModel {
     }
 
     public void selectNode(AnalysisTree.Node node) {
+        checkSwingThread();
         if (node.getStatistics() != null) {
             statisticsTableModel.setCounterList(node.getStatistics().getCounters());
         }
@@ -154,12 +165,9 @@ public class SipModel {
     }
 
     public void setRecordRoot(QName recordRoot) {
+        checkSwingThread();
         setRecordRootInternal(recordRoot);
-        fileSet.setRecordRoot(recordRoot);
-    }
-
-    public boolean hasStatistics() {
-        return statisticsList != null;
+        executor.execute(new RecordRootSetter());
     }
 
     public TableModel getStatisticsTableModel() {
@@ -168,7 +176,7 @@ public class SipModel {
 
     public long getElementCount() {
         if (statisticsList != null) {
-            long total = 0;
+            long total = 0L;
             for (Statistics stats : statisticsList) {
                 total += stats.getTotal();
             }
@@ -177,10 +185,6 @@ public class SipModel {
         else {
             return 0L;
         }
-    }
-
-    public ListModel getFieldListModel() {
-        return fieldListModel;
     }
 
     public ListModel getUnmappedFieldListModel() {
@@ -195,27 +199,20 @@ public class SipModel {
         return variableListModel.createUnmapped(fieldMappingListModel);
     }
 
-    public String getRecordMappingString() {
-        if (recordMapping == null) {
-            return "";
-        }
-        else {
-            return recordMapping.toString();
-        }
-    }
-
     public void addFieldMapping(FieldMapping fieldMapping) {
+        checkSwingThread();
         recordMapping.getFieldMappings().add(fieldMapping);
         String code = recordMapping.getCodeForPersistence();
         setRecordMapping(code);
-        fileSet.setMapping(code);
+        executor.execute(new MappingSetter(code));
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
+        checkSwingThread();
         recordMapping.getFieldMappings().remove(fieldMapping);
         String code = recordMapping.getCodeForPersistence();
         setRecordMapping(code);
-        fileSet.setMapping(code);
+        executor.execute(new MappingSetter(code));
     }
 
     public ListModel getFieldMappingListModel() {
@@ -223,23 +220,13 @@ public class SipModel {
     }
 
     public void firstRecord() {
+        checkSwingThread();
         createMetadataParser();
     }
 
     public void nextRecord() {
-        if (metadataParser != null) {
-            try {
-                metadataRecord = metadataParser.nextRecord();
-                SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
-                compileCode();
-            }
-            catch (XMLStreamException e) {
-                throw new RuntimeException(e); // todo: handle this better
-            }
-            catch (IOException e) {
-                throw new RuntimeException(e); // todo: handle this better
-            }
-        }
+        checkSwingThread();
+        executor.execute(new NextRecordFetcher());
     }
 
     public Document getInputDocument() {
@@ -257,17 +244,20 @@ public class SipModel {
     // === privates
 
     private void compileCode() {
+        checkSwingThread();
         executor.execute(new CompilationRunner());
     }
 
     private void setRecordMapping(String recordMappingString) {
+        checkSwingThread();
         recordMapping = new RecordMapping(recordMappingString);
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, recordMapping.getCodeForDisplay()));
+        DocumentSetter.set(codeDocument, recordMapping.getCodeForDisplay());
         compileCode();
     }
 
     private void setRecordRootInternal(QName recordRoot) {
+        checkSwingThread();
         this.recordRoot = recordRoot;
         List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
         AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot, changedNodes);
@@ -279,9 +269,11 @@ public class SipModel {
             analysisTree.getVariables(variables);
         }
         variableListModel.setVariableList(variables);
+        fieldMappingListModel.clear();
     }
 
     private void setStatisticsList(List<Statistics> statisticsList) {
+        checkSwingThread();
         this.statisticsList = statisticsList;
         if (statisticsList != null) {
             analysisTree = AnalysisTree.create(statisticsList, fileSet.getName(), recordRoot);
@@ -293,6 +285,7 @@ public class SipModel {
     }
 
     private void createMetadataParser() {
+        checkSwingThread();
         if (metadataParser != null) {
             metadataParser.close();
             metadataParser = null;
@@ -303,11 +296,49 @@ public class SipModel {
             SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
             compileCode();
         }
-        catch (XMLStreamException e) {
-            throw new RuntimeException(e); // todo: handle this better
+        catch (Exception e) {
+            exceptionHandler.failure(e);
         }
-        catch (IOException e) {
-            throw new RuntimeException(e); // todo: handle this better
+    }
+
+    private class NextRecordFetcher implements Runnable {
+        @Override
+        public void run() {
+            if (metadataParser != null) {
+                try {
+                    metadataRecord = metadataParser.nextRecord();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            DocumentSetter.set(inputDocument, metadataRecord.toString());
+                            compileCode();
+                        }
+                    });
+                }
+                catch (Exception e) {
+                    exceptionHandler.failure(e);
+                }
+            }
+        }
+    }
+
+    private class RecordRootSetter implements Runnable {
+        @Override
+        public void run() {
+            fileSet.setRecordRoot(recordRoot);
+        }
+    }
+
+    private class MappingSetter implements Runnable {
+        private String mapping;
+
+        private MappingSetter(String mapping) {
+            this.mapping = mapping;
+        }
+
+        @Override
+        public void run() {
+            fileSet.setMapping(mapping);
         }
     }
 
@@ -322,6 +353,15 @@ public class SipModel {
 
         @Override
         public void run() {
+            setDocumentContents(document, content);
+        }
+
+        public static void set(Document document, String content) {
+            checkSwingThread();
+            setDocumentContents(document, content);
+        }
+
+        private static void setDocumentContents(Document document, String content) {
             int docLength = document.getLength();
             try {
                 document.remove(0, docLength);
@@ -370,6 +410,18 @@ public class SipModel {
 
         private void compilationComplete(String result) {
             SwingUtilities.invokeLater(new DocumentSetter(outputDocument, result));
+        }
+    }
+
+    private static void checkSwingThread() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Expected Swing thread");
+        }
+    }
+
+    private static void checkUtilityThread() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Expected a utility thread, but it was the Swing thread");
         }
     }
 }

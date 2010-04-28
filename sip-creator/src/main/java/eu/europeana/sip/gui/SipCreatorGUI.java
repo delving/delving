@@ -27,6 +27,7 @@ import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.model.ExceptionHandler;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import org.apache.log4j.Logger;
@@ -35,6 +36,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,25 +51,20 @@ import java.util.List;
 public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel = new SipModel();
-    private AnalysisPanel analysisPanel;
-    private MappingPanel mappingPanel;
-    private NormPanel normPanel;
 
     public SipCreatorGUI() {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         sipModel.setAnnotationProcessor(createAnnotationProcessor());
-        analysisPanel = new AnalysisPanel(sipModel);
-        mappingPanel = new MappingPanel(sipModel);
-        normPanel = new NormPanel(sipModel);
+        sipModel.setExceptionHandler(new PopupExceptionHandler());
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analyzer", analysisPanel);
-        tabs.addTab("Mapping", mappingPanel);
-        tabs.addTab("Normalizer", normPanel);
+        tabs.addTab("Analyzer", new AnalysisPanel(sipModel));
+        tabs.addTab("Mapping", new MappingPanel(sipModel));
+        tabs.addTab("Normalizer", new NormPanel(sipModel));
         getContentPane().add(tabs);
         setJMenuBar(createMenuBar());
-        setSize(1200, 800);
-//        setSize(Toolkit.getDefaultToolkit().getScreenSize());
+//        setSize(1200, 800);
+        setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 
     private JMenuBar createMenuBar() {
@@ -99,11 +97,25 @@ public class SipCreatorGUI extends JFrame {
         return annotationProcessor;
     }
 
-    private class PopupExceptionHandler implements FileSet.ExceptionHandler {
+    private class PopupExceptionHandler implements ExceptionHandler {
         @Override
-        public void failure(Exception exception) {
-            JOptionPane.showMessageDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
+        public void failure(final Exception exception) {
+            if (SwingUtilities.isEventDispatchThread()) {
+                reportException(exception);
+            }
+            else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        reportException(exception);
+                    }
+                });
+            }
             log.warn("Problem", exception);
+        }
+
+        private void reportException(Exception exception) {
+            JOptionPane.showMessageDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
         }
     }
 

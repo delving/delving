@@ -135,6 +135,9 @@ public class MappingPanel extends JPanel {
                 if (fieldMapping != null) {
                     groovyCodeArea.setText(fieldMapping.getCodeForDisplay());
                 }
+                else {
+                    groovyCodeArea.setText("");
+                }
             }
         });
     }
