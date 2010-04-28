@@ -99,26 +99,21 @@
             </td>
            </tr>
            <tr>
+             <td colspan="3">
+             <p style="font-size:70%;text-align:left;padding-left:3px;color:grey;"><@spring.message 'RelatedContent_t' />:</p>
+             </td>
+           </tr>
             <#assign max=3/><!-- max shown in list -->
             <#list result.relatedItems as doc>
             <#if doc_index &gt; 2><#break/></#if>
-                <td width="70" valign="top">
-                        <#if queryStringForPaging??>
-                            <a rel="rdfs:seeAlso" resource="${doc.id}" href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
-                         <#else>
-                            <a rel="rdfs:seeAlso" resource="${doc.id}" href="full-doc.html?uri=${doc.id}">
-                         </#if>
-                         <#if useCache="true">
-                            <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" height="40"/>
-                        <#else>
-                            <img src="${doc.thumbnail}" alt="Click here to view related item" height="40" onerror="showDefault(this,'${doc.type}','full')"/>
-                        </#if>
-                            </a>
+           <tr>
+                <td  colspan="3" width="70" valign="top">
+                    <p style="font-size:85%;text-align:left;padding-left:3px;"><a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a></p>
                 </td>
+          </tr>
             </#list>
-        </tr>
         <tr>
-            <td colspan="3" style="text-align:right;font-size:80%;">
+            <td colspan="3" style="text-align:right;font-size:70%;color:grey;">
              <@spring.message 'FindOutMore_t'/> <a href="${uri}" style="background-color:darkorange;color:white;text-decoration:none;padding-left:3px;padding-right:1px;">Europeana.eu</a>
             </td>
         </tr>
