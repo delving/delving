@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,8 +58,8 @@ public interface FileSet {
 
     void setMapping(String mapping);
 
-    QName getRecordRoot();
+    RecordRoot getRecordRoot();
 
-    void setRecordRoot(QName qname);
+    void setRecordRoot(RecordRoot recordRoot);
 
 }

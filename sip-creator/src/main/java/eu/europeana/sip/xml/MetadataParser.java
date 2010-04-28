@@ -22,6 +22,7 @@
 package eu.europeana.sip.xml;
 
 import eu.europeana.sip.groovy.GroovyNode;
+import eu.europeana.sip.model.RecordRoot;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -42,14 +43,22 @@ import java.util.Stack;
  */
 
 public class MetadataParser {
+    private static final long RECORDS_PER_NOTIFY = 1000;
     private Logger logger = Logger.getLogger(getClass());
     private InputStream inputStream;
     private XMLStreamReader2 input;
-    private QName recordRoot;
+    private RecordRoot recordRoot;
+    private int recordCount;
+    private Listener listener;
 
-    public MetadataParser(InputStream inputStream, QName recordRoot) throws XMLStreamException {
+    public interface Listener {
+        void recordsParsed(int count);
+    }
+
+    public MetadataParser(InputStream inputStream, RecordRoot recordRoot, Listener listener) throws XMLStreamException {
         this.inputStream = inputStream;
         this.recordRoot = recordRoot;
+        this.listener = listener;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -69,9 +78,10 @@ public class MetadataParser {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
                     logger.info("Starting document");
+                    listener.recordsParsed(0);
                     break;
                 case XMLEvent.START_ELEMENT:
-                    if (input.getName().equals(recordRoot)) {
+                    if (input.getName().equals(recordRoot.getRootQName())) {
                         withinRecord = true;
                     }
                     if (withinRecord) {
@@ -84,10 +94,10 @@ public class MetadataParser {
                         }
                         String nodeName;
                         if (null == input.getPrefix()) {
-                            nodeName = input.getName().equals(recordRoot) ? "input" : MetadataRecord.sanitize(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : MetadataRecord.sanitize(input.getLocalName());
                         }
                         else {
-                            nodeName = input.getName().equals(recordRoot) ? "input" : input.getPrefix() + "_" + MetadataRecord.sanitize(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + MetadataRecord.sanitize(input.getLocalName());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) {
@@ -110,9 +120,13 @@ public class MetadataParser {
                     }
                     break;
                 case XMLEvent.END_ELEMENT:
-                    if (input.getName().equals(recordRoot)) {
+                    if (input.getName().equals(recordRoot.getRootQName())) {
                         withinRecord = false;
                         metadataRecord = new MetadataRecord(rootNode);
+                        recordCount++;
+                        if (recordCount % RECORDS_PER_NOTIFY == 0) {
+                            listener.recordsParsed(recordCount);
+                        }
                     }
                     if (withinRecord) {
                         GroovyNode node = nodeStack.pop();

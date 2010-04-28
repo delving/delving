@@ -48,10 +48,9 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         this.tag = tag;
     }
 
-    QNameNode(QNameNode parent, QName qName, boolean recordRoot) {
+    QNameNode(QNameNode parent, QName qName) {
         this.parent = parent;
         this.qName = qName;
-        this.recordRoot = recordRoot;
     }
 
     QNameNode(QNameNode parent, Statistics statistics) {

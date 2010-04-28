@@ -22,7 +22,6 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.SipModel;
-import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -43,8 +42,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -54,13 +51,10 @@ import java.util.concurrent.Executors;
  */
 
 public class NormPanel extends JPanel {
-    private static final Logger LOG = Logger.getLogger(NormPanel.class);
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private SipModel sipModel;
     private JButton normalizeButton = new JButton("Normalize");
     private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
     private JButton abort = new JButton("Abort");
-    private Normalizer normalizer;
 
     public NormPanel(SipModel sipModel) {
         super(new GridBagLayout());
@@ -145,8 +139,7 @@ public class NormPanel extends JPanel {
     private JPanel createNormalizePanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.add(normalizeButton, BorderLayout.WEST);
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setString("Progress?");
+        JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
         progressBar.setBorderPainted(true);
         p.add(progressBar);
         return p;
@@ -169,49 +162,14 @@ public class NormPanel extends JPanel {
         normalizeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                normalize();
+                sipModel.normalize();
             }
         });
         abort.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (normalizer != null) {
-                    normalizer.abort();
-                }
+                sipModel.abortNormalize();
             }
         });
     }
-
-//    private JPanel createWest() {
-//        JPanel p = new JPanel(new GridLayout(0, 1));
-//        p.add(progressLabel);
-//        p.add(memoryLabel);
-//        p.add(normalizeButton);
-//        abort.setEnabled(false);
-//        p.add(abort);
-//        debugLevel.setHorizontalAlignment(JCheckBox.CENTER);
-//        p.add(debugLevel);
-//        return p;
-//    }
-//
-//    private Runnable finalAct = new Runnable() {
-//        @Override
-//        public void run() {
-//            normalizeButton.setEnabled(true);
-//            abort.setEnabled(false);
-////            list.setEnabled(true);
-////            normalizer = null;
-//        }
-//    };
-
-//    private void normalize() {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                normalizeButton.setEnabled(false);
-//            }
-//        });
-//        normalizer = new Normalizer(fileSet);
-//        executor.execute(normalizer);
-//    }
 }

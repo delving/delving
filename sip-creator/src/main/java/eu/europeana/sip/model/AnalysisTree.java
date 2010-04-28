@@ -59,17 +59,21 @@ public class AnalysisTree implements Serializable {
         Iterable<? extends Node> getChildNodes();
     }
 
-    public static void setRecordRoot(DefaultTreeModel model, QName recordRoot, List<Node> changedNodes) {
+    public static void setRecordRoot(DefaultTreeModel model, QName recordRoot) {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
+        List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
         setRecordRoot(node, recordRoot, changedNodes);
+        for (AnalysisTree.Node changedNode : changedNodes) {
+            model.nodeChanged(changedNode);
+        }
     }
 
     public static AnalysisTree create(String rootTag) {
         return new AnalysisTree(new QNameNode(rootTag));
     }
 
-    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag, QName recordRoot) {
-        QNameNode root = createSubtree(statisticsList, new QNamePath(), recordRoot, null);
+    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag) {
+        QNameNode root = createSubtree(statisticsList, new QNamePath(), null);
         root.setTag(rootTag);
         return new AnalysisTree(root);
     }
@@ -130,7 +134,7 @@ public class AnalysisTree implements Serializable {
         }
     }
 
-    private static QNameNode createSubtree(List<Statistics> statisticsList, QNamePath path, QName recordRoot, QNameNode parent) {
+    private static QNameNode createSubtree(List<Statistics> statisticsList, QNamePath path, QNameNode parent) {
         Map<QName, List<Statistics>> statisticsMap = new HashMap<QName, List<Statistics>>();
         for (Statistics statistics : statisticsList) {
             QNamePath pp = new QNamePath(statistics.getPath(), path.size());
@@ -149,7 +153,7 @@ public class AnalysisTree implements Serializable {
             return null;
         }
         QName name = path.peek();
-        QNameNode node = new QNameNode(parent, name, name != null && name.equals(recordRoot));
+        QNameNode node = new QNameNode(parent, name);
         for (Map.Entry<QName, List<Statistics>> entry : statisticsMap.entrySet()) {
             QNamePath childPath = new QNamePath(path);
             childPath.push(entry.getKey());
@@ -159,7 +163,7 @@ public class AnalysisTree implements Serializable {
                     statisticsForChild = statistics;
                 }
             }
-            QNameNode child = createSubtree(statisticsList, childPath, recordRoot, node);
+            QNameNode child = createSubtree(statisticsList, childPath, node);
             if (child != null) {
                 node.add(child);
                 child.setStatistics(statisticsForChild);

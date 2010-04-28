@@ -23,7 +23,6 @@ package eu.europeana.sip.model;
 
 import org.apache.log4j.Logger;
 
-import javax.xml.namespace.QName;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -38,7 +37,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -287,17 +285,17 @@ public class RecentFileSets {
         }
 
         @Override
-        public QName getRecordRoot() {
+        public RecordRoot getRecordRoot() {
             if (recordRootFile.exists()) {
-                StringBuilder qNameString = new StringBuilder();
+                StringBuilder contents = new StringBuilder();
                 try {
-                    Reader in = new FileReader(recordRootFile);
+                    BufferedReader in = new BufferedReader(new FileReader(recordRootFile));
                     int ch;
                     while ((ch = in.read()) >= 0) {
-                        qNameString.append((char) ch);
+                        contents.append((char) ch);
                     }
                     in.close();
-                    return QName.valueOf(qNameString.toString());
+                    return new RecordRoot(contents.toString());
                 }
                 catch (IOException e) {
                     recordRootFile.delete();
@@ -308,14 +306,14 @@ public class RecentFileSets {
         }
 
         @Override
-        public void setRecordRoot(QName qname) {
-            if (qname == null) {
+        public void setRecordRoot(RecordRoot recordRoot) {
+            if (recordRoot == null) {
                 recordRootFile.delete();
             }
             else {
                 try {
                     Writer out = new FileWriter(recordRootFile);
-                    out.write(qname.toString());
+                    out.write(recordRoot.toString());
                     out.close();
                 }
                 catch (IOException e) {

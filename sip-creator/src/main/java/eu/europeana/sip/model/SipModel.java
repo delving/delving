@@ -28,12 +28,15 @@ import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.MetadataRecord;
+import eu.europeana.sip.xml.Normalizer;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
+import javax.swing.BoundedRangeModel;
+import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
@@ -42,7 +45,6 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import javax.xml.namespace.QName;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -63,11 +65,13 @@ public class SipModel {
     private ExceptionHandler exceptionHandler;
     private List<Statistics> statisticsList;
     private AnalysisParser analysisParser;
+    private Normalizer normalizer;
     private AnalysisTree analysisTree;
     private RecordMapping recordMapping;
-    private QName recordRoot;
+    private RecordRoot recordRoot;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
+    private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel();
@@ -155,6 +159,36 @@ public class SipModel {
         }
     }
 
+    public BoundedRangeModel getNormalizeProgress() {
+        return normalizeProgressModel;
+    }
+
+    public void normalize() {
+        checkSwingThread();
+        abortNormalize();
+        normalizeProgressModel.setMaximum((int)recordRoot.getRecordCount());
+        normalizer = new Normalizer(fileSet, new MetadataParser.Listener(){
+            @Override
+            public void recordsParsed(final int count) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        normalizeProgressModel.setValue(count);
+                    }
+                });
+            }
+        });
+        executor.execute(normalizer);
+    }
+
+    public void abortNormalize() {
+        checkSwingThread();
+        if (normalizer != null) {
+            normalizer.abort();
+            normalizer = null;
+        }
+    }
+
     public TreeModel getAnalysisTreeModel() {
         return analysisTreeModel;
     }
@@ -169,7 +203,7 @@ public class SipModel {
         }
     }
 
-    public void setRecordRoot(QName recordRoot) {
+    public void setRecordRoot(RecordRoot recordRoot) {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
         executor.execute(new RecordRootSetter());
@@ -261,31 +295,33 @@ public class SipModel {
         compileCode();
     }
 
-    private void setRecordRootInternal(QName recordRoot) {
+    private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
         this.recordRoot = recordRoot;
-        List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
-        AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot, changedNodes);
-        for (AnalysisTree.Node node : changedNodes) {
-            analysisTreeModel.nodeChanged(node);
-        }
         List<String> variables = new ArrayList<String>();
         if (recordRoot != null) {
+            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
             analysisTree.getVariables(variables);
+            variableListModel.setVariableList(variables);
         }
-        variableListModel.setVariableList(variables);
+        else {
+            variableListModel.clear();
+        }
     }
 
     private void setStatisticsList(List<Statistics> statisticsList) {
         checkSwingThread();
         this.statisticsList = statisticsList;
         if (statisticsList != null) {
-            analysisTree = AnalysisTree.create(statisticsList, fileSet.getName(), recordRoot);
+            analysisTree = AnalysisTree.create(statisticsList, fileSet.getName());
         }
         else {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
+        if (recordRoot != null) {
+            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
+        }
         statisticsTableModel.setCounterList(null);
     }
 
@@ -297,7 +333,12 @@ public class SipModel {
         }
         if (recordRoot != null) {
             try {
-                metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot);
+                metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, new MetadataParser.Listener() {
+                    @Override
+                    public void recordsParsed(int count) {
+                        // todo: show this in the GUI associated with play/rewind?
+                    }
+                });
                 nextRecord();
                 compileCode();
             }
@@ -422,12 +463,6 @@ public class SipModel {
     private static void checkSwingThread() {
         if (!SwingUtilities.isEventDispatchThread()) {
             throw new RuntimeException("Expected Swing thread");
-        }
-    }
-
-    private static void checkUtilityThread() {
-        if (SwingUtilities.isEventDispatchThread()) {
-            throw new RuntimeException("Expected a utility thread, but it was the Swing thread");
         }
     }
 }

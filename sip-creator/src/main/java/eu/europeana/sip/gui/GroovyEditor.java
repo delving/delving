@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.groovy.GroovyService;
 import eu.europeana.sip.model.FileSet;
 import org.apache.log4j.Logger;
 
@@ -32,7 +31,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.xml.namespace.QName;
 import java.awt.BorderLayout;
@@ -56,7 +54,6 @@ public class GroovyEditor extends JPanel {
     private JEditorPane codeArea = new JEditorPane();
     private JTextArea outputArea;
     private CompileTimer compileTimer;
-    private GroovyService groovyService;
     private List<String> availableNodes;
 
     public void updateCodeArea(String groovyCode) {
@@ -68,28 +65,28 @@ public class GroovyEditor extends JPanel {
         super(new BorderLayout());
         this.outputArea = outputArea;
         add(createSplitPane());
-        this.groovyService = new GroovyService(new GroovyService.Listener() {
-            @Override
-            public void setMapping(final String groovyCode) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        codeArea.setText(groovyCode);
-                        compileTimer.triggerSoon();
-                    }
-                });
-            }
-
-            @Override
-            public void setResult(final String result) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        outputArea.setText(result);
-                    }
-                });
-            }
-        });
+//        this.groovyService = new GroovyService(new GroovyService.Listener() {
+//            @Override
+//            public void setMapping(final String groovyCode) {
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        codeArea.setText(groovyCode);
+//                        compileTimer.triggerSoon();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void setResult(final String result) {
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        outputArea.setText(result);
+//                    }
+//                });
+//            }
+//        });
         this.compileTimer = new CompileTimer();
         this.codeArea.addKeyListener(new KeyAdapter() {
             @Override
@@ -123,15 +120,15 @@ public class GroovyEditor extends JPanel {
     }
 
     public void setFileSet(FileSet fileSet) {
-        groovyService.setFileSet(fileSet);
+//        groovyService.setFileSet(fileSet);
     }
 
     public void setRecordRoot(QName recordRoot) {
-        groovyService.setRecordRoot(recordRoot);
+//        groovyService.setRecordRoot(recordRoot);
     }
 
     public void nextRecord() {
-        groovyService.nextRecord();
+//        groovyService.nextRecord();
     }
 
     private JComponent createSplitPane() {
@@ -174,7 +171,7 @@ public class GroovyEditor extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             timer.stop();
-            groovyService.setMapping(codeArea.getText());
+//            groovyService.setMapping(codeArea.getText());
         }
 
         public void triggerSoon() {

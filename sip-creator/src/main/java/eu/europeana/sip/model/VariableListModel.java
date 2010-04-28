@@ -45,11 +45,15 @@ public class VariableListModel extends AbstractListModel {
     private List<String> variableList = new ArrayList<String>();
 
     public void setVariableList(List<String> variableList) {
+        clear();
+        this.variableList.addAll(variableList);
+        fireIntervalAdded(this, 0, getSize());
+    }
+
+    public void clear() {
         int size = getSize();
         this.variableList.clear();
         fireIntervalRemoved(this, 0, size);
-        this.variableList.addAll(variableList);
-        fireIntervalAdded(this, 0, getSize());
     }
 
     public ListModel createUnmapped(FieldMappingListModel fieldMappingListModel) {

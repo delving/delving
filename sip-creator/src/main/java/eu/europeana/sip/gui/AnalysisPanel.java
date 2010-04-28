@@ -23,6 +23,7 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.QNameNode;
+import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -45,7 +46,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.xml.namespace.QName;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -53,6 +53,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,13 +68,13 @@ import java.awt.event.ActionListener;
 public class AnalysisPanel extends JPanel {
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
+    private static final String RECORDS = "%d Records";
     private JButton selectRecordRootButton = new JButton("Select Record Root");
+    private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0L), JLabel.CENTER);
     private JButton analyzeButton = new JButton("Perform Analysis");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
     private JTree statisticsJTree;
-    private JTable statsTable;
-    private boolean abort = false;
     private SipModel sipModel;
 
     public AnalysisPanel(SipModel sipModel) {
@@ -113,8 +114,15 @@ public class AnalysisPanel extends JPanel {
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll, BorderLayout.CENTER);
+        p.add(createTreeSouth(), BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel createTreeSouth() {
+        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
         selectRecordRootButton.setEnabled(false);
-        p.add(selectRecordRootButton, BorderLayout.SOUTH);
+        p.add(selectRecordRootButton);
+        p.add(recordCountLabel);
         return p;
     }
 
@@ -123,7 +131,7 @@ public class AnalysisPanel extends JPanel {
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
         JPanel tablePanel = new JPanel(new BorderLayout());
-        statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
+        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
         statsTable.getTableHeader().setReorderingAllowed(false);
         statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
@@ -139,8 +147,10 @@ public class AnalysisPanel extends JPanel {
         DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
         columnModel.addColumn(new TableColumn(0));
         columnModel.getColumn(0).setHeaderValue("Percent");
+        columnModel.getColumn(0).setMaxWidth(80);
         columnModel.addColumn(new TableColumn(1));
         columnModel.getColumn(1).setHeaderValue("Count");
+        columnModel.getColumn(1).setMaxWidth(80);
         columnModel.addColumn(new TableColumn(2));
         columnModel.getColumn(2).setHeaderValue("Value");
         return columnModel;
@@ -231,7 +241,7 @@ public class AnalysisPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
                 QNameNode node = (QNameNode) path.getLastPathComponent();
-                QName recordRoot = node.getQName();
+                RecordRoot recordRoot = new RecordRoot(node.getQName(), 1000000); // todo: get the real number!
                 sipModel.setRecordRoot(recordRoot);
             }
         });
