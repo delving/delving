@@ -23,7 +23,6 @@ package eu.europeana.sip.xml;
 
 import eu.europeana.sip.groovy.GroovyNode;
 import eu.europeana.sip.model.RecordRoot;
-import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -43,8 +42,7 @@ import java.util.Stack;
  */
 
 public class MetadataParser {
-    private static final long RECORDS_PER_NOTIFY = 1000;
-    private Logger logger = Logger.getLogger(getClass());
+    private static final long RECORDS_PER_NOTIFY = 100;
     private InputStream inputStream;
     private XMLStreamReader2 input;
     private RecordRoot recordRoot;
@@ -77,7 +75,6 @@ public class MetadataParser {
         while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
-                    logger.info("Starting document");
                     listener.recordsParsed(0);
                     break;
                 case XMLEvent.START_ELEMENT:
@@ -138,12 +135,12 @@ public class MetadataParser {
                     }
                     break;
                 case XMLEvent.END_DOCUMENT: {
-                    logger.info("Ending document");
                     break;
                 }
             }
             if (!input.hasNext()) {
                 inputStream.close();
+                listener.recordsParsed(recordCount);
                 break;
             }
             input.next();
@@ -156,7 +153,7 @@ public class MetadataParser {
             input.close();
         }
         catch (XMLStreamException e) {
-            logger.error("closing", e);
+            e.printStackTrace(); // should never happen
         }
     }
 

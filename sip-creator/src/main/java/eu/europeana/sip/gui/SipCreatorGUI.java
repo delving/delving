@@ -37,6 +37,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,7 @@ public class SipCreatorGUI extends JFrame {
         tabs.addTab("Analyzer", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
         tabs.addTab("Normalizer", new NormPanel(sipModel));
-        getContentPane().add(tabs);
+        getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
 //        setSize(1200, 800);
         setSize(Toolkit.getDefaultToolkit().getScreenSize());

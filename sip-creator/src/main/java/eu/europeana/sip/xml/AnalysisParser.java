@@ -45,7 +45,7 @@ import java.util.TreeMap;
  */
 
 public class AnalysisParser implements Runnable {
-    private static final int ELEMENT_STEP = 100000;
+    private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
     private QNamePath path = new QNamePath();
     private Map<QNamePath, Statistics> statisticsMap = new TreeMap<QNamePath, Statistics>();

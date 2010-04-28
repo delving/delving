@@ -83,7 +83,7 @@ public class SipModel {
     private MetadataRecord metadataRecord;
 
     public interface UpdateListener {
-        void updatedFileSet();
+        void updatedFileSet(FileSet fileSet);
         void updatedRecordRoot(RecordRoot recordRoot);
     }
 
@@ -118,7 +118,7 @@ public class SipModel {
         setRecordMapping(fileSet.getMapping());
         createMetadataParser();
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedFileSet();
+            updateListener.updatedFileSet(fileSet);
         }
     }
 
@@ -129,13 +129,13 @@ public class SipModel {
 
             @Override
             public void success(final List<Statistics> list) {
-                listener.finished(true);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         setStatisticsList(list);
                     }
                 });
+                listener.finished(true);
             }
 
             @Override
@@ -285,14 +285,19 @@ public class SipModel {
 
     private void compileCode() {
         checkSwingThread();
-        executor.execute(new CompilationRunner());
+        if (metadataRecord != null) {
+            executor.execute(new CompilationRunner());
+        }
+        else {
+            setDocumentContents(outputDocument, "");
+        }
     }
 
     private void setRecordMapping(String recordMappingString) {
         checkSwingThread();
         recordMapping = new RecordMapping(recordMappingString);
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        DocumentSetter.set(codeDocument, recordMapping.getCodeForDisplay());
+        setDocumentContents(codeDocument, recordMapping.getCodeForDisplay());
         compileCode();
     }
 
@@ -308,6 +313,9 @@ public class SipModel {
         else {
             variableListModel.clear();
         }
+        createMetadataParser();
+        normalizeProgressModel.setValue(0);
+        normalizeProgressModel.setMaximum(100);
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedRecordRoot(recordRoot);
         }
@@ -334,6 +342,7 @@ public class SipModel {
         if (metadataParser != null) {
             metadataParser.close();
             metadataParser = null;
+            setDocumentContents(inputDocument, "");
         }
         if (recordRoot != null) {
             try {
@@ -361,7 +370,7 @@ public class SipModel {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            DocumentSetter.set(inputDocument, metadataRecord.toString());
+                            setDocumentContents(inputDocument, metadataRecord.toString());
                             compileCode();
                         }
                     });
@@ -393,34 +402,15 @@ public class SipModel {
         }
     }
 
-    private static class DocumentSetter implements Runnable {
-        private Document document;
-        private String content;
-
-        private DocumentSetter(Document document, String content) {
-            this.document = document;
-            this.content = content;
+    private static void setDocumentContents(Document document, String content) {
+        checkSwingThread();
+        int docLength = document.getLength();
+        try {
+            document.remove(0, docLength);
+            document.insertString(0, content, null);
         }
-
-        @Override
-        public void run() {
-            setDocumentContents(document, content);
-        }
-
-        public static void set(Document document, String content) {
-            checkSwingThread();
-            setDocumentContents(document, content);
-        }
-
-        private static void setDocumentContents(Document document, String content) {
-            int docLength = document.getLength();
-            try {
-                document.remove(0, docLength);
-                document.insertString(0, content, null);
-            }
-            catch (BadLocationException e) {
-                throw new RuntimeException(e);
-            }
+        catch (BadLocationException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -459,8 +449,13 @@ public class SipModel {
             }
         }
 
-        private void compilationComplete(String result) {
-            SwingUtilities.invokeLater(new DocumentSetter(outputDocument, result));
+        private void compilationComplete(final String result) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    setDocumentContents(outputDocument, result);
+                }
+            });
         }
     }
 

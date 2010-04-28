@@ -22,6 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
@@ -69,9 +70,10 @@ public class AnalysisPanel extends JPanel {
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private static final String RECORDS = "%d Records";
+    private static final String PERFORM_ANALYSIS = "Analyze %s";
     private JButton selectRecordRootButton = new JButton("Select Record Root");
     private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0), JLabel.CENTER);
-    private JButton analyzeButton = new JButton("Perform Analysis");
+    private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
     private JTree statisticsJTree;
@@ -182,6 +184,7 @@ public class AnalysisPanel extends JPanel {
                             @Override
                             public void run() {
                                 analyzeButton.setEnabled(true);
+                                abortButton.setEnabled(false);
                                 setElementsProcessed(sipModel.getElementCount());
                             }
                         });
@@ -210,6 +213,7 @@ public class AnalysisPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
         p.add(analyzeButton, BorderLayout.WEST);
         p.add(elementCountLabel, BorderLayout.CENTER);
+        abortButton.setEnabled(false);
         p.add(abortButton, BorderLayout.EAST);
         return p;
     }
@@ -221,10 +225,11 @@ public class AnalysisPanel extends JPanel {
     private void wireUp() {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
-            public void updatedFileSet() {
+            public void updatedFileSet(FileSet fileSet) {
                 setElementsProcessed(sipModel.getElementCount());
+                analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
                 analyzeButton.setEnabled(true);
-                abortButton.setEnabled(true);
+                abortButton.setEnabled(false);
             }
 
             @Override
