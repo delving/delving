@@ -82,7 +82,7 @@ from django.conf import settings
 
 from apps.base_item import models as base_item
 from apps.log import models as log
-from apps.process_monitor import sip_task
+from apps.sipmanager import sip_task
 
 from utils.gen_utils import calculate_hash
 
@@ -202,8 +202,8 @@ class UriCreate(sip_task.SipTask):
         # TODO: In desperate need of optimization!
         sql = ["SELECT DISTINCT m.id FROM base_item_mdrecord m"]
         sql.append("LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id")
-        sql.append("WHERE u.mdr_id IS NULL and m.status NOT LIKE %i" % base_item.MDRS_BROKEN)
-        self.cursor.execute(' '.join(sql))
+        sql.append("WHERE u.mdr_id IS NULL and m.status != %i LIMIT 25000" % base_item.MDRS_BROKEN)
+        self.cursor.execute(" ".join(sql))
 
         if self.cursor.rowcount:
             self.initial_message = 'Found %i records' % self.cursor.rowcount
@@ -282,7 +282,10 @@ class UriCreate(sip_task.SipTask):
         # Do a mapping request - uri (to speed up statistics)
         #
         for req_md in base_item.RequestMdRecord.objects.filter(md_record=mdr):
-            req_uri = models.ReqUri(req=req_md.request, uri=uri)
+            req_uri = models.ReqUri(req=req_md.request,
+                                    uri=uri,
+                                    source_id=uri.uri_source.pk,
+                                    item_type=uri.item_type)
             req_uri.save()
         return True
 
@@ -300,6 +303,7 @@ class UriValidateSave(sip_task.SipTask):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
     THREAD_MODE = sip_task.SIPT_THREADABLE
+    PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
 
@@ -309,12 +313,11 @@ class UriValidateSave(sip_task.SipTask):
 
         # in order to not try the same urisource all the time when one task
         # previously was terminated due to high load, we randomize the order
-        lst = urisources._result_cache[:]
+        lst = [p['pk'] for p in urisources]
         random.shuffle(lst)
 
         self.urisource = None
-        for d in lst:
-            urisource_id = d['pk']
+        for urisource_id in lst:
             # Loop over available sources, see if any of them has pending jobs
             if models.Uri.objects.new_by_source_count(urisource_id):
                 # found one!  lets work on it
@@ -352,7 +355,7 @@ class UriValidateSave(sip_task.SipTask):
 
             try:
                 self.task_time_to_show(record_count, terminate_on_high_load=True)
-            except SipSystemOverLoaded:
+            except sip_task.SipSystemOverLoaded:
                  # Terminate in a controled fashion so we can do cleanup
                 break
 
@@ -457,6 +460,24 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to save original')
         self.uri_state(models.URIS_ORG_SAVED)
 
+
+        # Identify & store actual filetype
+        retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
+        if retcode:
+            msg = 'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
+            return self.set_urierr(models.URIE_OTHER_ERROR,
+                                   'Failed to identify file type\n%s' % msg)
+        f_type = stdout.split(org_fname)[-1].strip()
+        if f_type[0] == ':':
+            f_type = f_type[1:].strip()
+        self.uri.file_type = f_type
+
+
+        if f_type.lower().find('html') > -1:
+            # mime_type was image, content was webpage...
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
+
+
         if USE_IMAGE_MAGIC:
             return self.generate_images_magic(base_fname, org_fname)
         else:
@@ -491,12 +512,21 @@ class UriValidateSave(sip_task.SipTask):
             self.uri.status = models.URIS_FAILED
 
         self.uri.save()
+        for requri in models.ReqUri.objects.filter(uri=self.uri):
+            requri.err_code=code
+            requri.save()
         return False # propagate error
 
 
     def uri_state(self, state):
         self.uri.status = state
         self.uri.save()
+        for requri in models.ReqUri.objects.filter(uri=self.uri):
+            requri.status=state
+            requri.item_type = self.uri.item_type
+            requri.mime_type = self.uri.mime_type
+            requri.file_type = self.uri.file_type
+            requri.save()
 
 
     #--------------   ImageMagic utility methods   ----------------------------
@@ -526,12 +556,20 @@ class UriValidateSave(sip_task.SipTask):
         cmd.append('-resize 200x')
         cmd.append('%s[0]' % org_fname)
         cmd.append(fname_full)
-        output = self.cmd_execute1(cmd)
-        if output:
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode:
             self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate FULL_DOC\ncmd output %s' % output)
+            return self.set_urierr(models.URIE_OBJ_CONVERT_ERROR,
+                                   'Failed to generate FULL_DOC\ncmd output %s%s' % (stdout,stderr))
+        if stdout or stderr:
+            el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                            msg = 'FULL_DOC %s %s' % (stdout, stderr),
+                            item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
         self.uri_state(models.URIS_FULL_GENERATED)
+
 
         if OLD_STYLE_IMAGE_NAMES:
             ext = '.BRIEF_DOC.jpg'
@@ -543,11 +581,18 @@ class UriValidateSave(sip_task.SipTask):
         cmd.append('-resize x110')
         cmd.append('%s[0]' % org_fname)
         cmd.append(fname_brief)
-        output = self.cmd_execute1(cmd)
-        if output:
-            self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate BRIEF_DOC\ncmd output %s' % output)
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode:
+            self.remove_file(fname_brief)
+            return self.set_urierr(models.URIE_OBJ_CONVERT_ERROR,
+                                   'Failed to generate BRIEF_DOC\ncmd output %s%s' % (stdout,stderr))
+        if stdout or stderr:
+            el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                            msg = 'BRIEF_DOC %s %s' % (stdout, stderr),
+                            item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
 

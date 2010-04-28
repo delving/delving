@@ -15,11 +15,13 @@
     <th>mimetype</th>
     <th>Good</th>
     <th>Bad</th>
-    {% for lbl, mime_result in mime_results.items %}
+    <th>Ratio</th>
+    {% for mime_result in mime_results %}
       <tr>
-        <td>{{ lbl }}</td>
+        <td>{{ mime_result.name }}</td>
         <td>{{ mime_result.ok }}</td>
         <td>{{ mime_result.bad }}</td>
+        <td>{{ mime_result.ratio }}</td>
       </tr>
     {% endfor %}
   </table>
@@ -46,11 +48,17 @@
 <h3>Grouped by webserver</h3>
 <table border="1">
   <th>name or ip</th>
-  <th>items</th>
+  <th>Items</th>
+  <th>Good</th>
+  <th>Bad</th>
+  <th>Ratio</th>
   {% for webserver in webservers %}
     <tr>
-      <td>{{ webserver.0 }}</td>
-      <td>{{ webserver.2 }}</td>
+      <td>{{ webserver.name }}</td>
+      <td>{{ webserver.count }}</td>
+      <td>{{ webserver.good }}</td>
+      <td>{{ webserver.bad }}</td>
+      <td>{{ webserver.ratio }}</td>
     </tr>
   {% endfor %}
 </table>

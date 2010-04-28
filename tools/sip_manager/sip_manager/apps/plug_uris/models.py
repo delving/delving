@@ -96,7 +96,7 @@ URIE_WRONG_FILESIZE      = 7 # used
 URIE_DOWNLOAD_FAILED     = 8 # used
 URIE_WAS_HTML_PAGE_ERROR = 9
 URIE_FILE_STORAGE_FAILED = 10
-URIE_OBJ_CONVERTION_ERROR = 11 # used
+URIE_OBJ_CONVERT_ERROR   = 11 # used
 URIE_UNRECOGNIZED_FORMAT = 12
 URIE_UNSUPORTED_MIMETYPE_ERROR = 13
 #URIE_NO_RESPONSE        = 13
@@ -112,7 +112,7 @@ URI_ERR_CODES = {
     URIE_WRONG_FILESIZE      : 'wrong filesize',
     URIE_WAS_HTML_PAGE_ERROR : 'Object was a html page',
     URIE_FILE_STORAGE_FAILED : 'file storage failed',
-    URIE_OBJ_CONVERTION_ERROR: 'object convertion failed',
+    URIE_OBJ_CONVERT_ERROR:  'object convert failed',
     URIE_DOWNLOAD_FAILED     : 'download failed',
     URIE_UNRECOGNIZED_FORMAT : 'unrecognized format',
     URIE_UNSUPORTED_MIMETYPE_ERROR : 'unsuported mime-type',
@@ -148,7 +148,7 @@ class UriManager(models.Manager):
             s = 'COUNT(u.id)'
         else:
             s = 'u.id'
-        lst = ["SELECT %s FROM %s_uri u" % (s, __name__.split('.')[-2])]
+        lst = ["SELECT %s FROM %s u" % (s, self.model._meta.db_table)]
         lst.append("WHERE u.status=%i" % URIS_CREATED)
         lst.append("AND uri_source_id=%i" % source_id)
         lst.append("AND err_code=%i" % URIE_NO_ERROR)
@@ -205,9 +205,10 @@ class Uri(models.Model):
     item_type = models.IntegerField(choices=dict_2_django_choice(URI_TYPES),
                                  default = URIT_OBJECT, db_index=True)
     mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
+    file_type = models.CharField(max_length=150, blank=True)
     uri_source = models.ForeignKey(UriSource)
     pid = models.FloatField(default=0, db_index=True) # what process 'owns' this item
-    url = models.CharField(max_length=450)
+    url = models.CharField(max_length=1250)
     url_hash = models.CharField(max_length=64,default='')
     content_hash = models.CharField(max_length=64,default='')
     err_code = models.IntegerField(choices=dict_2_django_choice(URI_ERR_CODES),
@@ -228,6 +229,14 @@ class ReqUri(models.Model):
     """
     req = models.ForeignKey(Request)
     uri = models.ForeignKey(Uri)
+
+    source_id = models.IntegerField(default=0, blank=True)
+    item_type = models.IntegerField(db_index=True)
+    mime_type = models.CharField(max_length=50, blank=True) # mostly relevant for objects...
+    file_type = models.CharField(max_length=150, blank=True)
+    status  = models.IntegerField(default=URIS_CREATED,db_index=True)
+    err_code = models.IntegerField(default=URIE_NO_ERROR,db_index=True)
+
     # Dummy field if nothing here table isnt created
     #i = models.IntegerField(default=0, blank=True)
 

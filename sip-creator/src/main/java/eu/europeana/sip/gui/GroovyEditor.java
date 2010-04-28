@@ -21,13 +21,21 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.GroovyService;
+import eu.europeana.sip.groovy.GroovyService;
+import eu.europeana.sip.model.FileSet;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.xml.namespace.QName;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -40,7 +48,7 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
+public class GroovyEditor extends JPanel {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
@@ -60,7 +68,6 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
         super(new BorderLayout());
         this.outputArea = outputArea;
         add(createSplitPane());
-        outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
         this.groovyService = new GroovyService(new GroovyService.Listener() {
             @Override
             public void setMapping(final String groovyCode) {
@@ -149,15 +156,14 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
 
     public boolean validatePrefix(int caretPosition) {
         String text = codeArea.getText();
-        if (text.length() < AutoComplete.DEFAULT_PREFIX.length()) {
+        if (text.length() < AutoCompleteDialog.DEFAULT_PREFIX.length()) {
             return false;
         }
-        String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
+        String prefixArea = text.substring(caretPosition - AutoCompleteDialog.DEFAULT_PREFIX.length(), caretPosition);
         LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
-        return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
+        return AutoCompleteDialog.DEFAULT_PREFIX.equals(prefixArea);
     }
 
-    @Override
     public void updateAvailableNodes(java.util.List<String> nodes) {
         this.availableNodes = nodes;
     }

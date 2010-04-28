@@ -75,6 +75,7 @@ public interface EuropeanaField {
 
     String getFacetPrefix();
 
+    ValidationLevel getValidationLevel();
 
     boolean isEuropeanaUri();
 

@@ -68,13 +68,19 @@ public class ResultController {
             HttpServletRequest request
     ) throws Exception {
         final Map params = request.getParameterMap();
-        boolean srwFormat = format != null && format.equals("srw");
+        String template = "full-doc";
+        if (format != null && format.equals("srw")) {
+        	template = "full-doc-srw";
+        }
+        if (format != null && format.equals("embedded")) {
+        	template = "full-doc-embedded";
+        }
 
         // get results
         final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
 
         // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(template);
         page.addObject("result", fullResultView);
         if (fullResultView.getDocIdWindowPager() != null) {
             page.addObject("pagination", fullResultView.getDocIdWindowPager());

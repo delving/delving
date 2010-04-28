@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Running processes{% endblock %}
+
+{% block content %}
+
+
+
+
+<table border="1">
+      <th>plugin</th>
+      <th>label</th>
+      <th>progress</th>
+      <th>eta</th>
+      <th>created</th>
+      <th>last update</th>
+    {% for proc in procs %}
+    <tr>
+        <td>{{ proc.plugin_name }}</td>
+        <td>{{ proc.task_label }}</td>
+        <td>{{ proc.task_progress }}</td>
+        <td>{{ proc.task_eta }}</td>
+        <td>{{ proc.time_created|date:'m-d' }} {{ proc.time_created|time:'H:i:s' }}</td>
+        <td>{{ proc.last_change|date:'m-d' }} {{ proc.last_change|time:'H:i:s' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}
+
+
+{% comment %}
+{% endcomment %}

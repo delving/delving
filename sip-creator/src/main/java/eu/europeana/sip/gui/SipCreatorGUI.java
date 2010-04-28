@@ -21,14 +21,22 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.RecentFileSets;
+import eu.europeana.core.querymodel.beans.AllFieldBean;
+import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.beans.FullBean;
+import eu.europeana.core.querymodel.beans.IdBean;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.SipModel;
+import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.File;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The main GUI class for the sip creator
@@ -38,59 +46,66 @@ import java.io.File;
  */
 
 public class SipCreatorGUI extends JFrame {
-    private AnalyzerPanel analyzerPanel = new AnalyzerPanel();
-    private NormalizerPanel normalizerPanel = new NormalizerPanel();
+    private Logger log = Logger.getLogger(getClass());
+    private SipModel sipModel = new SipModel();
+    private AnalysisPanel analysisPanel;
+    private MappingPanel mappingPanel;
+    private NormPanel normPanel;
 
     public SipCreatorGUI() {
         super("Europeana Ingestion SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        sipModel.setAnnotationProcessor(createAnnotationProcessor());
+        analysisPanel = new AnalysisPanel(sipModel);
+        mappingPanel = new MappingPanel(sipModel);
+        normPanel = new NormPanel(sipModel);
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analyzer", analyzerPanel);
-        tabs.addTab("Normalizer", normalizerPanel);
+        tabs.addTab("Analyzer", analysisPanel);
+        tabs.addTab("Mapping", mappingPanel);
+        tabs.addTab("Normalizer", normPanel);
         getContentPane().add(tabs);
         setJMenuBar(createMenuBar());
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(new Dimension((int) Math.round(d.getWidth() * .8), (int) Math.round(d.getHeight() * .8)));
-        tabs.addKeyListener(
-                new KeyAdapter() {
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        if (KeyEvent.ALT_MASK == e.getModifiers() && KeyEvent.VK_L == e.getKeyCode()) {
-                            RecentFileSets recentFiles = new RecentFileSets(new File("."));
-                            if (0 < recentFiles.getList().size()) {
-                                FileSet fileSet = recentFiles.getList().get(0);
-                                analyzerPanel.setFileSet(fileSet);
-                                normalizerPanel.setFileSet(fileSet);
-                            }
-                        }
-                    }
-                }
-        );
-        tabs.requestFocus();
+        setSize(1200, 800);
+//        setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
         FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
-            public void select(FileSet fileSet) {
-                analyzerPanel.setFileSet(fileSet);
-                normalizerPanel.setFileSet(fileSet);
+            public boolean select(FileSet fileSet) {
+                if (!fileSet.isValid()) {
+                    return false;
+                }
+                else {
+                    fileSet.setExceptionHandler(new PopupExceptionHandler());
+                    sipModel.setFileSet(fileSet);
+                    return true;
+                }
             }
         });
-        analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
         bar.add(fileMenu);
         return bar;
     }
 
-//    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
-//        List<Class<?>> classes = new ArrayList<Class<?>>();
-//        classes.add(beanClass);
-//        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-//        annotationProcessor.setClasses(classes);
-//        return annotationProcessor;
-//    }
-//
+    private AnnotationProcessor createAnnotationProcessor() {
+        List<Class<?>> list = new ArrayList<Class<?>>();
+        list.add(IdBean.class);
+        list.add(BriefBean.class);
+        list.add(FullBean.class);
+        list.add(AllFieldBean.class);
+        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
+        annotationProcessor.setClasses(list);
+        return annotationProcessor;
+    }
+
+    private class PopupExceptionHandler implements FileSet.ExceptionHandler {
+        @Override
+        public void failure(Exception exception) {
+            JOptionPane.showMessageDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
+            log.warn("Problem", exception);
+        }
+    }
 
     public static void main(String[] args) {
         SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();

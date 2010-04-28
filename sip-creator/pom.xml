@@ -38,6 +38,28 @@
         <defaultGoal>compile</defaultGoal>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <fileset>
+                                    <directory>${pom.basedir}/src/main/java</directory>
+                                    <includes>
+                                        <include>**/*.groovy</include>
+                                    </includes>
+                                </fileset>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptorRefs>
@@ -45,7 +67,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>eu.europeana.sip.gui.NormalizerPanel</mainClass>
+                            <mainClass>eu.europeana.sip.gui.SipCreatorGUI</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -71,11 +93,6 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>jsyntaxpane</groupId>
-            <artifactId>jsyntaxpane</artifactId>
-            <version>0.9.5-b29</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
