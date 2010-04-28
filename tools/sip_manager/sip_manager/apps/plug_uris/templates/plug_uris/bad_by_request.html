@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Bad by request{% endblock %}
+
+{% block content %}
+
+<a href="{% url uri_stats_idx %}">Statistics</a>
+
+<h3>{{ request }}</h3>
+
+<h3>Problematic items with mime type: {{ mime_type }}</h3>
+
+<table border="1">
+  <th>url</th>
+  <th>status</th>
+  <th>error</th>
+  <th>err msg</th>
+  {% for problem in problems %}
+    <tr>
+      <td>{{ problem.url }}</td>
+      <td>{{ problem.status }}</td>
+      <td>{{ problem.errname }}</td>
+      <td>{{ problem.err_msg }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+
+
+
+
+{% endblock %}
+
+
+{% comment %}
+{% endcomment %}
