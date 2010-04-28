@@ -89,8 +89,8 @@ public class FieldMapping {
     @SuppressWarnings("unchecked")
     public void generateCode() {
         codeLines.clear();
-        Converter converter = Generator.getConverter(converterName);
-        List lines = converter.generateCode(this);
+        CodeTemplate codeTemplate = Generator.getConverter(converterName);
+        List lines = codeTemplate.generateCode(this);
         for (Object line : lines) {
             codeLines.add(line.toString());
         }

@@ -29,7 +29,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public interface Converter {
+public interface CodeTemplate {
     boolean applicable(FieldMapping fieldMapping);
     List generateCode(FieldMapping fieldMapping);
 }

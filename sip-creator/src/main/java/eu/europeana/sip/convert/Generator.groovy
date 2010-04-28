@@ -1,6 +1,6 @@
 package eu.europeana.sip.convert
 
-import eu.europeana.sip.groovy.Converter
+import eu.europeana.sip.groovy.CodeTemplate
 import eu.europeana.sip.groovy.FieldMapping
 
 /**
@@ -11,17 +11,18 @@ import eu.europeana.sip.groovy.FieldMapping
 
 class Generator {
 
-  static Converter getConverter(String name) {
-    return (Converter)MAP.get(name);
+  static CodeTemplate getConverter(String name) {
+    return (CodeTemplate)MAP.get(name);
   }
 
   public static Map MAP = [
-          "Verbatim": new Verbatim()
+          "Verbatim": new Verbatim(),
+          "First Instance": new FirstInstance()
   ]
 
 }
 
-class Verbatim implements Converter {
+class Verbatim implements CodeTemplate {
 
   boolean applicable(FieldMapping fieldMapping) {
     return "1:1".equals(fieldMapping.getArgumentPattern())
@@ -34,6 +35,25 @@ class Verbatim implements Converter {
             "for (x in ${input}) {",
             "   ${output} x",
             "}"
+    ]
+  }
+
+  String toString() {
+    return 'Verbatim'
+  }
+}
+
+class FirstInstance implements CodeTemplate {
+
+  boolean applicable(FieldMapping fieldMapping) {
+    return "1:1".equals(fieldMapping.getArgumentPattern())
+  }
+
+  List generateCode(FieldMapping fieldMapping) {
+    String input = fieldMapping.getFromVariables()[0]
+    String output = fieldMapping.getToFields()[0]
+    return [
+            "${output} ${input}[0]"
     ]
   }
 
