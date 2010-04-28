@@ -25,7 +25,7 @@
 
 """
 
-# Create your views here.
+import urllib
 
 from django.db.models import Q
 from django.shortcuts import render_to_response, get_object_or_404
@@ -34,6 +34,7 @@ from apps.dummy_ingester.models import Request
 
 #from datagrids import UriSourcesDataGrid
 import models
+from apps.base_item import models as base_item
 
 Q_OBJECT = Q(item_type=models.URIT_OBJECT)
 Q_OK = Q(status=models.URIS_COMPLETED, err_code=models.URIE_NO_ERROR)
@@ -123,6 +124,7 @@ def stats_by_req(request, sreq_id=0):
         itm_ok = qs_mime.filter(Q_OK).count()
         itm_bad = qs_mime.filter(Q_BAD).count()
         mime_results.append({'name':mime_type,
+                             'mime_url': urllib.quote_plus(mime_type),
                              'ok': itm_ok,
                              'bad': itm_bad,
                              'ratio': s_calc_ratio_bad(itm_ok, itm_bad),
@@ -131,14 +133,16 @@ def stats_by_req(request, sreq_id=0):
     #
     # Grouped by error
     #
-    err_by_reason = {}
+    err_by_reasons = []
     for err_code in models.URI_ERR_CODES.keys():
         if err_code == models.URIE_NO_ERROR:
             continue
         count = qs_all.filter(err_code=err_code).count()
         if not count:
             continue
-        err_by_reason[models.URI_ERR_CODES[err_code]] = count
+        err_by_reasons.append({'err_code' : err_code,
+                               'err_msg': models.URI_ERR_CODES[err_code],
+                               'count': count})
 
     #
     # Grouped by webserver
@@ -163,7 +167,7 @@ def stats_by_req(request, sreq_id=0):
                               {
                                   'request': request,
                                   'mime_results': mime_results,
-                                  'err_by_reason': err_by_reason,
+                                  'err_by_reasons': err_by_reasons,
                                   'webservers': webservers,
                               })
 
@@ -228,6 +232,39 @@ def problems(request, source_id=-1):
     return render_to_response('plug_uris/problems.html', {
         'urisource': urisource,
         'problems': problems})
+
+
+
+
+def uri_bad_by_req_err(request, sreq_id, err_code=0):
+    return bad_by_request(request, sreq_id, err_code=err_code)
+
+def bad_by_request(request, sreq_id, mime_type='', err_code=0):
+    req_id = int(sreq_id)
+    request = models.Request.objects.filter(pk=req_id)[0]
+    if mime_type:
+        q_filter = Q(mime_type=mime_type)
+    else:
+        q_filter = Q(err_code=err_code)
+
+    #
+    # Grouped by mimetype
+    #
+    problems = []
+    for requri in models.ReqUri.objects.filter(Q_OBJECT, Q_BAD, q_filter, req=req_id):
+        uri =models.Uri.objects.get(pk=requri.uri_id)
+        problems.append({'url': uri.url,
+                         'status': models.URI_STATES[requri.status],
+                         'errname': models.URI_ERR_CODES[requri.err_code],
+                         'err_msg': uri.err_msg,
+                         })
+
+    return render_to_response("plug_uris/bad_by_request.html",
+                              {
+                                  'request': request,
+                                  'mime_type': mime_type,
+                                  'problems': problems,
+                              })
 
 
 
