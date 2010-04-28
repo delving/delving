@@ -78,12 +78,13 @@ public class SipModel {
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
-    private List<FileSetListener> fileSetListeners = new CopyOnWriteArrayList<FileSetListener>();
+    private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
 
-    public interface FileSetListener {
+    public interface UpdateListener {
         void updatedFileSet();
+        void updatedRecordRoot(RecordRoot recordRoot);
     }
 
     public interface AnalysisListener {
@@ -101,8 +102,8 @@ public class SipModel {
         this.exceptionHandler = exceptionHandler;
     }
 
-    public void addFileSetListener(FileSetListener fileSetListener) {
-        fileSetListeners.add(fileSetListener);
+    public void addUpdateListener(UpdateListener updateListener) {
+        updateListeners.add(updateListener);
     }
 
     public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
@@ -116,8 +117,8 @@ public class SipModel {
         setRecordRootInternal(fileSet.getRecordRoot());
         setRecordMapping(fileSet.getMapping());
         createMetadataParser();
-        for (FileSetListener fileSetListener : fileSetListeners) {
-            fileSetListener.updatedFileSet();
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedFileSet();
         }
     }
 
@@ -166,7 +167,7 @@ public class SipModel {
     public void normalize() {
         checkSwingThread();
         abortNormalize();
-        normalizeProgressModel.setMaximum((int)recordRoot.getRecordCount());
+        normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
         normalizer = new Normalizer(fileSet, new MetadataParser.Listener(){
             @Override
             public void recordsParsed(final int count) {
@@ -306,6 +307,9 @@ public class SipModel {
         }
         else {
             variableListModel.clear();
+        }
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedRecordRoot(recordRoot);
         }
     }
 

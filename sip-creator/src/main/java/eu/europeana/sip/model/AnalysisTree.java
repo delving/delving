@@ -57,6 +57,8 @@ public class AnalysisTree implements Serializable {
         boolean isRecordRoot();
 
         Iterable<? extends Node> getChildNodes();
+
+        boolean couldBeRecordRoot();
     }
 
     public static void setRecordRoot(DefaultTreeModel model, QName recordRoot) {
@@ -110,7 +112,7 @@ public class AnalysisTree implements Serializable {
             stack.push("input");
             withinRecord = true;
         }
-        if (node.getStatistics() != null) {
+        if (node.isLeaf()) {
             if (withinRecord) {
                 StringBuilder out = new StringBuilder();
                 Iterator<String> tagWalk = stack.iterator();
@@ -137,8 +139,8 @@ public class AnalysisTree implements Serializable {
     private static QNameNode createSubtree(List<Statistics> statisticsList, QNamePath path, QNameNode parent) {
         Map<QName, List<Statistics>> statisticsMap = new HashMap<QName, List<Statistics>>();
         for (Statistics statistics : statisticsList) {
-            QNamePath pp = new QNamePath(statistics.getPath(), path.size());
-            if (pp.equals(path)) {
+            QNamePath subPath = new QNamePath(statistics.getPath(), path.size());
+            if (subPath.equals(path) && statistics.getPath().size() == path.size() + 1) {
                 QName name = statistics.getPath().getQName(path.size());
                 if (name != null) {
                     List<Statistics> list = statisticsMap.get(name);

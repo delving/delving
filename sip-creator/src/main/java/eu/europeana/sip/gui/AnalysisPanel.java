@@ -70,7 +70,7 @@ public class AnalysisPanel extends JPanel {
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private static final String RECORDS = "%d Records";
     private JButton selectRecordRootButton = new JButton("Select Record Root");
-    private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0L), JLabel.CENTER);
+    private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0), JLabel.CENTER);
     private JButton analyzeButton = new JButton("Perform Analysis");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
@@ -219,12 +219,17 @@ public class AnalysisPanel extends JPanel {
     }
 
     private void wireUp() {
-        sipModel.addFileSetListener(new SipModel.FileSetListener() {
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void updatedFileSet() {
                 setElementsProcessed(sipModel.getElementCount());
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(true);
+            }
+
+            @Override
+            public void updatedRecordRoot(RecordRoot recordRoot) {
+                recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
             }
         });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -233,7 +238,7 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = event.getPath();
                 AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 sipModel.selectNode(node);
-                selectRecordRootButton.setEnabled(node.getStatistics() == null);
+                selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
             }
         });
         selectRecordRootButton.addActionListener(new ActionListener() {
@@ -241,7 +246,7 @@ public class AnalysisPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
                 QNameNode node = (QNameNode) path.getLastPathComponent();
-                RecordRoot recordRoot = new RecordRoot(node.getQName(), 1000000); // todo: get the real number!
+                RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
                 sipModel.setRecordRoot(recordRoot);
             }
         });
@@ -302,7 +307,7 @@ public class AnalysisPanel extends JPanel {
         }
 
         private void expandEmptyNodes(AnalysisTree.Node node) {
-            if (node.getStatistics() == null) {
+            if (node.couldBeRecordRoot()) {
                 TreePath path = node.getTreePath();
                 statisticsJTree.expandPath(path);
             }

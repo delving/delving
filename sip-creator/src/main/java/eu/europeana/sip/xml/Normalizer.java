@@ -26,7 +26,6 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
-import org.apache.log4j.Logger;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -42,7 +41,6 @@ import java.io.Writer;
  */
 
 public class Normalizer implements Runnable {
-    private Logger log = Logger.getLogger(getClass());
     private FileSet fileSet;
     private MetadataParser.Listener listener;
     private boolean running;
@@ -68,9 +66,6 @@ public class Normalizer implements Runnable {
             int count = 0;
             running = true;
             while ((record = parser.nextRecord()) != null && running) {
-                if (count % 100 == 0) {
-                    log.info("record " + count);
-                }
                 mappingScriptBinding.setRecord(record);
                 script.run();
                 count++;

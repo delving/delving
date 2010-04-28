@@ -140,13 +140,13 @@ public class AnalysisParser implements Runnable {
     private void recordValue(String value) {
         value = value.trim();
         Statistics statistics = statisticsMap.get(path);
-        if (!value.isEmpty()) {
-            if (statistics == null) {
-                QNamePath key = new QNamePath(path);
-                statisticsMap.put(key, statistics = new Statistics(key));
-            }
-            statistics.recordValue(value);
-            statistics.recordOccurrence(); // todo: move outside the if
+        if (statistics == null) {
+            QNamePath key = new QNamePath(path);
+            statisticsMap.put(key, statistics = new Statistics(key));
         }
+        if (!value.isEmpty()) {
+            statistics.recordValue(value);
+        }
+        statistics.recordOccurrence();
     }
 }

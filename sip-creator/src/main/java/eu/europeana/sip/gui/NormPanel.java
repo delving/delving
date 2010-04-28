@@ -54,7 +54,7 @@ public class NormPanel extends JPanel {
     private SipModel sipModel;
     private JButton normalizeButton = new JButton("Normalize");
     private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
-    private JButton abort = new JButton("Abort");
+    private JButton abortButton = new JButton("Abort");
 
     public NormPanel(SipModel sipModel) {
         super(new GridBagLayout());
@@ -138,10 +138,11 @@ public class NormPanel extends JPanel {
 
     private JPanel createNormalizePanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.add(normalizeButton, BorderLayout.WEST);
         JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
         progressBar.setBorderPainted(true);
-        p.add(progressBar);
+        p.add(normalizeButton, BorderLayout.WEST);
+        p.add(progressBar, BorderLayout.CENTER);
+        p.add(abortButton, BorderLayout.EAST);
         return p;
     }
 
@@ -165,7 +166,7 @@ public class NormPanel extends JPanel {
                 sipModel.normalize();
             }
         });
-        abort.addActionListener(new ActionListener() {
+        abortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sipModel.abortNormalize();

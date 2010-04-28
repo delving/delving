@@ -105,6 +105,11 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         return children;
     }
 
+    @Override
+    public boolean couldBeRecordRoot() {
+        return statistics != null && statistics.getCounters().isEmpty();
+    }
+
     private void compilePathList(List<QNameNode> list) {
         if (parent != null) {
             parent.compilePathList(list);
@@ -139,13 +144,13 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean getAllowsChildren() {
-        return !children.isEmpty();
+        return statistics != null && statistics.getCounters().isEmpty();
+//        return !children.isEmpty();
     }
 
     @Override
     public boolean isLeaf() {
-        return statistics != null;
-//        return statistics == null || !statistics.getCounters().isEmpty();
+        return statistics != null && !statistics.getCounters().isEmpty();
     }
 
     @Override
