@@ -20,7 +20,13 @@
       <tr>
         <td>{{ mime_result.name }}</td>
         <td>{{ mime_result.ok }}</td>
-        <td><a href="{% url uri_bad_by_req request.pk mime_result.mime_url %}">{{ mime_result.bad }}</a></td>
+        <td>
+        {% if mime_result.bad %}
+          <a href="{% url uri_bad_by_req_mime request.pk mime_result.mime_url %}">{{ mime_result.bad }}</a>
+        {% else %}
+          0
+        {% endif %}
+        </td>
         <td>{{ mime_result.ratio }}</td>
       </tr>
     {% endfor %}
@@ -37,7 +43,13 @@
     {% for err_by_reason in err_by_reasons %}
       <tr>
         <td>{{ err_by_reason.err_msg }}</td>
-        <td><a href="{% url uri_bad_by_req_err request.pk err_by_reason.err_code %}">{{ err_by_reason.count }}</a></td>
+        <td>
+        {% if webserver.bad %}
+          <a href="{% url uri_bad_by_req_err request.pk err_by_reason.err_code %}">{{ err_by_reason.count }}</a>
+        {% else %}
+          0
+        {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </table>
@@ -57,7 +69,13 @@
       <td>{{ webserver.name }}</td>
       <td>{{ webserver.count }}</td>
       <td>{{ webserver.good }}</td>
-      <td>{{ webserver.bad }}</td>
+      <td>
+        {% if webserver.bad %}
+          <a href="{% url uri_bad_by_req request.pk %}">{{ webserver.bad }}</a>
+        {% else %}
+          0
+        {% endif %}
+      </td>
       <td>{{ webserver.ratio }}</td>
     </tr>
   {% endfor %}

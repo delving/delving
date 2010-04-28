@@ -65,6 +65,7 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 """
 
 import datetime
+import httplib
 import os
 import random
 import sys
@@ -391,7 +392,11 @@ class UriValidateSave(sip_task.SipTask):
         try:
             itm = urllib2.urlopen(self.uri.url,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
-            return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i' % e.code)
+            try:
+                err_msg = httplib.responses[e.code]
+            except:
+                err_msg = 'Unable to lookup error code'
+            return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i - %s' % (e.code, err_msg))
         except urllib2.URLError, e:
             if str(e.reason) == 'timed out':
                 code = models.URIE_TIMEOUT
@@ -404,7 +409,11 @@ class UriValidateSave(sip_task.SipTask):
             return self.set_urierr(models.URIE_OTHER_ERROR, 'Unhandled error when checking url')
 
         if itm.code != 200:
-            return self.set_urierr(models.URIE_HTML_ERROR, 'HTML status: %i' % itm.code)
+            try:
+                err_msg = httplib.responses[itm.code]
+            except:
+                err_msg = 'Unable to lookup error code'
+            return self.set_urierr(models.URIE_HTML_ERROR, 'HTML status: %i - %s' % (itm.code, err_msg) )
         try:
             content_t = itm.headers['content-type']
         except:

@@ -236,22 +236,29 @@ def problems(request, source_id=-1):
 
 
 
-def uri_bad_by_req_err(request, sreq_id, err_code=0):
+def uri_bad_by_req_mime(request, sreq_id, mime_type):
+    return bad_by_request(request, sreq_id, mime_type=mime_type)
+
+
+def uri_bad_by_req_err(request, sreq_id, err_code):
     return bad_by_request(request, sreq_id, err_code=err_code)
+
 
 def bad_by_request(request, sreq_id, mime_type='', err_code=0):
     req_id = int(sreq_id)
     request = models.Request.objects.filter(pk=req_id)[0]
     if mime_type:
-        q_filter = Q(mime_type=mime_type)
+        q_filter = Q(req=req_id, mime_type=mime_type)
+    elif err_code:
+        q_filter = Q(req=req_id, err_code=err_code)
     else:
-        q_filter = Q(err_code=err_code)
+        q_filter = Q(req=req_id)
 
     #
     # Grouped by mimetype
     #
     problems = []
-    for requri in models.ReqUri.objects.filter(Q_OBJECT, Q_BAD, q_filter, req=req_id):
+    for requri in models.ReqUri.objects.filter(q_filter, Q_OBJECT, Q_BAD):
         uri =models.Uri.objects.get(pk=requri.uri_id)
         problems.append({'url': uri.url,
                          'status': models.URI_STATES[requri.status],
