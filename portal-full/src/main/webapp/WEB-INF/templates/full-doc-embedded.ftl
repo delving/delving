@@ -75,7 +75,7 @@
            </tr>
            <#if result.fullDoc.europeanaType == "SOUND">
            <tr>
-              <td colspan="3">
+              <td colspan="3" style="padding-left:3px;padding-right:3px;">
                 <embed src="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}" 
                       width="100%" height="20" autostart="false" loop="FALSE"> 
                 </embed>
