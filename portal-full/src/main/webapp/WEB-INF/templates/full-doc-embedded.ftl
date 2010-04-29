@@ -71,17 +71,13 @@
                         <img src="${result.fullDoc.thumbnail[0]}" alt="Image title: ${result.fullDoc.dcTitle[0]}" id="imgview" onload="checkSize(this.height);" onerror="showDefault(this,'${result.fullDoc.europeanaType}','full')"/>
                         </#if>
                     </a>
-               </td>
-           </tr>
            <#if result.fullDoc.europeanaType == "SOUND">
-           <tr>
-              <td colspan="3" style="padding-left:3px;padding-right:3px;">
-                <embed src="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}" 
+                <embed  style="padding-left:3px;padding-right:3px;padding-top:0" src="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}" 
                       width="100%" height="20" autostart="false" loop="FALSE"> 
                 </embed>
-              </td>  
-           </tr>
            </#if>
+               </td>
+           </tr>
            <tr>    
             <td colspan="3">
                 <div about="${result.fullDoc.id}" style="max-width:200px">
