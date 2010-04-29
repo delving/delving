@@ -61,6 +61,7 @@
 <table border="1">
   <th>name or ip</th>
   <th>Items</th>
+  <th>Waiting</th>
   <th>Good</th>
   <th>Bad</th>
   <th>Ratio</th>
@@ -68,6 +69,7 @@
     <tr>
       <td>{{ webserver.name }}</td>
       <td>{{ webserver.count }}</td>
+      <td>{{ webserver.waiting }}</td>
       <td>{{ webserver.good }}</td>
       <td>
         {% if webserver.bad %}
@@ -79,6 +81,14 @@
       <td>{{ webserver.ratio }}</td>
     </tr>
   {% endfor %}
+  <tr>
+    <td><b>Summary</b></td>
+    <td><b>{{ webservers_summary.count }}</b></td>
+    <td><b>{{ webservers_summary.waiting }}</b></td>
+    <td><b>{{ webservers_summary.good }}</b></td>
+    <td><b>{{ webservers_summary.bad }}</b></td>
+    <td>&nbsp;</td>
+  </tr>
 </table>
 
 

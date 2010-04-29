@@ -148,16 +148,19 @@ def stats_by_req(request, sreq_id=0):
     # Grouped by webserver
     #
     webservers = []
+    tot_items = tot_good = tot_bad = tot_waiting = 0
     for row in qs_all.values_list('source_id').distinct().order_by('source_id'):
         srv_id = int(row[0])
         srv_name = models.UriSource.objects.get(pk=srv_id)
         qs_webserver = qs_all.filter(source_id=srv_id)
-        items = qs_webserver.count()
-        good = qs_webserver.filter(Q_OK).count()
-        bad = qs_webserver.filter(Q_BAD).count()
+        items = qs_webserver.count() ; tot_items += items
+        good = qs_webserver.filter(Q_OK).count(); tot_good += good
+        bad = qs_webserver.filter(Q_BAD).count(); tot_bad += bad
+        waiting = items - good - bad; tot_waiting += waiting
         webservers.append({'name': srv_name,
                            'srv_id': srv_id,
                            'count' :items,
+                           'waiting': waiting,
                            'good': good,
                            'bad': bad,
                            'ratio': s_calc_ratio_bad(good, bad),
@@ -169,6 +172,11 @@ def stats_by_req(request, sreq_id=0):
                                   'mime_results': mime_results,
                                   'err_by_reasons': err_by_reasons,
                                   'webservers': webservers,
+                                  'webservers_summary': {
+                                      'count': tot_items,
+                                      'waiting': tot_waiting,
+                                      'good': tot_good,
+                                      'bad': tot_bad,},
                               })
 
 
@@ -277,18 +285,15 @@ def bad_by_request(request, sreq_id, mime_type='', err_code=0):
 
 
 def uri_summary():
+    imgs_all =  models.ReqUri.objects.filter(item_type=models.URIT_OBJECT).count()
     imgs_ok = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
                                            status=models.URIS_COMPLETED,
                                            ).count()
-    imgs_waiting = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
-                                                status=models.URIS_CREATED
-                                                ).exclude(err_code=models.URIE_NO_ERROR
-                                                          ).count()
     imgs_bad = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT
                                             ).exclude(err_code=models.URIE_NO_ERROR
                                                       ).count()
     return {"imgs_ok": imgs_ok,
-            "imgs_waiting": imgs_waiting,
+            "imgs_waiting": imgs_all - imgs_ok - imgs_bad,
             "imgs_bad": imgs_bad}
 
 
