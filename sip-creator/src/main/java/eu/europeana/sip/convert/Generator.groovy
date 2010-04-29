@@ -11,7 +11,7 @@ import eu.europeana.sip.groovy.FieldMapping
 
 class Generator {
 
-  static CodeTemplate getConverter(String name) {
+  static CodeTemplate getCodeTemplate(String name) {
     return (CodeTemplate)MAP.get(name);
   }
 
