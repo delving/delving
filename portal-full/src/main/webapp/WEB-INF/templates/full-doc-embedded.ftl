@@ -70,10 +70,18 @@
                         </script>
                         <img src="${result.fullDoc.thumbnail[0]}" alt="Image title: ${result.fullDoc.dcTitle[0]}" id="imgview" onload="checkSize(this.height);" onerror="showDefault(this,'${result.fullDoc.europeanaType}','full')"/>
                         </#if>
-
                     </a>
                </td>
            </tr>
+           <#if result.fullDoc.europeanaType == "SOUND">
+           <tr>
+              <td colspan="3">
+                <embed src="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}" 
+                      width="100%" height="20" autostart="false" loop="FALSE"> 
+                </embed>
+              </td>  
+           </tr>
+           </#if>
            <tr>    
             <td colspan="3">
                 <div about="${result.fullDoc.id}" style="max-width:200px">
@@ -114,7 +122,7 @@
             </#list>
         <tr>
             <td colspan="3" style="text-align:right;font-size:70%;color:grey;">
-             <@spring.message 'FindOutMore_t'/> <a href="${uri}" style="background-color:darkorange;color:white;text-decoration:none;padding-left:3px;padding-right:1px;">Europeana.eu</a>
+             <#--<@spring.message 'FindOutMore_t'/> --><a href="${uri}" style="background-color:darkorange;color:white;text-decoration:none;padding-left:3px;padding-right:1px;">europeana.eu</a>
             </td>
         </tr>
     </table>
