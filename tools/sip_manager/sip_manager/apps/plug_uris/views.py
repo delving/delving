@@ -285,7 +285,7 @@ def uri_bad_by_server(request, req_id, webserver_id):
 def uri_bad_by_request(request, offset=0):
     offset = int(offset)
     sel = request.session['req_filter']
-    request = models.Request.objects.get(pk=sel['req_id'])
+    req = models.Request.objects.get(pk=sel['req_id'])
     q_selection = Q((sel['key'], sel['value']), req=sel['req_id'])
     #
     #
@@ -305,6 +305,7 @@ def uri_bad_by_request(request, offset=0):
     return render_to_response("plug_uris/bad_by_request.html",
                               {
                                   'request': request,
+                                  'req': req,
                                   'filter_label': sel['filter_label'],
                                   #'mime_type': mime_type,
                                   'problems': problems,
