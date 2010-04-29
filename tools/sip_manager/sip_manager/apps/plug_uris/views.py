@@ -257,7 +257,7 @@ def problems(request, source_id=-1):
 
 def uri_bad_by_req_mime(request, req_id, mime_type):
     request.session['req_filter'] = {'key': 'mime_type',
-                                     'value': mime_type,
+                                     'value': urllib.unquote(mime_type),
                                      'req_id': req_id,
                                      'filter_label':'mime-type',
                                      }
