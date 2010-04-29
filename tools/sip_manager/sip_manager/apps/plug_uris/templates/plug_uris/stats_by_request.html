@@ -73,7 +73,7 @@
       <td>{{ webserver.good }}</td>
       <td>
         {% if webserver.bad %}
-          <a href="{% url uri_bad_by_req request.pk %}">{{ webserver.bad }}</a>
+          <a href="{% url uri_bad_by_server request.pk webserver.srv_id %}">{{ webserver.bad }}</a>
         {% else %}
           0
         {% endif %}

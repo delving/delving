@@ -40,6 +40,9 @@ Q_OBJECT = Q(item_type=models.URIT_OBJECT)
 Q_OK = Q(status=models.URIS_COMPLETED, err_code=models.URIE_NO_ERROR)
 Q_BAD = ~Q(err_code=models.URIE_NO_ERROR)
 
+
+BAD_BY_REQ_PG_SIZE = 150
+
 """
 
 myapp/datagrid.html
@@ -181,6 +184,7 @@ def stats_by_req(request, sreq_id=0):
 
 
 def stats_by_uri(request, order_by=''):
+    """
     if order_by:
         if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
             if request.session.get('sortkey','').find(order_by)==1:
@@ -191,7 +195,8 @@ def stats_by_uri(request, order_by=''):
         else:
             p_order_by = 'name_or_ip'
     else:
-        p_order_by = 'name_or_ip'
+    """
+    p_order_by = 'name_or_ip'
     request.session['sortkey'] = p_order_by
 
     qs_all = models.ReqUri.objects.filter(Q_OBJECT)
@@ -245,29 +250,49 @@ def problems(request, source_id=-1):
 
 
 
-def uri_bad_by_req_mime(request, sreq_id, mime_type):
-    return bad_by_request(request, sreq_id, mime_type=mime_type)
 
 
-def uri_bad_by_req_err(request, sreq_id, err_code):
-    return bad_by_request(request, sreq_id, err_code=err_code)
 
 
-def bad_by_request(request, sreq_id, mime_type='', err_code=0):
-    req_id = int(sreq_id)
-    request = models.Request.objects.filter(pk=req_id)[0]
-    if mime_type:
-        q_filter = Q(req=req_id, mime_type=mime_type)
-    elif err_code:
-        q_filter = Q(req=req_id, err_code=err_code)
-    else:
-        q_filter = Q(req=req_id)
 
+def uri_bad_by_req_mime(request, req_id, mime_type):
+    request.session['req_filter'] = {'key': 'mime_type',
+                                     'value': mime_type,
+                                     'req_id': req_id,
+                                     'filter_label':'mime-type',
+                                     }
+    return uri_bad_by_request(request)
+
+
+def uri_bad_by_req_err(request, req_id, err_code):
+    request.session['req_filter'] = {'key': 'err_code',
+                                     'value': err_code,
+                                     'req_id': req_id,
+                                     'filter_label':'error',
+                                     }
+    return uri_bad_by_request(request)
+
+
+def uri_bad_by_server(request, req_id, webserver_id):
+    request.session['req_filter'] = {'key': 'source_id',
+                                     'value': webserver_id,
+                                     'req_id': req_id,
+                                     'filter_label': 'webserver',
+                                     }
+    return uri_bad_by_request(request)
+
+
+def uri_bad_by_request(request, offset=0):
+    offset = int(offset)
+    sel = request.session['req_filter']
+    request = models.Request.objects.get(pk=sel['req_id'])
+    q_selection = Q((sel['key'], sel['value']), req=sel['req_id'])
     #
-    # Grouped by mimetype
     #
+    #
+    qs = models.ReqUri.objects.filter(q_selection, Q_OBJECT, Q_BAD)
     problems = []
-    for requri in models.ReqUri.objects.filter(q_filter, Q_OBJECT, Q_BAD):
+    for requri in qs[offset:offset+BAD_BY_REQ_PG_SIZE]:
         uri =models.Uri.objects.get(pk=requri.uri_id)
         problems.append({'url': uri.url,
                          'status': models.URI_STATES[requri.status],
@@ -275,11 +300,20 @@ def bad_by_request(request, sreq_id, mime_type='', err_code=0):
                          'err_msg': uri.err_msg,
                          })
 
+    item_count = qs.count()
+    pages = item_count / BAD_BY_REQ_PG_SIZE + 1
     return render_to_response("plug_uris/bad_by_request.html",
                               {
                                   'request': request,
-                                  'mime_type': mime_type,
+                                  'filter_label': sel['filter_label'],
+                                  #'mime_type': mime_type,
                                   'problems': problems,
+
+                                  'prev': max(offset - BAD_BY_REQ_PG_SIZE, 0),
+                                  'next': offset + BAD_BY_REQ_PG_SIZE,
+                                  'last': max(0, item_count - BAD_BY_REQ_PG_SIZE),
+                                  'pages': pages,
+                                  'item_count': item_count,
                               })
 
 

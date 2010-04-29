@@ -8,7 +8,13 @@
 
 <h3>{{ request }}</h3>
 
-<h3>Problematic items with mime type: {{ mime_type }}</h3>
+<h3>Problematic items, filtered on: {{ filter_label }}</h3>
+
+<p>
+Found {{ item_count }} items matching filter
+</p>
+
+{% include "plug_uris/snippets/navigator.html" %}
 
 <table border="1">
   <th>url</th>
@@ -25,7 +31,7 @@
   {% endfor %}
 </table>
 
-
+{% include "plug_uris/snippets/navigator.html" %}
 
 
 
