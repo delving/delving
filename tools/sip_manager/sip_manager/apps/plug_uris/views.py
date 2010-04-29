@@ -295,6 +295,7 @@ def uri_bad_by_request(request, offset=0):
     for requri in qs[offset:offset+BAD_BY_REQ_PG_SIZE]:
         uri =models.Uri.objects.get(pk=requri.uri_id)
         problems.append({'url': uri.url,
+                         'uri_id': uri.pk,
                          'status': models.URI_STATES[requri.status],
                          'errname': models.URI_ERR_CODES[requri.err_code],
                          'err_msg': uri.err_msg,

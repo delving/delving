@@ -27,6 +27,7 @@ Found {{ item_count }} items matching filter
   <th>err msg</th>
   {% for problem in problems %}
     <tr>
+      <td>{{ problem.uri_id }}</td>
       <td>{{ problem.url }}</td>
       <td>{{ problem.status }}</td>
       <td>{{ problem.errname }}</td>
