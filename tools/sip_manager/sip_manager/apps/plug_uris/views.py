@@ -189,7 +189,8 @@ def stats_by_uri(request, order_by=''):
     qs_all = models.ReqUri.objects.filter(Q_OBJECT)
 
     uri_sources = []
-    web_servers = models.UriSource.objects.values_list('name_or_ip', 'pk').order_by('name_or_ip')
+    web_servers = models.UriSource.objects.values_list('name_or_ip', 'pk'
+                                                       ).order_by('name_or_ip')
     for name, source_id in web_servers:
         qs_web_server = qs_all.filter(source_id=source_id)
         img_count = qs_web_server.count()
@@ -280,8 +281,12 @@ def uri_summary():
                                            status=models.URIS_COMPLETED,
                                            ).count()
     imgs_waiting = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
-                                                 status=models.URIS_CREATED).count()
-    imgs_bad = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT).exclude(err_code=models.URIE_NO_ERROR).count()
+                                                status=models.URIS_CREATED
+                                                ).exclude(err_code=models.URIE_NO_ERROR
+                                                          ).count()
+    imgs_bad = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT
+                                            ).exclude(err_code=models.URIE_NO_ERROR
+                                                      ).count()
     return {"imgs_ok": imgs_ok,
             "imgs_waiting": imgs_waiting,
             "imgs_bad": imgs_bad}
