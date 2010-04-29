@@ -22,7 +22,7 @@
         <td>{{ mime_result.ok }}</td>
         <td>
         {% if mime_result.bad %}
-          <a href="{% url uri_bad_by_req_mime request.pk mime_result.mime_url %}">{{ mime_result.bad }}</a>
+          <a href="{% url uri_bad_by_req_mime request.pk mime_result.name|urlencode %}">{{ mime_result.bad }}</a>
         {% else %}
           0
         {% endif %}

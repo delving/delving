@@ -127,7 +127,7 @@ def stats_by_req(request, sreq_id=0):
         itm_ok = qs_mime.filter(Q_OK).count()
         itm_bad = qs_mime.filter(Q_BAD).count()
         mime_results.append({'name':mime_type,
-                             'mime_url': urllib.quote_plus(mime_type),
+                             #'mime_url': urllib.quote_plus(mime_type),
                              'ok': itm_ok,
                              'bad': itm_bad,
                              'ratio': s_calc_ratio_bad(itm_ok, itm_bad),
@@ -318,6 +318,14 @@ def uri_bad_by_request(request, offset=0):
                                   'item_count': item_count,
                               })
 
+
+
+def try_again(request, req_id):
+    pass
+
+
+def try_again_uri(request, uri_id):
+    pass
 
 
 def uri_summary():
