@@ -32,7 +32,13 @@ Found {{ item_count }} items matching filter
       <td>{{ problem.url }}</td>
       <td>{{ problem.status }}</td>
       <td>{{ problem.errname }}</td>
-      <td>{{ problem.err_msg }}</td>
+      <td>
+        {% ifequal problem.errname problem.err_msg %}
+           &nbsp;
+        {% else %}
+          {{ problem.err_msg }}
+        {% endifequal %}
+      </td>
     </tr>
   {% endfor %}
 </table>

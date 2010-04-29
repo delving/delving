@@ -396,14 +396,15 @@ class UriValidateSave(sip_task.SipTask):
                 err_msg = httplib.responses[e.code]
             except:
                 err_msg = 'Unable to lookup error code'
-            return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i - %s' % (e.code, err_msg))
+            return self.set_urierr(models.URIE_HTTP_ERROR, '[%i] - %s' % (e.code, err_msg))
+
         except urllib2.URLError, e:
             if str(e.reason) == 'timed out':
                 code = models.URIE_TIMEOUT
                 msg = ''
             else:
                 code = models.URIE_URL_ERROR
-                msg =  '%s: %s' % (models.URI_ERR_CODES[code], str(e.reason))
+                msg =  str(e.reason)
             return self.set_urierr(code, msg)
         except:
             return self.set_urierr(models.URIE_OTHER_ERROR, 'Unhandled error when checking url')
@@ -413,7 +414,7 @@ class UriValidateSave(sip_task.SipTask):
                 err_msg = httplib.responses[itm.code]
             except:
                 err_msg = 'Unable to lookup error code'
-            return self.set_urierr(models.URIE_HTML_ERROR, 'HTML status: %i - %s' % (itm.code, err_msg) )
+            return self.set_urierr(models.URIE_HTML_ERROR, '[%i] - %s' % (itm.code, err_msg) )
         try:
             content_t = itm.headers['content-type']
         except:
@@ -470,7 +471,7 @@ class UriValidateSave(sip_task.SipTask):
         self.uri_state(models.URIS_ORG_SAVED)
 
 
-        # Identify & store actual filetype
+        # Identify & store actual filetyp
         retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
         if retcode:
             msg = 'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
