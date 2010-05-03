@@ -38,7 +38,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String siwa;
     private String tab;
     private List<Breadcrumb> breadcrumbs;
-
+    private int fullDocUriInt;
 //    @Value("#{europeanaProperties['portal.name']}")
     private String portalName = "portal"; // must be injected later
 
@@ -68,6 +68,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         if (pager.hasPrevious) {
             pager.setPreviousFullDocUrl(httpParameters);
         }
+        pager.fullDocUriInt = fullDocUriInt;
         return pager;
     }
 
@@ -389,6 +390,11 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
             out.append(entry.getKey()).append(" => ").append(entry.getValue()).append("\n");
         }
         return out.toString();
+    }
+
+    @Override
+    public int getFullDocUriInt() {
+        return fullDocUriInt;
     }
 
     private static class DocIdWindowImpl implements DocIdWindow {
