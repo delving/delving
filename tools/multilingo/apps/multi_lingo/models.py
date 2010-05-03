@@ -67,13 +67,13 @@ class TranslatePage(models.Model):
 
 
 def update_translations():
-    print 'running update_translations...',
+    #print 'running update_translations...',
     views.update_template_list()
     output = cmd_execute('python ../../manage.py makemessages -a',
                           cwd=THIS_DIR)
     output = cmd_execute('python ../../manage.py compilemessages',
                           cwd=THIS_DIR)
-    print 'Done!'
+    #print 'Done!'
 
 
 
