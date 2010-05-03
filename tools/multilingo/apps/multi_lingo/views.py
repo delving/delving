@@ -42,16 +42,19 @@ from dataexp import get_tarball
 
 from utils import PORTAL_PREFIX
 
+import models
+
 HTML_EXT = '.html'
 PROP_URL_NAME = 'message_keys/messages'
 PROP_TEMPLATE = 'prop_file.html'
 
+_templates = []
 
 
 def find_templates():
     templates = []
     # project/app/locale
-    for fname in os.listdir(os.path.join(os.path.split(__file__)[0] + '/templates/pages')):
+    for fname in os.listdir(models.STATIC_PAGES_FULLP):
         if fname.find(HTML_EXT) < 0:
             continue
         if fname == 'prop_file.html':
@@ -59,7 +62,10 @@ def find_templates():
         templates.append('%s%s' % (PORTAL_PREFIX, fname.split(HTML_EXT)[0]))
     return templates
 
-_templates = find_templates()
+def update_template_list():
+    global _templates
+    _templates = find_templates()
+
 
 def export_content(request):
     data = get_tarball(_templates)
@@ -114,15 +120,16 @@ def show_page(request, lang=''):
         return HttpResponseRedirect(reverse(template, args=(content['lang'],)))
 
     # Map url to template
-    a  = django.template.loader.get_template('pages/newcontent.html')
+    if 0:
+        a  = django.template.loader.get_template('pages/newcontent.html')
 
-    rendered = render_to_string('pages/newcontent.html',
-                                content,
-                                context_instance=RequestContext(request))
+        rendered = render_to_string('pages/newcontent.html',
+                                    content,
+                                    context_instance=RequestContext(request))
 
-    return render_to_response('pages/%s.html' % template, content,
+    return render_to_response('%s/%s.html' % (models.STATIC_PAGES, template),
+                              content,
                               context_instance=RequestContext(request))
-
 
 def index_page(request):
     return render_to_response('overview.html',
@@ -159,3 +166,4 @@ def reload_templates(request):
     a=find_pos('de')
     pass
 
+update_template_list()
