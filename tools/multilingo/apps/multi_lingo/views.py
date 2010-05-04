@@ -97,7 +97,7 @@ def static_page(request, rel_url):
     if not (content):
         # we only accept urls with language selections, as a fallback send
         # visitor back to the english about_us
-        return HttpResponseRedirect(reverse(rel_url, args=('en',)))
+        return HttpResponseRedirect(rel_url)
 
     if request.session.get('django_language','') != content['lang']:
         # A langugage change is detected, propably due to usage of dropdown
@@ -125,7 +125,7 @@ def langCheck(lang):
     """
     if lang not in settings.LANGUAGES_DICT.keys():
         # trigger redirect to enforce nice language specific urls
-        return None
+        lang = 'en'
     return {'lang': lang,
             'lang_long_name': settings.LANGUAGES_DICT[lang],
             'all_languages': settings.LANGUAGES,
