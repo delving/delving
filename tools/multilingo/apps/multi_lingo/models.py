@@ -29,7 +29,7 @@ import subprocess
 import threading
 
 from django.conf import settings
-from django.core import exceptions
+from django.core import exceptions, urlresolvers
 from django.db import models
 from django.db.models.signals import post_delete
 from django.core.files.storage import FileSystemStorage
@@ -73,6 +73,7 @@ def update_translations():
                           cwd=THIS_DIR)
     output = cmd_execute('python ../../manage.py compilemessages',
                           cwd=THIS_DIR)
+    a = urlresolvers.resolve('/')
     #print 'Done!'
 
 

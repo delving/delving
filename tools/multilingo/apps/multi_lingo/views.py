@@ -33,6 +33,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.template.loader import render_to_string
 
 import django.template.loader
 
@@ -40,7 +41,6 @@ from rosetta.poutil import find_pos
 
 from dataexp import get_tarball
 
-from utils import PORTAL_PREFIX
 
 import models
 
@@ -48,27 +48,76 @@ HTML_EXT = '.html'
 PROP_URL_NAME = 'message_keys/messages'
 PROP_TEMPLATE = 'prop_file.html'
 
-_templates = []
+_TEMPLATES = []
+_STATIC_PAGES = {}
 
 
-def find_templates():
-    templates = []
-    # project/app/locale
-    for fname in os.listdir(models.STATIC_PAGES_FULLP):
-        if fname.find(HTML_EXT) < 0:
-            continue
-        if fname == 'prop_file.html':
-            continue
-        templates.append('%s%s' % (PORTAL_PREFIX, fname.split(HTML_EXT)[0]))
-    return templates
-
-def update_template_list():
-    global _templates
-    _templates = find_templates()
+# some caching
+PORTAL_PREFIX = settings.PORTAL_PREFIX
 
 
-def export_content(request):
-    data = get_tarball(_templates)
+def index_page(request):
+    return render_to_response('overview.html',
+                              {
+                                  'portal_prefix': PORTAL_PREFIX,
+                                  'pages': _TEMPLATES,
+                              },
+                              context_instance=RequestContext(request))
+
+
+
+
+def portal_page(request, rel_url, lang='', *args, **kwargs):
+    # if language is changed in dropdown, let POST param override url derived
+    # lang selection
+    if rel_url in _STATIC_PAGES.keys():
+        return static_page(request, rel_url)
+    path, url_item = os.path.split(rel_url)
+    if path:
+        parts = path.split('/')
+        if parts[0] in ('css','js','images'):
+            static_url = '%s%s' % (settings.MEDIA_URL, rel_url)
+            return HttpResponseRedirect(static_url)
+        else:
+            pass
+    return HttpResponseRedirect('/')
+
+
+
+#=================   utils   ======================
+
+def static_page(request, rel_url):
+    template = _STATIC_PAGES[rel_url]
+    new_lang = request.POST.get('lang')
+    if new_lang:
+        lang = new_lang
+    else:
+        lang = request.session.get('django_language','')
+    content = langCheck(lang) # only accept supported languages
+    if not (content):
+        # we only accept urls with language selections, as a fallback send
+        # visitor back to the english about_us
+        return HttpResponseRedirect(reverse(rel_url, args=('en',)))
+
+    if request.session.get('django_language','') != content['lang']:
+        # A langugage change is detected, propably due to usage of dropdown
+        # reload same page to get the propper context
+        request.session['django_language'] = content['lang']
+        return HttpResponseRedirect(rel_url)#'%s/%s' % (settings.PORTAL_PREFIX, rel_url))
+
+    return render_to_response(template, content,
+                              context_instance=RequestContext(request))
+
+
+def extract_lang_from_static_path(path):
+    us_pos = path.find('_')
+    dot_pos = path.find('.')
+    if not (us_pos > -1 and dot_pos > us_pos):
+        return path, ''
+    lang = path[us_pos+1:dot_pos]
+    s = path[:us_pos] + path[dot_pos:]
+    return s, lang
+
 
 def langCheck(lang):
     """
@@ -82,7 +131,44 @@ def langCheck(lang):
             'all_languages': settings.LANGUAGES,
             }
 
-def best_match_template(pname):
+
+
+#=================   Finding templates   ======================
+
+def update_template_list():
+    global _STATIC_PAGES, _TEMPLATES
+    # project/app/locale
+
+    _STATIC_PAGES = {}
+    _TEMPLATES = []
+    for static_page in models.TranslatePage.objects.all():
+        fname = os.path.split(static_page.file_name.name)[1]
+        """
+        dot_pos = fname.find('.')
+
+        for lang, name in settings.LANGUAGES:
+            key = '%s_%s.%s' % (fname[:dot_pos],
+                                lang,
+                                fname[dot_pos+1:])
+            _STATIC_PAGES[key] = {'template':fname,
+                              'lang':lang,}
+        """
+        _STATIC_PAGES[fname] = static_page.file_name.name
+        _TEMPLATES.append(fname)
+    _TEMPLATES.sort()
+
+
+update_template_list()
+
+#=================   Not checked   ======================
+
+
+
+
+def NOT_export_content(request):
+    data = get_tarball(_templates)
+
+def NOT_best_match_template(pname):
     "if possible pick template from url or fallback."
     r = _templates[0] # default fallback
     try:
@@ -99,48 +185,9 @@ def best_match_template(pname):
 
 
 
-from django.template.loader import render_to_string
-
-def show_page(request, lang=''):
-    # if language is changed in dropdown, let POST param override url derived
-    # lang selection
-    lang = request.POST.get('lang',lang)
-    template = best_match_template(request.path)
-
-    content = langCheck(lang) # only accept supported languages
-    if not (content):
-        # we only accept urls with language selections, as a fallback send
-        # visitor back to the english about_us
-        return HttpResponseRedirect(reverse(template, args=('en',)))
-
-    if request.session.get('django_language','') != content['lang']:
-        # A langugage change is detected, propably due to usage of dropdown
-        # reload same page to get the propper context
-        request.session['django_language'] = content['lang']
-        return HttpResponseRedirect(reverse(template, args=(content['lang'],)))
-
-    # Map url to template
-    if 0:
-        a  = django.template.loader.get_template('pages/newcontent.html')
-
-        rendered = render_to_string('pages/newcontent.html',
-                                    content,
-                                    context_instance=RequestContext(request))
-
-    return render_to_response('%s/%s.html' % (models.STATIC_PAGES, template),
-                              content,
-                              context_instance=RequestContext(request))
-
-def index_page(request):
-    return render_to_response('overview.html',
-                              {
-                                  'pages': _templates,
-                              },
-                              context_instance=RequestContext(request))
 
 
-
-def prop_page(request, lang=''):
+def NOT_prop_page(request, lang=''):
     content = langCheck(lang) # only accept supported languages
     if not (content):
         # we only accept urls with language selections, as a fallback send
@@ -156,14 +203,13 @@ def prop_page(request, lang=''):
     return render_to_response(PROP_TEMPLATE,
                               context_instance=RequestContext(request))
 
+
 #===============================
 
 
-from django.core.management import execute_manager
 
-def reload_templates(request):
+def NOT_reload_templates(request):
     execute_manager(sett2, argv=['foo','makemessages', 'help'])
     a=find_pos('de')
     pass
 
-update_template_list()

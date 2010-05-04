@@ -29,7 +29,6 @@ from django.conf.urls.defaults import url, patterns
 #from views import find_templates, show_page, prop_page, PROP_URL_NAME
 import views
 
-PORTAL_PREFIX = '' #portal/'
 
 def global_environ(request):
     """Insert some additional information into the template context
@@ -44,7 +43,7 @@ def global_environ(request):
 
 
 
-def urls():
+def NOTurls():
     """
     (r'^about_us/$', common_index),
     (r'^about_us.html$', common_index),

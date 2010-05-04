@@ -6,7 +6,6 @@ from django.template import Context, loader
 from django.utils import translation
 
 
-from views import langCheck
 from utils import global_environ
 
 class StandaloneSubmit(object):

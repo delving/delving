@@ -1,35 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <link rel="shortcut icon" href="{{ MEDIA_URL }}favicon.ico"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="shortcut icon" href="/portal/favicon.ico"/>
+<script type="text/javascript">
+var msgRequired = "This is a required field";
+</script>
+<link rel="stylesheet" type="text/css" href="css/epf-common.css"/>
+<script type="text/javascript" src="js/jquery-1.4.1.js"></script>
+<script type="text/javascript" src="js/jquery.toggleElements.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script type="text/javascript" src="js/js_utilities.js"></script>
+<link rel="stylesheet" type="text/css" href="css/jquery.jcarousel.css"/>
 
-  <script type="text/javascript">
-    var msgRequired = "This is a required field";
-  </script>
-  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/epf-common.css"/>
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.1.js"></script>
-
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.toggleElements.js"></script>
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.cookie.js"></script>
-  <script type="text/javascript" src="{{ MEDIA_URL }}js/js_utilities.js"></script>
-  <!--[if gte IE 6]>
-  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie6.css" />
-  <![endif]-->
-  <!--[if gte IE 7]>
-  <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/ie7.css" />
-  <![endif]-->
-  {% block header_scripts %}{% comment %}
-===============================================================================
-
-header_scripts
---------------
-  Here goes page specific extra stylesheets and javascripts
-
--------------------------------------------------------------------------------
-  {% endcomment %}{% endblock %}
-
-  <title>{% block title %}{% comment %}
+<script type="text/javascript" src="js/jquery.jcarousel.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<title>{% block title %}{% comment %}
 ===============================================================================
 
 title
@@ -37,10 +22,25 @@ title
   Here goes page title
 
 -------------------------------------------------------------------------------
-  {% endcomment %}{% endblock %}</title>
+{% endcomment %}{% endblock %}</title>
+{% block header_scripts %}{% comment %}
+===============================================================================
 
+header_scripts
+--------------
+  Here goes page specific extra stylesheets and javascripts
+
+-------------------------------------------------------------------------------
+{% endcomment %}{% endblock %}
+<!--[if gte IE 6]>
+<link rel="stylesheet" type="text/css" href="css/ie6.css" />
+<![endif]-->
+<!--[if gte IE 7]>
+<link rel="stylesheet" type="text/css" href="css/ie7.css" />
+<![endif]-->
 </head>
 <body id="">
+
 <script>
 // JavaScript Document
 function ContactMe(prefix,suffix){
@@ -54,15 +54,119 @@ function ContactMe(prefix,suffix){
 }
 
 </script>
-
 <div id="doc4" class="yui-t2">
-  <div id="hd">
-    {% include "head_default.html" %}
-  </div>
-  <div id="bd">
+    <div id="hd">
+
+
+<div  style="position:absolute; top:20px;left: -20px; width: 80px; height: 80px;"><img src="images/beta.gif" alt="we are in beta!!!"/></div>
+
+
+<ul id="mainNav">
+  <li><a href="myeuropeana.html" class="">My Europeana</a></li>
+  <li><a href="aboutus.html" class="">About us</a></li>
+
+  <li><a href="communities.html" class="">Communities</a></li>
+  <li><a href="partners.html" class="">Partners</a></li>
+  <li><a href="thought-lab.html" class="">Thought lab</a></li>
+  <li class="no-border">
+      <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
+          <option value="Choose language" selected="selected">Choose a language</option>
+          <option value="ca">Catal&#224; (ca)</option>
+
+          <option value="bg">
+              &#x0411;&#x044a;&#x043b;&#x0433;&#x0430;&#x0440;&#x0441;&#x043a;&#x0438; (bul)
+          </option>
+          <option value="cs">
+              &#268;e&#353;tina (cze/cse)
+          </option>
+          <option value="da">
+              Dansk (dan)
+          </option>
+
+          <option value="de">
+              Deutsch (deu)
+          </option>
+          <option value="nl">
+              Nederlands (dut)
+          </option>
+          <option value="el">
+              &#917;&#955;&#955;&#951;&#957;&#953;&#954;&#940; (ell/gre)
+          </option>
+          <option value="en">
+
+          English (eng)
+          </option>
+          <option value="es">
+              Espa&#241;ol (esp)
+          </option>
+          <option value="et">
+          Eesti (est)
+          </option>
+          <option value="fi">
+          Suomi (fin)
+          </option>
+
+          <option value="fr">
+          Fran&#231;ais (fre)
+          </option>
+          <option value="ga">
+          Irish (gle)
+          </option>
+          <option value="hu">
+          Magyar (hun)
+          </option>
+          <option value="is">
+
+          &#205;slenska (ice)
+          </option>
+          <option value="it">
+          Italiano (ita)
+          </option>
+          <option value="lv">
+          Latvie&#353;u (lav)
+          </option>
+          <option value="lt">
+          Lietuvi&#371; (lit)
+          </option>
+
+          <option value="mt">
+          Malti (mlt)
+          </option>
+          <option value="no">
+          Norsk (nor)
+          </option>
+          <option value="pl">
+          Polski (pol)
+          </option>
+          <option value="pt">
+
+          Portugu&#234;s (por)
+          </option>
+          <option value="ro">
+          Rom&#226;n&#259; (rom)
+          </option>
+          <option value="sk">
+          Slovensk&#253; (slo)
+          </option>
+
+          <option value="sl">
+          Sloven&#353;&#269;ina (slv)
+          </option>
+          <option value="sv">
+              Svenska (sve/swe)
+          </option>
+      </select>
+  </li>
+</ul>
+
+<form method="post" id="frm-lang" name="frm-lang" style="display: none;" action="">
+    <input  type="hidden" name="lang"/>
+</form>
+    </div>
+   <div id="bd">
     <div id="yui-main">
-      <div class="yui-b">
-        {% block content %}{% comment %}
+        <div class="yui-b">
+{% block content %}{% comment %}
 ===============================================================================
 
   content
@@ -70,19 +174,54 @@ function ContactMe(prefix,suffix){
     This is where actual content of the page should go
 
 -------------------------------------------------------------------------------
-        {% endcomment %}{% endblock %}
-      </div>
+{% endcomment %}{% endblock %}
+        </div>
     </div>
-    <div class="yui-b">
-      <a href="index.html">
-        <img src="{{ MEDIA_URL }}images/europeana-logo-small.jpg" alt="Click here to return to the Europeana homepage" title="logo Europeana think culture"/>
-        <img src="{{ MEDIA_URL }}images/think_culture_en_small.gif" alt=""/>
-      </a>
+        <div class="yui-b">
+{% block left_side %}{% comment %}
+===============================================================================
+
+  left_side
+  -------
+    If you want to use the left column enter something in left_side,
+    that would override the default content
+
+-------------------------------------------------------------------------------
+{% endcomment %}
+<a href="index.html">
+    <img src="images/europeana-logo-small.jpg" alt="Click here to return to the Europeana homepage" title="logo Europeana think culture"/>
+            <img src="images/think_culture_en_small.gif" alt=""/>
+ </a>
+ {% endblock %}
+        </div>
+
     </div>
-  </div>
-  <div id="ft">
-    {% include "foot_default.html" %}
-  </div>
+   <div id="ft">
+<ul>
+  <li><a href="usingeuropeana.html" class="">Using Europeana</a></li>
+  <li><a href="accessibility.html" class="">Accessibility</a></li>
+  <li><a href="sitemap.html"  class="">Sitemap</a></li>
+  <li><a href="termsofservice.html" class="">Terms and conditions</a></li>
+
+  <li><a href="privacy.html" class="">Privacy</a></li>
+  <li><a href="languagepolicy.html" class="">Language policy</a></li>
+  <li><a href="contact.html" class=""><span  class="fg-red">Contacts | Send us feedback</span></a></li>
+  <li class="signoff">co-funded by the European Union<img src="images/eu-flag.gif" alt="icon-european union flag"/></li>
+</ul>
+
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-12776629-1");
+        pageTracker._setDomainName("none");
+        pageTracker._setAllowLinker(true);
+        pageTracker._trackPageview();
+    } catch(err) {
+    }</script>   </div>
+
 </div>
 </body>
 </html>
