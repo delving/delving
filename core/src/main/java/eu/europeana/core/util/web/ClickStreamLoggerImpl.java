@@ -134,10 +134,12 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     public void logFullResultView(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri) {
         String originalQuery = "";
         String startPage = "";
+        String numFound = "";
         try {
             DocIdWindowPager idWindowPager = fullResultView.getDocIdWindowPager();
             originalQuery = idWindowPager.getQuery();
-            startPage = idWindowPager.getStartPage();
+            startPage = String.valueOf(idWindowPager.getFullDocUriInt());
+            numFound = idWindowPager.getDocIdWindow().getHitCount().toString();
         } catch (UnsupportedEncodingException e) {
             // todo decide what to do with this error
         } catch (Exception e) {
@@ -162,9 +164,9 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         }
         log.info(
                 MessageFormat.format(
-                        "[action={0}, europeana_uri={2}, query={4}, start={3}, {1}]",
+                        "[action={0}, europeana_uri={2}, query={4}, start={3}, numFound={5}, {1}]",
                         userAction, printLogAffix(request), europeanaUri,
-                        startPage, originalQuery));
+                        startPage, originalQuery, numFound));
     }
 
     private static String printLogAffix(HttpServletRequest request) {

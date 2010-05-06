@@ -41,6 +41,7 @@
 
 <#assign metaCanonicalUrl = uri />
 
+
 <#include "inc_header.ftl">
 <#include "inc_search_form.ftl"/>
 

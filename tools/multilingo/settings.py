@@ -100,6 +100,9 @@ INSTALLED_APPS = (
 
 
 
+PORTAL_PREFIX = 'portal'
+
+
 
 #
 #=====================   Europeana languages settings   =======================

@@ -23,11 +23,10 @@ package eu.europeana.sip.xml;
 
 import eu.europeana.sip.groovy.MappingScriptBinding;
 import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.RecordRoot;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
-import org.apache.log4j.Logger;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,23 +41,24 @@ import java.io.Writer;
  */
 
 public class Normalizer implements Runnable {
-    private Logger log = Logger.getLogger(getClass());
     private FileSet fileSet;
+    private MetadataParser.Listener listener;
     private boolean running;
 
-    public Normalizer(FileSet fileSet) {
+    public Normalizer(FileSet fileSet, MetadataParser.Listener listener) {
         this.fileSet = fileSet;
+        this.listener = listener;
     }
 
     public void run() {
         try {
-            QName recordRoot = fileSet.getRecordRoot();
+            RecordRoot recordRoot = fileSet.getRecordRoot();
             InputStream inputStream = fileSet.getInputStream();
             OutputStream outputStream = fileSet.getOutputStream();
             String mapping = fileSet.getMapping();
             Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
-            MetadataParser parser = new MetadataParser(inputStream, recordRoot);
+            MetadataParser parser = new MetadataParser(inputStream, recordRoot, listener);
             GroovyShell shell = new GroovyShell(mappingScriptBinding);
             Script script = shell.parse(mapping);
             script.setBinding(mappingScriptBinding);
@@ -66,9 +66,6 @@ public class Normalizer implements Runnable {
             int count = 0;
             running = true;
             while ((record = parser.nextRecord()) != null && running) {
-                if (count % 100 == 0) {
-                    log.info("record "+count);
-                }
                 mappingScriptBinding.setRecord(record);
                 script.run();
                 count++;

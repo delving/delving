@@ -25,7 +25,7 @@
 
 """
 
-# Create your views here.
+import urllib
 
 from django.db.models import Q
 from django.shortcuts import render_to_response, get_object_or_404
@@ -34,10 +34,14 @@ from apps.dummy_ingester.models import Request
 
 #from datagrids import UriSourcesDataGrid
 import models
+from apps.base_item import models as base_item
 
 Q_OBJECT = Q(item_type=models.URIT_OBJECT)
 Q_OK = Q(status=models.URIS_COMPLETED, err_code=models.URIE_NO_ERROR)
 Q_BAD = ~Q(err_code=models.URIE_NO_ERROR)
+
+
+BAD_BY_REQ_PG_SIZE = 150
 
 """
 
@@ -123,6 +127,7 @@ def stats_by_req(request, sreq_id=0):
         itm_ok = qs_mime.filter(Q_OK).count()
         itm_bad = qs_mime.filter(Q_BAD).count()
         mime_results.append({'name':mime_type,
+                             'mime_url': urllib.quote_plus(mime_type),
                              'ok': itm_ok,
                              'bad': itm_bad,
                              'ratio': s_calc_ratio_bad(itm_ok, itm_bad),
@@ -131,29 +136,34 @@ def stats_by_req(request, sreq_id=0):
     #
     # Grouped by error
     #
-    err_by_reason = {}
+    err_by_reasons = []
     for err_code in models.URI_ERR_CODES.keys():
         if err_code == models.URIE_NO_ERROR:
             continue
         count = qs_all.filter(err_code=err_code).count()
         if not count:
             continue
-        err_by_reason[models.URI_ERR_CODES[err_code]] = count
+        err_by_reasons.append({'err_code' : err_code,
+                               'err_msg': models.URI_ERR_CODES[err_code],
+                               'count': count})
 
     #
     # Grouped by webserver
     #
     webservers = []
+    tot_items = tot_good = tot_bad = tot_waiting = 0
     for row in qs_all.values_list('source_id').distinct().order_by('source_id'):
         srv_id = int(row[0])
         srv_name = models.UriSource.objects.get(pk=srv_id)
         qs_webserver = qs_all.filter(source_id=srv_id)
-        items = qs_webserver.count()
-        good = qs_webserver.filter(Q_OK).count()
-        bad = qs_webserver.filter(Q_BAD).count()
+        items = qs_webserver.count() ; tot_items += items
+        good = qs_webserver.filter(Q_OK).count(); tot_good += good
+        bad = qs_webserver.filter(Q_BAD).count(); tot_bad += bad
+        waiting = items - good - bad; tot_waiting += waiting
         webservers.append({'name': srv_name,
                            'srv_id': srv_id,
                            'count' :items,
+                           'waiting': waiting,
                            'good': good,
                            'bad': bad,
                            'ratio': s_calc_ratio_bad(good, bad),
@@ -163,12 +173,18 @@ def stats_by_req(request, sreq_id=0):
                               {
                                   'request': request,
                                   'mime_results': mime_results,
-                                  'err_by_reason': err_by_reason,
+                                  'err_by_reasons': err_by_reasons,
                                   'webservers': webservers,
+                                  'webservers_summary': {
+                                      'count': tot_items,
+                                      'waiting': tot_waiting,
+                                      'good': tot_good,
+                                      'bad': tot_bad,},
                               })
 
 
 def stats_by_uri(request, order_by=''):
+    """
     if order_by:
         if order_by in ('name_or_ip','imgs_waiting','imgs_ok','imgs_bad','eta'):
             if request.session.get('sortkey','').find(order_by)==1:
@@ -179,13 +195,15 @@ def stats_by_uri(request, order_by=''):
         else:
             p_order_by = 'name_or_ip'
     else:
-        p_order_by = 'name_or_ip'
+    """
+    p_order_by = 'name_or_ip'
     request.session['sortkey'] = p_order_by
 
     qs_all = models.ReqUri.objects.filter(Q_OBJECT)
 
     uri_sources = []
-    web_servers = models.UriSource.objects.values_list('name_or_ip', 'pk').order_by('name_or_ip')
+    web_servers = models.UriSource.objects.values_list('name_or_ip', 'pk'
+                                                       ).order_by('name_or_ip')
     for name, source_id in web_servers:
         qs_web_server = qs_all.filter(source_id=source_id)
         img_count = qs_web_server.count()
@@ -231,15 +249,98 @@ def problems(request, source_id=-1):
 
 
 
+
+
+
+
+
+
+def uri_bad_by_req_mime(request, req_id, mime_type):
+    s = urllib.unquote(mime_type)
+    print 'mime param', mime_type
+    print 'mime used', s
+    request.session['req_filter'] = {'key': 'mime_type',
+                                     'value': s,
+                                     'req_id': req_id,
+                                     'filter_label':'mime-type',
+                                     }
+    return uri_bad_by_request(request)
+
+
+def uri_bad_by_req_err(request, req_id, err_code):
+    request.session['req_filter'] = {'key': 'err_code',
+                                     'value': err_code,
+                                     'req_id': req_id,
+                                     'filter_label':'error',
+                                     }
+    return uri_bad_by_request(request)
+
+
+def uri_bad_by_server(request, req_id, webserver_id):
+    request.session['req_filter'] = {'key': 'source_id',
+                                     'value': webserver_id,
+                                     'req_id': req_id,
+                                     'filter_label': 'webserver',
+                                     }
+    return uri_bad_by_request(request)
+
+
+def uri_bad_by_request(request, offset=0):
+    offset = int(offset)
+    sel = request.session['req_filter']
+    req = models.Request.objects.get(pk=sel['req_id'])
+    q_selection = Q((sel['key'], sel['value']), req=sel['req_id'])
+    #
+    #
+    #
+    qs = models.ReqUri.objects.filter(q_selection, Q_OBJECT, Q_BAD)
+    problems = []
+    for requri in qs[offset:offset+BAD_BY_REQ_PG_SIZE]:
+        uri =models.Uri.objects.get(pk=requri.uri_id)
+        problems.append({'url': uri.url,
+                         'uri_id': uri.pk,
+                         'status': models.URI_STATES[requri.status],
+                         'errname': models.URI_ERR_CODES[requri.err_code],
+                         'err_msg': uri.err_msg,
+                         })
+
+    item_count = qs.count()
+    pages = item_count / BAD_BY_REQ_PG_SIZE + 1
+    return render_to_response("plug_uris/bad_by_request.html",
+                              {
+                                  'request': request,
+                                  'req': req,
+                                  'filter_label': sel['filter_label'],
+                                  #'mime_type': mime_type,
+                                  'problems': problems,
+
+                                  'prev': max(offset - BAD_BY_REQ_PG_SIZE, 0),
+                                  'next': offset + BAD_BY_REQ_PG_SIZE,
+                                  'last': max(0, item_count - BAD_BY_REQ_PG_SIZE),
+                                  'pages': pages,
+                                  'item_count': item_count,
+                              })
+
+
+
+def try_again(request, req_id):
+    pass
+
+
+def try_again_uri(request, uri_id):
+    pass
+
+
 def uri_summary():
+    imgs_all =  models.ReqUri.objects.filter(item_type=models.URIT_OBJECT).count()
     imgs_ok = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
                                            status=models.URIS_COMPLETED,
                                            ).count()
-    imgs_waiting = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT,
-                                                 status=models.URIS_CREATED).count()
-    imgs_bad = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT).exclude(err_code=models.URIE_NO_ERROR).count()
+    imgs_bad = models.ReqUri.objects.filter(item_type=models.URIT_OBJECT
+                                            ).exclude(err_code=models.URIE_NO_ERROR
+                                                      ).count()
     return {"imgs_ok": imgs_ok,
-            "imgs_waiting": imgs_waiting,
+            "imgs_waiting": imgs_all - imgs_ok - imgs_bad,
             "imgs_bad": imgs_bad}
 
 

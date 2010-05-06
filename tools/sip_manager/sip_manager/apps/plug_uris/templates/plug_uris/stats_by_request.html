@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<a href="{% url uri_stats_idx %}">Statistics</a>
+<a href="{% url top_index %}">Start</a>
 
 <h2>{{ request }}</h2>
 
@@ -20,7 +20,13 @@
       <tr>
         <td>{{ mime_result.name }}</td>
         <td>{{ mime_result.ok }}</td>
-        <td>{{ mime_result.bad }}</td>
+        <td>
+        {% if mime_result.bad %}
+          <a href="{% url uri_bad_by_req_mime request.pk mime_result.mime_url %}">{{ mime_result.bad }}</a>
+        {% else %}
+          0
+        {% endif %}
+        </td>
         <td>{{ mime_result.ratio }}</td>
       </tr>
     {% endfor %}
@@ -29,15 +35,21 @@
 
 
 
-{% if err_by_reason %}
+{% if err_by_reasons %}
   <h3>Grouped by error</h3>
   <table border="1">
     <th>Error</th>
     <th>Count</th>
-    {% for error, count in err_by_reason.items %}
+    {% for err_by_reason in err_by_reasons %}
       <tr>
-        <td>{{ error }}</td>
-        <td>{{ count }}</td>
+        <td>{{ err_by_reason.err_msg }}</td>
+        <td>
+        {% if err_by_reason.count %}
+          <a href="{% url uri_bad_by_req_err request.pk err_by_reason.err_code %}">{{ err_by_reason.count }}</a>
+        {% else %}
+          0
+        {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </table>
@@ -49,6 +61,7 @@
 <table border="1">
   <th>name or ip</th>
   <th>Items</th>
+  <th>Waiting</th>
   <th>Good</th>
   <th>Bad</th>
   <th>Ratio</th>
@@ -56,11 +69,26 @@
     <tr>
       <td>{{ webserver.name }}</td>
       <td>{{ webserver.count }}</td>
+      <td>{{ webserver.waiting }}</td>
       <td>{{ webserver.good }}</td>
-      <td>{{ webserver.bad }}</td>
+      <td>
+        {% if webserver.bad %}
+          <a href="{% url uri_bad_by_server request.pk webserver.srv_id %}">{{ webserver.bad }}</a>
+        {% else %}
+          0
+        {% endif %}
+      </td>
       <td>{{ webserver.ratio }}</td>
     </tr>
   {% endfor %}
+  <tr>
+    <td><b>Summary</b></td>
+    <td><b>{{ webservers_summary.count }}</b></td>
+    <td><b>{{ webservers_summary.waiting }}</b></td>
+    <td><b>{{ webservers_summary.good }}</b></td>
+    <td><b>{{ webservers_summary.bad }}</b></td>
+    <td>&nbsp;</td>
+  </tr>
 </table>
 
 

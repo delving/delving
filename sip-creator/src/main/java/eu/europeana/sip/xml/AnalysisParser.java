@@ -45,7 +45,7 @@ import java.util.TreeMap;
  */
 
 public class AnalysisParser implements Runnable {
-    private static final int ELEMENT_STEP = 100000;
+    private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
     private QNamePath path = new QNamePath();
     private Map<QNamePath, Statistics> statisticsMap = new TreeMap<QNamePath, Statistics>();
@@ -140,13 +140,13 @@ public class AnalysisParser implements Runnable {
     private void recordValue(String value) {
         value = value.trim();
         Statistics statistics = statisticsMap.get(path);
-        if (!value.isEmpty()) {
-            if (statistics == null) {
-                QNamePath key = new QNamePath(path);
-                statisticsMap.put(key, statistics = new Statistics(key));
-            }
-            statistics.recordValue(value);
-            statistics.recordOccurrence(); // todo: move outside the if
+        if (statistics == null) {
+            QNamePath key = new QNamePath(path);
+            statisticsMap.put(key, statistics = new Statistics(key));
         }
+        if (!value.isEmpty()) {
+            statistics.recordValue(value);
+        }
+        statistics.recordOccurrence();
     }
 }

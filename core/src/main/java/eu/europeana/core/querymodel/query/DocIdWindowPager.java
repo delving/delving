@@ -42,4 +42,6 @@ public interface DocIdWindowPager {
     String getStartPage();
 
     List<Breadcrumb> getBreadcrumbs();
+
+    int getFullDocUriInt();
 }

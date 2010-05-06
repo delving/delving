@@ -133,6 +133,70 @@ public class StaticPageController {
         return pageModel;
     }
 
+    /**
+     * All mc/ css are served up from here
+     *
+     * @param pageName name of the page
+     * @param request  where we find locale
+     * @param response where to write it
+     * @return ModelAndView
+     * @throws Exception something went wrong
+     */
+
+    @RequestMapping("/{pageName}.css")
+    public ModelAndView fetchMcCss(
+            @PathVariable("pageName") String pageName,
+            HttpServletRequest request
+    ) throws Exception {
+    	return fetchVerbatimPage(pageName, request);
+    }
+
+    /**
+     * All mc/ js are served up from here
+     *
+     * @param pageName name of the page
+     * @param request  where we find locale
+     * @param response where to write it
+     * @return ModelAndView
+     * @throws Exception something went wrong
+     */
+
+    @RequestMapping("/{pageName}.js")
+    public ModelAndView fetchMcJs(
+            @PathVariable("pageName") String pageName,
+            HttpServletRequest request
+    ) throws Exception {
+    	return fetchVerbatimPage(pageName, request);
+    }
+    
+    /**
+     * All mc/ jpg are served up from here
+     *
+     * @param pageName name of the page
+     * @param request  where we find locale
+     * @param response where to write it
+     * @return ModelAndView
+     * @throws Exception something went wrong
+     */
+
+    @RequestMapping("/{pageName}.jpg")
+    public ModelAndView fetchMcJpg(
+            @PathVariable("pageName") String pageName,
+            HttpServletRequest request
+    ) throws Exception {
+    	return fetchVerbatimPage(pageName, request);
+    }
+
+    private ModelAndView fetchVerbatimPage(String pageName, HttpServletRequest request) {
+		
+		String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+        ModelAndView pageModel = ControllerUtil.createModelAndViewPage("verbatim");
+        if (pageValue != null) {
+            pageModel.addObject("pageBody", pageName);
+        }
+        return pageModel;
+	}
+
     /*
     * freemarker template not loadable from database
     */

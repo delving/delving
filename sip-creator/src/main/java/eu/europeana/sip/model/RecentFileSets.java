@@ -21,10 +21,8 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.AnalysisParser;
 import org.apache.log4j.Logger;
 
-import javax.xml.namespace.QName;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -39,15 +37,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Hold on to the recent files, maintaing their ordering
@@ -56,7 +51,6 @@ import java.util.concurrent.Executors;
  */
 
 public class RecentFileSets {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Logger LOG = Logger.getLogger(getClass());
     private File listFile;
     private List<FileSetImpl> recent = new ArrayList<FileSetImpl>();
@@ -152,7 +146,6 @@ public class RecentFileSets {
     private class FileSetImpl implements FileSet {
         private File inputFile, statisticsFile, mappingFile, recordRootFile, outputFile;
         private ExceptionHandler exceptionHandler;
-        private AnalysisParser analysisParser;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
@@ -231,24 +224,6 @@ public class RecentFileSets {
         }
 
         @Override
-        public void analyze(AnalysisParser.Listener listener) {
-            analysisParser = new AnalysisParser(this, listener);
-            executor.submit(analysisParser);
-        }
-
-        @Override
-        public void abortAnalysis() {
-            if (analysisParser != null) {
-                analysisParser.abort();
-            }
-        }
-
-        @Override
-        public boolean hasStatistics() {
-            return statisticsFile.exists();
-        }
-
-        @Override
         @SuppressWarnings("unchecked")
         public List<Statistics> getStatistics() {
             if (statisticsFile.exists()) {
@@ -310,17 +285,17 @@ public class RecentFileSets {
         }
 
         @Override
-        public QName getRecordRoot() {
+        public RecordRoot getRecordRoot() {
             if (recordRootFile.exists()) {
-                StringBuilder qNameString = new StringBuilder();
+                StringBuilder contents = new StringBuilder();
                 try {
-                    Reader in = new FileReader(recordRootFile);
+                    BufferedReader in = new BufferedReader(new FileReader(recordRootFile));
                     int ch;
                     while ((ch = in.read()) >= 0) {
-                        qNameString.append((char) ch);
+                        contents.append((char) ch);
                     }
                     in.close();
-                    return QName.valueOf(qNameString.toString());
+                    return new RecordRoot(contents.toString());
                 }
                 catch (IOException e) {
                     recordRootFile.delete();
@@ -331,14 +306,14 @@ public class RecentFileSets {
         }
 
         @Override
-        public void setRecordRoot(QName qname) {
-            if (qname == null) {
+        public void setRecordRoot(RecordRoot recordRoot) {
+            if (recordRoot == null) {
                 recordRootFile.delete();
             }
             else {
                 try {
                     Writer out = new FileWriter(recordRootFile);
-                    out.write(qname.toString());
+                    out.write(recordRoot.toString());
                     out.close();
                 }
                 catch (IOException e) {

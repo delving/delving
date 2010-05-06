@@ -37,11 +37,15 @@ public class FieldMappingListModel extends AbstractListModel {
     private List<FieldMapping> list = new ArrayList<FieldMapping>();
 
     public void setList(List<FieldMapping> list) {
+        clear();
+        this.list.addAll(list);
+        fireIntervalAdded(this, 0, getSize());
+    }
+
+    public void clear() {
         int size = getSize();
         this.list.clear();
         fireIntervalRemoved(this, 0, size);
-        this.list.addAll(list);
-        fireIntervalAdded(this, 0, getSize());
     }
 
     public List<FieldMapping> getList() {
@@ -57,4 +61,5 @@ public class FieldMappingListModel extends AbstractListModel {
     public Object getElementAt(int index) {
         return list.get(index);
     }
+
 }

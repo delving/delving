@@ -65,6 +65,7 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 """
 
 import datetime
+import httplib
 import os
 import random
 import sys
@@ -115,6 +116,19 @@ convert options that might be of interest to auto optimize images:
  -linear-stretch
 """
 CONVERT_COMMAND = 'convert -colorspace RGB'
+
+
+if not USE_IMAGE_MAGIC:
+    try:
+        from PIL import Image
+    except ImportError:
+        try:
+            import Image
+        except:
+            print '*** No module named PIL - needed by %s' % __file__
+            print '\tsuggested solution: sudo easy_install pil'
+            sys.exit(1)
+
 
 
 if not USE_IMAGE_MAGIC:
@@ -391,20 +405,29 @@ class UriValidateSave(sip_task.SipTask):
         try:
             itm = urllib2.urlopen(self.uri.url,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
-            return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i' % e.code)
+            try:
+                err_msg = httplib.responses[e.code]
+            except:
+                err_msg = 'Unable to lookup error code'
+            return self.set_urierr(models.URIE_HTTP_ERROR, '[%i] - %s' % (e.code, err_msg))
+
         except urllib2.URLError, e:
             if str(e.reason) == 'timed out':
                 code = models.URIE_TIMEOUT
                 msg = ''
             else:
                 code = models.URIE_URL_ERROR
-                msg =  '%s: %s' % (models.URI_ERR_CODES[code], str(e.reason))
+                msg =  str(e.reason)
             return self.set_urierr(code, msg)
         except:
             return self.set_urierr(models.URIE_OTHER_ERROR, 'Unhandled error when checking url')
 
         if itm.code != 200:
-            return self.set_urierr(models.URIE_HTML_ERROR, 'HTML status: %i' % itm.code)
+            try:
+                err_msg = httplib.responses[itm.code]
+            except:
+                err_msg = 'Unable to lookup error code'
+            return self.set_urierr(models.URIE_HTML_ERROR, '[%i] - %s' % (itm.code, err_msg) )
         try:
             content_t = itm.headers['content-type']
         except:
@@ -461,7 +484,7 @@ class UriValidateSave(sip_task.SipTask):
         self.uri_state(models.URIS_ORG_SAVED)
 
 
-        # Identify & store actual filetype
+        # Identify & store actual filetyp
         retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
         if retcode:
             msg = 'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)

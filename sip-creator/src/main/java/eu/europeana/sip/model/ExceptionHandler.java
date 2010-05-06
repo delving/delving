@@ -19,17 +19,14 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.groovy;
-
-import java.util.List;
+package eu.europeana.sip.model;
 
 /**
- * The interface that converters have to implement
+ * Handle exceptions that happen under the hood
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public interface Converter {
-    boolean applicable(FieldMapping fieldMapping);
-    List generateCode(FieldMapping fieldMapping);
+public interface ExceptionHandler {
+    void failure(Exception exception);
 }

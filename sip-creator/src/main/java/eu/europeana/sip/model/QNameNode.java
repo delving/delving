@@ -48,10 +48,9 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         this.tag = tag;
     }
 
-    QNameNode(QNameNode parent, QName qName, boolean recordRoot) {
+    QNameNode(QNameNode parent, QName qName) {
         this.parent = parent;
         this.qName = qName;
-        this.recordRoot = recordRoot;
     }
 
     QNameNode(QNameNode parent, Statistics statistics) {
@@ -106,6 +105,11 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         return children;
     }
 
+    @Override
+    public boolean couldBeRecordRoot() {
+        return statistics != null && statistics.getCounters().isEmpty();
+    }
+
     private void compilePathList(List<QNameNode> list) {
         if (parent != null) {
             parent.compilePathList(list);
@@ -140,13 +144,13 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean getAllowsChildren() {
-        return !children.isEmpty();
+        return statistics != null && statistics.getCounters().isEmpty();
+//        return !children.isEmpty();
     }
 
     @Override
     public boolean isLeaf() {
-        return statistics != null;
-//        return statistics == null || !statistics.getCounters().isEmpty();
+        return statistics != null && !statistics.getCounters().isEmpty();
     }
 
     @Override

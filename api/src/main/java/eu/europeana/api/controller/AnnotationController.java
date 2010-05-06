@@ -160,9 +160,8 @@ public class AnnotationController {
     
     @ExceptionHandler({Throwable.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String unknownProblem(Exception e) {
+    public void unknownProblem(Exception e) {
         log.warn("problem", e);
-        return e.toString();
     }
 
     private User getUser() throws UserNotFoundException {

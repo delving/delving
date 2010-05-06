@@ -19,47 +19,17 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.model;
+package eu.europeana.sip.groovy;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 /**
- * This class manages all of the files associated with an input file.
+ * The interface that converters have to implement
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public interface FileSet {
-
-    void setExceptionHandler(ExceptionHandler handler);
-
-    String getName();
-
-    boolean isValid();
-
-    void setMostRecent();
-
-    void remove();
-
-    File getDirectory();
-
-    InputStream getInputStream();
-
-    OutputStream getOutputStream();
-
-    List<Statistics> getStatistics();
-
-    void setStatistics(List<Statistics> statisticsList);
-
-    String getMapping();
-
-    void setMapping(String mapping);
-
-    RecordRoot getRecordRoot();
-
-    void setRecordRoot(RecordRoot recordRoot);
-
+public interface CodeTemplate {
+    boolean applicable(FieldMapping fieldMapping);
+    List generateCode(FieldMapping fieldMapping);
 }
