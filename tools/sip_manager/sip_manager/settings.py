@@ -112,10 +112,10 @@ except:
 
 
 try:
-    SIP_PROCESS_DBG_LVL
+    SIPMANAGER_DBG_LVL
 except:
-    SIP_PROCESS_DBG_LVL = 7
-    print 'Using default value for SIP_PROCESS_DBG_LVL =', SIP_PROCESS_DBG_LVL
+    SIPMANAGER_DBG_LVL = 7
+    print 'Using default value for SIPMANAGER_DBG_LVL =', SIPMANAGER_DBG_LVL
 
 
 try:
@@ -263,9 +263,12 @@ INSTALLED_APPS = (
     #'djblets.datagrid',
     #'djblets.util',
 
+    # base sipmanager modules
     'apps.sipmanager',
     'apps.dummy_ingester',
     'apps.base_item',
+
+    # plugins
     'apps.plug_uris',
 
     'apps.log',

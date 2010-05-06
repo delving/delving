@@ -42,7 +42,7 @@ import models
 # are cached within the module
 PROCESS_SLEEP_TIME = settings.PROCESS_SLEEP_TIME
 PLUGIN_FILTER = settings.PLUGIN_FILTER
-SIP_PROCESS_DBG_LVL = settings.SIP_PROCESS_DBG_LVL
+SIPMANAGER_DBG_LVL = settings.SIPMANAGER_DBG_LVL
 
 
 TASK_THROTTLE_TIME = 330
@@ -62,7 +62,7 @@ class MainProcessor(sip_task.SipTask):
 
 
     def __init__(self, options):
-        super(MainProcessor, self).__init__(debug_lvl=SIP_PROCESS_DBG_LVL)
+        super(MainProcessor, self).__init__(debug_lvl=SIPMANAGER_DBG_LVL)
         self.single_run = options['single-run']
         self.tasks_init = [] # tasks that should be run first
         self.tasks = [] # list of all tasks found
@@ -94,7 +94,7 @@ class MainProcessor(sip_task.SipTask):
         print
         print ' =====   Running init plugins   ====='
         for taskClass in self.tasks_init:
-            tc = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
+            tc = taskClass(debug_lvl=SIPMANAGER_DBG_LVL)
             print '\t%s' % tc.short_name()
             tc.run()
 
@@ -110,7 +110,7 @@ class MainProcessor(sip_task.SipTask):
                 busy, loads = self.system_is_occupied()
                 if busy:
                     break
-                task = taskClass(debug_lvl=SIP_PROCESS_DBG_LVL)
+                task = taskClass(debug_lvl=SIPMANAGER_DBG_LVL)
                 if task.run():
                     new_task_started = True
                     # it was started
@@ -131,7 +131,7 @@ class MainProcessor(sip_task.SipTask):
                 idle_count = 0
             else:
                 idle_count += 1
-            if SIP_PROCESS_DBG_LVL > 1 or idle_count > 10: # dont indicate idling too often...
+            if SIPMANAGER_DBG_LVL > 1 or idle_count > 10: # dont indicate idling too often...
                 idle_count = 0
                 if not models.ProcessMonitoring.objects.all().count():
                     print ' nothing to do for the moment...'
@@ -139,7 +139,7 @@ class MainProcessor(sip_task.SipTask):
 
             if self.task_throttling():
                 t = max(PROCESS_SLEEP_TIME, 60)
-                if SIP_PROCESS_DBG_LVL > 5:
+                if SIPMANAGER_DBG_LVL > 5:
                     print '... throtled waiting'
             else:
                 t = PROCESS_SLEEP_TIME
