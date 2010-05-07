@@ -4,6 +4,10 @@ import _root_.org.junit.runner.RunWith
 import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.Spec
 import _root_.org.scalatest.junit.JUnitRunner
+import scala.collection.JavaConversions._
+import org.apache.solr.client.solrj.SolrQuery
+import java.util.{Map => JMap}
+import collection.mutable.HashMap
 
 /**
  *
@@ -13,51 +17,42 @@ import _root_.org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class SolrQueryUtilSpec extends Spec with ShouldMatchers {
+  describe("A SolrQueryUtil") {
 
+    describe("(when given a SolrQuery with filterqueries)") {
+      val solrQuery = new SolrQuery
 
-  /*
-  @Test
-    public void testPhraseConversions() {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setFilterQueries(
-                "PROVIDER:The European Library",
-                "LANGUAGE:en"
-        );
-        String[] phrased = SolrQueryUtil.getFilterQueriesAsPhrases(solrQuery);
-        for (String s : phrased) {
-            String after = s.substring(s.indexOf(':') + 1);
-            Assert.assertTrue(after.startsWith("\"") && after.endsWith("\""));
-        }
-        solrQuery.setFilterQueries(phrased);
-        String [] unphrased = SolrQueryUtil.getFilterQueriesWithoutPhrases(solrQuery);
-        for (String s : unphrased) {
-            String after = s.substring(s.indexOf(':') + 1);
-            Assert.assertFalse(after.startsWith("\"") && after.endsWith("\""));
+      it("should enclose the filterqueries with double quotes before sending to Solr") {
+        solrQuery.setFilterQueries("PROVIDER:The European Library", "LANGUAGE:en")
+        val phrased = SolrQueryUtil.getFilterQueriesAsPhrases(solrQuery)
+        hasDoubleQuotesAroundQueryValue(phrased) should be(true)
+      }
+
+      it("should remove the double quotes from the filterqueries after receiving results from Solr") {
+        val phrasedSolrQuery = solrQuery.setFilterQueries("PROVIDER:\"The European Library\"", "LANGUAGE:\"en\"")
+        val unphrased = SolrQueryUtil.getFilterQueriesWithoutPhrases(phrasedSolrQuery)
+        hasDoubleQuotesAroundQueryValue(unphrased) should be(false)
+      }
+
+      def hasDoubleQuotesAroundQueryValue(fq: Array[String]): Boolean =
+        fq.forall {
+          fq =>
+            val value = fq.split(":").last
+            value.startsWith("\"") && value.endsWith("\"")
         }
     }
 
-    @Test
-    public void testOrBasedFacetQueries() throws Exception {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setFilterQueries(
-                "PROVIDER:\"The European Library\"",
-                "LANGUAGE:\"en\"",
-                "LANGUAGE:\"de\""
-        );
-        Map<String, String> facetMap = new HashMap<String, String>();
-        facetMap.put("PROVIDER", "prov");
-        facetMap.put("LANGUAGE", "lang");
-        String[] expectFilterQueries = new String[]{"{!tag=lang}LANGUAGE:(\"de\" OR \"en\")", "{!tag=prov}PROVIDER:\"The European Library\""};
-        log.info("expecting:");
-        for (String expect : expectFilterQueries) {
-            log.info(expect);
-        }
-        String[] actualFilterQueries = SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap);
-        log.info("actual:");
-        for (String actual : actualFilterQueries) {
-            log.info(actual);
-        }
-        Assert.assertArrayEquals("arrays should be equal", expectFilterQueries, actualFilterQueries);
+    describe("(when given a solr query with filterqueries for the same facet)") {
+      val solrQuery = new SolrQuery
+      solrQuery.setFilterQueries("PROVIDER:\"The European Library\"", "LANGUAGE:\"en\"", "LANGUAGE:\"de\"")
+      val facetMap: JMap[String, String] = asMap(HashMap("PROVIDER" -> "prov", "LANGUAGE" -> "lang"))
+      val queriesAsOrQueries = SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap)
+
+      it("should have an OR between the facets with the same facet field") {
+        queriesAsOrQueries.toList should equal (List("{!tag=lang}LANGUAGE:(\"de\" OR \"en\")", "{!tag=prov}PROVIDER:\"The European Library\""))
+      }
     }
-   */
+
+  }
+
 }
