@@ -21,18 +21,18 @@
 
 package eu.europeana.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.StaticPageCache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Genereric controller for static pages.
@@ -65,7 +65,7 @@ public class StaticPageController {
             HttpServletResponse response
     ) throws Exception {
         String pageValue = staticPageCache.getPage(
-        		request.getServletPath(), 
+        		request.getServletPath(),
         		request.getPathInfo(),
         		ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
@@ -105,7 +105,7 @@ public class StaticPageController {
     ) throws Exception {
     	return fetchVerbatimPage(request);
     }
-    
+
     /**
      * All mc/ jpg are served up from here
      *
@@ -123,7 +123,7 @@ public class StaticPageController {
 
     private ModelAndView fetchVerbatimPage(HttpServletRequest request) {
         String pageValue = staticPageCache.getPage(
-        		request.getServletPath(), 
+        		request.getServletPath(),
         		request.getPathInfo(),
         		null);
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("verbatim");
@@ -138,7 +138,6 @@ public class StaticPageController {
      *
      * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
@@ -156,7 +155,6 @@ public class StaticPageController {
      *
      * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
@@ -168,13 +166,12 @@ public class StaticPageController {
     ) throws Exception {
     	return fetchVerbatimPage(pageName, request);
     }
-    
+
     /**
      * All mc/ jpg are served up from here
      *
      * @param pageName name of the page
      * @param request  where we find locale
-     * @param response where to write it
      * @return ModelAndView
      * @throws Exception something went wrong
      */
@@ -188,8 +185,8 @@ public class StaticPageController {
     }
 
     private ModelAndView fetchVerbatimPage(String pageName, HttpServletRequest request) {
-		
-		String pageValue = staticPageCache.getPage(pageName, ControllerUtil.getLocale(request));
+
+		String pageValue = staticPageCache.getPage(null, pageName, ControllerUtil.getLocale(request));
         ModelAndView pageModel = ControllerUtil.createModelAndViewPage("verbatim");
         if (pageValue != null) {
             pageModel.addObject("pageBody", pageName);

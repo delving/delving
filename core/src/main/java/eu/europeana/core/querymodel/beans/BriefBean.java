@@ -39,6 +39,8 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
     transient String fullDocUrl;
+    transient int score;
+    transient String debugQuery;
 
     @Europeana(validation = ValidationLevel.ESE_PLUS_REQUIRED)
     @Solr(prefix = "europeana", localName = "europeanaCollectionName", multivalued = false, required = true)
@@ -96,6 +98,16 @@ public class BriefBean extends IdBean implements BriefDoc {
     }
 
     @Override
+    public int getScore() {
+        return score;
+    }
+
+    @Override
+    public String getDebugQuery() {
+        return debugQuery;  
+    }
+
+    @Override
     public void setIndex(int index) {
         this.index = index;
     }
@@ -103,6 +115,16 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Override
     public void setFullDocUrl(String fullDocUrl) {
         this.fullDocUrl = fullDocUrl;
+    }
+
+    @Override
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    @Override
+    public void setDebugQuery(String debugQuery) {
+        this.debugQuery = debugQuery;
     }
 
     @Override

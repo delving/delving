@@ -37,7 +37,12 @@ public interface BriefDoc { // if multiple-> show first
     String getProvider();
     String getLanguage(); // used to be Language
     DocType getType();
+    // debug and scoring information
+    int getScore();
+    String getDebugQuery();
 
     void setIndex(int index);
     void setFullDocUrl(String fullDocUrl);
+    void setScore(int score);
+    void setDebugQuery(String debugQuery);
 }

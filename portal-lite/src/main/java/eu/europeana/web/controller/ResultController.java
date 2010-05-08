@@ -21,10 +21,7 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.querymodel.query.BriefBeanView;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.FullBeanView;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -153,25 +150,6 @@ public class ResultController {
         return page;
     }
 
-    @SuppressWarnings({"unchecked"})
-    @RequestMapping("/comparator.html")
-    public ModelAndView searchComparator(HttpServletRequest request) throws EuropeanaQueryException, UnsupportedEncodingException {
-
-        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
-        solrQuery.setIncludeScore(true);
-        solrQuery.setShowDebugInfo(true);
-        solrQuery.setQueryType("clean_dismax");
-        solrQuery.setParam("qf", "title^1.1");
-        solrQuery.setParam("mm", "2&lt;-1 5&lt;-2 6&lt;90%");
-        BriefBeanView defaultBriefBeanView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
-
-        ModelAndView page = ControllerUtil.createModelAndViewPage("search-comparator");
-        page.addObject("defaultView", defaultBriefBeanView);
-
-        return page;
-    }
-
-
 //    <prop key="/brief-doc.rss">briefDocController</prop>
 //    <prop key="/brief-doc.rdf">briefDocController</prop>
 //    <prop key="/brief-doc.srw">briefDocController</prop>
@@ -204,5 +182,63 @@ public class ResultController {
         String logString = MessageFormat.format("outlink={0}, provider={2}, europeana_id={1}", redirectLink, europeanaId, provider);
         clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.REDIRECT_OUTLINK, logString);
         return ControllerUtil.createModelAndViewPage("redirect:" + redirectLink);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    @RequestMapping("/comparator.html")
+    public ModelAndView searchComparator(HttpServletRequest request) throws EuropeanaQueryException, UnsupportedEncodingException {
+
+        // simple search (default)
+        SolrQuery defaultQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        defaultQuery.setIncludeScore(true);
+        defaultQuery.setShowDebugInfo(true);
+        BriefBeanView defaultBriefBeanView = beanQueryModelFactory.getBriefResultView(defaultQuery, request.getQueryString());
+
+        // advanced search (default)
+        SolrQuery standardQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        standardQuery.setIncludeScore(true);
+        standardQuery.setShowDebugInfo(true);
+        standardQuery.setQueryType(QueryType.ADVANCED_QUERY.toString());
+        BriefBeanView standardViewBriefBeanView = beanQueryModelFactory.getBriefResultView(standardQuery, request.getQueryString());
+
+        // custom search 1
+        SolrQuery custom1Query = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        custom1Query.setIncludeScore(true);
+        custom1Query.setShowDebugInfo(true);
+        custom1Query.setQueryType("clean_dismax");
+        custom1Query.setParam("q.alt", "*:*"); // alternative query when q is empty
+        custom1Query.setParam("qf", "title^1.1"); // query fields on which the search is performed
+        custom1Query.setParam("mm", "2&lt;-1 5&lt;-2 6&lt;90%");
+        custom1Query.setParam("pf", "text^0.8 title^1.5 creator^1.5 dc_subject dc_description");
+        custom1Query.setParam("ps", "100");
+        custom1Query.setParam("tie", "0.01");
+        custom1Query.setParam("fl", "*, score"); //default field names to be returned
+        custom1Query.setParam("bf", "ord(popularity)^0.5"); // key to search configuration
+        BriefBeanView custom1BriefBeanView = beanQueryModelFactory.getBriefResultView(custom1Query, request.getQueryString());
+
+
+        // custom search 2
+        SolrQuery custom2Query = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        custom2Query.setIncludeScore(true);
+        custom2Query.setShowDebugInfo(true);
+        custom2Query.setQueryType("clean_dismax");
+        custom2Query.setParam("q.alt", "*:*"); // alternative query when q is empty
+        custom2Query.setParam("qf", "title^1.1"); // query fields on which the search is performed
+        custom2Query.setParam("mm", "2&lt;-1 5&lt;-2 6&lt;90%");
+        custom2Query.setParam("pf", "text^0.8 title^1.5 creator^1.5 dc_subject dc_description");
+        custom2Query.setParam("ps", "100");
+        custom2Query.setParam("tie", "0.01");
+        custom2Query.setParam("fl", "*, score"); //default field names to be returned
+        custom2Query.setParam("bf", "ord(popularity)^0.5"); // key to search configuration
+        BriefBeanView custom2BriefBeanView = beanQueryModelFactory.getBriefResultView(custom2Query, request.getQueryString());
+
+
+        ModelAndView comparator = ControllerUtil.createModelAndViewPage("search-comparator");
+        comparator.addObject("defaultView", defaultBriefBeanView);
+        comparator.addObject("standardView", standardViewBriefBeanView);
+        comparator.addObject("custom1View", custom1BriefBeanView);
+        comparator.addObject("custom2View", custom2BriefBeanView);
+
+        return comparator;
     }
 }

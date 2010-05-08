@@ -25,23 +25,7 @@ import eu.europeana.core.database.UserDao;
 import eu.europeana.core.querymodel.beans.BriefBean;
 import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
-import eu.europeana.core.querymodel.query.BriefBeanView;
-import eu.europeana.core.querymodel.query.BriefDoc;
-import eu.europeana.core.querymodel.query.DocId;
-import eu.europeana.core.querymodel.query.DocIdWindowPager;
-import eu.europeana.core.querymodel.query.DocIdWindowPagerImpl;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.FacetQueryLinks;
-import eu.europeana.core.querymodel.query.FullBeanView;
-import eu.europeana.core.querymodel.query.FullDoc;
-import eu.europeana.core.querymodel.query.QueryAnalyzer;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
-import eu.europeana.core.querymodel.query.QueryProblem;
-import eu.europeana.core.querymodel.query.QueryType;
-import eu.europeana.core.querymodel.query.ResultPagination;
-import eu.europeana.core.querymodel.query.ResultPaginationImpl;
-import eu.europeana.core.querymodel.query.SiteMapBeanView;
-import eu.europeana.core.querymodel.query.SolrQueryUtil;
+import eu.europeana.core.querymodel.query.*;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
 import org.apache.log4j.Logger;
@@ -84,6 +68,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     //    @Autowired
 //    @Qualifier("solrSelectServer")
+
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
@@ -252,7 +237,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             SolrDocumentList list = solrResponse.getResults();
             // todo: convert this list into briefdoc instances
-            briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean));
+            briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean), solrResponse);
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
             facetLogs = createFacetLogs(solrResponse);
             matchDoc = createMatchDoc(solrResponse);
@@ -322,12 +307,18 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         }
     }
 
-    private List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList) {
+    private List<? extends BriefDoc> addIndexToBriefDocList(SolrQuery solrQuery, List<? extends BriefDoc> briefDocList, QueryResponse solrResponse) {
+        Boolean debug = solrQuery.getBool("debugQuery");
+        Map<String, Object> debugMap = solrResponse.getDebugMap();
+        Map<String, String> explainMap = solrResponse.getExplainMap();
         Integer start = solrQuery.getStart();
         int index = start == null ? 1 : start + 1;
         for (BriefDoc briefDoc : briefDocList) {
             briefDoc.setIndex(index++);
             briefDoc.setFullDocUrl(createFullDocUrl(briefDoc.getId()));
+            if (debug != null && debug) {
+                briefDoc.setDebugQuery(explainMap.get(briefDoc.getId()));
+            }
         }
         return briefDocList;
     }
@@ -347,7 +338,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             this.solrResponse = solrResponse;
             this.params = params;
             fullDoc = createFullDoc();
-            relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(BriefBean.class));
+            relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(BriefBean.class), solrResponse);
             docIdWindowPager = createDocIdPager(params);
         }
 

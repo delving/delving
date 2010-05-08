@@ -25,17 +25,7 @@ import eu.europeana.core.querymodel.query.BriefDoc;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.definitions.domain.Language;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -171,6 +161,8 @@ public class CarouselItem implements Serializable {
         return new BriefDoc() {
             private int index;
             private String fullDocUrl;
+            private int score;
+            private String debugQuery;
 
             @Override
             public void setIndex(int index) {
@@ -183,13 +175,23 @@ public class CarouselItem implements Serializable {
             }
 
             @Override
+            public void setScore(int score) {
+                this.score = score;
+            }
+
+            @Override
+            public void setDebugQuery(String debugQuery) {
+                this.debugQuery = debugQuery;
+            }
+
+            @Override
             public int getIndex() {
                 return index;
             }
 
             @Override
             public String getFullDocUrl() {
-                return fullDocUrl;  
+                return fullDocUrl;
             }
 
             @Override
@@ -233,6 +235,16 @@ public class CarouselItem implements Serializable {
             @Override
             public DocType getType() {
                 return type;
+            }
+
+            @Override
+            public int getScore() {
+                return 0;
+            }
+
+            @Override
+            public String getDebugQuery() {
+                return null;
             }
 
         };
