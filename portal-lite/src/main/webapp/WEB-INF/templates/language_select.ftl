@@ -1,4 +1,3 @@
-  <p>
       <select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
           <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
           <option value="ca">Catal&#224; (ca)</option>
@@ -101,8 +100,6 @@
               <#--<@spring.message 'swedish_t' />-->
           </option>
       </select>
-  </p>
-
 <form method="post" id="frm-lang" name="frm-lang" style="display: none;" action="">
     <input  type="hidden" name="lang"/>
 </form>

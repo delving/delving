@@ -1,5 +1,5 @@
 <#compress>
-<h3><@spring.message 'RefineYourSearch_t' />:</h3>
+<h4><@spring.message 'RefineYourSearch_t' />:</h4>
     <#-- columsize is  used for the number of colums in the facet table. -->
 <noscript>
     <div class="attention">
@@ -64,12 +64,15 @@
 
                                    <#if !link.remove = true>
                                         <a class="add" href="${thisPage}?query=${query?html}${link.url?html}" title="${link.value}">
+                                            <#--<input type="checkbox" value="" onclick="document.location.href='${thisPage}?query=${query?html}${link.url}';"/>-->
                                             <@stringLimiter "${link.value}" "25"/>(${link.count})
                                         </a>
                                 <#else>
                                          <a class="remove" href="${thisPage}?query=${query?html}${link.url?html}" title="${link.value}">
+
                                              <@stringLimiter "${link.value}" "25"/>
                                              (${link.count})
+
                                         </a>
                                 </#if>
                                 </td>
@@ -81,7 +84,7 @@
         </div>
         </#if>
     </#list>
-        <h3><@spring.message 'Actions_t'/>:</h3>
+        <h4><@spring.message 'Actions_t'/>:</h4>
         <div class="related-links">
             <p class="linetop">
                 <#if user??>

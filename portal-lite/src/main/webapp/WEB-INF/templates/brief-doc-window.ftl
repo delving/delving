@@ -40,36 +40,31 @@
 
 <#include "inc_header.ftl">
 
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
-    <div id="facet-list">
-        <#include "inc_facets_lists.ftl"/>
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
-<div id="main" class="grid_9">
+<div class="clear"></div>
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-            <@SearchForm "search_result"/>
-    </div>
-
-    <div class="clear"></div>
-
+<div id="main" class="grid_9 page">
 
     <div id="breadcrumbs">
+        <div class="inner">
         <ul>
             <#if !result.matchDoc??>
                 <li class="first"><@spring.message 'MatchesFor_t' />:</li>
@@ -92,9 +87,12 @@
             </li>
             </#if>
         </ul>
+            </div>
     </div>
 
     <div class="clear"></div>
+
+    <div class="inner">
 
     <div id="objTypes">
         <div>
@@ -120,9 +118,31 @@
         <@resultnav_styled/>
     </div>
 
+    </div>
+
 </div>
 
+
+
+<div id="sidebar" class="grid_3">
+     <div id="search">
+        <div class="inner">
+            <@SearchForm "search_result"/>
+        </div>
+    </div>
+    <div class="inner">
+    <div id="facet-list">
+        <#include "inc_facets_lists.ftl"/>
+    </div>
+    </div>
+</div>
+
+
+
+
+
 <#include "inc_footer.ftl"/>
+
 
 <#--------------------------------------------------------------------------------------------------------------------->
 <#--  RESULT NAVIGATION/PAGINATION MACROS --->
@@ -191,6 +211,9 @@
 </#macro>
 <#-- PLAIN  -->
 <#macro resultnav_plain>
+
+
+
 
             <ul>
                 <#--<li><@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}</li>

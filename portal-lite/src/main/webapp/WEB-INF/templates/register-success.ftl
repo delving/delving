@@ -3,23 +3,27 @@
 <#include "spring_form_macros.ftl"/>
 <#include "inc_header.ftl"/>
 <#assign pageId = "rsp">
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    </div>
+
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
 <div id="main" class="grid_9">
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
 
     <h1 id="register_success"><@spring.message "registrationSucceed_t" /></h1>
 

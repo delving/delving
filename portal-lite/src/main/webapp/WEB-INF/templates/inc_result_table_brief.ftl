@@ -18,9 +18,14 @@
 <table id="multi" summary="gallery view all search results" border="0">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
+    <#assign  blockwidth ="25%">
+    <#-- if the result is less than 4 change the width of the table cell so that it does not stretch across the page -->
+    <#if (row?size < 4)>
+       <#assign  blockwidth ="250">
+    </#if>
     <tr>
         <#list row as cell>
-        <td valign="bottom" width="25%" class="${cell.type}">
+        <td valign="bottom" width="${blockwidth}" class="${cell.type}">
             <div class="brief-thumb-container">
                 <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
@@ -30,6 +35,7 @@
                     </#if>
                 </a>
             </div>
+            <div class="brief-content-container">
             <h6>
                 <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <@stringLimiter "${cell.title}" "40"/>
@@ -56,6 +62,7 @@
                     <li title="${cell.provider}"><span class="provider">${pr}</span></li>
                 </#if>
             </ul>
+            </div>
         </td>
         </#list>
     </tr>

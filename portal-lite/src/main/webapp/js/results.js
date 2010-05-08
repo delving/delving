@@ -50,7 +50,7 @@ function refineSearch(query,qf){
 }*/
 
 /* ________________FULL DOC_______________________*/
-function showDefaultLarge(rType,obj,iType){
+function showDefaultLarge(obj,iType){
     if(obj && iType){
         switch(iType)
         {

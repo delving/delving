@@ -2,23 +2,27 @@
 <#assign thisPage = "change-password.html"/>
 <#assign pageId = "cp"/>
 <#include "inc_header.ftl"/>
-<div id="sidebar" class="grid_3">
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+<div id="header">
+
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+    </div>
+
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
-<div id="main" class="grid_9">
-
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
+<div id="main" class="grid_10 prefix_2">
 
     <h1><@spring.message 'ForgotPassword_t' /></h1>
 

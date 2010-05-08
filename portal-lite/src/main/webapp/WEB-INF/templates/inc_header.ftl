@@ -75,7 +75,8 @@
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
-            <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
+            <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button>
+            <br/>
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
     </div>
@@ -114,6 +115,7 @@
 </#macro>
 
 <#macro userbar>
+<#include "language_select.ftl">
     <ul>
         <#if !user??>
         <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
@@ -151,6 +153,7 @@
         </#if>
         </#if>
     </ul>
+
 </#macro>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -177,13 +180,13 @@
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
-    <title>Delving - Homepage</title>
+    <title>Open-Europeana - Homepage</title>
     <#break>
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
     <#--<script type="text/javascript" src="js/lib/home.js"></script>-->
-    <title>Delving - Advanced Search</title>
+    <title>Open-Europeana - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "brd"/>
@@ -221,7 +224,7 @@
             $("#savedItems").tabs({ cookie: { expires: 30 } });
         });
     </script>
-    <title>Delving - My Delving</title>
+    <title>Delving - My Open-Europeana</title>
     <#break>
     <#case "exception.html">
     <title>Europeana - Exception</title>

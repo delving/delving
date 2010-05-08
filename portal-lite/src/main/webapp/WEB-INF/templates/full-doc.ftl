@@ -25,67 +25,71 @@
 <#include "inc_header.ftl">
 
 
-<div id="sidebar" class="grid_3">
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
+<div id="header">
+
+    <div id="identity" class="grid_3">
+        <h1>Delving</h1>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
-    <div id="facet-list">
-        <#include "inc_related_content.ftl"/>
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
+
 </div>
 
 
-<div id="main" class="grid_9">
-
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-            <@SearchForm "search_result"/>
-    </div>
-
-    <div class="clear"></div>
+<div id="main" class="grid_9 page">
 
    <div id="breadcrumbs">
-       <#if pagination??>
-    <ul>
-        <#if !query?starts_with("europeana_uri:")>
-        <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-        <#list pagination.breadcrumbs as crumb><#if !crumb.last>
-        <li><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
-        <#else>
-        <li><strong>${crumb.display?html}</strong></li>
-        </#if></#list>
-        <#else>
-        <li class="first">
-
-            <@spring.message 'ViewingRelatedItems_t' />
-            <#assign match = result.fullDoc />
-                <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
-            <a href="full-doc.html?&amp;uri=${match.id}">
-                <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                </#if>
-            </a>
-
-        </li>
-        </#if>
-    </ul>
-    <#else> <ul>
-        <li>&#160;</li>
-    </ul>
-    </#if>
-   </div>
+       <div class="inner">
+            <#if pagination??>
+                <ul>
+                    <#if !query?starts_with("europeana_uri:")>
+                        <li class="first"><@spring.message 'MatchesFor_t' />:</li>
+                        <#list pagination.breadcrumbs as crumb>
+                            <#if !crumb.last>
+                                <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                            <#else>
+                                <li><strong>${crumb.display?html}</strong></li>
+                            </#if>
+                        </#list>
+                    <#else>
+                        <li class="first">
+                            <@spring.message 'ViewingRelatedItems_t' />
+                            <#assign match = result.fullDoc />
+                            <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
+                            <a href="full-doc.html?&amp;uri=${match.id}">
+                            <#if useCache="true">
+                                <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                            <#else>
+                                <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                            </#if>
+                            </a>
+                        </li>
+                    </#if>
+                </ul>
+            <#else>
+                <ul>
+                    <li>&#160;</li>
+                </ul>
+            </#if>
+        </div>
+    </div>
 
     <div class="clear"></div>
 
+
+
     <div class="pagination fg-buttonset">
+
+   <div class="inner">
 
     <#assign uiClassStatePrev = ""/>
     <#assign uiClassStateNext = ""/>
@@ -130,19 +134,38 @@
         </#if>
 
     </#if>
-
+   </div>
     </div>
 
     <div class="clear"></div>
 
     <div id="item-detail">
+      <div class="inner">
         <#include "inc_result_table_full.ftl"/>
+
     </div>
+    </div>
+    <div class="clear"></div>
+
+</div>
+
+<div id="sidebar">
+    <div id="search">
+        <div class="inner">
+            <@SearchForm "search_result"/>
+        </div>
+    </div>
+    
+    <div id="facet-list">
+        <div class="inner">
+            <#include "inc_related_content.ftl"/>
+        </div>
+    </div>
+
 
 </div>
 
 <#include "inc_footer.ftl"/>
-
 
 <#macro show_array_values fieldName values showFieldName>
     <#list values as value>
