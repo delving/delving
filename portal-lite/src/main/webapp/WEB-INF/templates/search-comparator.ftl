@@ -12,36 +12,32 @@
 
 <#include "inc_header.ftl">
 
-<div id="sidebar" class="grid_3">
+<div id="header">
 
-    <div id="identity">
+    <div id="identity" class="grid_3">
         <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/images/logo-small.png"
-                                                                 alt="Delving Home"/></a>
+        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
-    <div id="facet-list">
-        <#include "inc_facets_lists.ftl"/>
+    <div class="grid_9">
+
+        <div id="top-bar">
+            <div class="inner">
+                <@userbar/>
+            </div>
+        </div>
+
     </div>
 
+</div>
 
-    <div id="main" class="grid_9">
+<div class="clear"></div>
 
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-            <@SearchForm "search_result"/>
-    </div>
-
-    <div class="clear"></div>
-
+<div id="main" class="grid_9 page">
 
     <div id="breadcrumbs">
+        <div class="inner">
+
         <ul>
             <#if !defaultView.matchDoc??>
                 <li class="first"><@spring.message 'MatchesFor_t' />:</li>
@@ -64,42 +60,70 @@
             </li>
             </#if>
         </ul>
+        </div>
     </div>
 
     <div class="clear"></div>
 
-    <div id="objTypes">
-        <div>
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+    <div class="inner">
+
+        <div id="objTypes">
+            <div>
+            <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+            </div>
+            <#--<@typeTabs_plain/>-->
+            <#--<@viewSelect/>-->
         </div>
-        <#--<@typeTabs_plain/>-->
-        <#--<@viewSelect/>-->
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="pagination">
-        <@resultnav_styled/>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <@show_result_list seq = defaultView.briefDocs/>
-
-    <@show_result_list seq = standardView.briefDocs/>
-
-    <@show_result_list seq = custom1View.briefDocs/>
-
-    <@show_result_list seq = custom2View.briefDocs/>
 
         <div class="clearfix"></div>
 
-    <div class="pagination">
-        <@resultnav_styled/>
+        <div class="pagination">
+            <@resultnav_styled/>
+        </div>
+
+        <div class="clearfix"></div>
+            <div class="grid_3 alpha">
+                <h4>default view</h4>
+                <@show_result_list seq = defaultView.briefDocs/>
+            </div>
+
+            <div class="grid_3">
+                <h4>standard view</h4>
+                <@show_result_list seq = standardView.briefDocs/>
+            </div>
+
+            <div class="grid_3">
+                <h4>custom view 1</h4>
+                <@show_result_list seq = custom1View.briefDocs/>
+            </div>
+
+            <div class="grid_3 omega">
+                <h4>custom view 2</h4>
+                <@show_result_list seq = custom2View.briefDocs/>
+            </div>
+
+            <div class="clearfix"></div>
+
+        <div class="pagination">
+            <@resultnav_styled/>
+        </div>
+
     </div>
 
 </div>
 
+
+<div id="sidebar" class="grid_3">
+     <div id="search">
+        <div class="inner">
+            <@SearchForm "search_result"/>
+        </div>
+    </div>
+    <div class="inner">
+    <div id="facet-list">
+        <#include "inc_facets_lists.ftl"/>
+    </div>
+    </div>
 </div>
 
 <#include "inc_footer.ftl"/>
@@ -161,11 +185,13 @@
 </#macro>
 
 <#macro show_result_list seq>
-<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" id="multi">
+
     <#list seq as cell>
-    <tr>
-        <td valign="top" width="50">
-            <div class="brief-thumb-container-listview">
+                 <h6>
+                    <a class="fg-gray" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
+                        <@stringLimiter "${cell.title}" "100"/></a>
+                </h6>
+            <div class="brief-thumb-container">
                 <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true"><img class="thumb" id="thumb_${cell.index}" align="middle"
                                               src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
@@ -176,12 +202,9 @@
                     </#if>
                 </a>
             </div>
-        </td>
-        <td class="${cell.type} ">
-                <h6>
-                    <a class="fg-gray" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
-                        <@stringLimiter "${cell.title}" "100"/></a>
-                </h6>
+
+        <div class="brief-content-container">
+
                 <p>
                 <#-- without labels -->
                 <#--
@@ -193,10 +216,10 @@
                 <#if !cell.creator[0]?matches(" ")><span><@spring.message 'Creator_t' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message 'Date_t' />: </span>${cell.year}<br/></#if></#if>
                 <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="provider">${cell.provider}</span></#if>
-                <#if cell.debugQuery??> ${cell.debugQuery}</#if>   
+                    <#-- TODO: MAKE AS OVERLAY -->
+                    <#if cell.debugQuery??> ${cell.debugQuery}</#if>
                 </p>
-        </td>
-    </tr>
+        </div>
     </#list>
-</table>
+
 </#macro>

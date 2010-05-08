@@ -331,6 +331,9 @@ table caption {
     padding: .5em;
     min-height: 75px;
 }
+.brief-content-container p {
+    font-size: .85em;
+}
 /* table wraps item detail / img and text
 ================================================*/
 #item-detail #img-full {
