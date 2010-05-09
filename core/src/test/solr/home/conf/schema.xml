@@ -250,6 +250,14 @@
       </analyzer>
     </fieldType>
 
+      <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" >
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
       <fieldType name="plain_text" class="solr.TextField" positionIncrementGap="100">
           <analyzer type="index">
             <tokenizer class="solr.WhitespaceTokenizerFactory"/>
@@ -517,6 +525,8 @@
      -->
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
 
+   <field name="spell" type="textSpell" indexed="true" stored="true" multiValued="true" />
+
      <!-- Europeana special fields: These are the general search fields -->
              <field name="description" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
              <field name="location" type="text" indexed="true" stored="true" multiValued="true" />
@@ -733,6 +743,12 @@
    <copyField source="dc_creator" dest="who" />
    <copyField source="dcterms_spatial" dest="where" />
 
+
+    <!--Spellcheck fields-->
+   <copyField source="dc_contributor" dest="spell" />
+   <copyField source="dc_creator" dest="spell" />
+   <copyField source="dc_subject" dest="spell"/>
+   <copyField source="dc_title" dest="spell"/>
 
    <copyField source="dc_contributor" dest="creator" />
    <copyField source="dc_creator" dest="creator" />

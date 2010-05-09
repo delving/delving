@@ -83,23 +83,31 @@
 
         <div class="clearfix"></div>
             <div class="grid_3 alpha">
-                <h4>default view</h4>
-                <@show_result_list seq = defaultView.briefDocs/>
+                <h4>default simple view</h4>
+                <p>numFound: ${defaultView.pagination.numFound}</p>
+                <p>parsed query: ${defaultView.pagination.presentationQuery.parsedQuery}</p>
+                <@show_result_list resultBeanView = defaultView/>
             </div>
 
             <div class="grid_3">
-                <h4>standard view</h4>
-                <@show_result_list seq = standardView.briefDocs/>
+                <h4>advanced view</h4>
+                <p>numFound: ${standardView.pagination.numFound}</p>
+                <p>parsed query: ${standardView.pagination.presentationQuery.parsedQuery}</p>
+                <@show_result_list resultBeanView = standardView/>
             </div>
 
             <div class="grid_3">
                 <h4>custom view 1</h4>
-                <@show_result_list seq = custom1View.briefDocs/>
+                <p>numFound: ${custom1View.pagination.numFound}</p>
+                <p>parsed query: ${custom1View.pagination.presentationQuery.parsedQuery}</p>
+                <@show_result_list resultBeanView = custom1View/>
             </div>
 
             <div class="grid_3 omega">
                 <h4>custom view 2</h4>
-                <@show_result_list seq = custom2View.briefDocs/>
+                <p>numFound: ${custom2View.pagination.numFound}</p>
+                <p>parsed query: ${custom2View.pagination.presentationQuery.parsedQuery}</p>
+                <@show_result_list resultBeanView  = custom2View/>
             </div>
 
             <div class="clearfix"></div>
@@ -116,7 +124,7 @@
 <div id="sidebar" class="grid_3">
      <div id="search">
         <div class="inner">
-            <@SearchForm "search_result"/>
+            <@MultiSearchForm "search_result"/>
         </div>
     </div>
     <div class="inner">
@@ -127,6 +135,67 @@
 </div>
 
 <#include "inc_footer.ftl"/>
+
+<#macro MultiSearchForm className>
+
+    <#assign showAdv="none"/>
+    <#assign showSim="block"/>
+    <#if pageId??>
+        <#if pageId=="adv">
+            <#assign showAdv="block"/>
+            <#assign showSim="none"/>
+        </#if>
+    </#if>
+
+    <div id="search_simple" class="${className}" style="display:${showSim};">
+        <#if result?? >
+            <#if result.badRequest?? >
+                <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
+            </#if>
+        </#if>
+        <form method="get" action="/${portalName}/comparator.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+            <input type="hidden" name="start" value="1" />
+            <input type="hidden" name="view" value="${view}" />
+            <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
+            <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button>
+            <br/>
+            <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+        </form>
+    </div>
+
+    <div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">
+       <form method="get" action="/${portalName}/comparator.html" accept-charset="UTF-8">
+        <input type="hidden" name="start" value="1" />
+        <input type="hidden" name="view" value="${view}" />
+        <table>
+            <tr>
+                <td>&#160;</td>
+                <td><select name="facet1" id="facet1"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td><input type="text" name="query1" class="search-input" maxlength="75"/></td>
+            </tr>
+            <tr>
+                <td align="right"><select name="operator2" id="operator2"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
+                <td><select name="facet2" id="facet2"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td><input type="text" name="query2" class="search-input" maxlength="75"/></td>
+            </tr>
+            <tr>
+                <td align="right"><select name="operator3" id="operator3"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
+                <td><select name="facet3" id="facet3"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td><input type="text" name="query3" class="search-input" maxlength="75"/></td>
+            </tr>
+            <tr>
+                <td colspan="3">&#160;</td>
+            </tr>
+            <tr>
+                <td align="left"><input type="reset" value="<@spring.message 'Reset_t' />" /></td>
+                <td>&#160;</td>
+                <td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />" /></td>
+            </tr>
+         </table>
+        </form>
+    </div>
+</#macro>
+
 
 <#-- UI STYLED  -->
 <#macro resultnav_styled>
@@ -184,8 +253,8 @@
         </div>
 </#macro>
 
-<#macro show_result_list seq>
-
+<#macro show_result_list resultBeanView >
+    <#assign seq = resultBeanView.briefDocs>
     <#list seq as cell>
                  <h6>
                     <a class="fg-gray" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">

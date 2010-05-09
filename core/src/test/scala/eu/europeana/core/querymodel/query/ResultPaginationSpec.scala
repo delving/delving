@@ -113,6 +113,6 @@ class ResultPaginationSpec extends Spec with ShouldMatchers {
       solrQuery setStart start
       solrQuery
     }
-    new ResultPaginationImpl(createSolrQuery, numFound, query)
+    new ResultPaginationImpl(createSolrQuery, numFound, query, null)
   }
 }
