@@ -56,7 +56,7 @@ public class NormPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.gridy = 0;
-        gbc.weightx = 1;
+        gbc.weightx = 0.333;
         gbc.weighty = 0.99;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;

@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.groovy.MappingScriptBinding;
 import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.MetadataRecord;
@@ -48,25 +47,18 @@ import java.util.concurrent.Executors;
 
 public class MappingModel implements SipModel.ParseListener {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private FieldMapping fieldMapping;
+    private boolean wholeRecord;
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
 
-    public void setRecordMapping(RecordMapping recordMapping) {
-        setDocumentContents(codeDocument, recordMapping.getCodeForDisplay());
-        compileCode();
+    public MappingModel(boolean wholeRecord) {
+        this.wholeRecord = wholeRecord;
     }
 
-    public void setFieldMapping(FieldMapping fieldMapping) {
-        this.fieldMapping = fieldMapping;
-        if (fieldMapping == null) {
-            setDocumentContents(codeDocument, "No Code");
-        }
-        else {
-            setDocumentContents(codeDocument, fieldMapping.getCodeForDisplay());
-        }
+    public void setCode(String code) {
+        setDocumentContents(codeDocument, code);
         compileCode();
     }
 
@@ -77,11 +69,11 @@ public class MappingModel implements SipModel.ParseListener {
             setDocumentContents(inputDocument, "No input");
         }
         else {
-            if (fieldMapping != null) {
-                // todo: filter
+            if (wholeRecord) {
                 setDocumentContents(inputDocument, metadataRecord.toString());
             }
             else {
+                // todo: filter!
                 setDocumentContents(inputDocument, metadataRecord.toString());
             }
             compileCode();
@@ -107,7 +99,9 @@ public class MappingModel implements SipModel.ParseListener {
         if (metadataRecord != null) {
             try {
                 String code = codeDocument.getText(0, codeDocument.getLength());
-                code = RecordMapping.getCodeForCompile(code);
+                if (!wholeRecord) {
+                    code = RecordMapping.getCodeForCompile(code);
+                }
                 executor.execute(new CompilationRunner(code, metadataRecord, outputDocument));
             }
             catch (BadLocationException e) {
@@ -129,6 +123,10 @@ public class MappingModel implements SipModel.ParseListener {
         catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void clearCode() {
+        setDocumentContents(codeDocument, "No Code");
     }
 
     private static class CompilationRunner implements Runnable {

@@ -24,8 +24,10 @@ package eu.europeana.sip.gui;
 import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.convert.Generator;
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.SipModel;
+import eu.europeana.sip.model.VariableListModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -113,6 +115,13 @@ public class MappingPanel extends JPanel {
                 }
             }
         });
+        variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                AnalysisTree.Node node = (AnalysisTree.Node) variablesList.getSelectedValue();
+                sipModel.selectNode(node);
+            }
+        });
     }
 
     private JPanel createLeftSide() {
@@ -124,7 +133,7 @@ public class MappingPanel extends JPanel {
         gbc.gridx = gbc.gridy = 0;
         gbc.weightx = 0.6;
         gbc.weighty = 0.5;
-        p.add(createInputPanel(), gbc);
+        p.add(createVariablesPanel(), gbc);
         // statistics panel
         gbc.gridy++;
         p.add(createStatisticsPanel(), gbc);
@@ -159,10 +168,11 @@ public class MappingPanel extends JPanel {
         return p;
     }
 
-    private JPanel createInputPanel() {
+    private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Unmapped Variables"));
         variablesList = new JList(sipModel.getUnmappedVariablesListModel());
+        variablesList.setCellRenderer(new VariableListModel.CellRenderer());
         JScrollPane scroll = new JScrollPane(variablesList);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

@@ -83,6 +83,7 @@ public class SipModel {
 
     public interface UpdateListener {
         void updatedFileSet(FileSet fileSet);
+
         void updatedRecordRoot(RecordRoot recordRoot);
     }
 
@@ -99,9 +100,9 @@ public class SipModel {
     public SipModel() {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
-        fullMappingModel = new MappingModel();
+        fullMappingModel = new MappingModel(true);
         parseListeners.add(fullMappingModel);
-        filteredMappingModel = new MappingModel();
+        filteredMappingModel = new MappingModel(false);
         parseListeners.add(filteredMappingModel);
     }
 
@@ -175,7 +176,7 @@ public class SipModel {
         checkSwingThread();
         abortNormalize();
         normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
-        normalizer = new Normalizer(fileSet, new MetadataParser.Listener(){
+        normalizer = new Normalizer(fileSet, new MetadataParser.Listener() {
             @Override
             public void recordsParsed(final int count) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -203,7 +204,7 @@ public class SipModel {
 
     public void selectNode(AnalysisTree.Node node) {
         checkSwingThread();
-        if (node.getStatistics() != null) {
+        if (node != null && node.getStatistics() != null) {
             statisticsTableModel.setCounterList(node.getStatistics().getCounters());
         }
         else {
@@ -248,7 +249,12 @@ public class SipModel {
 
     public void setFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        filteredMappingModel.setFieldMapping(fieldMapping);
+        if (fieldMapping == null) {
+            filteredMappingModel.clearCode();
+        }
+        else {
+            filteredMappingModel.setCode(fieldMapping.getCodeForDisplay());
+        }
     }
 
     public void addFieldMapping(FieldMapping fieldMapping) {
@@ -295,13 +301,13 @@ public class SipModel {
         checkSwingThread();
         recordMapping = new RecordMapping(recordMappingString);
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        fullMappingModel.setRecordMapping(recordMapping);
+        fullMappingModel.setCode(recordMapping.getCodeForDisplay());
     }
 
     private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
         this.recordRoot = recordRoot;
-        List<String> variables = new ArrayList<String>();
+        List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
         if (recordRoot != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
             analysisTree.getVariables(variables);
@@ -344,6 +350,13 @@ public class SipModel {
             }
         }
         if (recordRoot != null) {
+            executor.execute(new FirstRecordFetcher());
+        }
+    }
+
+    private class FirstRecordFetcher implements Runnable {
+        @Override
+        public void run() {
             try {
                 metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, new MetadataParser.Listener() {
                     @Override
@@ -351,7 +364,15 @@ public class SipModel {
                         // todo: show this in the GUI associated with play/rewind?
                     }
                 });
-                nextRecord();
+                metadataRecord = metadataParser.nextRecord();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (ParseListener parseListener : parseListeners) {
+                            parseListener.updatedRecord(metadataRecord);
+                        }
+                    }
+                });
             }
             catch (Exception e) {
                 exceptionHandler.failure(e);

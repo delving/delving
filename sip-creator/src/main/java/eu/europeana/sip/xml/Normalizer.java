@@ -63,12 +63,10 @@ public class Normalizer implements Runnable {
             Script script = shell.parse(mapping);
             script.setBinding(mappingScriptBinding);
             MetadataRecord record;
-            int count = 0;
             running = true;
             while ((record = parser.nextRecord()) != null && running) {
                 mappingScriptBinding.setRecord(record);
                 script.run();
-                count++;
             }
             writer.close();
             if (!running) {

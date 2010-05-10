@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.groovy.FieldMapping;
 
 import javax.swing.AbstractListModel;
@@ -42,9 +41,9 @@ import java.util.List;
 
 public class VariableListModel extends AbstractListModel {
     private static final long serialVersionUID = 939393939;
-    private List<String> variableList = new ArrayList<String>();
+    private List<AnalysisTree.Node> variableList = new ArrayList<AnalysisTree.Node>();
 
-    public void setVariableList(List<String> variableList) {
+    public void setVariableList(List<AnalysisTree.Node> variableList) {
         clear();
         this.variableList.addAll(variableList);
         fireIntervalAdded(this, 0, getSize());
@@ -73,17 +72,9 @@ public class VariableListModel extends AbstractListModel {
         return variableList.get(index);
     }
 
-    public static class CellRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            EuropeanaField europeanaField = (EuropeanaField) value;
-            return super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
-        }
-    }
-
     public class Unmapped extends AbstractListModel implements ListDataListener {
         private List<FieldMapping> fieldMappingList;
-        private List<String> unmappedVariables = new ArrayList<String>();
+        private List<AnalysisTree.Node> unmappedVariables = new ArrayList<AnalysisTree.Node>();
 
         public Unmapped(List<FieldMapping> fieldMappingList) {
             this.fieldMappingList = fieldMappingList;
@@ -119,10 +110,10 @@ public class VariableListModel extends AbstractListModel {
             unmappedVariables.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             nextVariable:
-            for (String variable : variableList) {
+            for (AnalysisTree.Node variable : variableList) {
                 for (FieldMapping fieldMapping : fieldMappingList) {
                     for (String mappedVariable : fieldMapping.getFromVariables()) {
-                        if (mappedVariable.equals(variable)) {
+                        if (mappedVariable.equals(variable.getVariableName())) {
                             continue nextVariable;
                         }
                     }
@@ -132,4 +123,13 @@ public class VariableListModel extends AbstractListModel {
             fireIntervalAdded(this, 0, getSize());
         }
     }
+
+    public static class CellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            AnalysisTree.Node node = (AnalysisTree.Node) value;
+            return super.getListCellRendererComponent(list, node.getVariableName(), index, isSelected, cellHasFocus);
+        }
+    }
+
 }

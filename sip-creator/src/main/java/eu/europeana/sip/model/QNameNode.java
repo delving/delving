@@ -20,12 +20,16 @@
  */
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.xml.MetadataRecord;
+
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -108,6 +112,27 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
     @Override
     public boolean couldBeRecordRoot() {
         return statistics != null && statistics.getCounters().isEmpty();
+    }
+
+    @Override
+    public String getVariableName() {
+        List<QNameNode> path = new ArrayList<QNameNode>();
+        QNameNode node = this;
+        while (node != null && !node.isRecordRoot()) {
+            path.add(node);
+            node = node.parent;
+        }
+        Collections.reverse(path);
+        StringBuilder out = new StringBuilder("input.");
+        Iterator<QNameNode> tagWalk = path.iterator();
+        while (tagWalk.hasNext()) {
+            String tag = tagWalk.next().toString();
+            out.append(MetadataRecord.sanitize(tag));
+            if (tagWalk.hasNext()) {
+                out.append('.');
+            }
+        }
+        return out.toString();
     }
 
     private void compilePathList(List<QNameNode> list) {

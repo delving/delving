@@ -66,7 +66,7 @@ public class MetadataParser {
     }
 
     @SuppressWarnings("unchecked")
-    public MetadataRecord nextRecord() throws XMLStreamException, IOException {
+    public synchronized MetadataRecord nextRecord() throws XMLStreamException, IOException {
         MetadataRecord metadataRecord = null;
         GroovyNode rootNode = null;
         Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();

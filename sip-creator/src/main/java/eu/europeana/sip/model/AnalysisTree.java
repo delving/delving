@@ -21,8 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.MetadataRecord;
-
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -30,10 +28,8 @@ import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * A tree representing the statistics gathered
@@ -59,6 +55,8 @@ public class AnalysisTree implements Serializable {
         Iterable<? extends Node> getChildNodes();
 
         boolean couldBeRecordRoot();
+
+        String getVariableName();
     }
 
     public static void setRecordRoot(DefaultTreeModel model, QName recordRoot) {
@@ -84,9 +82,8 @@ public class AnalysisTree implements Serializable {
         return root;
     }
 
-    public void getVariables(List<String> variables) {
-        Stack<String> stack = new Stack<String>();
-        getVariables(root, false, stack, variables);
+    public void getVariables(List<Node> variables) {
+        getVariables(root, false, variables);
     }
 
     // ==== privates
@@ -104,35 +101,16 @@ public class AnalysisTree implements Serializable {
         }
     }
 
-    private static void getVariables(QNameNode node, boolean withinRecord, Stack<String> stack, List<String> variables) {
-        if (withinRecord) {
-            stack.push(node.toString());
-        }
-        else if (node.isRecordRoot()) {
-            stack.push("input");
-            withinRecord = true;
-        }
+    private static void getVariables(QNameNode node, boolean withinRecord, List<Node> variables) {
         if (node.isLeaf()) {
             if (withinRecord) {
-                StringBuilder out = new StringBuilder();
-                Iterator<String> tagWalk = stack.iterator();
-                while (tagWalk.hasNext()) {
-                    String tag = tagWalk.next();
-                    out.append(MetadataRecord.sanitize(tag));
-                    if (tagWalk.hasNext()) {
-                        out.append('.');
-                    }
-                }
-                variables.add(out.toString());
+                variables.add(node);
             }
         }
         else {
             for (QNameNode child : node.getChildren()) {
-                getVariables(child, withinRecord, stack, variables);
+                getVariables(child, withinRecord || node.isRecordRoot(), variables);
             }
-        }
-        if (withinRecord) {
-            stack.pop();
         }
     }
 

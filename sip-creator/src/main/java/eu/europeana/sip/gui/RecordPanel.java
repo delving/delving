@@ -69,7 +69,7 @@ public class RecordPanel extends JPanel {
         add(nextButton, gbc);
         gbc.gridx++;
         add(rewindButton, gbc);
-        setPreferredSize(new Dimension(400, 500));
+        setPreferredSize(new Dimension(300, 500));
         wireUp();
     }
 
@@ -77,6 +77,7 @@ public class RecordPanel extends JPanel {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setPreferredSize(new Dimension(300, 300));
         return scroll;
     }
 
