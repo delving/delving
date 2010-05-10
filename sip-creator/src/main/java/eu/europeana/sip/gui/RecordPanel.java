@@ -27,10 +27,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,56 +37,38 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Turn diverse source xml data into standardized output for import into the europeana portal database and search
- * engine.
+ * Show the current parsed record, and allow for moving to next, and rewinding
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class NormPanel extends JPanel {
+public class RecordPanel extends JPanel {
     private SipModel sipModel;
-    private JButton normalizeButton = new JButton("Normalize");
-    private JButton abortButton = new JButton("Abort");
+    private JButton rewindButton = new JButton("Rewind");
+    private JButton nextButton = new JButton("Next");
 
-    public NormPanel(SipModel sipModel) {
+    public RecordPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
+        setBorder(BorderFactory.createTitledBorder("Parsed Record"));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
-        gbc.gridy = 0;
+        gbc.gridx = gbc.gridy = 0;
         gbc.weightx = 1;
         gbc.weighty = 0.99;
+        gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = gbc.gridy = 0;
-        add(new RecordPanel(sipModel), gbc);
-        gbc.gridx++;
-        add(createCodePanel(), gbc);
-        gbc.gridx++;
-        add(createOutputPanel(), gbc);
-        gbc.weighty = 0.01;
-        gbc.gridwidth = 3;
-        gbc.gridx = 0;
+        JTextArea area = new JTextArea(sipModel.getInputDocument());
+        area.setEditable(false);
+        add(scroll(area), gbc);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 1;
         gbc.gridy++;
-        add(createNormalizePanel(), gbc);
+        gbc.weighty = 0.01;
+        add(nextButton, gbc);
+        gbc.gridx++;
+        add(rewindButton, gbc);
         wireUp();
-    }
-
-    private JPanel createCodePanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea area = new JTextArea(sipModel.getCodeDocument());
-        area.setEditable(false);
-        p.add(scroll(area));
-        return p;
-    }
-
-    private JPanel createOutputPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea area = new JTextArea(sipModel.getOutputDocument());
-        area.setEditable(false);
-        p.add(scroll(area));
-        return p;
     }
 
     private JScrollPane scroll(JComponent content) {
@@ -99,27 +79,17 @@ public class NormPanel extends JPanel {
         return scroll;
     }
 
-    private JPanel createNormalizePanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
-        JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
-        progressBar.setBorderPainted(true);
-        p.add(normalizeButton, BorderLayout.WEST);
-        p.add(progressBar, BorderLayout.CENTER);
-        p.add(abortButton, BorderLayout.EAST);
-        return p;
-    }
-
     private void wireUp() {
-        normalizeButton.addActionListener(new ActionListener() {
+        rewindButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sipModel.normalize();
+                sipModel.firstRecord();
             }
         });
-        abortButton.addActionListener(new ActionListener() {
+        nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sipModel.abortNormalize();
+                sipModel.nextRecord();
             }
         });
     }

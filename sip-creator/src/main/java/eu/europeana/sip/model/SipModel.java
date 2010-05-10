@@ -285,8 +285,8 @@ public class SipModel {
 
     private void compileCode() {
         checkSwingThread();
-        if (metadataRecord != null) {
-            executor.execute(new CompilationRunner());
+        if (metadataRecord != null && recordMapping != null) {
+            executor.execute(new CompilationRunner(recordMapping.getCodeForPersistence(), metadataRecord, outputDocument));
         }
         else {
             setDocumentContents(outputDocument, "");
@@ -414,12 +414,16 @@ public class SipModel {
         }
     }
 
-    private class CompilationRunner implements Runnable {
+    private static class CompilationRunner implements Runnable {
+        private MetadataRecord metadataRecord;
+        private Document outputDocument;
         private String code;
         private StringWriter writer = new StringWriter();
 
-        private CompilationRunner() {
-            this.code = recordMapping.getCodeForPersistence();
+        private CompilationRunner(String code, MetadataRecord metadataRecord, Document outputDocument) {
+            this.code = code;
+            this.metadataRecord = metadataRecord;
+            this.outputDocument = outputDocument;
         }
 
         @Override

@@ -33,17 +33,13 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -54,7 +50,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -84,23 +79,18 @@ public class AnalysisPanel extends JPanel {
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 0.99;
-        gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
-        gbc.gridheight = 2;
+        gbc.weightx = 0.5;
+        gbc.weighty = 0.95;
+        gbc.fill = GridBagConstraints.BOTH;
         add(createTreePanel(), gbc);
-        gbc.gridheight = 1;
-        gbc.gridx++;
-        add(createStatisticsPanel(), gbc);
         gbc.gridx++;
         add(createVariablesPanel(), gbc);
         gbc.gridy++;
-        gbc.weighty = 0.01;
+        gbc.weighty = 0.05;
         gbc.gridwidth = 2;
-        gbc.gridx = 1;
-        add(createProgress(), gbc);
+        gbc.gridx = 0;
+        add(createAnalyzePanel(), gbc);
         wireUp();
     }
 
@@ -116,46 +106,9 @@ public class AnalysisPanel extends JPanel {
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         p.add(scroll, BorderLayout.CENTER);
-        p.add(createTreeSouth(), BorderLayout.SOUTH);
-        return p;
-    }
-
-    private JPanel createTreeSouth() {
-        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
         selectRecordRootButton.setEnabled(false);
-        p.add(selectRecordRootButton);
-        p.add(recordCountLabel);
+        p.add(selectRecordRootButton, BorderLayout.SOUTH);
         return p;
-    }
-
-    private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.setPreferredSize(PREFERRED_SIZE);
-        p.setBorder(BorderFactory.createTitledBorder("Statistics"));
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
-        statsTable.getTableHeader().setReorderingAllowed(false);
-        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
-        JScrollPane scroll = new JScrollPane(statsTable);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        tablePanel.add(scroll, BorderLayout.CENTER);
-        p.add(tablePanel, BorderLayout.CENTER);
-        return p;
-    }
-
-    private DefaultTableColumnModel createStatsColumnModel() {
-        DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
-        columnModel.addColumn(new TableColumn(0));
-        columnModel.getColumn(0).setHeaderValue("Percent");
-        columnModel.getColumn(0).setMaxWidth(80);
-        columnModel.addColumn(new TableColumn(1));
-        columnModel.getColumn(1).setHeaderValue("Count");
-        columnModel.getColumn(1).setMaxWidth(80);
-        columnModel.addColumn(new TableColumn(2));
-        columnModel.getColumn(2).setHeaderValue("Value");
-        return columnModel;
     }
 
     private JPanel createVariablesPanel() {
@@ -170,7 +123,7 @@ public class AnalysisPanel extends JPanel {
         return p;
     }
 
-    private JPanel createProgress() {
+    private JPanel createAnalyzePanel() {
         analyzeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -209,12 +162,22 @@ public class AnalysisPanel extends JPanel {
                 analyzeButton.setEnabled(true);
             }
         });
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new GridBagLayout());
         p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
-        p.add(analyzeButton, BorderLayout.WEST);
-        p.add(elementCountLabel, BorderLayout.CENTER);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = gbc.gridy = 0;
+        gbc.weightx = 0.25;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        p.add(analyzeButton, gbc);
+        gbc.gridx++;
+        p.add(elementCountLabel, gbc);
+        gbc.gridx++;
+        p.add(recordCountLabel, gbc);
         abortButton.setEnabled(false);
-        p.add(abortButton, BorderLayout.EAST);
+        gbc.gridx++;
+        p.add(abortButton, gbc);
         return p;
     }
 

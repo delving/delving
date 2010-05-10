@@ -34,11 +34,15 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -53,54 +57,21 @@ import java.awt.event.ActionListener;
  */
 
 public class MappingPanel extends JPanel {
+    private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
-    private JButton createMappingButton = new JButton("<html><center>Create<br>Mapping");
+    private JButton createMappingButton = new JButton("Create Mapping");
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
     private JComboBox conversionChoice = new JComboBox(Generator.MAP.keySet().toArray());
-    private JTextArea groovyCodeArea = new JTextArea();
     private JList variablesList, mappingList, fieldList;
 
     public MappingPanel(SipModel sipModel) {
-        super(new GridBagLayout());
+        super(new BorderLayout());
         this.sipModel = sipModel;
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 15, 5, 15);
-        gbc.fill = GridBagConstraints.BOTH;
-        // input panel
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 0.3;
-        gbc.weighty = 0.8;
-        add(createInputPanel(), gbc);
-        // converter choice
-        gbc.gridy++;
-        gbc.weighty = 0.1;
-        add(createConverterChoice(), gbc);
-        // output panel
-        gbc.gridy++;
-        gbc.weighty = 0.8;
-        add(createOutputPanel(), gbc);
-        // create mapping button
-        gbc.gridx++;
-        gbc.gridy = 0;
-        gbc.weightx = 0.1;
-        gbc.gridheight = 3;
-        add(createMappingButton, gbc);
-        gbc.gridheight = 1;
-        // field mapping panel
-        gbc.gridx++;
-        gbc.gridy = 0;
-        gbc.weightx = 0.7;
-        gbc.weighty = 0.8;
-        add(createFieldMappingListPanel(), gbc);
-        // remove mapping button
-        gbc.gridy++;
-        gbc.weighty = 0.1;
-        removeMappingButton.setEnabled(false);
-        add(removeMappingButton, gbc);
-        // groovy panel
-        gbc.gridy++;
-        gbc.weighty = 0.8;
-        add(createGroovyPanel(), gbc);
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        split.setLeftComponent(createLeftSide());
+        split.setRightComponent(createRightSide());
+        split.setDividerLocation(0.6);
+        add(split, BorderLayout.CENTER);
         wireUp();
     }
 
@@ -120,6 +91,7 @@ public class MappingPanel extends JPanel {
                 mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
             }
         });
+        removeMappingButton.setEnabled(false);
         removeMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -134,15 +106,57 @@ public class MappingPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    groovyCodeArea.setText(fieldMapping.getCodeForDisplay());
                     removeMappingButton.setEnabled(true);
                 }
                 else {
-                    groovyCodeArea.setText("");
                     removeMappingButton.setEnabled(false);
                 }
             }
         });
+    }
+
+    private JPanel createLeftSide() {
+        JPanel p = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.fill = GridBagConstraints.BOTH;
+        // input panel
+        gbc.gridx = gbc.gridy = 0;
+        gbc.weightx = 0.6;
+        gbc.weighty = 0.5;
+        p.add(createInputPanel(), gbc);
+        // statistics panel
+        gbc.gridy++;
+        p.add(createStatisticsPanel(), gbc);
+        p.setPreferredSize(new Dimension(600, 800));
+        return p;
+    }
+
+    private JPanel createRightSide() {
+        JPanel p = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.fill = GridBagConstraints.BOTH;
+        // output panel
+        gbc.gridheight = 1;
+        gbc.weightx = 0.4;
+        gbc.weighty = 0.4;
+        gbc.gridy = gbc.gridx = 0;
+        p.add(createOutputPanel(), gbc);
+        // converter choice
+        gbc.gridy++;
+        gbc.weighty = 0.05;
+        p.add(createConverterChoice(), gbc);
+        // create mapping button
+        gbc.gridy++;
+        p.add(createMappingButton, gbc);
+        gbc.gridy++;
+        gbc.weighty = 0.4;
+        p.add(createFieldMappingListPanel(), gbc);
+        gbc.gridy++;
+        p.add(removeMappingButton, gbc);
+        p.setPreferredSize(new Dimension(600, 800));
+        return p;
     }
 
     private JPanel createInputPanel() {
@@ -168,6 +182,43 @@ public class MappingPanel extends JPanel {
         return p;
     }
 
+    private JPanel createConverterChoice() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.add(new JLabel("Converter:", JLabel.RIGHT), BorderLayout.WEST);
+        p.add(conversionChoice, BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel createStatisticsPanel() {
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setPreferredSize(PREFERRED_SIZE);
+        p.setBorder(BorderFactory.createTitledBorder("Statistics"));
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
+        statsTable.getTableHeader().setReorderingAllowed(false);
+        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
+        JScrollPane scroll = new JScrollPane(statsTable);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        tablePanel.add(scroll, BorderLayout.CENTER);
+        p.add(tablePanel, BorderLayout.CENTER);
+        return p;
+    }
+
+    private DefaultTableColumnModel createStatsColumnModel() {
+        DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
+        columnModel.addColumn(new TableColumn(0));
+        columnModel.getColumn(0).setHeaderValue("Percent");
+        columnModel.getColumn(0).setMaxWidth(80);
+        columnModel.addColumn(new TableColumn(1));
+        columnModel.getColumn(1).setHeaderValue("Count");
+        columnModel.getColumn(1).setMaxWidth(80);
+        columnModel.addColumn(new TableColumn(2));
+        columnModel.getColumn(2).setHeaderValue("Value");
+        return columnModel;
+    }
+
     private JPanel createFieldMappingListPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
@@ -180,19 +231,4 @@ public class MappingPanel extends JPanel {
         return p;
     }
 
-    private JPanel createConverterChoice() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JLabel("Converter:", JLabel.RIGHT), BorderLayout.WEST);
-        p.add(conversionChoice, BorderLayout.CENTER);
-        return p;
-    }
-
-    private JPanel createGroovyPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        groovyCodeArea.setEditable(false);
-        JScrollPane scroll = new JScrollPane(groovyCodeArea);
-        p.add(scroll);
-        return p;
-    }
 }

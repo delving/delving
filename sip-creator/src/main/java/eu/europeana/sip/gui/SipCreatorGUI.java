@@ -59,8 +59,9 @@ public class SipCreatorGUI extends JFrame {
         sipModel.setAnnotationProcessor(createAnnotationProcessor());
         sipModel.setExceptionHandler(new PopupExceptionHandler());
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analyzer", new AnalysisPanel(sipModel));
+        tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
+        tabs.addTab("Refinement", new RefinementPanel(sipModel));
         tabs.addTab("Normalizer", new NormPanel(sipModel));
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
