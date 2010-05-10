@@ -35,16 +35,15 @@ a:hover {
 }
 
 .page {
-    -moz-box-shadow:3px 3px 4px #BBBBBB;
-    background:none repeat scroll 0 0 #fff;
-    /*border-left: 1px solid #f1f1f1;*/
-    border-bottom:1px solid #BBBBBB;
-    border-right:1px solid #BBBBBB;
-    margin-right:7px;
-    padding:5;
-    margin-bottom: 20px;
+  background: #fff;
+  -moz-box-shadow: 3px 3px 4px #bbb;
+  -webkit-box-shadow: 3px 3px 4px #bbb;
+  box-shadow: 3px 3px 4px #bbb;
+  /*border-right: 1px solid #bbb;*/
+  /*border-bottom: 1px solid #bbb;*/
+  margin-right: 7px;
+  margin-bottom: 7px;
 }
-
 #main.home {
     text-align: center;
 }
@@ -114,6 +113,9 @@ a:hover {
 
 #facet-list {
     margin-top: 50px;
+}
+#facet-list h3 {
+    text-shadow: 2px 2px 2px #bbb;
 }
 
 #facet-list h4 {
@@ -319,15 +321,18 @@ table caption {
     color: #555;
 }
 
-.brief-thumb-container {
+.brief-thumb-container, .brief-thumb-container-listview, #img-full {
     background: #e5e5e5;
     overflow: hidden;
     text-align: center;
     padding: 0.5em;
  }
 
-.brief-thumb-container img{
+.brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img, #img-full img{
     border: 4px solid #fff;
+    -moz-box-shadow: 3px 3px 4px #bbb;
+    -webkit-box-shadow: 3px 3px 4px #bbb;
+    box-shadow: 3px 3px 4px #bbb;
  }
 .brief-content-container {
     /*border: 1px solid #e5e5e5;*/
@@ -341,9 +346,10 @@ table caption {
     overflow-x: hidden;
     overflow-y: hidden;
     text-align: center;
+
 }
 
-#item-detail h5 {
+#item-detail h1 {
     background: none;
     border-bottom: solid 1px #ccc;
     color: #333;
@@ -351,19 +357,19 @@ table caption {
     padding: 0 0 10px 30px;
 }
 
-#item-detail h5.SOUND {
+#item-detail h1.SOUND {
     background: url(../images/icon-sound.gif) left top no-repeat;
 }
 
-#item-detail h5.TEXT {
+#item-detail h1.TEXT {
     background: url(../images/icon-page.gif) left top no-repeat;
 }
 
-#item-detail h5.VIDEO {
+#item-detail h1.VIDEO {
     background: url(../images/icon-video.gif) left top no-repeat;
 }
 
-#item-detail h5.IMAGE {
+#item-detail h1.IMAGE {
     background: url(../images/icon-image.gif) left top no-repeat;
 }
 

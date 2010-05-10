@@ -13,7 +13,7 @@
                 + result.fullDoc.dcTermsConformsTo + result.fullDoc.dcTermsHasFormat />
 <#assign moreArr = indentifierArr + publisherArr + provenanceArr + arrsubj + typeArr + relationsArr />
 
-     <h5 class="${result.fullDoc.europeanaType}">
+     <h1 class="${result.fullDoc.europeanaType}">
         <#assign tl = "">
         <#if !model.fullDoc.dcTitle[0]?matches(" ")>
             <#assign tl= result.fullDoc.dcTitle[0]>
@@ -26,7 +26,7 @@
          </#if>
         </#if>
         <@stringLimiter "${tl}" "150"/>
-    </h5>
+    </h1>
 
                 <div class="grid_5 alpha" id="img-full">
                     <#assign imageRef = "#"/>
@@ -43,14 +43,7 @@
                             <img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
                              class="full" alt="Image title: ${result.fullDoc.dcTitle[0]}" />
                         <#else>
-                            <script>
-                                function checkSize(w){
-                                    if (w > 325) {
-                                        w = 325;
-                                        document.getElementById("imgview").width=w;
-                                    }
-                                }
-                            </script>
+
                             <img src="${result.fullDoc.thumbnails[0]}"
                                  alt="Image title: ${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
@@ -61,8 +54,7 @@
                         </#if>
                     </a>
                 </div>
-<#--            </td>
-            <td valign="top">-->
+
                 <div id="item-detail" class="grid_7 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
@@ -277,7 +269,3 @@
                     </#if>
                 </#if>
                 </div>
-<#--
- </td>
-        </tr>
-    </table>  -->

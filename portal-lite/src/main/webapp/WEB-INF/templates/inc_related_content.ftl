@@ -1,4 +1,4 @@
-        <h5><@spring.message 'RelatedContent_t' />:</h5>
+        <h3><@spring.message 'RelatedContent_t' />:</h3>
 
                 <table summary="related items" id="tbl-related-items" width="100%">
                     <#assign max=3/><!-- max shown in list -->
@@ -13,9 +13,9 @@
                                     <a href="full-doc.html?uri=${doc.id}">
                                  </#if>
                                  <#if useCache="true">
-                                    <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>
+                                    <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35"/>
                                 <#else>
-                                    <img src="${doc.thumbnail}" alt="Click here to view related item" width="40" onerror="showDefault(this,'${doc.type}')"/>
+                                    <img src="${doc.thumbnail}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}')"/>
                                 </#if>
 
                                     </a>
@@ -34,7 +34,9 @@
                     </#list>
                     <#if result.relatedItems?size &gt; max>
                     <tr>
-                        <td id="see-all" colspan="2"><a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
+                        <td id="see-all" colspan="2"><a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}' class="fg-button ui-state-default fg-button-icon-left ui-corner-all">
+                        <span class="ui-icon ui-icon-circle-plus"></span><@spring.message 'SeeAllRelatedItems_t' /></a>
+                        </td>
                     </tr>
                     </#if>
                 </table>
@@ -48,7 +50,7 @@
                 <#--</p>-->
             <#--</div>-->
 
-            <h5><@spring.message 'Actions_t' />:</h5>
+            <h3><@spring.message 'Actions_t' />:</h3>
             <#if user??>				
 
                 <p class="linetop">

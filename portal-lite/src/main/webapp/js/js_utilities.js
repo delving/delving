@@ -38,13 +38,29 @@ function isEmpty( inputStr ) {
 
 function checkFormSimpleSearch(oId){
     var o = document.getElementById(oId);
+
     if (isEmpty(o.value)){
         document.getElementById(oId).style.border="1px dotted firebrick";
         return false;
     }
+
     return true;
 }
 
+function checkFormRefineSearch(oId){
+    var o = document.getElementById(oId);
+
+    if (isEmpty(o.value)){
+        document.getElementById(oId).style.border="1px dotted firebrick";
+        return false;
+    }
+    
+    var refinement = $('input#rq').attr('value');
+    var query = $('input[type=hidden]#qq').attr('value');
+    var refineUrl = "brief-doc.html?"+query+"&rq="+refinement;
+    window.location=refineUrl;
+    return false;
+}
 
 $(document).ready(function() {
 

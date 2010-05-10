@@ -140,4 +140,12 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
      });
     return false;
 }
-
+/*
+** Resizes image in fulldoc(inc_result_table_full.ftl
+ */
+function checkSize(w){
+    if (w > 315) {
+        w = 315;
+        document.getElementById("imgview").width=w;
+    }
+}

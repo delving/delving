@@ -15,12 +15,15 @@
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');" name="form-simple-search" id="form-simple-search">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
-            <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
-            <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
-            <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+            <input class="search-input" name="query" id="query" type="text" title="Europeana Search" <#if query?exists>value="${qt}"</#if> maxlength="75"/>
+            <input id="submit_search" type="submit" class="button" value="<@spring.message 'Search_t' />" /><br/>
+            <#--<#if query?? && query?length &gt; 0 && enableRefinedSearch??>-->
+                <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search">Refine Search</a>
+            <#--</#if>-->
+            <a class="advanced-search" href="advancedsearch.html" onclick="toggleObject('search_simple');toggleObject('search_advanced');return false;" title="Advanced Search"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
     </div>
 

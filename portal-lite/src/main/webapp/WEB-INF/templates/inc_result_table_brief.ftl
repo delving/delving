@@ -52,40 +52,6 @@
                     </#if>
                 </ul>
             </div>
-
-
-
-
- 
-            <#--<div class="brief-thumb-container">-->
-                <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">-->
-                    <#--<#if useCache="true">-->
-                         <#--<img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" height="110"/>-->
-                    <#--<#else>-->
-                        <#--<img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cell.thumbnail}" alt="Click for more information" height="110" onerror="showDefaultSmall(this,'${cell.type}')"/>-->
-                    <#--</#if>-->
-                <#--</a>-->
-            <#--</div>-->
-            <#--<h6>-->
-                <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">-->
-                    <#--<@stringLimiter "${cell.title}" "40"/>-->
-                <#--</a>-->
-            <#--</h6>-->
-            <#--<ul>-->
-                <#--<#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>-->
-                <#--<li><@stringLimiter "${cell.creator}" "120"/></li>-->
-                <#--</#if></#if>-->
-                <#--<#if cell.year != ""><#if cell.year != "0000">-->
-                <#--<li>${cell.year}</li>-->
-                <#--</#if></#if>-->
-                <#--<#if cell.provider != "">-->
-                <#--<#assign pr = cell.provider />-->
-                <#--<#if pr?length &gt; 80>-->
-                <#--<#assign pr = cell.provider?substring(0, 80) + "..."/>-->
-                <#--</#if>-->
-                <#--<li title="${cell.provider}"><span class="provider">${pr}</span></li>-->
-                <#--</#if>-->
-            <#--</ul>-->
         </td>
         </#list>
     </tr>
