@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.model.MappingModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -47,7 +48,7 @@ public class RecordPanel extends JPanel {
     private JButton rewindButton = new JButton("Rewind");
     private JButton nextButton = new JButton("Next");
 
-    public RecordPanel(SipModel sipModel) {
+    public RecordPanel(SipModel sipModel, MappingModel mappingModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Parsed Record"));
@@ -58,7 +59,7 @@ public class RecordPanel extends JPanel {
         gbc.weighty = 0.99;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
-        JTextArea area = new JTextArea(sipModel.getInputDocument());
+        JTextArea area = new JTextArea(mappingModel.getInputDocument());
         area.setEditable(false);
         add(scroll(area), gbc);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -68,6 +69,7 @@ public class RecordPanel extends JPanel {
         add(nextButton, gbc);
         gbc.gridx++;
         add(rewindButton, gbc);
+        setPreferredSize(new Dimension(400, 500));
         wireUp();
     }
 
@@ -75,7 +77,6 @@ public class RecordPanel extends JPanel {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setPreferredSize(new Dimension(300, 800));
         return scroll;
     }
 

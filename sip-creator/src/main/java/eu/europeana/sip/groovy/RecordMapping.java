@@ -37,10 +37,6 @@ public class RecordMapping {
     private static final String RECORD_SUFFIX = "}";
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
 
-    public RecordMapping(List<FieldMapping> fieldMappings) {
-        this.fieldMappings = fieldMappings;
-    }
-
     public RecordMapping(String code) {
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
@@ -66,7 +62,7 @@ public class RecordMapping {
         return fieldMappings;
     }
 
-    public String getCodeForPersistence() {
+    public String getCode() {
         StringBuilder out = new StringBuilder();
         out.append(RECORD_PREFIX).append('\n');
         for (FieldMapping mapping : fieldMappings) {
@@ -102,8 +98,16 @@ public class RecordMapping {
         return out.toString();
     }
 
+    public static String getCodeForCompile(String code) {
+        StringBuilder out = new StringBuilder();
+        out.append(RECORD_PREFIX).append('\n');
+        out.append(code);
+        out.append(RECORD_SUFFIX).append('\n');
+        return out.toString();
+    }
+
     public String toString() {
-        return getCodeForPersistence();
+        return getCode();
     }
 
 }

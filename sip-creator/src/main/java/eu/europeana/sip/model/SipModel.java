@@ -42,7 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.PlainDocument;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import java.io.PrintWriter;
@@ -68,6 +67,7 @@ public class SipModel {
     private Normalizer normalizer;
     private AnalysisTree analysisTree;
     private RecordMapping recordMapping;
+    private FieldMapping fieldMapping;
     private RecordRoot recordRoot;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
@@ -75,12 +75,11 @@ public class SipModel {
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel();
-    private Document inputDocument = new PlainDocument();
-    private Document codeDocument = new PlainDocument();
-    private Document outputDocument = new PlainDocument();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
+    private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
+    private MappingModel fullMappingModel, filteredMappingModel;
 
     public interface UpdateListener {
         void updatedFileSet(FileSet fileSet);
@@ -93,9 +92,17 @@ public class SipModel {
         void analysisProgress(long elementCount);
     }
 
+    public interface ParseListener {
+        void updatedRecord(MetadataRecord metadataRecord);
+    }
+
     public SipModel() {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
+        fullMappingModel = new MappingModel();
+        parseListeners.add(fullMappingModel);
+        filteredMappingModel = new MappingModel();
+        parseListeners.add(filteredMappingModel);
     }
 
     public void setExceptionHandler(ExceptionHandler exceptionHandler) {
@@ -239,10 +246,15 @@ public class SipModel {
         return variableListModel.createUnmapped(fieldMappingListModel);
     }
 
+    public void setFieldMapping(FieldMapping fieldMapping) {
+        checkSwingThread();
+        filteredMappingModel.setFieldMapping(fieldMapping);
+    }
+
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         recordMapping.getFieldMappings().add(fieldMapping);
-        String code = recordMapping.getCodeForPersistence();
+        String code = recordMapping.getCode();
         setRecordMapping(code);
         executor.execute(new MappingSetter(code));
     }
@@ -250,7 +262,7 @@ public class SipModel {
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         recordMapping.getFieldMappings().remove(fieldMapping);
-        String code = recordMapping.getCodeForPersistence();
+        String code = recordMapping.getCode();
         setRecordMapping(code);
         executor.execute(new MappingSetter(code));
     }
@@ -269,36 +281,21 @@ public class SipModel {
         executor.execute(new NextRecordFetcher());
     }
 
-    public Document getInputDocument() {
-        return inputDocument;
+    public MappingModel getFullMappingModel() {
+        return fullMappingModel;
     }
 
-    public Document getCodeDocument() {
-        return codeDocument;
-    }
-
-    public Document getOutputDocument() {
-        return outputDocument;
+    public MappingModel getFilteredMappingModel() {
+        return filteredMappingModel;
     }
 
     // === privates
-
-    private void compileCode() {
-        checkSwingThread();
-        if (metadataRecord != null && recordMapping != null) {
-            executor.execute(new CompilationRunner(recordMapping.getCodeForPersistence(), metadataRecord, outputDocument));
-        }
-        else {
-            setDocumentContents(outputDocument, "");
-        }
-    }
 
     private void setRecordMapping(String recordMappingString) {
         checkSwingThread();
         recordMapping = new RecordMapping(recordMappingString);
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        setDocumentContents(codeDocument, recordMapping.getCodeForDisplay());
-        compileCode();
+        fullMappingModel.setRecordMapping(recordMapping);
     }
 
     private void setRecordRootInternal(RecordRoot recordRoot) {
@@ -342,7 +339,9 @@ public class SipModel {
         if (metadataParser != null) {
             metadataParser.close();
             metadataParser = null;
-            setDocumentContents(inputDocument, "");
+            for (ParseListener parseListener : parseListeners) {
+                parseListener.updatedRecord(null);
+            }
         }
         if (recordRoot != null) {
             try {
@@ -353,7 +352,6 @@ public class SipModel {
                     }
                 });
                 nextRecord();
-                compileCode();
             }
             catch (Exception e) {
                 exceptionHandler.failure(e);
@@ -370,8 +368,9 @@ public class SipModel {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            setDocumentContents(inputDocument, metadataRecord.toString());
-                            compileCode();
+                            for (ParseListener parseListener : parseListeners) {
+                                parseListener.updatedRecord(metadataRecord);
+                            }
                         }
                     });
                 }
