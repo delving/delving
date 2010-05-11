@@ -21,8 +21,6 @@
 
 package eu.europeana.sip.groovy;
 
-import eu.europeana.sip.convert.Generator;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -38,24 +36,23 @@ import java.util.regex.Pattern;
  */
 
 public class FieldMapping {
-    private static final Pattern FULL_PATTERN = Pattern.compile("^([^{]+)\\{([^}]+)\\}\\{([^}]+)\\}$");
-    private String converterName;
+    private static final Pattern FULL_PATTERN = Pattern.compile("^\\[([^]]+)\\] ==> \\[([^}]+)\\]$");
     private List<String> fromVariables = new ArrayList<String>();
     private List<String> toFields = new ArrayList<String>();
     private List<String> codeLines = new ArrayList<String>();
 
+    public FieldMapping() {
+    }
+
     public FieldMapping(String string) {
         Matcher matcher = FULL_PATTERN.matcher(string);
-        if (matcher.find()) {
-            converterName = matcher.group(1);
-            String from = matcher.group(2);
-            String to = matcher.group(3);
-            fromVariables.addAll(Arrays.asList(from.split(",")));
-            toFields.addAll(Arrays.asList(to.split(",")));
+        if (!matcher.find()) {
+            throw new RuntimeException("Unable to interpret field mapping: "+string);
         }
-        else {
-            this.converterName = string;
-        }
+        String from = matcher.group(1);
+        String to = matcher.group(2);
+        fromVariables.addAll(Arrays.asList(from.split(",")));
+        toFields.addAll(Arrays.asList(to.split(",")));
     }
 
     public void addFromVariable(String fromVariable) {
@@ -70,10 +67,6 @@ public class FieldMapping {
         codeLines.add(codeLine);
     }
 
-    public String getConverterName() {
-        return converterName;
-    }
-
     public List<String> getFromVariables() {
         return fromVariables;
     }
@@ -84,16 +77,6 @@ public class FieldMapping {
 
     public List<String> getCodeLines() {
         return codeLines;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void generateCode() {
-        codeLines.clear();
-        CodeTemplate codeTemplate = Generator.getCodeTemplate(converterName);
-        List lines = codeTemplate.generateCode(this);
-        for (Object line : lines) {
-            codeLines.add(line.toString());
-        }
     }
 
     public String getCodeForDisplay() {
@@ -114,12 +97,8 @@ public class FieldMapping {
         return out.toString();
     }
 
-    public String getArgumentPattern() {
-        return fromVariables.size()+":"+toFields.size();
-    }
-
     public String toString() {
-        StringBuilder out = new StringBuilder(converterName+"{");
+        StringBuilder out = new StringBuilder("[");
         Iterator<String> walk = fromVariables.iterator();
         while (walk.hasNext()) {
             out.append(walk.next());
@@ -127,7 +106,7 @@ public class FieldMapping {
                 out.append(",");
             }
         }
-        out.append("}{");
+        out.append("] ==> [");
         walk = toFields.iterator();
         while (walk.hasNext()) {
             out.append(walk.next());
@@ -135,7 +114,7 @@ public class FieldMapping {
                 out.append(",");
             }
         }
-        out.append("}");
+        out.append("]");
         return out.toString();
     }
 

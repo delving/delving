@@ -30,6 +30,7 @@ import java.util.List;
  */
 
 public interface CodeTemplate {
-    boolean applicable(FieldMapping fieldMapping);
-    List generateCode(FieldMapping fieldMapping);
+    boolean isApplicable(FieldMapping fieldMapping);
+    String getExplanation();
+    List getCode(FieldMapping fieldMapping);
 }
