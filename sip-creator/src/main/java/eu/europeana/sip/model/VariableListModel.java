@@ -112,7 +112,7 @@ public class VariableListModel extends AbstractListModel {
             nextVariable:
             for (AnalysisTree.Node variable : variableList) {
                 for (FieldMapping fieldMapping : fieldMappingList) {
-                    for (String mappedVariable : fieldMapping.getFromVariables()) {
+                    for (String mappedVariable : fieldMapping.getInputVariables()) {
                         if (mappedVariable.equals(variable.getVariableName())) {
                             continue nextVariable;
                         }

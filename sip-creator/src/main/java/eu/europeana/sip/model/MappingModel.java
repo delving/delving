@@ -21,9 +21,11 @@
 
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.groovy.MappingScriptBinding;
 import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.MetadataRecord;
+import eu.europeana.sip.xml.MetadataVariable;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
@@ -36,6 +38,8 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,6 +52,7 @@ import java.util.concurrent.Executors;
 public class MappingModel implements SipModel.ParseListener {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private boolean wholeRecord;
+    private FieldMapping fieldMapping;
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
@@ -55,6 +60,11 @@ public class MappingModel implements SipModel.ParseListener {
 
     public MappingModel(boolean wholeRecord) {
         this.wholeRecord = wholeRecord;
+    }
+
+    public void setFieldMapping(FieldMapping fieldMapping) {
+        this.fieldMapping = fieldMapping;
+        updateInputDocument(metadataRecord);
     }
 
     public void setCode(String code) {
@@ -69,15 +79,27 @@ public class MappingModel implements SipModel.ParseListener {
             setDocumentContents(inputDocument, "No input");
         }
         else {
-            if (wholeRecord) {
-                setDocumentContents(inputDocument, metadataRecord.toString());
-            }
-            else {
-                // todo: filter!
-                setDocumentContents(inputDocument, metadataRecord.toString());
-            }
+            updateInputDocument(metadataRecord);
             compileCode();
         }
+    }
+
+    private void updateInputDocument(MetadataRecord metadataRecord) {
+        List<MetadataVariable> variables = metadataRecord.getVariables();
+        if (!wholeRecord && fieldMapping != null) {
+            Iterator<MetadataVariable> walk = variables.iterator();
+            while (walk.hasNext()) {
+                MetadataVariable variable = walk.next();
+                if (!fieldMapping.getInputVariables().contains(variable.getName())) {
+                    walk.remove();
+                }
+            }
+        }
+        StringBuilder out = new StringBuilder();
+        for (MetadataVariable variable : variables) {
+            out.append(variable.toString()).append('\n');
+        }
+        setDocumentContents(inputDocument, out.toString());
     }
 
     public Document getInputDocument() {

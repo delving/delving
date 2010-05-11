@@ -24,6 +24,11 @@ package eu.europeana.sip.xml;
 import eu.europeana.sip.groovy.GroovyNode;
 import eu.europeana.sip.groovy.GroovyNodeList;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Something to hold the groovy node and turn it into a string
  *
@@ -39,6 +44,42 @@ public class MetadataRecord {
 
     public GroovyNode getRootNode() {
         return rootNode;
+    }
+
+    public List<MetadataVariable> getVariables() {
+        List<MetadataVariable> variables = new ArrayList<MetadataVariable>();
+        getVariables(rootNode, variables);
+        return variables;
+    }
+
+    private void getVariables(GroovyNode groovyNode, List<MetadataVariable> variables) {
+        if (groovyNode.value() instanceof GroovyNodeList) {
+            GroovyNodeList list = (GroovyNodeList) groovyNode.value();
+            for (Object member : list) {
+                GroovyNode childNode = (GroovyNode) member;
+                getVariables(childNode, variables);
+            }
+        }
+        else {
+            List<GroovyNode> path = new ArrayList<GroovyNode>();
+            GroovyNode walk = groovyNode;
+            while (walk != null) {
+                path.add(walk);
+                walk = walk.parent();
+            }
+            Collections.reverse(path);
+            StringBuilder out = new StringBuilder();
+            Iterator<GroovyNode> nodeWalk = path.iterator();
+            while (nodeWalk.hasNext()) {
+                String nodeName = (String)nodeWalk.next().name();
+                out.append(nodeName);
+                if (nodeWalk.hasNext()) {
+                    out.append('.');
+                }
+            }
+            String variableName = out.toString();
+            variables.add(new MetadataVariable(variableName, (String)groovyNode.value()));
+        }
     }
 
     public String toString() {
@@ -70,5 +111,4 @@ public class MetadataRecord {
     public static String sanitize(String name) {
         return name.replace("-", "_");
     }
-
 }

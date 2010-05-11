@@ -206,7 +206,7 @@ public class MappingPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 AnalysisTree.Node node = (AnalysisTree.Node) variablesList.getSelectedValue();
                 sipModel.selectNode(node);
-                fieldMapping.getFromVariables().clear();
+                fieldMapping.getInputVariables().clear();
                 for (Object variable : variablesList.getSelectedValues()) {
                     fieldMapping.addFromVariable(((AnalysisTree.Node) variable).getVariableName());
                 }
@@ -216,7 +216,7 @@ public class MappingPanel extends JPanel {
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                fieldMapping.getToFields().clear();
+                fieldMapping.getOutputFields().clear();
                 for (Object field : fieldList.getSelectedValues()) {
                     fieldMapping.addToField(((EuropeanaField) field).getFieldNameString());
                 }

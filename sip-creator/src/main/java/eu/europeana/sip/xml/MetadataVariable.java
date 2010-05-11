@@ -19,18 +19,32 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.groovy;
-
-import java.util.List;
+package eu.europeana.sip.xml;
 
 /**
- * The interface that converters have to implement
+ * Holding a variable name and value
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public interface CodeTemplate {
-    boolean isApplicable(FieldMapping fieldMapping);
-    String getExplanation();
-    List getCode(FieldMapping fieldMapping);
+public class MetadataVariable {
+    private String name;
+    private String value;
+
+    public MetadataVariable(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String toString() {
+        return name + "= \"" + value+"\"";
+    }
 }

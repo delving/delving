@@ -249,6 +249,7 @@ public class SipModel {
 
     public void setFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
+        filteredMappingModel.setFieldMapping(fieldMapping);
         if (fieldMapping == null) {
             filteredMappingModel.clearCode();
         }

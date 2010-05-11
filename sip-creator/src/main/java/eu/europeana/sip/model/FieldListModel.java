@@ -120,7 +120,7 @@ public class FieldListModel extends AbstractListModel {
             fireIntervalRemoved(this, 0, sizeBefore);
             nextVariable: for (EuropeanaField field : europeanaFieldList) {
                 for (FieldMapping fieldMapping : fieldMappingList) {
-                    for (String mappedField : fieldMapping.getToFields()) {
+                    for (String mappedField : fieldMapping.getOutputFields()) {
                         if (mappedField.equals(field.getFieldNameString())) {
                             continue nextVariable;
                         }

@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 
 public class FieldMapping {
     private static final Pattern FULL_PATTERN = Pattern.compile("^\\[([^]]+)\\] ==> \\[([^}]+)\\]$");
-    private List<String> fromVariables = new ArrayList<String>();
-    private List<String> toFields = new ArrayList<String>();
+    private List<String> inputVariables = new ArrayList<String>();
+    private List<String> outputFields = new ArrayList<String>();
     private List<String> codeLines = new ArrayList<String>();
 
     public FieldMapping() {
@@ -51,28 +51,28 @@ public class FieldMapping {
         }
         String from = matcher.group(1);
         String to = matcher.group(2);
-        fromVariables.addAll(Arrays.asList(from.split(",")));
-        toFields.addAll(Arrays.asList(to.split(",")));
+        inputVariables.addAll(Arrays.asList(from.split(",")));
+        outputFields.addAll(Arrays.asList(to.split(",")));
     }
 
     public void addFromVariable(String fromVariable) {
-        fromVariables.add(fromVariable);
+        inputVariables.add(fromVariable);
     }
 
     public void addToField(String toField) {
-        toFields.add(toField);
+        outputFields.add(toField);
     }
 
     public void addCodeLine(String codeLine) {
         codeLines.add(codeLine);
     }
 
-    public List<String> getFromVariables() {
-        return fromVariables;
+    public List<String> getInputVariables() {
+        return inputVariables;
     }
 
-    public List<String> getToFields() {
-        return toFields;
+    public List<String> getOutputFields() {
+        return outputFields;
     }
 
     public List<String> getCodeLines() {
@@ -99,7 +99,7 @@ public class FieldMapping {
 
     public String toString() {
         StringBuilder out = new StringBuilder("[");
-        Iterator<String> walk = fromVariables.iterator();
+        Iterator<String> walk = inputVariables.iterator();
         while (walk.hasNext()) {
             out.append(walk.next());
             if (walk.hasNext()) {
@@ -107,7 +107,7 @@ public class FieldMapping {
             }
         }
         out.append("] ==> [");
-        walk = toFields.iterator();
+        walk = outputFields.iterator();
         while (walk.hasNext()) {
             out.append(walk.next());
             if (walk.hasNext()) {
