@@ -61,7 +61,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private AnnotationProcessor annotationProcessor;
     private String portalName;
     private UserDao dashboardDao;
+    private DocIdWindowPagerFactory docIdWindowPagerFactory;
 
+    @Autowired
+    public void setDocIdWindowPagerFactory(DocIdWindowPagerFactory docIdWindowPagerFactory) {
+        this.docIdWindowPagerFactory = docIdWindowPagerFactory;
+    }
 
     @Value("#{europeanaProperties['portal.name']}")
     public void setPortalName(String portalName) {
@@ -353,7 +358,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private DocIdWindowPager createDocIdPager(Map<String, String[]> params) throws SolrServerException, EuropeanaQueryException {
             DocIdWindowPager idWindowPager = null;
             if (params.containsKey("query")) {
-                idWindowPager = DocIdWindowPagerImpl.fetchPager(params, createFromQueryParams(params), solrServer, idBean);
+                idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), solrServer, idBean);
             }
             return idWindowPager;
         }
