@@ -131,7 +131,7 @@ class MainProcessor(sip_task.SipTask):
                 idle_count = 0
             else:
                 idle_count += 1
-            if SIPMANAGER_DBG_LVL > 1 or idle_count > 10: # dont indicate idling too often...
+            if SIPMANAGER_DBG_LVL > 7 or idle_count > 10: # dont indicate idling too often...
                 idle_count = 0
                 if not models.ProcessMonitoring.objects.all().count():
                     print ' nothing to do for the moment...'

@@ -460,7 +460,7 @@ class UriValidateSave(sip_task.SipTask):
         else:
             base_fname = self.file_name_from_hash(self.uri.url_hash)
         org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
-        #self.make_needed_dirs(org_fname)
+
         try:
             fp = open(org_fname, 'w')
             fp.write(data)
