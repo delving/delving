@@ -147,12 +147,12 @@ public class RecordMapping implements Iterable<FieldMapping> {
             indent++;
         }
         for (FieldMapping mapping : fieldMappings) {
+            if (delimited) {
+                out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
+            }
             for (String codeLine : mapping.getCodeLines()) {
                 if (codeLine.endsWith("}")) {
                     indent--;
-                }
-                if (delimited) {
-                    out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
                 }
                 if (indented) {
                     for (int walk = 0; walk < indent; walk++) {
@@ -160,12 +160,12 @@ public class RecordMapping implements Iterable<FieldMapping> {
                     }
                 }
                 out.append(codeLine).append('\n');
-                if (delimited) {
-                    out.append(MAPPING_SUFFIX).append('\n');
-                }
                 if (codeLine.endsWith("{")) {
                     indent++;
                 }
+            }
+            if (delimited) {
+                out.append(MAPPING_SUFFIX).append('\n');
             }
         }
         if (wrappedInRecord) {
