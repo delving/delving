@@ -97,7 +97,7 @@ public class MetadataParser {
                             nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + MetadataRecord.sanitize(input.getLocalName());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
-                        if (input.getAttributeCount() > 0) {
+                        if (input.getAttributeCount() > 0) { // todo: sometimes java.lang.IllegalStateException: Current state not START_ELEMENT        
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
                                 node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));

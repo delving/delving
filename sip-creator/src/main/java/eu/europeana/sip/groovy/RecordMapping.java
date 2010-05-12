@@ -37,20 +37,28 @@ public class RecordMapping implements Iterable<FieldMapping> {
     private static final String MAPPING_SUFFIX = "//>>>";
     private static final String RECORD_PREFIX = "output.record {";
     private static final String RECORD_SUFFIX = "}";
+    private boolean singleFieldMapping;
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
     public interface Listener {
         void mappingAdded(FieldMapping fieldMapping);
+
         void mappingRemoved(FieldMapping fieldMapping);
+
         void mappingsRefreshed(RecordMapping recordMapping);
     }
 
     public RecordMapping() {
     }
 
-    public boolean hasFieldMapping() {
-        return !fieldMappings.isEmpty();
+    public FieldMapping getOnlyFieldMapping() {
+        if (fieldMappings.size() != 1) {
+            return null;
+        }
+        else {
+            return fieldMappings.get(0);
+        }
     }
 
     public void addListener(Listener listener) {
@@ -63,6 +71,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
     }
 
     public void setFieldMapping(FieldMapping fieldMapping) {
+        singleFieldMapping = true;
         fieldMappings.clear();
         fieldMappings.add(fieldMapping);
         fireRefresh();
@@ -110,39 +119,50 @@ public class RecordMapping implements Iterable<FieldMapping> {
         }
     }
 
-    public String getCode() {
+    public String getCodeForCompile() {
+        return getCode(true, false, false);
+    }
+
+    public static String getCodeForCompile(String code) {
         StringBuilder out = new StringBuilder();
         out.append(RECORD_PREFIX).append('\n');
-        for (FieldMapping mapping : fieldMappings) {
-            out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
-            for (String codeLine : mapping.getCodeLines()) {
-                out.append(codeLine).append('\n');
-            }
-            out.append(MAPPING_SUFFIX).append('\n');
-        }
+        out.append(code);
         out.append(RECORD_SUFFIX).append('\n');
         return out.toString();
     }
 
-    public String getCodeForDisplay(boolean wrappedInRecord) {
+    public String getCodeForPersistence() {
+        return getCode(true, false, true);
+    }
+
+    public String getCodeForDisplay() {
+        return getCode(!singleFieldMapping, true, false);
+    }
+
+    private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited) {
         StringBuilder out = new StringBuilder();
-        int indent;
+        int indent = 0;
         if (wrappedInRecord) {
             out.append(RECORD_PREFIX).append('\n');
-            indent = 1;
-        }
-        else {
-            indent = 0;
+            indent++;
         }
         for (FieldMapping mapping : fieldMappings) {
             for (String codeLine : mapping.getCodeLines()) {
                 if (codeLine.endsWith("}")) {
                     indent--;
                 }
-                for (int walk = 0; walk < indent; walk++) {
-                    out.append("   ");
+                if (delimited) {
+                    out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
+                }
+                if (indented) {
+                    for (int walk = 0; walk < indent; walk++) {
+                        out.append("   ");
+                    }
                 }
                 out.append(codeLine).append('\n');
+                if (delimited) {
+                    out.append(MAPPING_SUFFIX).append('\n');
+                }
                 if (codeLine.endsWith("{")) {
                     indent++;
                 }
@@ -155,7 +175,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
     }
 
     public String toString() {
-        return getCodeForDisplay(true);
+        return getCodeForDisplay();
     }
 
     private void fireRefresh() {

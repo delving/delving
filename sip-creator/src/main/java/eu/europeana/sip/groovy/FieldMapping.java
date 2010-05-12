@@ -75,6 +75,35 @@ public class FieldMapping {
         return outputFields;
     }
 
+    public boolean codeLooksLike(String code) {
+        Iterator<String> walk = codeLines.iterator();
+        for (String line : code.split("\n")) {
+            line = line.trim();
+            if (!line.isEmpty()) {
+                if (!walk.hasNext()) {
+                    return false;
+                }
+                String codeLine = walk.next();
+                if (!codeLine.equals(line)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void setCode(String code) {
+        codeLines.clear();
+        if (code != null) {
+            for (String line : code.split("\n")) {
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    codeLines.add(line);
+                }
+            }
+        }
+    }
+
     public List<String> getCodeLines() {
         return codeLines;
     }

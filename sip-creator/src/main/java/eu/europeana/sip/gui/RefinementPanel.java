@@ -22,6 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.model.MappingModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -33,15 +34,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * A Graphical interface for analysis
@@ -52,12 +59,14 @@ import java.awt.event.ActionListener;
 
 public class RefinementPanel extends JPanel {
     private SipModel sipModel;
+    private JTextArea groovyCodeArea;
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
     private JList mappingList;
 
     public RefinementPanel(SipModel sipModel) {
         super(new BorderLayout());
         this.sipModel = sipModel;
+        sipModel.getFieldMappingModel().setListener(new ModelStateListener());
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createLeftSide());
         split.setRightComponent(createRightSide());
@@ -104,7 +113,6 @@ public class RefinementPanel extends JPanel {
         return p;
     }
 
-
     private void wireUp() {
         removeMappingButton.addActionListener(new ActionListener() {
             @Override
@@ -129,6 +137,33 @@ public class RefinementPanel extends JPanel {
                 }
             }
         });
+        sipModel.getFieldMappingModel().getCodeDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                sipModel.getFieldMappingModel().setCode(groovyCodeArea.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                sipModel.getFieldMappingModel().setCode(groovyCodeArea.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                sipModel.getFieldMappingModel().setCode(groovyCodeArea.getText());
+            }
+        });
+        groovyCodeArea.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                sipModel.getFieldMappingModel().commitCode();
+                sipModel.getRecordMappingModel().refreshCode();
+            }
+        });
     }
 
     private JPanel createFieldMappingListPanel() {
@@ -143,8 +178,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createGroovyPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea groovyCodeArea = new JTextArea(sipModel.getFieldMappingModel().getCodeDocument());
-        groovyCodeArea.setEditable(false);
+        groovyCodeArea = new JTextArea(sipModel.getFieldMappingModel().getCodeDocument());
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll);
         return p;
@@ -167,4 +201,28 @@ public class RefinementPanel extends JPanel {
         return scroll;
     }
 
+    private class ModelStateListener implements MappingModel.Listener {
+
+        @Override
+        public void stateChanged(final MappingModel.State state) {
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    switch (state) {
+                        case PRISTINE:
+                        case UNCOMPILED:
+                            groovyCodeArea.setBackground(new Color(1.0f, 1.0f, 1.0f));
+                            break;
+                        case EDITED:
+                            groovyCodeArea.setBackground(new Color(1.0f, 1.0f, 0.9f));
+                            break;
+                        case ERROR:
+                            groovyCodeArea.setBackground(new Color(1.0f, 0.9f, 0.9f));
+                            break;
+                    }
+                }
+            });
+        }
+    }
 }

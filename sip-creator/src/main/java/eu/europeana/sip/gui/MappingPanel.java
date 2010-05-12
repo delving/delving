@@ -169,7 +169,7 @@ public class MappingPanel extends JPanel {
 //                CodeTemplate codeTemplate = generatorPanel.getSelectedTemplate();
 //                if (codeTemplate != null) {
 //                    fieldMapping.getCodeLines().clear();
-//                    for (Object line : codeTemplate.getCode(fieldMapping)) {
+//                    for (Object line : codeTemplate.getCodeForPersistence(fieldMapping)) {
 //                        fieldMapping.addCodeLine(line.toString());
 //                    }
 //                }

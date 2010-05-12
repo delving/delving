@@ -33,9 +33,12 @@ import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -50,17 +53,86 @@ import java.util.concurrent.Executors;
  */
 
 public class MappingModel implements SipModel.ParseListener, RecordMapping.Listener {
+    public final static int COMPILE_DELAY = 500;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Listener listener;
     private boolean multipleMappings;
     private RecordMapping recordMapping = new RecordMapping();
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
+    private CompileTimer compileTimer = new CompileTimer();
+    private State state = State.UNCOMPILED;
+    private String editedCode;
+
+    public enum State {
+        UNCOMPILED,
+        PRISTINE,
+        EDITED,
+        ERROR
+    }
+
+    public interface Listener {
+        void stateChanged(State state);
+    }
 
     public MappingModel(boolean multipleMappings) {
         this.multipleMappings = multipleMappings;
         this.recordMapping.addListener(this);
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    public void refreshCode() {
+        String code = recordMapping.getCodeForDisplay();
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
+        compileSoon();
+    }
+
+    public void compileSoon() {
+        compileTimer.triggerSoon();
+    }
+
+    public void setCode(String code) {
+        if (multipleMappings) {
+            throw new RuntimeException();
+        }
+        FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+        if (fieldMapping != null) {
+            if (!fieldMapping.codeLooksLike(code)) {
+                editedCode = code;
+                compileSoon();
+            }
+        }
+    }
+
+    public void commitCode() {
+        if (multipleMappings) {
+            throw new RuntimeException();
+        }
+        switch (state) {
+            case UNCOMPILED:
+            case PRISTINE:
+                break;
+            case EDITED:
+                if (editedCode != null) {
+                    FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                    if (fieldMapping != null) {
+                        recordMapping.iterator().next().setCode(editedCode);
+                        compileSoon();
+                    }
+                }
+                break;
+            case ERROR:
+                String code = recordMapping.getCodeForDisplay();
+                SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
+                state = State.PRISTINE;
+                break;
+        }
+        editedCode = null;
     }
 
     public RecordMapping getRecordMapping() {
@@ -71,11 +143,11 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
     public void updatedRecord(MetadataRecord metadataRecord) {
         this.metadataRecord = metadataRecord;
         if (metadataRecord == null) {
-            setDocumentContents(inputDocument, "No input");
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No input"));
         }
         else {
             updateInputDocument(metadataRecord);
-            compileCode();
+            compileSoon();
         }
     }
 
@@ -109,35 +181,27 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
     // === privates
 
     private void mappingChanged() {
-        String code = recordMapping.getCodeForDisplay(!multipleMappings);
+        String code = recordMapping.getCodeForDisplay();
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
         if (!multipleMappings) {
             updateInputDocument(metadataRecord);
         }
-        setDocumentContents(codeDocument, code);
-        compileCode();
-    }
-
-    private void compileCode() {
-        checkSwingThread();
-        if (metadataRecord != null && recordMapping != null) {
-            String code = recordMapping.getCode();
-            executor.execute(new CompilationRunner(code, metadataRecord, outputDocument));
-        }
-        else {
-            setDocumentContents(outputDocument, "");
-        }
+        editedCode = null;
+        compileSoon();
     }
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
         if (metadataRecord != null) {
             List<MetadataVariable> variables = metadataRecord.getVariables();
-            if (!multipleMappings && recordMapping.hasFieldMapping()) {
-                FieldMapping fieldMapping = recordMapping.iterator().next();
-                Iterator<MetadataVariable> walk = variables.iterator();
-                while (walk.hasNext()) {
-                    MetadataVariable variable = walk.next();
-                    if (!fieldMapping.getInputVariables().contains(variable.getName())) {
-                        walk.remove();
+            if (!multipleMappings) {
+                FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                if (fieldMapping != null) {
+                    Iterator<MetadataVariable> walk = variables.iterator();
+                    while (walk.hasNext()) {
+                        MetadataVariable variable = walk.next();
+                        if (!fieldMapping.getInputVariables().contains(variable.getName())) {
+                            walk.remove();
+                        }
                     }
                 }
             }
@@ -145,72 +209,95 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
             for (MetadataVariable variable : variables) {
                 out.append(variable.toString()).append('\n');
             }
-            setDocumentContents(inputDocument, out.toString());
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, out.toString()));
         }
         else {
-            setDocumentContents(inputDocument, "No Input");
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No Input"));
         }
     }
 
-    private static void setDocumentContents(Document document, String content) {
-        checkSwingThread();
-        int docLength = document.getLength();
-        try {
-            document.remove(0, docLength);
-            document.insertString(0, content, null);
-        }
-        catch (BadLocationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static class CompilationRunner implements Runnable {
-        private MetadataRecord metadataRecord;
-        private Document outputDocument;
-        private String code;
+    private class CompilationRunner implements Runnable {
         private StringWriter writer = new StringWriter();
-
-        private CompilationRunner(String code, MetadataRecord metadataRecord, Document outputDocument) {
-            this.code = code;
-            this.metadataRecord = metadataRecord;
-            this.outputDocument = outputDocument;
-        }
 
         @Override
         public void run() {
             try {
+                String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
                 MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
                 mappingScriptBinding.setRecord(metadataRecord);
                 new GroovyShell(mappingScriptBinding).evaluate(code);
                 compilationComplete(writer.toString());
+                changeState(editedCode == null ? State.PRISTINE : State.EDITED);
             }
             catch (MissingPropertyException e) {
                 compilationComplete("Missing Property: " + e.getProperty());
+                changeState(State.ERROR);
             }
             catch (MultipleCompilationErrorsException e) {
                 StringBuilder out = new StringBuilder();
                 for (Object o : e.getErrorCollector().getErrors()) {
                     SyntaxErrorMessage message = (SyntaxErrorMessage) o;
                     SyntaxException se = message.getCause();
-                    out.append(String.format("Line %d Column %d: %s%n", se.getLine(), se.getStartColumn(), se.getOriginalMessage()));
+                    // todo: lines will not match for !multipleFieldMappings
+                    out.append(String.format("Line %d: %s%n", se.getLine(), se.getOriginalMessage()));
                 }
-                compilationComplete(code + "\n" + out);
-//                compilationComplete(out.toString());
+                compilationComplete(out.toString());
+                changeState(State.ERROR);
             }
             catch (Exception e) {
                 StringWriter writer = new StringWriter();
                 e.printStackTrace(new PrintWriter(writer));
                 compilationComplete(writer.toString());
+                changeState(State.ERROR);
             }
         }
 
         private void compilationComplete(final String result) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    setDocumentContents(outputDocument, result);
-                }
-            });
+            SwingUtilities.invokeLater(new DocumentSetter(outputDocument, result));
+        }
+    }
+
+    private class DocumentSetter implements Runnable {
+
+        private Document document;
+        private String content;
+
+        private DocumentSetter(Document document, String content) {
+            this.document = document;
+            this.content = content;
+        }
+
+        @Override
+        public void run() {
+            int docLength = document.getLength();
+            try {
+                document.remove(0, docLength);
+                document.insertString(0, content, null);
+            }
+            catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private class CompileTimer implements ActionListener {
+        private Timer timer = new Timer(COMPILE_DELAY, this);
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            timer.stop();
+            executor.execute(new CompilationRunner());
+        }
+
+        public void triggerSoon() {
+            timer.restart();
+        }
+    }
+
+    private void changeState(State state) {
+        this.state = state;
+        if (listener != null) {
+            listener.stateChanged(this.state);
         }
     }
 

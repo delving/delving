@@ -236,14 +236,14 @@ public class SipModel {
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         recordMappingModel.getRecordMapping().add(fieldMapping);
-        String code = recordMappingModel.getRecordMapping().getCode();
+        String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         recordMappingModel.getRecordMapping().remove(fieldMapping);
-        String code = recordMappingModel.getRecordMapping().getCode();
+        String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
     }
 
