@@ -53,7 +53,7 @@ public class RecordPanel extends JPanel {
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Parsed Record"));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 10, 5, 10);
         gbc.gridx = gbc.gridy = 0;
         gbc.weightx = 1;
         gbc.weighty = 0.99;

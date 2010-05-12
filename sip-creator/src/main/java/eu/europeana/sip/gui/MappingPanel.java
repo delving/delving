@@ -35,6 +35,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -47,6 +48,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.List;
 
 /**
@@ -59,6 +62,7 @@ import java.util.List;
 public class MappingPanel extends JPanel {
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
+    private JTextField constantField = new JTextField("?");
     private JButton createMappingButton = new JButton("Create Mapping");
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
     private FieldMapping fieldMapping = new FieldMapping(null);
@@ -72,7 +76,7 @@ public class MappingPanel extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
         gbc.weightx = gbc.weighty = 1;
-        add(createVariablesPanel(), gbc);
+        add(createInputPanel(), gbc);
         gbc.gridx++;
         add(createFieldsPanel(), gbc);
         gbc.gridx = 0;
@@ -83,12 +87,26 @@ public class MappingPanel extends JPanel {
         wireUp();
     }
 
+    private JPanel createInputPanel() {
+        JPanel p = new JPanel(new BorderLayout(5,5));
+        p.add(createVariablesPanel(), BorderLayout.CENTER);
+        p.add(createConstantFieldPanel(), BorderLayout.SOUTH);
+        return p;
+    }
+
     private JPanel createVariablesPanel() {
-        JPanel p = new JPanel(new BorderLayout());
+        JPanel p = new JPanel(new BorderLayout(5,5));
         p.setBorder(BorderFactory.createTitledBorder("Variables"));
         variablesList = new JList(sipModel.getVariablesListModel());
         variablesList.setCellRenderer(new VariableListModel.CellRenderer());
-        p.add(scroll(variablesList));
+        p.add(scroll(variablesList), BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel createConstantFieldPanel() {
+        JPanel p = new JPanel(new BorderLayout(5,5));
+        p.setBorder(BorderFactory.createTitledBorder("Constant Value"));
+        p.add(constantField);
         return p;
     }
 
@@ -192,11 +210,22 @@ public class MappingPanel extends JPanel {
                 }
             }
         });
+        constantField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                variablesList.clearSelection();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+            }
+        });
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 AnalysisTree.Node node = (AnalysisTree.Node) variablesList.getSelectedValue();
                 sipModel.selectNode(node);
+                constantField.setText("?");
             }
         });
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -214,11 +243,21 @@ public class MappingPanel extends JPanel {
         }
         FieldMapping fresh = new FieldMapping(fieldMapping.getEuropeanaField());
         List<String> code = fresh.getCodeLines();
-        for (Object variable : variablesList.getSelectedValues()) {
-            AnalysisTree.Node node = (AnalysisTree.Node) variable;
-            code.add(String.format("for (x in %s) {", node.getVariableName()));
-            code.add(String.format("%s x", fresh.getEuropeanaField().getFieldNameString()));
-            code.add("}");
+        Object[] selected = variablesList.getSelectedValues();
+        if (selected.length == 0) {
+            code.add(String.format(
+                    "%s '%s'",
+                    fresh.getEuropeanaField().getFieldNameString(),
+                    constantField.getText()
+            ));
+        }
+        else {
+            for (Object variable : variablesList.getSelectedValues()) {
+                AnalysisTree.Node node = (AnalysisTree.Node) variable;
+                code.add(String.format("for (x in %s) {", node.getVariableName()));
+                code.add(String.format("%s x", fresh.getEuropeanaField().getFieldNameString()));
+                code.add("}");
+            }
         }
         sipModel.addFieldMapping(fresh);
     }
