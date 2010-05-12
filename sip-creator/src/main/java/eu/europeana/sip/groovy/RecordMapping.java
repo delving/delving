@@ -58,6 +58,10 @@ public class RecordMapping {
         }
     }
 
+    public RecordMapping(FieldMapping fieldMapping) {
+        fieldMappings.add(fieldMapping);
+    }
+
     public List<FieldMapping> getFieldMappings() {
         return fieldMappings;
     }
@@ -76,16 +80,22 @@ public class RecordMapping {
         return out.toString();
     }
 
-    public String getCodeForDisplay() {
+    public String getCodeForDisplay(boolean wrappedInRecord) {
         StringBuilder out = new StringBuilder();
-        out.append(RECORD_PREFIX).append('\n');
+        int indent;
+        if (wrappedInRecord) {
+            out.append(RECORD_PREFIX).append('\n');
+            indent = 1;
+        }
+        else {
+            indent = 0;
+        }
         for (FieldMapping mapping : fieldMappings) {
-            int indent = 1;
             for (String codeLine : mapping.getCodeLines()) {
                 if (codeLine.endsWith("}")) {
                     indent--;
                 }
-                for (int walk = 0; walk<indent; walk++) {
+                for (int walk = 0; walk < indent; walk++) {
                     out.append("   ");
                 }
                 out.append(codeLine).append('\n');
@@ -94,20 +104,14 @@ public class RecordMapping {
                 }
             }
         }
-        out.append(RECORD_SUFFIX).append('\n');
-        return out.toString();
-    }
-
-    public static String getCodeForCompile(String code) {
-        StringBuilder out = new StringBuilder();
-        out.append(RECORD_PREFIX).append('\n');
-        out.append(code);
-        out.append(RECORD_SUFFIX).append('\n');
+        if (wrappedInRecord) {
+            out.append(RECORD_SUFFIX).append('\n');
+        }
         return out.toString();
     }
 
     public String toString() {
-        return getCode();
+        return getCodeForDisplay(true);
     }
 
 }

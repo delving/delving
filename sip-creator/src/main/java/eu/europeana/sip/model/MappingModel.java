@@ -51,25 +51,28 @@ import java.util.concurrent.Executors;
 
 public class MappingModel implements SipModel.ParseListener {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private boolean wholeRecord;
-    private FieldMapping fieldMapping;
+    private boolean multipleMappings;
+    private RecordMapping recordMapping;
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
 
-    public MappingModel(boolean wholeRecord) {
-        this.wholeRecord = wholeRecord;
+    public MappingModel(boolean multipleMappings) {
+        this.multipleMappings = multipleMappings;
     }
 
-    public void setFieldMapping(FieldMapping fieldMapping) {
-        this.fieldMapping = fieldMapping;
-        updateInputDocument(metadataRecord);
-    }
-
-    public void setCode(String code) {
-        setDocumentContents(codeDocument, code);
-        compileCode();
+    public void setRecordMapping(RecordMapping recordMapping) {
+        this.recordMapping = recordMapping;
+        if (recordMapping == null) {
+            clearCode();
+        }
+        else {
+            setCode(recordMapping.getCodeForDisplay(multipleMappings));
+        }
+        if (!multipleMappings) {
+            updateInputDocument(metadataRecord); // because it's filtered
+        }
     }
 
     @Override
@@ -85,21 +88,27 @@ public class MappingModel implements SipModel.ParseListener {
     }
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
-        List<MetadataVariable> variables = metadataRecord.getVariables();
-        if (!wholeRecord && fieldMapping != null) {
-            Iterator<MetadataVariable> walk = variables.iterator();
-            while (walk.hasNext()) {
-                MetadataVariable variable = walk.next();
-                if (!fieldMapping.getInputVariables().contains(variable.getName())) {
-                    walk.remove();
+        if (metadataRecord != null) {
+            List<MetadataVariable> variables = metadataRecord.getVariables();
+            if (!multipleMappings && recordMapping != null) {
+                FieldMapping fieldMapping = recordMapping.getFieldMappings().get(0);
+                Iterator<MetadataVariable> walk = variables.iterator();
+                while (walk.hasNext()) {
+                    MetadataVariable variable = walk.next();
+                    if (!fieldMapping.getInputVariables().contains(variable.getName())) {
+                        walk.remove();
+                    }
                 }
             }
+            StringBuilder out = new StringBuilder();
+            for (MetadataVariable variable : variables) {
+                out.append(variable.toString()).append('\n');
+            }
+            setDocumentContents(inputDocument, out.toString());
         }
-        StringBuilder out = new StringBuilder();
-        for (MetadataVariable variable : variables) {
-            out.append(variable.toString()).append('\n');
+        else {
+            setDocumentContents(inputDocument, "No Input");
         }
-        setDocumentContents(inputDocument, out.toString());
     }
 
     public Document getInputDocument() {
@@ -116,19 +125,20 @@ public class MappingModel implements SipModel.ParseListener {
 
     // === privates
 
+    private void setCode(String code) {
+        setDocumentContents(codeDocument, code);
+        compileCode();
+    }
+
+    private void clearCode() {
+        setDocumentContents(codeDocument, "No Code");
+    }
+
     private void compileCode() {
         checkSwingThread();
-        if (metadataRecord != null) {
-            try {
-                String code = codeDocument.getText(0, codeDocument.getLength());
-                if (!wholeRecord) {
-                    code = RecordMapping.getCodeForCompile(code);
-                }
-                executor.execute(new CompilationRunner(code, metadataRecord, outputDocument));
-            }
-            catch (BadLocationException e) {
-                setDocumentContents(outputDocument, e.toString());
-            }
+        if (metadataRecord != null && recordMapping != null) {
+            String code = recordMapping.getCode();
+            executor.execute(new CompilationRunner(code, metadataRecord, outputDocument));
         }
         else {
             setDocumentContents(outputDocument, "");
@@ -145,10 +155,6 @@ public class MappingModel implements SipModel.ParseListener {
         catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void clearCode() {
-        setDocumentContents(codeDocument, "No Code");
     }
 
     private static class CompilationRunner implements Runnable {

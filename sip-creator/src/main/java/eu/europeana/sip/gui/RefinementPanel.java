@@ -22,6 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -51,7 +52,6 @@ import java.awt.event.ActionListener;
  */
 
 public class RefinementPanel extends JPanel {
-    private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
     private JList mappingList;
@@ -94,7 +94,7 @@ public class RefinementPanel extends JPanel {
         gbc.weightx = 1;
         gbc.weighty = 0.3;
         gbc.gridy = gbc.gridx = 0;
-        p.add(new RecordPanel(sipModel, sipModel.getFilteredMappingModel()), gbc);
+        p.add(new RecordPanel(sipModel, sipModel.getFieldMappingModel()), gbc);
         // converter choice
         gbc.gridy++;
         p.add(createGroovyPanel(), gbc);
@@ -121,13 +121,11 @@ public class RefinementPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-//                    groovyCodeArea.setText(fieldMapping.getCodeForDisplay());
-                    sipModel.setFieldMapping(fieldMapping);
+                    sipModel.getFieldMappingModel().setRecordMapping(new RecordMapping(fieldMapping));
                     removeMappingButton.setEnabled(true);
                 }
                 else {
-                    sipModel.setFieldMapping(null);
-//                    groovyCodeArea.setText("");
+                    sipModel.getFieldMappingModel().setRecordMapping(null);
                     removeMappingButton.setEnabled(false);
                 }
             }
@@ -146,7 +144,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createGroovyPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea groovyCodeArea = new JTextArea(sipModel.getFilteredMappingModel().getCodeDocument());
+        JTextArea groovyCodeArea = new JTextArea(sipModel.getFieldMappingModel().getCodeDocument());
         groovyCodeArea.setEditable(false);
         JScrollPane scroll = new JScrollPane(groovyCodeArea);
         p.add(scroll);
@@ -156,7 +154,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea outputArea = new JTextArea(sipModel.getFilteredMappingModel().getOutputDocument());
+        JTextArea outputArea = new JTextArea(sipModel.getFieldMappingModel().getOutputDocument());
         outputArea.setEditable(false);
         p.add(scroll(outputArea));
         return p;

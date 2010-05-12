@@ -60,7 +60,7 @@ public class NormPanel extends JPanel {
         gbc.weighty = 0.99;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
-        add(new RecordPanel(sipModel, sipModel.getFullMappingModel()), gbc);
+        add(new RecordPanel(sipModel, sipModel.getRecordMappingModel()), gbc);
         gbc.gridx++;
         add(createCodePanel(), gbc);
         gbc.gridx++;
@@ -76,7 +76,7 @@ public class NormPanel extends JPanel {
     private JPanel createCodePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea area = new JTextArea(sipModel.getFullMappingModel().getCodeDocument());
+        JTextArea area = new JTextArea(sipModel.getRecordMappingModel().getCodeDocument());
         area.setEditable(false);
         p.add(scroll(area));
         return p;
@@ -85,7 +85,7 @@ public class NormPanel extends JPanel {
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea area = new JTextArea(sipModel.getFullMappingModel().getOutputDocument());
+        JTextArea area = new JTextArea(sipModel.getRecordMappingModel().getOutputDocument());
         area.setEditable(false);
         p.add(scroll(area));
         return p;

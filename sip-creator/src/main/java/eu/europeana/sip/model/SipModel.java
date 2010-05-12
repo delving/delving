@@ -67,7 +67,6 @@ public class SipModel {
     private Normalizer normalizer;
     private AnalysisTree analysisTree;
     private RecordMapping recordMapping;
-    private FieldMapping fieldMapping;
     private RecordRoot recordRoot;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
@@ -79,7 +78,7 @@ public class SipModel {
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
-    private MappingModel fullMappingModel, filteredMappingModel;
+    private MappingModel recordMappingModel, fieldMappingModel;
 
     public interface UpdateListener {
         void updatedFileSet(FileSet fileSet);
@@ -100,10 +99,10 @@ public class SipModel {
     public SipModel() {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
-        fullMappingModel = new MappingModel(true);
-        parseListeners.add(fullMappingModel);
-        filteredMappingModel = new MappingModel(false);
-        parseListeners.add(filteredMappingModel);
+        recordMappingModel = new MappingModel(true);
+        parseListeners.add(recordMappingModel);
+        fieldMappingModel = new MappingModel(false);
+        parseListeners.add(fieldMappingModel);
     }
 
     public void setExceptionHandler(ExceptionHandler exceptionHandler) {
@@ -247,17 +246,6 @@ public class SipModel {
         return variableListModel.createUnmapped(fieldMappingListModel);
     }
 
-    public void setFieldMapping(FieldMapping fieldMapping) {
-        checkSwingThread();
-        filteredMappingModel.setFieldMapping(fieldMapping);
-        if (fieldMapping == null) {
-            filteredMappingModel.clearCode();
-        }
-        else {
-            filteredMappingModel.setCode(fieldMapping.getCodeForDisplay());
-        }
-    }
-
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         recordMapping.getFieldMappings().add(fieldMapping);
@@ -288,12 +276,12 @@ public class SipModel {
         executor.execute(new NextRecordFetcher());
     }
 
-    public MappingModel getFullMappingModel() {
-        return fullMappingModel;
+    public MappingModel getRecordMappingModel() {
+        return recordMappingModel;
     }
 
-    public MappingModel getFilteredMappingModel() {
-        return filteredMappingModel;
+    public MappingModel getFieldMappingModel() {
+        return fieldMappingModel;
     }
 
     // === privates
@@ -302,7 +290,7 @@ public class SipModel {
         checkSwingThread();
         recordMapping = new RecordMapping(recordMappingString);
         fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        fullMappingModel.setCode(recordMapping.getCodeForDisplay());
+        recordMappingModel.setRecordMapping(recordMapping);
     }
 
     private void setRecordRootInternal(RecordRoot recordRoot) {

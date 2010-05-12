@@ -74,8 +74,8 @@ public class MappingPanel extends JPanel {
         add(createVariablesPanel(), gbc);
         gbc.gridx++;
         add(createFieldsPanel(), gbc);
-//        gbc.gridx++;
-//        add(generatorPanel, gbc);
+//        gbc.gridx++; todo
+//        add(generatorPanel, gbc); todo
         gbc.gridx = 0;
         gbc.gridy++;
         add(createStatisticsPanel(), gbc);
