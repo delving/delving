@@ -239,7 +239,7 @@ public class SipModel {
     }
 
     public ListModel getUnmappedFieldListModel() {
-        return fieldListModel.createUnmapped(recordMappingModel.getRecordMapping());
+        return fieldListModel.getUnmapped(recordMappingModel.getRecordMapping());
     }
 
     public ListModel getVariablesListModel() {

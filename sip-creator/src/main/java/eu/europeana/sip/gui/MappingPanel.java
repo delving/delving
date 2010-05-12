@@ -27,6 +27,7 @@ import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.VariableListModel;
+import eu.europeana.sip.xml.MetadataRecord;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -50,6 +51,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,7 +65,8 @@ public class MappingPanel extends JPanel {
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
     private JTextField constantField = new JTextField("?");
-    private JButton createMappingButton = new JButton("Create Mapping");
+    private JButton createObviousButton = new JButton("Create Obvious Mappings");
+    private JButton createMappingButton = new JButton("Create Specific Mapping");
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
     private FieldMapping fieldMapping = new FieldMapping(null);
     private JList variablesList, mappingList, fieldList;
@@ -149,6 +152,8 @@ public class MappingPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = gbc.gridx = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        p.add(createObviousButton, gbc);
+        gbc.gridy++;
         createMappingButton.setEnabled(false);
         p.add(createMappingButton, gbc);
         gbc.gridy++;
@@ -179,6 +184,12 @@ public class MappingPanel extends JPanel {
     }
 
     private void wireUp() {
+        createObviousButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createObviousMappings();
+            }
+        });
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -260,5 +271,29 @@ public class MappingPanel extends JPanel {
             }
         }
         sipModel.addFieldMapping(fresh);
+    }
+
+    private void createObviousMappings() {
+        List<FieldMapping> obvious = new ArrayList<FieldMapping>();
+        for (int walkField=0; walkField<sipModel.getUnmappedFieldListModel().getSize(); walkField++) {
+            EuropeanaField field = (EuropeanaField) sipModel.getUnmappedFieldListModel().getElementAt(walkField);
+            FieldMapping fresh = new FieldMapping(field);
+            List<String> code = fresh.getCodeLines();
+            for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
+                AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
+                String nodeName = MetadataRecord.sanitize(node.toString());
+                if (nodeName.equals(field.getFieldNameString())) {
+                    code.add(String.format("for (x in %s) {", node.getVariableName()));
+                    code.add(String.format("%s x", field.getFieldNameString()));
+                    code.add("}");
+                }
+            }
+            if (!fresh.getCodeLines().isEmpty()) {
+                obvious.add(fresh);
+            }
+        }
+        for (FieldMapping fieldMapping : obvious) {
+            sipModel.addFieldMapping(fieldMapping);
+        }
     }
 }

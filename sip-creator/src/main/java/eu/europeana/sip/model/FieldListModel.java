@@ -44,6 +44,7 @@ import java.util.List;
 
 public class FieldListModel extends AbstractListModel {
     private List<EuropeanaField> europeanaFieldList;
+    private Unmapped unmapped;
 
     public FieldListModel(AnnotationProcessor annotationProcessor) {
         this.europeanaFieldList = new ArrayList<EuropeanaField>(annotationProcessor.getMappableFields());
@@ -55,9 +56,11 @@ public class FieldListModel extends AbstractListModel {
         });
     }
 
-    public ListModel createUnmapped(RecordMapping recordMapping) {
-        Unmapped unmapped = new Unmapped(recordMapping);
-        recordMapping.addListener(unmapped);
+    public ListModel getUnmapped(RecordMapping recordMapping) {
+        if (unmapped == null) {
+            unmapped = new Unmapped(recordMapping);
+            recordMapping.addListener(unmapped);
+        }
         return unmapped;
     }
 
@@ -116,7 +119,8 @@ public class FieldListModel extends AbstractListModel {
             int sizeBefore = getSize();
             unmappedFields.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            nextVariable: for (EuropeanaField field : europeanaFieldList) {
+            nextVariable:
+            for (EuropeanaField field : europeanaFieldList) {
                 for (FieldMapping fieldMapping : recordMapping) {
                     if (fieldMapping.getEuropeanaField() == field) {
                         continue nextVariable;

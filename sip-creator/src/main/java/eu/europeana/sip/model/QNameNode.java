@@ -124,11 +124,11 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         }
         Collections.reverse(path);
         StringBuilder out = new StringBuilder("input.");
-        Iterator<QNameNode> tagWalk = path.iterator();
-        while (tagWalk.hasNext()) {
-            String tag = tagWalk.next().toString();
-            out.append(MetadataRecord.sanitize(tag));
-            if (tagWalk.hasNext()) {
+        Iterator<QNameNode> nodeWalk = path.iterator();
+        while (nodeWalk.hasNext()) {
+            String nodeName = nodeWalk.next().toString();
+            out.append(MetadataRecord.sanitize(nodeName));
+            if (nodeWalk.hasNext()) {
                 out.append('.');
             }
         }
