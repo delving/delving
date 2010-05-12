@@ -43,6 +43,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,7 +56,7 @@ import java.util.concurrent.Executors;
 public class MappingModel implements SipModel.ParseListener, RecordMapping.Listener {
     public final static int COMPILE_DELAY = 500;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private Listener listener;
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
     private boolean multipleMappings;
     private RecordMapping recordMapping = new RecordMapping();
     private MetadataRecord metadataRecord;
@@ -70,7 +71,8 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         UNCOMPILED,
         PRISTINE,
         EDITED,
-        ERROR
+        ERROR,
+        COMMITTED
     }
 
     public interface Listener {
@@ -82,8 +84,8 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         this.recordMapping.addListener(this);
     }
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    public void addListener(Listener listener) {
+        listeners.add(listener);
     }
 
     public void refreshCode() {
@@ -122,6 +124,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
                     FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
                     if (fieldMapping != null) {
                         recordMapping.iterator().next().setCode(editedCode);
+                        changeState(State.COMMITTED);
                         compileSoon();
                     }
                 }
@@ -129,7 +132,6 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
             case ERROR:
                 String code = recordMapping.getCodeForDisplay();
                 SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
-                state = State.PRISTINE;
                 break;
         }
         editedCode = null;
@@ -183,6 +185,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
     private void mappingChanged() {
         String code = recordMapping.getCodeForDisplay();
         SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
+        changeState(State.PRISTINE);
         if (!multipleMappings) {
             updateInputDocument(metadataRecord);
         }
@@ -296,7 +299,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
 
     private void changeState(State state) {
         this.state = state;
-        if (listener != null) {
+        for (Listener listener : listeners) {
             listener.stateChanged(this.state);
         }
     }

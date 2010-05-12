@@ -66,7 +66,7 @@ public class RefinementPanel extends JPanel {
     public RefinementPanel(SipModel sipModel) {
         super(new BorderLayout());
         this.sipModel = sipModel;
-        sipModel.getFieldMappingModel().setListener(new ModelStateListener());
+        sipModel.getFieldMappingModel().addListener(new ModelStateListener());
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createLeftSide());
         split.setRightComponent(createRightSide());
@@ -219,6 +219,9 @@ public class RefinementPanel extends JPanel {
                             break;
                         case ERROR:
                             groovyCodeArea.setBackground(new Color(1.0f, 0.9f, 0.9f));
+                            break;
+                        case COMMITTED:
+                            groovyCodeArea.setBackground(new Color(0.9f, 1.0f, 0.9f));
                             break;
                     }
                 }

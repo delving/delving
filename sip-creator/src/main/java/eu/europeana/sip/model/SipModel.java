@@ -90,6 +90,16 @@ public class SipModel {
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         parseListeners.add(recordMappingModel);
         parseListeners.add(fieldMappingModel);
+        fieldMappingModel.addListener(new MappingModel.Listener() {
+
+            @Override
+            public void stateChanged(MappingModel.State state) {
+                if (state == MappingModel.State.COMMITTED) {
+                    String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
+                    executor.execute(new MappingSetter(code));
+                }
+            }
+        });
     }
 
     public void setExceptionHandler(ExceptionHandler exceptionHandler) {
