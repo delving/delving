@@ -49,10 +49,10 @@ import java.util.concurrent.Executors;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MappingModel implements SipModel.ParseListener {
+public class MappingModel implements SipModel.ParseListener, RecordMapping.Listener {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private boolean multipleMappings;
-    private RecordMapping recordMapping;
+    private RecordMapping recordMapping = new RecordMapping();
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
@@ -60,19 +60,11 @@ public class MappingModel implements SipModel.ParseListener {
 
     public MappingModel(boolean multipleMappings) {
         this.multipleMappings = multipleMappings;
+        this.recordMapping.addListener(this);
     }
 
-    public void setRecordMapping(RecordMapping recordMapping) {
-        this.recordMapping = recordMapping;
-        if (recordMapping == null) {
-            clearCode();
-        }
-        else {
-            setCode(recordMapping.getCodeForDisplay(multipleMappings));
-        }
-        if (!multipleMappings) {
-            updateInputDocument(metadataRecord); // because it's filtered
-        }
+    public RecordMapping getRecordMapping() {
+        return recordMapping;
     }
 
     @Override
@@ -87,28 +79,19 @@ public class MappingModel implements SipModel.ParseListener {
         }
     }
 
-    private void updateInputDocument(MetadataRecord metadataRecord) {
-        if (metadataRecord != null) {
-            List<MetadataVariable> variables = metadataRecord.getVariables();
-            if (!multipleMappings && recordMapping != null) {
-                FieldMapping fieldMapping = recordMapping.getFieldMappings().get(0);
-                Iterator<MetadataVariable> walk = variables.iterator();
-                while (walk.hasNext()) {
-                    MetadataVariable variable = walk.next();
-                    if (!fieldMapping.getInputVariables().contains(variable.getName())) {
-                        walk.remove();
-                    }
-                }
-            }
-            StringBuilder out = new StringBuilder();
-            for (MetadataVariable variable : variables) {
-                out.append(variable.toString()).append('\n');
-            }
-            setDocumentContents(inputDocument, out.toString());
-        }
-        else {
-            setDocumentContents(inputDocument, "No Input");
-        }
+    @Override
+    public void mappingAdded(FieldMapping fieldMapping) {
+        mappingChanged();
+    }
+
+    @Override
+    public void mappingRemoved(FieldMapping fieldMapping) {
+        mappingChanged();
+    }
+
+    @Override
+    public void mappingsRefreshed(RecordMapping recordMapping) {
+        mappingChanged();
     }
 
     public Document getInputDocument() {
@@ -125,13 +108,13 @@ public class MappingModel implements SipModel.ParseListener {
 
     // === privates
 
-    private void setCode(String code) {
+    private void mappingChanged() {
+        String code = recordMapping.getCodeForDisplay(!multipleMappings);
+        if (!multipleMappings) {
+            updateInputDocument(metadataRecord);
+        }
         setDocumentContents(codeDocument, code);
         compileCode();
-    }
-
-    private void clearCode() {
-        setDocumentContents(codeDocument, "No Code");
     }
 
     private void compileCode() {
@@ -142,6 +125,30 @@ public class MappingModel implements SipModel.ParseListener {
         }
         else {
             setDocumentContents(outputDocument, "");
+        }
+    }
+
+    private void updateInputDocument(MetadataRecord metadataRecord) {
+        if (metadataRecord != null) {
+            List<MetadataVariable> variables = metadataRecord.getVariables();
+            if (!multipleMappings && recordMapping.hasFieldMapping()) {
+                FieldMapping fieldMapping = recordMapping.iterator().next();
+                Iterator<MetadataVariable> walk = variables.iterator();
+                while (walk.hasNext()) {
+                    MetadataVariable variable = walk.next();
+                    if (!fieldMapping.getInputVariables().contains(variable.getName())) {
+                        walk.remove();
+                    }
+                }
+            }
+            StringBuilder out = new StringBuilder();
+            for (MetadataVariable variable : variables) {
+                out.append(variable.toString()).append('\n');
+            }
+            setDocumentContents(inputDocument, out.toString());
+        }
+        else {
+            setDocumentContents(inputDocument, "No Input");
         }
     }
 

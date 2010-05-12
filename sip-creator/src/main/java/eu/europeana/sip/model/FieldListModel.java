@@ -24,13 +24,12 @@ package eu.europeana.sip.model;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,10 +55,9 @@ public class FieldListModel extends AbstractListModel {
         });
     }
 
-    public ListModel createUnmapped(FieldMappingListModel fieldMappingListModel) {
-        Unmapped unmapped = new Unmapped(fieldMappingListModel.getList());
-        fieldMappingListModel.addListDataListener(unmapped);
-        this.addListDataListener(unmapped);
+    public ListModel createUnmapped(RecordMapping recordMapping) {
+        Unmapped unmapped = new Unmapped(recordMapping);
+        recordMapping.addListener(unmapped);
         return unmapped;
     }
 
@@ -81,12 +79,12 @@ public class FieldListModel extends AbstractListModel {
         }
     }
 
-    public class Unmapped extends AbstractListModel implements ListDataListener {
-        private List<FieldMapping> fieldMappingList;
+    public class Unmapped extends AbstractListModel implements RecordMapping.Listener {
+        private RecordMapping recordMapping;
         private List<EuropeanaField> unmappedFields = new ArrayList<EuropeanaField>();
 
-        public Unmapped(List<FieldMapping> fieldMappingList) {
-            this.fieldMappingList = fieldMappingList;
+        public Unmapped(RecordMapping recordMapping) {
+            this.recordMapping = recordMapping;
         }
 
         @Override
@@ -100,17 +98,17 @@ public class FieldListModel extends AbstractListModel {
         }
 
         @Override
-        public void intervalAdded(ListDataEvent e) {
+        public void mappingAdded(FieldMapping fieldMapping) {
             refresh();
         }
 
         @Override
-        public void intervalRemoved(ListDataEvent e) {
+        public void mappingRemoved(FieldMapping fieldMapping) {
             refresh();
         }
 
         @Override
-        public void contentsChanged(ListDataEvent e) {
+        public void mappingsRefreshed(RecordMapping recordMapping) {
             refresh();
         }
 
@@ -119,7 +117,7 @@ public class FieldListModel extends AbstractListModel {
             unmappedFields.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             nextVariable: for (EuropeanaField field : europeanaFieldList) {
-                for (FieldMapping fieldMapping : fieldMappingList) {
+                for (FieldMapping fieldMapping : recordMapping) {
                     for (String mappedField : fieldMapping.getOutputFields()) {
                         if (mappedField.equals(field.getFieldNameString())) {
                             continue nextVariable;
@@ -130,5 +128,6 @@ public class FieldListModel extends AbstractListModel {
             }
             fireIntervalAdded(this, 0, getSize());
         }
+
     }
 }

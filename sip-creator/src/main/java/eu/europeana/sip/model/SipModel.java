@@ -23,29 +23,18 @@ package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.MappingScriptBinding;
-import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.Normalizer;
-import groovy.lang.GroovyShell;
-import groovy.lang.MissingPropertyException;
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
-import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
-import org.codehaus.groovy.syntax.SyntaxException;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -66,19 +55,19 @@ public class SipModel {
     private AnalysisParser analysisParser;
     private Normalizer normalizer;
     private AnalysisTree analysisTree;
-    private RecordMapping recordMapping;
     private RecordRoot recordRoot;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
+    private MappingModel recordMappingModel = new MappingModel(true);
+    private MappingModel fieldMappingModel = new MappingModel(false);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
-    private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel();
+    private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel(recordMappingModel.getRecordMapping());
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
-    private MappingModel recordMappingModel, fieldMappingModel;
 
     public interface UpdateListener {
         void updatedFileSet(FileSet fileSet);
@@ -99,9 +88,7 @@ public class SipModel {
     public SipModel() {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
-        recordMappingModel = new MappingModel(true);
         parseListeners.add(recordMappingModel);
-        fieldMappingModel = new MappingModel(false);
         parseListeners.add(fieldMappingModel);
     }
 
@@ -122,7 +109,7 @@ public class SipModel {
         this.fileSet = fileSet;
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
-        setRecordMapping(fileSet.getMapping());
+        recordMappingModel.getRecordMapping().setCode(fileSet.getMapping());
         createMetadataParser();
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedFileSet(fileSet);
@@ -235,7 +222,7 @@ public class SipModel {
     }
 
     public ListModel getUnmappedFieldListModel() {
-        return fieldListModel.createUnmapped(fieldMappingListModel);
+        return fieldListModel.createUnmapped(recordMappingModel.getRecordMapping());
     }
 
     public ListModel getVariablesListModel() {
@@ -243,22 +230,20 @@ public class SipModel {
     }
 
     public ListModel getUnmappedVariablesListModel() {
-        return variableListModel.createUnmapped(fieldMappingListModel);
+        return variableListModel.createUnmapped(recordMappingModel.getRecordMapping());
     }
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordMapping.getFieldMappings().add(fieldMapping);
-        String code = recordMapping.getCode();
-        setRecordMapping(code);
+        recordMappingModel.getRecordMapping().add(fieldMapping);
+        String code = recordMappingModel.getRecordMapping().getCode();
         executor.execute(new MappingSetter(code));
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordMapping.getFieldMappings().remove(fieldMapping);
-        String code = recordMapping.getCode();
-        setRecordMapping(code);
+        recordMappingModel.getRecordMapping().remove(fieldMapping);
+        String code = recordMappingModel.getRecordMapping().getCode();
         executor.execute(new MappingSetter(code));
     }
 
@@ -286,12 +271,10 @@ public class SipModel {
 
     // === privates
 
-    private void setRecordMapping(String recordMappingString) {
-        checkSwingThread();
-        recordMapping = new RecordMapping(recordMappingString);
-        fieldMappingListModel.setList(recordMapping.getFieldMappings());
-        recordMappingModel.setRecordMapping(recordMapping);
-    }
+//    private void setRecordMapping(String recordMappingString) {
+//        checkSwingThread();
+//        recordMapping.setCode(recordMappingString);
+//    }
 
     private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
@@ -408,67 +391,6 @@ public class SipModel {
         @Override
         public void run() {
             fileSet.setMapping(mapping);
-        }
-    }
-
-    private static void setDocumentContents(Document document, String content) {
-        checkSwingThread();
-        int docLength = document.getLength();
-        try {
-            document.remove(0, docLength);
-            document.insertString(0, content, null);
-        }
-        catch (BadLocationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static class CompilationRunner implements Runnable {
-        private MetadataRecord metadataRecord;
-        private Document outputDocument;
-        private String code;
-        private StringWriter writer = new StringWriter();
-
-        private CompilationRunner(String code, MetadataRecord metadataRecord, Document outputDocument) {
-            this.code = code;
-            this.metadataRecord = metadataRecord;
-            this.outputDocument = outputDocument;
-        }
-
-        @Override
-        public void run() {
-            try {
-                MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
-                mappingScriptBinding.setRecord(metadataRecord);
-                new GroovyShell(mappingScriptBinding).evaluate(code);
-                compilationComplete(writer.toString());
-            }
-            catch (MissingPropertyException e) {
-                compilationComplete("Missing Property: " + e.getProperty());
-            }
-            catch (MultipleCompilationErrorsException e) {
-                StringBuilder out = new StringBuilder();
-                for (Object o : e.getErrorCollector().getErrors()) {
-                    SyntaxErrorMessage message = (SyntaxErrorMessage) o;
-                    SyntaxException se = message.getCause();
-                    out.append(String.format("Line %d Column %d: %s%n", se.getLine(), se.getStartColumn(), se.getOriginalMessage()));
-                }
-                compilationComplete(out.toString());
-            }
-            catch (Exception e) {
-                StringWriter writer = new StringWriter();
-                e.printStackTrace(new PrintWriter(writer));
-                compilationComplete(writer.toString());
-            }
-        }
-
-        private void compilationComplete(final String result) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    setDocumentContents(outputDocument, result);
-                }
-            });
         }
     }
 

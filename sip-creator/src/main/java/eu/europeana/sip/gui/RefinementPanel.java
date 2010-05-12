@@ -22,7 +22,6 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -121,11 +120,11 @@ public class RefinementPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    sipModel.getFieldMappingModel().setRecordMapping(new RecordMapping(fieldMapping));
+                    sipModel.getFieldMappingModel().getRecordMapping().setFieldMapping(fieldMapping);
                     removeMappingButton.setEnabled(true);
                 }
                 else {
-                    sipModel.getFieldMappingModel().setRecordMapping(null);
+                    sipModel.getFieldMappingModel().getRecordMapping().clear();
                     removeMappingButton.setEnabled(false);
                 }
             }

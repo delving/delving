@@ -22,6 +22,7 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -40,7 +41,6 @@ import java.util.List;
  */
 
 public class VariableListModel extends AbstractListModel {
-    private static final long serialVersionUID = 939393939;
     private List<AnalysisTree.Node> variableList = new ArrayList<AnalysisTree.Node>();
 
     public void setVariableList(List<AnalysisTree.Node> variableList) {
@@ -55,9 +55,9 @@ public class VariableListModel extends AbstractListModel {
         fireIntervalRemoved(this, 0, size);
     }
 
-    public ListModel createUnmapped(FieldMappingListModel fieldMappingListModel) {
-        Unmapped unmapped = new Unmapped(fieldMappingListModel.getList());
-        fieldMappingListModel.addListDataListener(unmapped);
+    public ListModel createUnmapped(RecordMapping recordMapping) {
+        Unmapped unmapped = new Unmapped(recordMapping);
+        recordMapping.addListener(unmapped);
         this.addListDataListener(unmapped);
         return unmapped;
     }
@@ -72,12 +72,12 @@ public class VariableListModel extends AbstractListModel {
         return variableList.get(index);
     }
 
-    public class Unmapped extends AbstractListModel implements ListDataListener {
-        private List<FieldMapping> fieldMappingList;
+    public class Unmapped extends AbstractListModel implements RecordMapping.Listener, ListDataListener {
+        private RecordMapping recordMapping;
         private List<AnalysisTree.Node> unmappedVariables = new ArrayList<AnalysisTree.Node>();
 
-        public Unmapped(List<FieldMapping> fieldMappingList) {
-            this.fieldMappingList = fieldMappingList;
+        public Unmapped(RecordMapping recordMapping) {
+            this.recordMapping = recordMapping;
         }
 
         @Override
@@ -88,6 +88,21 @@ public class VariableListModel extends AbstractListModel {
         @Override
         public Object getElementAt(int index) {
             return unmappedVariables.get(index);
+        }
+
+        @Override
+        public void mappingAdded(FieldMapping fieldMapping) {
+            refresh();
+        }
+
+        @Override
+        public void mappingRemoved(FieldMapping fieldMapping) {
+            refresh();
+        }
+
+        @Override
+        public void mappingsRefreshed(RecordMapping recordMapping) {
+            refresh();
         }
 
         @Override
@@ -104,14 +119,14 @@ public class VariableListModel extends AbstractListModel {
         public void contentsChanged(ListDataEvent e) {
             refresh();
         }
-
+        
         private void refresh() {
             int sizeBefore = getSize();
             unmappedVariables.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             nextVariable:
             for (AnalysisTree.Node variable : variableList) {
-                for (FieldMapping fieldMapping : fieldMappingList) {
+                for (FieldMapping fieldMapping : recordMapping) {
                     for (String mappedVariable : fieldMapping.getInputVariables()) {
                         if (mappedVariable.equals(variable.getVariableName())) {
                             continue nextVariable;
@@ -122,6 +137,7 @@ public class VariableListModel extends AbstractListModel {
             }
             fireIntervalAdded(this, 0, getSize());
         }
+
     }
 
     public static class CellRenderer extends DefaultListCellRenderer {

@@ -21,7 +21,9 @@
 package eu.europeana.sip.groovy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Stores and retrieves snippets in a file separated by a delimiter. File structure looks like this
@@ -30,14 +32,44 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class RecordMapping {
+public class RecordMapping implements Iterable<FieldMapping> {
     private static final String MAPPING_PREFIX = "//<<<";
     private static final String MAPPING_SUFFIX = "//>>>";
     private static final String RECORD_PREFIX = "output.record {";
     private static final String RECORD_SUFFIX = "}";
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
-    public RecordMapping(String code) {
+    public interface Listener {
+        void mappingAdded(FieldMapping fieldMapping);
+        void mappingRemoved(FieldMapping fieldMapping);
+        void mappingsRefreshed(RecordMapping recordMapping);
+    }
+
+    public RecordMapping() {
+    }
+
+    public boolean hasFieldMapping() {
+        return !fieldMappings.isEmpty();
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public void clear() {
+        fieldMappings.clear();
+        fireRefresh();
+    }
+
+    public void setFieldMapping(FieldMapping fieldMapping) {
+        fieldMappings.clear();
+        fieldMappings.add(fieldMapping);
+        fireRefresh();
+    }
+
+    public void setCode(String code) {
+        fieldMappings.clear();
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
             if (line.startsWith(MAPPING_PREFIX)) {
@@ -56,14 +88,26 @@ public class RecordMapping {
                 }
             }
         }
+        fireRefresh();
     }
 
-    public RecordMapping(FieldMapping fieldMapping) {
+    @Override
+    public Iterator<FieldMapping> iterator() {
+        return fieldMappings.iterator();
+    }
+
+    public void add(FieldMapping fieldMapping) {
         fieldMappings.add(fieldMapping);
+        for (Listener listener : listeners) {
+            listener.mappingAdded(fieldMapping);
+        }
     }
 
-    public List<FieldMapping> getFieldMappings() {
-        return fieldMappings;
+    public void remove(FieldMapping fieldMapping) {
+        fieldMappings.remove(fieldMapping);
+        for (Listener listener : listeners) {
+            listener.mappingRemoved(fieldMapping);
+        }
     }
 
     public String getCode() {
@@ -112,6 +156,12 @@ public class RecordMapping {
 
     public String toString() {
         return getCodeForDisplay(true);
+    }
+
+    private void fireRefresh() {
+        for (Listener listener : listeners) {
+            listener.mappingsRefreshed(this);
+        }
     }
 
 }

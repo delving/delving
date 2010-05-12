@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +123,11 @@ public class SipCreatorGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
-        sipCreatorGUI.setVisible(true);
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
+                sipCreatorGUI.setVisible(true);
+            }
+        });
     }
 }

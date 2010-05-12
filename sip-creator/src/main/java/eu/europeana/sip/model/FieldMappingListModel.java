@@ -22,6 +22,7 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import java.util.ArrayList;
@@ -33,23 +34,12 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class FieldMappingListModel extends AbstractListModel {
+public class FieldMappingListModel extends AbstractListModel implements RecordMapping.Listener {
     private List<FieldMapping> list = new ArrayList<FieldMapping>();
 
-    public void setList(List<FieldMapping> list) {
-        clear();
-        this.list.addAll(list);
-        fireIntervalAdded(this, 0, getSize());
-    }
-
-    public void clear() {
-        int size = getSize();
-        this.list.clear();
-        fireIntervalRemoved(this, 0, size);
-    }
-
-    public List<FieldMapping> getList() {
-        return list;
+    public FieldMappingListModel(RecordMapping recordMapping) {
+        recordMapping.addListener(this);
+        refreshList(recordMapping);
     }
 
     @Override
@@ -60,6 +50,43 @@ public class FieldMappingListModel extends AbstractListModel {
     @Override
     public Object getElementAt(int index) {
         return list.get(index);
+    }
+
+    @Override
+    public void mappingAdded(FieldMapping fieldMapping) {
+        int index = list.size();
+        list.add(fieldMapping);
+        fireIntervalAdded(this, index, index);
+    }
+
+    @Override
+    public void mappingRemoved(FieldMapping fieldMapping) {
+        int index = list.indexOf(fieldMapping);
+        if (index >= 0) {
+            list.remove(index);
+            fireIntervalRemoved(this, index, index);
+        }
+    }
+
+    @Override
+    public void mappingsRefreshed(RecordMapping recordMapping) {
+        refreshList(recordMapping);
+    }
+
+    private void refreshList(RecordMapping recordMapping) {
+        clear();
+        for (FieldMapping fieldMapping : recordMapping) {
+            list.add(fieldMapping);
+        }
+        fireIntervalAdded(this, 0, getSize());
+    }
+
+    private void clear() {
+        int size = getSize();
+        if (size > 0) {
+            this.list.clear();
+            fireIntervalRemoved(this, 0, size);
+        }
     }
 
 }
