@@ -92,7 +92,7 @@
                 <#-- only pages with title are indexed -->
                 <#if metaTitle?? && metaTitle?length &gt; 3>
                     <meta name="robots" content="nofollow"/>
-                <#else>    
+                <#else>
                     <meta name="robots" content="noindex, nofollow"/>
                 </#if>
                 <#if metaDescription??>
