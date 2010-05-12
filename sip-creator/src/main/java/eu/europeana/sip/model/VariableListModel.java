@@ -21,15 +21,9 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.RecordMapping;
-
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,13 +49,6 @@ public class VariableListModel extends AbstractListModel {
         fireIntervalRemoved(this, 0, size);
     }
 
-    public ListModel createUnmapped(RecordMapping recordMapping) {
-        Unmapped unmapped = new Unmapped(recordMapping);
-        recordMapping.addListener(unmapped);
-        this.addListDataListener(unmapped);
-        return unmapped;
-    }
-
     @Override
     public int getSize() {
         return variableList.size();
@@ -70,74 +57,6 @@ public class VariableListModel extends AbstractListModel {
     @Override
     public Object getElementAt(int index) {
         return variableList.get(index);
-    }
-
-    public class Unmapped extends AbstractListModel implements RecordMapping.Listener, ListDataListener {
-        private RecordMapping recordMapping;
-        private List<AnalysisTree.Node> unmappedVariables = new ArrayList<AnalysisTree.Node>();
-
-        public Unmapped(RecordMapping recordMapping) {
-            this.recordMapping = recordMapping;
-        }
-
-        @Override
-        public int getSize() {
-            return unmappedVariables.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return unmappedVariables.get(index);
-        }
-
-        @Override
-        public void mappingAdded(FieldMapping fieldMapping) {
-            refresh();
-        }
-
-        @Override
-        public void mappingRemoved(FieldMapping fieldMapping) {
-            refresh();
-        }
-
-        @Override
-        public void mappingsRefreshed(RecordMapping recordMapping) {
-            refresh();
-        }
-
-        @Override
-        public void intervalAdded(ListDataEvent e) {
-            refresh();
-        }
-
-        @Override
-        public void intervalRemoved(ListDataEvent e) {
-            refresh();
-        }
-
-        @Override
-        public void contentsChanged(ListDataEvent e) {
-            refresh();
-        }
-        
-        private void refresh() {
-            int sizeBefore = getSize();
-            unmappedVariables.clear();
-            fireIntervalRemoved(this, 0, sizeBefore);
-            nextVariable:
-            for (AnalysisTree.Node variable : variableList) {
-                for (FieldMapping fieldMapping : recordMapping) {
-                    for (String mappedVariable : fieldMapping.getInputVariables()) {
-                        if (mappedVariable.equals(variable.getVariableName())) {
-                            continue nextVariable;
-                        }
-                    }
-                }
-                unmappedVariables.add(variable);
-            }
-            fireIntervalAdded(this, 0, getSize());
-        }
-
     }
 
     public static class CellRenderer extends DefaultListCellRenderer {

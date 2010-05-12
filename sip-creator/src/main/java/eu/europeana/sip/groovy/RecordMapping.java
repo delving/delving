@@ -20,9 +20,12 @@
  */
 package eu.europeana.sip.groovy;
 
+import eu.europeana.definitions.annotations.EuropeanaField;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -77,13 +80,17 @@ public class RecordMapping implements Iterable<FieldMapping> {
         fireRefresh();
     }
 
-    public void setCode(String code) {
+    public void setCode(String code, Map<String, EuropeanaField> fieldMap) {
         fieldMappings.clear();
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
             if (line.startsWith(MAPPING_PREFIX)) {
-                String mappingSpec = line.substring(MAPPING_PREFIX.length()).trim();
-                fieldMapping = new FieldMapping(mappingSpec);
+                String europeanaFieldName = line.substring(MAPPING_PREFIX.length()).trim();
+                EuropeanaField europeanaField = fieldMap.get(europeanaFieldName);
+                if (europeanaField == null) {
+                    throw new RuntimeException("Cannot find "+europeanaFieldName); // todo: better response
+                }
+                fieldMapping = new FieldMapping(europeanaField);
             }
             else if (line.startsWith(MAPPING_SUFFIX)) {
                 if (fieldMapping != null) {
@@ -93,7 +100,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
             }
             else {
                 if (fieldMapping != null) {
-                    fieldMapping.addCodeLine(line.trim());
+                    fieldMapping.getCodeLines().add(line.trim());
                 }
             }
         }

@@ -22,6 +22,7 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
@@ -37,6 +38,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,6 +61,7 @@ public class SipModel {
     private RecordRoot recordRoot;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
+    private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private MappingModel recordMappingModel = new MappingModel(true);
     private MappingModel fieldMappingModel = new MappingModel(false);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
@@ -112,6 +116,9 @@ public class SipModel {
 
     public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
         this.fieldListModel = new FieldListModel(annotationProcessor);
+        for (EuropeanaField field : annotationProcessor.getMappableFields()) {
+            europeanaFieldMap.put(field.getFieldNameString(), field);
+        }
     }
 
     public void setFileSet(FileSet fileSet) {
@@ -119,7 +126,7 @@ public class SipModel {
         this.fileSet = fileSet;
         setStatisticsList(fileSet.getStatistics());
         setRecordRootInternal(fileSet.getRecordRoot());
-        recordMappingModel.getRecordMapping().setCode(fileSet.getMapping());
+        recordMappingModel.getRecordMapping().setCode(fileSet.getMapping(), europeanaFieldMap);
         createMetadataParser();
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedFileSet(fileSet);
@@ -237,10 +244,6 @@ public class SipModel {
 
     public ListModel getVariablesListModel() {
         return variableListModel;
-    }
-
-    public ListModel getUnmappedVariablesListModel() {
-        return variableListModel.createUnmapped(recordMappingModel.getRecordMapping());
     }
 
     public void addFieldMapping(FieldMapping fieldMapping) {

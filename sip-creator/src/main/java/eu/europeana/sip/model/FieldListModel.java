@@ -118,10 +118,8 @@ public class FieldListModel extends AbstractListModel {
             fireIntervalRemoved(this, 0, sizeBefore);
             nextVariable: for (EuropeanaField field : europeanaFieldList) {
                 for (FieldMapping fieldMapping : recordMapping) {
-                    for (String mappedField : fieldMapping.getOutputFields()) {
-                        if (mappedField.equals(field.getFieldNameString())) {
-                            continue nextVariable;
-                        }
+                    if (fieldMapping.getEuropeanaField() == field) {
+                        continue nextVariable;
                     }
                 }
                 unmappedFields.add(field);

@@ -47,6 +47,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 /**
  * A Graphical interface for analysis
@@ -60,7 +61,7 @@ public class MappingPanel extends JPanel {
     private SipModel sipModel;
     private JButton createMappingButton = new JButton("Create Mapping");
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
-    private FieldMapping fieldMapping = new FieldMapping();
+    private FieldMapping fieldMapping = new FieldMapping(null);
     private JList variablesList, mappingList, fieldList;
 
     public MappingPanel(SipModel sipModel) {
@@ -74,21 +75,18 @@ public class MappingPanel extends JPanel {
         add(createVariablesPanel(), gbc);
         gbc.gridx++;
         add(createFieldsPanel(), gbc);
-//        gbc.gridx++; todo
-//        add(generatorPanel, gbc); todo
         gbc.gridx = 0;
         gbc.gridy++;
         add(createStatisticsPanel(), gbc);
         gbc.gridx++;
-//        gbc.gridwidth = 2;
         add(createFieldMappingListPanel(), gbc);
         wireUp();
     }
 
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unmapped Variables"));
-        variablesList = new JList(sipModel.getUnmappedVariablesListModel());
+        p.setBorder(BorderFactory.createTitledBorder("Variables"));
+        variablesList = new JList(sipModel.getVariablesListModel());
         variablesList.setCellRenderer(new VariableListModel.CellRenderer());
         p.add(scroll(variablesList));
         return p;
@@ -99,6 +97,7 @@ public class MappingPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Unmapped Fields"));
         fieldList = new JList(sipModel.getUnmappedFieldListModel());
         fieldList.setCellRenderer(new FieldListModel.CellRenderer());
+        fieldList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         p.add(scroll(fieldList));
         return p;
     }
@@ -165,15 +164,7 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // todo: generate some code
-//                CodeTemplate codeTemplate = generatorPanel.getSelectedTemplate();
-//                if (codeTemplate != null) {
-//                    fieldMapping.getCodeLines().clear();
-//                    for (Object line : codeTemplate.getCodeForPersistence(fieldMapping)) {
-//                        fieldMapping.addCodeLine(line.toString());
-//                    }
-//                }
-                sipModel.addFieldMapping(fieldMapping);
+                addFieldMapping();
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
@@ -206,23 +197,29 @@ public class MappingPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 AnalysisTree.Node node = (AnalysisTree.Node) variablesList.getSelectedValue();
                 sipModel.selectNode(node);
-                fieldMapping.getInputVariables().clear();
-                for (Object variable : variablesList.getSelectedValues()) {
-                    fieldMapping.addFromVariable(((AnalysisTree.Node) variable).getVariableName());
-                }
-//                createMappingButton.setEnabled(generatorPanel.refresh(Generator.getTemplates(fieldMapping)));
             }
         });
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                fieldMapping.getOutputFields().clear();
-                for (Object field : fieldList.getSelectedValues()) {
-                    fieldMapping.addToField(((EuropeanaField) field).getFieldNameString());
-                }
-//                createMappingButton.setEnabled(generatorPanel.refresh(Generator.getTemplates(fieldMapping)));
+                fieldMapping.setEuropeanaField((EuropeanaField) fieldList.getSelectedValue());
+                createMappingButton.setEnabled(fieldMapping.getEuropeanaField() != null);
             }
         });
     }
 
+    private void addFieldMapping() {
+        if (fieldMapping.getEuropeanaField() == null) {
+            throw new RuntimeException();
+        }
+        FieldMapping fresh = new FieldMapping(fieldMapping.getEuropeanaField());
+        List<String> code = fresh.getCodeLines();
+        for (Object variable : variablesList.getSelectedValues()) {
+            AnalysisTree.Node node = (AnalysisTree.Node) variable;
+            code.add(String.format("for (x in %s) {", node.getVariableName()));
+            code.add(String.format("%s x", fresh.getEuropeanaField().getFieldNameString()));
+            code.add("}");
+        }
+        sipModel.addFieldMapping(fresh);
+    }
 }

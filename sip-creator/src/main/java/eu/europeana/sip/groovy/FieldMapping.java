@@ -21,12 +21,11 @@
 
 package eu.europeana.sip.groovy;
 
+import eu.europeana.definitions.annotations.EuropeanaField;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Map one or more fields to one or more destinatiopn fields using a conversion and the resulting
@@ -36,43 +35,15 @@ import java.util.regex.Pattern;
  */
 
 public class FieldMapping {
-    private static final Pattern FULL_PATTERN = Pattern.compile("^\\[([^]]+)\\] ==> \\[([^}]+)\\]$");
-    private List<String> inputVariables = new ArrayList<String>();
-    private List<String> outputFields = new ArrayList<String>();
+    private EuropeanaField europeanaField;
     private List<String> codeLines = new ArrayList<String>();
 
-    public FieldMapping() {
+    public FieldMapping(EuropeanaField europeanaField) {
+        this.europeanaField = europeanaField;
     }
 
-    public FieldMapping(String string) {
-        Matcher matcher = FULL_PATTERN.matcher(string);
-        if (!matcher.find()) {
-            throw new RuntimeException("Unable to interpret field mapping: "+string);
-        }
-        String from = matcher.group(1);
-        String to = matcher.group(2);
-        inputVariables.addAll(Arrays.asList(from.split(",")));
-        outputFields.addAll(Arrays.asList(to.split(",")));
-    }
-
-    public void addFromVariable(String fromVariable) {
-        inputVariables.add(fromVariable);
-    }
-
-    public void addToField(String toField) {
-        outputFields.add(toField);
-    }
-
-    public void addCodeLine(String codeLine) {
-        codeLines.add(codeLine);
-    }
-
-    public List<String> getInputVariables() {
-        return inputVariables;
-    }
-
-    public List<String> getOutputFields() {
-        return outputFields;
+    public void setEuropeanaField(EuropeanaField europeanaField) {
+        this.europeanaField = europeanaField;
     }
 
     public boolean codeLooksLike(String code) {
@@ -104,29 +75,16 @@ public class FieldMapping {
         }
     }
 
+    public EuropeanaField getEuropeanaField() {
+        return europeanaField;
+    }
+
     public List<String> getCodeLines() {
         return codeLines;
     }
 
     public String toString() {
-        StringBuilder out = new StringBuilder("[");
-        Iterator<String> walk = inputVariables.iterator();
-        while (walk.hasNext()) {
-            out.append(walk.next());
-            if (walk.hasNext()) {
-                out.append(",");
-            }
-        }
-        out.append("] ==> [");
-        walk = outputFields.iterator();
-        while (walk.hasNext()) {
-            out.append(walk.next());
-            if (walk.hasNext()) {
-                out.append(",");
-            }
-        }
-        out.append("]");
-        return out.toString();
+        return europeanaField.getFieldNameString();
     }
 
 }

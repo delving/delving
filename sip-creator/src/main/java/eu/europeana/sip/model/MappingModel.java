@@ -41,7 +41,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -195,21 +194,8 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
         if (metadataRecord != null) {
-            List<MetadataVariable> variables = metadataRecord.getVariables();
-            if (!multipleMappings) {
-                FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
-                if (fieldMapping != null) {
-                    Iterator<MetadataVariable> walk = variables.iterator();
-                    while (walk.hasNext()) {
-                        MetadataVariable variable = walk.next();
-                        if (!fieldMapping.getInputVariables().contains(variable.getName())) {
-                            walk.remove();
-                        }
-                    }
-                }
-            }
             StringBuilder out = new StringBuilder();
-            for (MetadataVariable variable : variables) {
+            for (MetadataVariable variable : metadataRecord.getVariables()) {
                 out.append(variable.toString()).append('\n');
             }
             SwingUtilities.invokeLater(new DocumentSetter(inputDocument, out.toString()));
