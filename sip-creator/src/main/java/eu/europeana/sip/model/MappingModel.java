@@ -105,9 +105,13 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         if (fieldMapping != null) {
             if (!fieldMapping.codeLooksLike(code)) {
                 editedCode = code;
-                compileSoon();
+            }
+            else {
+                editedCode = null;
+                changeState(State.PRISTINE);
             }
         }
+        compileSoon();
     }
 
     public void commitCode() {

@@ -66,7 +66,6 @@ public class RefinementPanel extends JPanel {
     public RefinementPanel(SipModel sipModel) {
         super(new BorderLayout());
         this.sipModel = sipModel;
-        sipModel.getFieldMappingModel().addListener(new ModelStateListener());
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setLeftComponent(createLeftSide());
         split.setRightComponent(createRightSide());
@@ -164,6 +163,7 @@ public class RefinementPanel extends JPanel {
                 sipModel.getRecordMappingModel().refreshCode();
             }
         });
+        sipModel.getFieldMappingModel().addListener(new ModelStateListener());
     }
 
     private JPanel createFieldMappingListPanel() {
