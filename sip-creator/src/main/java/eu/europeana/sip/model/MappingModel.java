@@ -218,7 +218,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
                 String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
                 MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
                 mappingScriptBinding.setRecord(metadataRecord);
-                new GroovyShell(mappingScriptBinding).evaluate(code);
+                new GroovyShell(mappingScriptBinding).evaluate(ToolCodeModel.getToolCode() + code);
                 compilationComplete(writer.toString());
                 changeState(editedCode == null ? State.PRISTINE : State.EDITED);
             }
@@ -231,7 +231,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
                 for (Object o : e.getErrorCollector().getErrors()) {
                     SyntaxErrorMessage message = (SyntaxErrorMessage) o;
                     SyntaxException se = message.getCause();
-                    // todo: lines will not match for !multipleFieldMappings
+                    // todo: line numbers will not match
                     out.append(String.format("Line %d: %s%n", se.getLine(), se.getOriginalMessage()));
                 }
                 compilationComplete(out.toString());
