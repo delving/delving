@@ -266,7 +266,7 @@ public class MappingPanel extends JPanel {
             for (Object variable : variablesList.getSelectedValues()) {
                 AnalysisTree.Node node = (AnalysisTree.Node) variable;
                 code.add(String.format("%s.each {", node.getVariableName()));
-                code.add(String.format("%s it", fresh.getEuropeanaField().getFieldNameString()));
+                code.add(String.format("%s.%s it", fresh.getEuropeanaField().getPrefix(), fresh.getEuropeanaField().getLocalName()));
                 code.add("}");
             }
         }
@@ -284,7 +284,7 @@ public class MappingPanel extends JPanel {
                 String nodeName = MetadataRecord.sanitize(node.toString());
                 if (nodeName.equals(field.getFieldNameString())) {
                     code.add(String.format("%s.each {", node.getVariableName()));
-                    code.add(String.format("%s it", field.getFieldNameString()));
+                    code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
                     code.add("}");
                 }
             }
