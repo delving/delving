@@ -1,3 +1,5 @@
+import java.security.MessageDigest
+
 // ToolCode.groovy - the place for helpful closures
 
 def extractYear(String field) {
@@ -53,4 +55,16 @@ def extractYear(String field) {
       return result.replace('  ', ', ');
     
   }
+}
+
+def createEuropeanaURI(String collection, String uri) {
+  resolveUrl = 'http://www.europeana.eu/resolve/record';
+  uriBytes = uri.getBytes("UTF-8");
+  digest = MessageDigest.getInstance("SHA-1");
+  hash = ''
+  for (Byte b in digest.digest(uriBytes)) {
+    hash += '0123456789ABCDEF'[b & 0x0F]
+    hash += '0123456789ABCDEF'[(b & 0xF0) >> 4]
+  }
+  return "$resolveUrl/$collection/$hash";
 }
