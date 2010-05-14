@@ -26,6 +26,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 
 /**
  * The groovy helper code that precedes the mapping snippet.
@@ -35,25 +39,63 @@ import java.io.IOException;
 
 public class ToolCodeModel {
     private static final String FILE_NAME = "ToolCode.groovy";
+    private static final File TOOL_CODE_FILE = new File(FILE_NAME);
+    private static final URL TOOL_CODE_URL = ToolCodeModel.class.getResource("/" + FILE_NAME);
+    private String resourceCode;
+    private String fileCode;
+    private long fileModified;
 
-    public static String getToolCode() {
+    public ToolCodeModel() {
         try {
-            return readToolCode();
+            resourceCode = readResourceCode();
+            if (!TOOL_CODE_FILE.exists()) {
+                FileWriter out = new FileWriter(TOOL_CODE_FILE);
+                out.write("// ToolCode.groovy - the place for helpful closures\n\n");
+                out.close();
+            }
         }
         catch (IOException e) {
-            return "print 'Could not read tool code'";
+            resourceCode = "println 'Could not read tool code: "+e.toString()+"'";
         }
     }
 
-    private static String readToolCode() throws IOException {
-        File file = new File(FILE_NAME);
-        if (!file.exists()) {
-            FileWriter out = new FileWriter(file);
+    public String getToolCode() {
+        try {
+            long mod = TOOL_CODE_FILE.lastModified();
+            if (mod > fileModified) {
+                fileCode = readFileCode();
+                fileModified = mod;
+            }
+            return resourceCode + fileCode;
+        }
+        catch (IOException e) {
+            return "println 'Could not read tool code'";
+        }
+    }
+
+    private String readFileCode() throws IOException {
+        if (!TOOL_CODE_FILE.exists()) {
+            FileWriter out = new FileWriter(TOOL_CODE_FILE);
             out.write("// ToolCode.groovy - the place for helpful closures\n\n");
             out.close();
+            return "println 'No file code'";
         }
-        System.out.println("modified "+(System.currentTimeMillis()-file.lastModified()));
-        BufferedReader in = new BufferedReader(new FileReader(file));
+        else {
+            return readCode(new FileReader(TOOL_CODE_FILE));
+        }
+    }
+
+    private String readResourceCode() throws IOException {
+        if (TOOL_CODE_URL == null) {
+            throw new IOException("Cannot find resource");
+        }
+        InputStream in = TOOL_CODE_URL.openStream();
+        Reader reader = new InputStreamReader(in);
+        return readCode(reader);
+    }
+
+    private String readCode(Reader reader) throws IOException {
+        BufferedReader in = new BufferedReader(reader);
         StringBuilder out = new StringBuilder();
         String line;
         while ((line = in.readLine()) != null) {

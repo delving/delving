@@ -63,6 +63,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
+    private ToolCodeModel toolCodeModel;
     private State state = State.UNCOMPILED;
     private String editedCode;
 
@@ -78,9 +79,10 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         void stateChanged(State state);
     }
 
-    public MappingModel(boolean multipleMappings) {
+    public MappingModel(boolean multipleMappings, ToolCodeModel toolCodeModel) {
         this.multipleMappings = multipleMappings;
         this.recordMapping.addListener(this);
+        this.toolCodeModel = toolCodeModel;
     }
 
     public void addListener(Listener listener) {
@@ -218,7 +220,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
                 String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
                 MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
                 mappingScriptBinding.setRecord(metadataRecord);
-                new GroovyShell(mappingScriptBinding).evaluate(ToolCodeModel.getToolCode() + code);
+                new GroovyShell(mappingScriptBinding).evaluate(toolCodeModel.getToolCode() + code);
                 compilationComplete(writer.toString());
                 changeState(editedCode == null ? State.PRISTINE : State.EDITED);
             }

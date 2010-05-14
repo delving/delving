@@ -8,7 +8,6 @@ import java.security.MessageDigest
  *
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
-@EuropeanaExtractable
 class EuropeanaUriHasher {
 
 	private static final String RESOLVABLE_URI = "http://www.europeana.eu/resolve/record/";

@@ -62,8 +62,9 @@ public class SipModel {
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
-    private MappingModel recordMappingModel = new MappingModel(true);
-    private MappingModel fieldMappingModel = new MappingModel(false);
+    private ToolCodeModel toolCodeModel = new ToolCodeModel();
+    private MappingModel recordMappingModel = new MappingModel(true, toolCodeModel);
+    private MappingModel fieldMappingModel = new MappingModel(false, toolCodeModel);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
