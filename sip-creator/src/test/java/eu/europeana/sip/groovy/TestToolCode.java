@@ -10,6 +10,7 @@ import org.junit.Test;
 /**
  * Make sure the groovy code is working as expected
  *
+ * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 

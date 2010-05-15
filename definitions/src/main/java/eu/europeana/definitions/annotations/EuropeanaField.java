@@ -82,4 +82,13 @@ public interface EuropeanaField {
     boolean isEuropeanaObject();
 
     boolean isEuropeanaType();
+
+
+    /**
+     * Fetch the converter name from the annotation
+     *
+     * @return name of the method in ToolCode.groovy
+     */
+
+    String getConverter();
 }

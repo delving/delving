@@ -70,7 +70,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     String[] language;
 
     @Field("YEAR")
-    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "yr", briefDoc = true)
+    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "yr", briefDoc = true, converter="extractYear")
     @Solr(fieldType = "string")
     String[] year;
 

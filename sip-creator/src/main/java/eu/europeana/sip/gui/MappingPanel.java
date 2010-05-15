@@ -265,9 +265,7 @@ public class MappingPanel extends JPanel {
         else {
             for (Object variable : variablesList.getSelectedValues()) {
                 AnalysisTree.Node node = (AnalysisTree.Node) variable;
-                code.add(String.format("%s.each {", node.getVariableName()));
-                code.add(String.format("%s.%s it", fresh.getEuropeanaField().getPrefix(), fresh.getEuropeanaField().getLocalName()));
-                code.add("}");
+                generateCopyCode(fresh.getEuropeanaField(), node, code);
             }
         }
         sipModel.addFieldMapping(fresh);
@@ -283,9 +281,7 @@ public class MappingPanel extends JPanel {
                 AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
                 String nodeName = MetadataRecord.sanitize(node.toString());
                 if (nodeName.equals(field.getFieldNameString())) {
-                    code.add(String.format("%s.each {", node.getVariableName()));
-                    code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
-                    code.add("}");
+                    generateCopyCode(field, node, code);
                 }
             }
             if (!fresh.getCodeLines().isEmpty()) {
@@ -295,5 +291,16 @@ public class MappingPanel extends JPanel {
         for (FieldMapping fieldMapping : obvious) {
             sipModel.addFieldMapping(fieldMapping);
         }
+    }
+
+    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, List<String> code) {
+        code.add(String.format("%s.each {", node.getVariableName()));
+        if (field.getConverter().isEmpty()) {
+            code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+        }
+        else {
+            code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.getConverter()));
+        }
+        code.add("}");
     }
 }

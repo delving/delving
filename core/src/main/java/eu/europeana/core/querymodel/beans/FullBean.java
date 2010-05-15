@@ -120,7 +120,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("dc_creator")
     String[] dcCreator;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana(validation = ESE_OPTIONAL, mappable = true, converter="extractYear")
     @Solr(prefix = "dc", localName = "date", toCopyField = {"text", "when", "date"})
     @Field("dc_date")
     String[] dcDate;

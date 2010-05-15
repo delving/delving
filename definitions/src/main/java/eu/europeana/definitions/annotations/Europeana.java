@@ -138,4 +138,13 @@ public @interface Europeana {
      */
 
     ValidationLevel validation() default ValidationLevel.ESE_OPTIONAL;
+
+    /**
+     * The converter is the name of the groovy method in ToolCode.groovy which is to be applied to the
+     * values of this field when it is normalized.
+     *
+     * @return the name of the converter method in ToolCode.groovy
+     */
+
+    String converter() default "";
 }

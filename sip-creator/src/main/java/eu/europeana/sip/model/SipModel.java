@@ -336,20 +336,22 @@ public class SipModel {
             }
         }
         if (recordRoot != null) {
-            executor.execute(new FirstRecordFetcher());
+            executor.execute(new NextRecordFetcher());
         }
     }
 
-    private class FirstRecordFetcher implements Runnable {
+    private class NextRecordFetcher implements Runnable {
         @Override
         public void run() {
             try {
-                metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, new MetadataParser.Listener() {
-                    @Override
-                    public void recordsParsed(int count) {
-                        // todo: show this in the GUI associated with play/rewind?
-                    }
-                });
+                if (metadataParser == null) {
+                    metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, new MetadataParser.Listener() {
+                        @Override
+                        public void recordsParsed(int count) {
+                            // todo: show this in the GUI associated with play/rewind?
+                        }
+                    });
+                }
                 metadataRecord = metadataParser.nextRecord();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -362,28 +364,6 @@ public class SipModel {
             }
             catch (Exception e) {
                 exceptionHandler.failure(e);
-            }
-        }
-    }
-
-    private class NextRecordFetcher implements Runnable {
-        @Override
-        public void run() {
-            if (metadataParser != null) {
-                try {
-                    metadataRecord = metadataParser.nextRecord();
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (ParseListener parseListener : parseListeners) {
-                                parseListener.updatedRecord(metadataRecord);
-                            }
-                        }
-                    });
-                }
-                catch (Exception e) {
-                    exceptionHandler.failure(e);
-                }
             }
         }
     }
