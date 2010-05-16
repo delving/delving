@@ -56,6 +56,6 @@ public class TestToolCode {
         String collection = "070201";
         Object [] args = { collection, uri };
         String result = script.invokeMethod("createEuropeanaURI", args).toString();
-        Assert.assertEquals("http://www.europeana.eu/resolve/record/070201/6D477B62F9510ED51FE91A804BB80771CCC60149", result);
+        Assert.assertEquals("should equal", "http://www.europeana.eu/resolve/record/070201/D674B7269F15E05DF19EA108B48B7017CC6C1094", result);
     }
 }
