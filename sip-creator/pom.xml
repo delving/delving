@@ -86,8 +86,8 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
+            <artifactId>definitions</artifactId>
+            <version>${europeana.definitions.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>

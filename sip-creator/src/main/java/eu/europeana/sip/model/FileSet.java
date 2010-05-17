@@ -38,6 +38,8 @@ public interface FileSet {
 
     String getName();
 
+    String getAbsolutePath();
+
     boolean isValid();
 
     void setMostRecent();

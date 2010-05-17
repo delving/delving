@@ -32,7 +32,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.Set;
 
 /**
  * The menu for handling files
@@ -67,11 +66,9 @@ public class FileMenu extends JMenu {
 
     private void refresh() {
         removeAll();
-        add(new LoadNewFileAction(new File("/")));
-        addSeparator();
-        Set<File> directories = recentFiles.getDirectories();
-        for (File directory : directories) {
-            add(new LoadNewFileAction(directory));
+        File commonDirectory = recentFiles.getCommonDirectory();
+        if (commonDirectory != null) {
+            add(new LoadNewFileAction(commonDirectory));
         }
         addSeparator();
         for (FileSet fileSet : recentFiles.getList()) {
@@ -118,7 +115,7 @@ public class FileMenu extends JMenu {
         private FileSet fileSet;
 
         private LoadRecentFileSetAction(FileSet fileSet) {
-            super(fileSet.getName());
+            super(fileSet.getAbsolutePath());
             this.fileSet = fileSet;
         }
 

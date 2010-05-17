@@ -51,6 +51,7 @@ import java.util.Set;
  */
 
 public class RecentFileSets {
+    private static final int MAX_RECENT = 20;
     private final Logger LOG = Logger.getLogger(getClass());
     private File listFile;
     private List<FileSetImpl> recent = new ArrayList<FileSetImpl>();
@@ -118,12 +119,39 @@ public class RecentFileSets {
         return recent;
     }
 
-    public Set<File> getDirectories() {
+    public File getCommonDirectory() {
         Set<File> directories = new HashSet<File>();
         for (FileSet set : recent) {
             directories.add(set.getDirectory());
         }
-        return directories;
+        File highest = null;
+        for (File directory : directories) {
+            if (highest == null) {
+                highest = directory;
+            }
+            else {
+                highest = getHighest(highest, directory);
+            }
+        }
+        return highest;
+    }
+
+    private File getHighest(File a, File b) {
+        while (!a.equals(b)) {
+            String pathA = a.getAbsolutePath();
+            String pathB = b.getAbsolutePath();
+            if (pathA.length() > pathB.length()) {
+                a = a.getParentFile();
+            }
+            else if (pathB.length() > pathA.length()) {
+                b = b.getParentFile();
+            }
+            else {
+                a = a.getParentFile();
+                b = b.getParentFile();
+            }
+        }
+        return a; // or b
     }
 
     private void loadList() throws IOException {
@@ -136,9 +164,13 @@ public class RecentFileSets {
 
     private void saveList() throws IOException {
         FileWriter out = new FileWriter(listFile);
+        int count = 0;
         for (FileSetImpl set : recent) {
             out.write(set.getAbsolutePath());
             out.write('\n');
+            if (count++ == MAX_RECENT) {
+                break;
+            }
         }
         out.close();
     }
@@ -166,6 +198,11 @@ public class RecentFileSets {
         @Override
         public String getName() {
             return inputFile.getName();
+        }
+
+        @Override
+        public String getAbsolutePath() {
+            return inputFile.getAbsolutePath();
         }
 
         @Override
@@ -324,10 +361,6 @@ public class RecentFileSets {
 
         public String toString() {
             return getName();
-        }
-
-        public String getAbsolutePath() {
-            return inputFile.getAbsolutePath();
         }
     }
 }
