@@ -176,7 +176,7 @@ except:
 # Django settings for sip_web project.
 
 #local_settings DEBUG = True
-TEMPLATE_DEBUG = True
+#TEMPLATE_DEBUG = True
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
