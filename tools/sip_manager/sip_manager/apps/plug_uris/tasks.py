@@ -72,7 +72,7 @@ import sys
 import time
 import urllib2
 import urlparse
-#from xml.dom.minidom import parseString
+from xml.sax.saxutils import unescape as unescapeXml
 
 
 # sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
@@ -295,7 +295,7 @@ class UriCreate(sip_task.SipTask):
         parts = source_data.split(tag)
         if len(parts) == 1:
             return None
-        url = parts[1].split('<')[0]
+        url = unescapeXml(parts[1].split('<')[0])
         return url
 
 
