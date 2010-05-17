@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Bad items resceduled{% endblock %}
+
+
+{% block content %}
+
+<ul>
+  <li><a href="{% url top_index %}">Start</a>
+  <li><a href="{% url uri_stats_by_req request.session.req_filter.req_id %}">Back to request overview</a>
+</ul>
+
+
+<h3>{{ req }}</h3>
+
+<h3>Problematic items, filtered on: {{ filter_label }}</h3>
+
+<p>
+Resceduled {{ item_count }} items matching filter
+</p>
+
+{% endblock %}
+
+
+{% comment %}
+{% endcomment %}
