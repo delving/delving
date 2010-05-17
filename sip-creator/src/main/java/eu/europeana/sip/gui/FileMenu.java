@@ -70,6 +70,9 @@ public class FileMenu extends JMenu {
         if (commonDirectory != null) {
             add(new LoadNewFileAction(commonDirectory));
         }
+        else {
+            add(new LoadNewFileAction(new File("/")));
+        }
         addSeparator();
         for (FileSet fileSet : recentFiles.getList()) {
             add(new LoadRecentFileSetAction(fileSet));

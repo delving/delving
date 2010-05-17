@@ -502,15 +502,8 @@ public class FullBean extends BriefBean implements FullDoc {
         return returnStringOrElse(europeanaCollectionName);
     }
 
-    private static final String[] STRINGS = new String[]{" "};
-    private static final String EMPTY_STRING = " ";
-
-//    private static String returnStringOrElse(String[] s) {
-//        return (s != null) ? s[0] : EMPTY_STRING;
-//    }
-//
     private static String[] returnArrayOrElse(String[] s) {
-        return (s != null) ? s : STRINGS;
+        return (s != null) ? s : new String[]{" "};
     }
 
     private static String[] returnArrayOrElse (String[] ... arrs) {
@@ -519,7 +512,7 @@ public class FullBean extends BriefBean implements FullDoc {
                 return arr;
             }
         }
-        return STRINGS;
+        return new String[]{" "};
     }
 }
 
