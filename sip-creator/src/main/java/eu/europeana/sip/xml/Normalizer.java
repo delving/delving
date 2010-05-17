@@ -69,8 +69,9 @@ public class Normalizer implements Runnable {
                 script.run();
             }
             writer.close();
+            parser.close();
             if (!running) {
-                parser.close();
+                fileSet.removeOutputFile();
             }
         }
         catch (XMLStreamException e) {

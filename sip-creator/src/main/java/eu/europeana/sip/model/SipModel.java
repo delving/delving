@@ -129,6 +129,14 @@ public class SipModel {
         setRecordRootInternal(fileSet.getRecordRoot());
         recordMappingModel.getRecordMapping().setCode(fileSet.getMapping(), europeanaFieldMap);
         createMetadataParser();
+        if (recordRoot != null) {
+            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
+            normalizeProgressModel.setValue(fileSet.hasOutputFile() ? recordRoot.getRecordCount() : 0);
+        }
+        else {
+            normalizeProgressModel.setMaximum(100);
+            normalizeProgressModel.setValue(0);
+        }
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedFileSet(fileSet);
         }
@@ -179,7 +187,6 @@ public class SipModel {
     public void normalize() {
         checkSwingThread();
         abortNormalize();
-        normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
         normalizer = new Normalizer(fileSet, new MetadataParser.Listener() {
             @Override
             public void recordsParsed(final int count) {
@@ -199,6 +206,10 @@ public class SipModel {
         if (normalizer != null) {
             normalizer.abort();
             normalizer = null;
+        }
+        if (fileSet.hasOutputFile()) {
+            fileSet.removeOutputFile();
+            normalizeProgressModel.setValue(0);
         }
     }
 

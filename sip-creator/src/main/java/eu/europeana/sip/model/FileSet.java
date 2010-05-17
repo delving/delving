@@ -52,6 +52,10 @@ public interface FileSet {
 
     OutputStream getOutputStream();
 
+    boolean hasOutputFile();
+
+    void removeOutputFile();
+
     List<Statistics> getStatistics();
 
     void setStatistics(List<Statistics> statisticsList);

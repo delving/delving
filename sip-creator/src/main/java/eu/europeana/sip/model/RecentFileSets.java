@@ -185,9 +185,6 @@ public class RecentFileSets {
             this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
             this.recordRootFile = new File(inputFile.getParentFile(), inputFile.getName() + ".record");
             this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
-            if (outputFile.exists()) {
-                outputFile.delete();
-            }
         }
 
         @Override
@@ -258,6 +255,18 @@ public class RecentFileSets {
                 exceptionHandler.failure(e);
             }
             return null;
+        }
+
+        @Override
+        public boolean hasOutputFile() {
+            return outputFile.exists();
+        }
+
+        @Override
+        public void removeOutputFile() {
+            if (!outputFile.delete()) {
+                LOG.warn("Unable to delete "+outputFile);
+            }
         }
 
         @Override
@@ -335,7 +344,9 @@ public class RecentFileSets {
                     return new RecordRoot(contents.toString());
                 }
                 catch (IOException e) {
-                    recordRootFile.delete();
+                    if (recordRootFile.delete()) {
+                        LOG.warn("Unable to delete "+recordRootFile);
+                    }
                     exceptionHandler.failure(e);
                 }
             }
@@ -345,7 +356,9 @@ public class RecentFileSets {
         @Override
         public void setRecordRoot(RecordRoot recordRoot) {
             if (recordRoot == null) {
-                recordRootFile.delete();
+                if (!recordRootFile.delete()) {
+                    LOG.warn("Unable to delete "+recordRootFile);
+                }
             }
             else {
                 try {

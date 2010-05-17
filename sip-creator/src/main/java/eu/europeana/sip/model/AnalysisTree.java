@@ -74,7 +74,12 @@ public class AnalysisTree implements Serializable {
 
     public static AnalysisTree create(List<Statistics> statisticsList, String rootTag) {
         QNameNode root = createSubtree(statisticsList, new QNamePath(), null);
-        root.setTag(rootTag);
+        if (root != null) {
+            root.setTag(rootTag);
+        }
+        else {
+            root = new QNameNode("No statistics");
+        }
         return new AnalysisTree(root);
     }
 
