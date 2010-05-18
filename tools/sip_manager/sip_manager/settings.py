@@ -176,7 +176,7 @@ except:
 # Django settings for sip_web project.
 
 #local_settings DEBUG = True
-#TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = True
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -241,6 +241,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
+
+
 ROOT_URLCONF = 'sip_manager.urls'
 
 TEMPLATE_DIRS = (
@@ -278,4 +280,3 @@ INSTALLED_APPS = (
 DAJAXICE_FUNCTIONS = (
 	'examples.ajax.randomize',
 )
-
