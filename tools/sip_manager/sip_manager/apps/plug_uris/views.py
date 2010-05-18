@@ -345,15 +345,17 @@ def rescedule(request, sel=None):
     item_count = 0
     for requri in qs:
         uri =models.Uri.objects.get(pk=requri.uri_id)
-        uri.status = models.URIS_CREATED
-        uri.mime_type = ''
-        uri.err_code = models.URIE_NO_ERROR
-        uri.err_msg = ''
-        uri.save()
-        requri.mime_type = uri.mime_type
-        requri.err_code = uri.err_code
-        requri.status = uri.status
-        requri.save()
+        uri.delete()
+        #uri.status = models.URIS_CREATED
+        #uri.mime_type = ''
+        #uri.err_code = models.URIE_NO_ERROR
+        #uri.err_msg = ''
+        #uri.save()
+        #requri.mime_type = uri.mime_type
+        #requri.err_code = uri.err_code
+        #requri.status = uri.status
+        #requri.save()
+        requri.delete()
         item_count += 1
 
     return render_to_response("plug_uris/bad_resceduled.html",
