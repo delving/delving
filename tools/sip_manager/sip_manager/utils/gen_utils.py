@@ -65,6 +65,7 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) != 2:
         print 'Param should be the item that should be hashed'
+        sys.exit(1)
     print calculate_hash(sys.argv[1])
 else:
     db_is_mysql = __db_is_mysql()
