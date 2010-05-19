@@ -23,6 +23,7 @@ package eu.europeana.sip.model;
 
 import org.apache.log4j.Logger;
 
+import javax.swing.SwingUtilities;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -69,6 +70,7 @@ public class RecentFileSets {
     }
 
     public FileSet select(File inputFile) {
+        checkWorkerThread();
         FileSetImpl fileSet = removeFileSet(inputFile);
         if (fileSet != null) {
             recent.add(0, fileSet);
@@ -86,7 +88,20 @@ public class RecentFileSets {
         return fileSet;
     }
 
+    public void setMostRecent(FileSet fileSet) {
+        FileSetImpl fileSetImpl = (FileSetImpl)fileSet;
+        recent.remove(fileSetImpl);
+        recent.add(0, fileSetImpl);
+        try {
+            saveList();
+        }
+        catch (IOException e) {
+            LOG.warn("Unable to save recent files list", e);
+        }
+    }
+
     private FileSetImpl removeFileSet(File inputFile) {
+        checkWorkerThread();
         Iterator<FileSetImpl> walk = recent.iterator();
         FileSetImpl fileSet = null;
         while (walk.hasNext()) {
@@ -100,6 +115,7 @@ public class RecentFileSets {
     }
 
     public void remove(FileSet fileSet) {
+        checkWorkerThread();
         Iterator<FileSetImpl> walk = recent.iterator();
         while (walk.hasNext()) {
             FileSetImpl next = walk.next();
@@ -163,6 +179,7 @@ public class RecentFileSets {
     }
 
     private void saveList() throws IOException {
+        checkWorkerThread();
         FileWriter out = new FileWriter(listFile);
         int count = 0;
         for (FileSetImpl set : recent) {
@@ -208,18 +225,6 @@ public class RecentFileSets {
         }
 
         @Override
-        public void setMostRecent() {
-            recent.remove(this);
-            recent.add(0, this);
-            try {
-                saveList();
-            }
-            catch (IOException e) {
-                LOG.warn("Unable to save recent files list", e);
-            }
-        }
-
-        @Override
         public void remove() {
             recent.remove(this);
             try {
@@ -237,6 +242,7 @@ public class RecentFileSets {
 
         @Override
         public InputStream getInputStream() {
+            checkWorkerThread();
             try {
                 return new FileInputStream(inputFile);
             }
@@ -248,6 +254,7 @@ public class RecentFileSets {
 
         @Override
         public OutputStream getOutputStream() {
+            checkWorkerThread();
             try {
                 return new FileOutputStream(outputFile, true);
             }
@@ -264,6 +271,7 @@ public class RecentFileSets {
 
         @Override
         public void removeOutputFile() {
+            checkWorkerThread();
             if (!outputFile.delete()) {
                 LOG.warn("Unable to delete "+outputFile);
             }
@@ -272,6 +280,7 @@ public class RecentFileSets {
         @Override
         @SuppressWarnings("unchecked")
         public List<Statistics> getStatistics() {
+            checkWorkerThread();
             if (statisticsFile.exists()) {
                 try {
                     ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(statisticsFile)));
@@ -288,6 +297,7 @@ public class RecentFileSets {
 
         @Override
         public void setStatistics(List<Statistics> statisticsList) {
+            checkWorkerThread();
             try {
                 ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(statisticsFile)));
                 out.writeObject(statisticsList);
@@ -300,6 +310,7 @@ public class RecentFileSets {
 
         @Override
         public String getMapping() {
+            checkWorkerThread();
             if (mappingFile.exists()) {
                 try {
                     BufferedReader in = new BufferedReader(new FileReader(mappingFile));
@@ -320,6 +331,7 @@ public class RecentFileSets {
 
         @Override
         public void setMapping(String mapping) {
+            checkWorkerThread();
             try {
                 FileWriter out = new FileWriter(mappingFile);
                 out.write(mapping);
@@ -332,6 +344,7 @@ public class RecentFileSets {
 
         @Override
         public RecordRoot getRecordRoot() {
+            checkWorkerThread();
             if (recordRootFile.exists()) {
                 StringBuilder contents = new StringBuilder();
                 try {
@@ -355,6 +368,7 @@ public class RecentFileSets {
 
         @Override
         public void setRecordRoot(RecordRoot recordRoot) {
+            checkWorkerThread();
             if (recordRoot == null) {
                 if (!recordRootFile.delete()) {
                     LOG.warn("Unable to delete "+recordRootFile);
@@ -374,6 +388,12 @@ public class RecentFileSets {
 
         public String toString() {
             return getName();
+        }
+    }
+
+    private static void checkWorkerThread() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Expected Worker thread");
         }
     }
 }

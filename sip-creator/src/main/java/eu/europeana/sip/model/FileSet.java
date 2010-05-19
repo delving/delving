@@ -42,8 +42,6 @@ public interface FileSet {
 
     boolean isValid();
 
-    void setMostRecent();
-
     void remove();
 
     File getDirectory();

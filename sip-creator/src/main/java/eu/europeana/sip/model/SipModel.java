@@ -122,24 +122,38 @@ public class SipModel {
         }
     }
 
-    public void setFileSet(FileSet fileSet) {
+    public void setFileSet(final FileSet newFileSet) {
         checkSwingThread();
-        this.fileSet = fileSet;
-        setStatisticsList(fileSet.getStatistics());
-        setRecordRootInternal(fileSet.getRecordRoot());
-        recordMappingModel.getRecordMapping().setCode(fileSet.getMapping(), europeanaFieldMap);
-        createMetadataParser();
-        if (recordRoot != null) {
-            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
-            normalizeProgressModel.setValue(fileSet.hasOutputFile() ? recordRoot.getRecordCount() : 0);
-        }
-        else {
-            normalizeProgressModel.setMaximum(100);
-            normalizeProgressModel.setValue(0);
-        }
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedFileSet(fileSet);
-        }
+        this.fileSet = newFileSet;
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<Statistics> statistics = newFileSet.getStatistics();
+                final RecordRoot recordRoot = newFileSet.getRecordRoot();
+                final String mapping = newFileSet.getMapping();
+                final boolean outputFilePresent = newFileSet.hasOutputFile();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setStatisticsList(statistics);
+                        setRecordRootInternal(recordRoot);
+                        recordMappingModel.getRecordMapping().setCode(mapping, europeanaFieldMap);
+                        createMetadataParser();
+                        if (recordRoot != null) {
+                            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
+                            normalizeProgressModel.setValue(outputFilePresent ? recordRoot.getRecordCount() : 0);
+                        }
+                        else {
+                            normalizeProgressModel.setMaximum(100);
+                            normalizeProgressModel.setValue(0);
+                        }
+                        for (UpdateListener updateListener : updateListeners) {
+                            updateListener.updatedFileSet(newFileSet);
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public void analyze(final AnalysisListener listener) {
@@ -396,6 +410,12 @@ public class SipModel {
         @Override
         public void run() {
             fileSet.setMapping(mapping);
+        }
+    }
+
+    private static void checkWorkerThread() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Expected Worker thread");
         }
     }
 
