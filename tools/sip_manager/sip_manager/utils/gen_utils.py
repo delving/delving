@@ -41,7 +41,7 @@ def calculate_hash(item):
       each line is separated by one \n character
       and finaly the <record> and </record> should be kept!
     """
-    r_hash = hashlib.sha256(item.upper()).hexdigest().upper()
+    r_hash = hashlib.sha256(item).hexdigest().upper()
     return r_hash
 
 
