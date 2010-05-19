@@ -147,10 +147,10 @@ class UriPepareStorageDirs(sip_task.SipTask):
 
     def run_it(self):
         if OLD_STYLE_IMAGE_NAMES:
-            places = (REL_DIR_ORIGINAL, REL_DIR_BRIEF)
+            places = ((REL_DIR_ORIGINAL, False), REL_DIR_BRIEF)
             tst_dir = '6EA'
         else:
-            places = (REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF)
+            places = ((REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF)
             tst_dir = '12/32'
 
         for s in places:
@@ -452,15 +452,13 @@ class UriValidateSave(sip_task.SipTask):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
                                    'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
 
-        self.uri.url_hash = calculate_hash(self.uri.url)
         self.uri.content_hash = calculate_hash(data)
 
-        if OLD_STYLE_IMAGE_NAMES:
-            base_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
-        else:
-            base_fname = self.file_name_from_hash(self.uri.url_hash)
-        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
-
+        #
+        #  Store original
+        #
+        org_rel = self.file_name_from_hash(self.uri.content_hash)
+        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, org_rel)
         try:
             fp = open(org_fname, 'w')
             fp.write(data)
@@ -481,17 +479,20 @@ class UriValidateSave(sip_task.SipTask):
         if f_type[0] == ':':
             f_type = f_type[1:].strip()
         self.uri.file_type = f_type
-
-
         if f_type.lower().find('html') > -1:
-            # mime_type was image, content was webpage...
-            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR, 'mime_type image, content html')
 
+
+        self.uri.url_hash = calculate_hash(self.uri.url)
+        if OLD_STYLE_IMAGE_NAMES:
+            thumb_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
+        else:
+            thumb_fname = self.file_name_from_hash(self.uri.url_hash)
 
         if USE_IMAGE_MAGIC:
-            return self.generate_images_magic(base_fname, org_fname)
+            return self.generate_images_magic(thumb_fname, org_fname)
         else:
-            return self.generate_images_pil(base_fname, org_fname)
+            return self.generate_images_pil(thumb_fname, org_fname)
 
 
     def file_name_from_hash(self, url_hash):
