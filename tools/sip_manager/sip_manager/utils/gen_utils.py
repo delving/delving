@@ -60,4 +60,11 @@ def __db_is_mysql():
         b = False
     return b
 
-db_is_mysql = __db_is_mysql()
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print 'Param should be the item that should be hashed'
+    print calculate_hash(sys.argv[1])
+else:
+    db_is_mysql = __db_is_mysql()
