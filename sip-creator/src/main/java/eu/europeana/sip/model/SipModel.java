@@ -217,14 +217,24 @@ public class SipModel {
 
     public void abortNormalize() {
         checkSwingThread();
-        if (normalizer != null) {
-            normalizer.abort();
-            normalizer = null;
-        }
-        if (fileSet.hasOutputFile()) {
-            fileSet.removeOutputFile();
-            normalizeProgressModel.setValue(0);
-        }
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (normalizer != null) {
+                    normalizer.abort();
+                    normalizer = null;
+                }
+                if (fileSet.hasOutputFile()) {
+                    fileSet.removeOutputFile();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            normalizeProgressModel.setValue(0);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     public TreeModel getAnalysisTreeModel() {
