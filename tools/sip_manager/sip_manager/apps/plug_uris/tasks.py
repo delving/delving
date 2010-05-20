@@ -443,8 +443,16 @@ class UriValidateSave(sip_task.SipTask):
             try:
                 content_length = int(itm.headers[HTTPH_CONT_LENGTH])
             except:
-                return self.set_urierr(models.URIE_OTHER_ERROR,
-                                       'Failed to read %s' % HTTPH_CONT_LENGTH)
+                # previously we aborted, if content lenght couldnt be read
+                # this proved to be to restrictive, now we just log a warning
+                # and accept the item
+                el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                                msg = 'Failed to read %s' % HTTPH_CONT_LENGTH,
+                                item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                                plugin_module = self.__class__.__module__,
+                                plugin_name = self.__class__.__name__)
+                el.save()
+                content_length = 0
         try:
             data = itm.read()
         except:
