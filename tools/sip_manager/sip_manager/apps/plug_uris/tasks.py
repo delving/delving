@@ -587,7 +587,7 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to generate FULL_DOC\ncmd output %s%s' % (stdout,stderr))
         if stdout or stderr:
             el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
-                            msg = 'FULL_DOC %s %s' % (stdout, stderr),
+                            msg = u'FULL_DOC %s %s' % (stdout, stderr),
                             item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
                             plugin_module = self.__class__.__module__,
                             plugin_name = self.__class__.__name__)
