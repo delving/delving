@@ -141,7 +141,7 @@ except:
 try:
     MAX_LOAD_RUNNING_TASKS
 except:
-    MAX_LOAD_RUNNING_TASKS = (2.0, 2.1, 2.2)
+    MAX_LOAD_RUNNING_TASKS = (3.0, 3.2, 4.0)
     print 'Using default value for MAX_LOAD_RUNNING_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_RUNNING_TASKS
 try:
     float(MAX_LOAD_RUNNING_TASKS)
