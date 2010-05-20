@@ -484,7 +484,7 @@ class UriValidateSave(sip_task.SipTask):
         # Identify & store actual filetyp
         retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
         if retcode:
-            msg = 'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
+            msg = u'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
             return self.set_urierr(models.URIE_OTHER_ERROR,
                                    'Failed to identify file type\n%s' % msg)
         f_type = stdout.split(org_fname)[-1].strip()
@@ -612,7 +612,7 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to generate BRIEF_DOC\ncmd output %s%s' % (stdout,stderr))
         if stdout or stderr:
             el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
-                            msg = 'BRIEF_DOC %s %s' % (stdout, stderr),
+                            msg = u'BRIEF_DOC %s %s' % (stdout, stderr),
                             item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
                             plugin_module = self.__class__.__module__,
                             plugin_name = self.__class__.__name__)

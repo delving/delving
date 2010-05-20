@@ -20,9 +20,10 @@ class ErrLog(models.Model):
     time_created = models.DateTimeField(auto_now_add=True, editable=False)
 
     def save(self, *args, **kwargs):
-        print '****Logged an error!!'
-        print '*\terr_code: [%i] %s' % (self.err_code, LOG_ERR_CODES[self.err_code])
-        print '*\tmsg:     ', self.msg
-        print '*\titem_id: ', self.item_id
-        print '*\tplugin:  ', self.plugin_name
+        if self.err_code != LOGE_IMG_CONV_WARN:
+            print '****Logged an error!!'
+            print '*\terr_code: [%i] %s' % (self.err_code, LOG_ERR_CODES[self.err_code])
+            print '*\tmsg:     ', self.msg
+            print '*\titem_id: ', self.item_id
+            print '*\tplugin:  ', self.plugin_name
         super(ErrLog, self).save(*args, **kwargs)
