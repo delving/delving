@@ -147,17 +147,21 @@ class UriPepareStorageDirs(sip_task.SipTask):
 
     def run_it(self):
         if OLD_STYLE_IMAGE_NAMES:
-            places = ((REL_DIR_ORIGINAL, False), REL_DIR_BRIEF)
-            tst_dir = '6EA'
+            places = ((REL_DIR_ORIGINAL, False), (REL_DIR_BRIEF, True))
         else:
-            places = ((REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF)
-            tst_dir = '12/32'
+            places = ((REL_DIR_ORIGINAL, False),
+                      (REL_DIR_FULL, False), (REL_DIR_BRIEF, False))
 
-        for s in places:
+        for s, old_style in places:
+            if old_style:
+                tst_dir = '6EA' # just test something random for existance
+            else:
+                tst_dir = '12/32'  # just test something random for existance
+
             test_dir = os.path.join(SIP_OBJ_FILES, s, tst_dir)
             if not os.path.exists(test_dir):
                 self.task_starting('Creating dirs for %s' % s, 256)
-                if OLD_STYLE_IMAGE_NAMES:
+                if old_style:
                     self.pre_generate_uri_trees_old_style(s)
                 else:
                     self.pre_generate_uri_trees(s)
@@ -307,7 +311,6 @@ class UriValidateSave(sip_task.SipTask):
     PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
-
         urisources = models.UriSource.objects.filter(pid=0).values('pk')
         if not urisources:
             return False
@@ -450,7 +453,8 @@ class UriValidateSave(sip_task.SipTask):
 
         if content_length and (len(data) != content_length):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
-                                   'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
+                                   'Wrong filesize, expected: %i recieved: %i' % (
+                                       content_length, len(data)))
 
         self.uri.content_hash = calculate_hash(data)
 
@@ -480,7 +484,8 @@ class UriValidateSave(sip_task.SipTask):
             f_type = f_type[1:].strip()
         self.uri.file_type = f_type
         if f_type.lower().find('html') > -1:
-            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR, 'mime_type image, content html')
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR,
+                                   'mime_type image, content html')
 
 
         self.uri.url_hash = calculate_hash(self.uri.url)
