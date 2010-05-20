@@ -446,7 +446,7 @@ class UriValidateSave(sip_task.SipTask):
                 # previously we aborted, if content lenght couldnt be read
                 # this proved to be to restrictive, now we just log a warning
                 # and accept the item
-                el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                el = log.ErrLog(err_code=log.LOGE_WEB_SERV_RESP,
                                 msg = 'Failed to read %s' % HTTPH_CONT_LENGTH,
                                 item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
                                 plugin_module = self.__class__.__module__,
