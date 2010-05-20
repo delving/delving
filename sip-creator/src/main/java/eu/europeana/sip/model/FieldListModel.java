@@ -28,8 +28,10 @@ import eu.europeana.sip.groovy.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListModel;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,7 +80,22 @@ public class FieldListModel extends AbstractListModel {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             EuropeanaField europeanaField = (EuropeanaField) value;
-            return super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
+            switch (europeanaField.getValidationLevel()) {
+                case COPY_FIELD:
+                case INDEX_TIME_FIELD:
+                    label.setForeground(new Color(1f, 0f, 0f));
+                    break;
+                case ESE_OPTIONAL:
+                case ESE_PLUS_OPTIONAL:
+                    label.setForeground(new Color(0.5f, 0.5f, 0f));
+                    break;
+                case ESE_REQUIRED:
+                case ESE_PLUS_REQUIRED:
+                    label.setForeground(new Color(0.3f, 0f, 0.3f));
+                    break;
+            }
+            return label;
         }
     }
 
