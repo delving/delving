@@ -64,7 +64,6 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
     private ToolCodeModel toolCodeModel;
-    private State state = State.UNCOMPILED;
     private String editedCode;
 
     public enum State {
@@ -107,39 +106,14 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         if (fieldMapping != null) {
             if (!fieldMapping.codeLooksLike(code)) {
                 editedCode = code;
+                notifyStateChange(State.EDITED);
             }
             else {
                 editedCode = null;
-                changeState(State.PRISTINE);
+                notifyStateChange(State.PRISTINE);
             }
         }
         compileSoon();
-    }
-
-    public void commitCode() {
-        if (multipleMappings) {
-            throw new RuntimeException();
-        }
-        switch (state) {
-            case UNCOMPILED:
-            case PRISTINE:
-                break;
-            case EDITED:
-                if (editedCode != null) {
-                    FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
-                    if (fieldMapping != null) {
-                        recordMapping.iterator().next().setCode(editedCode);
-                        changeState(State.COMMITTED);
-                        compileSoon();
-                    }
-                }
-                break;
-            case ERROR:
-                String code = recordMapping.getCodeForDisplay();
-                SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
-                break;
-        }
-        editedCode = null;
     }
 
     public RecordMapping getRecordMapping() {
@@ -190,7 +164,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
     private void mappingChanged() {
         String code = recordMapping.getCodeForDisplay();
         SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
-        changeState(State.PRISTINE);
+        notifyStateChange(State.PRISTINE);
         if (!multipleMappings) {
             updateInputDocument(metadataRecord);
         }
@@ -222,28 +196,42 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
                 mappingScriptBinding.setRecord(metadataRecord);
                 new GroovyShell(mappingScriptBinding).evaluate(toolCodeModel.getToolCode() + code);
                 compilationComplete(writer.toString());
-                changeState(editedCode == null ? State.PRISTINE : State.EDITED);
+                if (editedCode == null) {
+                    notifyStateChange(State.PRISTINE);
+                }
+                else {
+                    FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                    if (fieldMapping != null) {
+                        fieldMapping.setCode(editedCode);
+                        notifyStateChange(State.COMMITTED);
+                        editedCode = null;
+                        notifyStateChange(State.PRISTINE);
+                    }
+                    else {
+                        notifyStateChange(State.EDITED);
+                    }
+                }
             }
             catch (MissingPropertyException e) {
                 compilationComplete("Missing Property: " + e.getProperty());
-                changeState(State.ERROR);
+                notifyStateChange(State.ERROR);
             }
             catch (MultipleCompilationErrorsException e) {
                 StringBuilder out = new StringBuilder();
                 for (Object o : e.getErrorCollector().getErrors()) {
                     SyntaxErrorMessage message = (SyntaxErrorMessage) o;
                     SyntaxException se = message.getCause();
-                    // todo: line numbers will not match
-                    out.append(String.format("Line %d: %s%n", se.getLine(), se.getOriginalMessage()));
+                    // line numbers will not match
+                    out.append(String.format("Problem: %s", se.getOriginalMessage()));
                 }
                 compilationComplete(out.toString());
-                changeState(State.ERROR);
+                notifyStateChange(State.ERROR);
             }
             catch (Exception e) {
                 StringWriter writer = new StringWriter();
                 e.printStackTrace(new PrintWriter(writer));
                 compilationComplete(writer.toString());
-                changeState(State.ERROR);
+                notifyStateChange(State.ERROR);
             }
         }
 
@@ -289,10 +277,9 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         }
     }
 
-    private void changeState(State state) {
-        this.state = state;
+    private void notifyStateChange(State state) {
         for (Listener listener : listeners) {
-            listener.stateChanged(this.state);
+            listener.stateChanged(state);
         }
     }
 

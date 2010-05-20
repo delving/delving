@@ -159,8 +159,7 @@ public class RefinementPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                sipModel.getFieldMappingModel().commitCode();
-                sipModel.getRecordMappingModel().refreshCode();
+                sipModel.getRecordMappingModel().refreshCode(); // todo: somebody else do this?
             }
         });
         sipModel.getFieldMappingModel().addListener(new ModelStateListener());
