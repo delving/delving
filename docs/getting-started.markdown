@@ -1,4 +1,4 @@
-#Getting Started with Open Europeana Development
+#Getting Started with Delving Development
 
 <!--
 	TODO rewrite documentation to reflect changes after refactor (11-12-2009)
@@ -14,7 +14,7 @@ This document shows you how to setup your local development environment to start
 - ImageMagick 6.4 or higher
 
 
-## Open Europeana Modules ##
+## Delving Modules ##
 
 The Europeana Core environment contains the following modules:
 

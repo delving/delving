@@ -1,13 +1,13 @@
-Title:			How to Deploy Open Europeana  
+Title:			How to Deploy Delving
 Author:			Sjoerd Siebinga  
-Affiliation:	Open Europeana 
+Affiliation:	Delving
 Date:			January 30, 2010  
-Copyright:		2010 Open Europeana  
+Copyright:		2010 Delving
 				This work is licensed under a Creative Commons License.  
 				http://creativecommons.org/licenses/by-sa/2.5/
 Keywords:		
 
-# How to deploy Open Europeana #
+# How to deploy Delving #
 
 In this document you can find the instructions how to deploy the *Europeana Framework* on a server environment. For development
 setup please consult *develop.md*
