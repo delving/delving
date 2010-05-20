@@ -21,6 +21,7 @@
 package eu.europeana.sip.groovy;
 
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.model.RecordRoot;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,11 +37,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public class RecordMapping implements Iterable<FieldMapping> {
+    private static final String HEADER = "// SIP-Creator Mapping file";
     private static final String MAPPING_PREFIX = "//<<<";
     private static final String MAPPING_SUFFIX = "//>>>";
     private static final String RECORD_PREFIX = "output.record {";
     private static final String RECORD_SUFFIX = "}";
     private boolean singleFieldMapping;
+    private RecordRoot recordRoot;
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
@@ -73,6 +76,14 @@ public class RecordMapping implements Iterable<FieldMapping> {
         fireRefresh();
     }
 
+    public RecordRoot getRecordRoot() {
+        return recordRoot;
+    }
+
+    public void setRecordRoot(RecordRoot recordRoot) {
+        this.recordRoot = recordRoot;
+    }
+
     public void setFieldMapping(FieldMapping fieldMapping) {
         singleFieldMapping = true;
         fieldMappings.clear();
@@ -84,7 +95,11 @@ public class RecordMapping implements Iterable<FieldMapping> {
         fieldMappings.clear();
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
-            if (line.startsWith(MAPPING_PREFIX)) {
+            RecordRoot root = RecordRoot.fromLine(line);
+            if (root != null) {
+                this.recordRoot = root;
+            }
+            else if (line.startsWith(MAPPING_PREFIX)) {
                 String europeanaFieldName = line.substring(MAPPING_PREFIX.length()).trim();
                 EuropeanaField europeanaField = fieldMap.get(europeanaFieldName);
                 if (europeanaField == null) {
@@ -148,6 +163,12 @@ public class RecordMapping implements Iterable<FieldMapping> {
 
     private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited) {
         StringBuilder out = new StringBuilder();
+        if (delimited) {
+            out.append(HEADER).append('\n').append('\n');
+            if (recordRoot != null) {
+                out.append(recordRoot.toString()).append('\n').append('\n');
+            }
+        }
         int indent = 0;
         if (wrappedInRecord) {
             out.append(RECORD_PREFIX).append('\n');
@@ -155,7 +176,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
         }
         for (FieldMapping mapping : fieldMappings) {
             if (delimited) {
-                out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
+                out.append('\n').append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
             }
             for (String codeLine : mapping.getCodeLines()) {
                 if (codeLine.endsWith("}")) {

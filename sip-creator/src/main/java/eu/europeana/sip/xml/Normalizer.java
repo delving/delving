@@ -52,10 +52,10 @@ public class Normalizer implements Runnable {
 
     public void run() {
         try {
-            RecordRoot recordRoot = fileSet.getRecordRoot();
             InputStream inputStream = fileSet.getInputStream();
             OutputStream outputStream = fileSet.getOutputStream();
             String mapping = fileSet.getMapping();
+            RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
             Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
             MetadataParser parser = new MetadataParser(inputStream, recordRoot, listener);

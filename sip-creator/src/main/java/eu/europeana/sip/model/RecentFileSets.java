@@ -38,7 +38,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -193,14 +192,13 @@ public class RecentFileSets {
     }
 
     private class FileSetImpl implements FileSet {
-        private File inputFile, statisticsFile, mappingFile, recordRootFile, outputFile;
+        private File inputFile, statisticsFile, mappingFile, outputFile;
         private ExceptionHandler exceptionHandler;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
             this.statisticsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".statistics");
             this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
-            this.recordRootFile = new File(inputFile.getParentFile(), inputFile.getName() + ".record");
             this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
         }
 
@@ -339,50 +337,6 @@ public class RecentFileSets {
             }
             catch (IOException e) {
                 exceptionHandler.failure(e);
-            }
-        }
-
-        @Override
-        public RecordRoot getRecordRoot() {
-            checkWorkerThread();
-            if (recordRootFile.exists()) {
-                StringBuilder contents = new StringBuilder();
-                try {
-                    BufferedReader in = new BufferedReader(new FileReader(recordRootFile));
-                    int ch;
-                    while ((ch = in.read()) >= 0) {
-                        contents.append((char) ch);
-                    }
-                    in.close();
-                    return new RecordRoot(contents.toString());
-                }
-                catch (IOException e) {
-                    if (recordRootFile.delete()) {
-                        LOG.warn("Unable to delete "+recordRootFile);
-                    }
-                    exceptionHandler.failure(e);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public void setRecordRoot(RecordRoot recordRoot) {
-            checkWorkerThread();
-            if (recordRoot == null) {
-                if (!recordRootFile.delete()) {
-                    LOG.warn("Unable to delete "+recordRootFile);
-                }
-            }
-            else {
-                try {
-                    Writer out = new FileWriter(recordRootFile);
-                    out.write(recordRoot.toString());
-                    out.close();
-                }
-                catch (IOException e) {
-                    exceptionHandler.failure(e);
-                }
             }
         }
 

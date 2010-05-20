@@ -58,7 +58,6 @@ public class SipModel {
     private AnalysisParser analysisParser;
     private Normalizer normalizer;
     private AnalysisTree analysisTree;
-    private RecordRoot recordRoot;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
@@ -129,15 +128,15 @@ public class SipModel {
             @Override
             public void run() {
                 final List<Statistics> statistics = newFileSet.getStatistics();
-                final RecordRoot recordRoot = newFileSet.getRecordRoot();
                 final String mapping = newFileSet.getMapping();
                 final boolean outputFilePresent = newFileSet.hasOutputFile();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
-                        setRecordRootInternal(recordRoot);
                         recordMappingModel.getRecordMapping().setCode(mapping, europeanaFieldMap);
+                        RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
+                        setRecordRootInternal(recordRoot);
                         createMetadataParser();
                         if (recordRoot != null) {
                             normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
@@ -254,7 +253,9 @@ public class SipModel {
     public void setRecordRoot(RecordRoot recordRoot) {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
-        executor.execute(new RecordRootSetter());
+        recordMappingModel.getRecordMapping().setRecordRoot(recordRoot);
+        String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
+        executor.execute(new MappingSetter(code));
     }
 
     public TableModel getStatisticsTableModel() {
@@ -327,7 +328,6 @@ public class SipModel {
 
     private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
-        this.recordRoot = recordRoot;
         List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
         if (recordRoot != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
@@ -355,6 +355,7 @@ public class SipModel {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
+        RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
         if (recordRoot != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
         }
@@ -370,6 +371,7 @@ public class SipModel {
                 parseListener.updatedRecord(null);
             }
         }
+        RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
         if (recordRoot != null) {
             executor.execute(new NextRecordFetcher());
         }
@@ -378,6 +380,10 @@ public class SipModel {
     private class NextRecordFetcher implements Runnable {
         @Override
         public void run() {
+            RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
+            if (recordRoot == null) {
+                return;
+            }
             try {
                 if (metadataParser == null) {
                     metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, new MetadataParser.Listener() {
@@ -400,13 +406,6 @@ public class SipModel {
             catch (Exception e) {
                 exceptionHandler.failure(e);
             }
-        }
-    }
-
-    private class RecordRootSetter implements Runnable {
-        @Override
-        public void run() {
-            fileSet.setRecordRoot(recordRoot);
         }
     }
 

@@ -9,16 +9,29 @@ import javax.xml.namespace.QName;
  */
 
 public class RecordRoot {
+    private static final String PREFIX = "// ## RecordRoot ";
     private QName rootQName;
     private int recordCount;
 
-    public RecordRoot(String string) {
-        String[] parts = string.split("\n");
-        if (parts.length != 2) {
-            throw new RuntimeException("Expected two lines");
+    public static RecordRoot fromMapping(String mapping) {
+        for (String line : mapping.split("\n")) {
+            RecordRoot recordRoot = fromLine(line);
+            if (recordRoot != null) {
+                return recordRoot;
+            }
         }
-        this.rootQName = QName.valueOf(parts[0]);
-        this.recordCount = Integer.parseInt(parts[1]);
+        return null;
+    }
+
+    public static RecordRoot fromLine(String line) {
+        if (line.startsWith(PREFIX)) {
+            String recordRootString = line.substring(PREFIX.length());
+            String[] parts = recordRootString.split(" ");
+            QName qname = QName.valueOf(parts[0]);
+            int recordCount = Integer.parseInt(parts[1]);
+            return new RecordRoot(qname, recordCount);
+        }
+        return null;
     }
 
     public RecordRoot(QName rootQName, int recordCount) {
@@ -35,6 +48,6 @@ public class RecordRoot {
     }
 
     public String toString() {
-        return rootQName + "\n" + recordCount;
+        return PREFIX + rootQName + " " + recordCount;
     }
 }

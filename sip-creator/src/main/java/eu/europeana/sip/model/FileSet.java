@@ -62,8 +62,4 @@ public interface FileSet {
 
     void setMapping(String mapping);
 
-    RecordRoot getRecordRoot();
-
-    void setRecordRoot(RecordRoot recordRoot);
-
 }
