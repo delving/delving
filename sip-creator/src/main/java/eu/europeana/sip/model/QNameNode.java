@@ -194,4 +194,9 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
             return qName.getLocalPart();
         }
     }
+
+    @Override
+    public int compareTo(AnalysisTree.Node other) {
+        return getVariableName().compareTo(other.getVariableName());
+    }
 }

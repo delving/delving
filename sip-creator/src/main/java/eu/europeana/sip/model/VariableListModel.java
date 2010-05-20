@@ -26,6 +26,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,6 +41,7 @@ public class VariableListModel extends AbstractListModel {
     public void setVariableList(List<AnalysisTree.Node> variableList) {
         clear();
         this.variableList.addAll(variableList);
+        Collections.sort(this.variableList);
         fireIntervalAdded(this, 0, getSize());
     }
 

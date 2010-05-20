@@ -41,7 +41,7 @@ public class AnalysisTree implements Serializable {
     private static final long serialVersionUID = -15171971879119571L;
     private QNameNode root;
 
-    public interface Node extends TreeNode {
+    public interface Node extends TreeNode, Comparable<Node> {
         Statistics getStatistics();
 
         TreePath getTreePath();
