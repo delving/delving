@@ -103,16 +103,6 @@ public @interface Europeana {
     boolean type() default false;
 
     /**
-     * Is this field mappable (Source Field to Europeana Field). The are quite a few fields that are created through
-     * Solr copyfields and are therefore not directly mappable during the mapping face.
-     *
-     * Note: CopyFields can never be mappable
-     *
-     * @return true if it is
-     */
-    boolean mappable() default false;
-
-    /**
      * There are some fields that are added by the Europeana System during the IngestionPhase based on meta-information
      * provided with the DataSet during submission.
      *
@@ -129,7 +119,7 @@ public @interface Europeana {
     boolean importAddition() default false;
 
     /**
-     *  The annotated fields can be valid at different levels in the application. The ValidationLevel will be used to
+     *  The annotated fields can be valid at different levels in the application. The FieldCategory will be used to
      * create a Data Model Validator to be used at various stages of ingestion.
      *
      * The validator should also be used in the Sip-Creator and could be used in external applications. 
@@ -137,7 +127,7 @@ public @interface Europeana {
      * @return the validation level of a certain field
      */
 
-    ValidationLevel validation() default ValidationLevel.ESE_OPTIONAL;
+    FieldCategory category() default FieldCategory.ESE_OPTIONAL;
 
     /**
      * The converter is the name of the groovy method in ToolCode.groovy which is to be applied to the

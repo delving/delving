@@ -26,7 +26,7 @@ package eu.europeana.definitions.annotations;
  * @since Mar 24, 2010 1:53:50 PM
  */
 
-public enum ValidationLevel {
+public enum FieldCategory {
     ESE_OPTIONAL,
     ESE_REQUIRED,
     ESE_PLUS_OPTIONAL,

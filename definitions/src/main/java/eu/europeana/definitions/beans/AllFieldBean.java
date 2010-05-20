@@ -24,8 +24,8 @@ package eu.europeana.definitions.beans;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
 
-import static eu.europeana.definitions.annotations.ValidationLevel.COPY_FIELD;
-import static eu.europeana.definitions.annotations.ValidationLevel.ESE_OPTIONAL;
+import static eu.europeana.definitions.annotations.FieldCategory.COPY_FIELD;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_OPTIONAL;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -36,82 +36,82 @@ import static eu.europeana.definitions.annotations.ValidationLevel.ESE_OPTIONAL;
 
 public class AllFieldBean extends FullBean {
 
-    @Europeana(validation = COPY_FIELD, facet = false, facetPrefix = "loc", fullDoc = false)
+    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "loc", fullDoc = false)
     @Solr(fieldType = "string")
     String[] location;
 
-    @Europeana(validation = COPY_FIELD, facet = false, facetPrefix = "cont", fullDoc = false)
+    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "cont", fullDoc = false)
     @Solr(fieldType = "string")
     String[] contributor;
 
-    @Europeana(validation = COPY_FIELD, facet = false, facetPrefix = "ut", fullDoc = false)
+    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "ut", fullDoc = false)
     @Solr(fieldType = "string")
     String[] userTags;
 
-    @Europeana(validation = COPY_FIELD, facet = false, facetPrefix = "sub", fullDoc = false)
+    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "sub", fullDoc = false)
     @Solr(fieldType = "string")
     String[] SUBJECT;
 
 
-    @Europeana(validation = ESE_OPTIONAL, fullDoc = false, mappable = true)
+    @Europeana(category = ESE_OPTIONAL, fullDoc = false)
     @Solr(prefix = "europeana", localName = "unstored", stored = false)
     String[] europeanaUnstored;
 
     // copy fields
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] text;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] description;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] date;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] format;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] publisher;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] source;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] rights;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] identifier;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] relation;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] subject;
 
     // wh copy fields
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] who;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] when;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] what;
 
-    @Europeana(validation = COPY_FIELD, fullDoc = false)
+    @Europeana(category = COPY_FIELD, fullDoc = false)
     @Solr()
     String[] where;
 }

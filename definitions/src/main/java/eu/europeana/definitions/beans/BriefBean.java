@@ -23,9 +23,12 @@ package eu.europeana.definitions.beans;
 
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.annotations.ValidationLevel;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
+
+import static eu.europeana.definitions.annotations.FieldCategory.COPY_FIELD;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS_REQUIRED;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_REQUIRED;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -38,40 +41,40 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
 
-    @Europeana(validation = ValidationLevel.ESE_PLUS_REQUIRED)
+    @Europeana(category = ESE_PLUS_REQUIRED)
     @Solr(prefix = "europeana", localName = "europeanaCollectionName", multivalued = false, required = true)
     String[] europeanaCollectionName;
 
-    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "prov", briefDoc = true)
+    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "prov", briefDoc = true)
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(validation = ValidationLevel.ESE_REQUIRED, briefDoc = true, object = true, mappable = true)
+    @Europeana(category = ESE_REQUIRED, briefDoc = true, object = true)
     @Solr(prefix = "europeana", localName = "object")
     String[] europeanaObject;
 
-    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "coun")
+    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "coun")
     @Solr(fieldType = "string")
     String[] country;
 
-    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "type", briefDoc = true, type = true)
+    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "type", briefDoc = true, type = true)
     @Solr(localName = "type", fieldType = "string")
     String[] docType;
 
-    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "lang", briefDoc = true)
+    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "lang", briefDoc = true)
     @Solr(fieldType = "string")
     String[] language;
 
-    @Europeana(validation = ValidationLevel.COPY_FIELD, facet = true, facetPrefix = "yr", briefDoc = true, converter="extractYear")
+    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "yr", briefDoc = true, converter="extractYear")
     @Solr(fieldType = "string")
     String[] year;
 
-    @Europeana(validation = ValidationLevel.COPY_FIELD, briefDoc = true)
+    @Europeana(category = COPY_FIELD, briefDoc = true)
     @Solr()
     String[] title;
 
     @Solr()
-    @Europeana(validation = ValidationLevel.COPY_FIELD, briefDoc = true)
+    @Europeana(category = COPY_FIELD, briefDoc = true)
     String[] creator;
 
     @Override

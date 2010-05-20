@@ -70,11 +70,11 @@ public interface AnnotationProcessor {
 
     /**
      * Fetch the fields which
-     * @param validationLevel which level?
+     * @param fieldCategory which level?
      * @return the fields which match
      */
     
-    Set<? extends EuropeanaField> getFields(ValidationLevel validationLevel);
+    Set<? extends EuropeanaField> getFields(FieldCategory fieldCategory);
 
     /**
      * Get an array of all solr field names which can be passed easily

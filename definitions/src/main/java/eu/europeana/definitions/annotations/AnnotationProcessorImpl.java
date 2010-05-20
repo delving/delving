@@ -74,10 +74,10 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     @Override
-    public Set<? extends EuropeanaField> getFields(ValidationLevel validationLevel) {
+    public Set<? extends EuropeanaField> getFields(FieldCategory fieldCategory) {
         Set<EuropeanaFieldImpl> fields = new HashSet<EuropeanaFieldImpl>();
         for (EuropeanaFieldImpl field : solrFields) {
-            if (field.getValidationLevel() == validationLevel) {
+            if (field.getCategory() == fieldCategory) {
                 fields.add(field);
             }
         }
@@ -132,7 +132,8 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                             facetFields.add(europeanaField);
                             facetMap.put(europeanaField.getFacetName(), europeanaField.getFacetPrefix());
                         }
-                        if (europeanaField.isMappable()) {
+                        if (europeanaField.getCategory() != FieldCategory.COPY_FIELD
+                                && europeanaField.getCategory() != FieldCategory.INDEX_TIME_FIELD) {
                             mappableFields.add(europeanaField);
                         }
                         solrFields.add(europeanaField);
@@ -263,11 +264,6 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         }
 
         @Override
-        public boolean isMappable() {
-            return europeanaAnnotation.mappable();
-        }
-
-        @Override
         public String getFacetName() {
             if (europeanaAnnotation.facet()) {
                 if (!solrAnnotation.localName().isEmpty()) {
@@ -288,8 +284,8 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         }
 
         @Override
-        public ValidationLevel getValidationLevel() {
-            return europeanaAnnotation.validation();
+        public FieldCategory getCategory() {
+            return europeanaAnnotation.category();
         }
 
         @Override

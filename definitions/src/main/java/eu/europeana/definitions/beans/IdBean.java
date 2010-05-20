@@ -22,8 +22,8 @@
 package eu.europeana.definitions.beans;
 
 import eu.europeana.definitions.annotations.Europeana;
+import eu.europeana.definitions.annotations.FieldCategory;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.annotations.ValidationLevel;
 import eu.europeana.definitions.presentation.DocId;
 
 import java.util.Date;
@@ -37,11 +37,11 @@ import java.util.Date;
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true, validation = ValidationLevel.ESE_PLUS_REQUIRED)
+    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS_REQUIRED)
     @Solr(prefix = "europeana", localName = "uri", multivalued = false, required = true)
     String europeanaUri;
 
-    @Europeana(validation = ValidationLevel.INDEX_TIME_FIELD)
+    @Europeana(category = FieldCategory.INDEX_TIME_FIELD)
     @Solr(localName = "timestamp", multivalued = false, defaultValue = "NOW")
     Date timestamp;
 

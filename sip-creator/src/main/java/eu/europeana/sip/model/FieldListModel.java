@@ -81,7 +81,10 @@ public class FieldListModel extends AbstractListModel {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             EuropeanaField europeanaField = (EuropeanaField) value;
             JLabel label = (JLabel) super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
-            switch (europeanaField.getValidationLevel()) {
+            if (isSelected) {
+                label.setForeground(new Color(1f, 1f, 1f));
+            }
+            else switch (europeanaField.getCategory()) {
                 case COPY_FIELD:
                 case INDEX_TIME_FIELD:
                     label.setForeground(new Color(1f, 0f, 0f));
