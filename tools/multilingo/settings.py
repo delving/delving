@@ -6,7 +6,7 @@ if proj_root[-1] == '/':
     # to make it consistent, remove trailing space
     proj_root = proj_root[:-1]
 
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     #('Jacob Lundqvist', 'jacob.lundqvist@gmail.com'),
@@ -39,6 +39,10 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+# If you set this to False, Django will not format dates, numbers and
+# calendars according to the current locale
+USE_L10N = True
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 #local_settings MEDIA_ROOT = '/full/path/to/static/media'
@@ -67,10 +71,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "apps.multi_lingo.utils.global_environ",
     )
 
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
+#     'django.template.loaders.eggs.load_template_source',
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+#    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
@@ -91,9 +102,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.contenttypes',
-    'django.contrib.markup',
+    #'django.contrib.markup',
     'django.contrib.sessions',
     'django.contrib.sites',
+
     'rosetta',
     'apps.multi_lingo',
 )

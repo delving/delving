@@ -25,7 +25,6 @@
 """
 
 import os
-import subprocess
 import threading
 
 from django.conf import settings
@@ -34,6 +33,8 @@ from django.db import models
 from django.db.models.signals import post_delete
 from django.core.files.storage import FileSystemStorage
 
+
+from gen_utils.shell_cmd import cmd_execute
 
 import views
 
@@ -65,7 +66,6 @@ class TranslatePage(models.Model):
         update_translations()
 
 
-
 def update_translations():
     #print 'running update_translations...',
     views.update_template_list()
@@ -77,8 +77,7 @@ def update_translations():
     #print 'Done!'
 
 
-
-def post_delete_cb(sender, instance, **kwargs):
+def translate_page_post_delete_cb(sender, instance, **kwargs):
     """We use a timer to make sure we only run update_translations() once on
     multiple deletes"""
     global T_DELETE
@@ -87,39 +86,18 @@ def post_delete_cb(sender, instance, **kwargs):
     T_DELETE = threading.Timer(2.0, update_translations)
     T_DELETE.start()
 
+post_delete.connect(translate_page_post_delete_cb, sender=TranslatePage)
 
 
 
-def cmd_execute(cmd, cwd=''):
-    "Returns 0 on success, or error message on failure."
-    result = 0
-    retcode, stdout, stderr = cmd_execute_output(cmd, cwd)
-    if retcode:
-        result = 'retcode: %s' % retcode
-        if stdout:
-            result += '\nstdout: %s' % stdout
-        if stderr:
-            result += '\nstderr: %s' % stderr
-    return result
+
+class CssFile(models.Model)
 
 
 
-def cmd_execute_output(cmd, cwd=''):
-    "Returns retcode,stdout,stderr."
-    if isinstance(cmd, (list, tuple)):
-        cmd = ' '.join(cmd)
-    try:
-        p = subprocess.Popen(cmd, shell=True, cwd=cwd,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = p.communicate()
-        retcode = p.returncode
-    except:
-        retcode = 1
-        stdout = ''
-        stderr = 'cmd_execute() exception - shouldnt normally happen'
-    return retcode, stdout, stderr
-
-
+#
+#  Startup checks
+#
 
 def check_template_link_exists():
     "To be able to download translation pages a link must exist, create if not found."
@@ -134,6 +112,4 @@ def check_template_link_exists():
         print msg
         raise exceptions.ImproperlyConfigured(msg)
 
-
-post_delete.connect(post_delete_cb, sender=TranslatePage)
 check_template_link_exists()
