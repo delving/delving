@@ -24,6 +24,7 @@ package eu.europeana.sip.model;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.MetadataRecord;
@@ -62,12 +63,12 @@ public class SipModel {
     private FieldListModel fieldListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private ToolCodeModel toolCodeModel = new ToolCodeModel();
-    private MappingModel recordMappingModel = new MappingModel(true, toolCodeModel);
-    private MappingModel fieldMappingModel = new MappingModel(false, toolCodeModel);
+    private CompileModel recordCompileModel = new CompileModel(true, toolCodeModel);
+    private CompileModel fieldCompileModel = new CompileModel(false, toolCodeModel);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
-    private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel(recordMappingModel.getRecordMapping());
+    private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel(recordCompileModel.getRecordMapping());
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
     private MetadataParser metadataParser;
@@ -77,6 +78,8 @@ public class SipModel {
         void updatedFileSet(FileSet fileSet);
 
         void updatedRecordRoot(RecordRoot recordRoot);
+
+        void updatedGlobalFieldModel(GlobalFieldModel globalFieldModel);
     }
 
     public interface AnalysisListener {
@@ -92,14 +95,14 @@ public class SipModel {
     public SipModel() {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
-        parseListeners.add(recordMappingModel);
-        parseListeners.add(fieldMappingModel);
-        fieldMappingModel.addListener(new MappingModel.Listener() {
+        parseListeners.add(recordCompileModel);
+        parseListeners.add(fieldCompileModel);
+        fieldCompileModel.addListener(new CompileModel.Listener() {
 
             @Override
-            public void stateChanged(MappingModel.State state) {
-                if (state == MappingModel.State.COMMITTED) {
-                    String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
+            public void stateChanged(CompileModel.State state) {
+                if (state == CompileModel.State.COMMITTED) {
+                    String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
                     executor.execute(new MappingSetter(code));
                 }
             }
@@ -134,9 +137,12 @@ public class SipModel {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
-                        recordMappingModel.getRecordMapping().setCode(mapping, europeanaFieldMap);
-                        RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
+                        RecordMapping recordMapping = recordCompileModel.getRecordMapping();
+                        recordMapping.setCode(mapping, europeanaFieldMap);
+                        RecordRoot recordRoot = recordMapping.getRecordRoot();
                         setRecordRootInternal(recordRoot);
+                        setGlobalFieldModelInternal(recordMapping.getGlobalFieldModel());
+                        fieldCompileModel.getRecordMapping().setGlobalFieldModel(recordMapping.getGlobalFieldModel());
                         createMetadataParser();
                         if (recordRoot != null) {
                             normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
@@ -253,9 +259,19 @@ public class SipModel {
     public void setRecordRoot(RecordRoot recordRoot) {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
-        recordMappingModel.getRecordMapping().setRecordRoot(recordRoot);
-        String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
+        recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
+        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
+    }
+
+    public void setGlobalField(GlobalField globalField, String value) {
+        recordCompileModel.getRecordMapping().getGlobalFieldModel().set(globalField, value);
+        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
+        executor.execute(new MappingSetter(code));
+    }
+
+    public GlobalFieldModel getGlobalFieldModel() {
+        return recordCompileModel.getRecordMapping().getGlobalFieldModel();
     }
 
     public TableModel getStatisticsTableModel() {
@@ -276,7 +292,7 @@ public class SipModel {
     }
 
     public ListModel getUnmappedFieldListModel() {
-        return fieldListModel.getUnmapped(recordMappingModel.getRecordMapping());
+        return fieldListModel.getUnmapped(recordCompileModel.getRecordMapping());
     }
 
     public ListModel getVariablesListModel() {
@@ -285,15 +301,15 @@ public class SipModel {
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordMappingModel.getRecordMapping().add(fieldMapping);
-        String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
+        recordCompileModel.getRecordMapping().add(fieldMapping);
+        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordMappingModel.getRecordMapping().remove(fieldMapping);
-        String code = recordMappingModel.getRecordMapping().getCodeForPersistence();
+        recordCompileModel.getRecordMapping().remove(fieldMapping);
+        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
     }
 
@@ -311,15 +327,22 @@ public class SipModel {
         executor.execute(new NextRecordFetcher());
     }
 
-    public MappingModel getRecordMappingModel() {
-        return recordMappingModel;
+    public CompileModel getRecordMappingModel() {
+        return recordCompileModel;
     }
 
-    public MappingModel getFieldMappingModel() {
-        return fieldMappingModel;
+    public CompileModel getFieldMappingModel() {
+        return fieldCompileModel;
     }
 
     // === privates
+
+    private void setGlobalFieldModelInternal(GlobalFieldModel globalFieldModel) {
+        checkSwingThread();
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedGlobalFieldModel(globalFieldModel);
+        }
+    }
 
     private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
@@ -350,7 +373,7 @@ public class SipModel {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
-        RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
+        RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
         if (recordRoot != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
         }
@@ -366,7 +389,7 @@ public class SipModel {
                 parseListener.updatedRecord(null);
             }
         }
-        RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
+        RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
         if (recordRoot != null) {
             executor.execute(new NextRecordFetcher());
         }
@@ -375,7 +398,7 @@ public class SipModel {
     private class NextRecordFetcher implements Runnable {
         @Override
         public void run() {
-            RecordRoot recordRoot = recordMappingModel.getRecordMapping().getRecordRoot();
+            RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
             if (recordRoot == null) {
                 return;
             }

@@ -23,6 +23,7 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
@@ -64,7 +65,6 @@ import java.awt.event.ActionListener;
  */
 
 public class AnalysisPanel extends JPanel {
-    private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private static final String RECORDS = "%d Records";
     private static final String PERFORM_ANALYSIS = "Analyze %s";
@@ -73,25 +73,40 @@ public class AnalysisPanel extends JPanel {
     private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
+    private GlobalFieldPanel globalFieldPanel;
     private JTree statisticsJTree;
     private SipModel sipModel;
 
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
+        this.globalFieldPanel = new GlobalFieldPanel(sipModel);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
-        gbc.gridx = gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
         gbc.weighty = 0.95;
-        gbc.fill = GridBagConstraints.BOTH;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 2;
         add(createTreePanel(), gbc);
-        gbc.gridx++;
+
+        gbc.weighty = 0.45;
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 1;
         add(createVariablesPanel(), gbc);
-        gbc.gridy++;
+        
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        add(globalFieldPanel, gbc);
+
         gbc.weighty = 0.05;
         gbc.gridwidth = 2;
         gbc.gridx = 0;
+        gbc.gridy = 2;
         add(createAnalyzePanel(), gbc);
         wireUp();
     }
@@ -163,6 +178,11 @@ public class AnalysisPanel extends JPanel {
             @Override
             public void updatedRecordRoot(RecordRoot recordRoot) {
                 recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
+            }
+
+            @Override
+            public void updatedGlobalFieldModel(GlobalFieldModel globalFieldModel) {
+                globalFieldPanel.refresh();
             }
         });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {

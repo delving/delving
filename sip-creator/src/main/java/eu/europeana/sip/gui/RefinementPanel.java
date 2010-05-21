@@ -22,7 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.model.MappingModel;
+import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -200,10 +200,10 @@ public class RefinementPanel extends JPanel {
         return scroll;
     }
 
-    private class ModelStateListener implements MappingModel.Listener {
+    private class ModelStateListener implements CompileModel.Listener {
 
         @Override
-        public void stateChanged(final MappingModel.State state) {
+        public void stateChanged(final CompileModel.State state) {
             SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

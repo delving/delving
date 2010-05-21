@@ -21,6 +21,7 @@
 package eu.europeana.sip.groovy;
 
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.RecordRoot;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
     private static final String RECORD_SUFFIX = "}";
     private boolean singleFieldMapping;
     private RecordRoot recordRoot;
+    private GlobalFieldModel globalFieldModel;
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
@@ -80,6 +82,14 @@ public class RecordMapping implements Iterable<FieldMapping> {
         return recordRoot;
     }
 
+    public void setGlobalFieldModel(GlobalFieldModel globalFieldModel) {
+        this.globalFieldModel = globalFieldModel;
+    }
+
+    public GlobalFieldModel getGlobalFieldModel() {
+        return globalFieldModel;
+    }
+
     public void setRecordRoot(RecordRoot recordRoot) {
         this.recordRoot = recordRoot;
     }
@@ -91,16 +101,27 @@ public class RecordMapping implements Iterable<FieldMapping> {
         fireRefresh();
     }
 
+    public boolean isSingleFieldMapping() {
+        return singleFieldMapping;
+    }
+
     public void setCode(String code, Map<String, EuropeanaField> fieldMap) {
         fieldMappings.clear();
         recordRoot = null;
+        if (!singleFieldMapping) {
+            globalFieldModel = new GlobalFieldModel();
+        }
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
             RecordRoot root = RecordRoot.fromLine(line);
             if (root != null) {
                 this.recordRoot = root;
+                continue;
             }
-            else if (line.startsWith(MAPPING_PREFIX)) {
+            if (!singleFieldMapping && globalFieldModel.fromLine(line)) {
+                continue;
+            }
+            if (line.startsWith(MAPPING_PREFIX)) {
                 String europeanaFieldName = line.substring(MAPPING_PREFIX.length()).trim();
                 EuropeanaField europeanaField = fieldMap.get(europeanaFieldName);
                 if (europeanaField == null) {
@@ -169,6 +190,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
             if (recordRoot != null) {
                 out.append(recordRoot.toString()).append('\n').append('\n');
             }
+            out.append(globalFieldModel.toString()).append('\n');
         }
         int indent = 0;
         if (wrappedInRecord) {

@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.MappingModel;
+import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -48,7 +48,7 @@ public class RecordPanel extends JPanel {
     private JButton rewindButton = new JButton("Rewind");
     private JButton nextButton = new JButton("Next");
 
-    public RecordPanel(SipModel sipModel, MappingModel mappingModel) {
+    public RecordPanel(SipModel sipModel, CompileModel compileModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Parsed Record"));
@@ -59,7 +59,7 @@ public class RecordPanel extends JPanel {
         gbc.weighty = 0.99;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
-        JTextArea area = new JTextArea(mappingModel.getInputDocument());
+        JTextArea area = new JTextArea(compileModel.getInputDocument());
         area.setEditable(false);
         add(scroll(area), gbc);
         gbc.fill = GridBagConstraints.HORIZONTAL;

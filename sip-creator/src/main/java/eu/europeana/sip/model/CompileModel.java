@@ -52,7 +52,7 @@ import java.util.concurrent.Executors;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MappingModel implements SipModel.ParseListener, RecordMapping.Listener {
+public class CompileModel implements SipModel.ParseListener, RecordMapping.Listener {
     public final static int COMPILE_DELAY = 500;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
@@ -78,11 +78,12 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         void stateChanged(State state);
     }
 
-    public MappingModel(boolean multipleMappings, ToolCodeModel toolCodeModel) {
+    public CompileModel(boolean multipleMappings, ToolCodeModel toolCodeModel) {
         this.multipleMappings = multipleMappings;
         this.recordMapping.addListener(this);
         this.toolCodeModel = toolCodeModel;
     }
+
 
     public void addListener(Listener listener) {
         listeners.add(listener);
@@ -192,7 +193,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
         public void run() {
             try {
                 String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-                MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
+                MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer, recordMapping.getGlobalFieldModel());
                 mappingScriptBinding.setRecord(metadataRecord);
                 new GroovyShell(mappingScriptBinding).evaluate(toolCodeModel.getToolCode() + code);
                 compilationComplete(writer.toString());
