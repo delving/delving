@@ -39,6 +39,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -87,6 +89,16 @@ public class GlobalFieldPanel extends JPanel {
         });
         field.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                setValue(field, globalField);
+            }
+        });
+        field.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
                 setValue(field, globalField);
             }
         });

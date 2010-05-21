@@ -30,6 +30,7 @@ package eu.europeana.sip.model;
 public enum GlobalField {
     COLLECTION_ID("Collection ID", "collectionId"),
     PROVIDER_NAME("Provider Name", "providerName"),
+    PROVIDER_ABBREVIATION("Provider Abbreviation", "providerAbbreviation"),
     COLLECTION_NAME("Collection Name", "collectionName"),
     LANGUAGE("Language", "language"),
     COUNTRY("Country", "country"),
