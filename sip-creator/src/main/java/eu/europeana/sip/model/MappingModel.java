@@ -199,7 +199,7 @@ public class MappingModel implements SipModel.ParseListener, RecordMapping.Liste
                 if (editedCode == null) {
                     notifyStateChange(State.PRISTINE);
                 }
-                else {
+                else if (!multipleMappings) {
                     FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
                     if (fieldMapping != null) {
                         fieldMapping.setCode(editedCode);

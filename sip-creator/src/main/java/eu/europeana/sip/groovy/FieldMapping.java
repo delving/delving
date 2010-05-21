@@ -60,7 +60,7 @@ public class FieldMapping {
                 }
             }
         }
-        return true;
+        return !walk.hasNext();
     }
 
     public void setCode(String code) {

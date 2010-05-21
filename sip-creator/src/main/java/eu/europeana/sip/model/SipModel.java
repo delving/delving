@@ -321,11 +321,6 @@ public class SipModel {
 
     // === privates
 
-//    private void setRecordMapping(String recordMappingString) {
-//        checkSwingThread();
-//        recordMapping.setCode(recordMappingString);
-//    }
-
     private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
         List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
