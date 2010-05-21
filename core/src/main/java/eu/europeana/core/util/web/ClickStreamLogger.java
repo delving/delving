@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
  *         <p/>
  *         This interface is used add custom logging information to the application log.
  *         These logs are used to trace user behavior with special focus for how to best
- *         provide multilingual support of  the Europeana Users.
+ *         provide multilingual support for the Europeana Users.
  *         <p/>
  *         <p/>
  *         The idea is to log

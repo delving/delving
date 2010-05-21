@@ -132,7 +132,7 @@ public @interface Europeana {
      *  The annotated fields can be valid at different levels in the application. The ValidationLevel will be used to
      * create a Data Model Validator to be used at various stages of ingestion.
      *
-     * The validator should also be used in the Sip-Creator and could be used in external applications. 
+     * The validator should also be used in the Sip-Creator and could be used in external applications.
      *
      * @return the validation level of a certain field
      */
