@@ -316,32 +316,31 @@ table caption {
     margin: 0;
     color: #555;
 }
-.brief-thumb-container {
+.brief-thumb-container, .brief-thumb-container-listview, #img-full {
     background: #e5e5e5;
     overflow: hidden;
     text-align: center;
     padding: 0.5em;
  }
 
-.brief-thumb-container img{
+.brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img, #img-full img{
     border: 4px solid #fff;
+    -moz-box-shadow: 3px 3px 4px #bbb;
+    -webkit-box-shadow: 3px 3px 4px #bbb;
+    box-shadow: 3px 3px 4px #bbb;
  }
 .brief-content-container {
     /*border: 1px solid #e5e5e5;*/
     padding: .5em;
     min-height: 75px;
 }
-.brief-content-container p {
-    font-size: .85em;
-}
 /* table wraps item detail / img and text
 ================================================*/
 #item-detail #img-full {
     overflow-x: hidden;
     overflow-y: hidden;
-    text-align: left;
-    margin: 0;
-    padding: 0;
+    text-align: center;
+
 }
 
 #item-detail h4 {
@@ -366,6 +365,10 @@ table caption {
 #item-detail h4.IMAGE {
     background: url(../images/icon-image.gif) left top no-repeat;
 }
+
+
+#item-detail table th {font-weight: bold; padding-right: 10px; text-align: right;}
+
 
 /* UI Button styles */
 .fg-button {
