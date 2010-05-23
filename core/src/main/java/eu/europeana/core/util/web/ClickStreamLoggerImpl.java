@@ -42,6 +42,7 @@ import java.util.Map;
  */
 public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());
+    private static String VERSION = "1.0";
 
     @Override
     public void logUserAction(HttpServletRequest request, UserAction action, ModelAndView model) {
@@ -185,8 +186,8 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         String userAgent = request.getHeader("User-Agent");
         String referer = request.getHeader("referer");
         return MessageFormat.format(
-                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}",
-                userId, language, date, ip, reqUrl, userAgent, referer);
+                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, v={7}",
+                userId, language, date, ip, reqUrl, userAgent, referer, VERSION);
     }
 
     private static String getRequestUrl(HttpServletRequest request) {
