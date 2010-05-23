@@ -39,65 +39,68 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String tab;
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
-//    @Value("#{europeanaProperties['portal.name']}")
-    private String portalName = "portal"; // must be injected later
 
+    private String portalName = "portal";
+
+    @Override
     public void setPortalName(String portalName) {
         this.portalName = portalName;
     }
 
+    @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public static DocIdWindowPager fetchPager(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException, EuropeanaQueryException {
-        DocIdWindowPagerImpl pager = new DocIdWindowPagerImpl();
-        pager.query = originalBriefSolrQuery.getQuery();
-        int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery, pager);
-        int solrStartRow = getSolrStart(pager, fullDocUriInt);
-        QueryResponse queryResponse = getQueryResponse(originalBriefSolrQuery, solrServer, pager, solrStartRow);
+    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException, EuropeanaQueryException {
+        this.query = originalBriefSolrQuery.getQuery();
+        int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
+        this.fullDocUriInt = fullDocUriInt;
+        int solrStartRow = getSolrStart(fullDocUriInt);
+        QueryResponse queryResponse = getQueryResponse(originalBriefSolrQuery, solrServer, solrStartRow);
         if (queryResponse.getResults() == null) {
-            return null; // if no results are found return null to signify that docIdPage can be created.
+            throw new EuropeanaQueryException("no results for this query"); // if no results are found return null to signify that docIdPage can be created.
+        }
+        else if (queryResponse.getResults().size() == 0) {
+            throw new EuropeanaQueryException("no results for this query"); // if no results are found return null to signify that docIdPage can be created.
         }
         List<? extends DocId> list = queryResponse.getBeans(idBean);
         final SolrDocumentList response = queryResponse.getResults();
         int offset = (int) response.getStart();
         int numFound = (int) response.getNumFound();
-        setNextAndPrevious(pager, fullDocUriInt, list, offset, numFound);
-        pager.docIdWindow = new DocIdWindowImpl(list, offset, numFound);
-        if (pager.hasNext) {
-            pager.setNextFullDocUrl(httpParameters);
+        setNextAndPrevious(fullDocUriInt, list, offset, numFound);
+        this.docIdWindow = new DocIdWindowImpl(list, offset, numFound);
+        if (this.hasNext) {
+            this.setNextFullDocUrl(httpParameters);
         }
-        if (pager.hasPrevious) {
-            pager.setPreviousFullDocUrl(httpParameters);
+        if (this.hasPrevious) {
+            this.setPreviousFullDocUrl(httpParameters);
         }
-        pager.fullDocUriInt = fullDocUriInt;
-        return pager;
     }
 
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    static int getFullDocInt(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, DocIdWindowPagerImpl pager) {
-        pager.fullDocUri = fetchParameter(httpParameters, "uri", "");
-        if (pager.fullDocUri.isEmpty()) {
+    int getFullDocInt(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery) {
+        this.fullDocUri = fetchParameter(httpParameters, "uri", "");
+        if (this.fullDocUri.isEmpty()) {
             throw new IllegalArgumentException("Expected URI"); // todo: a better exception
         }
-        pager.startPage = fetchParameter(httpParameters, "startPage", "1");
-        pager.tab = fetchParameter(httpParameters, "tab", "all");
-        pager.pageId = fetchParameter(httpParameters, "pageId", "");
-        pager.format = fetchParameter(httpParameters, "format", "");
-        pager.siwa = fetchParameter(httpParameters, "siwa", "");
-        if (pager.pageId != null) {
-            pager.setReturnToResults(httpParameters);
+        this.startPage = fetchParameter(httpParameters, "startPage", "1");
+        this.tab = fetchParameter(httpParameters, "tab", "all");
+        this.pageId = fetchParameter(httpParameters, "pageId", "");
+        this.format = fetchParameter(httpParameters, "format", "");
+        this.siwa = fetchParameter(httpParameters, "siwa", "");
+        if (this.pageId != null) {
+            this.setReturnToResults(httpParameters);
         }
         int fullDocUriInt = 0;
-        if (!pager.startPage.isEmpty()) {
+        if (!this.startPage.isEmpty()) {
             fullDocUriInt = Integer.parseInt(fetchParameter(httpParameters, "start", ""));
-            pager.setQueryStringForPaging(originalBriefSolrQuery, pager.startPage);
+            this.setQueryStringForPaging(originalBriefSolrQuery, this.startPage);
         }
         return fullDocUriInt;
     }
 
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    private static int getSolrStart(DocIdWindowPagerImpl pager, int fullDocUriInt) {
+    private int getSolrStart(int fullDocUriInt) {
         int solrStartRow = fullDocUriInt;
-        pager.hasPrevious = fullDocUriInt > 1;
+        this.hasPrevious = fullDocUriInt > 1;
         if (fullDocUriInt > 1) {
             solrStartRow -= 2;
         }
@@ -108,28 +111,28 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     }
 
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    private static void setNextAndPrevious(DocIdWindowPagerImpl pager, int fullDocUriInt, List<? extends DocId> list, int offset, int numFound) {
+    private void setNextAndPrevious(int fullDocUriInt, List<? extends DocId> list, int offset, int numFound) {
         if (offset + 2 < numFound) {
-            pager.hasNext = true;
+            this.hasNext = true;
         }
         else if (fullDocUriInt == 1 && list.size() == 2) {
-            pager.hasNext = true;
+            this.hasNext = true;
         }
         if (fullDocUriInt > numFound || list.size() < 2) {
-            pager.hasPrevious = false;
-            pager.hasNext = false;
+            this.hasPrevious = false;
+            this.hasNext = false;
         }
-        if (pager.hasPrevious) {
-            pager.previousInt = fullDocUriInt - 1;
-            pager.previousUri = list.get(0).getEuropeanaUri();
+        if (this.hasPrevious) {
+            this.previousInt = fullDocUriInt - 1;
+            this.previousUri = list.get(0).getEuropeanaUri();
         }
-        if (pager.hasNext) {
-            pager.nextInt = fullDocUriInt + 1;
-            if (pager.hasPrevious) {
-                pager.nextUri = list.get(2).getEuropeanaUri();
+        if (this.hasNext) {
+            this.nextInt = fullDocUriInt + 1;
+            if (this.hasPrevious) {
+                this.nextUri = list.get(2).getEuropeanaUri();
             }
             else {
-                pager.nextUri = list.get(1).getEuropeanaUri();
+                this.nextUri = list.get(1).getEuropeanaUri();
             }
         }
     }
@@ -141,18 +144,18 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
      *
      * @param originalBriefSolrQuery
      * @param solrServer
-     * @param pager
      * @param solrStartRow
      * @return
      * @throws EuropeanaQueryException
-     * @throws SolrServerException
+     * @throws org.apache.solr.client.solrj.SolrServerException
+     *
      */
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    private static QueryResponse getQueryResponse(SolrQuery originalBriefSolrQuery, SolrServer solrServer, DocIdWindowPagerImpl pager, int solrStartRow) throws EuropeanaQueryException, SolrServerException {
+    private QueryResponse getQueryResponse(SolrQuery originalBriefSolrQuery, SolrServer solrServer, int solrStartRow) throws EuropeanaQueryException, SolrServerException {
         originalBriefSolrQuery.setFields("europeana_uri");
         originalBriefSolrQuery.setStart(solrStartRow);
         originalBriefSolrQuery.setRows(3);
-        pager.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery);
+        this.breadcrumbs = Breadcrumb.createList(originalBriefSolrQuery);
         return solrServer.query(originalBriefSolrQuery);
     }
 
@@ -281,7 +284,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         }
     }
 
-    DocIdWindowPagerImpl() {
+    public DocIdWindowPagerImpl() {
     }
 
     @Override
@@ -370,6 +373,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     }
 
     // todo fix this it throws an nullPointerException now
+
     @Override
     public String toString() {
         Map<String, String> map = new LinkedHashMap<String, String>();

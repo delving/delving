@@ -21,6 +21,8 @@
 
 package eu.europeana.core.querymodel.query;
 
+import org.apache.solr.client.solrj.response.SpellCheckResponse;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
@@ -38,4 +40,5 @@ public interface BriefBeanView {
     ResultPagination getPagination();
     Map<String,String> getFacetLogs();
     BriefDoc getMatchDoc();
+    SpellCheckResponse getSpellCheck();
 }

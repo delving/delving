@@ -30,7 +30,7 @@ public class ResultPaginationImpl implements ResultPagination {
     private PresentationQueryImpl presentationQuery = new PresentationQueryImpl();
     private List<PageLink> pageLinks = new ArrayList<PageLink>();
 
-    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString) throws EuropeanaQueryException {
+    public ResultPaginationImpl(SolrQuery solrQuery, int numFound, String requestQueryString, String parsedQuery) throws EuropeanaQueryException {
         this.solrQuery = solrQuery;
         this.numFound = numFound;
         int rows = solrQuery.getRows();
@@ -64,6 +64,7 @@ public class ResultPaginationImpl implements ResultPagination {
         presentationQuery.queryToSave = requestQueryString;
         presentationQuery.userSubmittedQuery = solrQuery.getQuery();
         presentationQuery.typeQuery = removePresentationFilters(requestQueryString);
+        presentationQuery.parsedQuery = parsedQuery;
     }
 
     private static String removePresentationFilters(String requestQueryString) {
@@ -191,6 +192,7 @@ public class ResultPaginationImpl implements ResultPagination {
         private String queryForPresentation;
         private String queryToSave;
         private String typeQuery;
+        private String parsedQuery;
 
         @Override
         public String getUserSubmittedQuery() {
@@ -210,6 +212,14 @@ public class ResultPaginationImpl implements ResultPagination {
         @Override
         public String getTypeQuery() {
             return typeQuery;
+        }
+
+        @Override
+        public String getParsedQuery() {
+            if (parsedQuery == null) {
+                return "";
+            }
+            return parsedQuery;
         }
     }
 

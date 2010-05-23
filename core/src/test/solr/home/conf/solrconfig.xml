@@ -608,7 +608,18 @@
             <!--found -->
             <!--<str name="f.name.hl.alternateField">name</str>-->
             <!--<str name="f.text.hl.fragmenter">regex</str> --><!-- defined below -->
+            <!-- collate the spelling suggestions-->
+            <!--<str name="spellcheck.collate">true</str> -->
+            <!-- omp = Only More Popular -->
+            <!--<str name="spellcheck.onlyMorePopular">true</str>-->
+            <!-- exr = Extended Results -->
+            <!--<str name="spellcheck.extendedResults">true</str>-->
+            <!--  The number of suggestions to return -->
+            <!--<str name="spellcheck.count">2</str>-->
         </lst>
+        <arr name="last-components">
+            <str>spellcheck</str>
+        </arr>
     </requestHandler>
 
     <!--This handler is here for backwards compatibility with old setup-->
@@ -761,8 +772,10 @@
 
     <lst name="spellchecker">
       <str name="name">default</str>
-      <str name="field">name</str>
+      <str name="field">spell</str>
       <str name="spellcheckIndexDir">./spellchecker</str>
+      <str name="buildOnCommit">true</str>
+      <!--<str name="buildOnOptimize">true</str>-->  <!--enable this on production-->
     </lst>
 
     <!-- a spellchecker that uses a different distance measure
