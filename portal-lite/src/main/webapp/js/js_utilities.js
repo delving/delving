@@ -62,6 +62,8 @@ function checkFormRefineSearch(oId){
     return false;
 }
 
+
+
 $(document).ready(function() {
 
     // instantiate the advanced search dialog overlay

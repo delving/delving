@@ -373,6 +373,10 @@ table caption {
     background: url(../images/icon-image.gif) left top no-repeat;
 }
 
+#item-detail table th {font-weight: bold; padding-right: 10px; text-align: right;}
+/*#item-detail table th, #item-detail table td {border-bottom: 1px solid #ccc;}*/
+#item-detail .dialog {display: none;}
+
 /* UI Button styles */
 .fg-button {
     outline: 0;

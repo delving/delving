@@ -15,7 +15,7 @@
 
 
 <#macro show_result_table seq>
-<table id="multi" summary="gallery view all search results" border="0">
+<table id="multi" summary="gallery view all search results" border="0" width="100%">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
@@ -24,9 +24,26 @@
              <div class="brief-thumb-container">
                 <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
-                         <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />" onerror="showDefaultSmall(this,'${cell.type}')" height="110"/>
+                         <img
+                                 class="thumb"
+                                 id="thumb_${cell.index?c}"
+                                 align="middle"
+                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />"
+                                 onload="checkSize(this.id,'brief',this.width);"
+                                 onerror="showDefaultSmall(this,'${cell.type}')"
+                                 height="110"
+                          />
                     <#else>
-                        <img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cell.thumbnail}" alt="Click for more information" height="110" onerror="showDefaultSmall(this,'${cell.type}')"/>
+                        <img
+                                class="thumb"
+                                id="thumb_${cell.index?c}"
+                                align="middle"
+                                src="${cell.thumbnail}"
+                                alt="Click for more information"
+                                height="110"
+                                onload="checkSize(this.id,'brief',this.width);"
+                                onerror="showDefaultSmall(this,'${cell.type}')"
+                         />
                     </#if>
                 </a>
             </div>
@@ -66,12 +83,23 @@
         <td valign="top" width="50">
             <div class="brief-thumb-container-listview">
                 <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
-                    <#if useCache="true"><img class="thumb" id="thumb_${cell.index}" align="middle"
-                                              src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
-                                              alt="<@spring.message 'AltMoreInfo_t' />" height="50"/>
-                    <#else><img class="thumb" id="thumb_${cell.index?c}" align="middle" src="${cell.thumbnail}"
-                                alt="Click for more information" height="50"
-                                onerror="showDefaultSmall(this,'${cell.type}')"/>
+                    <#if useCache="true">
+                        <img class="thumb"
+                             id="thumb_${cell.index}"
+                             align="middle"
+                             src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
+                             alt="<@spring.message 'AltMoreInfo_t' />"
+                             height="50"
+                          />
+                    <#else>
+                        <img class="thumb"
+                             id="thumb_${cell.index?c}"
+                             align="middle"
+                             src="${cell.thumbnail}"
+                             alt="Click for more information"
+                             height="50"
+                             onerror="showDefaultSmall(this,'${cell.type}')"
+                         />
                     </#if>
                 </a>
             </div>

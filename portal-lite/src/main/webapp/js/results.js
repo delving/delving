@@ -141,11 +141,33 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
     return false;
 }
 /*
-** Resizes image in fulldoc(inc_result_table_full.ftl
+** Resizes displayed images in the brief and full doc displays
  */
-function checkSize(w){
-    if (w > 315) {
-        w = 315;
-        document.getElementById("imgview").width=w;
+function checkSize(obj,type,w){
+    if(type=="brief"){
+        if (w > 220) {
+            w = 220;
+            document.getElementById(obj).width=w;
+        }        
+    }
+    else {
+        if (w > 365) {
+            w = 365;
+            document.getElementById(obj).width=w;
+        }
     }
 }
+
+$(document).ready(function() {
+
+    $(".dialog").dialog({
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        width: 500
+    });
+
+    $('#opener').click(function() {
+        $(".dialog").dialog('open');
+    });
+});
