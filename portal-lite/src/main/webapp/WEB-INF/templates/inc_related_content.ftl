@@ -3,43 +3,44 @@
                 <table summary="related items" id="tbl-related-items" width="100%">
                     <#assign max=3/><!-- max shown in list -->
                     <#list result.relatedItems as doc>
-                    <#if doc_index &gt; 2><#break/></#if>
-                    <tr>
-                        <td width="45" valign="top">
-                            <div class="related-thumb-container">
+                        <#if doc_index &gt; 2><#break/></#if>
+                        <tr>
+                            <td width="45" valign="top">
+                                <div class="related-thumb-container">
+                                    <#if queryStringForPaging??>
+                                        <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
+                                     <#else>
+                                        <a href="full-doc.html?uri=${doc.id}">
+                                     </#if>
+                                     <#if useCache="true">
+                                        <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35"/>
+                                    <#else>
+                                        <img src="${doc.thumbnail}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}')"/>
+                                    </#if>
+
+                                        </a>
+                                </div>
+                            </td>
+
+                            <td class="item-titles" valign="top" width="130">
                                 <#if queryStringForPaging??>
-                                    <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
-                                 <#else>
-                                    <a href="full-doc.html?uri=${doc.id}">
-                                 </#if>
-                                 <#if useCache="true">
-                                    <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35"/>
+                                <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
                                 <#else>
-                                    <img src="${doc.thumbnail}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}')"/>
+                                <a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
                                 </#if>
-
-                                    </a>
-                            </div>
-                        </td>
-
-                        <td class="item-titles" valign="top" width="130">
-                            <#if queryStringForPaging??>
-                            <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
-                            <#else>
-                            <a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
-                            </#if>
-                        </td>
-                    </tr>
-
+                            </td>
+                        </tr>
                     </#list>
-                    <#if result.relatedItems?size &gt; max>
-                    <tr>
-                        <td id="see-all" colspan="2"><a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}' class="fg-button ui-state-default fg-button-icon-left ui-corner-all">
-                        <span class="ui-icon ui-icon-circle-plus"></span><@spring.message 'SeeAllRelatedItems_t' /></a>
-                        </td>
-                    </tr>
-                    </#if>
                 </table>
+        
+                <#if result.relatedItems?size &gt; max>
+
+                    <a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}' class="fg-button ui-state-default fg-button-icon-left ui-corner-all">
+                    <span class="ui-icon ui-icon-circle-plus"></span><@spring.message 'SeeAllRelatedItems_t' /></a>
+
+                </#if>
+
+                <div class="clear"></div>
 
             <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
             <#--<div class="toggler-c"title="<@spring.message 'UserTags_t' />">-->

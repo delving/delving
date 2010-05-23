@@ -116,6 +116,7 @@ a:hover {
 }
 #facet-list h3 {
     text-shadow: 2px 2px 2px #bbb;
+    margin-top: 10px;
 }
 
 #facet-list h4 {
