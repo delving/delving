@@ -58,9 +58,9 @@ def extractYear(fieldObject) {
   }
 }
 
-def createEuropeanaURI(String collection, String uri) {
+def createEuropeanaURI(collection, uri) {
   def resolveUrl = 'http://www.europeana.eu/resolve/record';
-  def uriBytes = uri.getBytes("UTF-8");
+  def uriBytes = uri.toString().getBytes("UTF-8");
   def digest = MessageDigest.getInstance("SHA-1");
   def hash = ''
   for (Byte b in digest.digest(uriBytes)) {
