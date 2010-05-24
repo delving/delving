@@ -490,7 +490,7 @@ class UriValidateSave(sip_task.SipTask):
         f_type = stdout.split(org_fname)[-1].strip()
         if f_type[0] == ':':
             f_type = f_type[1:].strip()
-        self.uri.file_type = f_type
+        self.uri.file_type = f_type[:149]
         if f_type.lower().find('html') > -1:
             return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR,
                                    'mime_type image, content html')
