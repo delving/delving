@@ -186,9 +186,9 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getGlobalFieldModel(), new MappingRunner.Listener() {
                 @Override
-                public void complete(boolean success, String output) {
+                public void complete(Exception exception, String output) {
                     compilationComplete(output);
-                    if (success) {
+                    if (exception == null) {
                         if (editedCode == null) {
                             notifyStateChange(State.PRISTINE);
                         }
