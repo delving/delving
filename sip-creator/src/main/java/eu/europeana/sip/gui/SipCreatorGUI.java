@@ -55,7 +55,7 @@ public class SipCreatorGUI extends JFrame {
     private SipModel sipModel = new SipModel();
 
     public SipCreatorGUI() {
-        super("Europeana Ingestion SIP Creator");
+        super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         sipModel.setAnnotationProcessor(createAnnotationProcessor());
         sipModel.setExceptionHandler(new PopupExceptionHandler());
@@ -81,6 +81,7 @@ public class SipCreatorGUI extends JFrame {
                 else {
                     fileSet.setExceptionHandler(new PopupExceptionHandler());
                     sipModel.setFileSet(fileSet);
+                    setTitle(String.format("SIP Creator - %s", fileSet.getAbsolutePath()));
                     return true;
                 }
             }
