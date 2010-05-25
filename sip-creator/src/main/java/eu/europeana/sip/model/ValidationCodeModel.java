@@ -21,6 +21,9 @@
 
 package eu.europeana.sip.model;
 
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -32,21 +35,22 @@ import java.io.Reader;
 import java.net.URL;
 
 /**
- * The groovy helper code that precedes the mapping snippet.
+ * The groovy code that is to validate records
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ToolCodeModel {
-    private static final String HEADER = "// ToolCode.groovy - the place for helpful methods\n\n";
-    private static final String FILE_NAME = "ToolCode.groovy";
+public class ValidationCodeModel {
+    private static final String HEADER = "// ValidationCode.groovy - the place for record validation\n\n";
+    private static final String FILE_NAME = "ValidationCode.groovy";
     private static final File CODE_FILE = new File(FILE_NAME);
-    private static final URL CODE_RESOURCE = ToolCodeModel.class.getResource("/" + FILE_NAME);
+    private static final URL CODE_RESOURCE = ValidationCodeModel.class.getResource("/" + FILE_NAME);
     private String resourceCode;
     private String fileCode;
     private long fileModified;
+    private Script script;
 
-    public ToolCodeModel() {
+    public ValidationCodeModel() {
         try {
             resourceCode = readResourceCode();
             if (!CODE_FILE.exists()) {
@@ -60,6 +64,13 @@ public class ToolCodeModel {
         }
     }
 
+    public Script getScript() {
+        if (script == null) {
+            script = new GroovyShell().parse(getCode());
+        }
+        return script;
+    }
+
     public String getCode() {
         try {
             long mod = CODE_FILE.lastModified();
@@ -67,10 +78,15 @@ public class ToolCodeModel {
                 fileCode = readFileCode();
                 fileModified = mod;
             }
-            return resourceCode + fileCode;
+            if (fileCode.isEmpty()) {
+                return fileCode;
+            }
+            else {
+                return resourceCode;
+            }
         }
         catch (IOException e) {
-            return "println 'Could not read tool code'";
+            return "println 'Could not read validation code'";
         }
     }
 

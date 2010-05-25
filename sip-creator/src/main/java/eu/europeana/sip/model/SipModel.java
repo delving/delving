@@ -63,6 +63,7 @@ public class SipModel {
     private FieldListModel fieldListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private ToolCodeModel toolCodeModel = new ToolCodeModel();
+    private ValidationCodeModel validationCodeModel = new ValidationCodeModel();
     private CompileModel recordCompileModel = new CompileModel(true, toolCodeModel);
     private CompileModel fieldCompileModel = new CompileModel(false, toolCodeModel);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
@@ -206,7 +207,7 @@ public class SipModel {
     public void normalize() {
         checkSwingThread();
         abortNormalize();
-        normalizer = new Normalizer(fileSet, new MetadataParser.Listener() {
+        normalizer = new Normalizer(fileSet, exceptionHandler, new MetadataParser.Listener() {
             @Override
             public void recordsParsed(final int count) {
                 SwingUtilities.invokeLater(new Runnable() {

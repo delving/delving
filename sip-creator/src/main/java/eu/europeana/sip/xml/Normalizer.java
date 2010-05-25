@@ -21,12 +21,12 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.groovy.MappingScriptBinding;
+import eu.europeana.sip.groovy.MappingRunner;
+import eu.europeana.sip.model.ExceptionHandler;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.RecordRoot;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
+import eu.europeana.sip.model.ToolCodeModel;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -44,10 +44,12 @@ import java.io.Writer;
 public class Normalizer implements Runnable {
     private FileSet fileSet;
     private MetadataParser.Listener listener;
-    private boolean running;
+    private ExceptionHandler exceptionHandler;
+    private boolean running = true;
 
-    public Normalizer(FileSet fileSet, MetadataParser.Listener listener) {
+    public Normalizer(FileSet fileSet, ExceptionHandler exceptionHandler, MetadataParser.Listener listener) {
         this.fileSet = fileSet;
+        this.exceptionHandler = exceptionHandler;
         this.listener = listener;
     }
 
@@ -58,18 +60,35 @@ public class Normalizer implements Runnable {
             String mapping = fileSet.getMapping();
             RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
             GlobalFieldModel globalFieldModel = GlobalFieldModel.fromMapping(mapping);
-            Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
-            MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer, globalFieldModel);
+            ToolCodeModel toolCodeModel = new ToolCodeModel();
+            final Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer.write("<?xml version='1.0' encoding='UTF-8'?>\n");
+            writer.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, globalFieldModel, new MappingRunner.Listener() {
+                @Override
+                public void complete(Exception exception, String output) {
+                    if (exception != null) {
+                        running = false;
+                        exceptionHandler.failure(exception);
+                    }
+                    else {
+                        try {
+                            writer.write(output);
+                            writer.write("\n\n");
+                        }
+                        catch (IOException e) {
+                            running = false;
+                            exceptionHandler.failure(e);
+                        }
+                    }
+                }
+            });
             MetadataParser parser = new MetadataParser(inputStream, recordRoot, listener);
-            GroovyShell shell = new GroovyShell(mappingScriptBinding);
-            Script script = shell.parse(mapping);
-            script.setBinding(mappingScriptBinding);
             MetadataRecord record;
-            running = true;
             while ((record = parser.nextRecord()) != null && running) {
-                mappingScriptBinding.setRecord(record);
-                script.run();
+                mappingRunner.compile(record);
             }
+            writer.write("</metadata>\n");
             writer.close();
             parser.close();
             if (!running) {

@@ -22,7 +22,7 @@ public class TestToolCode {
 
     @Before
     public void compile() {
-        script = groovyShell.parse(toolCodeModel.getToolCode());
+        script = groovyShell.parse(toolCodeModel.getCode());
     }
 
     @Test

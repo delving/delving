@@ -1,6 +1,7 @@
-import java.security.MessageDigest
+// ToolCode.groovy - the place for helpful methods
 
-// ToolCode.groovy - the place for helpful closures
+
+import java.security.MessageDigest
 
 def extractYear(fieldObject) {
   String field = fieldObject.toString();

@@ -22,15 +22,10 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.MappingScriptBinding;
+import eu.europeana.sip.groovy.MappingRunner;
 import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.MetadataVariable;
-import groovy.lang.GroovyShell;
-import groovy.lang.MissingPropertyException;
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
-import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
-import org.codehaus.groovy.syntax.SyntaxException;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -39,8 +34,6 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -187,53 +180,37 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     }
 
     private class CompilationRunner implements Runnable {
-        private StringWriter writer = new StringWriter();
 
         @Override
         public void run() {
-            try {
-                String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-                MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer, recordMapping.getGlobalFieldModel());
-                mappingScriptBinding.setRecord(metadataRecord);
-                new GroovyShell(mappingScriptBinding).evaluate(toolCodeModel.getToolCode() + code);
-                compilationComplete(writer.toString());
-                if (editedCode == null) {
-                    notifyStateChange(State.PRISTINE);
-                }
-                else if (!multipleMappings) {
-                    FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
-                    if (fieldMapping != null) {
-                        fieldMapping.setCode(editedCode);
-                        notifyStateChange(State.COMMITTED);
-                        editedCode = null;
-                        notifyStateChange(State.PRISTINE);
+            String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getGlobalFieldModel(), new MappingRunner.Listener() {
+                @Override
+                public void complete(boolean success, String output) {
+                    compilationComplete(output);
+                    if (success) {
+                        if (editedCode == null) {
+                            notifyStateChange(State.PRISTINE);
+                        }
+                        else if (!multipleMappings) {
+                            FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                            if (fieldMapping != null) {
+                                fieldMapping.setCode(editedCode);
+                                notifyStateChange(State.COMMITTED);
+                                editedCode = null;
+                                notifyStateChange(State.PRISTINE);
+                            }
+                            else {
+                                notifyStateChange(State.EDITED);
+                            }
+                        }
                     }
                     else {
-                        notifyStateChange(State.EDITED);
+                        notifyStateChange(State.ERROR);
                     }
                 }
-            }
-            catch (MissingPropertyException e) {
-                compilationComplete("Missing Property: " + e.getProperty());
-                notifyStateChange(State.ERROR);
-            }
-            catch (MultipleCompilationErrorsException e) {
-                StringBuilder out = new StringBuilder();
-                for (Object o : e.getErrorCollector().getErrors()) {
-                    SyntaxErrorMessage message = (SyntaxErrorMessage) o;
-                    SyntaxException se = message.getCause();
-                    // line numbers will not match
-                    out.append(String.format("Problem: %s", se.getOriginalMessage()));
-                }
-                compilationComplete(out.toString());
-                notifyStateChange(State.ERROR);
-            }
-            catch (Exception e) {
-                StringWriter writer = new StringWriter();
-                e.printStackTrace(new PrintWriter(writer));
-                compilationComplete(writer.toString());
-                notifyStateChange(State.ERROR);
-            }
+            });
+            mappingRunner.compile(metadataRecord);
         }
 
         private void compilationComplete(final String result) {
