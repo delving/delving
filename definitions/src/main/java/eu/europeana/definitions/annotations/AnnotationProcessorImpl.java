@@ -309,6 +309,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         }
 
         @Override
+        public String getGenerator() {
+            return europeanaAnnotation.generator();
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;

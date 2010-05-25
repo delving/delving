@@ -58,7 +58,7 @@ def extractYear(fieldObject) {
   }
 }
 
-def createEuropeanaURI(collection, uri) {
+def createEuropeanaURI(uri) {
   def resolveUrl = 'http://www.europeana.eu/resolve/record';
   def uriBytes = uri.toString().getBytes("UTF-8");
   def digest = MessageDigest.getInstance("SHA-1");
@@ -67,5 +67,9 @@ def createEuropeanaURI(collection, uri) {
     hash += '0123456789ABCDEF'[(b & 0xF0)  >> 4]
     hash += '0123456789ABCDEF'[b & 0x0F]
   }
-  return "$resolveUrl/$collection/$hash";
+  return "$resolveUrl/$collectionId/$hash";
+}
+
+def createEuropeanaCollectionName() {
+  return "${collectionId} ${type} ${country} ${providerAbbreviation} ${collectionName}".replaceAll(' ', '_')
 }

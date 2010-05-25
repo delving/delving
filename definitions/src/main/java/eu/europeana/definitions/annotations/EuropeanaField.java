@@ -83,4 +83,13 @@ public interface EuropeanaField {
      */
 
     String getConverter();
+
+    /**
+     * Fetch the generator name from the annotation
+     *
+     * @return name of a generator method in ToolCode.groovy
+     */
+
+    String getGenerator();
+
 }

@@ -84,7 +84,12 @@ public class FieldMapping {
     }
 
     public String toString() {
-        return europeanaField.getFieldNameString();
+        if (europeanaField != null) {
+            return europeanaField.getFieldNameString();
+        }
+        else {
+            return "?";
+        }
     }
 
 }

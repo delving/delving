@@ -137,4 +137,13 @@ public @interface Europeana {
      */
 
     String converter() default "";
+
+    /**
+     * A generator is a groovy method in ToolCode.groovy which requires no input but generates
+     * some output, based on some standard Groovy bindings which are available.
+     *
+     * @return the name of the groovy method.
+     */
+
+    String generator() default "";
 }
