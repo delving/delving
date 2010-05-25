@@ -57,6 +57,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
     private ToolCodeModel toolCodeModel;
+    private ValidationCodeModel validationCodeModel;
     private String editedCode;
 
     public enum State {
@@ -71,12 +72,18 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         void stateChanged(State state);
     }
 
-    public CompileModel(boolean multipleMappings, ToolCodeModel toolCodeModel) {
-        this.multipleMappings = multipleMappings;
+    public CompileModel(ToolCodeModel toolCodeModel, ValidationCodeModel validationCodeModel) {
+        this.multipleMappings = true;
+        this.recordMapping.addListener(this);
+        this.toolCodeModel = toolCodeModel;
+        this.validationCodeModel = validationCodeModel;
+    }
+
+    public CompileModel(ToolCodeModel toolCodeModel) {
+        this.multipleMappings = false;
         this.recordMapping.addListener(this);
         this.toolCodeModel = toolCodeModel;
     }
-
 
     public void addListener(Listener listener) {
         listeners.add(listener);
@@ -187,25 +194,32 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getGlobalFieldModel(), new MappingRunner.Listener() {
                 @Override
                 public void complete(Exception exception, String output) {
-                    compilationComplete(output);
                     if (exception == null) {
-                        if (editedCode == null) {
-                            notifyStateChange(State.PRISTINE);
+                        if (multipleMappings) {
+                            String validated = validationCodeModel.validate(output);
+                            compilationComplete(validated);
                         }
-                        else if (!multipleMappings) {
-                            FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
-                            if (fieldMapping != null) {
-                                fieldMapping.setCode(editedCode);
-                                notifyStateChange(State.COMMITTED);
-                                editedCode = null;
+                        else {
+                            compilationComplete(output);
+                            if (editedCode == null) {
                                 notifyStateChange(State.PRISTINE);
                             }
                             else {
-                                notifyStateChange(State.EDITED);
+                                FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                                if (fieldMapping != null) {
+                                    fieldMapping.setCode(editedCode);
+                                    notifyStateChange(State.COMMITTED);
+                                    editedCode = null;
+                                    notifyStateChange(State.PRISTINE);
+                                }
+                                else {
+                                    notifyStateChange(State.EDITED);
+                                }
                             }
                         }
                     }
                     else {
+                        compilationComplete(output);
                         notifyStateChange(State.ERROR);
                     }
                 }

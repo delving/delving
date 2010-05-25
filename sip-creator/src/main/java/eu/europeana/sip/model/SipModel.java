@@ -64,8 +64,8 @@ public class SipModel {
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private ToolCodeModel toolCodeModel = new ToolCodeModel();
     private ValidationCodeModel validationCodeModel = new ValidationCodeModel();
-    private CompileModel recordCompileModel = new CompileModel(true, toolCodeModel);
-    private CompileModel fieldCompileModel = new CompileModel(false, toolCodeModel);
+    private CompileModel recordCompileModel = new CompileModel(toolCodeModel, validationCodeModel);
+    private CompileModel fieldCompileModel = new CompileModel(toolCodeModel);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();

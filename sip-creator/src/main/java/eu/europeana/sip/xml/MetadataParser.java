@@ -127,7 +127,7 @@ public class MetadataParser {
                     }
                     if (withinRecord) {
                         GroovyNode node = nodeStack.pop();
-                        String valueString = value.toString().trim();
+                        String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
                         value.setLength(0);
                         if (valueString.length() > 0) {
                             node.setValue(valueString);
