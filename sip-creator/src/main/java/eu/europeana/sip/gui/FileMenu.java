@@ -144,17 +144,19 @@ public class FileMenu extends JMenu {
         @Override
         public void run() {
             runFirst.run();
-            final File commonDirectory = recentFiles.getCommonDirectory();
+            final List<File> commonDirectories = recentFiles.getCommonDirectories();
             final List<? extends FileSet> fileSetList = recentFiles.getList();
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     removeAll();
-                    if (commonDirectory != null) {
-                        add(new LoadNewFileAction(commonDirectory));
+                    if (commonDirectories.isEmpty()) {
+                        add(new LoadNewFileAction(new File("/")));
                     }
                     else {
-                        add(new LoadNewFileAction(new File("/")));
+                        for (File directory : commonDirectories) {
+                            add(new LoadNewFileAction(directory));
+                        }
                     }
                     addSeparator();
                     for (FileSet fileSet : fileSetList) {

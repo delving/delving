@@ -39,6 +39,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -136,8 +137,8 @@ public class RecentFileSets {
 
     public File getCommonDirectory() {
         Set<File> directories = new HashSet<File>();
-        for (FileSet set : recent) {
-            directories.add(set.getDirectory());
+        for (FileSet fileSet : recent) {
+            directories.add(fileSet.getDirectory());
         }
         File highest = null;
         for (File directory : directories) {
@@ -145,13 +146,27 @@ public class RecentFileSets {
                 highest = directory;
             }
             else {
-                highest = getHighest(highest, directory);
+                highest = getDeepestCommonDirectory(highest, directory);
             }
         }
         return highest;
     }
 
-    private File getHighest(File a, File b) {
+    public List<File> getCommonDirectories() {
+        Set<File> uniqueDirectories = new HashSet<File>();
+        for (int walkA = 0; walkA < recent.size(); walkA++) {
+            FileSet fsA = recent.get(walkA);
+            for (int walkB = walkA+1; walkB < recent.size(); walkB++) {
+                FileSet fsB = recent.get(walkB);
+                uniqueDirectories.add(getDeepestCommonDirectory(fsA.getDirectory(), fsB.getDirectory()));
+            }
+        }
+        List<File> directories = new ArrayList<File>(uniqueDirectories);
+        Collections.sort(directories);
+        return directories;
+    }
+
+    private File getDeepestCommonDirectory(File a, File b) {
         while (!a.equals(b)) {
             String pathA = a.getAbsolutePath();
             String pathB = b.getAbsolutePath();
