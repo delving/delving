@@ -49,13 +49,4 @@ public class TestToolCode {
             System.out.println("Successful: " + d[0] + " --> " + d[1]);
         }
     }
-
-    @Test
-    public void testUriHash() {
-        String uri = "http://whateber/";
-        String collection = "070201";
-        Object [] args = { collection, uri };
-        String result = script.invokeMethod("createEuropeanaURI", args).toString();
-        Assert.assertEquals("should equal", "http://www.europeana.eu/resolve/record/070201/D674B7269F15E05DF19EA108B48B7017CC6C1094", result);
-    }
 }

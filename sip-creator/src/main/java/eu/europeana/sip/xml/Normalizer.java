@@ -77,7 +77,6 @@ public class Normalizer implements Runnable {
                         String validated = validationCodeModel.validate(output);
                         try {
                             writer.write(validated);
-                            writer.write("\n\n");
                         }
                         catch (IOException e) {
                             running = false;
