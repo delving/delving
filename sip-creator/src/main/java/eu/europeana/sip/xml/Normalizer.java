@@ -26,8 +26,8 @@ import eu.europeana.sip.model.ExceptionHandler;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.RecordRoot;
+import eu.europeana.sip.model.RecordValidator;
 import eu.europeana.sip.model.ToolCodeModel;
-import eu.europeana.sip.model.ValidationCodeModel;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class Normalizer implements Runnable {
             RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
             GlobalFieldModel globalFieldModel = GlobalFieldModel.fromMapping(mapping);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
-            final ValidationCodeModel validationCodeModel = new ValidationCodeModel();
+            final RecordValidator recordValidator = new RecordValidator();
             final Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             writer.write("<?xml version='1.0' encoding='UTF-8'?>\n");
             writer.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
@@ -74,7 +74,7 @@ public class Normalizer implements Runnable {
                         exceptionHandler.failure(exception);
                     }
                     else {
-                        String validated = validationCodeModel.validate(output);
+                        String validated = recordValidator.validate(output);
                         try {
                             writer.write(validated);
                         }

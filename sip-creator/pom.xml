@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>${europeana.sip-creator.version}</version>
+    <version>0.7.7</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>

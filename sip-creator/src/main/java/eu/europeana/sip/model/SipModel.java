@@ -63,8 +63,8 @@ public class SipModel {
     private FieldListModel fieldListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private ToolCodeModel toolCodeModel = new ToolCodeModel();
-    private ValidationCodeModel validationCodeModel = new ValidationCodeModel();
-    private CompileModel recordCompileModel = new CompileModel(toolCodeModel, validationCodeModel);
+    private RecordValidator recordValidator = new RecordValidator();
+    private CompileModel recordCompileModel = new CompileModel(toolCodeModel, recordValidator);
     private CompileModel fieldCompileModel = new CompileModel(toolCodeModel);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
@@ -120,6 +120,7 @@ public class SipModel {
 
     public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
         this.fieldListModel = new FieldListModel(annotationProcessor);
+        this.recordValidator.setAnnotationProcessor(annotationProcessor);
         for (EuropeanaField field : annotationProcessor.getMappableFields()) {
             europeanaFieldMap.put(field.getFieldNameString(), field);
         }

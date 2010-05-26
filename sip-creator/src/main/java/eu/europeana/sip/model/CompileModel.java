@@ -57,7 +57,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
     private ToolCodeModel toolCodeModel;
-    private ValidationCodeModel validationCodeModel;
+    private RecordValidator recordValidator;
     private String editedCode;
 
     public enum State {
@@ -72,11 +72,11 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         void stateChanged(State state);
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel, ValidationCodeModel validationCodeModel) {
+    public CompileModel(ToolCodeModel toolCodeModel, RecordValidator recordValidator) {
         this.multipleMappings = true;
         this.recordMapping.addListener(this);
         this.toolCodeModel = toolCodeModel;
-        this.validationCodeModel = validationCodeModel;
+        this.recordValidator = recordValidator;
     }
 
     public CompileModel(ToolCodeModel toolCodeModel) {
@@ -196,7 +196,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                 public void complete(Exception exception, String output) {
                     if (exception == null) {
                         if (multipleMappings) {
-                            String validated = validationCodeModel.validate(output);
+                            String validated = recordValidator.validate(output);
                             compilationComplete(validated);
                         }
                         else {

@@ -548,7 +548,6 @@
     <properties>
         <europeana.definitions.version>1.09</europeana.definitions.version>
         <europeana.core.version>1.29</europeana.core.version>
-        <europeana.sip-creator.version>0.7.6</europeana.sip-creator.version>
         <europeana.portal.version>0.6.2</europeana.portal.version>
         <europeana.api.version>0.14</europeana.api.version>
         <europeana.dashboard.version>0.3</europeana.dashboard.version>
