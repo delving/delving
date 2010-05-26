@@ -44,6 +44,7 @@ TEMPLATES_DIR = os.path.join(THIS_DIR, 'templates')
 STATIC_PAGES = 'static_pages'
 STATIC_PAGES_FULLP = os.path.join(TEMPLATES_DIR, STATIC_PAGES)
 
+MEDIA_FILE_PATH = 'sp'
 
 T_DELETE = None # timer object for delayed translate updates on multiple deletes
 
@@ -91,9 +92,11 @@ post_delete.connect(translate_page_post_delete_cb, sender=TranslatePage)
 
 
 
-class CssFile(models.Model)
+class MediaFile(models.Model):
+    file_name = models.FileField(upload_to=MEDIA_FILE_PATH)
 
-
+    def __unicode__(self):
+        return self.file_name.name
 
 #
 #  Startup checks
@@ -113,3 +116,14 @@ def check_template_link_exists():
         raise exceptions.ImproperlyConfigured(msg)
 
 check_template_link_exists()
+
+def checkMedia_link_exists():
+    dir_support_media = os.path.join(settings.MEDIA_ROOT, MEDIA_FILE_PATH)
+    if os.path.exists(dir_support_media):
+        return
+    print '***'
+    msg = 'support media dir is missing: %s' % dir_support_media
+    print msg
+    raise exceptions.ImproperlyConfigured(msg)
+
+checkMedia_link_exists()

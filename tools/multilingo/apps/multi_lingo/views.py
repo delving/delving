@@ -75,7 +75,7 @@ def portal_page(request, rel_url, lang='', *args, **kwargs):
     path, url_item = os.path.split(rel_url)
     if path:
         parts = path.split('/')
-        if parts[0] in ('css','js','images'):
+        if parts[0] == models.MEDIA_FILE_PATH:
             static_url = '%s%s' % (settings.MEDIA_URL, rel_url)
             return HttpResponseRedirect(static_url)
         else:
