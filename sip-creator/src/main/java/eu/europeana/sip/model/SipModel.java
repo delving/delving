@@ -29,6 +29,7 @@ import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.Normalizer;
+import eu.europeana.sip.xml.RecordValidator;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
@@ -53,6 +54,7 @@ import java.util.concurrent.Executors;
 
 public class SipModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private AnnotationProcessor annotationProcessor;
     private FileSet fileSet;
     private ExceptionHandler exceptionHandler;
     private List<Statistics> statisticsList;
@@ -61,19 +63,17 @@ public class SipModel {
     private AnalysisTree analysisTree;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
+    private CompileModel recordCompileModel;
+    private CompileModel fieldCompileModel;
+    private MetadataParser metadataParser;
+    private MetadataRecord metadataRecord;
+    private FieldMappingListModel fieldMappingListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
-    private ToolCodeModel toolCodeModel = new ToolCodeModel();
-    private RecordValidator recordValidator = new RecordValidator();
-    private CompileModel recordCompileModel = new CompileModel(toolCodeModel, recordValidator);
-    private CompileModel fieldCompileModel = new CompileModel(toolCodeModel);
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
-    private FieldMappingListModel fieldMappingListModel = new FieldMappingListModel(recordCompileModel.getRecordMapping());
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
-    private MetadataParser metadataParser;
-    private MetadataRecord metadataRecord;
 
     public interface UpdateListener {
         void updatedFileSet(FileSet fileSet);
@@ -93,11 +93,21 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel() {
+    public SipModel(AnnotationProcessor annotationProcessor, ExceptionHandler exceptionHandler) {
+        this.annotationProcessor = annotationProcessor;
+        this.exceptionHandler = exceptionHandler;
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
+        fieldListModel = new FieldListModel(annotationProcessor);
+        ToolCodeModel toolCodeModel = new ToolCodeModel();
+        recordCompileModel = new CompileModel(toolCodeModel, new RecordValidator(annotationProcessor, false));
+        fieldCompileModel = new CompileModel(toolCodeModel);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
+        fieldMappingListModel = new FieldMappingListModel(recordCompileModel.getRecordMapping());
+        for (EuropeanaField field : annotationProcessor.getMappableFields()) {
+            europeanaFieldMap.put(field.getFieldNameString(), field);
+        }
         fieldCompileModel.addListener(new CompileModel.Listener() {
 
             @Override
@@ -110,20 +120,8 @@ public class SipModel {
         });
     }
 
-    public void setExceptionHandler(ExceptionHandler exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
-    }
-
     public void addUpdateListener(UpdateListener updateListener) {
         updateListeners.add(updateListener);
-    }
-
-    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
-        this.fieldListModel = new FieldListModel(annotationProcessor);
-        this.recordValidator.setAnnotationProcessor(annotationProcessor);
-        for (EuropeanaField field : annotationProcessor.getMappableFields()) {
-            europeanaFieldMap.put(field.getFieldNameString(), field);
-        }
     }
 
     public void setFileSet(final FileSet newFileSet) {
@@ -208,17 +206,22 @@ public class SipModel {
     public void normalize() {
         checkSwingThread();
         abortNormalize();
-        normalizer = new Normalizer(fileSet, exceptionHandler, new MetadataParser.Listener() {
-            @Override
-            public void recordsParsed(final int count) {
-                SwingUtilities.invokeLater(new Runnable() {
+        normalizer = new Normalizer(
+                fileSet,
+                new RecordValidator(annotationProcessor, true),
+                exceptionHandler,
+                new MetadataParser.Listener() {
                     @Override
-                    public void run() {
-                        normalizeProgressModel.setValue(count);
+                    public void recordsParsed(final int count) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                normalizeProgressModel.setValue(count);
+                            }
+                        });
                     }
-                });
-            }
-        });
+                }
+        );
         executor.execute(normalizer);
     }
 

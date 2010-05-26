@@ -52,13 +52,12 @@ import java.util.List;
 
 public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
-    private SipModel sipModel = new SipModel();
+    private SipModel sipModel;
 
     public SipCreatorGUI() {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        sipModel.setAnnotationProcessor(createAnnotationProcessor());
-        sipModel.setExceptionHandler(new PopupExceptionHandler());
+        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler());
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));

@@ -85,7 +85,7 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     @Override
-    public List<String> getSolrFieldList() {
+    public List<String> getSolrFieldNameList() {
         if (solrFieldList == null) {
             solrFieldList = new ArrayList<String>();
             for (EuropeanaFieldImpl solrField : solrFields) {
@@ -234,6 +234,11 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             else {
                 return solrAnnotation.prefix();
             }
+        }
+
+        @Override
+        public String getPrefixedName() {
+            return getPrefix()+":"+getLocalName();
         }
 
         @Override

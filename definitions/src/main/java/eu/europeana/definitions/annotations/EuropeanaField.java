@@ -40,6 +40,12 @@ public interface EuropeanaField {
     String getPrefix();
 
     /**
+     * Combine the prefix and the local name
+     */
+
+    String getPrefixedName();
+
+    /**
      * A combination of prefix and name, separated by underscore
      * @return the name of this field according to Solr
      */

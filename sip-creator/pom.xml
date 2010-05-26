@@ -37,28 +37,6 @@
     <build>
         <defaultGoal>compile</defaultGoal>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.groovy.maven</groupId>-->
-                <!--<artifactId>gmaven-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>generateStubs</goal>-->
-                            <!--<goal>compile</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<sources>-->
-                                <!--<fileset>-->
-                                    <!--<directory>${pom.basedir}/src/main/java</directory>-->
-                                    <!--<includes>-->
-                                        <!--<include>**/*.groovy</include>-->
-                                    <!--</includes>-->
-                                <!--</fileset>-->
-                            <!--</sources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>

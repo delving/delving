@@ -26,6 +26,8 @@ import eu.europeana.sip.groovy.MappingRunner;
 import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.MetadataVariable;
+import eu.europeana.sip.xml.RecordValidationException;
+import eu.europeana.sip.xml.RecordValidator;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -196,8 +198,13 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                 public void complete(Exception exception, String output) {
                     if (exception == null) {
                         if (multipleMappings) {
-                            String validated = recordValidator.validate(output);
-                            compilationComplete(validated);
+                            try {
+                                String validated = recordValidator.validate(output);
+                                compilationComplete(validated);
+                            }
+                            catch (RecordValidationException e) {
+                                e.printStackTrace();  // todo: notify the world that this happened so that it can be shown on screen
+                            }
                         }
                         else {
                             compilationComplete(output);

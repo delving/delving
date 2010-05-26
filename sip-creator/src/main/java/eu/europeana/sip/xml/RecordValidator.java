@@ -19,14 +19,20 @@
  *  permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.model;
+package eu.europeana.sip.xml;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.definitions.annotations.FieldCategory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,22 +45,77 @@ import java.util.regex.Pattern;
 public class RecordValidator {
     private static Pattern PATTERN = Pattern.compile("<([^>]*)>([^<]*)<[^>]*>");
     private AnnotationProcessor annotationProcessor;
+    private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
+    private Map<FieldCategory, List<String>> categoryFieldMap = new HashMap<FieldCategory, List<String>>();
+    private Set<String> unique;
 
-    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
+    public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
         this.annotationProcessor = annotationProcessor;
+        if (checkUniqueness) {
+             unique = new HashSet<String>();
+        }
+        for (FieldCategory category : FieldCategory.values()) {
+            categoryFieldMap.put(category, new ArrayList<String>());
+        }
+        for (EuropeanaField field : annotationProcessor.getSolrFields()) {
+            fieldMap.put(field.getPrefixedName(), field);
+            categoryFieldMap.get(field.getCategory()).add(field.getPrefixedName());
+        }
     }
 
-    public String validate(String recordString) {
+    public String validate(String recordString) throws RecordValidationException {
         List<Entry> entries = createNonemptyEntryList(recordString);
         Collections.sort(entries);
         eliminateDuplicates(entries);
-        validateAgainstAnnotations(entries);
+        List<String> problems = new ArrayList<String>();
+        validateAgainstAnnotations(entries, problems);
+        if (!problems.isEmpty()) {
+            throw new RecordValidationException(problems);
+        }
         return toString(entries);
     }
 
-    private void validateAgainstAnnotations(List<Entry> entries) {
-        // todo: use the annotations to validate the entries
+    private void validateAgainstAnnotations(List<Entry> entries, List<String> problems) {
+        Map<String, Counter> counterMap = new HashMap<String, Counter>();
+        for (Entry entry : entries) {
+            EuropeanaField field = fieldMap.get(entry.tag);
+            if (field == null) {
+                problems.add("Unknown tag: "+entry.tag);
+            }
+            else {
+                Counter counter = counterMap.get(entry.tag);
+                if (counter == null) {
+                    counter = new Counter();
+                    counterMap.put(entry.tag, counter);
+                }
+                counter.count++;
+            }
+        }
+        for (String requiredName : categoryFieldMap.get(FieldCategory.ESE_REQUIRED)) {
+            Counter counter = counterMap.get(requiredName);
+            if (counter == null || counter.count == 0) {
+                problems.add("Required: "+requiredName);
+            }
+            else if (counter.count > 1) {
+                problems.add("Too many: "+requiredName);
+            }
+        }
     }
+
+//                switch (field.getCategory()) {
+//                    case ESE_OPTIONAL:
+//                        break;
+//                    case ESE_REQUIRED:
+//                        break;
+//                    case ESE_PLUS_OPTIONAL:
+//                        break;
+//                    case ESE_PLUS_REQUIRED:
+//                        break;
+//                    case COPY_FIELD:
+//                    case INDEX_TIME_FIELD:
+//                        problems.add("Not allowed: "+entry.tag);
+//                        break;
+//                }
 
     private String toString(List<Entry> entries) {
         StringBuilder out = new StringBuilder();
@@ -110,6 +171,10 @@ public class RecordValidator {
         return entries;
     }
 
+    private static class Counter {
+        int count;
+    }
+
     private static class Entry implements Comparable<Entry> {
         private String tag;
         private String value;
@@ -135,9 +200,5 @@ public class RecordValidator {
             Entry entry = (Entry) o;
             return !(tag != null ? !tag.equals(entry.tag) : entry.tag != null) && !(value != null ? !value.equals(entry.value) : entry.value != null);
         }
-    }
-
-    public class ValidationException extends java.lang.Exception {
-        
     }
 }

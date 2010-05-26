@@ -83,7 +83,7 @@ public interface AnnotationProcessor {
      * @return an array of Solr name strings
      */
 
-    List<String> getSolrFieldList();
+    List<String> getSolrFieldNameList();
 
     /**
      * Fetch the bean interface for the given bean class

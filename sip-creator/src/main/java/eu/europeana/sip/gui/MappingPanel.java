@@ -296,8 +296,9 @@ public class MappingPanel extends JPanel {
             Object[] selected = variablesList.getSelectedValues();
             if (selected.length == 0) {
                 code.add(String.format(
-                        "%s '%s'",
-                        fresh.getEuropeanaField().getFieldNameString(),
+                        "%s.%s '%s'",
+                        fresh.getEuropeanaField().getPrefix(),
+                        fresh.getEuropeanaField().getLocalName(),
                         constantField.getText()
                 ));
             }
@@ -344,8 +345,9 @@ public class MappingPanel extends JPanel {
             }
             else {
                 code.add(String.format(
-                        "%s %s()",
-                        obvious.getEuropeanaField().getFieldNameString(),
+                        "%s.%s %s()",
+                        obvious.getEuropeanaField().getPrefix(),
+                        obvious.getEuropeanaField().getLocalName(),
                         field.getGenerator()
                 ));
             }
