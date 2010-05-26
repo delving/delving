@@ -2,7 +2,7 @@
 
 The SIP-Creator tool is a Graphical User Interface designed to enable people to transform input XML of any record-based format to specifically formatted XML records defined by Europeana Semantic Elements.
 
-There is a great variety of challenges in transforming arbitrary formats into a desired format, although most mappings are straightforward verbatim copying.  Sometimes mapping requires some sophisticated manipulation of input data to make the correct output:
+We encounter a great variety of challenges when transforming arbitrary formats into a desired format, although most mappings are straightforward verbatim copying.  Sometimes mapping requires some sophisticated manipulation of input data to make the correct output:
 
 - combining content of multiple input fields to one output field
 - splitting strings of characters of an element to create multiple elements
@@ -10,25 +10,57 @@ There is a great variety of challenges in transforming arbitrary formats into a 
 - sophisticated extractions of data from element content (like year values)
 - generating resolvable URLs using a hashing strategy
 
-The most important feature of the SIP-Creator
+The SIP-Creator is designed to make simple mappings as easy as possible to create, but the most important feature of the approach that this program has taken is that there are solutions possible for the nastiest mapping problems. The SIP-Creator can handle these challenges because it integrates a general-purpose programming language as the core of its mapping mechanism: Groovy.
 
 ## The Groovy Programming Language
 
-Groovy is a rich and dynamic alternative to Java which can be very naturally integrated into a Java application. The SIP-Creator integrates Groovy in a way that allows you to make changes in the mapping code and see the results immediately in an output panel.  The application actually triggers a re-compile and execution of the Groovy mapping code whenever you stop editing it, and any errors are immediately reported.
+Groovy is a rich and **dynamic** alternative to Java which can be very naturally integrated into a Java application.  It becomes possible to change the behavior of the code while the program is running, and see the results of changes happen live before your eyes.
+
+When you edit the tiny code snippets, which are initially generated for you, the application spontaneously triggers a re-compile and execution of the Groovy mapping code whenever you stop editing it, and any errors are immediately reported. The SIP-Creator also only saves modified code to the mapping file when it is correct, so even if you are just learning to use the language, you cannot easily mess up too badly.
 
 ### Code snippets
+
+It is by no means the case that the entire SIP-Creator is built on a foundation of Groovy, but rather that Groovy is used specifically for the purpose of performing the mapping work. The only code that you are invited to edit appears in the form of tiny snippets, one for each field mapping, so it should never be overwhelming.
+
+The snippets of code for each of the individual field mappings take on different forms but the basis of the record mapping is a so-called **"Builder"**, which wraps the various field mapping snippets into an output record by creating this structure:
 
 	output.record {
 		// field mappings
 	}
 
+This builder code creates an output record containing the mapped field values which is immediately visible in the output panel.  Each field mapping specifies what output should be built from what input, and the input corresponding to the contents of an individual metadata record is made available in the form of Groovy variables.
+
 ### Variables
 
-
+The SIP-Creator's job is to take input XML files and transform them into output XML files, 
 
 ### GStrings
 
+There is an extremely convenient construction built into the Groovy programming language which makes composing strings of characters into bigger strings very easy.  A Groovy string, or **"GString"**, is a string of characters in the code surrounded with double quotes, whereas a normal string of characters in Groovy is surrounded with single quotes.  The special feature of GStrings is that they allow us to substitute other things into the string by referring to them with the dollar sign (**$**).
+
+Simple variable substitution might look like this:
+
+	def name = 'Elvis'
+	def king = "$name is king!"
+	assert 'Elvis is king!' == king.toString();
+
+More advanced substitutions are also possible, where the inserted values come from arbitrary Groovy code between curly braces:
+
+	def list = ['one', 'two', 'three']
+	def hands = "I have ${ list[1].toUpperCase() } hands."
+	assert 'I have TWO hands.' == hands.toString();
+
+For the purposes of the SIP-Creator, the most common usage of GStrings will be for building URLs on the basis of existing identifiers, perhaps something like this:
+
+	europeana.isShownBy "http://somesite.eu/images?picture=${input.identifier}.jpg"
+
+This one-liner uses the identifier to build an URL pointing to an image and outputs something like this:
+
+	<europeana:isShownBy>http://somesite.eu/images?picture=A-001-3421C.jpg</europeana:isShownBy>
+
 ### Regular expressions
+
+
 
 ### Pre-built converters
 
@@ -73,7 +105,7 @@ It is in the mapping refinement process that you first encounter Groovy code and
 The code generated by default for every normal mapping is a small statement which adds **.each** to the end of the input variable to traverse each value, followed by a block of code surrounded by **braces {...}** which is executed for each entry.
 
 	input.path.path.variable.each {
-		ns_tag it
+		ns.tag it
 	}
 
 The **it** variable represents the value that is extracted from each of the entries when this construction is used.
@@ -83,7 +115,7 @@ The **it** variable represents the value that is extracted from each of the entr
 When a verbatim copy of the original values into the new fields is not enough, it is very easy to modify the **it** value to turn it into a so-called **GString** which can place the value in the context of a larger string.  Often this is used to build URLs from identifier values.
 
 	input.path.path.variable.each {
-		ns_tag "http://some/prefix/${it}"
+		ns.tag "http://some/prefix/${it}"
 	}
 
 A GString is a string between double-quotes which uses the **dollar sign** to indicate that a variable from the environment is to be inserted.  The dollar sign can often precede simply a variable name (without braces), but adding braces allows you to use any arbitrary piece of Groovy code as the substitution.
@@ -98,8 +130,8 @@ It is trivial to add the same constant value to each record of the normalized ou
 
 When it is not appropriate to create output for every value in the input, but rather to use only one of the input values to create the output element, you can use the **array syntax** to pick members of the group.  Groovy array syntax is written as a number within square brackets, and it conveniently uses negative numbers to index from the end of the list rather than from the beginning.
 
-	ns_tag input.path.variable[0] // first
-	ns_tag input.path.variable[-1] // last
+	ns.tag input.path.variable[0] // first
+	ns.tag input.path.variable[-1] // last
 	
 #### Splitting a content field
 
@@ -107,7 +139,7 @@ Sometimes a mapping requires that the content of a single element be split into 
 
 	input.path.path.variable.each {
 		for (part in it.toString().split(';')) {
-			ns_tag part
+			ns.tag part
 		}
 	}
 	
