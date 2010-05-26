@@ -548,9 +548,9 @@
     <properties>
         <europeana.definitions.version>1.09</europeana.definitions.version>
         <europeana.core.version>1.30</europeana.core.version>
-        <europeana.portal.version>0.6.2</europeana.portal.version>
-        <europeana.api.version>0.14</europeana.api.version>
-        <europeana.dashboard.version>0.3</europeana.dashboard.version>
+        <europeana.portal.version>0.6.3</europeana.portal.version>
+        <europeana.api.version>0.15</europeana.api.version>
+        <europeana.dashboard.version>0.3.1</europeana.dashboard.version>
 
         <jdkLevel>1.6</jdkLevel>
 

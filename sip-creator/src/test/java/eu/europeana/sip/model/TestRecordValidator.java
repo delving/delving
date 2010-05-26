@@ -66,7 +66,7 @@ public class TestRecordValidator {
         assertEquals(expected.toString(), result);
     }
 
-    private void compare(String [] given, String [] expect) throws RecordValidationException {
+    private void compare(String[] given, String[] expect) throws RecordValidationException {
         List<String> givenList = new ArrayList<String>(Arrays.asList(given));
         List<String> expectList = new ArrayList<String>(Arrays.asList(expect));
         givenList.add(VALID_SHOWN_AT);
@@ -80,7 +80,7 @@ public class TestRecordValidator {
         compareList(givenList, expectList);
     }
 
-    private void compareBare(String [] given, String [] expect) throws RecordValidationException {
+    private void compareBare(String[] given, String[] expect) throws RecordValidationException {
         List<String> givenList = Arrays.asList(given);
         List<String> expectList = Arrays.asList(expect);
         compareList(givenList, expectList);
@@ -110,12 +110,30 @@ public class TestRecordValidator {
                         "<description>illegal</description>"
                 }
                 ,
-                new String [] {}
+                new String[]{}
         );
     }
 
-//    @Test(expected = RecordValidationException.class)
-    public void shownTags() throws RecordValidationException {
+    @Test
+    public void missing() {
+        try {
+            compareBare(
+                    new String[]{
+                            VALID_TYPE,
+                            VALID_OBJECT,
+                            VALID_SHOWN_BY
+                    }
+                    ,
+                    new String[]{
+                            VALID_TYPE,
+                            VALID_OBJECT,
+                            VALID_SHOWN_BY
+                    }
+            );
+        }
+        catch (RecordValidationException e) {
+            assertEquals(1, e.getProblems().size());
+        }
 
     }
 }
