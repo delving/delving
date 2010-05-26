@@ -546,7 +546,7 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.definitions.version>1.09</europeana.definitions.version>
+        <europeana.definitions.version>1.10</europeana.definitions.version>
         <europeana.core.version>1.30</europeana.core.version>
         <europeana.portal.version>0.6.3</europeana.portal.version>
         <europeana.api.version>0.15</europeana.api.version>
