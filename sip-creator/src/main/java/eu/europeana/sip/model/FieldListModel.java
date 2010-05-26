@@ -84,19 +84,11 @@ public class FieldListModel extends AbstractListModel {
             if (isSelected) {
                 label.setForeground(new Color(1f, 1f, 1f));
             }
-            else switch (europeanaField.getCategory()) {
-                case COPY_FIELD:
-                case INDEX_TIME_FIELD:
-                    label.setForeground(new Color(1f, 0f, 0f));
-                    break;
-                case ESE_OPTIONAL:
-                case ESE_PLUS_OPTIONAL:
-                    label.setForeground(new Color(0.5f, 0.5f, 0f));
-                    break;
-                case ESE_REQUIRED:
-                case ESE_PLUS_REQUIRED:
-                    label.setForeground(new Color(0.3f, 0f, 0.3f));
-                    break;
+            else if (europeanaField.europeana().required()) {
+                label.setForeground(new Color(0.3f, 0f, 0.3f));
+            }
+            else {
+                label.setForeground(new Color(0.5f, 0.5f, 0f));
             }
             return label;
         }

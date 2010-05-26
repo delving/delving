@@ -36,14 +36,6 @@ import java.util.Set;
 public interface AnnotationProcessor {
 
     /**
-     * Retrieve instances of field specifications from the annotations
-     *
-     * @return a set of fields that play the facet role
-     */
-
-    Set<? extends EuropeanaField> getFacetFields();
-
-    /**
      * Get an array of facet field names which can be passed easily
      * to the SolrQuery.
      *
@@ -58,7 +50,7 @@ public interface AnnotationProcessor {
      * @return a set of all fields defined in bean classes
      */
 
-    Set<? extends EuropeanaField> getSolrFields();
+    Set<? extends EuropeanaField> getAllFields();
 
     /**
      * Return a collection of mappable fields
@@ -83,7 +75,7 @@ public interface AnnotationProcessor {
      * @return an array of Solr name strings
      */
 
-    List<String> getSolrFieldNameList();
+    List<String> getFieldNameList();
 
     /**
      * Fetch the bean interface for the given bean class
@@ -94,5 +86,10 @@ public interface AnnotationProcessor {
 
     EuropeanaBean getEuropeanaBean(Class<?> clazz);
 
+    /**
+     * Get a map that can be used to build up a filter query
+     *
+     * @return map from facetName to facetPrefix
+     */
     HashMap<String, String> getFacetMap();
 }

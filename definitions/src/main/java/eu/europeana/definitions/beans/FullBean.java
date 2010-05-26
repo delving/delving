@@ -30,14 +30,11 @@ import eu.europeana.definitions.presentation.FullDoc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_OPTIONAL;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS_OPTIONAL;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS_REQUIRED;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_REQUIRED;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
- * 
+ *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
@@ -45,196 +42,196 @@ import static eu.europeana.definitions.annotations.FieldCategory.ESE_REQUIRED;
 public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
-    @Europeana(category = ESE_REQUIRED, type = true)
+    @Europeana(required = true, type = true)
     @Solr(prefix = "europeana", localName = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     String europeanaType;
 
-    @Europeana(category = ESE_PLUS_OPTIONAL)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "userTag", toCopyField = {"text", "USERTAGS"})
     String[] europeanaUserTag;
 
-    @Europeana(category = ESE_PLUS_REQUIRED, importAddition = true)
+    @Europeana(category = ESE_PLUS, constant = true, required = true)
     @Solr(prefix = "europeana", localName = "language", fieldType = "string", toCopyField = {"text", "LANGUAGE"})
     String[] europeanaLanguage;
 
-    @Europeana(category = ESE_PLUS_REQUIRED, importAddition = true)
-    @Solr(prefix = "europeana", localName = "country")
+    @Europeana(category = ESE_PLUS, constant = true, required = true)
+    @Solr(prefix = "europeana", localName = "country", multivalued = false)
     String[] europeanaCountry;
 
     // todo find out what this field is
-    @Europeana(category = ESE_PLUS_OPTIONAL)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "source")
     String[] europeanaSource;
 
-    @Europeana(category = ESE_REQUIRED)
+    @Europeana(required = true, url = true)
     @Solr(prefix = "europeana", localName = "isShownAt", fieldType = "string", toCopyField = {"text"})
     String[] europeanaisShownAt;
 
-    @Europeana(category = ESE_REQUIRED)
+    @Europeana(required = true, url = true)
     @Solr(prefix = "europeana", localName = "isShownBy", fieldType = "string", toCopyField = {"text"})
     String[] europeanaisShownBy;
 
-    @Europeana(category = ESE_PLUS_OPTIONAL, importAddition = true)
+    @Europeana(category = ESE_PLUS, constant = true, converter = "extractYear", regularExpression = "\\d{4}")
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-    @Europeana(category = ESE_PLUS_OPTIONAL, importAddition = true)
+    @Europeana(category = ESE_PLUS, constant = true)
     @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
     boolean europeanahasObject;
 
-    @Europeana(category = ESE_PLUS_REQUIRED, importAddition = true)
-    @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"})
+    @Europeana(category = ESE_PLUS, required = true, constant = true)
+    @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
 
 
     // Dublin Core / ESE fields
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "coverage", toCopyField = {"text", "what", "subject"})
     String[] dcCoverage;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "contributor", toCopyField = {"text", "who", "creator"})
     String[] dcContributor;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "description", toCopyField = {"text", "description"})
     String[] dcDescription;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "creator", toCopyField = {"text", "who", "creator"})
     String[] dcCreator;
 
-    @Europeana(category = ESE_OPTIONAL, converter="extractYear")
+    @Europeana(converter = "extractYear")
     @Solr(prefix = "dc", localName = "date", toCopyField = {"text", "when", "date"})
     String[] dcDate;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "format", toCopyField = {"text"})
     String[] dcFormat;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "identifier", toCopyField = {"text", "identifier"})
     String[] dcIdentifier;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "language", toCopyField = {"text"})
     String[] dcLanguage;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "publisher", toCopyField = {"text"})
     String[] dcPublisher;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "relation", toCopyField = {"text", "relation"})
     String[] dcRelation;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "rights", toCopyField = {"text"})
     String[] dcRights;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "source", toCopyField = {"text"})
     String[] dcSource;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "subject", toCopyField = {"text", "what", "subject"})
     String[] dcSubject;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "title", toCopyField = {"text"})
     String[] dcTitle;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dc", localName = "type", toCopyField = {"text"})
     String[] dcType;
 
 
     // Dublin Core Terms extended / ESE fields
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "alternative", toCopyField = {"text"})
     String[] dctermsAlternative;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "created", toCopyField = {"text", "when", "date"})
     String[] dctermsCreated;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "conformsTo", toCopyField = {"text"})
     String[] dctermsConformsTo;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "extent", toCopyField = {"text", "format"})
     String[] dctermsExtent;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "hasFormat", toCopyField = {"text", "relation"})
     String[] dctermsHasFormat;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "hasPart", toCopyField = {"text", "relation"})
     String[] dctermsHasPart;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "hasVersion", toCopyField = {"text", "relation"})
     String[] dctermsHasVersion;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isFormatOf", toCopyField = {"text"})
     String[] dctermsIsFormatOf;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isPartOf", toCopyField = {"text"})
     String[] dctermsIsPartOf;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isReferencedBy", toCopyField = {"text", "relation"})
     String[] dctermsIsReferencedBy;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isReplacedBy", toCopyField = {"text", "relation"})
     String[] dctermsIsReplacedBy;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isRequiredBy", toCopyField = {"text", "relation"})
     String[] dctermsIsRequiredBy;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "issued", toCopyField = {"text", "date"})
     String[] dctermsIssued;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isVersionOf", toCopyField = {"text"})
     String[] dctermsIsVersionOf;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "medium", toCopyField = {"text", "format"})
     String[] dctermsMedium;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "provenance", toCopyField = {"text"})
     String[] dctermsProvenance;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "references", toCopyField = {"text"})
     String[] dctermsReferences;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "replaces", toCopyField = {"text", "relation"})
     String[] dctermsReplaces;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "requires", toCopyField = {"text", "relation"})
     String[] dctermsRequires;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "spatial", toCopyField = {"text", "where", "location", "subject"})
     String[] dctermsSpatial;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "tableOfContents", toCopyField = {"text", "description"})
     String[] dctermsTableOfContents;
 
-    @Europeana(category = ESE_OPTIONAL)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "temporal", toCopyField = {"text", "what", "subject"})
     String[] dctermsTemporal;
 
@@ -243,7 +240,6 @@ public class FullBean extends BriefBean implements FullDoc {
         return europeanaUri;
     }
 
-    
 
     @Override
     public String[] getThumbnails() {
@@ -506,7 +502,7 @@ public class FullBean extends BriefBean implements FullDoc {
         return (s != null) ? s : new String[]{" "};
     }
 
-    private static String[] returnArrayOrElse (String[] ... arrs) {
+    private static String[] returnArrayOrElse(String[]... arrs) {
         for (String[] arr : arrs) {
             if (arr != null) {
                 return arr;

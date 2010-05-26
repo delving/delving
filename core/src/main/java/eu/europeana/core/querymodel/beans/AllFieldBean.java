@@ -25,8 +25,8 @@ import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
 import org.apache.solr.client.solrj.beans.Field;
 
-import static eu.europeana.definitions.annotations.FieldCategory.COPY_FIELD;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_OPTIONAL;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE;
+import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -36,100 +36,100 @@ import static eu.europeana.definitions.annotations.FieldCategory.ESE_OPTIONAL;
 public class AllFieldBean extends FullBean {
 
     @Field("LOCATION")
-    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "loc", fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr(fieldType = "string")
     String[] location;
 
     @Field("CONTRIBUTOR")
-    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "cont", fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr(fieldType = "string")
     String[] contributor;
 
     @Field("USERTAGS")
-    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "ut", fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr(fieldType = "string")
     String[] userTags;
 
     @Field("SUBJECT")
-    @Europeana(category = COPY_FIELD, facet = false, facetPrefix = "sub", fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr(fieldType = "string")
     String[] SUBJECT;
 
 
-    @Europeana(category = ESE_OPTIONAL, fullDoc = false)
+    @Europeana(category = ESE, fullDoc = false)
     @Solr(prefix = "europeana", localName = "unstored", stored = false)
     @Field("europeana_unstored")
     String[] europeanaUnstored;
 
     // copy fields
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] text;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] description;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] date;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] format;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] publisher;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] source;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] rights;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] identifier;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] relation;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] subject;
 
     // wh copy fields
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] who;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] when;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] what;
 
     @Field
-    @Europeana(category = COPY_FIELD, fullDoc = false)
+    @Europeana(category = INDEX_TIME_ADDITION, fullDoc = false)
     @Solr()
     String[] where;
 }

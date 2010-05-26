@@ -320,11 +320,11 @@ public class MappingPanel extends JPanel {
 
     private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, List<String> code) {
         code.add(String.format("%s.each {", node.getVariableName()));
-        if (field.getConverter().isEmpty()) {
+        if (field.europeana().converter().isEmpty()) {
             code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
         }
         else {
-            code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.getConverter()));
+            code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
         }
         code.add("}");
     }
@@ -334,7 +334,7 @@ public class MappingPanel extends JPanel {
         if (field != null) {
             FieldMapping obvious = new FieldMapping(field);
             List<String> code = obvious.getCodeLines();
-            if (field.getGenerator().isEmpty()) {
+            if (field.europeana().generator().isEmpty()) {
                 for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                     AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
                     String nodeName = MetadataRecord.sanitize(node.toString());
@@ -348,7 +348,7 @@ public class MappingPanel extends JPanel {
                         "%s.%s %s()",
                         obvious.getEuropeanaField().getPrefix(),
                         obvious.getEuropeanaField().getLocalName(),
-                        field.getGenerator()
+                        field.europeana().generator()
                 ));
             }
             if (!code.isEmpty()) {
@@ -361,7 +361,7 @@ public class MappingPanel extends JPanel {
     private EuropeanaField getObviousMappingField() {
         for (int walkField = 0; walkField < sipModel.getUnmappedFieldListModel().getSize(); walkField++) {
             EuropeanaField field = (EuropeanaField) sipModel.getUnmappedFieldListModel().getElementAt(walkField);
-            if (field.getGenerator().isEmpty()) {
+            if (field.europeana().generator().isEmpty()) {
                 for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                     AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
                     String nodeName = MetadataRecord.sanitize(node.toString());

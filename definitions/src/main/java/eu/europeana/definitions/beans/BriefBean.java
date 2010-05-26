@@ -26,13 +26,12 @@ import eu.europeana.definitions.annotations.Solr;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
 
-import static eu.europeana.definitions.annotations.FieldCategory.COPY_FIELD;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS_REQUIRED;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_REQUIRED;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
+import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
- * 
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:16:46 AM
  */
@@ -41,40 +40,40 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
 
-    @Europeana(category = ESE_PLUS_REQUIRED, generator = "createEuropeanaCollectionName")
+    @Europeana(category = ESE_PLUS, required = true, generator = "createEuropeanaCollectionName")
     @Solr(prefix = "europeana", localName = "europeanaCollectionName", multivalued = false, required = true)
     String[] europeanaCollectionName;
 
-    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "prov", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "prov", briefDoc = true)
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(category = ESE_REQUIRED, briefDoc = true, object = true)
+    @Europeana(required = true, briefDoc = true, object = true, url = true)
     @Solr(prefix = "europeana", localName = "object")
     String[] europeanaObject;
 
-    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "coun")
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coun")
     @Solr(fieldType = "string")
     String[] country;
 
-    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "type", briefDoc = true, type = true)
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "type", briefDoc = true, type = true)
     @Solr(localName = "type", fieldType = "string")
     String[] docType;
 
-    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "lang", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "lang", briefDoc = true)
     @Solr(fieldType = "string")
     String[] language;
 
-    @Europeana(category = COPY_FIELD, facet = true, facetPrefix = "yr", briefDoc = true, converter="extractYear")
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "yr", briefDoc = true)
     @Solr(fieldType = "string")
     String[] year;
 
-    @Europeana(category = COPY_FIELD, briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true)
     @Solr()
     String[] title;
 
     @Solr()
-    @Europeana(category = COPY_FIELD, briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true)
     String[] creator;
 
     @Override

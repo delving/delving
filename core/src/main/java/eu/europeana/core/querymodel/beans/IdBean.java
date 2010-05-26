@@ -36,12 +36,12 @@ import java.util.Date;
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS_REQUIRED)
+    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, required = true, url = true)
     @Solr(prefix = "europeana", localName = "uri", multivalued = false, required = true)
     @Field("europeana_uri")
     String europeanaUri;
 
-    @Europeana(category = FieldCategory.INDEX_TIME_FIELD)
+    @Europeana(category = FieldCategory.INDEX_TIME_ADDITION)
     @Solr(localName = "timestamp", multivalued = false, defaultValue = "NOW")
     @Field("timestamp")
     Date timestamp;

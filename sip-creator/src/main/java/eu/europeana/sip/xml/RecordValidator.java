@@ -23,8 +23,9 @@ package eu.europeana.sip.xml;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.definitions.annotations.FieldCategory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import java.util.regex.Pattern;
 
 /**
  * Validate a record
+ * <p/>
+ * todo: move this class to the definitions module
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -46,20 +49,15 @@ public class RecordValidator {
     private static Pattern PATTERN = Pattern.compile("<([^>]*)>([^<]*)<[^>]*>");
     private AnnotationProcessor annotationProcessor;
     private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
-    private Map<FieldCategory, List<String>> categoryFieldMap = new HashMap<FieldCategory, List<String>>();
     private Set<String> unique;
 
     public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
         this.annotationProcessor = annotationProcessor;
         if (checkUniqueness) {
-             unique = new HashSet<String>();
+            unique = new HashSet<String>();
         }
-        for (FieldCategory category : FieldCategory.values()) {
-            categoryFieldMap.put(category, new ArrayList<String>());
-        }
-        for (EuropeanaField field : annotationProcessor.getSolrFields()) {
-            fieldMap.put(field.getPrefixedName(), field);
-            categoryFieldMap.get(field.getCategory()).add(field.getPrefixedName());
+        for (EuropeanaField field : annotationProcessor.getAllFields()) {
+            fieldMap.put(field.getXmlName(), field);
         }
     }
 
@@ -80,7 +78,7 @@ public class RecordValidator {
         for (Entry entry : entries) {
             EuropeanaField field = fieldMap.get(entry.tag);
             if (field == null) {
-                problems.add("Unknown tag: "+entry.tag);
+                problems.add("Unknown tag: " + entry.tag);
             }
             else {
                 Counter counter = counterMap.get(entry.tag);
@@ -89,33 +87,41 @@ public class RecordValidator {
                     counterMap.put(entry.tag, counter);
                 }
                 counter.count++;
+                String regex = field.europeana().regularExpression();
+                if (!regex.isEmpty()) {
+                    if (!entry.value.matches(regex)) {
+                        problems.add("Field value "+entry.value+" does not match regular expression /"+regex+"/: "+entry.tag);
+                    }
+                }
+                if (field.europeana().url()) {
+                    try {
+                        new URL(entry.value);
+                    }
+                    catch (MalformedURLException e) {
+                        problems.add("Malformed URL["+entry.value+"]: "+entry.tag);
+                    }
+                }
+                if (field.europeana().id() && unique != null) {
+                    if (unique.contains(entry.value)) {
+                        problems.add("Second occurrence of ID, must be unique: "+entry.value);
+                    }
+                    unique.add(entry.value);
+                }
             }
         }
-        for (String requiredName : categoryFieldMap.get(FieldCategory.ESE_REQUIRED)) {
-            Counter counter = counterMap.get(requiredName);
-            if (counter == null || counter.count == 0) {
-                problems.add("Required: "+requiredName);
+        for (EuropeanaField field : fieldMap.values()) {
+            String name = field.getXmlName();
+            Counter counter = counterMap.get(name);
+            if (counter == null) {
+                if (field.europeana().required()) {
+                    problems.add("Required: " + name);
+                }
             }
-            else if (counter.count > 1) {
-                problems.add("Too many: "+requiredName);
+            else if (!field.solr().multivalued() && counter.count > 1) {
+                problems.add("Single-valued field has " + counter.count + " values: " + name);
             }
         }
     }
-
-//                switch (field.getCategory()) {
-//                    case ESE_OPTIONAL:
-//                        break;
-//                    case ESE_REQUIRED:
-//                        break;
-//                    case ESE_PLUS_OPTIONAL:
-//                        break;
-//                    case ESE_PLUS_REQUIRED:
-//                        break;
-//                    case COPY_FIELD:
-//                    case INDEX_TIME_FIELD:
-//                        problems.add("Not allowed: "+entry.tag);
-//                        break;
-//                }
 
     private String toString(List<Entry> entries) {
         StringBuilder out = new StringBuilder();

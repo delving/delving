@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -20,26 +21,33 @@ import static junit.framework.Assert.assertEquals;
  * <li> no duplicate fields - filtered silently
  * <li> no empty fields - filtered silently
  * <li> no unknown fields
- * <li> isShownAt and isShownBy required
- * <li> isShownBy, isShownAt, and europeana_object should contain an url
- * <li> records with duplicate europeana_uri's should be discarded.
- * <li> europeana_uri: must be unique per collection and can only occur once
- * <li> europeana_type: can only have four values that must be checked from enum and can only occur once
- * <li> europeana_year: contains a 4 digit year. can appear multiple times
- * <li> europeana_language: must come from enum. multivalue true
- * <li> europeana_country: can only occur once and must be the same for every record
- * <li> europeana_provider: must be a constant. can only occur one per record.
- * <li> europeana_collectionName: must be a constant per collection. Can only occur once per record
+ * <li> required fields must be there
+ * <li> non-multivalued fields must not have multiple values
+ * <li> URLs checked using java.net.URL
+ * <li> regular expression checking
+ * <li> ids unique per collection
+ * <li> todo: europeana_type: can only have four values that must be checked from enum and can only occur once
+ * <li> todo: europeana_language: must come from enum. multivalue true
+ * <li> todo: europeana_country: can only occur once and must be the same for every record
+ * <li> todo: europeana_provider: must be a constant. can only occur one per record.
+ * <li> todo: europeana_collectionName: must be a constant per collection. Can only occur once per record
  * </ul>
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class TestRecordValidator {
-    private static final String VALID_TYPE = "<europeana:type>type</europeana:type>";
-    private static final String VALID_OBJECT = "<europeana:object>object</europeana:object>";
-    private static final String VALID_SHOWN_AT = "<europeana:isShownAt>is-shown-at</europeana:isShownAt>";
-    private static final String VALID_SHOWN_BY = "<europeana:isShownBy>is-shown-by</europeana:isShownBy>";
+    private static final String[] VALID_FIELDS = {
+            "<europeana:country>country</europeana:country>",
+            "<europeana:europeanaCollectionName>collectionName</europeana:europeanaCollectionName>",
+            "<europeana:isShownAt>http://is-shown-at.com/</europeana:isShownAt>",
+            "<europeana:isShownBy>http://is-shown-by.com/</europeana:isShownBy>",
+            "<europeana:language>language</europeana:language>",
+            "<europeana:object>http://object.com/</europeana:object>",
+            "<europeana:provider>provider</europeana:provider>",
+            "<europeana:type>type</europeana:type>",
+            "<europeana:uri>http://uri.com/</europeana:uri>",
+    };
     private RecordValidator recordValidator;
 
     @Before
@@ -69,20 +77,10 @@ public class TestRecordValidator {
     private void compare(String[] given, String[] expect) throws RecordValidationException {
         List<String> givenList = new ArrayList<String>(Arrays.asList(given));
         List<String> expectList = new ArrayList<String>(Arrays.asList(expect));
-        givenList.add(VALID_SHOWN_AT);
-        expectList.add(VALID_SHOWN_AT);
-        givenList.add(VALID_SHOWN_BY);
-        expectList.add(VALID_SHOWN_BY);
-        givenList.add(VALID_OBJECT);
-        expectList.add(VALID_OBJECT);
-        givenList.add(VALID_TYPE);
-        expectList.add(VALID_TYPE);
-        compareList(givenList, expectList);
-    }
-
-    private void compareBare(String[] given, String[] expect) throws RecordValidationException {
-        List<String> givenList = Arrays.asList(given);
-        List<String> expectList = Arrays.asList(expect);
+        givenList.addAll(Arrays.asList(VALID_FIELDS));
+        Collections.sort(givenList);
+        expectList.addAll(Arrays.asList(VALID_FIELDS));
+        Collections.sort(expectList);
         compareList(givenList, expectList);
     }
 
@@ -114,26 +112,22 @@ public class TestRecordValidator {
         );
     }
 
-    @Test
-    public void missing() {
-        try {
-            compareBare(
-                    new String[]{
-                            VALID_TYPE,
-                            VALID_OBJECT,
-                            VALID_SHOWN_BY
-                    }
-                    ,
-                    new String[]{
-                            VALID_TYPE,
-                            VALID_OBJECT,
-                            VALID_SHOWN_BY
-                    }
-            );
-        }
-        catch (RecordValidationException e) {
-            assertEquals(1, e.getProblems().size());
-        }
+    @Test(expected = RecordValidationException.class)
+    public void badYear() throws RecordValidationException {
+        compare(
+                new String[]{
+                        "<europeana:year>99999</europeana:year>"
+                }
+                ,
+                new String[]{
+                        "<europeana:year>99999</europeana:year>"
+                }
+        );
+    }
 
+    @Test(expected = RecordValidationException.class)
+    public void doubleUri() throws RecordValidationException {
+        compare(new String[]{},new String[]{});
+        compare(new String[]{},new String[]{});
     }
 }

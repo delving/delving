@@ -30,18 +30,18 @@ import java.util.Date;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
- * 
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:15:43 AM
  */
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS_REQUIRED, converter = "createEuropeanaURI")
+    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, required = true, converter = "createEuropeanaURI", url = true)
     @Solr(prefix = "europeana", localName = "uri", multivalued = false, required = true)
     String europeanaUri;
 
-    @Europeana(category = FieldCategory.INDEX_TIME_FIELD)
+    @Europeana(category = FieldCategory.INDEX_TIME_ADDITION)
     @Solr(localName = "timestamp", multivalued = false, defaultValue = "NOW")
     Date timestamp;
 

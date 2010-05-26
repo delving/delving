@@ -203,7 +203,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                                 compilationComplete(validated);
                             }
                             catch (RecordValidationException e) {
-                                e.printStackTrace();  // todo: notify the world that this happened so that it can be shown on screen
+                                compilationComplete(e.toString());
                             }
                         }
                         else {

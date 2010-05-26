@@ -27,10 +27,7 @@ package eu.europeana.definitions.annotations;
  */
 
 public enum FieldCategory {
-    ESE_OPTIONAL,
-    ESE_REQUIRED,
-    ESE_PLUS_OPTIONAL,
-    ESE_PLUS_REQUIRED,
-    COPY_FIELD,
-    INDEX_TIME_FIELD,
+    ESE,
+    ESE_PLUS,
+    INDEX_TIME_ADDITION,
 }

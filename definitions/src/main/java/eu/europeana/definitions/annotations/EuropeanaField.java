@@ -28,74 +28,93 @@ package eu.europeana.definitions.annotations;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface EuropeanaField {
+public class EuropeanaField {
+    private java.lang.reflect.Field field;
+    private Europeana europeanaAnnotation;
+    private Solr solrAnnotation;
+    private String fieldNameString;
 
-    String getLocalName();
+    public EuropeanaField(java.lang.reflect.Field field) {
+        this.field = field;
+        europeanaAnnotation = field.getAnnotation(Europeana.class);
+        solrAnnotation = field.getAnnotation(Solr.class);
+        if (europeanaAnnotation == null) {
+            throw new IllegalStateException("Field must have @Europeana annotation: " + field.getDeclaringClass().getName() + "." + field.getName());
+        }
+        if (solrAnnotation == null) {
+            throw new IllegalStateException("Field must have solrj @Solr annotation: " + field.getDeclaringClass().getName() + "." + field.getName());
+        }
+    }
 
-    /**
-     * How does its name begin?
-     * @return the first part
-     */
+    public String getPrefix() {
+        if (!europeanaAnnotation.facetPrefix().isEmpty()) {
+            return europeanaAnnotation.facetPrefix();
+        }
+        else {
+            return solrAnnotation.prefix();
+        }
+    }
 
-    String getPrefix();
+    public String getXmlName() {
+        return getPrefix() + ":" + getLocalName();
+    }
 
-    /**
-     * Combine the prefix and the local name
-     */
+    public String getLocalName() {
+        String name = solrAnnotation.localName();
+        if (name.isEmpty()) {
+            name = field.getName();
+        }
+        return name;
+    }
 
-    String getPrefixedName();
+    public String getFieldNameString() {
+        if (fieldNameString == null) {
+            if (getPrefix().isEmpty()) {
+                fieldNameString = getLocalName();
+            }
+            else {
+                fieldNameString = getPrefix() + '_' + getLocalName();
+            }
+        }
+        return fieldNameString;
+    }
 
-    /**
-     * A combination of prefix and name, separated by underscore
-     * @return the name of this field according to Solr
-     */
+    public String getFacetName() {
+        if (!europeanaAnnotation.facetPrefix().isEmpty()) {
+            if (!solrAnnotation.localName().isEmpty()) {
+                return solrAnnotation.localName().toUpperCase();
+            }
+            else {
+                return field.getName().toUpperCase();
+            }
+        }
+        else {
+            return field.getName();
+        }
+    }
 
-    String getFieldNameString();
+    public Europeana europeana() {
+        return europeanaAnnotation;
+    }
 
-    /**
-     * Reveal whether this is a facet field
-     * @return true if it is
-     */
+    public Solr solr() {
+        return solrAnnotation;
+    }
 
-    boolean isFacet();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EuropeanaField that = (EuropeanaField) o;
+        return !(field != null ? !field.equals(that.field) : that.field != null);
+    }
 
-    /**
-     * When this is a facet field, reveal its name
-     * @return the name of the facet
-     */
+    @Override
+    public int hashCode() {
+        return field != null ? field.hashCode() : 0;
+    }
 
-    String getFacetName();
-
-    /**
-     * Show whether this field is the europeana URI
-     * @return true if this field is the one
-     */
-
-    String getFacetPrefix();
-
-    FieldCategory getCategory();
-
-    boolean isEuropeanaUri();
-
-    boolean isEuropeanaObject();
-
-    boolean isEuropeanaType();
-
-
-    /**
-     * Fetch the converter name from the annotation
-     *
-     * @return name of the method in ToolCode.groovy
-     */
-
-    String getConverter();
-
-    /**
-     * Fetch the generator name from the annotation
-     *
-     * @return name of a generator method in ToolCode.groovy
-     */
-
-    String getGenerator();
-
+    public String toString() {
+        return field.getName();
+    }
 }
