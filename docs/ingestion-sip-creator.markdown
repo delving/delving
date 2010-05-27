@@ -96,6 +96,36 @@ The special constants that you filled in during step one are used here in almost
 
 	<europeana:country>NETHERLANDS</europeana:country>
 
+### Built-in Converters
+
+Certain types of field conversions are common enough that the SIP-Creator has included some specifically pre-written Groovy functions to handle them. This set of functions is currently small, but it will likely expand in the future.
+
+One such function is for ***extracting a year***, which works like this:
+
+	def it = 'Created in the year 1983'
+	def year = extractYear(it)
+	assert year == '1983'
+	it = '1890-02-03 to 1892-03-21'
+	year = extractYear(it)
+	assert year == '1890, 1892'
+
+This function is automatically inserted into the generated code snippet whenever you map to the fields that typically use it, like **"europeana:year"**.
+
+	input.temporal.created.each {
+   		europeana.year extractYear(it)
+	}
+
+Another essential function is for ***creating a europeana URI*** using a hash function:
+	
+	def record_id = "0001"
+	europeana.uri createEuropeanaURI(record_id)
+
+Which produces this URL:
+
+	http://www.europeana.eu/resolve/record/0101/7A6779700F09E1EAFE9AD40E390F3A15B94DFA4B
+
+Note that it has prefixed the hashed value with a URL that includes the path to the Europeana resolver, followed by **collectionId** which was one of the fields you had to fill in during step one.
+
 ### Simple Customizations
 
 Often an input value needs to be put in ***context***:
@@ -129,20 +159,72 @@ This combination example is something that you would have to create by editing t
 
 ### Advanced Refinement
 
-Sometimes a mapping requires that the content of a single element be split into pieces where each piece is to be an element in the output.  In cases like this, a **for-loop** is used to handle each of the parts of the split string.  For example, when the content consists of a number of values delimited by a semicolon, the snippet of Groovy mapping code might look like this:
+This is the point at which it might start to seem complicated, because for advanced manipulation of the input you have to delve deeper into the Groovy language, and that may not be for everyone.
 
-	input.path.path.variable.each {
-		for (part in it.toString().split(';')) {
-			ns.tag part
+The first advanced challenge is to ***split an input value***:
+
+Sometimes a mapping requires that the content of a single element be split into pieces where each piece is to be an element in the output.  In cases like this, a **for-loop** is used to handle each of the parts of the split string.
+
+Suppose an input element has this form:
+
+	<authors>Einstein;Rosen;Podolsky</authors>
+
+But what we would like to have in the output is:
+
+	<dc:creator>Einstein</dc:creator>
+	<dc:creator>Rosen</dc:creator>
+	<dc:creator>Podolsky</dc:creator>
+
+The following code, with a for-loop inside the code block, would do it:
+
+	input.source.authors.each {
+		for (part in it.split(';')) {
+			dc.creator part
 		}
 	}
 
-### Perform Normalization
+A much stranger corner case would be to ***split and interpret a value***:
 
-The normalization tab shows three panels at the top: input, code, and output.  The input panel shows the variables from the parsed input record as well as their values.  There are buttons below this panel which allow you to move to the next record of the input file or to rewind back to the beginning.
+Suppose we have this as input:
 
-The code panel shows the entire mapping code, consisting of all of the field-level mappings that you have built in the previous phases wrapped in code that makes it into a single **record** of output.  The output panel on the right shows the record that the code produces from the input values on the left.
+	<movie>Star Wars:T/George Lucas:D/20th Century Fox:P</movie>
+
+What we need to do is split it up and produce different elements, which is a challenge indeed. Groovy can help us, although this may be difficult for non-programmers to follow.
+
+	input.movies.movie.each {
+		for (part in it.split('/')) {
+			def chunk = part.split(':')
+			def name = chunk[0]
+			def role = chunk[1]
+			switch (role) {
+				case 'P':
+					dc.publisher name
+				case 'T':
+					dc.title name
+					break;
+				case 'D':
+					dc.creator name
+					break;
+			}
+		}
+	}
+
+The above code would produce this:
+
+	<dc:title>Star Wars</dc:title>
+	<dc:creator>George Lucas</dc:creator>
+	<dc:publisher>20th Century Fox</dc:publisher>
+
+Needless to say the diversity of tricks that you can use is endless, but the deeper you get the more basic Groovy knowledge and experience you need to have.
+
+## Step Four : Normalization and Validation
+
+The **Normalization** tab shows three panels at the top: input, code, and output.  The input panel shows the variables from the **Parsed Record** as well as their values.  There are buttons below this panel which allow you to move to the next record of the input file or to rewind back to the beginning.
+The middle panel shows the **Groovy Code** which does the mapping work, converting the parsed input record into the **Output Record**.  It consisting of all of the field-level mappings that you have built in the previous phases wrapped in code that makes it into a single record of output.  The panel on the right shows the record that the code produces from the input values on the left.
+
+Validation errors will be apparent in the **Output Record** panel on the right if something is wrong with the record according to the validation criteria.
 
 These three panels allow you to observe a dry-run of the normalization one record at a time so that you can visually verify the the output record looks right.
 
 When you are satisfied with the records that are being produced in the dry-run you can press the **Normalize** button to start the normalization of the entire input file to produce the output file.  While it is normalizing, the SIP-Creator shows its progress along the bottom.
+
