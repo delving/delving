@@ -261,10 +261,13 @@ public class SipModel {
     public void selectNode(AnalysisTree.Node node) {
         checkSwingThread();
         if (node != null && node.getStatistics() != null) {
-            statisticsTableModel.setCounterList(node.getStatistics().getCounters());
-        }
-        else {
-            statisticsTableModel.setCounterList(null);
+            List<? extends Statistics.Counter> counters = node.getStatistics().getCounters();
+            if (!counters.isEmpty()) {
+                statisticsTableModel.setCounterList(counters);
+            }
+            else {
+                statisticsTableModel.setCounterList(node.getStatistics().getTotalAsCounter());
+            }
         }
     }
 

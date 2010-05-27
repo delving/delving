@@ -36,13 +36,17 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -85,25 +89,25 @@ public class AnalysisPanel extends JPanel {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
-        gbc.weighty = 0.95;
+        gbc.weighty = 0.5;
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridheight = 2;
         add(createTreePanel(), gbc);
 
-        gbc.weighty = 0.45;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(createStatisticsPanel(), gbc);
+
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.gridheight = 1;
         add(createVariablesPanel(), gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 1;
-        gbc.gridheight = 1;
         add(constantFieldPanel, gbc);
 
-        gbc.weighty = 0.05;
+        gbc.weighty = 0.01;
         gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -124,6 +128,32 @@ public class AnalysisPanel extends JPanel {
         return p;
     }
 
+    private JPanel createStatisticsPanel() {
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setBorder(BorderFactory.createTitledBorder("Statistics"));
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
+        statsTable.getTableHeader().setReorderingAllowed(false);
+        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
+        tablePanel.add(scroll(statsTable), BorderLayout.CENTER);
+        p.add(tablePanel, BorderLayout.CENTER);
+        return p;
+    }
+
+    private DefaultTableColumnModel createStatsColumnModel() {
+        DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
+        columnModel.addColumn(new TableColumn(0));
+        columnModel.getColumn(0).setHeaderValue("Percent");
+        columnModel.getColumn(0).setMaxWidth(80);
+        columnModel.addColumn(new TableColumn(1));
+        columnModel.getColumn(1).setHeaderValue("Count");
+        columnModel.getColumn(1).setMaxWidth(80);
+        columnModel.addColumn(new TableColumn(2));
+        columnModel.getColumn(2).setHeaderValue("Value");
+        return columnModel;
+    }
+
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Variables"));
@@ -137,7 +167,7 @@ public class AnalysisPanel extends JPanel {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setPreferredSize(new Dimension(300, 800));
+        scroll.setPreferredSize(new Dimension(300, 500));
         return scroll;
     }
 
@@ -191,6 +221,7 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = event.getPath();
                 AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
+                sipModel.selectNode(node);
             }
         });
         selectRecordRootButton.addActionListener(new ActionListener() {

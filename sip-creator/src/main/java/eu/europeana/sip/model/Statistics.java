@@ -89,6 +89,12 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         return counterList;
     }
 
+    public List<? extends Counter> getTotalAsCounter() {
+        List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
+        counterList.add(new CounterImpl("Total Occurrences", total));
+        return counterList;
+    }
+
     public String toString() {
         return path + " (" + total + ")";
     }
@@ -110,6 +116,11 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         private static final long serialVersionUID = 8723534933008189272L;
         private String value;
         private int count;
+
+        public CounterImpl(String value, int count) {
+            this.value = value;
+            this.count = count;
+        }
 
         public CounterImpl(String value) {
             this.value = value;
