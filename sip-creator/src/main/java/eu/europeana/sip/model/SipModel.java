@@ -274,6 +274,7 @@ public class SipModel {
     public void setRecordRoot(RecordRoot recordRoot) {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
+        createMetadataParser();
         recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
         String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
@@ -370,7 +371,6 @@ public class SipModel {
         else {
             variableListModel.clear();
         }
-        createMetadataParser();
         normalizeProgressModel.setValue(0);
         normalizeProgressModel.setMaximum(100);
         for (UpdateListener updateListener : updateListeners) {

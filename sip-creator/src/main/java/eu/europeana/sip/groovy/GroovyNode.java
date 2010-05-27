@@ -374,6 +374,10 @@ public class GroovyNode {
         return answer;
     }
 
+    public String [] split(String regex) {
+        return text().split(regex);
+    }
+
     public String toString() {
         return text();
     }

@@ -376,13 +376,23 @@ public class MappingPanel extends JPanel {
     }
 
     private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, List<String> code) {
-        code.add(String.format("%s.each {", node.getVariableName()));
-        if (field.europeana().converter().isEmpty()) {
-            code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+        if (field.solr().multivalued()) {
+            code.add(String.format("%s.each {", node.getVariableName()));
+            if (field.europeana().converter().isEmpty()) {
+                code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+            }
+            else {
+                code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+            }
+            code.add("}");
         }
         else {
-            code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+            if (field.europeana().converter().isEmpty()) {
+                code.add(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
+            }
+            else {
+                code.add(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
+            }
         }
-        code.add("}");
     }
 }
