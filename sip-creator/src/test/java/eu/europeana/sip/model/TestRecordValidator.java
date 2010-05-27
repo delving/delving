@@ -38,14 +38,14 @@ import static junit.framework.Assert.assertEquals;
 
 public class TestRecordValidator {
     private static final String[] VALID_FIELDS = {
-            "<europeana:country>country</europeana:country>",
-            "<europeana:europeanaCollectionName>collectionName</europeana:europeanaCollectionName>",
+            "<europeana:country>NETHERLANDS</europeana:country>",
+            "<europeana:collectionName>collectionName</europeana:collectionName>",
             "<europeana:isShownAt>http://is-shown-at.com/</europeana:isShownAt>",
             "<europeana:isShownBy>http://is-shown-by.com/</europeana:isShownBy>",
-            "<europeana:language>language</europeana:language>",
+            "<europeana:language>EN</europeana:language>",
             "<europeana:object>http://object.com/</europeana:object>",
             "<europeana:provider>provider</europeana:provider>",
-            "<europeana:type>type</europeana:type>",
+            "<europeana:type>IMAGE</europeana:type>",
             "<europeana:uri>http://uri.com/</europeana:uri>",
     };
     private RecordValidator recordValidator;
