@@ -23,6 +23,8 @@ package eu.europeana.definitions.beans;
 
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
+import eu.europeana.definitions.domain.Country;
+import eu.europeana.definitions.domain.Language;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
 import eu.europeana.definitions.presentation.FullDoc;
@@ -42,7 +44,7 @@ import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
-    @Europeana(required = true, type = true)
+    @Europeana(required = true, type = true, enumClass = DocType.class)
     @Solr(prefix = "europeana", localName = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     String europeanaType;
 
@@ -50,11 +52,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "userTag", toCopyField = {"text", "USERTAGS"})
     String[] europeanaUserTag;
 
-    @Europeana(category = ESE_PLUS, constant = true, required = true)
+    @Europeana(category = ESE_PLUS, constant = true, required = true, enumClass = Language.class)
     @Solr(prefix = "europeana", localName = "language", fieldType = "string", toCopyField = {"text", "LANGUAGE"})
     String[] europeanaLanguage;
 
-    @Europeana(category = ESE_PLUS, constant = true, required = true)
+    @Europeana(category = ESE_PLUS, constant = true, required = true, enumClass = Country.class)
     @Solr(prefix = "europeana", localName = "country", multivalued = false)
     String[] europeanaCountry;
 
@@ -71,11 +73,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "isShownBy", fieldType = "string", toCopyField = {"text"})
     String[] europeanaisShownBy;
 
-    @Europeana(category = ESE_PLUS, constant = true, converter = "extractYear", regularExpression = "\\d{4}")
+    @Europeana(category = ESE_PLUS, converter = "extractYear", regularExpression = "\\d{4}")
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-    @Europeana(category = ESE_PLUS, constant = true)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
     boolean europeanahasObject;
 

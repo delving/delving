@@ -21,8 +21,7 @@
 
 package eu.europeana.sip.groovy;
 
-import eu.europeana.sip.model.GlobalField;
-import eu.europeana.sip.model.GlobalFieldModel;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.xml.MetadataRecord;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -48,23 +47,23 @@ import java.io.Writer;
 public class MappingRunner {
     private String code;
     private Script script;
-    private GlobalFieldModel globalFieldModel;
+    private ConstantFieldModel constantFieldModel;
     private Listener listener;
 
     public interface Listener {
         void complete(Exception exception, String output);
     }
 
-    public MappingRunner(String code, GlobalFieldModel globalFieldModel, Listener listener) {
+    public MappingRunner(String code, ConstantFieldModel constantFieldModel, Listener listener) {
         this.code = code;
-        this.globalFieldModel = globalFieldModel;
+        this.constantFieldModel = constantFieldModel;
         this.listener = listener;
     }
 
     public void compile(MetadataRecord metadataRecord) {
         try {
             StringWriter writer = new StringWriter();
-            Binding binding = createBinding(writer, globalFieldModel, metadataRecord);
+            Binding binding = createBinding(writer, constantFieldModel, metadataRecord);
             if (script == null) {
                 script = new GroovyShell(binding).parse(code);
             }
@@ -94,7 +93,7 @@ public class MappingRunner {
         }
     }
 
-    private static Binding createBinding(Writer writer, GlobalFieldModel globalFieldModel, MetadataRecord record) {
+    private static Binding createBinding(Writer writer, ConstantFieldModel constantFieldModel, MetadataRecord record) {
         Binding binding = new Binding();
         MarkupBuilder builder = new MarkupBuilder(writer);
         NamespaceBuilder xmlns = new NamespaceBuilder(builder);
@@ -102,8 +101,8 @@ public class MappingRunner {
         binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
         binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
         binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
-        for (GlobalField globalField : GlobalField.values()) {
-            binding.setVariable(globalField.getVariableName(), globalFieldModel.get(globalField));
+        for (String fieldName : constantFieldModel.getFields()) {
+            binding.setVariable(fieldName, constantFieldModel.get(fieldName));
         }
         binding.setVariable("input", record.getRootNode());
         return binding;

@@ -21,8 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.GlobalField;
-import eu.europeana.sip.model.GlobalFieldModel;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -49,47 +48,50 @@ import java.awt.event.FocusListener;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class GlobalFieldPanel extends JPanel {
+public class ConstantFieldPanel extends JPanel {
     private SipModel sipModel;
-    private JTextField[] textField = new JTextField[GlobalField.values().length];
+    private JTextField[] textField;
 
-    public GlobalFieldPanel(SipModel sipModel) {
+    public ConstantFieldPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
-        setBorder(BorderFactory.createTitledBorder("Global Fields"));
-        for (GlobalField globalField : GlobalField.values()) {
-            textField[globalField.ordinal()] = addField(globalField);
+        textField = new JTextField[sipModel.getGlobalFieldModel().getFields().size()];
+        setBorder(BorderFactory.createTitledBorder("Constant Fields"));
+        int index = 0;
+        for (String field : sipModel.getGlobalFieldModel().getFields()) {
+            textField[index++] = addField(field);
         }
         makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(400, 400));
     }
 
     public void refresh() {
-        GlobalFieldModel model = sipModel.getGlobalFieldModel();
-        for (GlobalField globalField : GlobalField.values()) {
-            textField[globalField.ordinal()].setText(model.get(globalField));
+        ConstantFieldModel model = sipModel.getGlobalFieldModel();
+        int index = 0;
+        for (String fieldName : model.getFields()) {
+            textField[index++].setText(model.get(fieldName));
         }
     }
 
-    private JTextField addField(final GlobalField globalField) {
+    private JTextField addField(final String fieldName) {
         final JTextField field = new JTextField();
         field.setText("");
         field.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent documentEvent) {
-                checkValue(field, globalField);
+                checkValue(field, fieldName);
             }
 
             public void removeUpdate(DocumentEvent documentEvent) {
-                checkValue(field, globalField);
+                checkValue(field, fieldName);
             }
 
             public void changedUpdate(DocumentEvent documentEvent) {
-                checkValue(field, globalField);
+                checkValue(field, fieldName);
             }
         });
         field.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                setValue(field, globalField);
+                setValue(field, fieldName);
             }
         });
         field.addFocusListener(new FocusListener() {
@@ -99,18 +101,18 @@ public class GlobalFieldPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                setValue(field, globalField);
+                setValue(field, fieldName);
             }
         });
-        JLabel label = new JLabel(globalField.getPrompt(), JLabel.RIGHT);
+        JLabel label = new JLabel(fieldName, JLabel.RIGHT);
         label.setLabelFor(field);
         this.add(label);
         this.add(field);
         return field;
     }
 
-    private void checkValue(JTextField field, GlobalField globalField) {
-        String valueString = sipModel.getGlobalFieldModel().get(globalField);
+    private void checkValue(JTextField field, String fieldName) {
+        String valueString = sipModel.getGlobalFieldModel().get(fieldName);
         String fieldString = field.getText();
         if (valueString.equals(fieldString)) {
             field.setBackground(Color.WHITE);
@@ -120,7 +122,7 @@ public class GlobalFieldPanel extends JPanel {
         }
     }
 
-    private void setValue(JTextField field, GlobalField globalField) {
+    private void setValue(JTextField field, String globalField) {
         sipModel.setGlobalField(globalField, field.getText());
         checkValue(field, globalField);
     }

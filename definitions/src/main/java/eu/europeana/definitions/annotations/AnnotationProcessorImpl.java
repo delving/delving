@@ -57,23 +57,34 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
     @Override
-    public Set<? extends EuropeanaField> getAllFields() {
+    public Set<EuropeanaField> getAllFields() {
         return allFields;
     }
 
     @Override
-    public Set<? extends EuropeanaField> getMappableFields() {
-        Set<EuropeanaField> mappableFields = new HashSet<EuropeanaField>();
+    public Set<EuropeanaField> getMappableFields() {
+        Set<EuropeanaField> selected = new HashSet<EuropeanaField>();
         for (EuropeanaField field : allFields) {
             if (field.europeana().category() != FieldCategory.INDEX_TIME_ADDITION) {
-                mappableFields.add(field);
+                selected.add(field);
             }
         }
-        return mappableFields;
+        return selected;
     }
 
     @Override
-    public Set<? extends EuropeanaField> getFields(FieldCategory fieldCategory) {
+    public Set<EuropeanaField> getConstantFields() {
+        Set<EuropeanaField> selected = new HashSet<EuropeanaField>();
+        for (EuropeanaField field : allFields) {
+            if (field.europeana().constant()) {
+                selected.add(field);
+            }
+        }
+        return selected;
+    }
+
+    @Override
+    public Set<EuropeanaField> getFields(FieldCategory fieldCategory) {
         Set<EuropeanaField> fields = new HashSet<EuropeanaField>();
         for (EuropeanaField field : allFields) {
             if (field.europeana().category() == fieldCategory) {

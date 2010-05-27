@@ -80,7 +80,7 @@ public class SipModel {
 
         void updatedRecordRoot(RecordRoot recordRoot);
 
-        void updatedGlobalFieldModel(GlobalFieldModel globalFieldModel);
+        void updatedConstantFieldModel(ConstantFieldModel constantFieldModel);
     }
 
     public interface AnalysisListener {
@@ -99,9 +99,15 @@ public class SipModel {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
+        ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, new ConstantFieldModel.Listener() {
+            @Override
+            public void updatedConstant() {
+                recordCompileModel.compileSoon();
+            }
+        });
         ToolCodeModel toolCodeModel = new ToolCodeModel();
-        recordCompileModel = new CompileModel(toolCodeModel, new RecordValidator(annotationProcessor, false));
-        fieldCompileModel = new CompileModel(toolCodeModel);
+        recordCompileModel = new CompileModel(toolCodeModel, constantFieldModel, new RecordValidator(annotationProcessor, false));
+        fieldCompileModel = new CompileModel(toolCodeModel, constantFieldModel);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel(recordCompileModel.getRecordMapping());
@@ -141,8 +147,8 @@ public class SipModel {
                         recordMapping.setCode(mapping, europeanaFieldMap);
                         RecordRoot recordRoot = recordMapping.getRecordRoot();
                         setRecordRootInternal(recordRoot);
-                        setGlobalFieldModelInternal(recordMapping.getGlobalFieldModel());
-                        fieldCompileModel.getRecordMapping().setGlobalFieldModel(recordMapping.getGlobalFieldModel());
+                        setGlobalFieldModelInternal(recordMapping.getConstantFieldModel());
+                        fieldCompileModel.getRecordMapping().setConstantFieldModel(recordMapping.getConstantFieldModel());
                         createMetadataParser();
                         if (recordRoot != null) {
                             normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
@@ -208,6 +214,7 @@ public class SipModel {
         abortNormalize();
         normalizer = new Normalizer(
                 fileSet,
+                annotationProcessor,
                 new RecordValidator(annotationProcessor, true),
                 exceptionHandler,
                 new MetadataParser.Listener() {
@@ -269,14 +276,14 @@ public class SipModel {
         executor.execute(new MappingSetter(code));
     }
 
-    public void setGlobalField(GlobalField globalField, String value) {
-        recordCompileModel.getRecordMapping().getGlobalFieldModel().set(globalField, value);
+    public void setGlobalField(String fieldName, String value) {
+        recordCompileModel.getRecordMapping().getConstantFieldModel().set(fieldName, value);
         String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
     }
 
-    public GlobalFieldModel getGlobalFieldModel() {
-        return recordCompileModel.getRecordMapping().getGlobalFieldModel();
+    public ConstantFieldModel getGlobalFieldModel() {
+        return recordCompileModel.getRecordMapping().getConstantFieldModel();
     }
 
     public TableModel getStatisticsTableModel() {
@@ -342,10 +349,10 @@ public class SipModel {
 
     // === privates
 
-    private void setGlobalFieldModelInternal(GlobalFieldModel globalFieldModel) {
+    private void setGlobalFieldModelInternal(ConstantFieldModel constantFieldModel) {
         checkSwingThread();
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedGlobalFieldModel(globalFieldModel);
+            updateListener.updatedConstantFieldModel(constantFieldModel);
         }
     }
 

@@ -21,6 +21,9 @@
 
 package eu.europeana.definitions.annotations;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Reveal information from the annotated bean field
  *
@@ -33,6 +36,7 @@ public class EuropeanaField {
     private Europeana europeanaAnnotation;
     private Solr solrAnnotation;
     private String fieldNameString;
+    private Set<String> enumValues;
 
     public EuropeanaField(java.lang.reflect.Field field) {
         this.field = field;
@@ -43,6 +47,12 @@ public class EuropeanaField {
         }
         if (solrAnnotation == null) {
             throw new IllegalStateException("Field must have solrj @Solr annotation: " + field.getDeclaringClass().getName() + "." + field.getName());
+        }
+        if (europeanaAnnotation.enumClass() != Europeana.NO_ENUM.class) {
+            enumValues = new TreeSet<String>();
+            for (Enum e : europeanaAnnotation.enumClass().getEnumConstants()) {
+                enumValues.add(e.toString());
+            }
         }
     }
 
@@ -99,6 +109,10 @@ public class EuropeanaField {
 
     public Solr solr() {
         return solrAnnotation;
+    }
+
+    public Set<String> getEnumValues() {
+        return enumValues;
     }
 
     @Override

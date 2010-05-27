@@ -40,8 +40,8 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
 
-    @Europeana(category = ESE_PLUS, required = true, generator = "createEuropeanaCollectionName")
-    @Solr(prefix = "europeana", localName = "europeanaCollectionName", multivalued = false, required = true)
+    @Europeana(category = ESE_PLUS, required = true, constant = true)
+    @Solr(prefix = "europeana", localName = "collectionName", multivalued = false, required = true)
     String[] europeanaCollectionName;
 
     @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "prov", briefDoc = true)

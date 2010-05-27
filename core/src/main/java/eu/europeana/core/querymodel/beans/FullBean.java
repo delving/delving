@@ -26,6 +26,8 @@ import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.querymodel.query.FullDoc;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
+import eu.europeana.definitions.domain.Country;
+import eu.europeana.definitions.domain.Language;
 import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -45,7 +47,7 @@ import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
-    @Europeana(required = true, type = true)
+    @Europeana(required = true, type = true, enumClass = DocType.class)
     @Solr(prefix = "europeana", localName = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     @Field("europeana_type")
     String europeanaType;
@@ -55,12 +57,12 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("europeana_userTag")
     String[] europeanaUserTag;
 
-    @Europeana(category = ESE_PLUS, required = true, constant = true)
+    @Europeana(category = ESE_PLUS, required = true, constant = true, enumClass = Language.class)
     @Solr(prefix = "europeana", localName = "language", fieldType = "string", toCopyField = {"text", "LANGUAGE"})
     @Field("europeana_language")
     String[] europeanaLanguage;
 
-    @Europeana(category = ESE_PLUS, required = true, constant = true)
+    @Europeana(category = ESE_PLUS, required = true, constant = true, enumClass = Country.class)
     @Solr(prefix = "europeana", localName = "country")
     @Field("europeana_country")
     String[] europeanaCountry;
@@ -81,12 +83,12 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("europeana_isShownBy")
     String[] europeanaisShownBy;
 
-    @Europeana(category = ESE_PLUS, constant = true)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     @Field("europeana_year")
     String[] europeanaYear;
 
-    @Europeana(category = ESE_PLUS, constant = true)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
     @Field("europeana_hasObject")
     boolean europeanahasObject;

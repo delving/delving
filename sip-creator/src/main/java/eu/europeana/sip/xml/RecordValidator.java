@@ -23,6 +23,7 @@ package eu.europeana.sip.xml;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.definitions.annotations.FieldCategory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,17 +48,19 @@ import java.util.regex.Pattern;
 
 public class RecordValidator {
     private static Pattern PATTERN = Pattern.compile("<([^>]*)>([^<]*)<[^>]*>");
-    private AnnotationProcessor annotationProcessor;
     private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
+    private Map<String, String> constantMap;
     private Set<String> unique;
 
     public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
-        this.annotationProcessor = annotationProcessor;
         if (checkUniqueness) {
             unique = new HashSet<String>();
+            constantMap = new HashMap<String, String>();
         }
         for (EuropeanaField field : annotationProcessor.getAllFields()) {
-            fieldMap.put(field.getXmlName(), field);
+            if (field.europeana().category() != FieldCategory.INDEX_TIME_ADDITION) {
+                fieldMap.put(field.getXmlName(), field);
+            }
         }
     }
 
@@ -78,7 +81,7 @@ public class RecordValidator {
         for (Entry entry : entries) {
             EuropeanaField field = fieldMap.get(entry.tag);
             if (field == null) {
-                problems.add("Unknown tag: " + entry.tag);
+                problems.add(String.format("Unknown XML element [%s]", entry.tag));
             }
             else {
                 Counter counter = counterMap.get(entry.tag);
@@ -87,10 +90,31 @@ public class RecordValidator {
                     counterMap.put(entry.tag, counter);
                 }
                 counter.count++;
+                Set<String> enumValues = field.getEnumValues();
+                if (enumValues != null && !enumValues.contains(entry.value)) {
+                    StringBuilder enumString = new StringBuilder();
+                    Iterator<String> walk = enumValues.iterator();
+                    while (walk.hasNext()) {
+                        enumString.append(walk.next());
+                        if (walk.hasNext()) {
+                            enumString.append(',');
+                        }
+                    }
+                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", entry.tag, entry.value, enumString.toString()));
+                }
+                if (field.europeana().constant() && constantMap != null) {
+                    String value = constantMap.get(entry.tag);
+                    if (value == null) {
+                        constantMap.put(entry.tag, entry.value);
+                    }
+                    else if (!value.equals(entry.value)) {
+                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", entry.tag, entry.value, value));
+                    }
+                }
                 String regex = field.europeana().regularExpression();
                 if (!regex.isEmpty()) {
                     if (!entry.value.matches(regex)) {
-                        problems.add("Field value "+entry.value+" does not match regular expression /"+regex+"/: "+entry.tag);
+                        problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", entry.tag, entry.value, regex));
                     }
                 }
                 if (field.europeana().url()) {
@@ -98,27 +122,26 @@ public class RecordValidator {
                         new URL(entry.value);
                     }
                     catch (MalformedURLException e) {
-                        problems.add("Malformed URL["+entry.value+"]: "+entry.tag);
+                        problems.add(String.format("URL value for [%s] was [%s] which is malformed", entry.tag, entry.value));
                     }
                 }
                 if (field.europeana().id() && unique != null) {
                     if (unique.contains(entry.value)) {
-                        problems.add("Second occurrence of ID, must be unique: "+entry.value);
+                        problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", entry.tag, entry.value));
                     }
                     unique.add(entry.value);
                 }
             }
         }
         for (EuropeanaField field : fieldMap.values()) {
-            String name = field.getXmlName();
-            Counter counter = counterMap.get(name);
+            Counter counter = counterMap.get(field.getXmlName());
             if (counter == null) {
                 if (field.europeana().required()) {
-                    problems.add("Required: " + name);
+                    problems.add(String.format("Required field [%s] was absent", field.getXmlName()));
                 }
             }
             else if (!field.solr().multivalued() && counter.count > 1) {
-                problems.add("Single-valued field has " + counter.count + " values: " + name);
+                problems.add(String.format("Single-valued field [%s] had %d values", field.getXmlName(), counter.count));
             }
         }
     }

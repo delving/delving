@@ -21,10 +21,11 @@
 
 package eu.europeana.sip.xml;
 
+import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.groovy.MappingRunner;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.ExceptionHandler;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.ToolCodeModel;
 
@@ -43,13 +44,15 @@ import java.io.Writer;
 
 public class Normalizer implements Runnable {
     private FileSet fileSet;
+    private AnnotationProcessor annotationProcessor;
     private RecordValidator recordValidator;
     private MetadataParser.Listener listener;
     private ExceptionHandler exceptionHandler;
     private boolean running = true;
 
-    public Normalizer(FileSet fileSet, RecordValidator recordValidator, ExceptionHandler exceptionHandler, MetadataParser.Listener listener) {
+    public Normalizer(FileSet fileSet, AnnotationProcessor annotationProcessor, RecordValidator recordValidator, ExceptionHandler exceptionHandler, MetadataParser.Listener listener) {
         this.fileSet = fileSet;
+        this.annotationProcessor = annotationProcessor;
         this.recordValidator = recordValidator;
         this.exceptionHandler = exceptionHandler;
         this.listener = listener;
@@ -61,12 +64,12 @@ public class Normalizer implements Runnable {
             OutputStream outputStream = fileSet.getOutputStream();
             String mapping = fileSet.getMapping();
             RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
-            GlobalFieldModel globalFieldModel = GlobalFieldModel.fromMapping(mapping);
+            ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(mapping, annotationProcessor);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             final Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             writer.write("<?xml version='1.0' encoding='UTF-8'?>\n");
             writer.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, globalFieldModel, new MappingRunner.Listener() {
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel, new MappingRunner.Listener() {
                 @Override
                 public void complete(Exception exception, String output) {
                     if (exception != null) {

@@ -24,9 +24,9 @@ package eu.europeana.sip.gui;
 import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.VariableListModel;
@@ -64,6 +64,7 @@ import java.util.List;
  */
 
 public class MappingPanel extends JPanel {
+    private static final String CREATE = "Create mapping";
     private static final String CREATE_FOR = "<html><center>Create mapping for<br><b>%s</b>";
     private static final String CREATE_OBVIOUS_FOR = "<html><center>Create obvious mapping for<br><b>%s</b>";
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
@@ -71,7 +72,6 @@ public class MappingPanel extends JPanel {
     private JTextField constantField = new JTextField("?");
     private JButton createMappingButton = new JButton(String.format(CREATE_FOR, "?"));
     private JButton removeMappingButton = new JButton("Remove the selected mapping");
-    private EuropeanaField europeanaField;
     private JList variablesList, mappingList, fieldList;
 
     public MappingPanel(SipModel sipModel) {
@@ -193,7 +193,6 @@ public class MappingPanel extends JPanel {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.clearSelection();
-                europeanaField = null;
                 prepareCreateMappingButton();
             }
 
@@ -202,7 +201,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedGlobalFieldModel(GlobalFieldModel globalFieldModel) {
+            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
             }
         });
         createMappingButton.addActionListener(new ActionListener() {
@@ -267,74 +266,83 @@ public class MappingPanel extends JPanel {
     private void prepareCreateMappingButton() {
         String fieldName = null;
         boolean obvious = false;
-        europeanaField = (EuropeanaField) fieldList.getSelectedValue();
-        if (europeanaField != null) {
-            fieldName = europeanaField.getFieldNameString();
+        EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
+        if (field != null) {
+            fieldName = field.getFieldNameString();
         }
         else {
-            europeanaField = getObviousMappingField();
-            if (europeanaField != null) {
-                fieldName = europeanaField.getFieldNameString();
+            field = getObviousMappingField();
+            if (field != null) {
+                fieldName = field.getFieldNameString();
                 obvious = true;
             }
         }
         if (fieldName != null) {
-            createMappingButton.setText(String.format(obvious ? CREATE_OBVIOUS_FOR : CREATE_FOR, europeanaField.getFieldNameString()));
+            createMappingButton.setText(String.format(obvious ? CREATE_OBVIOUS_FOR : CREATE_FOR, field.getFieldNameString()));
             createMappingButton.setEnabled(true);
         }
         else {
-            createMappingButton.setText(String.format(CREATE_FOR, "?"));
+            createMappingButton.setText(CREATE);
             createMappingButton.setEnabled(false);
         }
     }
 
     private void addFieldMapping() {
-        europeanaField = (EuropeanaField) fieldList.getSelectedValue();
-        if (europeanaField != null) {
-            FieldMapping fresh = new FieldMapping(europeanaField);
+        EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
+        if (field != null) {
+            FieldMapping fresh = new FieldMapping(field);
             List<String> code = fresh.getCodeLines();
-            Object[] selected = variablesList.getSelectedValues();
-            if (selected.length == 0) {
+            if (field.europeana().constant()) {
                 code.add(String.format(
-                        "%s.%s '%s'",
-                        fresh.getEuropeanaField().getPrefix(),
-                        fresh.getEuropeanaField().getLocalName(),
-                        constantField.getText()
+                        "%s.%s %s",
+                        field.getPrefix(),
+                        field.getLocalName(),
+                        field.getFieldNameString()
                 ));
             }
             else {
-                for (Object variable : variablesList.getSelectedValues()) {
-                    AnalysisTree.Node node = (AnalysisTree.Node) variable;
-                    generateCopyCode(fresh.getEuropeanaField(), node, code);
+                Object[] selected = variablesList.getSelectedValues();
+                if (selected.length == 0) {
+                    code.add(String.format(
+                            "%s.%s '%s'",
+                            field.getPrefix(),
+                            field.getLocalName(),
+                            constantField.getText()
+                    ));
+                }
+                else {
+                    for (Object variable : variablesList.getSelectedValues()) {
+                        AnalysisTree.Node node = (AnalysisTree.Node) variable;
+                        generateCopyCode(fresh.getEuropeanaField(), node, code);
+                    }
                 }
             }
+
+
             sipModel.addFieldMapping(fresh);
         }
         else {
-            FieldMapping obviousMapping = getObviousMapping();
+            FieldMapping obviousMapping = createObviousMapping();
             if (obviousMapping != null) {
                 sipModel.addFieldMapping(obviousMapping);
             }
         }
     }
 
-    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, List<String> code) {
-        code.add(String.format("%s.each {", node.getVariableName()));
-        if (field.europeana().converter().isEmpty()) {
-            code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
-        }
-        else {
-            code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
-        }
-        code.add("}");
-    }
-
-    private FieldMapping getObviousMapping() {
+    private FieldMapping createObviousMapping() {
         EuropeanaField field = getObviousMappingField();
         if (field != null) {
             FieldMapping obvious = new FieldMapping(field);
             List<String> code = obvious.getCodeLines();
-            if (field.europeana().generator().isEmpty()) {
+            if (field.europeana().constant()) {
+                code.add(String.format(
+                        "%s.%s %s",
+                        field.getPrefix(),
+                        field.getLocalName(),
+                        field.getFieldNameString()
+                ));
+            }
+            else {
                 for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                     AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
                     String nodeName = MetadataRecord.sanitize(node.toString());
@@ -342,14 +350,6 @@ public class MappingPanel extends JPanel {
                         generateCopyCode(field, node, code);
                     }
                 }
-            }
-            else {
-                code.add(String.format(
-                        "%s.%s %s()",
-                        obvious.getEuropeanaField().getPrefix(),
-                        obvious.getEuropeanaField().getLocalName(),
-                        field.europeana().generator()
-                ));
             }
             if (!code.isEmpty()) {
                 return obvious;
@@ -361,19 +361,28 @@ public class MappingPanel extends JPanel {
     private EuropeanaField getObviousMappingField() {
         for (int walkField = 0; walkField < sipModel.getUnmappedFieldListModel().getSize(); walkField++) {
             EuropeanaField field = (EuropeanaField) sipModel.getUnmappedFieldListModel().getElementAt(walkField);
-            if (field.europeana().generator().isEmpty()) {
-                for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
-                    AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
-                    String nodeName = MetadataRecord.sanitize(node.toString());
-                    if (nodeName.equals(field.getFieldNameString())) {
-                        return field;
-                    }
-                }
-            }
-            else {
+            if (field.europeana().constant()) {
                 return field;
+            }
+            for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
+                AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
+                String nodeName = MetadataRecord.sanitize(node.toString());
+                if (nodeName.equals(field.getFieldNameString())) {
+                    return field;
+                }
             }
         }
         return null;
+    }
+
+    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, List<String> code) {
+        code.add(String.format("%s.each {", node.getVariableName()));
+        if (field.europeana().converter().isEmpty()) {
+            code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+        }
+        else {
+            code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+        }
+        code.add("}");
     }
 }

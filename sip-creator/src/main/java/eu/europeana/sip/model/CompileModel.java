@@ -52,7 +52,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
     private boolean multipleMappings;
-    private RecordMapping recordMapping = new RecordMapping();
+    private RecordMapping recordMapping;
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
@@ -74,15 +74,17 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         void stateChanged(State state);
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel, RecordValidator recordValidator) {
+    public CompileModel(ToolCodeModel toolCodeModel, ConstantFieldModel constantFieldModel, RecordValidator recordValidator) {
         this.multipleMappings = true;
+        this.recordMapping = new RecordMapping(false, constantFieldModel);
         this.recordMapping.addListener(this);
         this.toolCodeModel = toolCodeModel;
         this.recordValidator = recordValidator;
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel) {
+    public CompileModel(ToolCodeModel toolCodeModel, ConstantFieldModel constantFieldModel) {
         this.multipleMappings = false;
+        this.recordMapping = new RecordMapping(true, constantFieldModel);
         this.recordMapping.addListener(this);
         this.toolCodeModel = toolCodeModel;
     }
@@ -193,7 +195,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         @Override
         public void run() {
             String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getGlobalFieldModel(), new MappingRunner.Listener() {
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel(), new MappingRunner.Listener() {
                 @Override
                 public void complete(Exception exception, String output) {
                     if (exception == null) {

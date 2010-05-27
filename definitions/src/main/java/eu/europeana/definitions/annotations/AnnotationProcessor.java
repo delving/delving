@@ -50,7 +50,7 @@ public interface AnnotationProcessor {
      * @return a set of all fields defined in bean classes
      */
 
-    Set<? extends EuropeanaField> getAllFields();
+    Set<EuropeanaField> getAllFields();
 
     /**
      * Return a collection of mappable fields
@@ -58,7 +58,15 @@ public interface AnnotationProcessor {
      * @return the fields which are mappable
      */
 
-    Set<? extends EuropeanaField> getMappableFields();
+    Set<EuropeanaField> getMappableFields();
+
+    /**
+     * Get the fields which are to be constants.
+     *
+     * @return all the fields marked as constant
+     */
+
+    Set<EuropeanaField> getConstantFields();
 
     /**
      * Fetch the fields which
@@ -66,7 +74,7 @@ public interface AnnotationProcessor {
      * @return the fields which match
      */
     
-    Set<? extends EuropeanaField> getFields(FieldCategory fieldCategory);
+    Set<EuropeanaField> getFields(FieldCategory fieldCategory);
 
     /**
      * Get an array of all solr field names which can be passed easily
@@ -91,5 +99,6 @@ public interface AnnotationProcessor {
      *
      * @return map from facetName to facetPrefix
      */
+    
     HashMap<String, String> getFacetMap();
 }

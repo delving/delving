@@ -22,8 +22,8 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.GlobalFieldModel;
 import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
@@ -73,14 +73,14 @@ public class AnalysisPanel extends JPanel {
     private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
-    private GlobalFieldPanel globalFieldPanel;
+    private ConstantFieldPanel constantFieldPanel;
     private JTree statisticsJTree;
     private SipModel sipModel;
 
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
-        this.globalFieldPanel = new GlobalFieldPanel(sipModel);
+        this.constantFieldPanel = new ConstantFieldPanel(sipModel);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.BOTH;
@@ -101,7 +101,7 @@ public class AnalysisPanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.gridheight = 1;
-        add(globalFieldPanel, gbc);
+        add(constantFieldPanel, gbc);
 
         gbc.weighty = 0.05;
         gbc.gridwidth = 2;
@@ -181,8 +181,8 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void updatedGlobalFieldModel(GlobalFieldModel globalFieldModel) {
-                globalFieldPanel.refresh();
+            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+                constantFieldPanel.refresh();
             }
         });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {

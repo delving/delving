@@ -21,7 +21,7 @@
 package eu.europeana.sip.groovy;
 
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.model.GlobalFieldModel;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.RecordRoot;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
     private static final String RECORD_SUFFIX = "}";
     private boolean singleFieldMapping;
     private RecordRoot recordRoot;
-    private GlobalFieldModel globalFieldModel;
+    private ConstantFieldModel constantFieldModel;
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
@@ -57,7 +57,9 @@ public class RecordMapping implements Iterable<FieldMapping> {
         void mappingsRefreshed(RecordMapping recordMapping);
     }
 
-    public RecordMapping() {
+    public RecordMapping(boolean singleFieldMapping, ConstantFieldModel constantFieldModel) {
+        this.singleFieldMapping = singleFieldMapping;
+        this.constantFieldModel = constantFieldModel;
     }
 
     public FieldMapping getOnlyFieldMapping() {
@@ -82,12 +84,12 @@ public class RecordMapping implements Iterable<FieldMapping> {
         return recordRoot;
     }
 
-    public void setGlobalFieldModel(GlobalFieldModel globalFieldModel) {
-        this.globalFieldModel = globalFieldModel;
+    public void setConstantFieldModel(ConstantFieldModel constantFieldModel) {
+        this.constantFieldModel = constantFieldModel;
     }
 
-    public GlobalFieldModel getGlobalFieldModel() {
-        return globalFieldModel;
+    public ConstantFieldModel getConstantFieldModel() {
+        return constantFieldModel;
     }
 
     public void setRecordRoot(RecordRoot recordRoot) {
@@ -101,16 +103,9 @@ public class RecordMapping implements Iterable<FieldMapping> {
         fireRefresh();
     }
 
-    public boolean isSingleFieldMapping() {
-        return singleFieldMapping;
-    }
-
     public void setCode(String code, Map<String, EuropeanaField> fieldMap) {
         fieldMappings.clear();
         recordRoot = null;
-        if (!singleFieldMapping) {
-            globalFieldModel = new GlobalFieldModel();
-        }
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
             RecordRoot root = RecordRoot.fromLine(line);
@@ -118,7 +113,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
                 this.recordRoot = root;
                 continue;
             }
-            if (!singleFieldMapping && globalFieldModel.fromLine(line)) {
+            if (!singleFieldMapping && constantFieldModel.fromLine(line)) {
                 continue;
             }
             if (line.startsWith(MAPPING_PREFIX)) {
@@ -190,7 +185,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
             if (recordRoot != null) {
                 out.append(recordRoot.toString()).append('\n').append('\n');
             }
-            out.append(globalFieldModel.toString()).append('\n');
+            out.append(constantFieldModel.toString()).append('\n');
         }
         int indent = 0;
         if (wrappedInRecord) {
