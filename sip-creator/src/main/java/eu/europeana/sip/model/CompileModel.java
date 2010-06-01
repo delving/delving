@@ -194,6 +194,9 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
 
         @Override
         public void run() {
+            if (metadataRecord == null) {
+                return;
+            }
             String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel(), new MappingRunner.Listener() {
                 @Override

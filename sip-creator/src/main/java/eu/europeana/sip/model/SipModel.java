@@ -80,6 +80,9 @@ public class SipModel {
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
 
     public interface UpdateListener {
+
+        void templateApplied();
+
         void updatedFileSet(FileSet fileSet);
 
         void updatedRecordRoot(RecordRoot recordRoot);
@@ -189,9 +192,14 @@ public class SipModel {
                 }
                 in.close();
                 String templateCode = out.toString();
-                recordCompileModel.getRecordMapping().setCode(templateCode, europeanaFieldMap);
-                setRecordRootInternal(recordCompileModel.getRecordMapping().getRecordRoot());
+                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
+                recordMapping.setCode(templateCode, europeanaFieldMap);
+                setRecordRootInternal(recordMapping.getRecordRoot());
+                recordMapping.getConstantFieldModel().clear();
                 createMetadataParser();
+                for (UpdateListener updateListener : updateListeners) {
+                    updateListener.templateApplied();
+                }
             }
             catch (IOException e) {
                 userNotifier.tellUser("Unable to load template", e);

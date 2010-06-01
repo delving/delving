@@ -189,6 +189,10 @@ public class MappingPanel extends JPanel {
     private void wireUp() {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
+            public void templateApplied() {
+            }
+
+            @Override
             public void updatedFileSet(FileSet fileSet) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();

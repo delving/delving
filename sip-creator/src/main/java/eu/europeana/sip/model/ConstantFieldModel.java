@@ -83,6 +83,11 @@ public class ConstantFieldModel {
         return fields;
     }
 
+    public void clear() {
+        map.clear();
+        fireUpdate();
+    }
+
     public void set(String field, String value) {
         String oldValue = map.get(field);
         if (oldValue == null || !oldValue.equals(value)) {

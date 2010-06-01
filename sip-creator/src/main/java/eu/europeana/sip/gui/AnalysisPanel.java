@@ -198,6 +198,11 @@ public class AnalysisPanel extends JPanel {
     private void wireUp() {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
+            public void templateApplied() {
+                constantFieldPanel.refresh();
+            }
+
+            @Override
             public void updatedFileSet(FileSet fileSet) {
                 setElementsProcessed(sipModel.getElementCount());
                 analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));

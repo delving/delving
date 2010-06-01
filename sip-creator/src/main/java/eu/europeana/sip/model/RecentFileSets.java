@@ -52,7 +52,7 @@ import java.util.Set;
  */
 
 public class RecentFileSets {
-    private static final int MAX_RECENT = 20;
+    private static final int MAX_RECENT = 40;
     private final Logger LOG = Logger.getLogger(getClass());
     private File listFile;
     private List<FileSetImpl> recent = new ArrayList<FileSetImpl>();

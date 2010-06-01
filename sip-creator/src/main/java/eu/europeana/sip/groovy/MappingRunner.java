@@ -61,6 +61,9 @@ public class MappingRunner {
     }
 
     public void compile(MetadataRecord metadataRecord) {
+        if (metadataRecord == null) {
+            throw new RuntimeException("A record is needed for compile");
+        }
         try {
             StringWriter writer = new StringWriter();
             Binding binding = createBinding(writer, constantFieldModel, metadataRecord);
