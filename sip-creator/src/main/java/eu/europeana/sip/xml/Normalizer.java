@@ -24,10 +24,10 @@ package eu.europeana.sip.xml;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.groovy.MappingRunner;
 import eu.europeana.sip.model.ConstantFieldModel;
-import eu.europeana.sip.model.ExceptionHandler;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.ToolCodeModel;
+import eu.europeana.sip.model.UserNotifier;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -47,14 +47,14 @@ public class Normalizer implements Runnable {
     private AnnotationProcessor annotationProcessor;
     private RecordValidator recordValidator;
     private MetadataParser.Listener listener;
-    private ExceptionHandler exceptionHandler;
+    private UserNotifier userNotifier;
     private boolean running = true;
 
-    public Normalizer(FileSet fileSet, AnnotationProcessor annotationProcessor, RecordValidator recordValidator, ExceptionHandler exceptionHandler, MetadataParser.Listener listener) {
+    public Normalizer(FileSet fileSet, AnnotationProcessor annotationProcessor, RecordValidator recordValidator, UserNotifier userNotifier, MetadataParser.Listener listener) {
         this.fileSet = fileSet;
         this.annotationProcessor = annotationProcessor;
         this.recordValidator = recordValidator;
-        this.exceptionHandler = exceptionHandler;
+        this.userNotifier = userNotifier;
         this.listener = listener;
     }
 
@@ -74,7 +74,7 @@ public class Normalizer implements Runnable {
                 public void complete(Exception exception, String output) {
                     if (exception != null) {
                         running = false;
-                        exceptionHandler.failure(exception);
+                        userNotifier.tellUser("Problem normalizing", exception);
                     }
                     else {
                         try {
@@ -83,7 +83,7 @@ public class Normalizer implements Runnable {
                         }
                         catch (Exception e) {
                             running = false;
-                            exceptionHandler.failure(e);
+                            userNotifier.tellUser("Invalid record encountered", e);
                         }
                     }
                 }

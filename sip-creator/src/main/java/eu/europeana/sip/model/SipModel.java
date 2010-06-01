@@ -38,6 +38,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +60,7 @@ public class SipModel {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private AnnotationProcessor annotationProcessor;
     private FileSet fileSet;
-    private ExceptionHandler exceptionHandler;
+    private UserNotifier userNotifier;
     private List<Statistics> statisticsList;
     private AnalysisParser analysisParser;
     private Normalizer normalizer;
@@ -93,9 +97,9 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(AnnotationProcessor annotationProcessor, ExceptionHandler exceptionHandler) {
+    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier) {
         this.annotationProcessor = annotationProcessor;
-        this.exceptionHandler = exceptionHandler;
+        this.userNotifier = userNotifier;
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
@@ -167,6 +171,34 @@ public class SipModel {
         });
     }
 
+    public String getMappingTemplate() {
+        return recordCompileModel.getRecordMapping().getCodeForTemplate();
+    }
+
+    public void loadMappingTemplate(File file) {
+        if (!recordCompileModel.getRecordMapping().isEmpty()) {
+            userNotifier.tellUser("Record must be empty to use a template.");
+        }
+        else {
+            try {
+                BufferedReader in = new BufferedReader(new FileReader(file));
+                StringBuilder out = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null) {
+                    out.append(line).append('\n');
+                }
+                in.close();
+                String templateCode = out.toString();
+                recordCompileModel.getRecordMapping().setCode(templateCode, europeanaFieldMap);
+                setRecordRootInternal(recordCompileModel.getRecordMapping().getRecordRoot());
+                createMetadataParser();
+            }
+            catch (IOException e) {
+                userNotifier.tellUser("Unable to load template", e);
+            }
+        }
+    }
+
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();
         abortAnalyze();
@@ -186,7 +218,7 @@ public class SipModel {
             @Override
             public void failure(Exception exception) {
                 listener.finished(false);
-                exceptionHandler.failure(exception);
+                userNotifier.tellUser("Analysis failed", exception);
             }
 
             @Override
@@ -216,7 +248,7 @@ public class SipModel {
                 fileSet,
                 annotationProcessor,
                 new RecordValidator(annotationProcessor, true),
-                exceptionHandler,
+                userNotifier,
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count) {
@@ -437,7 +469,7 @@ public class SipModel {
                 });
             }
             catch (Exception e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to fetch the next record", e);
             }
         }
     }

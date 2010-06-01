@@ -208,7 +208,7 @@ public class RecentFileSets {
 
     private class FileSetImpl implements FileSet {
         private File inputFile, statisticsFile, mappingFile, outputFile;
-        private ExceptionHandler exceptionHandler;
+        private UserNotifier userNotifier;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
@@ -218,8 +218,8 @@ public class RecentFileSets {
         }
 
         @Override
-        public void setExceptionHandler(ExceptionHandler handler) {
-            this.exceptionHandler = handler;
+        public void setExceptionHandler(UserNotifier handler) {
+            this.userNotifier = handler;
         }
 
         @Override
@@ -260,7 +260,7 @@ public class RecentFileSets {
                 return new FileInputStream(inputFile);
             }
             catch (FileNotFoundException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to open input file", e);
             }
             return null;
         }
@@ -272,7 +272,7 @@ public class RecentFileSets {
                 return new FileOutputStream(outputFile, true);
             }
             catch (FileNotFoundException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to open output file "+outputFile.getAbsolutePath(), e);
             }
             return null;
         }
@@ -302,7 +302,10 @@ public class RecentFileSets {
                     return statisticsList;
                 }
                 catch (Exception e) {
-                    exceptionHandler.failure(e);
+                    userNotifier.tellUser("Unable to read statistics, please re-analyze", e);
+                    if (statisticsFile.delete()) {
+                        LOG.warn("Cannot delete statistics file");
+                    }
                 }
             }
             return null;
@@ -317,7 +320,7 @@ public class RecentFileSets {
                 out.close();
             }
             catch (IOException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to save statistics file", e);
             }
         }
 
@@ -336,7 +339,7 @@ public class RecentFileSets {
                     return mapping.toString();
                 }
                 catch (IOException e) {
-                    exceptionHandler.failure(e);
+                    userNotifier.tellUser("Unable to read mapping file", e);
                 }
             }
             return "";
@@ -351,7 +354,7 @@ public class RecentFileSets {
                 out.close();
             }
             catch (IOException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to save mapping file", e);
             }
         }
 

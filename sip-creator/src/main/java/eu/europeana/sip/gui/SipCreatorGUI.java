@@ -27,9 +27,9 @@ import eu.europeana.definitions.beans.AllFieldBean;
 import eu.europeana.definitions.beans.BriefBean;
 import eu.europeana.definitions.beans.FullBean;
 import eu.europeana.definitions.beans.IdBean;
-import eu.europeana.sip.model.ExceptionHandler;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
+import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
 import javax.swing.JFrame;
@@ -86,6 +86,8 @@ public class SipCreatorGUI extends JFrame {
             }
         });
         bar.add(fileMenu);
+        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
+        bar.add(mappingTemplateMenu);
         return bar;
     }
 
@@ -100,25 +102,27 @@ public class SipCreatorGUI extends JFrame {
         return annotationProcessor;
     }
 
-    private class PopupExceptionHandler implements ExceptionHandler {
+    private class PopupExceptionHandler implements UserNotifier {
+
         @Override
-        public void failure(final Exception exception) {
-            if (SwingUtilities.isEventDispatchThread()) {
-                reportException(exception);
+        public void tellUser(final String message, final Exception exception) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(SipCreatorGUI.this, message);
+                }
+            });
+            if (exception != null) {
+                log.warn(message, exception);
             }
             else {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        reportException(exception);
-                    }
-                });
+                log.warn(message);
             }
-            log.warn("Problem", exception);
         }
 
-        private void reportException(Exception exception) {
-            JOptionPane.showMessageDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
+        @Override
+        public void tellUser(String message) {
+            tellUser(message, null);
         }
     }
 

@@ -34,7 +34,7 @@ import java.util.List;
 
 public interface FileSet {
 
-    void setExceptionHandler(ExceptionHandler handler);
+    void setExceptionHandler(UserNotifier handler);
 
     String getName();
 

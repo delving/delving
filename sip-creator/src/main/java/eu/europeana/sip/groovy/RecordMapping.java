@@ -23,6 +23,7 @@ package eu.europeana.sip.groovy;
 import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.RecordRoot;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
     private static final String MAPPING_SUFFIX = "//>>>";
     private static final String RECORD_PREFIX = "output.record {";
     private static final String RECORD_SUFFIX = "}";
+    private Logger log = Logger.getLogger(getClass());
     private boolean singleFieldMapping;
     private RecordRoot recordRoot;
     private ConstantFieldModel constantFieldModel;
@@ -69,6 +71,10 @@ public class RecordMapping implements Iterable<FieldMapping> {
         else {
             return fieldMappings.get(0);
         }
+    }
+
+    public boolean isEmpty() {
+        return fieldMappings.isEmpty();
     }
 
     public void addListener(Listener listener) {
@@ -119,10 +125,12 @@ public class RecordMapping implements Iterable<FieldMapping> {
             if (line.startsWith(MAPPING_PREFIX)) {
                 String europeanaFieldName = line.substring(MAPPING_PREFIX.length()).trim();
                 EuropeanaField europeanaField = fieldMap.get(europeanaFieldName);
-                if (europeanaField == null) {
-                    throw new RuntimeException("Cannot find "+europeanaFieldName); // todo: better response
+                if (europeanaField != null) {
+                    fieldMapping = new FieldMapping(europeanaField);
                 }
-                fieldMapping = new FieldMapping(europeanaField);
+                else {
+                    log.warn("Discarding unrecognized field "+europeanaFieldName);
+                }
             }
             else if (line.startsWith(MAPPING_SUFFIX)) {
                 if (fieldMapping != null) {
@@ -159,7 +167,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
     }
 
     public String getCodeForCompile() {
-        return getCode(true, false, false);
+        return getCode(true, false, false, false);
     }
 
     public static String getCodeForCompile(String code) {
@@ -171,21 +179,27 @@ public class RecordMapping implements Iterable<FieldMapping> {
     }
 
     public String getCodeForPersistence() {
-        return getCode(true, false, true);
+        return getCode(true, false, true, true);
     }
 
     public String getCodeForDisplay() {
-        return getCode(!singleFieldMapping, true, false);
+        return getCode(!singleFieldMapping, true, false, false);
     }
 
-    private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited) {
+    public String getCodeForTemplate() {
+        return getCode(!singleFieldMapping, true, true, false);
+    }
+
+    private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited, boolean includesConstants) {
         StringBuilder out = new StringBuilder();
         if (delimited) {
             out.append(HEADER).append('\n').append('\n');
             if (recordRoot != null) {
                 out.append(recordRoot.toString()).append('\n').append('\n');
             }
-            out.append(constantFieldModel.toString()).append('\n');
+            if (includesConstants) {
+                out.append(constantFieldModel.toString()).append('\n');
+            }
         }
         int indent = 0;
         if (wrappedInRecord) {

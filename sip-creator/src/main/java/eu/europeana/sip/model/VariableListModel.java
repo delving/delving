@@ -47,8 +47,10 @@ public class VariableListModel extends AbstractListModel {
 
     public void clear() {
         int size = getSize();
-        this.variableList.clear();
-        fireIntervalRemoved(this, 0, size);
+        if (size > 0) {
+            this.variableList.clear();
+            fireIntervalRemoved(this, 0, size);
+        }
     }
 
     @Override

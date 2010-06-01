@@ -27,6 +27,7 @@ package eu.europeana.sip.model;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public interface ExceptionHandler {
-    void failure(Exception exception);
+public interface UserNotifier {
+    void tellUser(String message);
+    void tellUser(String message, Exception exception);
 }
