@@ -21,6 +21,25 @@
 
 package eu.europeana.core.database.dao;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.fail;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
 import eu.europeana.core.database.AnnotationDao;
 import eu.europeana.core.database.domain.Annotation;
 import eu.europeana.core.database.domain.AnnotationType;
@@ -33,24 +52,6 @@ import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
 import eu.europeana.definitions.domain.Language;
 import eu.europeana.fixture.DatabaseFixture;
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.List;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.fail;
 
 /**
  * Test the AnnotationDao methods
@@ -71,7 +72,7 @@ public class TestAnnotationDao {
 
     @Autowired
     private AnnotationDao annotationDao;
-
+    
     @Autowired
     private DatabaseFixture databaseFixture;
 
@@ -93,10 +94,10 @@ public class TestAnnotationDao {
     }
 
     @Test
-    public void createFresh() throws UserNotFoundException {
+    public void createFresh() throws UserNotFoundException, AnnotationNotFoundException {
         log.info("createFresh");
         predecessor = annotationDao.create(
-                users.get(0),
+        		users.get(0),
                 AnnotationType.IMAGE_ANNOTATION,
                 europeanaIds.get(0).getEuropeanaUri(),
                 Language.EN,
@@ -170,4 +171,16 @@ public class TestAnnotationDao {
         List<Long> ids = annotationDao.list(AnnotationType.IMAGE_ANNOTATION, europeanaIds.get(0).getEuropeanaUri());
         assertEquals(2, ids.size());
     }
+
+	@Test
+	public void getAnnotationsForEuropeanaId() throws AnnotationNotFoundException, UserNotFoundException {
+		createFresh();
+		databaseFixture.clear();
+		
+		EuropeanaId europeanaId = 
+			databaseFixture.fetchEuropeanaId(predecessor.getEuropeanaId().getId());
+		assertNotNull(europeanaId.getAnnotations());
+		assertEquals(europeanaId.getAnnotations().size(), 1);
+		assertEquals(europeanaId.getAnnotations().get(0).getId(), predecessor.getId());
+	}
 }

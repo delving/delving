@@ -26,6 +26,7 @@ import org.hibernate.annotations.Index;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -84,7 +85,11 @@ public class EuropeanaId implements Serializable {
     @JoinColumn(name = "europeanaid")
     private List<SocialTag> socialTags;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.LAZY)
+    @JoinColumn(name = "europeanaid")
+    private List<Annotation> annotations;
+    
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
     @JoinColumn(name = "europeanaid")
     private List<CarouselItem> carouselItems;
 
@@ -168,6 +173,17 @@ public class EuropeanaId implements Serializable {
     public void setSocialTags(List<SocialTag> socialTags) {
         this.socialTags = socialTags;
     }
+    
+    public List<Annotation> getAnnotations() {
+		if (annotations == null) {
+			annotations = new ArrayList<Annotation>();
+		}
+    	return annotations;
+	}
+
+	public void setAnnotations(List<Annotation> annotations) {
+		this.annotations = annotations;
+	}
 
     public List<CarouselItem> getCarouselItems() {
         if (carouselItems == null) {
