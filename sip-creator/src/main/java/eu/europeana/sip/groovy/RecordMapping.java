@@ -140,7 +140,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
             }
             else {
                 if (fieldMapping != null) {
-                    fieldMapping.getCodeLines().add(line.trim());
+                    fieldMapping.addCodeLine(line.trim());
                 }
             }
         }
@@ -210,7 +210,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
             if (delimited) {
                 out.append('\n').append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
             }
-            for (String codeLine : mapping.getCodeLines()) {
+            for (String codeLine : mapping) {
                 if (codeLine.endsWith("}")) {
                     indent--;
                 }

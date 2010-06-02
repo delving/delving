@@ -36,10 +36,11 @@ import java.util.regex.Pattern;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class FieldMapping {
+public class FieldMapping implements Iterable<String> {
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+");
     private EuropeanaField europeanaField;
     private List<String> codeLines = new ArrayList<String>();
+    private List<String> variables;
 
     public FieldMapping(EuropeanaField europeanaField) {
         this.europeanaField = europeanaField;
@@ -64,6 +65,7 @@ public class FieldMapping {
 
     public void setCode(String code) {
         codeLines.clear();
+        variables = null;
         if (code != null) {
             for (String line : code.split("\n")) {
                 line = line.trim();
@@ -79,28 +81,40 @@ public class FieldMapping {
     }
 
     public List<String> getVariables() {
-        List<String> vars = new ArrayList<String>();
-        for (String line : codeLines) {
-            Matcher matcher = VARIABLE_PATTERN.matcher(line);
-            while (matcher.find()) {
-                String var = matcher.group(0);
-                vars.add(var);
+        if (variables == null) {
+            variables = new ArrayList<String>();
+            for (String line : codeLines) {
+                Matcher matcher = VARIABLE_PATTERN.matcher(line);
+                while (matcher.find()) {
+                    String var = matcher.group(0);
+                    variables.add(var);
+                }
             }
         }
-        return vars;
+        return variables;
     }
 
-    public List<String> getCodeLines() {
-        return codeLines;
+    public void addCodeLine(String line) {
+        codeLines.add(line);
+        variables = null;
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return codeLines.iterator();
+    }
+
+    public boolean isEmpty() {
+        return codeLines.isEmpty();
     }
 
     public String toString() {
-        if (europeanaField != null) {
-            return europeanaField.getFieldNameString();
+        String fieldName = europeanaField == null ? "?" : europeanaField.getFieldNameString();
+        if (getVariables().isEmpty()) {
+            return fieldName;
         }
         else {
-            return "?";
+            return fieldName + " from " + getVariables();
         }
     }
-
 }

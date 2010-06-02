@@ -54,7 +54,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.List;
 
 /**
  * A Graphical interface for analysis
@@ -295,9 +294,8 @@ public class MappingPanel extends JPanel {
         EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
         if (field != null) {
             FieldMapping fresh = new FieldMapping(field);
-            List<String> code = fresh.getCodeLines();
             if (field.europeana().constant()) {
-                code.add(String.format(
+                fresh.addCodeLine(String.format(
                         "%s.%s %s",
                         field.getPrefix(),
                         field.getLocalName(),
@@ -307,7 +305,7 @@ public class MappingPanel extends JPanel {
             else {
                 Object[] selected = variablesList.getSelectedValues();
                 if (selected.length == 0) {
-                    code.add(String.format(
+                    fresh.addCodeLine(String.format(
                             "%s.%s '%s'",
                             field.getPrefix(),
                             field.getLocalName(),
@@ -317,7 +315,7 @@ public class MappingPanel extends JPanel {
                 else {
                     for (Object variable : variablesList.getSelectedValues()) {
                         AnalysisTree.Node node = (AnalysisTree.Node) variable;
-                        generateCopyCode(fresh.getEuropeanaField(), node, code);
+                        generateCopyCode(fresh.getEuropeanaField(), node, fresh);
                     }
                 }
             }
@@ -337,9 +335,8 @@ public class MappingPanel extends JPanel {
         EuropeanaField field = getObviousMappingField();
         if (field != null) {
             FieldMapping obvious = new FieldMapping(field);
-            List<String> code = obvious.getCodeLines();
             if (field.europeana().constant()) {
-                code.add(String.format(
+                obvious.addCodeLine(String.format(
                         "%s.%s %s",
                         field.getPrefix(),
                         field.getLocalName(),
@@ -351,11 +348,11 @@ public class MappingPanel extends JPanel {
                     AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
                     String nodeName = Sanitizer.tag2variable(node.toString());
                     if (nodeName.equals(field.getFieldNameString())) {
-                        generateCopyCode(field, node, code);
+                        generateCopyCode(field, node, obvious);
                     }
                 }
             }
-            if (!code.isEmpty()) {
+            if (!obvious.isEmpty()) {
                 return obvious;
             }
         }
@@ -379,23 +376,23 @@ public class MappingPanel extends JPanel {
         return null;
     }
 
-    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, List<String> code) {
+    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, FieldMapping fieldMapping) {
         if (field.solr().multivalued()) {
-            code.add(String.format("%s.each {", node.getVariableName()));
+            fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
             if (field.europeana().converter().isEmpty()) {
-                code.add(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+                fieldMapping.addCodeLine(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
             }
             else {
-                code.add(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+                fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
             }
-            code.add("}");
+            fieldMapping.addCodeLine("}");
         }
         else {
             if (field.europeana().converter().isEmpty()) {
-                code.add(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
+                fieldMapping.addCodeLine(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
             }
             else {
-                code.add(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
+                fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
             }
         }
     }
