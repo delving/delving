@@ -81,16 +81,19 @@ public class EuropeanaId implements Serializable {
     @Index(name = "europeanauri_index")
     private String europeanaUri;
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.LAZY, mappedBy = "europeanaId")
+    private List<Annotation> annotations;
+    
+    //TODO is CascadeType.ALL really necessary?
     @OneToMany(cascade = CascadeType.ALL)
+    //TODO should rather use mappedBy here instead of @JoinColumn
     @JoinColumn(name = "europeanaid")
     private List<SocialTag> socialTags;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.LAZY)
-    @JoinColumn(name = "europeanaid")
-    private List<Annotation> annotations;
-    
+    //TODO is CascadeType.ALL really necessary?
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
-    @JoinColumn(name = "europeanaid")
+    //TODO this @JoinColumn can be removed (covered by mappedBy)
+	@JoinColumn(name = "europeanaid")
     private List<CarouselItem> carouselItems;
 
     @Column(nullable = true)
