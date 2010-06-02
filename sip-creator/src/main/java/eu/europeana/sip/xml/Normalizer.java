@@ -46,15 +46,28 @@ public class Normalizer implements Runnable {
     private FileSet fileSet;
     private AnnotationProcessor annotationProcessor;
     private RecordValidator recordValidator;
-    private MetadataParser.Listener listener;
+    private MetadataParser.Listener parserListener;
+    private Listener listener;
     private UserNotifier userNotifier;
     private boolean running = true;
 
-    public Normalizer(FileSet fileSet, AnnotationProcessor annotationProcessor, RecordValidator recordValidator, UserNotifier userNotifier, MetadataParser.Listener listener) {
+    public interface Listener {
+        void invalidRecord(RecordValidationException exception);
+    }
+
+    public Normalizer(
+            FileSet fileSet,
+            AnnotationProcessor annotationProcessor,
+            RecordValidator recordValidator,
+            UserNotifier userNotifier,
+            MetadataParser.Listener parserListener,
+            Listener listener
+    ) {
         this.fileSet = fileSet;
         this.annotationProcessor = annotationProcessor;
         this.recordValidator = recordValidator;
         this.userNotifier = userNotifier;
+        this.parserListener = parserListener;
         this.listener = listener;
     }
 
@@ -71,27 +84,30 @@ public class Normalizer implements Runnable {
             writer.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel, new MappingRunner.Listener() {
                 @Override
-                public void complete(Exception exception, String output) {
+                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
                     if (exception != null) {
-                        running = false;
                         userNotifier.tellUser("Problem normalizing", exception);
                     }
                     else {
                         try {
-                            String validated = recordValidator.validate(output);
+                            String validated = recordValidator.validate(metadataRecord, output);
                             writer.write(validated);
                         }
+                        catch (RecordValidationException e) {
+                            listener.invalidRecord(e);
+                        }
                         catch (Exception e) {
-                            running = false;
-                            userNotifier.tellUser("Invalid record encountered", e);
+                            userNotifier.tellUser("Problem writing output", e);
                         }
                     }
                 }
             });
-            MetadataParser parser = new MetadataParser(inputStream, recordRoot, listener);
+            MetadataParser parser = new MetadataParser(inputStream, recordRoot, parserListener);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
-                mappingRunner.compile(record);
+                if (!mappingRunner.runMapping(record)) {
+                    running = false;
+                }
             }
             writer.write("</metadata>\n");
             writer.close();

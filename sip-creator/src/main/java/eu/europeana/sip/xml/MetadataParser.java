@@ -42,7 +42,6 @@ import java.util.Stack;
  */
 
 public class MetadataParser {
-    private static final long RECORDS_PER_NOTIFY = 100;
     private InputStream inputStream;
     private XMLStreamReader2 input;
     private RecordRoot recordRoot;
@@ -50,7 +49,7 @@ public class MetadataParser {
     private Listener listener;
 
     public interface Listener {
-        void recordsParsed(int count);
+        void recordsParsed(int count, boolean lastRecord);
     }
 
     public MetadataParser(InputStream inputStream, RecordRoot recordRoot, Listener listener) throws XMLStreamException {
@@ -75,7 +74,9 @@ public class MetadataParser {
         while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
-                    listener.recordsParsed(0);
+                    if (listener != null) {
+                        listener.recordsParsed(0, false);
+                    }
                     break;
                 case XMLEvent.START_ELEMENT:
                     if (input.getName().equals(recordRoot.getRootQName())) {
@@ -119,10 +120,10 @@ public class MetadataParser {
                 case XMLEvent.END_ELEMENT:
                     if (input.getName().equals(recordRoot.getRootQName())) {
                         withinRecord = false;
-                        metadataRecord = new MetadataRecord(rootNode);
                         recordCount++;
-                        if (recordCount % RECORDS_PER_NOTIFY == 0) {
-                            listener.recordsParsed(recordCount);
+                        metadataRecord = new MetadataRecord(rootNode, recordCount);
+                        if (listener != null) {
+                            listener.recordsParsed(recordCount, false);
                         }
                     }
                     if (withinRecord) {
@@ -140,7 +141,9 @@ public class MetadataParser {
             }
             if (!input.hasNext()) {
                 inputStream.close();
-                listener.recordsParsed(recordCount);
+                if (listener != null) {
+                    listener.recordsParsed(recordCount, true);
+                }
                 break;
             }
             input.next();

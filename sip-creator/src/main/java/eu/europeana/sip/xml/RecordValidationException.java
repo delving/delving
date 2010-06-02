@@ -10,15 +10,17 @@ import java.util.List;
  */
 
 public class RecordValidationException extends Exception {
+    private MetadataRecord metadataRecord;
     private List<String> problems = new ArrayList<String>();
 
-    public RecordValidationException(List<String> problems) {
+    public RecordValidationException(MetadataRecord metadataRecord, List<String> problems) {
         super(problems.size() + " Record Validation Problems");
+        this.metadataRecord = metadataRecord;
         this.problems = problems;
     }
 
-    public List<String> getProblems() {
-        return problems;
+    public MetadataRecord getMetadataRecord() {
+        return metadataRecord;
     }
 
     public String toString() {

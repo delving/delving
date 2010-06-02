@@ -180,6 +180,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     private void updateInputDocument(MetadataRecord metadataRecord) {
         if (metadataRecord != null) {
             StringBuilder out = new StringBuilder();
+            out.append("Record #").append(metadataRecord.getRecordNumber()).append('\n');
             for (MetadataVariable variable : metadataRecord.getVariables()) {
                 out.append(variable.toString()).append('\n');
             }
@@ -200,11 +201,11 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel(), new MappingRunner.Listener() {
                 @Override
-                public void complete(Exception exception, String output) {
+                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
                     if (exception == null) {
                         if (multipleMappings) {
                             try {
-                                String validated = recordValidator.validate(output);
+                                String validated = recordValidator.validate(metadataRecord, output);
                                 compilationComplete(validated);
                             }
                             catch (RecordValidationException e) {
@@ -236,7 +237,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                     }
                 }
             });
-            mappingRunner.compile(metadataRecord);
+            mappingRunner.runMapping(metadataRecord);
         }
 
         private void compilationComplete(final String result) {

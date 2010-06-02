@@ -23,6 +23,7 @@ package eu.europeana.sip.gui;
 
 import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.model.CompileModel;
+import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -170,6 +171,7 @@ public class RefinementPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
         mappingList = new JList(sipModel.getFieldMappingListModel());
         mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
         p.add(scroll(mappingList));
         return p;
     }

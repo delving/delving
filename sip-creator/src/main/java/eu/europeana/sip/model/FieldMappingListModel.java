@@ -25,6 +25,10 @@ import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.groovy.RecordMapping;
 
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,5 +92,14 @@ public class FieldMappingListModel extends AbstractListModel implements RecordMa
             fireIntervalRemoved(this, 0, size);
         }
     }
+
+    public static class CellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            FieldMapping fieldMapping = (FieldMapping) value;
+            return (JLabel) super.getListCellRendererComponent(list, fieldMapping.getDescription(), index, isSelected, cellHasFocus);
+        }
+    }
+
 
 }

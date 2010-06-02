@@ -37,13 +37,19 @@ import java.util.List;
 
 public class MetadataRecord {
     private GroovyNode rootNode;
+    private int recordNumber;
 
-    public MetadataRecord(GroovyNode rootNode) {
+    public MetadataRecord(GroovyNode rootNode, int recordNumber) {
         this.rootNode = rootNode;
+        this.recordNumber = recordNumber;
     }
 
     public GroovyNode getRootNode() {
         return rootNode;
+    }
+
+    public int getRecordNumber() {
+        return recordNumber;
     }
 
     public List<MetadataVariable> getVariables() {

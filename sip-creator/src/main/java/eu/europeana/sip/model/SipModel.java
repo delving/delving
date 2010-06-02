@@ -29,7 +29,9 @@ import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.Normalizer;
+import eu.europeana.sip.xml.RecordValidationException;
 import eu.europeana.sip.xml.RecordValidator;
+import org.apache.log4j.Logger;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
@@ -57,6 +59,7 @@ import java.util.concurrent.Executors;
  */
 
 public class SipModel {
+    private Logger log = Logger.getLogger(getClass());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private AnnotationProcessor annotationProcessor;
     private FileSet fileSet;
@@ -156,7 +159,7 @@ public class SipModel {
                         setRecordRootInternal(recordRoot);
                         setGlobalFieldModelInternal(recordMapping.getConstantFieldModel());
                         fieldCompileModel.getRecordMapping().setConstantFieldModel(recordMapping.getConstantFieldModel());
-                        createMetadataParser();
+                        createMetadataParser(1);
                         if (recordRoot != null) {
                             normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
                             normalizeProgressModel.setValue(outputFilePresent ? recordRoot.getRecordCount() : 0);
@@ -196,7 +199,7 @@ public class SipModel {
                 recordMapping.setCode(templateCode, europeanaFieldMap);
                 setRecordRootInternal(recordMapping.getRecordRoot());
                 recordMapping.getConstantFieldModel().clear();
-                createMetadataParser();
+                createMetadataParser(1);
                 for (UpdateListener updateListener : updateListeners) {
                     updateListener.templateApplied();
                 }
@@ -259,13 +262,21 @@ public class SipModel {
                 userNotifier,
                 new MetadataParser.Listener() {
                     @Override
-                    public void recordsParsed(final int count) {
+                    public void recordsParsed(final int count, final boolean lastRecord) {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                normalizeProgressModel.setValue(count);
+                                if (lastRecord || count % 100 == 0) {
+                                    normalizeProgressModel.setValue(count);
+                                }
                             }
                         });
+                    }
+                },
+                new Normalizer.Listener() {
+                    @Override
+                    public void invalidRecord(RecordValidationException exception) {
+                        createMetadataParser(exception.getMetadataRecord().getRecordNumber());
                     }
                 }
         );
@@ -314,7 +325,7 @@ public class SipModel {
     public void setRecordRoot(RecordRoot recordRoot) {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
-        createMetadataParser();
+        createMetadataParser(1);
         recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
         String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
@@ -375,12 +386,12 @@ public class SipModel {
 
     public void firstRecord() {
         checkSwingThread();
-        createMetadataParser();
+        createMetadataParser(1);
     }
 
     public void nextRecord() {
         checkSwingThread();
-        executor.execute(new NextRecordFetcher());
+        executor.execute(new RecordFetcher(1));
     }
 
     public CompileModel getRecordMappingModel() {
@@ -435,7 +446,7 @@ public class SipModel {
         statisticsTableModel.setCounterList(null);
     }
 
-    private void createMetadataParser() {
+    private void createMetadataParser(int recordNumber) {
         checkSwingThread();
         if (metadataParser != null) {
             metadataParser.close();
@@ -446,11 +457,17 @@ public class SipModel {
         }
         RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
         if (recordRoot != null) {
-            executor.execute(new NextRecordFetcher());
+            executor.execute(new RecordFetcher(recordNumber));
         }
     }
 
-    private class NextRecordFetcher implements Runnable {
+    private class RecordFetcher implements Runnable {
+        private int recordNumber;
+
+        private RecordFetcher(int recordNumber) {
+            this.recordNumber = recordNumber;
+        }
+
         @Override
         public void run() {
             RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
@@ -459,14 +476,11 @@ public class SipModel {
             }
             try {
                 if (metadataParser == null) {
-                    metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, new MetadataParser.Listener() {
-                        @Override
-                        public void recordsParsed(int count) {
-                            // todo: show this in the GUI associated with play/rewind?
-                        }
-                    });
+                    metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, null);
                 }
-                metadataRecord = metadataParser.nextRecord();
+                while (recordNumber-- > 0) {
+                    metadataRecord = metadataParser.nextRecord();
+                }
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -492,6 +506,7 @@ public class SipModel {
         @Override
         public void run() {
             fileSet.setMapping(mapping);
+            log.info("Saving the mapping");
         }
     }
 

@@ -64,7 +64,7 @@ public class TestRecordValidator {
         for (String line : given) {
             input.append(line).append('\n');
         }
-        String result = recordValidator.validate(input.toString());
+        String result = recordValidator.validate(null, input.toString());
         StringBuilder expected = new StringBuilder();
         expected.append("<record>\n");
         for (String line : expect) {

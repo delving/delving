@@ -51,7 +51,7 @@ public class MappingRunner {
     private Listener listener;
 
     public interface Listener {
-        void complete(Exception exception, String output);
+        void complete(MetadataRecord metadataRecord, Exception exception, String output);
     }
 
     public MappingRunner(String code, ConstantFieldModel constantFieldModel, Listener listener) {
@@ -60,7 +60,7 @@ public class MappingRunner {
         this.listener = listener;
     }
 
-    public void compile(MetadataRecord metadataRecord) {
+    public boolean runMapping(MetadataRecord metadataRecord) {
         if (metadataRecord == null) {
             throw new RuntimeException("A record is needed for compile");
         }
@@ -74,10 +74,12 @@ public class MappingRunner {
                 script.setBinding(binding);
             }
             script.run();
-            listener.complete(null, writer.toString());
+            listener.complete(metadataRecord, null, writer.toString());
+            return true;
         }
         catch (MissingPropertyException e) {
-            listener.complete(e, "Missing Property: " + e.getProperty());
+            listener.complete(metadataRecord, e, "Missing Property: " + e.getProperty());
+            return false;
         }
         catch (MultipleCompilationErrorsException e) {
             StringBuilder out = new StringBuilder();
@@ -87,12 +89,14 @@ public class MappingRunner {
                 // line numbers will not match
                 out.append(String.format("Problem: %s", se.getOriginalMessage()));
             }
-            listener.complete(e, out.toString());
+            listener.complete(metadataRecord, e, out.toString());
+            return false;
         }
         catch (Exception e) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            listener.complete(e, writer.toString());
+            listener.complete(metadataRecord, e, writer.toString());
+            return false;
         }
     }
 

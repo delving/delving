@@ -118,7 +118,7 @@ public class FieldMapping implements Iterable<String> {
         return codeLines.isEmpty();
     }
 
-    public String toString() {
+    public String getDescription() {
         String fieldName = europeanaField == null ? "?" : europeanaField.getFieldNameString();
         if (getVariables().isEmpty()) {
             return fieldName;
@@ -126,5 +126,9 @@ public class FieldMapping implements Iterable<String> {
         else {
             return fieldName + " from " + getVariables();
         }
+    }
+
+    public String toString() {
+        return europeanaField == null ? "?" : europeanaField.getFieldNameString();
     }
 }

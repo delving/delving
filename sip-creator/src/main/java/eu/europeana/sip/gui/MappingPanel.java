@@ -26,6 +26,7 @@ import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FieldListModel;
+import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
@@ -144,6 +145,7 @@ public class MappingPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
         mappingList = new JList(sipModel.getFieldMappingListModel());
         mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
         p.add(scroll(mappingList), BorderLayout.CENTER);
         p.add(createButtonPanel(), BorderLayout.EAST);
         return p;

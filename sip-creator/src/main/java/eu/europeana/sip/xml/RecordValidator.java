@@ -64,14 +64,14 @@ public class RecordValidator {
         }
     }
 
-    public String validate(String recordString) throws RecordValidationException {
+    public String validate(MetadataRecord metadataRecord, String recordString) throws RecordValidationException {
         List<Entry> entries = createNonemptyEntryList(recordString);
         Collections.sort(entries);
         eliminateDuplicates(entries);
         List<String> problems = new ArrayList<String>();
         validateAgainstAnnotations(entries, problems);
         if (!problems.isEmpty()) {
-            throw new RecordValidationException(problems);
+            throw new RecordValidationException(metadataRecord, problems);
         }
         return toString(entries);
     }
