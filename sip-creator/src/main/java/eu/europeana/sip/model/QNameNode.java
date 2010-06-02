@@ -20,7 +20,7 @@
  */
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.MetadataRecord;
+import eu.europeana.sip.xml.Sanitizer;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -127,7 +127,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         Iterator<QNameNode> nodeWalk = path.iterator();
         while (nodeWalk.hasNext()) {
             String nodeName = nodeWalk.next().toString();
-            out.append(MetadataRecord.sanitize(nodeName));
+            out.append(Sanitizer.tag2variable(nodeName));
             if (nodeWalk.hasNext()) {
                 out.append('.');
             }

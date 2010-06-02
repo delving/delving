@@ -91,10 +91,10 @@ public class MetadataParser {
                         }
                         String nodeName;
                         if (null == input.getPrefix()) {
-                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : MetadataRecord.sanitize(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : Sanitizer.tag2variable(input.getLocalName());
                         }
                         else {
-                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + MetadataRecord.sanitize(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + Sanitizer.tag2variable(input.getLocalName());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) { // todo: sometimes java.lang.IllegalStateException: Current state not START_ELEMENT        

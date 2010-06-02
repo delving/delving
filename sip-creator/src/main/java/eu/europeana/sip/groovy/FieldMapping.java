@@ -26,6 +26,8 @@ import eu.europeana.definitions.annotations.EuropeanaField;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Map one or more fields to one or more destinatiopn fields using a conversion and the resulting
@@ -35,14 +37,11 @@ import java.util.List;
  */
 
 public class FieldMapping {
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+");
     private EuropeanaField europeanaField;
     private List<String> codeLines = new ArrayList<String>();
 
     public FieldMapping(EuropeanaField europeanaField) {
-        this.europeanaField = europeanaField;
-    }
-
-    public void setEuropeanaField(EuropeanaField europeanaField) {
         this.europeanaField = europeanaField;
     }
 
@@ -77,6 +76,18 @@ public class FieldMapping {
 
     public EuropeanaField getEuropeanaField() {
         return europeanaField;
+    }
+
+    public List<String> getVariables() {
+        List<String> vars = new ArrayList<String>();
+        for (String line : codeLines) {
+            Matcher matcher = VARIABLE_PATTERN.matcher(line);
+            while (matcher.find()) {
+                String var = matcher.group(0);
+                vars.add(var);
+            }
+        }
+        return vars;
     }
 
     public List<String> getCodeLines() {

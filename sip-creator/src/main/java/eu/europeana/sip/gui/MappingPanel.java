@@ -30,7 +30,7 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.VariableListModel;
-import eu.europeana.sip.xml.MetadataRecord;
+import eu.europeana.sip.xml.Sanitizer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -349,7 +349,7 @@ public class MappingPanel extends JPanel {
             else {
                 for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                     AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
-                    String nodeName = MetadataRecord.sanitize(node.toString());
+                    String nodeName = Sanitizer.tag2variable(node.toString());
                     if (nodeName.equals(field.getFieldNameString())) {
                         generateCopyCode(field, node, code);
                     }
@@ -370,7 +370,7 @@ public class MappingPanel extends JPanel {
             }
             for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                 AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
-                String nodeName = MetadataRecord.sanitize(node.toString());
+                String nodeName = Sanitizer.tag2variable(node.toString());
                 if (nodeName.equals(field.getFieldNameString())) {
                     return field;
                 }
