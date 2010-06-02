@@ -38,6 +38,10 @@ import java.util.regex.Pattern;
 
 public class FieldMapping implements Iterable<String> {
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+");
+    private static final String [] TO_REMOVE = {
+            ".each",
+            ".split"
+    };
     private EuropeanaField europeanaField;
     private List<String> codeLines = new ArrayList<String>();
     private List<String> variables;
@@ -87,6 +91,12 @@ public class FieldMapping implements Iterable<String> {
                 Matcher matcher = VARIABLE_PATTERN.matcher(line);
                 while (matcher.find()) {
                     String var = matcher.group(0);
+                    for (String toRemove : TO_REMOVE) {
+                        if (var.endsWith(toRemove)) {
+                            var = var.substring(0, var.length() - toRemove.length());
+                            break;        
+                        }
+                    }
                     variables.add(var);
                 }
             }
