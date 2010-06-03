@@ -31,6 +31,7 @@ import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.Normalizer;
 import eu.europeana.sip.xml.RecordValidationException;
 import eu.europeana.sip.xml.RecordValidator;
+import groovy.lang.MissingPropertyException;
 import org.apache.log4j.Logger;
 
 import javax.swing.BoundedRangeModel;
@@ -275,8 +276,23 @@ public class SipModel {
                 },
                 new Normalizer.Listener() {
                     @Override
-                    public void invalidRecord(RecordValidationException exception) {
-                        createMetadataParser(exception.getMetadataRecord().getRecordNumber());
+                    public void invalidInput(final MetadataRecord metadataRecord, MissingPropertyException exception) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                createMetadataParser(metadataRecord.getRecordNumber());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void invalidOutput(final RecordValidationException exception) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                createMetadataParser(exception.getMetadataRecord().getRecordNumber());
+                            }
+                        });
                     }
                 }
         );

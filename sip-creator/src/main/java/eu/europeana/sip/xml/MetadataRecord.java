@@ -89,28 +89,37 @@ public class MetadataRecord {
     }
 
     public String toString() {
-        StringBuilder recordPrinted = new StringBuilder();
-        printRecord(rootNode, recordPrinted, 0);
-        return recordPrinted.toString();
+        StringBuilder out = new StringBuilder();
+        out.append("Record #").append(recordNumber).append('\n');
+        for (MetadataVariable variable : getVariables()) {
+            out.append(variable.toString()).append('\n');
+        }
+        return out.toString();
     }
 
-    private void printRecord(GroovyNode node, StringBuilder out, int depth) {
-        if (node.value() instanceof GroovyNodeList) {
-            for (int walk = 0; walk < depth; walk++) {
-                out.append(' ');
-            }
-            GroovyNodeList list = (GroovyNodeList) node.value();
-            out.append(node.name()).append("\n");
-            for (Object member : list) {
-                GroovyNode childNode = (GroovyNode) member;
-                printRecord(childNode, out, depth + 1);
-            }
-        }
-        else {
-            for (int walk = 0; walk < depth; walk++) {
-                out.append(' ');
-            }
-            out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
-        }
-    }
+//    public String toString() {
+//        StringBuilder recordPrinted = new StringBuilder();
+//        printRecord(rootNode, recordPrinted, 0);
+//        return recordPrinted.toString();
+//    }
+//
+//    private void printRecord(GroovyNode node, StringBuilder out, int depth) {
+//        if (node.value() instanceof GroovyNodeList) {
+//            for (int walk = 0; walk < depth; walk++) {
+//                out.append(' ');
+//            }
+//            GroovyNodeList list = (GroovyNodeList) node.value();
+//            out.append(node.name()).append("\n");
+//            for (Object member : list) {
+//                GroovyNode childNode = (GroovyNode) member;
+//                printRecord(childNode, out, depth + 1);
+//            }
+//        }
+//        else {
+//            for (int walk = 0; walk < depth; walk++) {
+//                out.append(' ');
+//            }
+//            out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
+//        }
+//    }
 }

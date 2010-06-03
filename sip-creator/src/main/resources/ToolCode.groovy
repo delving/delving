@@ -59,9 +59,15 @@ def extractYear(fieldObject) {
   }
 }
 
-def createEuropeanaURI(uri) {
+def createEuropeanaURI(identifier) {
+  if (!collectionId) {
+    throw new MissingPropertyException("collectionId", String.class)
+  }
+  if (!identifier) {
+    throw new MissingPropertyException("Identifier passed to createEuropeanaURI", String.class)
+  }
   def resolveUrl = 'http://www.europeana.eu/resolve/record';
-  def uriBytes = uri.toString().getBytes("UTF-8");
+  def uriBytes = identifier.toString().getBytes("UTF-8");
   def digest = MessageDigest.getInstance("SHA-1");
   def hash = ''
   for (Byte b in digest.digest(uriBytes)) {
@@ -69,8 +75,4 @@ def createEuropeanaURI(uri) {
     hash += '0123456789ABCDEF'[b & 0x0F]
   }
   return "$resolveUrl/$collectionId/$hash";
-}
-
-def createEuropeanaCollectionName() {
-  return "${collectionId} ${type} ${country} ${providerAbbreviation} ${collectionName}".replaceAll(' ', '_')
 }

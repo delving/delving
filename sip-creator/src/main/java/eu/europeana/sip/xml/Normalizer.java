@@ -28,6 +28,7 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.ToolCodeModel;
 import eu.europeana.sip.model.UserNotifier;
+import groovy.lang.MissingPropertyException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -52,7 +53,8 @@ public class Normalizer implements Runnable {
     private boolean running = true;
 
     public interface Listener {
-        void invalidRecord(RecordValidationException exception);
+        void invalidInput(MetadataRecord metadataRecord, MissingPropertyException exception);
+        void invalidOutput(RecordValidationException exception);
     }
 
     public Normalizer(
@@ -86,7 +88,14 @@ public class Normalizer implements Runnable {
                 @Override
                 public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
                     if (exception != null) {
-                        userNotifier.tellUser("Problem normalizing", exception);
+                        if (exception instanceof MissingPropertyException) {
+                            MissingPropertyException mpe = (MissingPropertyException)exception;
+                            userNotifier.tellUser("Missing property in record "+metadataRecord.getRecordNumber()+": "+mpe.getProperty(), exception);
+                            listener.invalidInput(metadataRecord, mpe);
+                        }
+                        else {
+                            userNotifier.tellUser("Problem normalizing record "+metadataRecord.toString(), exception);
+                        }
                     }
                     else {
                         try {
@@ -94,7 +103,8 @@ public class Normalizer implements Runnable {
                             writer.write(validated);
                         }
                         catch (RecordValidationException e) {
-                            listener.invalidRecord(e);
+                            userNotifier.tellUser("Invalid output record", e);
+                            listener.invalidOutput(e);
                         }
                         catch (Exception e) {
                             userNotifier.tellUser("Problem writing output", e);

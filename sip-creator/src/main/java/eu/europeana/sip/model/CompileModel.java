@@ -25,7 +25,6 @@ import eu.europeana.sip.groovy.FieldMapping;
 import eu.europeana.sip.groovy.MappingRunner;
 import eu.europeana.sip.groovy.RecordMapping;
 import eu.europeana.sip.xml.MetadataRecord;
-import eu.europeana.sip.xml.MetadataVariable;
 import eu.europeana.sip.xml.RecordValidationException;
 import eu.europeana.sip.xml.RecordValidator;
 
@@ -179,12 +178,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
         if (metadataRecord != null) {
-            StringBuilder out = new StringBuilder();
-            out.append("Record #").append(metadataRecord.getRecordNumber()).append('\n');
-            for (MetadataVariable variable : metadataRecord.getVariables()) {
-                out.append(variable.toString()).append('\n');
-            }
-            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, out.toString()));
+            SwingUtilities.invokeLater(new DocumentSetter(inputDocument, metadataRecord.toString()));
         }
         else {
             SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No Input"));
