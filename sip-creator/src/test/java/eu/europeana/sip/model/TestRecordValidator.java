@@ -5,6 +5,7 @@ import eu.europeana.definitions.beans.AllFieldBean;
 import eu.europeana.sip.xml.RecordValidationException;
 import eu.europeana.sip.xml.RecordValidator;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -113,6 +114,7 @@ public class TestRecordValidator {
     }
 
     @Test(expected = RecordValidationException.class)
+    @Ignore
     public void badYear() throws RecordValidationException {
         compare(
                 new String[]{

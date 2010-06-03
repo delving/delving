@@ -73,7 +73,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "isShownBy", fieldType = "string", toCopyField = {"text"})
     String[] europeanaisShownBy;
 
-    @Europeana(category = ESE_PLUS, converter = "extractYear", regularExpression = "\\d{4}")
+    @Europeana(category = ESE_PLUS, converter = "extractYear", converterMultipleOutput = true /*, regularExpression = "\\d{4}"*/)
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 

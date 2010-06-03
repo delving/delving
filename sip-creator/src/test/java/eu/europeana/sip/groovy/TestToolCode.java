@@ -28,23 +28,23 @@ public class TestToolCode {
     @Test
     public void testDates() {
         String[][] cases = {
-                {"1990", "1990"},
-                {"1940-1945", "1940, 1945"},
-                {"1940-45", "1940, 1945"},
-                {"100 AD", "100 AD"},
-                {"100 BC", "100 BC"},
-                {"10/02/2010", "2010"},
-                {"10/02/2010-11/02/2010", "2010"},
-                {"The object was created in 1910 and sold May 2005", "1910, 2005"},
-                {"2010-03-19", "2010"},
-                {"2005-03-09 to 2010-03-19", "2005, 2010"},
-                {"65 BC", "65 BC"},
-                {"10 AD", "10 AD"},
-                {"100", "100 AD"},
-                {"65", "65 AD"},
+                {"1990", "[1990]"},
+                {"1940-1945", "[1940, 1945]"},
+                {"1940-45", "[1940, 1945]"},
+                {"100 AD", "[100 AD]"},
+                {"100 BC", "[100 BC]"},
+                {"10/02/2010", "[2010]"},
+                {"10/02/2010-11/02/2010", "[2010]"},
+                {"The object was created in 1910 and sold May 2005", "[1910, 2005]"},
+                {"2010-03-19", "[2010]"},
+                {"2005-03-09 to 2010-03-19", "[2005, 2010]"},
+                {"65 BC", "[65 BC]"},
+                {"10 AD", "[10 AD]"},
+                {"100", "[100 AD]"},
+                {"65", "[65 AD]"},
         };
         for (String[] d : cases) {
-            String result = (String) script.invokeMethod("extractYear", d[0]);
+            String result = script.invokeMethod("extractYear", d[0]).toString();
             Assert.assertEquals("failing to extract \"" + d[0] + "\"", d[1], result);
             System.out.println("Successful: " + d[0] + " --> " + d[1]);
         }

@@ -106,7 +106,7 @@ public class RecentFileSets {
         FileSetImpl fileSet = null;
         while (walk.hasNext()) {
             FileSetImpl next = walk.next();
-            if (next.getName().equals(inputFile.getName())) {
+            if (next.getAbsolutePath().equals(inputFile.getAbsolutePath())) {
                 fileSet = next;
                 walk.remove();
             }

@@ -144,6 +144,15 @@ public @interface Europeana {
     String converter() default "";
 
     /**
+     * Flag whether the converter is producing an array of results rather than just one result.
+     * This will affect the generated code.
+     *
+     * @return true if an array is returned
+     */
+    
+    boolean converterMultipleOutput() default false;
+
+    /**
      * Is this a URL?
      *
      * @return true if it must be

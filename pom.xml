@@ -547,11 +547,11 @@
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.definitions.version>1.12</europeana.definitions.version>
-        <europeana.core.version>1.32</europeana.core.version>
-        <europeana.portal.version>0.6.5</europeana.portal.version>
-        <europeana.api.version>0.17</europeana.api.version>
-        <europeana.dashboard.version>0.3.3</europeana.dashboard.version>
+        <europeana.definitions.version>1.13</europeana.definitions.version>
+        <europeana.core.version>1.33</europeana.core.version>
+        <europeana.portal.version>0.6.6</europeana.portal.version>
+        <europeana.api.version>0.18</europeana.api.version>
+        <europeana.dashboard.version>0.3.4</europeana.dashboard.version>
 
         <jdkLevel>1.6</jdkLevel>
 

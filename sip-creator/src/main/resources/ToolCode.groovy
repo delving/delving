@@ -20,43 +20,50 @@ def extractYear(fieldObject) {
   def yearRangeTo = /$normalYear to $normalYear/
   def yearRange = /($yearRangeDash|$yearRangeTo)/
   def yearRangeBrief = /$year-\d\d/
+  def result = [];
 
   switch (field) {
 
     case ~/$normalYear/:
-      return (field =~ /$year/)[0]
+      result += (field =~ /$year/)[0]
+      break;
 
     case ~/$yearAD/:
-      return (field =~ /$yr/)[0] + ' AD';
+      result += (field =~ /$yr/)[0] + ' AD';
+      break;
 
     case ~/$yearBC/:
-      return (field =~ /$yr/)[0] + ' BC';
+      result += (field =~ /$yr/)[0] + ' BC';
+      break;
 
     case ~/$yearRange/:
       def list = field =~ /$year/
       if (list[0] == list[1]) {
-        return list[0]
+        result += list[0]
       }
       else {
-        return list[0] + ', ' + list[1]
+        result += list[0]
+        result += list[1]
       }
+      break;
 
     case ~/$yearRangeBrief/:
       def list = field =~ /\d{1,4}/
-      return list[0] + ', ' + list[0][0] + list[0][1] + list[1]
+      result += list[0]
+      result += list[0][0] + list[0][1] + list[1]
+      break;
 
     case ~/$yr/:
-      return field+' AD'
+      result += field + ' AD'
+      break;
 
     default:
-      def result = ""
       field.eachMatch(/$year/) {
-        result += it + '  ';
+        result += it;
       }
-      result = result.trim();
-      return result.replace('  ', ', ');
-    
+      break;
   }
+  return result;
 }
 
 def createEuropeanaURI(identifier) {
@@ -71,7 +78,7 @@ def createEuropeanaURI(identifier) {
   def digest = MessageDigest.getInstance("SHA-1");
   def hash = ''
   for (Byte b in digest.digest(uriBytes)) {
-    hash += '0123456789ABCDEF'[(b & 0xF0)  >> 4]
+    hash += '0123456789ABCDEF'[(b & 0xF0) >> 4]
     hash += '0123456789ABCDEF'[b & 0x0F]
   }
   return "$resolveUrl/$collectionId/$hash";

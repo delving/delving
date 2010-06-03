@@ -32,7 +32,6 @@ import eu.europeana.sip.xml.Normalizer;
 import eu.europeana.sip.xml.RecordValidationException;
 import eu.europeana.sip.xml.RecordValidator;
 import groovy.lang.MissingPropertyException;
-import org.apache.log4j.Logger;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
@@ -60,7 +59,7 @@ import java.util.concurrent.Executors;
  */
 
 public class SipModel {
-    private Logger log = Logger.getLogger(getClass());
+//    private Logger log = Logger.getLogger(getClass());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private AnnotationProcessor annotationProcessor;
     private FileSet fileSet;
@@ -522,7 +521,7 @@ public class SipModel {
         @Override
         public void run() {
             fileSet.setMapping(mapping);
-            log.info("Saving the mapping");
+//            log.info("Saving the mapping");
         }
     }
 

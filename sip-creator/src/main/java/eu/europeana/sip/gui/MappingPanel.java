@@ -384,6 +384,11 @@ public class MappingPanel extends JPanel {
             if (field.europeana().converter().isEmpty()) {
                 fieldMapping.addCodeLine(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
             }
+            else if (field.europeana().converterMultipleOutput()) {
+                fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", field.europeana().converter()));
+                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
+                fieldMapping.addCodeLine("}");
+            }
             else {
                 fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
             }
@@ -392,6 +397,11 @@ public class MappingPanel extends JPanel {
         else {
             if (field.europeana().converter().isEmpty()) {
                 fieldMapping.addCodeLine(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
+            }
+            else if (field.europeana().converterMultipleOutput()) {
+                fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", field.europeana().converter(), node.getVariableName()));
+                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
+                fieldMapping.addCodeLine("}");
             }
             else {
                 fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
