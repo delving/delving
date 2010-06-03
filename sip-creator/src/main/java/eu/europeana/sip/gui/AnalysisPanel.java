@@ -156,7 +156,7 @@ public class AnalysisPanel extends JPanel {
 
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Variables"));
+        p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
         JList list = new JList(sipModel.getVariablesListModel());
         list.setCellRenderer(new VariableListModel.CellRenderer());
         p.add(scroll(list), BorderLayout.CENTER);
@@ -329,6 +329,7 @@ public class AnalysisPanel extends JPanel {
                     expandEmptyNodes((AnalysisTree.Node) statisticsJTree.getModel().getRoot());
                 }
             });
+            timer.setRepeats(false);
             timer.start();
         }
 

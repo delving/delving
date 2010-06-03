@@ -102,7 +102,7 @@ public class MappingPanel extends JPanel {
 
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Variables"));
+        p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
         variablesList = new JList(sipModel.getVariablesListModel());
         variablesList.setCellRenderer(new VariableListModel.CellRenderer());
         p.add(scroll(variablesList), BorderLayout.CENTER);
@@ -111,14 +111,14 @@ public class MappingPanel extends JPanel {
 
     private JPanel createConstantFieldPanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Constant Value"));
+        p.setBorder(BorderFactory.createTitledBorder("Constant Value Source"));
         p.add(constantField);
         return p;
     }
 
     private JPanel createFieldsPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unmapped Fields"));
+        p.setBorder(BorderFactory.createTitledBorder("Unmapped Target Fields"));
         fieldList = new JList(sipModel.getUnmappedFieldListModel());
         fieldList.setCellRenderer(new FieldListModel.CellRenderer());
         fieldList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
