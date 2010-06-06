@@ -37,6 +37,7 @@ public class Sanitizer {
     + "Aa"            // ring
     + "Cc"            // cedilla
     + "OoUu"          // double acute
+    + "_"
     ;
 
     private static final String UNICODE =
@@ -48,6 +49,7 @@ public class Sanitizer {
     + "\u00C5\u00E5"
     + "\u00C7\u00E7"
     + "\u0150\u0151\u0170\u0171"
+    + "-"
     ;
 
     public static String tag2variable(String s) {
