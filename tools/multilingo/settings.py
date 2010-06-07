@@ -6,7 +6,7 @@ if proj_root[-1] == '/':
     # to make it consistent, remove trailing space
     proj_root = proj_root[:-1]
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     #('Jacob Lundqvist', 'jacob.lundqvist@gmail.com'),
@@ -31,7 +31,7 @@ TIME_ZONE = 'Europe/Amsterdam'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
@@ -62,6 +62,8 @@ ADMIN_MEDIA_PREFIX = '/admin_media/'
 #local_settings SECRET_KEY = '3h&^gpvh*pn)r$$!)7g+8s^4!4jp6k17@#3gihk+vr8i4zty_h'
 
 
+<<<<<<< .mine
+=======
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
@@ -80,8 +82,14 @@ NOT_TEMPLATE_CONTEXT_PROCESSORS = (
     "apps.multi_lingo.utils.global_environ",
     )
 
+>>>>>>> .r2223
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+#     'django.template.loaders.eggs.Loader',
+)
+NOT_TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 #     'django.template.loaders.eggs.load_template_source',
@@ -90,11 +98,13 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-#    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
-
-LANGUAGE_COOKIE_NAME = 'django_language'
+NOT_MIDDLEWARE_CLASSES = (
+#    'django.middleware.locale.LocaleMiddleware',
+)
 
 ROOT_URLCONF = 'urls'
 
@@ -108,12 +118,14 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'django.contrib.auth',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
     'django.contrib.contenttypes',
-    #'django.contrib.markup',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.messages',
+
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    #'django.contrib.markup',
 
     'rosetta',
     'apps.multi_lingo',
@@ -122,6 +134,20 @@ INSTALLED_APPS = (
 
 
 PORTAL_PREFIX = 'portal'
+
+
+
+
+MAYBE_NOT_TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages"
+
+    #"django.core.context_processors.request",
+    "apps.multi_lingo.utils.global_environ",
+    )
 
 
 

@@ -7,12 +7,17 @@ import os.path
 proj_root = os.path.normpath(os.path.dirname(__file__))
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '%s/db.sqlite3' % proj_root,    # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
 
-DATABASE_ENGINE = 'sqlite3'   # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = '%s/db.sqlite3' % proj_root # Or path to database file if using sqlite3.
-DATABASE_USER = ''     # Not used with sqlite3.
-DATABASE_PASSWORD = '' # Not used with sqlite3.
-DATABASE_HOST = ''     # Set to empty string for localhost. Not used with sqlite3.
 
 SECRET_KEY = '* long and secret string used as session key *'
 

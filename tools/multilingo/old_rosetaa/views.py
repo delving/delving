@@ -224,13 +224,6 @@ download_file=user_passes_test(lambda user:can_translate(user),LOGIN_URL)(downlo
 download_file=never_cache(download_file)
 
 
-def translator_allowed(user, lang):
-    """Europeana specific modification
-    Only allow translators to modify the languages they are responsible for
-    """
-    a = user.get_all_permissions()
-    b = user.has_perm('rosetta.%s' % lang) or user.has_perm('rosetta.all_langs')
-    return b
 
 def list_languages(request):
     """
@@ -243,7 +236,7 @@ def list_languages(request):
     has_pos = False
     for language in settings.LANGUAGES:
         # Patch to only allow translator to handle assigned language
-        if not translator_allowed(request.user, language[0]):
+        if not gen_utils.translator_allowed(request.user, language[0]):
             continue
         pos = find_pos(language[0],include_djangos=do_django,include_rosetta=do_rosetta)
         has_pos = has_pos or len(pos)
