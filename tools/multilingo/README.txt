@@ -63,6 +63,60 @@ This tool is intended to be run from an apache server, using the WSGI wrapper.
 Dependencies
 
 1. A resent django - 1.1 or higer should work
-2. django-rosetta - we use 0.5.2 for the moment (included in this code-tree)
-     It is slightly patched in (rosetta/views.py:translator_allowed ) to only allow a translator to handle languages
-     they have permission (rosetta | translator | ...) for.
+2. django-rosetta - we use 0.5.5 for the moment (included in this code-tree)
+
+
+====================   Rosetta patches aplied   ===========================
+
+---------------   rosetta/templates/rosetta/base.html   -----------------
+
+            {% block header %}
+            <div id="branding">
+                <h1 id="site-name">
+		<a href="{% url rosetta-pick-file %}">Rosetta home</a>
+		&nbsp;-&nbsp;
+		<a href="/">Static pages</a>
+		</h1>
+            </div>
+            {% endblock %}
+
+-------------------------   rosetta/views.py   --------------------------
+
+from gen_utils.rosetta_extras import translator_allowed
+
+(in list_languages() arround #240)
+    for language in settings.LANGUAGES:
+        # Patch to only allow translator to handle assigned language
+        if not translator_allowed(request.user, language[0]):
+            continue
+
+
+
+
+=============== Some hints on multilingual setup ===================
+
+To get languages to work in django 1.2 or greater, in settings.py:
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    ...
+    )
+
+--------------------------------------
+# Sample language setter
+
+from django.http import HttpResponseRedirect
+
+LANG_KEY = 'django_language'
+
+def set_lang(request, lang, next_page='/'):
+    if lang == 'sv':
+        request.session[LANG_KEY] = 'sv-se'
+    elif lang in ('en','de'):
+        request.session[LANG_KEY] = lang
+    else:
+        # If youre ambitious, inform user of bad lang selection...
+    return HttpResponseRedirect(next_page)
+---------------------------------
