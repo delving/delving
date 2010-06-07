@@ -37,7 +37,7 @@ def global_environ(request):
     """
     additions = {
         #'DJANGO_ROOT': request.META['SCRIPT_NAME'],
-        'europeana_item_count_mill': 6, # in miljons how large the dataset is
+        'europeana_item_count_mill': 7, # in miljons how large the dataset is
     }
     return additions
 

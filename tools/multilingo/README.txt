@@ -116,7 +116,7 @@ def set_lang(request, lang, next_page='/'):
         request.session[LANG_KEY] = 'sv-se'
     elif lang in ('en','de'):
         request.session[LANG_KEY] = lang
-    else:
+    #else:
         # If youre ambitious, inform user of bad lang selection...
     return HttpResponseRedirect(next_page)
 ---------------------------------

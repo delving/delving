@@ -35,6 +35,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
 
+
 import django.template.loader
 
 from rosetta.poutil import find_pos
@@ -47,6 +48,7 @@ import models
 HTML_EXT = '.html'
 PROP_URL_NAME = 'message_keys/messages'
 PROP_TEMPLATE = 'prop_file.html'
+LANG_KEY = 'django_language'
 
 _TEMPLATES = []
 _STATIC_PAGES = {}
@@ -90,14 +92,15 @@ def static_page(request, rel_url):
     template = _STATIC_PAGES[rel_url]
     new_lang = request.POST.get('lang')
     if new_lang:
-        lang = new_lang
+        set_lang(request, new_lang, request['META']['PATH_INFO'])
     else:
-        lang = request.session.get('django_language','')
+        #lang = request.session.get('django_language','')
     content = langCheck(lang) # only accept supported languages
     if not (content):
         # we only accept urls with language selections, as a fallback send
         # visitor back to the english about_us
         return HttpResponseRedirect(rel_url)
+    content['europeana_item_count_mill'] = 7
 
     if request.session.get('django_language','') != content['lang']:
         # A langugage change is detected, propably due to usage of dropdown
@@ -119,7 +122,7 @@ def extract_lang_from_static_path(path):
     return s, lang
 
 
-def langCheck(lang):
+def not_langCheck(lang):
     """
     Set up a few language dependent environ variables
     """
@@ -131,6 +134,16 @@ def langCheck(lang):
             'all_languages': settings.LANGUAGES,
             }
 
+
+
+def set_lang(request, lang, next_page='/'):
+    if lang == 'sv':
+        request.session[LANG_KEY] = 'sv-se'
+    elif lang in ('en','de'):
+        request.session[LANG_KEY] = lang
+    #else:
+        # If youre ambitious, inform user of bad lang selection...
+    return HttpResponseRedirect(next_page)
 
 
 #=================   Finding templates   ======================
