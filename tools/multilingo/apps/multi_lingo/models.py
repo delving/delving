@@ -127,3 +127,12 @@ def checkMedia_link_exists():
     raise exceptions.ImproperlyConfigured(msg)
 
 checkMedia_link_exists()
+
+
+class Language(models.Model):
+    short_name = models.CharField(max_length=10)
+    visible_name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.short_name
+#ALTER TABLE `multi_lingo_language` CHANGE `visible_name` `visible_name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL

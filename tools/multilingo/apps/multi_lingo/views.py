@@ -30,7 +30,6 @@ import settings as sett2
 
 from django.conf import settings
 from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
@@ -64,21 +63,22 @@ def index_page(request):
                               {
                                   'portal_prefix': PORTAL_PREFIX,
                                   'pages': page_lst,
-                              },
-                              context_instance=RequestContext(request))
+                              })
 
 
 
 
-def portal_page(request, rel_url, lang='', *args, **kwargs):
+def portal_url(request, rel_url, lang='', *args, **kwargs):
     """Due to the way the official portal handles urls, everything starts with
     /portal/
     This is a bit counter-intuitive when handled by django, we filter out
     the pages we want to handle ourself, and redirect everything else to the
     static page handler
     """
+    if rel_url == 'index.html':
+        return index_page(request) # point back to topindex
     if rel_url in OUR_STATIC_PAGES.keys():
-        return static_page(request, rel_url)
+        return our_static_pages_handler(request, rel_url)
     stat_path = os.path.join(settings.MEDIA_URL, rel_url)
     return HttpResponseRedirect(stat_path)
 
@@ -86,47 +86,26 @@ def portal_page(request, rel_url, lang='', *args, **kwargs):
 
 #=================   utils   ======================
 
-def static_page(request, rel_url):
+def our_static_pages_handler(request, rel_url):
     template = OUR_STATIC_PAGES[rel_url]
     lang = request.session.get(LANG_KEY,'')
     new_lang = request.POST.get('lang')
     if not (lang or new_lang):
         new_lang = 'en'
     if new_lang:
-        return set_lang(request, new_lang, rel_url)#request['META']['PATH_INFO'])
-    #else:
-        #lang = request.session.get('django_language','')
-    content = set_lang_vars(lang) # only accept supported languages
-    if not (content):
-        # we only accept urls with language selections, as a fallback send
-        # visitor back to the english about_us
-        return HttpResponseRedirect(rel_url)
-    content['europeana_item_count_mill'] = 7
-
-    """
-    if request.session.get('django_language','') != content['lang']:
-        # A langugage change is detected, propably due to usage of dropdown
-        # reload same page to get the propper context
-        request.session['django_language'] = content['lang']
-        return HttpResponseRedirect(rel_url)#'%s/%s' % (settings.PORTAL_PREFIX, rel_url))
-    """
-    return render_to_response(template, content,
-                              context_instance=RequestContext(request))
+        return set_lang_redirect(request, new_lang, rel_url)
+    content = prepare_generic_vars(lang) # only accept supported languages
+    return render_to_response(template, content)
 
 
-def set_lang(request, lang, next_page='/'):
-    if lang == 'sv':
-        request.session[LANG_KEY] = 'sv-se'
-    elif lang in ('en','de'):
-        request.session[LANG_KEY] = lang
-    #else:
-        # If youre ambitious, inform user of bad lang selection...
+def set_lang_redirect(request, lang, next_page='/'):
+    request.session[LANG_KEY] = lang
     return HttpResponseRedirect(next_page)
 
 
-def set_lang_vars(lang):
+def prepare_generic_vars(lang):
     """
-    Set up a few language dependent environ variables for usage in templates
+    Set up a few generic variables for usage in templates
     """
     if lang not in settings.LANGUAGES_DICT.keys():
         # trigger redirect to enforce nice language specific urls
@@ -134,6 +113,7 @@ def set_lang_vars(lang):
     return {'lang': lang,
             'lang_long_name': settings.LANGUAGES_DICT[lang],
             'all_languages': settings.LANGUAGES,
+            'europeana_item_count_mill': 7,
             }
 
 
@@ -217,8 +197,7 @@ def NOT_prop_page(request, lang=''):
         request.session['django_language'] = content['lang']
         return HttpResponseRedirect(reverse(PROP_TEMPLATE, args=(content['lang'],)))
 
-    return render_to_response(PROP_TEMPLATE,
-                              context_instance=RequestContext(request))
+    return render_to_response(PROP_TEMPLATE)
 
 
 #===============================

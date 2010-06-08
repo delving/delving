@@ -73,7 +73,7 @@ Dependencies
             {% block header %}
             <div id="branding">
                 <h1 id="site-name">
-		<a href="{% url rosetta-pick-file %}">Rosetta home</a>
+		<a href="{% url rosetta-pick-file %}">Rosetta select language</a>
 		&nbsp;-&nbsp;
 		<a href="/">Static pages</a>
 		</h1>

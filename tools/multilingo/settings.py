@@ -50,7 +50,11 @@ USE_L10N = True
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-#local_settings MEDIA_URL = '/static_media/'
+MEDIA_URL = '/portal_static/'
+
+DELIVER_STATIC_MEDIA = True
+# If DELIVER_STATIC_MEDIA is True, all references to MEDIA_URL above
+# are pointed to the MEDIA_ROOT below
 
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -77,7 +81,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -130,36 +134,6 @@ MAYBE_NOT_TEMPLATE_CONTEXT_PROCESSORS = (
 #
 #=====================   Europeana languages settings   =======================
 #
-
-#This one is sorted in display order
-LANGUAGES = (
-    ('bg', '&#x0411;&#x044a;&#x043b;&#x0433;&#x0430;&#x0440;&#x0441;&#x043a;&#x0438; (bul)'),
-    ('ca', 'Catal&#224; (ca)'),
-    ('cs', '&#268;e&#353;tina (cze/cse)'),
-    ('da', 'Dansk (dan)'),
-    ('de', 'Deutsch (deu)'),
-    ('el', '&#917;&#955;&#955;&#951;&#957;&#953;&#954;&#940; (ell/gre)'),
-    ('en', 'English (eng)'),
-    ('es', 'Espa&#241;ol (esp)'),
-    ('et', 'Eesti (est)'),
-    ('fi', 'Suomi (fin)'),
-    ('fr', 'Fran&#231;ais (fre)'),
-    ('ga', 'Irish (gle)'),
-    ('hu', 'Magyar (hun)'),
-    ('is', '&#205;slenska (ice)'),
-    ('it', 'Italiano (ita)'),
-    ('lt', 'Lietuvi&#371; (lit)'),
-    ('lv', 'Latvie&#353;u (lav)'),
-    ('mt', 'Malti (mlt)'),
-    ('nl', 'Nederlands (dut)'),
-    ('no', 'Norsk (nor)'),
-    ('pl', 'Polski (pol)'),
-    ('pt', 'Portugu&#234;s (por)'),
-    ('ro', 'Rom&#226;n&#259; (rom'),
-    ('sk', 'Slovensk&#253; (slo)'),
-    ('sl', 'Sloven&#353;&#269;ina (slv)'),
-    ('sv', 'Svenska (sve/swe)'),
-)
 
 # just the lang keys for quick lookups
 LANGUAGES_DICT = {}

@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
     #(r'^portal/(?P<path>\w+)_(?P<lang>\w+).html$',  apps.multi_lingo.views.static_page),
-    (r'^portal/(?P<rel_url>.*)$',  apps.multi_lingo.views.portal_page),
+    (r'^portal/(?P<rel_url>.*)$',  apps.multi_lingo.views.portal_url),
 
     #url(r'^reload_templates/', apps.multi_lingo.views.reload_templates,
     #    name='reload-templates'),

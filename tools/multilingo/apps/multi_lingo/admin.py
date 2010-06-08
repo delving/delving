@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from models import TranslatePage, MediaFile
+from models import TranslatePage, MediaFile, Language
 
 
 
@@ -23,5 +23,6 @@ class TranslatePageAdmin(admin.ModelAdmin):
 admin.site.register(TranslatePage, TranslatePageAdmin)
 
 
-
 admin.site.register(MediaFile)
+
+admin.site.register(Language)
