@@ -72,12 +72,12 @@ public class FileMenu extends JMenu {
         private JFileChooser chooser = new JFileChooser("XML File");
 
         private LoadNewFileAction(File directory) {
-            super("Open File from "+directory.getAbsolutePath());
+            super("Open File from " + directory.getAbsolutePath());
             chooser.setCurrentDirectory(directory);
             chooser.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    return file.getName().endsWith(".xml");
+                    return file.getName().endsWith(".xml") && !file.getName().endsWith(".xml.normalized.xml");
                 }
 
                 @Override

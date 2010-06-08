@@ -103,8 +103,7 @@ public class MappingPanel extends JPanel {
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
-        variablesList = new JList(sipModel.getVariablesListModel());
-        variablesList.setCellRenderer(new VariableListModel.CellRenderer());
+        variablesList = new JList(sipModel.getVariablesListWithCountsModel());
         p.add(scroll(variablesList), BorderLayout.CENTER);
         return p;
     }
@@ -315,9 +314,9 @@ public class MappingPanel extends JPanel {
                     ));
                 }
                 else {
-                    for (Object variable : variablesList.getSelectedValues()) {
-                        AnalysisTree.Node node = (AnalysisTree.Node) variable;
-                        generateCopyCode(fresh.getEuropeanaField(), node, fresh);
+                    for (Object variableHolderObject : variablesList.getSelectedValues()) {
+                        VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) variableHolderObject;
+                        generateCopyCode(fresh.getEuropeanaField(), variableHolder.getNode(), fresh);
                     }
                 }
             }
@@ -347,10 +346,10 @@ public class MappingPanel extends JPanel {
             }
             else {
                 for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
-                    AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
-                    String nodeName = Sanitizer.tag2variable(node.toString());
-                    if (nodeName.equals(field.getFieldNameString())) {
-                        generateCopyCode(field, node, obvious);
+                    VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
+                    String variableName = Sanitizer.tag2variable(variableHolder.getVariableName());
+                    if (variableName.equals(field.getFieldNameString())) {
+                        generateCopyCode(field, variableHolder.getNode(), obvious);
                     }
                 }
             }
@@ -368,8 +367,8 @@ public class MappingPanel extends JPanel {
                 return field;
             }
             for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
-                AnalysisTree.Node node = (AnalysisTree.Node) sipModel.getVariablesListModel().getElementAt(walkVar);
-                String nodeName = Sanitizer.tag2variable(node.toString());
+                VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
+                String nodeName = Sanitizer.tag2variable(variableHolder.getVariableName());
                 if (nodeName.equals(field.getFieldNameString())) {
                     return field;
                 }

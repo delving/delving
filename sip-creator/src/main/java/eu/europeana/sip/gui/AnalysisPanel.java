@@ -27,7 +27,6 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
-import eu.europeana.sip.model.VariableListModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -158,7 +157,6 @@ public class AnalysisPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
         JList list = new JList(sipModel.getVariablesListModel());
-        list.setCellRenderer(new VariableListModel.CellRenderer());
         p.add(scroll(list), BorderLayout.CENTER);
         return p;
     }

@@ -21,10 +21,11 @@
 
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
+
 import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import java.awt.Component;
+import javax.swing.ListModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +37,19 @@ import java.util.List;
  */
 
 public class VariableListModel extends AbstractListModel {
-    private List<AnalysisTree.Node> variableList = new ArrayList<AnalysisTree.Node>();
+    private List<VariableHolder> variableList = new ArrayList<VariableHolder>();
+    private WithCounts withCounts;
 
     public void setVariableList(List<AnalysisTree.Node> variableList) {
         clear();
-        this.variableList.addAll(variableList);
+        for (AnalysisTree.Node node : variableList) {
+            this.variableList.add(new VariableHolder(node));
+        }
         Collections.sort(this.variableList);
         fireIntervalAdded(this, 0, getSize());
+        if (withCounts != null) {
+            withCounts.refresh();
+        }
     }
 
     public void clear() {
@@ -63,12 +70,121 @@ public class VariableListModel extends AbstractListModel {
         return variableList.get(index);
     }
 
-    public static class CellRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            AnalysisTree.Node node = (AnalysisTree.Node) value;
-            return super.getListCellRendererComponent(list, node.getVariableName(), index, isSelected, cellHasFocus);
+    public ListModel getWithCounts(RecordMapping recordMapping) {
+        if (withCounts == null) {
+            withCounts = new WithCounts(recordMapping);
+            recordMapping.addListener(withCounts);
         }
+        return withCounts;
     }
 
+    public class WithCounts extends AbstractListModel implements RecordMapping.Listener {
+        private RecordMapping recordMapping;
+        private List<VariableHolder> variableHolderList = new ArrayList<VariableHolder>();
+
+        public WithCounts(RecordMapping recordMapping) {
+            this.recordMapping = recordMapping;
+            refresh();
+        }
+
+        @Override
+        public int getSize() {
+            return variableHolderList.size();
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            return variableHolderList.get(index);
+        }
+
+        @Override
+        public void mappingAdded(FieldMapping fieldMapping) {
+            refresh();
+        }
+
+        @Override
+        public void mappingRemoved(FieldMapping fieldMapping) {
+            refresh();
+        }
+
+        @Override
+        public void mappingsRefreshed(RecordMapping recordMapping) {
+            refresh();
+        }
+
+        private void refresh() {
+            int sizeBefore = getSize();
+            variableHolderList.clear();
+            fireIntervalRemoved(this, 0, sizeBefore);
+            for (VariableHolder uncountedHolder : variableList) {
+                VariableHolder variableHolder = new VariableHolder(uncountedHolder.node);
+                for (FieldMapping fieldMapping : recordMapping) {
+                    for (String variable : fieldMapping.getVariables()) {
+                        variableHolder.checkIfMapped(variable);
+                    }
+                }
+                variableHolderList.add(variableHolder);
+            }
+            Collections.sort(variableHolderList);
+            fireIntervalAdded(this, 0, getSize());
+        }
+
+    }
+
+
+    public static class VariableHolder implements Comparable<VariableHolder> {
+        private AnalysisTree.Node node;
+        private String variableName;
+        private int mappingCount;
+
+        private VariableHolder(AnalysisTree.Node node) {
+            this.node = node;
+            this.variableName = node.getVariableName();
+        }
+
+        public void checkIfMapped(String variableName) {
+            if (this.variableName.equals(variableName)) {
+                mappingCount++;
+            }
+        }
+
+        public AnalysisTree.Node getNode() {
+            return node;
+        }
+
+        public String getVariableName() {
+            return variableName;
+        }
+
+        public String toString() {
+            StringBuilder out = new StringBuilder(variableName);
+            switch (mappingCount) {
+                case 0:
+                    break;
+                case 1:
+                    out.append(" (mapped once)");
+                    break;
+                case 2:
+                    out.append(" (mapped twice)");
+                    break;
+                default:
+                    out.append(" (mapped ").append(mappingCount).append(" times)");
+                    break;
+            }
+            return out.toString();
+        }
+
+        @Override
+        public int compareTo(VariableHolder o) {
+            if (mappingCount > o.mappingCount) {
+                return 11;
+            }
+            else if (mappingCount < o.mappingCount) {
+                return -1;
+            }
+            else {
+                return node.compareTo(o.node);
+            }
+        }
+    }
 }

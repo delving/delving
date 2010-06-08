@@ -381,6 +381,10 @@ public class SipModel {
         return variableListModel;
     }
 
+    public ListModel getVariablesListWithCountsModel() {
+        return variableListModel.getWithCounts(recordCompileModel.getRecordMapping());
+    }
+
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         recordCompileModel.getRecordMapping().add(fieldMapping);
