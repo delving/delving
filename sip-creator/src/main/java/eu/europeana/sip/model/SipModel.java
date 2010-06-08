@@ -429,16 +429,17 @@ public class SipModel {
     private void setRecordRootInternal(RecordRoot recordRoot) {
         checkSwingThread();
         List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
+        normalizeProgressModel.setValue(0);
         if (recordRoot != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
             analysisTree.getVariables(variables);
             variableListModel.setVariableList(variables);
+            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
         }
         else {
             variableListModel.clear();
+            normalizeProgressModel.setMaximum(100);
         }
-        normalizeProgressModel.setValue(0);
-        normalizeProgressModel.setMaximum(100);
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedRecordRoot(recordRoot);
         }

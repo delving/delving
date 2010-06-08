@@ -105,9 +105,11 @@ public class Normalizer implements Runnable {
                         catch (RecordValidationException e) {
                             userNotifier.tellUser("Invalid output record", e);
                             listener.invalidOutput(e);
+                            running = false;
                         }
                         catch (Exception e) {
                             userNotifier.tellUser("Problem writing output", e);
+                            running = false;
                         }
                     }
                 }
@@ -124,6 +126,7 @@ public class Normalizer implements Runnable {
             parser.close();
             if (!running) {
                 fileSet.removeOutputFile();
+                parserListener.recordsParsed(0, true);
             }
         }
         catch (XMLStreamException e) {

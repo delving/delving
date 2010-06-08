@@ -194,10 +194,10 @@ public class RecordMapping implements Iterable<FieldMapping> {
         StringBuilder out = new StringBuilder();
         if (delimited) {
             out.append(HEADER).append('\n').append('\n');
-            if (recordRoot != null) {
-                out.append(recordRoot.toString()).append('\n').append('\n');
-            }
             if (includesConstants) {
+                if (recordRoot != null) {
+                    out.append(recordRoot.toString()).append('\n').append('\n');
+                }
                 out.append(constantFieldModel.toString()).append('\n');
             }
         }
