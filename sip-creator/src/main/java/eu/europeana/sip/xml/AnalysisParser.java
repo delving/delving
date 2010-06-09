@@ -127,7 +127,7 @@ public class AnalysisParser implements Runnable {
             List<Statistics> statisticsList = new ArrayList<Statistics>(statisticsMap.values());
             Collections.sort(statisticsList);
             for (Statistics statistics : statisticsList) {
-                statistics.trim();
+                statistics.trim(true);
             }
             fileSet.setStatistics(statisticsList);
             listener.success(statisticsList);
@@ -148,5 +148,6 @@ public class AnalysisParser implements Runnable {
             statistics.recordValue(value);
         }
         statistics.recordOccurrence();
+        statistics.trim(false);
     }
 }

@@ -22,28 +22,39 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.convert.Generator;
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FieldListModel;
+import eu.europeana.sip.model.FieldMappingListModel;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
+import eu.europeana.sip.model.VariableListModel;
+import eu.europeana.sip.xml.Sanitizer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 /**
  * A Graphical interface for analysis
@@ -53,79 +64,168 @@ import java.awt.event.ActionListener;
  */
 
 public class MappingPanel extends JPanel {
+    private static final String CREATE = "Create mapping";
+    private static final String CREATE_FOR = "<html><center>Create mapping for<br><b>%s</b>";
+    private static final String CREATE_OBVIOUS_FOR = "<html><center>Create obvious mapping for<br><b>%s</b>";
+    private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
-    private JButton createMappingButton = new JButton("<html><center>Create<br>Mapping");
-    private JButton removeMappingButton = new JButton("Remove Selected Mapping");
-    private JComboBox conversionChoice = new JComboBox(Generator.MAP.keySet().toArray());
-    private JTextArea groovyCodeArea = new JTextArea();
+    private JTextField constantField = new JTextField("?");
+    private JButton createMappingButton = new JButton(String.format(CREATE_FOR, "?"));
+    private JButton removeMappingButton = new JButton("Remove the selected mapping");
     private JList variablesList, mappingList, fieldList;
 
     public MappingPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 15, 5, 15);
+        gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.BOTH;
-        // input panel
         gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 0.3;
-        gbc.weighty = 0.8;
+        gbc.weightx = gbc.weighty = 1;
         add(createInputPanel(), gbc);
-        // converter choice
-        gbc.gridy++;
-        gbc.weighty = 0.1;
-        add(createConverterChoice(), gbc);
-        // output panel
-        gbc.gridy++;
-        gbc.weighty = 0.8;
-        add(createOutputPanel(), gbc);
-        // create mapping button
         gbc.gridx++;
-        gbc.gridy = 0;
-        gbc.weightx = 0.1;
-        gbc.gridheight = 3;
-        add(createMappingButton, gbc);
-        gbc.gridheight = 1;
-        // field mapping panel
+        add(createFieldsPanel(), gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        add(createStatisticsPanel(), gbc);
         gbc.gridx++;
-        gbc.gridy = 0;
-        gbc.weightx = 0.7;
-        gbc.weighty = 0.8;
         add(createFieldMappingListPanel(), gbc);
-        // remove mapping button
-        gbc.gridy++;
-        gbc.weighty = 0.1;
-        removeMappingButton.setEnabled(false);
-        add(removeMappingButton, gbc);
-        // groovy panel
-        gbc.gridy++;
-        gbc.weighty = 0.8;
-        add(createGroovyPanel(), gbc);
         wireUp();
     }
 
+    private JPanel createInputPanel() {
+        JPanel p = new JPanel(new BorderLayout(5, 5));
+        p.add(createVariablesPanel(), BorderLayout.CENTER);
+        p.add(createConstantFieldPanel(), BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel createVariablesPanel() {
+        JPanel p = new JPanel(new BorderLayout(5, 5));
+        p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
+        variablesList = new JList(sipModel.getVariablesListWithCountsModel());
+        p.add(scroll(variablesList), BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel createConstantFieldPanel() {
+        JPanel p = new JPanel(new BorderLayout(5, 5));
+        p.setBorder(BorderFactory.createTitledBorder("Constant Value Source"));
+        p.add(constantField);
+        return p;
+    }
+
+    private JPanel createFieldsPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createTitledBorder("Unmapped Target Fields"));
+        fieldList = new JList(sipModel.getUnmappedFieldListModel());
+        fieldList.setCellRenderer(new FieldListModel.CellRenderer());
+        fieldList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        p.add(scroll(fieldList));
+        return p;
+    }
+
+    private JPanel createStatisticsPanel() {
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setPreferredSize(PREFERRED_SIZE);
+        p.setBorder(BorderFactory.createTitledBorder("Statistics"));
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
+        statsTable.getTableHeader().setReorderingAllowed(false);
+        statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
+        tablePanel.add(scroll(statsTable), BorderLayout.CENTER);
+        p.add(tablePanel, BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel createFieldMappingListPanel() {
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
+        mappingList = new JList(sipModel.getFieldMappingListModel());
+        mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mappingList.setCellRenderer(new FieldMappingListModel.CellRenderer());
+        p.add(scroll(mappingList), BorderLayout.CENTER);
+        p.add(createButtonPanel(), BorderLayout.EAST);
+        return p;
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel p = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(30, 10, 30, 10);
+        gbc.gridy = gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        createMappingButton.setEnabled(false);
+        p.add(createMappingButton, gbc);
+        gbc.gridy++;
+        removeMappingButton.setEnabled(false);
+        p.add(removeMappingButton, gbc);
+        p.setPreferredSize(new Dimension(350, 300));
+        return p;
+    }
+
+    private DefaultTableColumnModel createStatsColumnModel() {
+        DefaultTableColumnModel columnModel = new DefaultTableColumnModel();
+        columnModel.addColumn(new TableColumn(0));
+        columnModel.getColumn(0).setHeaderValue("Percent");
+        columnModel.getColumn(0).setMaxWidth(80);
+        columnModel.addColumn(new TableColumn(1));
+        columnModel.getColumn(1).setHeaderValue("Count");
+        columnModel.getColumn(1).setMaxWidth(80);
+        columnModel.addColumn(new TableColumn(2));
+        columnModel.getColumn(2).setHeaderValue("Value");
+        return columnModel;
+    }
+
+    private JScrollPane scroll(JComponent content) {
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setPreferredSize(new Dimension(400, 400));
+        return scroll;
+    }
+
     private void wireUp() {
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+            @Override
+            public void templateApplied() {
+            }
+
+            @Override
+            public void updatedFileSet(FileSet fileSet) {
+                variablesList.clearSelection();
+                fieldList.clearSelection();
+                mappingList.clearSelection();
+                prepareCreateMappingButton();
+            }
+
+            @Override
+            public void updatedRecordRoot(RecordRoot recordRoot) {
+            }
+
+            @Override
+            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            }
+        });
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FieldMapping fieldMapping = new FieldMapping(conversionChoice.getSelectedItem().toString());
-                for (Object variable : variablesList.getSelectedValues()) {
-                    fieldMapping.addFromVariable((String) variable);
-                }
-                for (Object field : fieldList.getSelectedValues()) {
-                    fieldMapping.addToField(((EuropeanaField) field).getFieldNameString());
-                }
-                fieldMapping.generateCode();
-                sipModel.addFieldMapping(fieldMapping);
+                addFieldMapping();
+                variablesList.clearSelection();
+                fieldList.clearSelection();
                 mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
+                prepareCreateMappingButton();
             }
         });
+        removeMappingButton.setEnabled(false);
         removeMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
                     sipModel.removeFieldMapping(fieldMapping);
+                    prepareCreateMappingButton();
                 }
             }
         });
@@ -134,65 +234,177 @@ public class MappingPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
-                    groovyCodeArea.setText(fieldMapping.getCodeForDisplay());
                     removeMappingButton.setEnabled(true);
                 }
                 else {
-                    groovyCodeArea.setText("");
                     removeMappingButton.setEnabled(false);
                 }
             }
         });
+        constantField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                variablesList.clearSelection();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+            }
+        });
+        variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                AnalysisTree.Node node = (AnalysisTree.Node) variablesList.getSelectedValue();
+                sipModel.selectNode(node);
+                constantField.setText("?");
+            }
+        });
+        fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                prepareCreateMappingButton();
+            }
+        });
     }
 
-    private JPanel createInputPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unmapped Variables"));
-        variablesList = new JList(sipModel.getUnmappedVariablesListModel());
-        JScrollPane scroll = new JScrollPane(variablesList);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p.add(scroll);
-        return p;
+    private void prepareCreateMappingButton() {
+        String fieldName = null;
+        boolean obvious = false;
+        EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
+        if (field != null) {
+            fieldName = field.getFieldNameString();
+        }
+        else {
+            field = getObviousMappingField();
+            if (field != null) {
+                fieldName = field.getFieldNameString();
+                obvious = true;
+            }
+        }
+        if (fieldName != null) {
+            createMappingButton.setText(String.format(obvious ? CREATE_OBVIOUS_FOR : CREATE_FOR, field.getFieldNameString()));
+            createMappingButton.setEnabled(true);
+        }
+        else {
+            createMappingButton.setText(CREATE);
+            createMappingButton.setEnabled(false);
+        }
     }
 
-    private JPanel createOutputPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unmapped Fields"));
-        fieldList = new JList(sipModel.getUnmappedFieldListModel());
-        fieldList.setCellRenderer(new FieldListModel.CellRenderer());
-        JScrollPane scroll = new JScrollPane(fieldList);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p.add(scroll);
-        return p;
+    private void addFieldMapping() {
+        EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
+        if (field != null) {
+            FieldMapping fresh = new FieldMapping(field);
+            if (field.europeana().constant()) {
+                fresh.addCodeLine(String.format(
+                        "%s.%s %s",
+                        field.getPrefix(),
+                        field.getLocalName(),
+                        field.getFieldNameString()
+                ));
+            }
+            else {
+                Object[] selected = variablesList.getSelectedValues();
+                if (selected.length == 0) {
+                    fresh.addCodeLine(String.format(
+                            "%s.%s '%s'",
+                            field.getPrefix(),
+                            field.getLocalName(),
+                            constantField.getText()
+                    ));
+                }
+                else {
+                    for (Object variableHolderObject : variablesList.getSelectedValues()) {
+                        VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) variableHolderObject;
+                        generateCopyCode(fresh.getEuropeanaField(), variableHolder.getNode(), fresh);
+                    }
+                }
+            }
+
+
+            sipModel.addFieldMapping(fresh);
+        }
+        else {
+            FieldMapping obviousMapping = createObviousMapping();
+            if (obviousMapping != null) {
+                sipModel.addFieldMapping(obviousMapping);
+            }
+        }
     }
 
-    private JPanel createFieldMappingListPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
-        mappingList = new JList(sipModel.getFieldMappingListModel());
-        mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scroll = new JScrollPane(mappingList);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p.add(scroll);
-        return p;
+    private FieldMapping createObviousMapping() {
+        EuropeanaField field = getObviousMappingField();
+        if (field != null) {
+            FieldMapping obvious = new FieldMapping(field);
+            if (field.europeana().constant()) {
+                obvious.addCodeLine(String.format(
+                        "%s.%s %s",
+                        field.getPrefix(),
+                        field.getLocalName(),
+                        field.getFieldNameString()
+                ));
+            }
+            else {
+                for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
+                    VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
+                    String variableName = Sanitizer.tag2variable(variableHolder.getVariableName());
+                    if (variableName.equals(field.getFieldNameString())) {
+                        generateCopyCode(field, variableHolder.getNode(), obvious);
+                    }
+                }
+            }
+            if (!obvious.isEmpty()) {
+                return obvious;
+            }
+        }
+        return null;
     }
 
-    private JPanel createConverterChoice() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(new JLabel("Converter:", JLabel.RIGHT), BorderLayout.WEST);
-        p.add(conversionChoice, BorderLayout.CENTER);
-        return p;
+    private EuropeanaField getObviousMappingField() {
+        for (int walkField = 0; walkField < sipModel.getUnmappedFieldListModel().getSize(); walkField++) {
+            EuropeanaField field = (EuropeanaField) sipModel.getUnmappedFieldListModel().getElementAt(walkField);
+            if (field.europeana().constant()) {
+                return field;
+            }
+            for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
+                VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
+                String nodeName = Sanitizer.tag2variable(variableHolder.getVariableName());
+                if (nodeName.equals(field.getFieldNameString())) {
+                    return field;
+                }
+            }
+        }
+        return null;
     }
 
-    private JPanel createGroovyPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        groovyCodeArea.setEditable(false);
-        JScrollPane scroll = new JScrollPane(groovyCodeArea);
-        p.add(scroll);
-        return p;
+    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, FieldMapping fieldMapping) {
+        if (field.solr().multivalued()) {
+            fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
+            if (field.europeana().converter().isEmpty()) {
+                fieldMapping.addCodeLine(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+            }
+            else if (field.europeana().converterMultipleOutput()) {
+                fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", field.europeana().converter()));
+                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
+                fieldMapping.addCodeLine("}");
+            }
+            else {
+                fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+            }
+            fieldMapping.addCodeLine("}");
+        }
+        else {
+            if (field.europeana().converter().isEmpty()) {
+                fieldMapping.addCodeLine(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
+            }
+            else if (field.europeana().converterMultipleOutput()) {
+                fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", field.europeana().converter(), node.getVariableName()));
+                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
+                fieldMapping.addCodeLine("}");
+            }
+            else {
+                fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
+            }
+        }
     }
 }

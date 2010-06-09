@@ -26,6 +26,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static eu.europeana.definitions.annotations.FieldCategory.ESE;
+
 /**
  * This is the annotation which describes the europeana aspects of a
  * field in one of the beans being used.
@@ -38,13 +40,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Europeana {
 
-    /**
-     * Is this field one of the facets?
-     *
-     * @return true if it is to be a facet
-     */
-
-    boolean facet() default false;
+    public enum NO_ENUM {
+    }
 
     /**
      * A prefix for a facet, must be unique
@@ -103,14 +100,12 @@ public @interface Europeana {
     boolean type() default false;
 
     /**
-     * Is this field mappable (Source Field to Europeana Field). The are quite a few fields that are created through
-     * Solr copyfields and are therefore not directly mappable during the mapping face.
-     *
-     * Note: CopyFields can never be mappable
+     * Is this field required?
      *
      * @return true if it is
      */
-    boolean mappable() default false;
+
+    boolean required() default false;
 
     /**
      * There are some fields that are added by the Europeana System during the IngestionPhase based on meta-information
@@ -126,10 +121,10 @@ public @interface Europeana {
      * @return true if it is
      */
 
-    boolean importAddition() default false;
+    boolean constant() default false; // todo: make it generate the fields on the analysis
 
     /**
-     *  The annotated fields can be valid at different levels in the application. The ValidationLevel will be used to
+     *  The annotated fields can be valid at different levels in the application. The FieldCategory will be used to
      * create a Data Model Validator to be used at various stages of ingestion.
      *
      * The validator should also be used in the Sip-Creator and could be used in external applications.
@@ -137,5 +132,46 @@ public @interface Europeana {
      * @return the validation level of a certain field
      */
 
-    ValidationLevel validation() default ValidationLevel.ESE_OPTIONAL;
+    FieldCategory category() default ESE;
+
+    /**
+     * The converter is the name of the groovy method in ToolCode.groovy which is to be applied to the
+     * values of this field when it is normalized.
+     *
+     * @return the name of the converter method in ToolCode.groovy
+     */
+
+    String converter() default "";
+
+    /**
+     * Flag whether the converter is producing an array of results rather than just one result.
+     * This will affect the generated code.
+     *
+     * @return true if an array is returned
+     */
+    
+    boolean converterMultipleOutput() default false;
+
+    /**
+     * Is this a URL?
+     *
+     * @return true if it must be
+     */
+
+    boolean url() default false;
+
+    /**
+     * The regular expression which must match the content of this field
+     * @return a regular expression string
+     */
+
+    String regularExpression() default ""; // todo: use it in validation
+
+    /**
+     * Fetch the enum class to which this field's value must belong
+     *
+     * @return an enum class
+     */
+
+    Class<? extends Enum> enumClass() default NO_ENUM.class; // todo: use in validation
 }

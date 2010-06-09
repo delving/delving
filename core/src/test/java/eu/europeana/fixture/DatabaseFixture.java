@@ -82,6 +82,14 @@ public class DatabaseFixture {
         europeanaId.getSocialTags().size();
         return europeanaId;
     }
+    
+    @Transactional
+    public EuropeanaId fetchEuropeanaIdByUri(String europeanaUri) {
+        entityManager.clear();
+    	Query query = entityManager.createQuery("select e from EuropeanaId e where e.europeanaUri = :europeanaUri");
+        query.setParameter("europeanaUri", europeanaUri);
+        return (EuropeanaId) query.getSingleResult();
+    }
 
     @Transactional
     public List<SavedItem> createSavedItems(String name, int count, List<EuropeanaId> europeanaIds, List<User> users) {
@@ -181,8 +189,11 @@ public class DatabaseFixture {
 
     }
 
-
     public void flush() {
         entityManager.flush();
+    }
+    
+    public void clear() {
+        entityManager.clear();
     }
 }

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from models import TranslatePage
+from models import TranslatePage, MediaFile, Language
 
 
 
@@ -20,5 +20,9 @@ class TranslatePageAdmin(admin.ModelAdmin):
     list_display = ('file_name', 'active')
     actions = [make_active, make_inactive]
 
-
 admin.site.register(TranslatePage, TranslatePageAdmin)
+
+
+admin.site.register(MediaFile)
+
+admin.site.register(Language)

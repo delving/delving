@@ -23,6 +23,7 @@ package eu.europeana.sip.model;
 
 import org.apache.log4j.Logger;
 
+import javax.swing.SwingUtilities;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -37,8 +38,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +52,7 @@ import java.util.Set;
  */
 
 public class RecentFileSets {
+    private static final int MAX_RECENT = 40;
     private final Logger LOG = Logger.getLogger(getClass());
     private File listFile;
     private List<FileSetImpl> recent = new ArrayList<FileSetImpl>();
@@ -68,6 +70,7 @@ public class RecentFileSets {
     }
 
     public FileSet select(File inputFile) {
+        checkWorkerThread();
         FileSetImpl fileSet = removeFileSet(inputFile);
         if (fileSet != null) {
             recent.add(0, fileSet);
@@ -85,12 +88,25 @@ public class RecentFileSets {
         return fileSet;
     }
 
+    public void setMostRecent(FileSet fileSet) {
+        FileSetImpl fileSetImpl = (FileSetImpl)fileSet;
+        recent.remove(fileSetImpl);
+        recent.add(0, fileSetImpl);
+        try {
+            saveList();
+        }
+        catch (IOException e) {
+            LOG.warn("Unable to save recent files list", e);
+        }
+    }
+
     private FileSetImpl removeFileSet(File inputFile) {
+        checkWorkerThread();
         Iterator<FileSetImpl> walk = recent.iterator();
         FileSetImpl fileSet = null;
         while (walk.hasNext()) {
             FileSetImpl next = walk.next();
-            if (next.getName().equals(inputFile.getName())) {
+            if (next.getAbsolutePath().equals(inputFile.getAbsolutePath())) {
                 fileSet = next;
                 walk.remove();
             }
@@ -99,6 +115,7 @@ public class RecentFileSets {
     }
 
     public void remove(FileSet fileSet) {
+        checkWorkerThread();
         Iterator<FileSetImpl> walk = recent.iterator();
         while (walk.hasNext()) {
             FileSetImpl next = walk.next();
@@ -118,12 +135,53 @@ public class RecentFileSets {
         return recent;
     }
 
-    public Set<File> getDirectories() {
+    public File getCommonDirectory() {
         Set<File> directories = new HashSet<File>();
-        for (FileSet set : recent) {
-            directories.add(set.getDirectory());
+        for (FileSet fileSet : recent) {
+            directories.add(fileSet.getDirectory());
         }
+        File highest = null;
+        for (File directory : directories) {
+            if (highest == null) {
+                highest = directory;
+            }
+            else {
+                highest = getDeepestCommonDirectory(highest, directory);
+            }
+        }
+        return highest;
+    }
+
+    public List<File> getCommonDirectories() {
+        Set<File> uniqueDirectories = new HashSet<File>();
+        for (int walkA = 0; walkA < recent.size(); walkA++) {
+            FileSet fsA = recent.get(walkA);
+            for (int walkB = walkA+1; walkB < recent.size(); walkB++) {
+                FileSet fsB = recent.get(walkB);
+                uniqueDirectories.add(getDeepestCommonDirectory(fsA.getDirectory(), fsB.getDirectory()));
+            }
+        }
+        List<File> directories = new ArrayList<File>(uniqueDirectories);
+        Collections.sort(directories);
         return directories;
+    }
+
+    private File getDeepestCommonDirectory(File a, File b) {
+        while (!a.equals(b)) {
+            String pathA = a.getAbsolutePath();
+            String pathB = b.getAbsolutePath();
+            if (pathA.length() > pathB.length()) {
+                a = a.getParentFile();
+            }
+            else if (pathB.length() > pathA.length()) {
+                b = b.getParentFile();
+            }
+            else {
+                a = a.getParentFile();
+                b = b.getParentFile();
+            }
+        }
+        return a; // or b
     }
 
     private void loadList() throws IOException {
@@ -135,32 +193,33 @@ public class RecentFileSets {
     }
 
     private void saveList() throws IOException {
+        checkWorkerThread();
         FileWriter out = new FileWriter(listFile);
+        int count = 0;
         for (FileSetImpl set : recent) {
             out.write(set.getAbsolutePath());
             out.write('\n');
+            if (count++ == MAX_RECENT) {
+                break;
+            }
         }
         out.close();
     }
 
     private class FileSetImpl implements FileSet {
-        private File inputFile, statisticsFile, mappingFile, recordRootFile, outputFile;
-        private ExceptionHandler exceptionHandler;
+        private File inputFile, statisticsFile, mappingFile, outputFile;
+        private UserNotifier userNotifier;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
             this.statisticsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".statistics");
             this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
-            this.recordRootFile = new File(inputFile.getParentFile(), inputFile.getName() + ".record");
             this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
-            if (outputFile.exists()) {
-                outputFile.delete();
-            }
         }
 
         @Override
-        public void setExceptionHandler(ExceptionHandler handler) {
-            this.exceptionHandler = handler;
+        public void setExceptionHandler(UserNotifier handler) {
+            this.userNotifier = handler;
         }
 
         @Override
@@ -169,20 +228,13 @@ public class RecentFileSets {
         }
 
         @Override
-        public boolean isValid() {
-            return inputFile.exists();
+        public String getAbsolutePath() {
+            return inputFile.getAbsolutePath();
         }
 
         @Override
-        public void setMostRecent() {
-            recent.remove(this);
-            recent.add(0, this);
-            try {
-                saveList();
-            }
-            catch (IOException e) {
-                LOG.warn("Unable to save recent files list", e);
-            }
+        public boolean isValid() {
+            return inputFile.exists();
         }
 
         @Override
@@ -203,29 +255,45 @@ public class RecentFileSets {
 
         @Override
         public InputStream getInputStream() {
+            checkWorkerThread();
             try {
                 return new FileInputStream(inputFile);
             }
             catch (FileNotFoundException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to open input file", e);
             }
             return null;
         }
 
         @Override
         public OutputStream getOutputStream() {
+            checkWorkerThread();
             try {
                 return new FileOutputStream(outputFile, true);
             }
             catch (FileNotFoundException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to open output file "+outputFile.getAbsolutePath(), e);
             }
             return null;
         }
 
         @Override
+        public boolean hasOutputFile() {
+            return outputFile.exists();
+        }
+
+        @Override
+        public void removeOutputFile() {
+            checkWorkerThread();
+            if (!outputFile.delete()) {
+                LOG.warn("Unable to delete "+outputFile);
+            }
+        }
+
+        @Override
         @SuppressWarnings("unchecked")
         public List<Statistics> getStatistics() {
+            checkWorkerThread();
             if (statisticsFile.exists()) {
                 try {
                     ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(statisticsFile)));
@@ -234,7 +302,10 @@ public class RecentFileSets {
                     return statisticsList;
                 }
                 catch (Exception e) {
-                    exceptionHandler.failure(e);
+                    userNotifier.tellUser("Unable to read statistics, please re-analyze", e);
+                    if (statisticsFile.delete()) {
+                        LOG.warn("Cannot delete statistics file");
+                    }
                 }
             }
             return null;
@@ -242,18 +313,20 @@ public class RecentFileSets {
 
         @Override
         public void setStatistics(List<Statistics> statisticsList) {
+            checkWorkerThread();
             try {
                 ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(statisticsFile)));
                 out.writeObject(statisticsList);
                 out.close();
             }
             catch (IOException e) {
-                exceptionHandler.failure(e);
+                userNotifier.tellUser("Unable to save statistics file", e);
             }
         }
 
         @Override
         public String getMapping() {
+            checkWorkerThread();
             if (mappingFile.exists()) {
                 try {
                     BufferedReader in = new BufferedReader(new FileReader(mappingFile));
@@ -266,7 +339,7 @@ public class RecentFileSets {
                     return mapping.toString();
                 }
                 catch (IOException e) {
-                    exceptionHandler.failure(e);
+                    userNotifier.tellUser("Unable to read mapping file", e);
                 }
             }
             return "";
@@ -274,60 +347,25 @@ public class RecentFileSets {
 
         @Override
         public void setMapping(String mapping) {
+            checkWorkerThread();
             try {
                 FileWriter out = new FileWriter(mappingFile);
                 out.write(mapping);
                 out.close();
             }
             catch (IOException e) {
-                exceptionHandler.failure(e);
-            }
-        }
-
-        @Override
-        public RecordRoot getRecordRoot() {
-            if (recordRootFile.exists()) {
-                StringBuilder contents = new StringBuilder();
-                try {
-                    BufferedReader in = new BufferedReader(new FileReader(recordRootFile));
-                    int ch;
-                    while ((ch = in.read()) >= 0) {
-                        contents.append((char) ch);
-                    }
-                    in.close();
-                    return new RecordRoot(contents.toString());
-                }
-                catch (IOException e) {
-                    recordRootFile.delete();
-                    exceptionHandler.failure(e);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public void setRecordRoot(RecordRoot recordRoot) {
-            if (recordRoot == null) {
-                recordRootFile.delete();
-            }
-            else {
-                try {
-                    Writer out = new FileWriter(recordRootFile);
-                    out.write(recordRoot.toString());
-                    out.close();
-                }
-                catch (IOException e) {
-                    exceptionHandler.failure(e);
-                }
+                userNotifier.tellUser("Unable to save mapping file", e);
             }
         }
 
         public String toString() {
             return getName();
         }
+    }
 
-        public String getAbsolutePath() {
-            return inputFile.getAbsolutePath();
+    private static void checkWorkerThread() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Expected Worker thread");
         }
     }
 }

@@ -34,13 +34,13 @@ import java.util.List;
 
 public interface FileSet {
 
-    void setExceptionHandler(ExceptionHandler handler);
+    void setExceptionHandler(UserNotifier handler);
 
     String getName();
 
-    boolean isValid();
+    String getAbsolutePath();
 
-    void setMostRecent();
+    boolean isValid();
 
     void remove();
 
@@ -50,6 +50,10 @@ public interface FileSet {
 
     OutputStream getOutputStream();
 
+    boolean hasOutputFile();
+
+    void removeOutputFile();
+
     List<Statistics> getStatistics();
 
     void setStatistics(List<Statistics> statisticsList);
@@ -57,9 +61,5 @@ public interface FileSet {
     String getMapping();
 
     void setMapping(String mapping);
-
-    RecordRoot getRecordRoot();
-
-    void setRecordRoot(RecordRoot recordRoot);
 
 }

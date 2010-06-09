@@ -47,8 +47,20 @@ IMPORT_SCAN_TREE = '/Users/jaclu/tmp/ingestion'
 # tree, files with extention .xml found in a directory named output_xml will be
 # parsed.
 # If this is False, any .xml file found will be parsed
-TREE_IS_INGESTION_SVN = True
+# if not set the default will be printed and used
+#TREE_IS_INGESTION_SVN =
 
+
+# Mostly a temporary setting, if this is True, the pre version 0.7 version
+# of hash-generation and directory naming is used
+# if False (please dont set this one unless you have some serious reason...)
+# "New" style is used, this means that below SIP_OBJ_FILES we have three subdirs
+#  each files sha256 has is uses as follows first-two/next-two/full-hash
+#  original/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895
+#  FULL_DOC/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895.jpg
+#  BRIEF_DOC/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895.jpg
+# if not set the default will be printed and used
+#OLD_STYLE_IMAGE_NAMES =
 
 
 
@@ -65,40 +77,39 @@ TREE_IS_INGESTION_SVN = True
 
 # If we allow processor to run in multithreaded
 # If set to False, all plugins are run sequentaly in a single-threded way
+# if not set the default will be printed and used
 # THREADING_PLUGINS = False/True
 
 
-# Mostly a temporary setting, if this is True, the pre version 0.7 version
-# of hash-generation and directory naming is used
-# if False (please dont set this one unless you have some serious reason...)
-# "New" style is used, this means that below SIP_OBJ_FILES we have three subdirs
-#  each files sha256 has is uses as follows first-two/next-two/full-hash
-#  original/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895
-#  FULL_DOC/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895.jpg
-#  BRIEF_DOC/01/23/012393C4FFA32E49D481A69E0F5B557B3A650343AD48083A6181A61C0DA3C895.jpg
-#OLD_STYLE_IMAGE_NAMES = True
 
 
 # how often plugins should report what is happening (seconds)
+# if not set the default will be printed and used
 #TASK_PROGRESS_INTERVALL =
 
 
 # How often we check for new tasks (seconds)
+# if not set the default will be printed and used
 #PROCESS_SLEEP_TIME =
 
 
 # Limits amount of logging output (1-9)
 # i normaly use 7 any higher value will be extreamly talkative
-#SIPMANAGER_DBG_LVL = 7
+# if not set the default will be printed and used
+#SIPMANAGER_DBG_LVL =
 
 
 # If system load is over this, new tasks wont be started
 # either a single float, or (prefered three values for 1, 5 and 15 min load)
-#MAX_LOAD_NEW_TASKS = (1.2, 1.1, 1.1)
+# if not set the default will be printed and used
+#MAX_LOAD_NEW_TASKS =
 
 # If system load is over this, tasks will be terminated
 # either a single float, or (prefered three values for 1, 5 and 15 min load)
-#MAX_LOAD_RUNNING_TASKS = (2.8, 2.7, 2.7)
+# if not set the default will be printed and used
+#MAX_LOAD_RUNNING_TASKS =
+
+
 
 
 
@@ -117,4 +128,5 @@ DEBUG = False
 
 # If given only the named plugins will be run
 #  init plugins are excluded from this check - they are always run!
+#  if not set the default will be printed and used
 #PLUGIN_FILTER = ['UriCreate',]

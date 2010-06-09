@@ -25,7 +25,6 @@
 """
 
 import os
-import subprocess
 import threading
 
 from django.conf import settings
@@ -35,6 +34,8 @@ from django.db.models.signals import post_delete
 from django.core.files.storage import FileSystemStorage
 
 
+from gen_utils.shell_cmd import cmd_execute
+
 import views
 
 
@@ -43,6 +44,7 @@ TEMPLATES_DIR = os.path.join(THIS_DIR, 'templates')
 STATIC_PAGES = 'static_pages'
 STATIC_PAGES_FULLP = os.path.join(TEMPLATES_DIR, STATIC_PAGES)
 
+MEDIA_FILE_PATH = 'sp'
 
 T_DELETE = None # timer object for delayed translate updates on multiple deletes
 
@@ -65,7 +67,6 @@ class TranslatePage(models.Model):
         update_translations()
 
 
-
 def update_translations():
     #print 'running update_translations...',
     views.update_template_list()
@@ -77,8 +78,7 @@ def update_translations():
     #print 'Done!'
 
 
-
-def post_delete_cb(sender, instance, **kwargs):
+def translate_page_post_delete_cb(sender, instance, **kwargs):
     """We use a timer to make sure we only run update_translations() once on
     multiple deletes"""
     global T_DELETE
@@ -87,39 +87,20 @@ def post_delete_cb(sender, instance, **kwargs):
     T_DELETE = threading.Timer(2.0, update_translations)
     T_DELETE.start()
 
+post_delete.connect(translate_page_post_delete_cb, sender=TranslatePage)
 
 
 
-def cmd_execute(cmd, cwd=''):
-    "Returns 0 on success, or error message on failure."
-    result = 0
-    retcode, stdout, stderr = cmd_execute_output(cmd, cwd)
-    if retcode:
-        result = 'retcode: %s' % retcode
-        if stdout:
-            result += '\nstdout: %s' % stdout
-        if stderr:
-            result += '\nstderr: %s' % stderr
-    return result
 
+class MediaFile(models.Model):
+    file_name = models.FileField(upload_to=MEDIA_FILE_PATH)
 
+    def __unicode__(self):
+        return self.file_name.name
 
-def cmd_execute_output(cmd, cwd=''):
-    "Returns retcode,stdout,stderr."
-    if isinstance(cmd, (list, tuple)):
-        cmd = ' '.join(cmd)
-    try:
-        p = subprocess.Popen(cmd, shell=True, cwd=cwd,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = p.communicate()
-        retcode = p.returncode
-    except:
-        retcode = 1
-        stdout = ''
-        stderr = 'cmd_execute() exception - shouldnt normally happen'
-    return retcode, stdout, stderr
-
-
+#
+#  Startup checks
+#
 
 def check_template_link_exists():
     "To be able to download translation pages a link must exist, create if not found."
@@ -134,6 +115,24 @@ def check_template_link_exists():
         print msg
         raise exceptions.ImproperlyConfigured(msg)
 
-
-post_delete.connect(post_delete_cb, sender=TranslatePage)
 check_template_link_exists()
+
+def checkMedia_link_exists():
+    dir_support_media = os.path.join(settings.MEDIA_ROOT, MEDIA_FILE_PATH)
+    if os.path.exists(dir_support_media):
+        return
+    print '***'
+    msg = 'support media dir is missing: %s' % dir_support_media
+    print msg
+    raise exceptions.ImproperlyConfigured(msg)
+
+checkMedia_link_exists()
+
+
+class Language(models.Model):
+    short_name = models.CharField(max_length=10)
+    visible_name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.short_name
+#ALTER TABLE `multi_lingo_language` CHANGE `visible_name` `visible_name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL

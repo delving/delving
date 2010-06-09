@@ -106,7 +106,11 @@ public class ResultController {
         BriefBeanView briefBeanView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
 
         // Create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage("brief-doc-window");
+        String template = "brief-doc-window";
+        if (format != null && format.equals("kml")) {
+            template = "brief-doc-window.kml";
+        }
+        ModelAndView page = ControllerUtil.createModelAndViewPage(template);
         page.addObject("display", format);
         page.addObject("result", briefBeanView);
         page.addObject("query", briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery());

@@ -26,6 +26,8 @@ import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.querymodel.query.FullDoc;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
+import eu.europeana.definitions.domain.Country;
+import eu.europeana.definitions.domain.Language;
 import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -34,10 +36,8 @@ import java.util.List;
 
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
-import static eu.europeana.definitions.annotations.ValidationLevel.ESE_OPTIONAL;
-import static eu.europeana.definitions.annotations.ValidationLevel.ESE_PLUS_OPTIONAL;
-import static eu.europeana.definitions.annotations.ValidationLevel.ESE_PLUS_REQUIRED;
-import static eu.europeana.definitions.annotations.ValidationLevel.ESE_REQUIRED;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -47,242 +47,242 @@ import static eu.europeana.definitions.annotations.ValidationLevel.ESE_REQUIRED;
 public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
-    @Europeana(validation = ESE_REQUIRED, type = true, mappable = true)
+    @Europeana(required = true, type = true, enumClass = DocType.class)
     @Solr(prefix = "europeana", localName = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     @Field("europeana_type")
     String europeanaType;
 
-    @Europeana(validation = ESE_PLUS_OPTIONAL)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "userTag", toCopyField = {"text", "USERTAGS"})
     @Field("europeana_userTag")
     String[] europeanaUserTag;
 
-    @Europeana(validation = ESE_PLUS_REQUIRED, importAddition = true)
+    @Europeana(category = ESE_PLUS, required = true, constant = true, enumClass = Language.class)
     @Solr(prefix = "europeana", localName = "language", fieldType = "string", toCopyField = {"text", "LANGUAGE"})
     @Field("europeana_language")
     String[] europeanaLanguage;
 
-    @Europeana(validation = ESE_PLUS_REQUIRED, importAddition = true)
+    @Europeana(category = ESE_PLUS, required = true, constant = true, enumClass = Country.class)
     @Solr(prefix = "europeana", localName = "country")
     @Field("europeana_country")
     String[] europeanaCountry;
 
     // todo find out what this field is
-    @Europeana(validation = ESE_PLUS_OPTIONAL)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "source")
     @Field("europeana_source")
     String[] europeanaSource;
 
-    @Europeana(validation = ESE_REQUIRED, mappable = true)
+    @Europeana(required = true, url = true)
     @Solr(prefix = "europeana", localName = "isShownAt", fieldType = "string", toCopyField = {"text"})
     @Field("europeana_isShownAt")
     String[] europeanaisShownAt;
 
-    @Europeana(validation = ESE_REQUIRED, mappable = true)
+    @Europeana(required = true, url = true)
     @Solr(prefix = "europeana", localName = "isShownBy", fieldType = "string", toCopyField = {"text"})
     @Field("europeana_isShownBy")
     String[] europeanaisShownBy;
 
-    @Europeana(validation = ESE_PLUS_OPTIONAL, importAddition = true)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     @Field("europeana_year")
     String[] europeanaYear;
 
-    @Europeana(validation = ESE_PLUS_OPTIONAL, importAddition = true)
+    @Europeana(category = ESE_PLUS)
     @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
     @Field("europeana_hasObject")
     boolean europeanahasObject;
 
-    @Europeana(validation = ESE_PLUS_REQUIRED, importAddition = true)
+    @Europeana(category = ESE_PLUS, required = true, constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"})
     @Field("europeana_provider")
     String[] europeanaProvider;
 
 
     // Dublin Core / ESE fields
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "coverage", toCopyField = {"text", "what", "subject"})
     @Field("dc_coverage")
     String[] dcCoverage;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "contributor", toCopyField = {"text", "who", "creator"})
     @Field("dc_contributor")
     String[] dcContributor;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "description", toCopyField = {"text", "description"})
     @Field("dc_description")
     String[] dcDescription;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "creator", toCopyField = {"text", "who", "creator"})
     @Field("dc_creator")
     String[] dcCreator;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana(category = ESE, converter="extractYear")
     @Solr(prefix = "dc", localName = "date", toCopyField = {"text", "when", "date"})
     @Field("dc_date")
     String[] dcDate;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "format", toCopyField = {"text"})
     @Field("dc_format")
     String[] dcFormat;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "identifier", toCopyField = {"text", "identifier"})
     @Field("dc_identifier")
     String[] dcIdentifier;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "language", toCopyField = {"text"})
     @Field("dc_language")
     String[] dcLanguage;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "publisher", toCopyField = {"text"})
     @Field("dc_publisher")
     String[] dcPublisher;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "relation", toCopyField = {"text", "relation"})
     @Field("dc_relation")
     String[] dcRelation;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "rights", toCopyField = {"text"})
     @Field("dc_rights")
     String[] dcRights;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "source", toCopyField = {"text"})
     @Field("dc_source")
     String[] dcSource;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "subject", toCopyField = {"text", "what", "subject"})
     @Field("dc_subject")
     String[] dcSubject;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "title", toCopyField = {"text"})
     @Field("dc_title")
     String[] dcTitle;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dc", localName = "type", toCopyField = {"text"})
     @Field("dc_type")
     String[] dcType;
 
 
     // Dublin Core Terms extended / ESE fields
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "alternative", toCopyField = {"text"})
     @Field("dcterms_alternative")
     String[] dctermsAlternative;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "created", toCopyField = {"text", "when", "date"})
     @Field("dcterms_created")
     String[] dctermsCreated;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "conformsTo", toCopyField = {"text"})
     @Field("dcterms_conformsTo")
     String[] dctermsConformsTo;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "extent", toCopyField = {"text", "format"})
     @Field("dcterms_extent")
     String[] dctermsExtent;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "hasFormat", toCopyField = {"text", "relation"})
     @Field("dcterms_hasFormat")
     String[] dctermsHasFormat;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "hasPart", toCopyField = {"text", "relation"})
     @Field("dcterms_hasPart")
     String[] dctermsHasPart;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "hasVersion", toCopyField = {"text", "relation"})
     @Field("dcterms_hasVersion")
     String[] dctermsHasVersion;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isFormatOf", toCopyField = {"text"})
     @Field("dcterms_isFormatOf")
     String[] dctermsIsFormatOf;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isPartOf", toCopyField = {"text"})
     @Field("dcterms_isPartOf")
     String[] dctermsIsPartOf;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isReferencedBy", toCopyField = {"text", "relation"})
     @Field("dcterms_isReferencedBy")
     String[] dctermsIsReferencedBy;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isReplacedBy", toCopyField = {"text", "relation"})
     @Field("dcterms_isReplacedBy")
     String[] dctermsIsReplacedBy;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isRequiredBy", toCopyField = {"text", "relation"})
     @Field("dcterms_isRequiredBy")
     String[] dctermsIsRequiredBy;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "issued", toCopyField = {"text", "date"})
     @Field("dcterms_issued")
     String[] dctermsIssued;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "isVersionOf", toCopyField = {"text"})
     @Field("dcterms_isVersionOf")
     String[] dctermsIsVersionOf;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "medium", toCopyField = {"text", "format"})
     @Field("dcterms_medium")
     String[] dctermsMedium;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "provenance", toCopyField = {"text"})
     @Field("dcterms_provenance")
     String[] dctermsProvenance;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "references", toCopyField = {"text"})
     @Field("dcterms_references")
     String[] dctermsReferences;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "replaces", toCopyField = {"text", "relation"})
     @Field("dcterms_replaces")
     String[] dctermsReplaces;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "requires", toCopyField = {"text", "relation"})
     @Field("dcterms_requires")
     String[] dctermsRequires;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "spatial", toCopyField = {"text", "where", "location", "subject"})
     @Field("dcterms_spatial")
     String[] dctermsSpatial;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "tableOfContents", toCopyField = {"text", "description"})
     @Field("dcterms_tableOfContents")
     String[] dctermsTableOfContents;
 
-    @Europeana(validation = ESE_OPTIONAL, mappable = true)
+    @Europeana
     @Solr(prefix = "dcterms", localName = "temporal", toCopyField = {"text", "what", "subject"})
     @Field("dcterms_temporal")
     String[] dctermsTemporal;

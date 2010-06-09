@@ -72,7 +72,7 @@ import sys
 import time
 import urllib2
 import urlparse
-#from xml.dom.minidom import parseString
+from xml.sax.saxutils import unescape as unescapeXml
 
 
 # sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
@@ -160,17 +160,21 @@ class UriPepareStorageDirs(sip_task.SipTask):
 
     def run_it(self):
         if OLD_STYLE_IMAGE_NAMES:
-            places = (REL_DIR_ORIGINAL, REL_DIR_BRIEF)
-            tst_dir = '6EA'
+            places = ((REL_DIR_ORIGINAL, False), (REL_DIR_BRIEF, True))
         else:
-            places = (REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF)
-            tst_dir = '12/32'
+            places = ((REL_DIR_ORIGINAL, False),
+                      (REL_DIR_FULL, False), (REL_DIR_BRIEF, False))
 
-        for s in places:
+        for s, old_style in places:
+            if old_style:
+                tst_dir = '6EA' # just test something random for existance
+            else:
+                tst_dir = '12/32'  # just test something random for existance
+
             test_dir = os.path.join(SIP_OBJ_FILES, s, tst_dir)
             if not os.path.exists(test_dir):
                 self.task_starting('Creating dirs for %s' % s, 256)
-                if OLD_STYLE_IMAGE_NAMES:
+                if old_style:
                     self.pre_generate_uri_trees_old_style(s)
                 else:
                     self.pre_generate_uri_trees(s)
@@ -308,7 +312,7 @@ class UriCreate(sip_task.SipTask):
         parts = source_data.split(tag)
         if len(parts) == 1:
             return None
-        url = parts[1].split('<')[0]
+        url = unescapeXml(parts[1].split('<')[0])
         return url
 
 
@@ -320,7 +324,6 @@ class UriValidateSave(sip_task.SipTask):
     PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
-
         urisources = models.UriSource.objects.filter(pid=0).values('pk')
         if not urisources:
             return False
@@ -453,8 +456,16 @@ class UriValidateSave(sip_task.SipTask):
             try:
                 content_length = int(itm.headers[HTTPH_CONT_LENGTH])
             except:
-                return self.set_urierr(models.URIE_OTHER_ERROR,
-                                       'Failed to read %s' % HTTPH_CONT_LENGTH)
+                # previously we aborted, if content lenght couldnt be read
+                # this proved to be to restrictive, now we just log a warning
+                # and accept the item
+                el = log.ErrLog(err_code=log.LOGE_WEB_SERV_RESP,
+                                msg = 'Failed to read %s' % HTTPH_CONT_LENGTH,
+                                item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                                plugin_module = self.__class__.__module__,
+                                plugin_name = self.__class__.__name__)
+                el.save()
+                content_length = 0
         try:
             data = itm.read()
         except:
@@ -463,17 +474,16 @@ class UriValidateSave(sip_task.SipTask):
 
         if content_length and (len(data) != content_length):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
-                                   'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
+                                   'Wrong filesize, expected: %i recieved: %i' % (
+                                       content_length, len(data)))
 
-        self.uri.url_hash = calculate_hash(self.uri.url)
         self.uri.content_hash = calculate_hash(data)
 
-        if OLD_STYLE_IMAGE_NAMES:
-            base_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
-        else:
-            base_fname = self.file_name_from_hash(self.uri.url_hash)
-        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
-        #self.make_needed_dirs(org_fname)
+        #
+        #  Store original
+        #
+        org_rel = self.file_name_from_hash(self.uri.content_hash)
+        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, org_rel)
         try:
             fp = open(org_fname, 'w')
             fp.write(data)
@@ -487,24 +497,28 @@ class UriValidateSave(sip_task.SipTask):
         # Identify & store actual filetyp
         retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
         if retcode:
-            msg = 'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
+            msg = u'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
             return self.set_urierr(models.URIE_OTHER_ERROR,
                                    'Failed to identify file type\n%s' % msg)
         f_type = stdout.split(org_fname)[-1].strip()
         if f_type[0] == ':':
             f_type = f_type[1:].strip()
-        self.uri.file_type = f_type
-
-
+        self.uri.file_type = f_type[:149]
         if f_type.lower().find('html') > -1:
-            # mime_type was image, content was webpage...
-            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR)
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR,
+                                   'mime_type image, content html')
 
+
+        self.uri.url_hash = calculate_hash(self.uri.url)
+        if OLD_STYLE_IMAGE_NAMES:
+            thumb_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
+        else:
+            thumb_fname = self.file_name_from_hash(self.uri.url_hash)
 
         if USE_IMAGE_MAGIC:
-            return self.generate_images_magic(base_fname, org_fname)
+            return self.generate_images_magic(thumb_fname, org_fname)
         else:
-            return self.generate_images_pil(base_fname, org_fname)
+            return self.generate_images_pil(thumb_fname, org_fname)
 
 
     def file_name_from_hash(self, url_hash):
@@ -586,7 +600,7 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to generate FULL_DOC\ncmd output %s%s' % (stdout,stderr))
         if stdout or stderr:
             el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
-                            msg = 'FULL_DOC %s %s' % (stdout, stderr),
+                            msg = u'FULL_DOC %s %s' % (stdout, stderr),
                             item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
                             plugin_module = self.__class__.__module__,
                             plugin_name = self.__class__.__name__)
@@ -611,7 +625,7 @@ class UriValidateSave(sip_task.SipTask):
                                    'Failed to generate BRIEF_DOC\ncmd output %s%s' % (stdout,stderr))
         if stdout or stderr:
             el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
-                            msg = 'BRIEF_DOC %s %s' % (stdout, stderr),
+                            msg = u'BRIEF_DOC %s %s' % (stdout, stderr),
                             item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
                             plugin_module = self.__class__.__module__,
                             plugin_name = self.__class__.__name__)

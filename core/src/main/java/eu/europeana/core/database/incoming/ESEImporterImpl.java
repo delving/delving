@@ -327,13 +327,13 @@ public class ESEImporterImpl implements ESEImporter {
                             EuropeanaField field = getEuropeanaField(xml.getPrefix(), xml.getLocalName(), recordCount);
 //                            String language = fetchLanguage(xml);
                             String text = xml.getElementText();
-                            if (field.isEuropeanaUri()) {
+                            if (field.europeana().id()) {
                                 europeanaId.setEuropeanaUri(text);
                             }
-                            else if (field.isEuropeanaObject()) {
+                            else if (field.europeana().object()) {
                                 objectCount++;
                             }
-                            else if (field.isEuropeanaType()) {
+                            else if (field.europeana().type()) {
                                 DocType.get(text); // checking if it matches one of them
                                 SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                 if (objectField != null) {

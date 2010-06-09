@@ -28,8 +28,9 @@
 import urllib
 
 from django.db.models import Q
-from django.shortcuts import render_to_response, get_object_or_404
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render_to_response, get_object_or_404
 from apps.dummy_ingester.models import Request
 
 #from datagrids import UriSourcesDataGrid
@@ -80,8 +81,10 @@ def dg1(request, template_name='plug_uris/datagrid1.html'):
     return UriSourcesDataGrid(request).render_to_response(template_name)
 
 def statistics(request):
-    return render_to_response("plug_uris/statistics.html", {
-        'summary': uri_summary(),})
+    return render_to_response("plug_uris/statistics.html",
+                              {
+                                  'summary': uri_summary(),},
+                              )
 
 def stats_req_lst(request):
     lst = []
@@ -105,8 +108,10 @@ def stats_req_lst(request):
                     'ratio': s_calc_ratio(itm_ok, img_count),
                     })
 
-    return render_to_response("plug_uris/stats_all_requests.html", {
-        'requests': lst,})
+    return render_to_response("plug_uris/stats_all_requests.html",
+                              {
+                                  'requests': lst,},
+                              )
 
 
 def stats_by_req(request, sreq_id=0):
@@ -180,7 +185,8 @@ def stats_by_req(request, sreq_id=0):
                                       'waiting': tot_waiting,
                                       'good': tot_good,
                                       'bad': tot_bad,},
-                              })
+                                  },
+                              )
 
 
 def stats_by_uri(request, order_by=''):
@@ -219,9 +225,11 @@ def stats_by_uri(request, order_by=''):
                             'bad': bad,
                             'ratio': s_calc_ratio_bad(good, bad)})
 
-    return render_to_response("plug_uris/stats_uri_source.html", {
-        "uri_sources":uri_sources,
-        "summary": uri_summary(),})
+    return render_to_response("plug_uris/stats_uri_source.html",
+                              {
+                                  "uri_sources":uri_sources,
+                                  "summary": uri_summary(),},
+                              )
 
 
 def problems(request, source_id=-1):
@@ -243,9 +251,11 @@ def problems(request, source_id=-1):
             'err_code': k,
             'count': count,
         }
-    return render_to_response('plug_uris/problems.html', {
-        'urisource': urisource,
-        'problems': problems})
+    return render_to_response('plug_uris/problems.html',
+                              {
+                                  'urisource': urisource,
+                                  'problems': problems},
+                              )
 
 
 
@@ -295,7 +305,7 @@ def uri_bad_by_request(request, offset=0):
     #
     qs = models.ReqUri.objects.filter(q_selection, Q_OBJECT, Q_BAD)
     problems = []
-    for requri in qs[offset:offset+BAD_BY_REQ_PG_SIZE]:
+    for requri in qs[ offset : offset+BAD_BY_REQ_PG_SIZE ]:
         uri =models.Uri.objects.get(pk=requri.uri_id)
         problems.append({'url': uri.url,
                          'uri_id': uri.pk,
@@ -319,12 +329,45 @@ def uri_bad_by_request(request, offset=0):
                                   'last': max(0, item_count - BAD_BY_REQ_PG_SIZE),
                                   'pages': pages,
                                   'item_count': item_count,
-                              })
+                              },
+                              )
 
 
 
-def try_again(request, req_id):
-    pass
+
+@login_required
+def rescedule(request, sel=None):
+    if not sel:
+        sel = request.session['req_filter']
+    req = models.Request.objects.get(pk=sel['req_id'])
+    q_selection = Q((sel['key'], sel['value']), req=sel['req_id'])
+    qs = models.ReqUri.objects.filter(q_selection, Q_OBJECT, Q_BAD)
+    item_count = 0
+    for requri in qs:
+        uri =models.Uri.objects.get(pk=requri.uri_id)
+        uri.delete()
+        #uri.status = models.URIS_CREATED
+        #uri.mime_type = ''
+        #uri.err_code = models.URIE_NO_ERROR
+        #uri.err_msg = ''
+        #uri.save()
+        #requri.mime_type = uri.mime_type
+        #requri.err_code = uri.err_code
+        #requri.status = uri.status
+        #requri.save()
+        requri.delete()
+        item_count += 1
+
+    return render_to_response("plug_uris/bad_resceduled.html",
+                              {
+                                  'request': request,
+                                  'req': req,
+                                  'filter_label': sel['filter_label'],
+                                  'item_count': item_count,
+                                  },
+                              )
+
+
 
 
 def try_again_uri(request, uri_id):
@@ -350,7 +393,8 @@ def index(request):
     uris =  models.Uri.objects.filter(status=models.URIS_CREATED,
                                       pid=0).order_by('-uri_source')
 
-    return render_to_response('plug_uris/index.html', {'uri':uris[0]})
+    return render_to_response('plug_uris/index.html', {'uri':uris[0]},
+                              )
 
 
 

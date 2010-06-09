@@ -21,6 +21,7 @@
 
 package eu.europeana.definitions.annotations;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -30,9 +31,32 @@ import java.util.Set;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface EuropeanaBean {
+public class EuropeanaBean {
+    private Set<EuropeanaField> fields = new HashSet<EuropeanaField>();
+    private String[] fieldStrings;
 
-    Set<EuropeanaField> getFields();
+    public Set<EuropeanaField> getFields() {
+        return fields;
+    }
 
-    String[] getFieldStrings();
+    public String[] getFieldStrings() {
+        if (fieldStrings == null) {
+            fieldStrings = new String[fields.size()];
+            int index = 0;
+            for (EuropeanaField europeanaField : fields) {
+                if (!europeanaField.europeana().facetPrefix().isEmpty()) {
+                    fieldStrings[index] = europeanaField.getFacetName();
+                }
+                else {
+                    fieldStrings[index] = europeanaField.getFieldNameString();
+                }
+                index++;
+            }
+        }
+        return fieldStrings;
+    }
+
+    public void addField(EuropeanaField field) {
+        fields.add(field);
+    }
 }

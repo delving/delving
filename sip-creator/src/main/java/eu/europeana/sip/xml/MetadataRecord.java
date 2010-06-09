@@ -24,6 +24,11 @@ package eu.europeana.sip.xml;
 import eu.europeana.sip.groovy.GroovyNode;
 import eu.europeana.sip.groovy.GroovyNodeList;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Something to hold the groovy node and turn it into a string
  *
@@ -32,43 +37,89 @@ import eu.europeana.sip.groovy.GroovyNodeList;
 
 public class MetadataRecord {
     private GroovyNode rootNode;
+    private int recordNumber;
 
-    public MetadataRecord(GroovyNode rootNode) {
+    public MetadataRecord(GroovyNode rootNode, int recordNumber) {
         this.rootNode = rootNode;
+        this.recordNumber = recordNumber;
     }
 
     public GroovyNode getRootNode() {
         return rootNode;
     }
 
-    public String toString() {
-        StringBuilder recordPrinted = new StringBuilder();
-        printRecord(rootNode, recordPrinted, 0);
-        return recordPrinted.toString();
+    public int getRecordNumber() {
+        return recordNumber;
     }
 
-    private void printRecord(GroovyNode node, StringBuilder out, int depth) {
-        if (node.value() instanceof GroovyNodeList) {
-            for (int walk = 0; walk < depth; walk++) {
-                out.append(' ');
-            }
-            GroovyNodeList list = (GroovyNodeList) node.value();
-            out.append(node.name()).append("\n");
+    public List<MetadataVariable> getVariables() {
+        List<MetadataVariable> variables = new ArrayList<MetadataVariable>();
+        getVariables(rootNode, variables);
+        return variables;
+    }
+
+    private void getVariables(GroovyNode groovyNode, List<MetadataVariable> variables) {
+        if (groovyNode.value() instanceof GroovyNodeList) {
+            GroovyNodeList list = (GroovyNodeList) groovyNode.value();
             for (Object member : list) {
                 GroovyNode childNode = (GroovyNode) member;
-                printRecord(childNode, out, depth + 1);
+                getVariables(childNode, variables);
             }
         }
         else {
-            for (int walk = 0; walk < depth; walk++) {
-                out.append(' ');
+            List<GroovyNode> path = new ArrayList<GroovyNode>();
+            GroovyNode walk = groovyNode;
+            while (walk != null) {
+                path.add(walk);
+                walk = walk.parent();
             }
-            out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
+            Collections.reverse(path);
+            StringBuilder out = new StringBuilder();
+            Iterator<GroovyNode> nodeWalk = path.iterator();
+            while (nodeWalk.hasNext()) {
+                String nodeName = (String)nodeWalk.next().name();
+                out.append(nodeName);
+                if (nodeWalk.hasNext()) {
+                    out.append('.');
+                }
+            }
+            String variableName = out.toString();
+            variables.add(new MetadataVariable(variableName, (String)groovyNode.value()));
         }
     }
 
-    public static String sanitize(String name) {
-        return name.replace("-", "_");
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append("Record #").append(recordNumber).append('\n');
+        for (MetadataVariable variable : getVariables()) {
+            out.append(variable.toString()).append('\n');
+        }
+        return out.toString();
     }
 
+//    public String toString() {
+//        StringBuilder recordPrinted = new StringBuilder();
+//        printRecord(rootNode, recordPrinted, 0);
+//        return recordPrinted.toString();
+//    }
+//
+//    private void printRecord(GroovyNode node, StringBuilder out, int depth) {
+//        if (node.value() instanceof GroovyNodeList) {
+//            for (int walk = 0; walk < depth; walk++) {
+//                out.append(' ');
+//            }
+//            GroovyNodeList list = (GroovyNodeList) node.value();
+//            out.append(node.name()).append("\n");
+//            for (Object member : list) {
+//                GroovyNode childNode = (GroovyNode) member;
+//                printRecord(childNode, out, depth + 1);
+//            }
+//        }
+//        else {
+//            for (int walk = 0; walk < depth; walk++) {
+//                out.append(' ');
+//            }
+//            out.append(node.name()).append(" := ").append(node.value().toString()).append("\n");
+//        }
+//    }
 }

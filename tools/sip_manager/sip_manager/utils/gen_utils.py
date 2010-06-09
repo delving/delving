@@ -41,7 +41,7 @@ def calculate_hash(item):
       each line is separated by one \n character
       and finaly the <record> and </record> should be kept!
     """
-    r_hash = hashlib.sha256(item.upper()).hexdigest().upper()
+    r_hash = hashlib.sha256(item).hexdigest().upper()
     return r_hash
 
 
@@ -60,4 +60,12 @@ def __db_is_mysql():
         b = False
     return b
 
-db_is_mysql = __db_is_mysql()
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print 'Param should be the item that should be hashed'
+        sys.exit(1)
+    print calculate_hash(sys.argv[1])
+else:
+    db_is_mysql = __db_is_mysql()

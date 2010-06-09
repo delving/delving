@@ -63,7 +63,7 @@ public class QueryAnalyzer {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
                 else {
-                    if (annotationProcessor.getSolrFieldList().contains(field)) {
+                    if (annotationProcessor.getFieldNameList().contains(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
                     else {

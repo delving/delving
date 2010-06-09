@@ -21,17 +21,13 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.groovy.RecordMapping;
 
 import javax.swing.AbstractListModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
 import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,26 +37,27 @@ import java.util.List;
  */
 
 public class VariableListModel extends AbstractListModel {
-    private static final long serialVersionUID = 939393939;
-    private List<String> variableList = new ArrayList<String>();
+    private List<VariableHolder> variableList = new ArrayList<VariableHolder>();
+    private WithCounts withCounts;
 
-    public void setVariableList(List<String> variableList) {
+    public void setVariableList(List<AnalysisTree.Node> variableList) {
         clear();
-        this.variableList.addAll(variableList);
+        for (AnalysisTree.Node node : variableList) {
+            this.variableList.add(new VariableHolder(node));
+        }
+        Collections.sort(this.variableList);
         fireIntervalAdded(this, 0, getSize());
+        if (withCounts != null) {
+            withCounts.refresh();
+        }
     }
 
     public void clear() {
         int size = getSize();
-        this.variableList.clear();
-        fireIntervalRemoved(this, 0, size);
-    }
-
-    public ListModel createUnmapped(FieldMappingListModel fieldMappingListModel) {
-        Unmapped unmapped = new Unmapped(fieldMappingListModel.getList());
-        fieldMappingListModel.addListDataListener(unmapped);
-        this.addListDataListener(unmapped);
-        return unmapped;
+        if (size > 0) {
+            this.variableList.clear();
+            fireIntervalRemoved(this, 0, size);
+        }
     }
 
     @Override
@@ -73,63 +70,121 @@ public class VariableListModel extends AbstractListModel {
         return variableList.get(index);
     }
 
-    public static class CellRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            EuropeanaField europeanaField = (EuropeanaField) value;
-            return super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
+    public ListModel getWithCounts(RecordMapping recordMapping) {
+        if (withCounts == null) {
+            withCounts = new WithCounts(recordMapping);
+            recordMapping.addListener(withCounts);
         }
+        return withCounts;
     }
 
-    public class Unmapped extends AbstractListModel implements ListDataListener {
-        private List<FieldMapping> fieldMappingList;
-        private List<String> unmappedVariables = new ArrayList<String>();
+    public class WithCounts extends AbstractListModel implements RecordMapping.Listener {
+        private RecordMapping recordMapping;
+        private List<VariableHolder> variableHolderList = new ArrayList<VariableHolder>();
 
-        public Unmapped(List<FieldMapping> fieldMappingList) {
-            this.fieldMappingList = fieldMappingList;
+        public WithCounts(RecordMapping recordMapping) {
+            this.recordMapping = recordMapping;
+            refresh();
         }
 
         @Override
         public int getSize() {
-            return unmappedVariables.size();
+            return variableHolderList.size();
         }
 
         @Override
         public Object getElementAt(int index) {
-            return unmappedVariables.get(index);
+            return variableHolderList.get(index);
         }
 
         @Override
-        public void intervalAdded(ListDataEvent e) {
+        public void mappingAdded(FieldMapping fieldMapping) {
             refresh();
         }
 
         @Override
-        public void intervalRemoved(ListDataEvent e) {
+        public void mappingRemoved(FieldMapping fieldMapping) {
             refresh();
         }
 
         @Override
-        public void contentsChanged(ListDataEvent e) {
+        public void mappingsRefreshed(RecordMapping recordMapping) {
             refresh();
         }
 
         private void refresh() {
             int sizeBefore = getSize();
-            unmappedVariables.clear();
+            variableHolderList.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            nextVariable:
-            for (String variable : variableList) {
-                for (FieldMapping fieldMapping : fieldMappingList) {
-                    for (String mappedVariable : fieldMapping.getFromVariables()) {
-                        if (mappedVariable.equals(variable)) {
-                            continue nextVariable;
-                        }
+            for (VariableHolder uncountedHolder : variableList) {
+                VariableHolder variableHolder = new VariableHolder(uncountedHolder.node);
+                for (FieldMapping fieldMapping : recordMapping) {
+                    for (String variable : fieldMapping.getVariables()) {
+                        variableHolder.checkIfMapped(variable);
                     }
                 }
-                unmappedVariables.add(variable);
+                variableHolderList.add(variableHolder);
             }
+            Collections.sort(variableHolderList);
             fireIntervalAdded(this, 0, getSize());
+        }
+
+    }
+
+
+    public static class VariableHolder implements Comparable<VariableHolder> {
+        private AnalysisTree.Node node;
+        private String variableName;
+        private int mappingCount;
+
+        private VariableHolder(AnalysisTree.Node node) {
+            this.node = node;
+            this.variableName = node.getVariableName();
+        }
+
+        public void checkIfMapped(String variableName) {
+            if (this.variableName.equals(variableName)) {
+                mappingCount++;
+            }
+        }
+
+        public AnalysisTree.Node getNode() {
+            return node;
+        }
+
+        public String getVariableName() {
+            return variableName;
+        }
+
+        public String toString() {
+            StringBuilder out = new StringBuilder(variableName);
+            switch (mappingCount) {
+                case 0:
+                    break;
+                case 1:
+                    out.append(" (mapped once)");
+                    break;
+                case 2:
+                    out.append(" (mapped twice)");
+                    break;
+                default:
+                    out.append(" (mapped ").append(mappingCount).append(" times)");
+                    break;
+            }
+            return out.toString();
+        }
+
+        @Override
+        public int compareTo(VariableHolder o) {
+            if (mappingCount > o.mappingCount) {
+                return 11;
+            }
+            else if (mappingCount < o.mappingCount) {
+                return -1;
+            }
+            else {
+                return node.compareTo(o.node);
+            }
         }
     }
 }

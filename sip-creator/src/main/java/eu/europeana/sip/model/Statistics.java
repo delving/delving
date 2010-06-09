@@ -50,7 +50,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
     public void recordValue(String value) {
         if (value.length() > MAXIMUM_LENGTH) {
-            value = "** LONGER THAN 100 **";
+            value = value.substring(0, MAXIMUM_LENGTH) + " [...longer...]";
         }
         CounterImpl counter = counterMap.get(value);
         if (counter == null) {
@@ -71,21 +71,29 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         return total;
     }
 
-    public void trim() {
-        List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
-        counterMap.clear();
-        int count = MAX_STATISTICS_LIST_SIZE;
-        for (CounterImpl counter : counterList) {
-            if (count-- == 0) {
-                break;
+    public void trim(boolean complete) {
+        if (complete || counterMap.size() > MAX_STATISTICS_LIST_SIZE * 3) {
+            List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
+            counterMap.clear();
+            int count = MAX_STATISTICS_LIST_SIZE;
+            for (CounterImpl counter : counterList) {
+                if (count-- == 0) {
+                    break;
+                }
+                counterMap.put(counter.getValue(), counter);
             }
-            counterMap.put(counter.getValue(), counter);
         }
     }
 
     public List<? extends Counter> getCounters() {
         List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
         Collections.sort(counterList);
+        return counterList;
+    }
+
+    public List<? extends Counter> getTotalAsCounter() {
+        List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
+        counterList.add(new CounterImpl("Total Occurrences", total));
         return counterList;
     }
 
@@ -110,6 +118,11 @@ public class Statistics implements Comparable<Statistics>, Serializable {
         private static final long serialVersionUID = 8723534933008189272L;
         private String value;
         private int count;
+
+        public CounterImpl(String value, int count) {
+            this.value = value;
+            this.count = count;
+        }
 
         public CounterImpl(String value) {
             this.value = value;

@@ -21,10 +21,9 @@
 
 package eu.europeana.sip.groovy;
 
-import eu.europeana.sip.convert.Generator;
+import eu.europeana.definitions.annotations.EuropeanaField;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,106 +36,99 @@ import java.util.regex.Pattern;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class FieldMapping {
-    private static final Pattern FULL_PATTERN = Pattern.compile("^([^{]+)\\{([^}]+)\\}\\{([^}]+)\\}$");
-    private String converterName;
-    private List<String> fromVariables = new ArrayList<String>();
-    private List<String> toFields = new ArrayList<String>();
+public class FieldMapping implements Iterable<String> {
+    private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+");
+    private static final String [] TO_REMOVE = {
+            ".each",
+            ".split"
+    };
+    private EuropeanaField europeanaField;
     private List<String> codeLines = new ArrayList<String>();
+    private List<String> variables;
 
-    public FieldMapping(String string) {
-        Matcher matcher = FULL_PATTERN.matcher(string);
-        if (matcher.find()) {
-            converterName = matcher.group(1);
-            String from = matcher.group(2);
-            String to = matcher.group(3);
-            fromVariables.addAll(Arrays.asList(from.split(",")));
-            toFields.addAll(Arrays.asList(to.split(",")));
+    public FieldMapping(EuropeanaField europeanaField) {
+        this.europeanaField = europeanaField;
+    }
+
+    public boolean codeLooksLike(String code) {
+        Iterator<String> walk = codeLines.iterator();
+        for (String line : code.split("\n")) {
+            line = line.trim();
+            if (!line.isEmpty()) {
+                if (!walk.hasNext()) {
+                    return false;
+                }
+                String codeLine = walk.next();
+                if (!codeLine.equals(line)) {
+                    return false;
+                }
+            }
+        }
+        return !walk.hasNext();
+    }
+
+    public void setCode(String code) {
+        codeLines.clear();
+        variables = null;
+        if (code != null) {
+            for (String line : code.split("\n")) {
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    codeLines.add(line);
+                }
+            }
+        }
+    }
+
+    public EuropeanaField getEuropeanaField() {
+        return europeanaField;
+    }
+
+    public List<String> getVariables() {
+        if (variables == null) {
+            variables = new ArrayList<String>();
+            for (String line : codeLines) {
+                Matcher matcher = VARIABLE_PATTERN.matcher(line);
+                while (matcher.find()) {
+                    String var = matcher.group(0);
+                    for (String toRemove : TO_REMOVE) {
+                        if (var.endsWith(toRemove)) {
+                            var = var.substring(0, var.length() - toRemove.length());
+                            break;        
+                        }
+                    }
+                    variables.add(var);
+                }
+            }
+        }
+        return variables;
+    }
+
+    public void addCodeLine(String line) {
+        codeLines.add(line);
+        variables = null;
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return codeLines.iterator();
+    }
+
+    public boolean isEmpty() {
+        return codeLines.isEmpty();
+    }
+
+    public String getDescription() {
+        String fieldName = europeanaField == null ? "?" : europeanaField.getFieldNameString();
+        if (getVariables().isEmpty()) {
+            return fieldName;
         }
         else {
-            this.converterName = string;
+            return fieldName + " from " + getVariables();
         }
-    }
-
-    public void addFromVariable(String fromVariable) {
-        fromVariables.add(fromVariable);
-    }
-
-    public void addToField(String toField) {
-        toFields.add(toField);
-    }
-
-    public void addCodeLine(String codeLine) {
-        codeLines.add(codeLine);
-    }
-
-    public String getConverterName() {
-        return converterName;
-    }
-
-    public List<String> getFromVariables() {
-        return fromVariables;
-    }
-
-    public List<String> getToFields() {
-        return toFields;
-    }
-
-    public List<String> getCodeLines() {
-        return codeLines;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void generateCode() {
-        codeLines.clear();
-        CodeTemplate codeTemplate = Generator.getCodeTemplate(converterName);
-        List lines = codeTemplate.generateCode(this);
-        for (Object line : lines) {
-            codeLines.add(line.toString());
-        }
-    }
-
-    public String getCodeForDisplay() {
-        StringBuilder out = new StringBuilder();
-        int indent = 0;
-        for (String codeLine : codeLines) {
-            if (codeLine.endsWith("}")) {
-                indent--;
-            }
-            for (int walk = 0; walk<indent; walk++) {
-                out.append("   ");
-            }
-            out.append(codeLine).append('\n');
-            if (codeLine.endsWith("{")) {
-                indent++;
-            }
-        }
-        return out.toString();
-    }
-
-    public String getArgumentPattern() {
-        return fromVariables.size()+":"+toFields.size();
     }
 
     public String toString() {
-        StringBuilder out = new StringBuilder(converterName+"{");
-        Iterator<String> walk = fromVariables.iterator();
-        while (walk.hasNext()) {
-            out.append(walk.next());
-            if (walk.hasNext()) {
-                out.append(",");
-            }
-        }
-        out.append("}{");
-        walk = toFields.iterator();
-        while (walk.hasNext()) {
-            out.append(walk.next());
-            if (walk.hasNext()) {
-                out.append(",");
-            }
-        }
-        out.append("}");
-        return out.toString();
+        return europeanaField == null ? "?" : europeanaField.getFieldNameString();
     }
-
 }

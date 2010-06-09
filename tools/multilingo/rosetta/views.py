@@ -13,6 +13,8 @@ from rosetta.conf import settings as rosetta_settings
 import re, os, rosetta, datetime, unicodedata
 from django.template import RequestContext
 
+from gen_utils.rosetta_extras import translator_allowed
+
 
 try:
     resolve(settings.LOGIN_URL)
@@ -178,6 +180,9 @@ def home(request):
         ADMIN_MEDIA_PREFIX = settings.ADMIN_MEDIA_PREFIX
         ENABLE_TRANSLATION_SUGGESTIONS = rosetta_settings.ENABLE_TRANSLATION_SUGGESTIONS
 
+        MESSAGES_SOURCE_LANGUAGE_NAME = rosetta_settings.MESSAGES_SOURCE_LANGUAGE_NAME
+        MESSAGES_SOURCE_LANGUAGE_CODE = rosetta_settings.MESSAGES_SOURCE_LANGUAGE_CODE
+
         return render_to_response('rosetta/pofile.html', locals(), context_instance=RequestContext(request))
 
 
@@ -224,13 +229,6 @@ download_file=user_passes_test(lambda user:can_translate(user),LOGIN_URL)(downlo
 download_file=never_cache(download_file)
 
 
-def translator_allowed(user, lang):
-    """Europeana specific modification
-    Only allow translators to modify the languages they are responsible for
-    """
-    a = user.get_all_permissions()
-    b = user.has_perm('rosetta.%s' % lang) or user.has_perm('rosetta.all_langs')
-    return b
 
 def list_languages(request):
     """

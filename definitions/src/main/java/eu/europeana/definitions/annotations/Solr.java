@@ -48,7 +48,7 @@ public @interface Solr {
 
     String fieldType() default "text";
 
-    boolean multivalued() default true;
+    boolean multivalued() default true; // todo: use this for validation!
 
     boolean stored() default true;
 

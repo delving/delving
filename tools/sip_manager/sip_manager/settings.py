@@ -52,11 +52,6 @@ except:
 
 
 try:
-    IMPORT_SCAN_TREE
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE - see local_settings_sample.py')
-
-try:
     SIP_LOG_FILE
 except:
     raise exceptions.ImproperlyConfigured('Missing setting SIP_LOG_FILE - see local_settings_sample.py')
@@ -68,22 +63,15 @@ except:
 
 
 
-
 #
-#  Optional settings, if not given default is used
+# DummyIngestion settings
+#  Until integration with Repox I use the module dummy_ingester this module
+#  is pointed to a path, where it reads and parses all xml files found.
 #
 try:
-    DEBUG
+    IMPORT_SCAN_TREE
 except:
-    DEBUG = False
-    print 'Using default value for DEBUG =', DEBUG
-
-try:
-    THREADING_PLUGINS
-except:
-    THREADING_PLUGINS = True
-    print 'Using default value for THREADING_PLUGINS =', THREADING_PLUGINS
-
+    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE - see local_settings_sample.py')
 
 try:
     TREE_IS_INGESTION_SVN
@@ -96,6 +84,18 @@ try:
 except:
     OLD_STYLE_IMAGE_NAMES = False
     print 'Using default value for OLD_STYLE_IMAGE_NAMES =', OLD_STYLE_IMAGE_NAMES
+
+
+
+
+#
+#  Optional settings, if not given default is used
+#
+try:
+    THREADING_PLUGINS
+except:
+    THREADING_PLUGINS = True
+    print 'Using default value for THREADING_PLUGINS =', THREADING_PLUGINS
 
 
 try:
@@ -121,7 +121,7 @@ except:
 try:
     MAX_LOAD_NEW_TASKS
 except:
-    MAX_LOAD_NEW_TASKS = (1.9, 1.8,  1.7)
+    MAX_LOAD_NEW_TASKS = (1.7, 1.8,  1.9)
     print 'Using default value for MAX_LOAD_NEW_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_NEW_TASKS
 try:
     float(MAX_LOAD_NEW_TASKS)
@@ -141,7 +141,7 @@ except:
 try:
     MAX_LOAD_RUNNING_TASKS
 except:
-    MAX_LOAD_RUNNING_TASKS = (2.5, 2.2, 2.0)
+    MAX_LOAD_RUNNING_TASKS = (3.0, 3.2, 4.0)
     print 'Using default value for MAX_LOAD_RUNNING_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_RUNNING_TASKS
 try:
     float(MAX_LOAD_RUNNING_TASKS)
@@ -162,6 +162,12 @@ except:
 #   Debug settings
 #
 try:
+    DEBUG
+except:
+    DEBUG = False
+    print 'Using default value for DEBUG =', DEBUG
+
+try:
     PLUGIN_FILTER
 except:
     PLUGIN_FILTER = []
@@ -176,7 +182,7 @@ except:
 # Django settings for sip_web project.
 
 #local_settings DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -238,8 +244,11 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    #'django.contrib.csrf.middleware.CsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
+
+
 
 ROOT_URLCONF = 'sip_manager.urls'
 
@@ -278,5 +287,3 @@ INSTALLED_APPS = (
 DAJAXICE_FUNCTIONS = (
 	'examples.ajax.randomize',
 )
-
-

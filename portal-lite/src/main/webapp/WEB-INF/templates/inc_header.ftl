@@ -183,13 +183,13 @@
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
-    <title>Open-Europeana - Homepage</title>
+    <title>Delving - Homepage</title>
     <#break>
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
     <#--<script type="text/javascript" src="js/lib/home.js"></script>-->
-    <title>Open-Europeana - Advanced Search</title>
+    <title>Delving - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "brd"/>
@@ -227,7 +227,7 @@
             $("#savedItems").tabs({ cookie: { expires: 30 } });
         });
     </script>
-    <title>Delving - My Open-Europeana</title>
+    <title>Delving - My Delving</title>
     <#break>
     <#case "exception.html">
     <title>Europeana - Exception</title>

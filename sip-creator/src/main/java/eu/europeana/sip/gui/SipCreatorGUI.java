@@ -21,15 +21,15 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.core.querymodel.beans.AllFieldBean;
-import eu.europeana.core.querymodel.beans.BriefBean;
-import eu.europeana.core.querymodel.beans.FullBean;
-import eu.europeana.core.querymodel.beans.IdBean;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.model.ExceptionHandler;
+import eu.europeana.definitions.beans.AllFieldBean;
+import eu.europeana.definitions.beans.BriefBean;
+import eu.europeana.definitions.beans.FullBean;
+import eu.europeana.definitions.beans.IdBean;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
+import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
 
 import javax.swing.JFrame;
@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +52,17 @@ import java.util.List;
 
 public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
-    private SipModel sipModel = new SipModel();
+    private SipModel sipModel;
 
     public SipCreatorGUI() {
-        super("Europeana Ingestion SIP Creator");
+        super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        sipModel.setAnnotationProcessor(createAnnotationProcessor());
-        sipModel.setExceptionHandler(new PopupExceptionHandler());
+        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler());
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analyzer", new AnalysisPanel(sipModel));
+        tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
-        tabs.addTab("Normalizer", new NormPanel(sipModel));
+        tabs.addTab("Refinement", new RefinementPanel(sipModel));
+        tabs.addTab("Normalization", new NormPanel(sipModel));
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
 //        setSize(1200, 800);
@@ -79,11 +80,14 @@ public class SipCreatorGUI extends JFrame {
                 else {
                     fileSet.setExceptionHandler(new PopupExceptionHandler());
                     sipModel.setFileSet(fileSet);
+                    setTitle(String.format("SIP Creator - %s", fileSet.getAbsolutePath()));
                     return true;
                 }
             }
         });
         bar.add(fileMenu);
+        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
+        bar.add(mappingTemplateMenu);
         return bar;
     }
 
@@ -98,30 +102,36 @@ public class SipCreatorGUI extends JFrame {
         return annotationProcessor;
     }
 
-    private class PopupExceptionHandler implements ExceptionHandler {
+    private class PopupExceptionHandler implements UserNotifier {
+
         @Override
-        public void failure(final Exception exception) {
-            if (SwingUtilities.isEventDispatchThread()) {
-                reportException(exception);
+        public void tellUser(final String message, final Exception exception) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(SipCreatorGUI.this, message);
+                }
+            });
+            if (exception != null) {
+                log.warn(message, exception);
             }
             else {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        reportException(exception);
-                    }
-                });
+                log.warn(message);
             }
-            log.warn("Problem", exception);
         }
 
-        private void reportException(Exception exception) {
-            JOptionPane.showMessageDialog(SipCreatorGUI.this, exception.toString()); // todo: improve
+        @Override
+        public void tellUser(String message) {
+            tellUser(message, null);
         }
     }
 
     public static void main(String[] args) {
-        SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
-        sipCreatorGUI.setVisible(true);
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
+                sipCreatorGUI.setVisible(true);
+            }
+        });
     }
 }

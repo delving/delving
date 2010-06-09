@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>${europeana.sip-creator.version}</version>
+    <version>0.8.12</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -38,26 +38,35 @@
         <defaultGoal>compile</defaultGoal>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.groovy.maven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
+                <groupId>org.codehaus.mojo.webstart</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-1-SNAPSHOT</version>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
+                            <goal>jnlp-inline</goal>
                         </goals>
-                        <configuration>
-                            <sources>
-                                <fileset>
-                                    <directory>${pom.basedir}/src/main/java</directory>
-                                    <includes>
-                                        <include>**/*.groovy</include>
-                                    </includes>
-                                </fileset>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <libPath/>
+                    <jnlp>
+                        <outputFile>sip-creator.jnlp</outputFile>
+                        <mainClass>eu.europeana.sip.gui.SipCreatorGUI</mainClass>
+                    </jnlp>
+                    <sign>
+                      <keystore>${basedir}/src/main/jnlp/snakeoil.keystore</keystore>
+                      <keypass>sip-creator</keypass>
+                      <storepass>sip-creator</storepass>
+                      <alias>sip-creator</alias>
+                      <verify>true</verify>
+                    </sign>
+                    <pack200>false</pack200>
+                    <gzip>false</gzip>
+                    <outputJarVersions>false</outputJarVersions>
+                    <verbose>false</verbose>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -86,33 +95,16 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
+            <artifactId>definitions</artifactId>
+            <version>${europeana.definitions.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-lgpl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.htmlparser</groupId>
-            <artifactId>htmlparser</artifactId>
         </dependency>
     </dependencies>
 </project>

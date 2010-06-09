@@ -22,12 +22,9 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.SipModel;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -40,8 +37,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -53,7 +48,6 @@ import java.awt.event.ItemListener;
 public class NormPanel extends JPanel {
     private SipModel sipModel;
     private JButton normalizeButton = new JButton("Normalize");
-    private JCheckBox debugLevel = new JCheckBox("Debug Mode", false);
     private JButton abortButton = new JButton("Abort");
 
     public NormPanel(SipModel sipModel) {
@@ -62,11 +56,11 @@ public class NormPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.gridy = 0;
-        gbc.weightx = 1;
+        gbc.weightx = 0.333;
         gbc.weighty = 0.99;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
-        add(createInputPanel(), gbc);
+        add(new RecordPanel(sipModel, sipModel.getRecordMappingModel()), gbc);
         gbc.gridx++;
         add(createCodePanel(), gbc);
         gbc.gridx++;
@@ -79,41 +73,10 @@ public class NormPanel extends JPanel {
         wireUp();
     }
 
-    private JPanel createInputPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Input Record"));
-        JTextArea area = new JTextArea(sipModel.getInputDocument());
-        area.setEditable(false);
-        p.add(scroll(area), BorderLayout.CENTER);
-        p.add(createInputButtons(), BorderLayout.SOUTH);
-        return p;
-    }
-
-    private JPanel createInputButtons() {
-        JButton rewind = new JButton("Rewind");
-        rewind.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.firstRecord();
-            }
-        });
-        JButton next = new JButton("Next");
-        next.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.nextRecord();
-            }
-        });
-        JPanel p = new JPanel();
-        p.add(rewind);
-        p.add(next);
-        return p;
-    }
-
     private JPanel createCodePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea area = new JTextArea(sipModel.getCodeDocument());
+        JTextArea area = new JTextArea(sipModel.getRecordMappingModel().getCodeDocument());
         area.setEditable(false);
         p.add(scroll(area));
         return p;
@@ -122,7 +85,7 @@ public class NormPanel extends JPanel {
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea area = new JTextArea(sipModel.getOutputDocument());
+        JTextArea area = new JTextArea(sipModel.getRecordMappingModel().getOutputDocument());
         area.setEditable(false);
         p.add(scroll(area));
         return p;
@@ -147,19 +110,6 @@ public class NormPanel extends JPanel {
     }
 
     private void wireUp() {
-        debugLevel.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                switch (e.getStateChange()) {
-                    case ItemEvent.DESELECTED:
-                        Logger.getRootLogger().setLevel(Level.INFO);
-                        break;
-                    case ItemEvent.SELECTED:
-                        Logger.getRootLogger().setLevel(Level.DEBUG);
-                        break;
-                }
-            }
-        });
         normalizeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

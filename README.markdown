@@ -2,7 +2,7 @@
 
 **Europeana** is an European Commission initiative to bring together digital objects from the four cultural heritage domains: Archives, Audio-Visual, Archives, Libraries and Museums. The Europeana Framework is an innovative multilingual high volume, high scalability search platform for Cultural Heritage metadata. The framework is developed using best-of-breed open-source software.
 
-In order to promote collaboration and reuse of the software in the Cultural Heritage sector the software is developed in the open. You can download the source code at: [https://github.com/kiivihal/open-europeana/downloads](https://github.com/kiivihal/open-europeana/downloads)
+In order to promote collaboration and reuse of the software in the Cultural Heritage sector the software is developed in the open under the name "Delving". You can find the source code at: [https://github.com/kiivihal/delving/downloads](https://github.com/kiivihal/delving/downloads)
 
 Or using [git] version control
 
@@ -109,10 +109,9 @@ permissions and limitations under the Licence.
 
 [http://ec.europa.eu/idabc/eupl]: http://ec.europa.eu/idabc/eupl "EUPL license"
 [delving]: https://github.com/kiivihal/delving "delving github repository"
-[delving-downloads]: https://github.com/kiivihal/delving/downloads "delving downloads"
 [github]: http://www.github.com "github.com"
 [europeanalabs-svn]: http://www.europeanalabs.eu/svn/europeana/trunk "europeana labs SVN repository"
 [europeanalabs]: http://www.europeanalabs.eu "europeanaLabs.eu"
 [git]: http://git-scm.com/ "Git"
 [europeana.eu]: http://www.europeana.eu "europeana home"
-[oe-mailinglist]: http://groups.google.com/group/delving-community "delving mailing list"
+[delving-mailinglist]: http://groups.google.com/group/delving-community "delving mailing list"

@@ -1,4 +1,7 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
+{% load i18n %}<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Multilingo language used on this page: {{ lang }}  -->
+
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="shortcut icon" href="/portal/favicon.ico"/>
@@ -178,6 +181,7 @@ function ContactMe(prefix,suffix){
         </div>
     </div>
         <div class="yui-b">
+	<p align="right">{{ lang }}</p>{% comment %} debug help, indicate lang{% endcomment %}
 <a href="index.html">
     <img src="images/europeana-logo-small.jpg" alt="Click here to return to the Europeana homepage" title="logo Europeana think culture"/>
             <img src="images/think_culture_en_small.gif" alt=""/>

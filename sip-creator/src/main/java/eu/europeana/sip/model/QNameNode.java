@@ -20,12 +20,16 @@
  */
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.xml.Sanitizer;
+
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -110,6 +114,27 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         return statistics != null && statistics.getCounters().isEmpty();
     }
 
+    @Override
+    public String getVariableName() {
+        List<QNameNode> path = new ArrayList<QNameNode>();
+        QNameNode node = this;
+        while (node != null && !node.isRecordRoot()) {
+            path.add(node);
+            node = node.parent;
+        }
+        Collections.reverse(path);
+        StringBuilder out = new StringBuilder("input.");
+        Iterator<QNameNode> nodeWalk = path.iterator();
+        while (nodeWalk.hasNext()) {
+            String nodeName = nodeWalk.next().toString();
+            out.append(Sanitizer.tag2variable(nodeName));
+            if (nodeWalk.hasNext()) {
+                out.append('.');
+            }
+        }
+        return out.toString();
+    }
+
     private void compilePathList(List<QNameNode> list) {
         if (parent != null) {
             parent.compilePathList(list);
@@ -168,5 +193,10 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         else {
             return qName.getLocalPart();
         }
+    }
+
+    @Override
+    public int compareTo(AnalysisTree.Node other) {
+        return getVariableName().compareTo(other.getVariableName());
     }
 }

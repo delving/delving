@@ -10,6 +10,10 @@ ENABLE_TRANSLATION_SUGGESTIONS = getattr(settings,'ROSETTA_ENABLE_TRANSLATION_SU
 # Displays this language beside the original MSGID in the admin
 MAIN_LANGUAGE = getattr(settings,'ROSETTA_MAIN_LANGUAGE', None)
 
+# Change these if the source language in your PO files isn't English
+MESSAGES_SOURCE_LANGUAGE_CODE = getattr(settings,'ROSETTA_MESSAGES_SOURCE_LANGUAGE_CODE', 'en')
+MESSAGES_SOURCE_LANGUAGE_NAME = getattr(settings,'ROSETTA_MESSAGES_SOURCE_LANGUAGE_NAME', 'English')
+
 
 """
 When running WSGI daemon mode, using mod_wsgi 2.0c5 or later, this setting 
@@ -34,4 +38,8 @@ Refs:
 
 """
 WSGI_AUTO_RELOAD = getattr(settings,'ROSETTA_WSGI_AUTO_RELOAD', False)
+
+
+# Exclude applications defined in this list from being translated
+EXCLUDED_APPLICATIONS = getattr(settings,'ROSETTA_EXCLUDED_APPLICATIONS', ())
 

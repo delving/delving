@@ -17,3 +17,8 @@ python-django
     djblets
     dmigrations  south
     lint
+
+
+
+portal search for a named dataset:
+europeana_collectionName:01406*

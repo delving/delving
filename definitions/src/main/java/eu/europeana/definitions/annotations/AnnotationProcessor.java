@@ -36,14 +36,6 @@ import java.util.Set;
 public interface AnnotationProcessor {
 
     /**
-     * Retrieve instances of field specifications from the annotations
-     *
-     * @return a set of fields that play the facet role
-     */
-
-    Set<? extends EuropeanaField> getFacetFields();
-
-    /**
      * Get an array of facet field names which can be passed easily
      * to the SolrQuery.
      *
@@ -58,7 +50,7 @@ public interface AnnotationProcessor {
      * @return a set of all fields defined in bean classes
      */
 
-    Set<? extends EuropeanaField> getSolrFields();
+    Set<EuropeanaField> getAllFields();
 
     /**
      * Return a collection of mappable fields
@@ -66,15 +58,23 @@ public interface AnnotationProcessor {
      * @return the fields which are mappable
      */
 
-    Set<? extends EuropeanaField> getMappableFields();
+    Set<EuropeanaField> getMappableFields();
+
+    /**
+     * Get the fields which are to be constants.
+     *
+     * @return all the fields marked as constant
+     */
+
+    Set<EuropeanaField> getConstantFields();
 
     /**
      * Fetch the fields which
-     * @param validationLevel which level?
+     * @param fieldCategory which level?
      * @return the fields which match
      */
     
-    Set<? extends EuropeanaField> getFields(ValidationLevel validationLevel);
+    Set<EuropeanaField> getFields(FieldCategory fieldCategory);
 
     /**
      * Get an array of all solr field names which can be passed easily
@@ -83,7 +83,7 @@ public interface AnnotationProcessor {
      * @return an array of Solr name strings
      */
 
-    List<String> getSolrFieldList();
+    List<String> getFieldNameList();
 
     /**
      * Fetch the bean interface for the given bean class
@@ -94,5 +94,11 @@ public interface AnnotationProcessor {
 
     EuropeanaBean getEuropeanaBean(Class<?> clazz);
 
+    /**
+     * Get a map that can be used to build up a filter query
+     *
+     * @return map from facetName to facetPrefix
+     */
+    
     HashMap<String, String> getFacetMap();
 }

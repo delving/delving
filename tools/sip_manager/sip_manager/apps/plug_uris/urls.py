@@ -53,4 +53,6 @@ urlpatterns = patterns('',
     url(r'^bad_by_req_m/(?P<req_id>\d+)/(?P<mime_type>\S+)/$', views.uri_bad_by_req_mime, name='uri_bad_by_req_mime'),
     url(r'^bad_by_req/(?P<offset>\d+)/$', views.uri_bad_by_request, name='uri_bad_by_request'),
 
+
+    url(r'^rescedule/$', views.rescedule, name='uri_bad_rescedule'),
 )

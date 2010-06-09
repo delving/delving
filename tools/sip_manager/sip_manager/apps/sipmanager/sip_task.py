@@ -30,6 +30,7 @@ import time
 
 from django import db
 from django.conf import settings
+from django.utils.encoding import smart_unicode
 
 import models
 
@@ -482,11 +483,11 @@ class SipTask(object): #SipProcess(object):
         result = 0
         retcode, stdout, stderr = self.cmd_execute_output(cmd)
         if retcode or stdout or stderr:
-            result = 'retcode: %s' % retcode
+            result = u'retcode: %s' % retcode
             if stdout:
-                result += '\nstdout: %s' % stdout
+                result += u'\nstdout: %s' % stdout
             if stderr:
-                result += '\nstderr: %s' % stderr
+                result += u'\nstderr: %s' % stderr
         return result
 
 
@@ -496,11 +497,14 @@ class SipTask(object): #SipProcess(object):
             cmd = ' '.join(cmd)
         try:
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
+            s_out, s_err = p.communicate()
             retcode = p.returncode
+            stdout = smart_unicode(s_out, errors='replace')
+            stderr = smart_unicode(s_err, errors='replace')
         except:
             retcode = 1
-            stderr = 'cmd_execute() exception - shouldnt normally happen'
+            stdout = u''
+            stderr = u'cmd_execute() exception - shouldnt normally happen'
         return retcode, stdout, stderr
 
 

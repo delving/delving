@@ -20,8 +20,16 @@
  */
 package eu.europeana.sip.groovy;
 
+import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.model.RecordRoot;
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Stores and retrieves snippets in a file separated by a delimiter. File structure looks like this
@@ -30,23 +38,99 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class RecordMapping {
+public class RecordMapping implements Iterable<FieldMapping> {
+    private static final String HEADER = "// SIP-Creator Mapping file";
     private static final String MAPPING_PREFIX = "//<<<";
     private static final String MAPPING_SUFFIX = "//>>>";
     private static final String RECORD_PREFIX = "output.record {";
     private static final String RECORD_SUFFIX = "}";
+    private Logger log = Logger.getLogger(getClass());
+    private boolean singleFieldMapping;
+    private RecordRoot recordRoot;
+    private ConstantFieldModel constantFieldModel;
     private List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
-    public RecordMapping(List<FieldMapping> fieldMappings) {
-        this.fieldMappings = fieldMappings;
+    public interface Listener {
+        void mappingAdded(FieldMapping fieldMapping);
+
+        void mappingRemoved(FieldMapping fieldMapping);
+
+        void mappingsRefreshed(RecordMapping recordMapping);
     }
 
-    public RecordMapping(String code) {
+    public RecordMapping(boolean singleFieldMapping, ConstantFieldModel constantFieldModel) {
+        this.singleFieldMapping = singleFieldMapping;
+        this.constantFieldModel = constantFieldModel;
+    }
+
+    public FieldMapping getOnlyFieldMapping() {
+        if (fieldMappings.size() != 1) {
+            return null;
+        }
+        else {
+            return fieldMappings.get(0);
+        }
+    }
+
+    public boolean isEmpty() {
+        return fieldMappings.isEmpty();
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public void clear() {
+        fieldMappings.clear();
+        fireRefresh();
+    }
+
+    public RecordRoot getRecordRoot() {
+        return recordRoot;
+    }
+
+    public void setConstantFieldModel(ConstantFieldModel constantFieldModel) {
+        this.constantFieldModel = constantFieldModel;
+    }
+
+    public ConstantFieldModel getConstantFieldModel() {
+        return constantFieldModel;
+    }
+
+    public void setRecordRoot(RecordRoot recordRoot) {
+        this.recordRoot = recordRoot;
+    }
+
+    public void setFieldMapping(FieldMapping fieldMapping) {
+        singleFieldMapping = true;
+        fieldMappings.clear();
+        fieldMappings.add(fieldMapping);
+        fireRefresh();
+    }
+
+    public void setCode(String code, Map<String, EuropeanaField> fieldMap) {
+        fieldMappings.clear();
+        recordRoot = null;
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {
+            RecordRoot root = RecordRoot.fromLine(line);
+            if (root != null) {
+                this.recordRoot = root;
+                continue;
+            }
+            if (!singleFieldMapping && constantFieldModel.fromLine(line)) {
+                continue;
+            }
             if (line.startsWith(MAPPING_PREFIX)) {
-                String mappingSpec = line.substring(MAPPING_PREFIX.length()).trim();
-                fieldMapping = new FieldMapping(mappingSpec);
+                String europeanaFieldName = line.substring(MAPPING_PREFIX.length()).trim();
+                EuropeanaField europeanaField = fieldMap.get(europeanaFieldName);
+                if (europeanaField != null) {
+                    fieldMapping = new FieldMapping(europeanaField);
+                }
+                else {
+                    log.warn("Discarding unrecognized field "+europeanaFieldName);
+                }
             }
             else if (line.startsWith(MAPPING_SUFFIX)) {
                 if (fieldMapping != null) {
@@ -60,50 +144,104 @@ public class RecordMapping {
                 }
             }
         }
+        fireRefresh();
     }
 
-    public List<FieldMapping> getFieldMappings() {
-        return fieldMappings;
+    @Override
+    public Iterator<FieldMapping> iterator() {
+        return fieldMappings.iterator();
     }
 
-    public String getCodeForPersistence() {
+    public void add(FieldMapping fieldMapping) {
+        fieldMappings.add(fieldMapping);
+        for (Listener listener : listeners) {
+            listener.mappingAdded(fieldMapping);
+        }
+    }
+
+    public void remove(FieldMapping fieldMapping) {
+        fieldMappings.remove(fieldMapping);
+        for (Listener listener : listeners) {
+            listener.mappingRemoved(fieldMapping);
+        }
+    }
+
+    public String getCodeForCompile() {
+        return getCode(true, false, false, false);
+    }
+
+    public static String getCodeForCompile(String code) {
         StringBuilder out = new StringBuilder();
         out.append(RECORD_PREFIX).append('\n');
-        for (FieldMapping mapping : fieldMappings) {
-            out.append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
-            for (String codeLine : mapping.getCodeLines()) {
-                out.append(codeLine).append('\n');
-            }
-            out.append(MAPPING_SUFFIX).append('\n');
-        }
+        out.append(code);
         out.append(RECORD_SUFFIX).append('\n');
         return out.toString();
     }
 
+    public String getCodeForPersistence() {
+        return getCode(true, false, true, true);
+    }
+
     public String getCodeForDisplay() {
+        return getCode(!singleFieldMapping, true, false, false);
+    }
+
+    public String getCodeForTemplate() {
+        return getCode(!singleFieldMapping, true, true, false);
+    }
+
+    private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited, boolean includesConstants) {
         StringBuilder out = new StringBuilder();
-        out.append(RECORD_PREFIX).append('\n');
+        if (delimited) {
+            out.append(HEADER).append('\n').append('\n');
+            if (includesConstants) {
+                if (recordRoot != null) {
+                    out.append(recordRoot.toString()).append('\n').append('\n');
+                }
+                out.append(constantFieldModel.toString()).append('\n');
+            }
+        }
+        int indent = 0;
+        if (wrappedInRecord) {
+            out.append(RECORD_PREFIX).append('\n');
+            indent++;
+        }
         for (FieldMapping mapping : fieldMappings) {
-            int indent = 1;
-            for (String codeLine : mapping.getCodeLines()) {
+            if (delimited) {
+                out.append('\n').append(MAPPING_PREFIX).append(mapping.toString()).append('\n');
+            }
+            for (String codeLine : mapping) {
                 if (codeLine.endsWith("}")) {
                     indent--;
                 }
-                for (int walk = 0; walk<indent; walk++) {
-                    out.append("   ");
+                if (indented) {
+                    for (int walk = 0; walk < indent; walk++) {
+                        out.append("   ");
+                    }
                 }
                 out.append(codeLine).append('\n');
                 if (codeLine.endsWith("{")) {
                     indent++;
                 }
             }
+            if (delimited) {
+                out.append(MAPPING_SUFFIX).append('\n');
+            }
         }
-        out.append(RECORD_SUFFIX).append('\n');
+        if (wrappedInRecord) {
+            out.append(RECORD_SUFFIX).append('\n');
+        }
         return out.toString();
     }
 
     public String toString() {
-        return getCodeForPersistence();
+        return getCodeForDisplay();
+    }
+
+    private void fireRefresh() {
+        for (Listener listener : listeners) {
+            listener.mappingsRefreshed(this);
+        }
     }
 
 }

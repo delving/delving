@@ -42,7 +42,6 @@ import java.util.Stack;
  */
 
 public class MetadataParser {
-    private static final long RECORDS_PER_NOTIFY = 100;
     private InputStream inputStream;
     private XMLStreamReader2 input;
     private RecordRoot recordRoot;
@@ -50,7 +49,7 @@ public class MetadataParser {
     private Listener listener;
 
     public interface Listener {
-        void recordsParsed(int count);
+        void recordsParsed(int count, boolean lastRecord);
     }
 
     public MetadataParser(InputStream inputStream, RecordRoot recordRoot, Listener listener) throws XMLStreamException {
@@ -66,7 +65,7 @@ public class MetadataParser {
     }
 
     @SuppressWarnings("unchecked")
-    public MetadataRecord nextRecord() throws XMLStreamException, IOException {
+    public synchronized MetadataRecord nextRecord() throws XMLStreamException, IOException {
         MetadataRecord metadataRecord = null;
         GroovyNode rootNode = null;
         Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
@@ -75,7 +74,9 @@ public class MetadataParser {
         while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
-                    listener.recordsParsed(0);
+                    if (listener != null) {
+                        listener.recordsParsed(0, false);
+                    }
                     break;
                 case XMLEvent.START_ELEMENT:
                     if (input.getName().equals(recordRoot.getRootQName())) {
@@ -91,13 +92,13 @@ public class MetadataParser {
                         }
                         String nodeName;
                         if (null == input.getPrefix()) {
-                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : MetadataRecord.sanitize(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : Sanitizer.tag2variable(input.getLocalName());
                         }
                         else {
-                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + MetadataRecord.sanitize(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + Sanitizer.tag2variable(input.getLocalName());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
-                        if (input.getAttributeCount() > 0) {
+                        if (input.getAttributeCount() > 0) { // todo: sometimes java.lang.IllegalStateException: Current state not START_ELEMENT        
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
                                 node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));
@@ -119,15 +120,15 @@ public class MetadataParser {
                 case XMLEvent.END_ELEMENT:
                     if (input.getName().equals(recordRoot.getRootQName())) {
                         withinRecord = false;
-                        metadataRecord = new MetadataRecord(rootNode);
                         recordCount++;
-                        if (recordCount % RECORDS_PER_NOTIFY == 0) {
-                            listener.recordsParsed(recordCount);
+                        metadataRecord = new MetadataRecord(rootNode, recordCount);
+                        if (listener != null) {
+                            listener.recordsParsed(recordCount, false);
                         }
                     }
                     if (withinRecord) {
                         GroovyNode node = nodeStack.pop();
-                        String valueString = value.toString().trim();
+                        String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
                         value.setLength(0);
                         if (valueString.length() > 0) {
                             node.setValue(valueString);
@@ -140,7 +141,9 @@ public class MetadataParser {
             }
             if (!input.hasNext()) {
                 inputStream.close();
-                listener.recordsParsed(recordCount);
+                if (listener != null) {
+                    listener.recordsParsed(recordCount, true);
+                }
                 break;
             }
             input.next();

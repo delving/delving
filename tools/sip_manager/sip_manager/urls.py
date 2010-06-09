@@ -25,7 +25,8 @@
 """
 
 from django.conf.urls.defaults import *
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
+from django.contrib.auth import logout
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -38,6 +39,9 @@ def top_index(request):
     return render_to_response("top_index.html", {'request': request,})
 
 
+def logout_view(request):
+    logout(request)
+    return redirect('top_index')
 
 
 urlpatterns = patterns('',
@@ -57,9 +61,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^logout/$', logout_view, name='logout'),
+
 )
-
-
-
 
 

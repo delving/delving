@@ -21,11 +21,14 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.groovy.MappingScriptBinding;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.groovy.MappingRunner;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
+import eu.europeana.sip.model.ToolCodeModel;
+import eu.europeana.sip.model.UserNotifier;
+import groovy.lang.MissingPropertyException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -42,37 +45,88 @@ import java.io.Writer;
 
 public class Normalizer implements Runnable {
     private FileSet fileSet;
-    private MetadataParser.Listener listener;
-    private boolean running;
+    private AnnotationProcessor annotationProcessor;
+    private RecordValidator recordValidator;
+    private MetadataParser.Listener parserListener;
+    private Listener listener;
+    private UserNotifier userNotifier;
+    private boolean running = true;
 
-    public Normalizer(FileSet fileSet, MetadataParser.Listener listener) {
+    public interface Listener {
+        void invalidInput(MetadataRecord metadataRecord, MissingPropertyException exception);
+        void invalidOutput(RecordValidationException exception);
+    }
+
+    public Normalizer(
+            FileSet fileSet,
+            AnnotationProcessor annotationProcessor,
+            RecordValidator recordValidator,
+            UserNotifier userNotifier,
+            MetadataParser.Listener parserListener,
+            Listener listener
+    ) {
         this.fileSet = fileSet;
+        this.annotationProcessor = annotationProcessor;
+        this.recordValidator = recordValidator;
+        this.userNotifier = userNotifier;
+        this.parserListener = parserListener;
         this.listener = listener;
     }
 
     public void run() {
         try {
-            RecordRoot recordRoot = fileSet.getRecordRoot();
             InputStream inputStream = fileSet.getInputStream();
             OutputStream outputStream = fileSet.getOutputStream();
             String mapping = fileSet.getMapping();
-            Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
-            MappingScriptBinding mappingScriptBinding = new MappingScriptBinding(writer);
-            MetadataParser parser = new MetadataParser(inputStream, recordRoot, listener);
-            GroovyShell shell = new GroovyShell(mappingScriptBinding);
-            Script script = shell.parse(mapping);
-            script.setBinding(mappingScriptBinding);
+            RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
+            ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(mapping, annotationProcessor);
+            ToolCodeModel toolCodeModel = new ToolCodeModel();
+            final Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer.write("<?xml version='1.0' encoding='UTF-8'?>\n");
+            writer.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel, new MappingRunner.Listener() {
+                @Override
+                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
+                    if (exception != null) {
+                        if (exception instanceof MissingPropertyException) {
+                            MissingPropertyException mpe = (MissingPropertyException)exception;
+                            userNotifier.tellUser("Missing property in record "+metadataRecord.getRecordNumber()+": "+mpe.getProperty(), exception);
+                            listener.invalidInput(metadataRecord, mpe);
+                        }
+                        else {
+                            userNotifier.tellUser("Problem normalizing record "+metadataRecord.toString(), exception);
+                        }
+                    }
+                    else {
+                        try {
+                            String validated = recordValidator.validate(metadataRecord, output);
+                            writer.write(validated);
+                        }
+                        catch (RecordValidationException e) {
+                            userNotifier.tellUser("Invalid output record", e);
+                            listener.invalidOutput(e);
+                            running = false;
+                        }
+                        catch (Exception e) {
+                            userNotifier.tellUser("Problem writing output", e);
+                            running = false;
+                        }
+                    }
+                }
+            });
+            MetadataParser parser = new MetadataParser(inputStream, recordRoot, parserListener);
             MetadataRecord record;
-            int count = 0;
-            running = true;
             while ((record = parser.nextRecord()) != null && running) {
-                mappingScriptBinding.setRecord(record);
-                script.run();
-                count++;
+                if (!mappingRunner.runMapping(record)) {
+                    running = false;
+                }
             }
+            writer.write("</metadata>\n");
             writer.close();
+            parser.close();
             if (!running) {
-                parser.close();
+                fileSet.removeOutputFile();
+                parserListener.recordsParsed(0, true);
             }
         }
         catch (XMLStreamException e) {

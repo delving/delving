@@ -22,6 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.RecordRoot;
@@ -29,6 +30,7 @@ import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -54,7 +56,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,7 +68,6 @@ import java.awt.event.ActionListener;
  */
 
 public class AnalysisPanel extends JPanel {
-    private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private static final String ELEMENTS_PROCESSED = "%d Elements Processed";
     private static final String RECORDS = "%d Records";
     private static final String PERFORM_ANALYSIS = "Analyze %s";
@@ -76,71 +76,66 @@ public class AnalysisPanel extends JPanel {
     private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
     private JButton abortButton = new JButton("Abort");
+    private ConstantFieldPanel constantFieldPanel;
     private JTree statisticsJTree;
     private SipModel sipModel;
 
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
+        this.constantFieldPanel = new ConstantFieldPanel(sipModel);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15);
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 0.99;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridx = gbc.gridy = 0;
-        gbc.gridheight = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 0.5;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         add(createTreePanel(), gbc);
-        gbc.gridheight = 1;
-        gbc.gridx++;
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         add(createStatisticsPanel(), gbc);
-        gbc.gridx++;
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
         add(createVariablesPanel(), gbc);
-        gbc.gridy++;
+        
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        add(constantFieldPanel, gbc);
+
         gbc.weighty = 0.01;
         gbc.gridwidth = 2;
-        gbc.gridx = 1;
-        add(createProgress(), gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        add(createAnalyzePanel(), gbc);
         wireUp();
     }
 
     private JPanel createTreePanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Document Structure"));
         statisticsJTree = new JTree(sipModel.getAnalysisTreeModel());
         statisticsJTree.getModel().addTreeModelListener(new Expander());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        JScrollPane scroll = new JScrollPane(statisticsJTree);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p.add(scroll, BorderLayout.CENTER);
-        p.add(createTreeSouth(), BorderLayout.SOUTH);
-        return p;
-    }
-
-    private JPanel createTreeSouth() {
-        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
+        p.add(scroll(statisticsJTree), BorderLayout.CENTER);
         selectRecordRootButton.setEnabled(false);
-        p.add(selectRecordRootButton);
-        p.add(recordCountLabel);
+        p.add(selectRecordRootButton, BorderLayout.SOUTH);
         return p;
     }
 
     private JPanel createStatisticsPanel() {
         JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
         JPanel tablePanel = new JPanel(new BorderLayout());
         JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());
         statsTable.getTableHeader().setReorderingAllowed(false);
         statsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePanel.add(statsTable.getTableHeader(), BorderLayout.NORTH);
-        JScrollPane scroll = new JScrollPane(statsTable);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        tablePanel.add(scroll, BorderLayout.CENTER);
+        tablePanel.add(scroll(statsTable), BorderLayout.CENTER);
         p.add(tablePanel, BorderLayout.CENTER);
         return p;
     }
@@ -160,17 +155,87 @@ public class AnalysisPanel extends JPanel {
 
     private JPanel createVariablesPanel() {
         JPanel p = new JPanel(new BorderLayout());
-        p.setPreferredSize(PREFERRED_SIZE);
-        p.setBorder(BorderFactory.createTitledBorder("Variables"));
+        p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
         JList list = new JList(sipModel.getVariablesListModel());
-        JScrollPane scroll = new JScrollPane(list);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        p.add(scroll, BorderLayout.CENTER);
+        p.add(scroll(list), BorderLayout.CENTER);
         return p;
     }
 
-    private JPanel createProgress() {
+    private JScrollPane scroll(JComponent content) {
+        JScrollPane scroll = new JScrollPane(content);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setPreferredSize(new Dimension(300, 500));
+        return scroll;
+    }
+
+    private JPanel createAnalyzePanel() {
+        JPanel p = new JPanel(new GridBagLayout());
+        p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = gbc.gridy = 0;
+        gbc.weightx = 0.25;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        p.add(analyzeButton, gbc);
+        gbc.gridx++;
+        p.add(elementCountLabel, gbc);
+        gbc.gridx++;
+        p.add(recordCountLabel, gbc);
+        abortButton.setEnabled(false);
+        gbc.gridx++;
+        p.add(abortButton, gbc);
+        return p;
+    }
+
+    private void setElementsProcessed(long count) {
+        elementCountLabel.setText(String.format(ELEMENTS_PROCESSED, count));
+    }
+
+    private void wireUp() {
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+            @Override
+            public void templateApplied() {
+                constantFieldPanel.refresh();
+            }
+
+            @Override
+            public void updatedFileSet(FileSet fileSet) {
+                setElementsProcessed(sipModel.getElementCount());
+                analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
+                analyzeButton.setEnabled(true);
+                abortButton.setEnabled(false);
+            }
+
+            @Override
+            public void updatedRecordRoot(RecordRoot recordRoot) {
+                recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
+            }
+
+            @Override
+            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+                constantFieldPanel.refresh();
+            }
+        });
+        statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent event) {
+                TreePath path = event.getPath();
+                AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
+                selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
+                sipModel.selectNode(node);
+            }
+        });
+        selectRecordRootButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TreePath path = statisticsJTree.getSelectionPath();
+                QNameNode node = (QNameNode) path.getLastPathComponent();
+                RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
+                sipModel.setRecordRoot(recordRoot);
+            }
+        });
         analyzeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -207,52 +272,6 @@ public class AnalysisPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 sipModel.abortAnalyze();
                 analyzeButton.setEnabled(true);
-            }
-        });
-        JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.setBorder(BorderFactory.createTitledBorder("Analysis Process"));
-        p.add(analyzeButton, BorderLayout.WEST);
-        p.add(elementCountLabel, BorderLayout.CENTER);
-        abortButton.setEnabled(false);
-        p.add(abortButton, BorderLayout.EAST);
-        return p;
-    }
-
-    private void setElementsProcessed(long count) {
-        elementCountLabel.setText(String.format(ELEMENTS_PROCESSED, count));
-    }
-
-    private void wireUp() {
-        sipModel.addUpdateListener(new SipModel.UpdateListener() {
-            @Override
-            public void updatedFileSet(FileSet fileSet) {
-                setElementsProcessed(sipModel.getElementCount());
-                analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
-                analyzeButton.setEnabled(true);
-                abortButton.setEnabled(false);
-            }
-
-            @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-                recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
-            }
-        });
-        statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(TreeSelectionEvent event) {
-                TreePath path = event.getPath();
-                AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
-                sipModel.selectNode(node);
-                selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
-            }
-        });
-        selectRecordRootButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                TreePath path = statisticsJTree.getSelectionPath();
-                QNameNode node = (QNameNode) path.getLastPathComponent();
-                RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
-                sipModel.setRecordRoot(recordRoot);
             }
         });
     }
@@ -308,6 +327,7 @@ public class AnalysisPanel extends JPanel {
                     expandEmptyNodes((AnalysisTree.Node) statisticsJTree.getModel().getRoot());
                 }
             });
+            timer.setRepeats(false);
             timer.start();
         }
 
