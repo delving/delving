@@ -19,7 +19,7 @@ public interface MetadataRepository {
 
     Collection getCollection(String name);
 
-    Resumption getResumption(ObjectId id);
+    HarvestStep getHarvestStep(ObjectId id);
 
     public interface Collection {
         String name();
@@ -40,7 +40,7 @@ public interface MetadataRepository {
         List<? extends Record> records(Date startTime, int count);
     }
 
-    public interface Resumption {
+    public interface HarvestStep {
         Date expiration();
         int listSize();
         List<? extends Record> records();
