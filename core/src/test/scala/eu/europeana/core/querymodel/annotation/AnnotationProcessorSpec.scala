@@ -25,34 +25,30 @@ import java.lang.annotation.Retention
 class AnnotationProcessorSpec extends Spec with ShouldMatchers {
   describe("An AnnotationProcessor") {
 
-    describe("(when it is given a List of annotated classes)") {
-      val beanClasses = new ListBuffer[Class[_]] += (classOf[IdBean], classOf[BriefBean], classOf[FullBean], classOf[AllFieldBean])
-      val mockBeans = new ListBuffer[Class[_]] += classOf[MockAnnotatedBean]
-      val processor = new AnnotationProcessorImpl
-      processor.setClasses(beanClasses)
-
-      it("should give EuropeanaBeans for each class") {
-        mockBeans.foreach {
-          beanClass: Class[_] =>
-            println(beanClass.getCanonicalName)
-            println(beanClass.getFields.foreach(println(_)))
-            println(beanClass.getAnnotations.size)
-            println(beanClass.getDeclaredFields.toString)
-          //            val bean: EuropeanaBean = processor.getEuropeanaBean (beanClass)
-          //            bean.getFieldStrings.foreach( println (_) )
-          //            europeanaBean.getFields.foreach(field => println (field) )
-        }
-      }
-
-      it("should have 11 brief bean fields") {
-        val briefBean: EuropeanaBean = processor.getEuropeanaBean(classOf[BriefBean])
-        briefBean.getFields.size should equal(11)
-      }
-
-      it("should have 5 facetfields") {
-        processor.getFacetFields.size should equal(5)
-      }
-    }
+//    describe("(when it is given a List of annotated classes)") {
+//      val beanClasses = new ListBuffer[Class[_]] += (classOf[IdBean], classOf[BriefBean], classOf[FullBean], classOf[AllFieldBean])
+//      val mockBeans = new ListBuffer[Class[_]] += classOf[MockAnnotatedBean]
+//      val processor = new AnnotationProcessorImpl
+//      processor.setClasses(beanClasses)
+//
+//      it("should give EuropeanaBeans for each class") {
+//        mockBeans.foreach {
+//          beanClass: Class[_] =>
+//            println(beanClass.getCanonicalName)
+//            println(beanClass.getFields.foreach(println(_)))
+//            println(beanClass.getAnnotations.size)
+//            println(beanClass.getDeclaredFields.toString)
+//          //            val bean: EuropeanaBean = processor.getEuropeanaBean (beanClass)
+//          //            bean.getFieldStrings.foreach( println (_) )
+//          //            europeanaBean.getFields.foreach(field => println (field) )
+//        }
+//      }
+//
+//      it("should have 11 brief bean fields") {
+//        val briefBean: EuropeanaBean = processor.getEuropeanaBean(classOf[BriefBean])
+//        briefBean.getFields.size should equal(11)
+//      }
+//    }
 
   }
 
