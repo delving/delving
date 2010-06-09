@@ -12,7 +12,6 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.ObjectId;
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +40,9 @@ public class TestMongo {
 
     @BeforeClass
     public static void startDaemon() throws IOException, InterruptedException {
-        MONGO.mkdirs();
+        if (!MONGO.mkdirs()) {
+            throw new IOException("couldn't make directories");
+        }
         daemonRunner = new DaemonRunner();
         daemonRunner.start();
     }
@@ -99,13 +100,6 @@ public class TestMongo {
         return object;
     }
 
-//    private void insert(DBObject object) throws UnknownHostException {
-//        DB db = mongo.getDB("delving");
-//        DBCollection collection = db.getCollection("metadata");
-//        collection.insert(object);
-//        System.out.format("inserted object's id is [%s] error [%s]\n", object.get("_id"), db.getLastError());
-//    }
-//
 //    private void insert(String id, DBObject object) throws UnknownHostException {
 //        DB db = mongo.getDB("delving");
 //        DBCollection collection = db.getCollection("metadata");
@@ -114,11 +108,6 @@ public class TestMongo {
 //        System.out.format("inserted object's id is [%s] error [%s]\n", object.get("_id"), db.getLastError());
 //    }
 //
-//    private void update(String id, DBObject object) throws UnknownHostException {
-//        DB db = mongo.getDB("delving");
-//        DBCollection collection = db.getCollection("metadata");
-//    }
-
     private static class DaemonRunner extends Thread {
         private Process process;
         private boolean killed;
