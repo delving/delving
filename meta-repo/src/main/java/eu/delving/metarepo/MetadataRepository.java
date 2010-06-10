@@ -4,6 +4,7 @@ import com.mongodb.DBObject;
 import com.mongodb.ObjectId;
 
 import javax.xml.namespace.QName;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -24,13 +25,15 @@ public interface MetadataRepository {
     public interface Collection {
         String name();
         Details details();
-        Record insertRecord(String xml);
-        Record updateRecord(ObjectId id, String xml);
-        View getView(String mappingName);
+        Record fetch(ObjectId id);
+        Record insert(String xml);
+        List<? extends Record> insert(InputStream inputStream, QName recordRoot);
+        Record update(ObjectId id, String xml);
+        void addMapping(String mappingName, String mapping);
+        View view(String mappingName);
     }
 
     public interface Details {
-        QName recordSeparator();
         String providerName();
         String description();
     }
@@ -41,9 +44,11 @@ public interface MetadataRepository {
     }
 
     public interface HarvestStep {
+        ObjectId identifier();
         Date expiration();
         int listSize();
         List<? extends Record> records();
+        HarvestStep next();
     }
 
     public interface Record {
