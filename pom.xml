@@ -159,6 +159,7 @@
         <module>dashboard</module>
         <module>sip-creator</module>
         <module>integration-tests</module>
+        <module>meta-repo</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
