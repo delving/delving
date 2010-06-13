@@ -28,7 +28,7 @@
         <@stringLimiter "${tl}" "150"/>
     </h1>
 
-                <div class="grid_5 alpha" id="img-full">
+                <div class="grid_4 alpha" id="img-full">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
@@ -59,7 +59,7 @@
                     </a>
                 </div>
 
-                <div id="item-detail" class="grid_7 omega">
+                <div id="item-detail" class="grid_8 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
@@ -120,24 +120,47 @@
                     <#else>
 
                     <table width="100%" summary="This table contains the metadata for the object being viewed">
+                        <col style="width:120px"/><col/>
                         <caption>Object metadata</caption>
                         <tbody>
                      <#-- TITLE   -------------------------------------------------------------------------------->
-                        <#assign titleArr = result.fullDoc.dcTitle + result.fullDoc.dcTermsAlternative />
+                        <#assign titleArr = result.fullDoc.dcTitle />
                         <#if isNonEmpty(titleArr)>
                             <tr>
                                 <th scope="row"><@spring.message 'dc_title_t' />:</th>
-                                <td><@simple_list_dual result.fullDoc.dcTitle result.fullDoc.dcTermsAlternative '<br />'/></td>
+                                <td><@simple_list result.fullDoc.dcTitle '<br />'/></td>
                             </tr>
                         </#if>
+
+                     <#-- ALTERNATIVE TITLE   -------------------------------------------------------------------------------->
+                        <#assign altTitleArr = result.fullDoc.dcTermsAlternative />
+                        <#if isNonEmpty(altTitleArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>
+                                <td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>
+                            </tr>
+                        </#if>
+
+
                       <#-- DC CREATOR    -------------------------------------------------------------------------------->
-                        <#assign creatorArr = model.fullDoc.dcCreator + model.fullDoc.dcContributor />
+                        <#assign creatorArr = model.fullDoc.dcCreator />
                         <#if isNonEmpty(creatorArr)>
                             <tr>
                                 <th scope="row"><@spring.message 'Creator_t' />:</th>
-                                <td><@simple_list_dual model.fullDoc.dcCreator model.fullDoc.dcContributor ';&#160;'/></td>
+                                <td><@simple_list model.fullDoc.dcCreator ';&#160;'/></td>
                             </tr>
                         </#if>
+
+
+                      <#-- DC CONTRIBUTOR    -------------------------------------------------------------------------------->
+                        <#assign contributorArr = model.fullDoc.dcContributor />
+                        <#if isNonEmpty(contributorArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'Contributor_t' />:</th>
+                                <td><@simple_list model.fullDoc.dcContributor ';&#160;'/></td>
+                            </tr>
+                        </#if>
+
                       <#-- DC DATE, DC TERMS CREATED, DC TERMS ISSUED --------------------------------->
                         <#assign dateArr = result.fullDoc.dcDate + result.fullDoc.dcTermsCreated + result.fullDoc.dcTermsIssued /></td>
                         <#if isNonEmpty(dateArr)>
