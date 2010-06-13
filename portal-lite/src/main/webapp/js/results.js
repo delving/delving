@@ -151,8 +151,8 @@ function checkSize(obj,type,w){
         }        
     }
     else {
-        if (w > 365) {
-            w = 365;
+        if (w > 285) {
+            w = 285;
             document.getElementById(obj).width=w;
         }
     }

@@ -353,25 +353,26 @@ table caption {
 #item-detail h1 {
     background: none;
     border-bottom: solid 1px #ccc;
-    color: #333;
+    color: #666;
     margin: 0 0 10px 0;
-    padding: 0 0 10px 30px;
+    padding: 0 0 0 30px;
+    text-shadow:2px 2px 2px #BBBBBB;
 }
 
 #item-detail h1.SOUND {
-    background: url(../images/icon-sound.gif) left top no-repeat;
+    background: url(../images/icon-sound.gif) 0 3px no-repeat;
 }
 
 #item-detail h1.TEXT {
-    background: url(../images/icon-page.gif) left top no-repeat;
+    background: url(../images/icon-page.gif) 0 3px no-repeat;
 }
 
 #item-detail h1.VIDEO {
-    background: url(../images/icon-video.gif) left top no-repeat;
+    background: url(../images/icon-video.gif) 0 3px no-repeat;
 }
 
 #item-detail h1.IMAGE {
-    background: url(../images/icon-image.gif) left top no-repeat;
+    background: url(../images/icon-image.gif) 0 3px no-repeat;
 }
 
 #item-detail table th {font-weight: bold; padding-right: 10px; text-align: right;}

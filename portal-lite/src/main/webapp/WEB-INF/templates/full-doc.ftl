@@ -190,11 +190,13 @@
 
     <#macro simple_list_dual values1 values2 separator>
         <#if isNonEmpty(values1) && isNonEmpty(values2)>
-        <@simple_list values1 separator />${separator} <@simple_list values2 separator />
+            <@simple_list values1 separator />${separator} <@simple_list values2 separator />
+                <@simple_list values1 separator />
             <#elseif isNonEmpty(values1)>
-            <@simple_list values1 separator />
+                <@simple_list values1 separator />
             <#elseif isNonEmpty(values2)>
-            <@simple_list values2 separator />
+                <@simple_list values2 separator />
+
         </#if>
     </#macro>
 
