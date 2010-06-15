@@ -17,6 +17,7 @@ public class MetaRepoStarter {
         runner.waitUntilRunning();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
+                System.out.println("executing shutdown hook");
                 runner.kill();
             }
         });

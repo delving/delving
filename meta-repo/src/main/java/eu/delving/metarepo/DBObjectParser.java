@@ -1,6 +1,5 @@
 package eu.delving.metarepo;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.codehaus.stax2.XMLInputFactory2;
@@ -12,7 +11,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Stack;
 
 /**
  * todo: javadoc
@@ -96,6 +94,7 @@ public class DBObjectParser {
                             // todo: unique!
                             // todo: lastModified
                             record = new BasicDBObject();
+                            record.put(MRConstants.TYPE_ATTR, MRConstants.TYPE_METADATA_RECORD);
                             record.put(metadataFormat, recordContent.toString());
                             recordContent.setLength(0);
                         }
@@ -114,7 +113,6 @@ public class DBObjectParser {
                 }
             }
             if (!input.hasNext()) {
-                inputStream.close();
                 break;
             }
             input.next();
