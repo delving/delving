@@ -2,19 +2,17 @@ package eu.delving.metarepo;
 
 import com.mongodb.DBObject;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Make sure the DBObjectParser is working correctly
+ * Make sure the MongoObjectParser is working correctly
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -29,7 +27,7 @@ public class TestParser {
     public void simple() throws XMLStreamException, IOException {
         InputStream input = getClass().getResourceAsStream(XML);
         QName qName = QName.valueOf(QNAME);
-        DBObjectParser parser = new DBObjectParser(input, qName, META_FORMAT);
+        MongoObjectParser parser = new MongoObjectParser(input, qName, META_FORMAT);
         for (int walk=0; walk<2; walk++) {
             DBObject object = parser.nextRecord();
             assertNotNull("Object", object);

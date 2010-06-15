@@ -13,12 +13,10 @@
         http://www.springframework.org/schema/security/spring-security-3.0.xsd
         ">
 
-
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="metarepo" class="eu.delving.metarepo.DbFactoryBean">
+    <bean id="metadataRepository" class="eu.delving.metarepo.MetadataRepositoryImpl">
         <property name="mongo" ref="mongo"/>
-        <property name="name" value="metarepo"/>
     </bean>
 
 </beans>

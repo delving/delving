@@ -13,19 +13,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * todo: javadoc
+ * Parse XML to produce DBObject instances
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class DBObjectParser {
-    private InputStream inputStream;
+public class MongoObjectParser {
     private XMLStreamReader2 input;
     private QName recordRoot;
     private String metadataFormat;
 
-    public DBObjectParser(InputStream inputStream, QName recordRoot, String metadataFormat) throws XMLStreamException {
-        this.inputStream = inputStream;
+    public MongoObjectParser(InputStream inputStream, QName recordRoot, String metadataFormat) throws XMLStreamException {
         this.recordRoot = recordRoot;
         this.metadataFormat = metadataFormat;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
@@ -91,9 +89,9 @@ public class DBObjectParser {
                     if (withinRecord) {
                         if (input.getName().equals(recordRoot) && depth == recordDepth) {
                             withinRecord = false;
+                            record = new BasicDBObject();
                             // todo: unique!
                             // todo: lastModified
-                            record = new BasicDBObject();
                             record.put(MRConstants.TYPE_ATTR, MRConstants.TYPE_METADATA_RECORD);
                             record.put(metadataFormat, recordContent.toString());
                             recordContent.setLength(0);

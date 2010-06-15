@@ -7,6 +7,8 @@ package eu.delving.metarepo;
  */
 
 public class MRConstants {
+    static String DATABASE_NAME = "MetaRepo";
+    static String COLLECTION_PREFIX = "MetadataCollection";
 
     // record types
     static String TYPE_ATTR = "type";

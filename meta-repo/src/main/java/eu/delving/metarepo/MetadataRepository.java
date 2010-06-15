@@ -1,9 +1,11 @@
 package eu.delving.metarepo;
 
 import com.mongodb.DBObject;
-import com.mongodb.ObjectId;
+import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
@@ -24,13 +26,15 @@ public interface MetadataRepository {
 
     public interface Collection {
         String name();
-        Details details();
+//        Details details();
         Record fetch(ObjectId id);
-        Record insert(String xml);
-        List<? extends Record> insert(InputStream inputStream, QName recordRoot);
-        Record update(ObjectId id, String xml);
-        void addMapping(String mappingName, String mapping);
-        View view(String mappingName);
+//        Record insert(String xml);
+        void parseRecords(InputStream inputStream, QName recordRoot) throws XMLStreamException, IOException;
+//        Record update(ObjectId id, String xml);
+        void setMapping(String mappingName, String mapping);
+//        View view(String mappingName);
+
+        List<? extends Record> records(int start, int count);
     }
 
     public interface Details {
@@ -55,6 +59,6 @@ public interface MetadataRepository {
         ObjectId identifier();
         DBObject rootObject();
         Date lastModified();
-        String toXML();
+        String xml();
     }
 }

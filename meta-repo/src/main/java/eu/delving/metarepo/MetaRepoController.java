@@ -1,11 +1,10 @@
 package eu.delving.metarepo;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,17 +32,34 @@ public class MetaRepoController {
 
     private Logger log = Logger.getLogger(getClass());
 
-    @Value("#{metarepo}")
-    private DB metaRepo;
+    @Autowired
+    private MetadataRepository metadataRepository;
 
-    @RequestMapping("index.html")
+    @RequestMapping("/index.html")
     public
     @ResponseBody
     String list() {
-        StringBuilder out = new StringBuilder("MetaRepo Collections:\n");
-        for (String name : metaRepo.getCollectionNames()) {
-            out.append(name).append('\n');
+        StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
+        for (String name : metadataRepository.getCollectionNames()) {
+            out.append(String.format("<li><a href=\"%s/index.html\">%s</a></li>", name, name));
         }
+        out.append("</ul>");
+        return out.toString();
+    }
+
+    @RequestMapping("/{collectionId}/index.html")
+    public
+    @ResponseBody
+    String listCollection(
+            @PathVariable String collectionId
+    ) {
+        MetadataRepository.Collection collection = metadataRepository.getCollection(collectionId);
+        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", collection.name()));
+        for (MetadataRepository.Record record : collection.records(0,10)) {
+            String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
+            out.append("<li>").append(record.identifier()).append("<br>").append(xml).append("</li>\n");
+        }
+        out.append("</ul>");
         return out.toString();
     }
 
@@ -55,16 +71,16 @@ public class MetaRepoController {
             InputStream inputStream
     ) throws IOException, XMLStreamException {
         log.info("submit(" + collectionId + ")");
-        DBCollection collection = metaRepo.getCollection(collectionId);
+        MetadataRepository.Collection collection = metadataRepository.getCollection(collectionId);
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             log.info("entry: " + entry);
             if (entry.getName().endsWith(".xml")) {
-                parseMetadata(zis, collection);
+                collection.parseRecords(zis, QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record"));
             }
             else if (entry.getName().endsWith(".mapping")) {
-                saveMapping(zis, collection);
+                collection.setMapping(MRConstants.FORMAT_ESE, getMapping(zis));
             }
             else {
                 byte[] buffer = new byte[2048];
@@ -80,28 +96,13 @@ public class MetaRepoController {
     }
 
 
-    private void parseMetadata(InputStream inputStream, DBCollection collection) throws XMLStreamException, IOException {
-        DBObjectParser parser = new DBObjectParser(
-                inputStream,
-                QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record"), // todo: get this from the zip file
-                "ORIG" // todo: what is the metadata format?
-        );
-        DBObject object;
-        while ((object = parser.nextRecord()) != null) {
-            collection.insert(object);
-        }
-    }
-
-    private void saveMapping(InputStream inputStream, DBCollection collection) throws IOException {
+    private String getMapping(InputStream inputStream) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
         String line;
         StringBuilder out = new StringBuilder();
         while ((line = in.readLine()) != null) {
             out.append(line).append('\n');
         }
-        DBObject object = new BasicDBObject();
-        object.put(TYPE_ATTR, TYPE_MAPPING);
-        object.put(FORMAT_MAPPING, out.toString());
-        collection.insert(object);
+        return out.toString();
     }
 }

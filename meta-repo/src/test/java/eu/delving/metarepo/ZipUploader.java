@@ -17,16 +17,25 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Upload a zip file to the controller
+ * Upload a test zip file to the controller
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class ZipUploader {
+    private static File ZIP_FILE = new File("meta-repo/target/92017.zip");
+    private Logger log = Logger.getLogger(ZipUploader.class);
 
-    private static Logger LOG = Logger.getLogger(ZipUploader.class);
+    public void upload() throws IOException {
+        if (!ZIP_FILE.getParentFile().exists() && !ZIP_FILE.getParentFile().mkdirs()) {
+            throw new RuntimeException("Can't create the zip file");
+        }
+        OutputStream zipOutput = new FileOutputStream(ZIP_FILE);
+        zipToOutputStream(zipOutput);
+        uploadFile(ZIP_FILE);
+    }
 
-    private static void stream(InputStream in, OutputStream out) throws IOException {
+    private void stream(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[4096];
         int length;
         while ((length = in.read(buffer)) > 0) {
@@ -34,7 +43,7 @@ public class ZipUploader {
         }
     }
 
-    private static void zipToOutputStream(OutputStream outputStream) throws IOException {
+    private void zipToOutputStream(OutputStream outputStream) throws IOException {
         InputStream xmlInput = ZipUploader.class.getResourceAsStream("/92017_Ag_EU_TEL_a0233E.xml");
         InputStream mappingInput = ZipUploader.class.getResourceAsStream("/92017_Ag_EU_TEL_a0233E.xml.mapping");
         ZipOutputStream zos = new ZipOutputStream(outputStream);
@@ -47,16 +56,16 @@ public class ZipUploader {
         zos.close();
     }
 
-    private static void uploadFile(File file) throws IOException {
+    private void uploadFile(File file) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
         String postUrl = "http://localhost:8080/meta-repo/submit/" + file.getName();
-        LOG.info("Posting to: "+postUrl);
+        log.info("Posting to: "+postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         FileEntity fileEntity = new FileEntity(file, "application/zip");
         fileEntity.setChunked(true);
         httpPost.setEntity(fileEntity);
         HttpResponse response = httpClient.execute(httpPost);
-        LOG.info("Response: " + response.getStatusLine());
+        log.info("Response: " + response.getStatusLine());
         HttpEntity resEntity = response.getEntity();
         if (resEntity != null) {
             resEntity.consumeContent();
@@ -65,12 +74,7 @@ public class ZipUploader {
     }
 
     public static void main(String[] args) throws IOException {
-        File ZIP_FILE = new File("meta-repo/target/92017.zip");
-        if (!ZIP_FILE.getParentFile().exists() && !ZIP_FILE.getParentFile().mkdirs()) {
-            throw new RuntimeException("Can't create the zip file");
-        }
-        OutputStream zipOutput = new FileOutputStream(ZIP_FILE);
-        zipToOutputStream(zipOutput);
-        uploadFile(ZIP_FILE);
+        ZipUploader uploader = new ZipUploader();
+        uploader.upload();
     }
 }
