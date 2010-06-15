@@ -40,7 +40,7 @@ public class MetaRepoController {
     }
 
     @RequestMapping("/submit/{collectionId}.zip")
-    public void submit(
+    public @ResponseBody String submit(
             @PathVariable String collectionId,
             InputStream inputStream
     ) throws IOException {
@@ -55,6 +55,9 @@ public class MetaRepoController {
                 log.info("buffer "+size);
             }
         }
+        zis.close();
+        log.info("finished submit");
+        return "OK";
     }
 
 }

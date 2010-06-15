@@ -82,11 +82,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.0.0.M0</version>
-            </plugin>
         </plugins>
     </build>
     <repositories>
@@ -154,7 +149,6 @@
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
-            <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -171,7 +165,6 @@
 
     </dependencies>
     <properties>
-        <jetty.version>6.1.10</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>
