@@ -18,10 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
@@ -34,17 +31,14 @@ import java.util.Map;
 
 public class TestMongo {
     private static final Logger LOG = Logger.getLogger(TestMongo.class);
-    private static final File MONGO = new File("meta-repo/target/mongo");
-    private static DaemonRunner daemonRunner;
+    private static MongoDaemonRunner daemonRunner;
     private DBCollection collection;
 
     @BeforeClass
     public static void startDaemon() throws IOException, InterruptedException {
-        if (!MONGO.mkdirs()) {
-            throw new IOException("couldn't make directories");
-        }
-        daemonRunner = new DaemonRunner();
+        daemonRunner = new MongoDaemonRunner();
         daemonRunner.start();
+        daemonRunner.waitUntilRunning();
     }
 
     @AfterClass
@@ -107,38 +101,4 @@ public class TestMongo {
 //        collection.insert(object);
 //        System.out.format("inserted object's id is [%s] error [%s]\n", object.get("_id"), db.getLastError());
 //    }
-//
-    private static class DaemonRunner extends Thread {
-        private Process process;
-        private boolean killed;
-
-        @Override
-        public void run() {
-            try {
-                LOG.info("Firing up the daemon");
-                process = Runtime.getRuntime().exec(new String[]{
-                        "/opt/local/bin/mongod",
-                        "--dbpath",
-                        MONGO.getAbsolutePath()
-                });
-                BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-                while ((line = in.readLine()) != null) {
-                    LOG.info(line);
-                }
-                LOG.info("Daemon is dead");
-            }
-            catch (IOException e) {
-                if (!killed) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void kill() {
-            killed = true;
-            process.destroy();
-        }
-    }
-
 }

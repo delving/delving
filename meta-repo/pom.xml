@@ -4,9 +4,14 @@
     <groupId>eu.delving</groupId>
     <artifactId>meta-repo</artifactId>
     <packaging>war</packaging>
-    <name>The Server Side of the SIP-Creator Application</name>
+    <name>Metadata Repository</name>
     <version>0.1</version>
     <inceptionYear>2010</inceptionYear>
+    <parent>
+        <groupId>eu.europeana</groupId>
+        <artifactId>europeana</artifactId>
+        <version>1</version>
+    </parent>
     <developers>
         <developer>
             <name>Gerald de Jong</name>
@@ -99,7 +104,6 @@
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-lgpl</artifactId>
-            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.collections</groupId>
@@ -109,37 +113,30 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
@@ -165,9 +162,15 @@
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     <properties>
-        <spring.version>3.0.2.RELEASE</spring.version>
         <jetty.version>6.1.10</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

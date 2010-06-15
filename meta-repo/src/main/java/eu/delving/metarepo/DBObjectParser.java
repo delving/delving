@@ -40,17 +40,18 @@ public class DBObjectParser {
 
     @SuppressWarnings("unchecked")
     public synchronized DBObject nextRecord() throws XMLStreamException, IOException {
-        DBObject object = null;
+        DBObject record = null;
         StringBuilder recordContent = new StringBuilder();
         boolean withinRecord = false;
         int depth = 0;
         int recordDepth = 0;
         boolean contentPresent = false;
-        while (object == null) {
+        while (record == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
                     break;
                 case XMLEvent.NAMESPACE:
+                    System.out.println("namespace: " + input.getName());
                     break;
                 case XMLEvent.START_ELEMENT:
                     depth++;
@@ -79,9 +80,12 @@ public class DBObjectParser {
                 case XMLEvent.CHARACTERS:
                 case XMLEvent.CDATA:
                     if (withinRecord) {
-                        if (!contentPresent && !input.getText().trim().isEmpty()) {
-                            contentPresent = true;
-                            recordContent.append(input.getText());
+                        if (!contentPresent) {
+                            String content = input.getText().trim();
+                            if (!content.isEmpty()) {
+                                contentPresent = true;
+                                recordContent.append(input.getText());
+                            }
                         }
                     }
                     break;
@@ -91,8 +95,8 @@ public class DBObjectParser {
                             withinRecord = false;
                             // todo: unique!
                             // todo: lastModified
-                            object = new BasicDBObject();
-                            object.put(metadataFormat, recordContent.toString());
+                            record = new BasicDBObject();
+                            record.put(metadataFormat, recordContent.toString());
                             recordContent.setLength(0);
                         }
                         else {
@@ -115,7 +119,7 @@ public class DBObjectParser {
             }
             input.next();
         }
-        return object;
+        return record;
     }
 
     public void close() {
