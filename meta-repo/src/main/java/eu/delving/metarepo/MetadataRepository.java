@@ -41,17 +41,18 @@ public interface MetadataRepository {
         String providerName();
         String description();
     }
-    
+
     public interface View {
         List<? extends Record> records(int start, int count);
         List<? extends Record> records(Date startTime, int count);
     }
 
     public interface HarvestStep {
-        ObjectId identifier();
+        ObjectId identifier(); // is resumptionToken
         Date expiration();
         int listSize();
         List<? extends Record> records();
+        OaiPmhObject oaiPmhObject();
         HarvestStep next();
     }
 
@@ -61,4 +62,34 @@ public interface MetadataRepository {
         Date lastModified();
         String xml();
     }
+
+    public interface OaiPmhObject {
+        PmhVerbs verb();
+        String set();
+        String from();
+        String until();
+        String metadataPrefix();
+        String identifier(); // Only used GetRecord
+    }
+
+    public enum PmhVerbs {
+        LIST_SETS("ListSets"),
+        List_METADATA_FORMATS("ListMetadataFormats"),
+        LIST_IDENTIFIERS("ListIdentifiers"),
+        LIST_RECORDS("ListRecords"),
+        GET_RECORD("GetRecord"),
+        IDENTIFY("Identify");
+
+        private String pmhCommand;
+
+        PmhVerbs(String pmhCommand) {
+            this.pmhCommand = pmhCommand;
+        }
+
+        public String getPmhCommand() {
+            return pmhCommand;
+        }
+    }
 }
+
+
