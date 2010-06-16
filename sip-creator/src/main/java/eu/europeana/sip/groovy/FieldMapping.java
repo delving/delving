@@ -131,4 +131,12 @@ public class FieldMapping implements Iterable<String> {
     public String toString() {
         return europeanaField == null ? "?" : europeanaField.getFieldNameString();
     }
+
+    // todo: this is a temporary measure, reversing the stupid decision to treat variable names
+    // todo: as lower case.
+    public void fixVariableName(String from, String to) {
+        for (int walk=0; walk<codeLines.size(); walk++) {
+            codeLines.set(walk, codeLines.get(walk).replaceAll(from, to));
+        }
+    }
 }

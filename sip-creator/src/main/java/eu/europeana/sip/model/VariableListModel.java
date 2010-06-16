@@ -125,6 +125,15 @@ public class VariableListModel extends AbstractListModel {
                 }
                 variableHolderList.add(variableHolder);
             }
+            // todo: this is a rude trick to correct the stupid decision to make variables lower-case
+            for (VariableHolder holder : variableHolderList) {
+                String to = holder.getVariableName();
+                String from = to.toLowerCase();
+                for (FieldMapping fieldMapping : recordMapping) {
+                    fieldMapping.fixVariableName(from, to);
+                }
+            }
+            // todo: remove the above block sometime
             Collections.sort(variableHolderList);
             fireIntervalAdded(this, 0, getSize());
         }

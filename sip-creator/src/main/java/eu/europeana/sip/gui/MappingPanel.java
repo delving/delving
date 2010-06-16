@@ -31,7 +31,6 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.VariableListModel;
-import eu.europeana.sip.xml.Sanitizer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -254,9 +253,11 @@ public class MappingPanel extends JPanel {
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                AnalysisTree.Node node = (AnalysisTree.Node) variablesList.getSelectedValue();
-                sipModel.selectNode(node);
-                constantField.setText("?");
+                VariableListModel.VariableHolder holder = (VariableListModel.VariableHolder) variablesList.getSelectedValue();
+                if (holder != null) {
+                    sipModel.selectNode(holder.getNode());
+                    constantField.setText("?");
+                }
             }
         });
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -347,8 +348,9 @@ public class MappingPanel extends JPanel {
             else {
                 for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                     VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
-                    String variableName = Sanitizer.tag2variable(variableHolder.getVariableName());
-                    if (variableName.equals(field.getFieldNameString())) {
+                    String variableName = variableHolder.getVariableName();
+                    String fieldName = field.getFieldNameString();
+                    if (variableName.endsWith(fieldName)) {
                         generateCopyCode(field, variableHolder.getNode(), obvious);
                     }
                 }
@@ -368,8 +370,9 @@ public class MappingPanel extends JPanel {
             }
             for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
                 VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
-                String nodeName = Sanitizer.tag2variable(variableHolder.getVariableName());
-                if (nodeName.equals(field.getFieldNameString())) {
+                String variableName = variableHolder.getVariableName();
+                String fieldName = field.getFieldNameString();
+                if (variableName.endsWith(fieldName)) {
                     return field;
                 }
             }

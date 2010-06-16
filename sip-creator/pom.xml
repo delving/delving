@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>0.8.12</version>
+    <version>0.8.19</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -97,6 +97,12 @@
             <groupId>eu.europeana</groupId>
             <artifactId>definitions</artifactId>
             <version>${europeana.definitions.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jnlp</groupId>
+            <artifactId>jnlp-api</artifactId>
+            <version>1.5.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>

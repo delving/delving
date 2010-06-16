@@ -25,14 +25,12 @@ import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Spring;
 import javax.swing.SpringLayout;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -40,6 +38,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -50,16 +50,21 @@ import java.awt.event.FocusListener;
 
 public class ConstantFieldPanel extends JPanel {
     private SipModel sipModel;
-    private JTextField[] textField;
+    private FieldComponent[] fieldComponent;
 
     public ConstantFieldPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
-        textField = new JTextField[sipModel.getGlobalFieldModel().getFields().size()];
+        fieldComponent = new FieldComponent[sipModel.getGlobalFieldModel().getFields().size()];
         setBorder(BorderFactory.createTitledBorder("Constant Fields"));
         int index = 0;
-        for (String field : sipModel.getGlobalFieldModel().getFields()) {
-            textField[index++] = addField(field);
+        for (ConstantFieldModel.FieldSpec fieldSpec : sipModel.getGlobalFieldModel().getFields()) {
+            if (fieldSpec.getEnumValues() == null) {
+                fieldComponent[index++] = new FieldComponent(fieldSpec);
+            }
+            else {
+                fieldComponent[index++] = new FieldComponent(fieldSpec);
+            }
         }
         makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(400, 400));
@@ -68,63 +73,9 @@ public class ConstantFieldPanel extends JPanel {
     public void refresh() {
         ConstantFieldModel model = sipModel.getGlobalFieldModel();
         int index = 0;
-        for (String fieldName : model.getFields()) {
-            textField[index++].setText(model.get(fieldName));
+        for (ConstantFieldModel.FieldSpec fieldSpec : model.getFields()) {
+            fieldComponent[index++].setText(model.get(fieldSpec.getName()));
         }
-    }
-
-    private JTextField addField(final String fieldName) {
-        final JTextField field = new JTextField();
-        field.setText("");
-        field.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent documentEvent) {
-                checkValue(field, fieldName);
-            }
-
-            public void removeUpdate(DocumentEvent documentEvent) {
-                checkValue(field, fieldName);
-            }
-
-            public void changedUpdate(DocumentEvent documentEvent) {
-                checkValue(field, fieldName);
-            }
-        });
-        field.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                setValue(field, fieldName);
-            }
-        });
-        field.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                setValue(field, fieldName);
-            }
-        });
-        JLabel label = new JLabel(fieldName, JLabel.RIGHT);
-        label.setLabelFor(field);
-        this.add(label);
-        this.add(field);
-        return field;
-    }
-
-    private void checkValue(JTextField field, String fieldName) {
-        String valueString = sipModel.getGlobalFieldModel().get(fieldName);
-        String fieldString = field.getText();
-        if (valueString.equals(fieldString)) {
-            field.setBackground(Color.WHITE);
-        }
-        else {
-            field.setBackground(Color.YELLOW);
-        }
-    }
-
-    private void setValue(JTextField field, String globalField) {
-        sipModel.setGlobalField(globalField, field.getText());
-        checkValue(field, globalField);
     }
 
     private static SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
@@ -168,5 +119,80 @@ public class ConstantFieldPanel extends JPanel {
         //Set the parent's size.
         SpringLayout.Constraints pCons = layout.getConstraints(parent);
         pCons.setConstraint(SpringLayout.EAST, x);
+    }
+
+    private class FieldComponent {
+        private ConstantFieldModel.FieldSpec fieldSpec;
+        private JTextField textField;
+        private JComboBox comboBox;
+
+        private FieldComponent(ConstantFieldModel.FieldSpec fieldSpec) {
+            this.fieldSpec = fieldSpec;
+            if (fieldSpec.getEnumValues() == null) {
+                createTextField();
+            }
+            else {
+                createComboBox();
+            }
+        }
+
+        private void createComboBox() {
+            comboBox = new JComboBox(fieldSpec.getEnumValues().toArray());
+            comboBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    Object selected = comboBox.getSelectedItem();
+                    if (selected != null) {
+                        setValue();
+                    }
+                }
+            });
+            JLabel label = new JLabel(fieldSpec.getName(), JLabel.RIGHT);
+            label.setLabelFor(comboBox);
+            ConstantFieldPanel.this.add(label);
+            ConstantFieldPanel.this.add(comboBox);
+        }
+
+        private void createTextField() {
+            textField = new JTextField();
+            textField.setText("");
+            textField.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    setValue();
+                }
+            });
+            textField.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    setValue();
+                }
+            });
+            JLabel label = new JLabel(fieldSpec.getName(), JLabel.RIGHT);
+            label.setLabelFor(textField);
+            ConstantFieldPanel.this.add(label);
+            ConstantFieldPanel.this.add(textField);
+        }
+
+        private void setValue() {
+            if (textField != null) {
+                sipModel.setGlobalField(fieldSpec.getName(), textField.getText());
+            }
+            else {
+                sipModel.setGlobalField(fieldSpec.getName(), comboBox.getSelectedItem().toString());
+            }
+        }
+
+        public void setText(String text) {
+            if (textField != null) {
+                textField.setText(text);
+            }
+            else {
+                comboBox.getModel().setSelectedItem(text);
+            }
+        }
     }
 }

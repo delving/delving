@@ -53,7 +53,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(required = true, briefDoc = true, object = true, url = true)
+    @Europeana(required = true, briefDoc = true, object = true, url = true) // todo: object is not required!!
     @Solr(prefix = "europeana", localName = "object")
     @Field("europeana_object")
     String[] europeanaObject;

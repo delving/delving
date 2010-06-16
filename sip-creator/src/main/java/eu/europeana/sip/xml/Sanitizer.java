@@ -52,7 +52,7 @@ public class Sanitizer {
     + "-"
     ;
 
-    public static String tag2variable(String s) {
+    public static String tagToVariable(String s) {
        if (s == null) return null;
        StringBuilder sb = new StringBuilder();
        int n = s.length();
@@ -66,6 +66,6 @@ public class Sanitizer {
               sb.append(c);
           }
        }
-       return sb.toString().toLowerCase();
+       return sb.toString();
     }
 }

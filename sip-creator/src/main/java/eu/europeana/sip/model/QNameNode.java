@@ -127,7 +127,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         Iterator<QNameNode> nodeWalk = path.iterator();
         while (nodeWalk.hasNext()) {
             String nodeName = nodeWalk.next().toString();
-            out.append(Sanitizer.tag2variable(nodeName));
+            out.append(Sanitizer.tagToVariable(nodeName));
             if (nodeWalk.hasNext()) {
                 out.append('.');
             }

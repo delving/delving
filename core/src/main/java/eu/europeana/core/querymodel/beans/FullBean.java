@@ -89,9 +89,9 @@ public class FullBean extends BriefBean implements FullDoc {
     String[] europeanaYear;
 
     @Europeana(category = ESE_PLUS)
-    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
+    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean") // todo: make it required
     @Field("europeana_hasObject")
-    boolean europeanahasObject;
+    boolean europeanahasObject; // todo: change this to europeanaHasObject (capitalization!)
 
     @Europeana(category = ESE_PLUS, required = true, constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"})

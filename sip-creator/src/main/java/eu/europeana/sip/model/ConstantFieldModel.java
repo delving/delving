@@ -27,6 +27,7 @@ import eu.europeana.definitions.annotations.EuropeanaField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -37,7 +38,7 @@ import java.util.TreeMap;
 
 public class ConstantFieldModel {
     private static final String PREFIX = "// ConstantField ";
-    private List<String> fields = new ArrayList<String>();
+    private List<FieldSpec> fields = new ArrayList<FieldSpec>();
     private Map<String, String> map = new TreeMap<String, String>();
     private Listener listener;
 
@@ -54,10 +55,12 @@ public class ConstantFieldModel {
     }
 
     public ConstantFieldModel(AnnotationProcessor annotationProcessor, Listener listener) {
-        fields.add("collectionId");
+        fields.add(new FieldSpec("collectionId"));
         for (EuropeanaField field : annotationProcessor.getAllFields()) {
             if (field.europeana().constant()) {
-                fields.add(field.getFieldNameString());
+                FieldSpec fieldSpec = new FieldSpec(field.getFieldNameString());
+                fieldSpec.setEnumValues(field.getEnumValues());
+                fields.add(fieldSpec);
             }
         }
         this.listener = listener;
@@ -79,7 +82,7 @@ public class ConstantFieldModel {
         }
     }
 
-    public List<String> getFields() {
+    public List<FieldSpec> getFields() {
         return fields;
     }
 
@@ -114,13 +117,38 @@ public class ConstantFieldModel {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-        for (String field : fields) {
-            String value = map.get(field);
+        for (FieldSpec fieldSpec : fields) {
+            String value = map.get(fieldSpec.getName());
             if (value == null) {
                 value = "";
             }
-            out.append(PREFIX).append(field).append(' ').append(value).append('\n');
+            out.append(PREFIX).append(fieldSpec.getName()).append(' ').append(value).append('\n');
         }
         return out.toString();
+    }
+
+    public class FieldSpec {
+        private String name;
+        private Set<String> enumValues;
+
+        public FieldSpec(String name) {
+            this.name = name;
+        }
+
+        public void setEnumValues(Set<String> enumValues) {
+            this.enumValues = enumValues;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Set<String> getEnumValues() {
+            return enumValues;
+        }
+
+        public String toString() {
+            return name;
+        }
     }
 }

@@ -111,6 +111,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
 
     public void setCode(String code, Map<String, EuropeanaField> fieldMap) {
         fieldMappings.clear();
+        constantFieldModel.clear();
         recordRoot = null;
         FieldMapping fieldMapping = null;
         for (String line : code.split("\n")) {

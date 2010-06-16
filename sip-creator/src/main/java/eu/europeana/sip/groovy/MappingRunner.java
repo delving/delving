@@ -108,8 +108,8 @@ public class MappingRunner {
         binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
         binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
         binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
-        for (String fieldName : constantFieldModel.getFields()) {
-            binding.setVariable(fieldName, constantFieldModel.get(fieldName));
+        for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
+            binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
         }
         binding.setVariable("input", record.getRootNode());
         return binding;
