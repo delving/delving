@@ -89,6 +89,7 @@ public class MetaRepoImpl implements MetaRepo {
             );
             DBObject object;
             while ((object = parser.nextRecord()) != null) {
+
                 dbc.insert(object);
             }
         }
