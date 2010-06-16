@@ -1,4 +1,4 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.core;
 
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public interface MetadataRepository {
+public interface MetaRepo {
 
     List<String> getCollectionNames();
 
@@ -29,7 +29,7 @@ public interface MetadataRepository {
 //        Details details();
         Record fetch(ObjectId id);
 //        Record insert(String xml);
-        void parseRecords(InputStream inputStream, QName recordRoot) throws XMLStreamException, IOException;
+        void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
 //        Record update(ObjectId id, String xml);
         void setMapping(String mappingName, String mapping);
 //        View view(String mappingName);
@@ -59,7 +59,7 @@ public interface MetadataRepository {
     public interface Record {
         ObjectId identifier();
         DBObject rootObject();
-        Date lastModified();
+        Date modified();
         String xml();
     }
 

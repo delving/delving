@@ -1,4 +1,4 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.impl;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -12,6 +12,8 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static eu.delving.metarepo.core.Constant.*;
+
 /**
  * Parse XML to produce DBObject instances
  *
@@ -20,12 +22,11 @@ import java.io.InputStream;
 
 public class MongoObjectParser {
     private XMLStreamReader2 input;
-    private QName recordRoot;
-    private String metadataFormat;
+    private QName recordRoot, uniqueElement;
 
-    public MongoObjectParser(InputStream inputStream, QName recordRoot, String metadataFormat) throws XMLStreamException {
+    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException {
         this.recordRoot = recordRoot;
-        this.metadataFormat = metadataFormat;
+        this.uniqueElement = uniqueElement;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -37,7 +38,9 @@ public class MongoObjectParser {
     @SuppressWarnings("unchecked")
     public synchronized DBObject nextRecord() throws XMLStreamException, IOException {
         DBObject record = null;
-        StringBuilder recordContent = new StringBuilder();
+        StringBuilder contentBuffer = new StringBuilder();
+        StringBuilder uniqueBuffer = null;
+        String uniqueContent = null;
         boolean withinRecord = false;
         int depth = 0;
         int recordDepth = 0;
@@ -61,26 +64,31 @@ public class MongoObjectParser {
                         if (contentPresent) {
                             throw new IOException("Content and subtags not permitted");
                         }
-                        recordContent.append("<").append(input.getPrefixedName());
+                        if (input.getName().equals(uniqueElement)) {
+                            uniqueBuffer = new StringBuilder();
+                        }
+                        contentBuffer.append("<").append(input.getPrefixedName());
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName qName = input.getAttributeName(walk);
                                 String attrName = qName.getPrefix().isEmpty() ? qName.getLocalPart() : qName.getPrefix() + ":" + qName.getLocalPart();
                                 String value = input.getAttributeValue(walk);
-                                recordContent.append(' ').append(attrName).append("=\"").append(value).append("\"");
+                                contentBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
                             }
                         }
-                        recordContent.append(">\n");
+                        contentBuffer.append(">\n");
                     }
                     break;
                 case XMLEvent.CHARACTERS:
                 case XMLEvent.CDATA:
                     if (withinRecord) {
                         if (!contentPresent) {
-                            String content = input.getText().trim();
-                            if (!content.isEmpty()) {
-                                contentPresent = true;
-                                recordContent.append(input.getText());
+                            contentPresent = !input.getText().trim().isEmpty();
+                        }
+                        if (contentPresent) {
+                            contentBuffer.append(input.getText());
+                            if (uniqueBuffer != null) {
+                                uniqueBuffer.append(input.getText());
                             }
                         }
                     }
@@ -90,17 +98,25 @@ public class MongoObjectParser {
                         if (input.getName().equals(recordRoot) && depth == recordDepth) {
                             withinRecord = false;
                             record = new BasicDBObject();
-                            // todo: unique!
-                            // todo: lastModified
-                            record.put(MRConstants.TYPE_ATTR, MRConstants.TYPE_METADATA_RECORD);
-                            record.put(metadataFormat, recordContent.toString());
-                            recordContent.setLength(0);
+                            record.put(TYPE, TYPE_METADATA_RECORD);
+                            record.put(ORIGINAL, contentBuffer.toString());
+                            if (uniqueContent != null) {
+                                record.put(UNIQUE, uniqueContent);
+                            }
+                            contentBuffer.setLength(0);
                         }
                         else {
                             if (contentPresent) {
-                                recordContent.append('\n');
+                                contentBuffer.append('\n');
+                                if (uniqueBuffer != null) {
+                                    String unique = uniqueBuffer.toString().trim();
+                                    if (!unique.isEmpty()) {
+                                        uniqueContent = unique;
+                                    }
+                                    uniqueBuffer = null;
+                                }
                             }
-                            recordContent.append("</").append(input.getPrefixedName()).append(">\n");
+                            contentBuffer.append("</").append(input.getPrefixedName()).append(">\n");
                             contentPresent = false;
                         }
                     }

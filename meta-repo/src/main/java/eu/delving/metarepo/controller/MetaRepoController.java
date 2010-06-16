@@ -1,8 +1,7 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.controller;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import eu.delving.metarepo.core.Constant;
+import eu.delving.metarepo.core.MetaRepo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,8 +18,6 @@ import java.io.InputStreamReader;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static eu.delving.metarepo.MRConstants.*;
-
 /**
  * The controller for the metadata repository
  *
@@ -33,14 +30,14 @@ public class MetaRepoController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    private MetadataRepository metadataRepository;
+    private MetaRepo metaRepo;
 
     @RequestMapping("/index.html")
     public
     @ResponseBody
     String list() {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
-        for (String name : metadataRepository.getCollectionNames()) {
+        for (String name : metaRepo.getCollectionNames()) {
             out.append(String.format("<li><a href=\"%s/index.html\">%s</a></li>", name, name));
         }
         out.append("</ul>");
@@ -53,11 +50,13 @@ public class MetaRepoController {
     String listCollection(
             @PathVariable String collectionId
     ) {
-        MetadataRepository.Collection collection = metadataRepository.getCollection(collectionId);
+        MetaRepo.Collection collection = metaRepo.getCollection(collectionId);
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", collection.name()));
-        for (MetadataRepository.Record record : collection.records(0,10)) {
+        for (MetaRepo.Record record : collection.records(0,10)) {
             String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
-            out.append("<li>").append(record.identifier()).append("<br>").append(xml).append("</li>\n");
+            out.append("<li>").append(record.identifier()).append("<br>")
+                    .append(record.modified().toString()).append("<br>")
+                    .append(xml).append("</li>\n");
         }
         out.append("</ul>");
         return out.toString();
@@ -71,16 +70,20 @@ public class MetaRepoController {
             InputStream inputStream
     ) throws IOException, XMLStreamException {
         log.info("submit(" + collectionId + ")");
-        MetadataRepository.Collection collection = metadataRepository.getCollection(collectionId);
+        MetaRepo.Collection collection = metaRepo.getCollection(collectionId);
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             log.info("entry: " + entry);
             if (entry.getName().endsWith(".xml")) {
-                collection.parseRecords(zis, QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record"));
+                collection.parseRecords(
+                        zis,
+                        QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record"),
+                        QName.valueOf("{http://www.openarchives.org/OAI/2.0/}identifier")
+                );
             }
             else if (entry.getName().endsWith(".mapping")) {
-                collection.setMapping(MRConstants.FORMAT_ESE, getMapping(zis));
+                collection.setMapping(Constant.MAPPING_TO_ESE, getMapping(zis));
             }
             else {
                 byte[] buffer = new byte[2048];

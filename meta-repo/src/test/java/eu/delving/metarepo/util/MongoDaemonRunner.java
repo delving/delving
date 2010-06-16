@@ -1,4 +1,4 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.util;
 
 import org.apache.log4j.Logger;
 
@@ -23,7 +23,19 @@ public class MongoDaemonRunner extends Thread {
     @Override
     public void run() {
         try {
-            if (!MONGO.exists() && !MONGO.mkdirs()) {
+            if (MONGO.exists()) {
+                for (File file : MONGO.listFiles()) {
+                    if (!file.delete()) {
+                        throw new IOException("couldn't delete "+file.getAbsolutePath());
+                    }
+                    LOG.info("Deleted "+file.getAbsolutePath());
+                }
+                if (!MONGO.delete()) {
+                    throw new IOException("couldn't delete "+MONGO.getAbsolutePath());
+                }
+                LOG.info("Deleted "+MONGO.getAbsolutePath());
+            }
+            if (!MONGO.mkdirs()) {
                 throw new IOException("couldn't make directories from "+MONGO.getAbsolutePath());
             }
             LOG.info("Firing up the daemon");

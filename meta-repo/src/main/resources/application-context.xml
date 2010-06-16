@@ -15,7 +15,7 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="metadataRepository" class="eu.delving.metarepo.MetadataRepositoryImpl">
+    <bean id="metadataRepository" class="eu.delving.metarepo.impl.MetaRepoImpl">
         <property name="mongo" ref="mongo"/>
     </bean>
 

@@ -1,4 +1,4 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.impl;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -6,6 +6,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import eu.delving.metarepo.core.MetaRepo;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static eu.delving.metarepo.MRConstants.*;
+import static eu.delving.metarepo.core.Constant.*;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -24,7 +25,7 @@ import static eu.delving.metarepo.MRConstants.*;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MetadataRepositoryImpl implements MetadataRepository {
+public class MetaRepoImpl implements MetaRepo {
     private Mongo mongo;
     private DB mongoDatabase;
 
@@ -75,16 +76,16 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
         @Override
         public Record fetch(ObjectId id) {
-            DBObject object = new BasicDBObject("_id", id);
+            DBObject object = new BasicDBObject(MONGO_ID, id);
             return new RecordImpl(dbc.findOne(object));
         }
 
         @Override
-        public void parseRecords(InputStream inputStream, QName recordRoot) throws XMLStreamException, IOException {
+        public void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException {
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
                     recordRoot,
-                    FORMAT_ORIGINAL
+                    uniqueElement
             );
             DBObject object;
             while ((object = parser.nextRecord()) != null) {
@@ -94,19 +95,19 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
         @Override
         public void setMapping(String mappingName, String mapping) {
-            DBObject query = new BasicDBObject(TYPE_ATTR, TYPE_MAPPING);
+            DBObject query = new BasicDBObject(TYPE, TYPE_MAPPING);
             DBObject result = dbc.findOne(query);
             if (result == null) {
                 DBObject mappingObject = new BasicDBObject();
-                mappingObject.put(TYPE_ATTR, TYPE_MAPPING);
-                mappingObject.put(FORMAT_ESE, mapping);
+                mappingObject.put(TYPE, TYPE_MAPPING);
+                mappingObject.put(mappingName, mapping);
             }
         }
 
         @Override
         public List<? extends Record> records(int start, int count) {
             DBObject query = new BasicDBObject();
-            query.put(TYPE_ATTR, TYPE_METADATA_RECORD);
+            query.put(TYPE, TYPE_METADATA_RECORD);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = dbc.find(query, null, start, count);
             while (cursor.hasNext()) {
@@ -127,7 +128,7 @@ public class MetadataRepositoryImpl implements MetadataRepository {
 
         @Override
         public ObjectId identifier() {
-            return (ObjectId) object.get("_id");
+            return (ObjectId) object.get(MONGO_ID);
         }
 
         @Override
@@ -136,13 +137,17 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         }
 
         @Override
-        public Date lastModified() {
-            return null;  // todo: implement
+        public Date modified() {
+            Date modified = (Date) object.get(MODIFIED);
+            if (modified == null) {
+                modified = new Date(identifier().getTime());
+            }
+            return modified;
         }
 
         @Override
         public String xml() {
-            return (String) object.get(FORMAT_ORIGINAL);
+            return (String) object.get(ORIGINAL);
         }
     }
 }

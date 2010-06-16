@@ -1,7 +1,8 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
@@ -71,6 +72,9 @@ public class ZipUploader {
             resEntity.consumeContent();
         }
         httpClient.getConnectionManager().shutdown();
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new IOException("Response not OK");
+        }
     }
 
     public static void main(String[] args) throws IOException {

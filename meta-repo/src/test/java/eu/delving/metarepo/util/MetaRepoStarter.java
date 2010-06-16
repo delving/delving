@@ -1,4 +1,4 @@
-package eu.delving.metarepo;
+package eu.delving.metarepo.util;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
