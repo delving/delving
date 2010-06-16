@@ -229,7 +229,7 @@
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <td><@spring.message 'dc_source_t' />:</td>
+                                <th scope="row"><@spring.message 'dc_source_t' />:</td>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
@@ -252,13 +252,6 @@
                         </#if>
 
 
-                        <#-- DC RELATIONS------------------------------------------------------------------------------>
-                        <#if isNonEmpty(relationsArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_relation_t' />:</th>
-                                <td><@simple_list relationsArr '<br/>'/></td>
-                            </tr>
-                        </#if>
                      <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(providerArr) >
                             <tr>
@@ -276,6 +269,14 @@
                         </#if>
 
 
+                        <#-- DC RELATIONS------------------------------------------------------------------------------>
+                        <#if isNonEmpty(relationsArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'dc_relation_t' />:</th>
+                                <td><@simple_list relationsArr '<br/>'/></td>
+                            </tr>
+                        </#if>
+                     
                     <#-- check if there is more content, if so show 'more' link and render content -->
                     <#--<#if isNonEmpty(moreArr) >-->
                     <#--<p id="morelink">-->
@@ -307,12 +308,12 @@
 
 
                         <#-- DC TERMS PROVENANCE----------------------------------------------------------------------->
-                        <#if isNonEmpty(provenanceArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dcterms_provenance_t' />:</th>
-                                <td><@simple_list provenanceArr ';&#160;'/></td>
-                            </tr>
-                        </#if>
+                        <#--<#if isNonEmpty(provenanceArr)>-->
+                            <#--<tr>-->
+                                <#--<th scope="row"><@spring.message 'dcterms_provenance_t' />:</th>-->
+                                <#--<td><@simple_list provenanceArr ';&#160;'/></td>-->
+                            <#--</tr>-->
+                        <#--</#if>-->
 
 
 
