@@ -32,6 +32,12 @@ To build a mapping you must go through four stages, indicated by different tabs 
 
 The SIP-Creator has built-in validation of the resulting record, so you will be able to see a report of anything in your mapping that is producing invalid records.
 
+## Templates
+
+When a number of different identically-structured or even similarly-structured input files must be mapped, it would be tedious to have to repeat the normalization steps again and again.  To avoid this, a template feature has been added to the menu at the top.
+
+After having completed a mapping of one of the similar files, you can select the menu item to "Save current mapping as template" under a name that you choose.  Subsequently, when you load another of the files to start normalization, you can apply one of the stored templates to the current file.  All of the field mappings are stored in the templates, but the constant fields (which will be different for a new file) are eliminated.
+
 ## Step One : Analysis, Record Root Choice, Constants
 
 The **File** menu makes it possible to select a source XML file using a pop-up file dialog box. When you start the application for the very first time, this file dialog is set to search from the root of your file system, but after you have chosen input files it gives options for opening other files in the vicinity.  Recent files are made available in the file menu as well.
@@ -64,7 +70,13 @@ Each of these mappings involve a small snippet of Groovy code, and the code for 
 
 ## Step Three : Refining the Field Mappings
 
-It is in the refinement process that you first encounter Groovy code and are given an opportunity to review and edit the snippets that were generated in the previous step. We will look at some examples of the generated snippets.
+It is in the refinement process that you first encounter Groovy code and are given an opportunity to review and edit the snippets that were generated in the previous step.
+
+### URL Launch Feature
+
+Some fields in the output record must be URLs, whether they are simply copied from input records or generated on the basis of some of their contents.  When the mapping is responsible for generating the URLs it is important to be able to check whether they are legitimate functional URLs pointing to the correct things.
+
+The output panel on the lower right of this tab has a special feature to make this process easy.  Since the SIP-Creator is launched from within your web browser using Java Web Start it has some control of the browser. When you double-click an URL in the output window it launches your browser on that link, allowing you to verify that the generated URL is indeed correct.
 
 ### Generated Snippets
 
