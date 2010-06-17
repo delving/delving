@@ -146,7 +146,7 @@
                         <#assign creatorArr = model.fullDoc.dcCreator />
                         <#if isNonEmpty(creatorArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Creator_t' />:</th>
+                                <th scope="row"><@spring.message 'dc_creator_t' />:</th>
                                 <td><@simple_list model.fullDoc.dcCreator ';&#160;'/></td>
                             </tr>
                         </#if>
