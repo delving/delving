@@ -28,7 +28,7 @@
         <@stringLimiter "${tl}" "150"/>
     </h1>
 
-                <div class="grid_5 alpha" id="img-full">
+                <div class="grid_4 alpha" id="img-full">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
@@ -59,7 +59,7 @@
                     </a>
                 </div>
 
-                <div id="item-detail" class="grid_7 omega">
+                <div id="item-detail" class="grid_8 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
@@ -120,14 +120,44 @@
                     <#else>
 
                     <table width="100%" summary="This table contains the metadata for the object being viewed">
+                        <col style="width:120px"/><col/>
                         <caption>Object metadata</caption>
                         <tbody>
                      <#-- TITLE   -------------------------------------------------------------------------------->
-                        <#assign titleArr = result.fullDoc.dcTitle + result.fullDoc.dcTermsAlternative />
+                        <#assign titleArr = result.fullDoc.dcTitle />
                         <#if isNonEmpty(titleArr)>
                             <tr>
                                 <th scope="row"><@spring.message 'dc_title_t' />:</th>
-                                <td><@simple_list_dual result.fullDoc.dcTitle result.fullDoc.dcTermsAlternative '<br />'/></td>
+                                <td><@simple_list result.fullDoc.dcTitle '<br />'/></td>
+                            </tr>
+                        </#if>
+
+                     <#-- ALTERNATIVE TITLE   -------------------------------------------------------------------------------->
+                        <#assign altTitleArr = result.fullDoc.dcTermsAlternative />
+                        <#if isNonEmpty(altTitleArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>
+                                <td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>
+                            </tr>
+                        </#if>
+
+
+                      <#-- DC CREATOR    -------------------------------------------------------------------------------->
+                        <#assign creatorArr = model.fullDoc.dcCreator />
+                        <#if isNonEmpty(creatorArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'Creator_t' />:</th>
+                                <td><@simple_list model.fullDoc.dcCreator ';&#160;'/></td>
+                            </tr>
+                        </#if>
+
+
+                      <#-- DC CONTRIBUTOR    -------------------------------------------------------------------------------->
+                        <#assign contributorArr = model.fullDoc.dcContributor />
+                        <#if isNonEmpty(contributorArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'Contributor_t' />:</th>
+                                <td><@simple_list model.fullDoc.dcContributor ';&#160;'/></td>
                             </tr>
                         </#if>
 
@@ -139,14 +169,32 @@
                                 <td><@simple_list dateArr ';&#160;'/></td>
                             </tr>
                         </#if>
-                        <#-- DC CREATOR    -------------------------------------------------------------------------------->
-                        <#assign creatorArr = model.fullDoc.dcCreator + model.fullDoc.dcContributor />
-                        <#if isNonEmpty(creatorArr)>
+
+                        <#-- DC TYPE   -------------------------------------------------------------------------------->
+                        <#if isNonEmpty(typeArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Creator_t' />:</th>
-                                <td><@simple_list_dual model.fullDoc.dcCreator model.fullDoc.dcContributor ';&#160;'/></td>
+                                <th scope="row"><@spring.message 'dc_type_t' />:</th>
+                                <td><@simple_list typeArr ';&#160;'/></td>
                             </tr>
                         </#if>
+
+                        <#-- DC FORMAT   -------------------------------------------------------------------------------->
+                         <#if isNonEmpty(formatArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'dc_format_t' />:</th>
+                                <td><@simple_list formatArr ';&#160;'/></td>
+                            </tr>
+                        </#if>
+
+                        <#-- LANGUAGE      -------------------------------------------------------------------------------->
+                        <#assign languageArr = result.fullDoc.dcLanguage />
+                        <#if isNonEmpty(languageArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'languageDropDownList_t' />:</th>
+                                <td><@simple_list languageArr ';&#160;'/></td>
+                            </tr>
+                        </#if>
+
                         <#-- DC DESCRIPTION -------------------------------------------------------------------------------->
                         <#assign descriptionArr = model.fullDoc.dcDescription />
                         <#if isNonEmpty(descriptionArr)>
@@ -161,29 +209,32 @@
                                 </td>
                             </tr>
                         </#if>
-                        <#-- LANGUAGE      -------------------------------------------------------------------------------->
-                        <#assign languageArr = result.fullDoc.dcLanguage />
-                        <#if isNonEmpty(languageArr)>
+
+                      <#-- SUBJECTS, TEMPORAL, SPATIAL  ----------------------------------------------------------------->
+                        <#if isNonEmpty(arrsubj)>
                             <tr>
-                                <th scope="row"><@spring.message 'languageDropDownList_t' />:</th>
-                                <td><@simple_list languageArr ';&#160;'/></td>
+                                <th scope="row"><@spring.message 'Subject_t' />:</th>
+                                <td><@simple_list arrsubj ';&#160;'/></td>
                             </tr>
                         </#if>
-                        <#-- DC FORMAT   -------------------------------------------------------------------------------->
-                         <#if isNonEmpty(formatArr)>
+
+                        <#-- DC IDENTIFIER   -------------------------------------------------------------------------->
+                        <#if isNonEmpty(indentifierArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_format_t' />:</th>
-                                <td><@simple_list formatArr ';&#160;'/></td>
+                                <th scope="row"><@spring.message 'dc_identifier_t' />:</th>
+                                <td><@simple_list indentifierArr ';&#160;'/></td>
                             </tr>
                         </#if>
+
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <td><@spring.message 'dc_source_t' />:</td>
+                                <th scope="row"><@spring.message 'dc_source_t' />:</td>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
-                        <#-- DC RIGHTS     -------------------------------------------------------------------------------->
+
+                     <#-- DC RIGHTS     -------------------------------------------------------------------------------->
                         <#assign rightsArr = result.fullDoc.dcRights />
                         <#if isNonEmpty(rightsArr)>
                             <tr>
@@ -191,7 +242,17 @@
                                 <td><@simple_list rightsArr ';&#160;'/></td>
                             </tr>
                         </#if>
-                        <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
+
+                     <#-- DC PUBLISHER------------------------------------------------------------------------------>
+                         <#if isNonEmpty(publisherArr) >
+                            <tr>
+                                <th scope="row"><@spring.message 'dc_publisher_t' />:</th>
+                                <td><@simple_list publisherArr ';&#160;'/></td>
+                            </tr>
+                        </#if>
+
+
+                     <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(providerArr) >
                             <tr>
                                 <th scope="row"><@spring.message 'Provider_t' />:</th>
@@ -208,6 +269,14 @@
                         </#if>
 
 
+                        <#-- DC RELATIONS------------------------------------------------------------------------------>
+                        <#if isNonEmpty(relationsArr)>
+                            <tr>
+                                <th scope="row"><@spring.message 'dc_relation_t' />:</th>
+                                <td><@simple_list relationsArr '<br/>'/></td>
+                            </tr>
+                        </#if>
+                     
                     <#-- check if there is more content, if so show 'more' link and render content -->
                     <#--<#if isNonEmpty(moreArr) >-->
                     <#--<p id="morelink">-->
@@ -236,54 +305,22 @@
                     <#--<div class="clearfix"></div>-->
                     <#--<div id="moremetadata" style="display:none  ">-->
                      
-                        <#-- DC IDENTIFIER   -------------------------------------------------------------------------->
-                        <#if isNonEmpty(indentifierArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_identifier_t' />:</th>
-                                <td><@simple_list indentifierArr ';&#160;'/></td>
-                            </tr>
-                        </#if>
-                        <#-- DC PUBLISHER------------------------------------------------------------------------------>
-                         <#if isNonEmpty(publisherArr) >
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_publisher_t' />:</th>
-                                <td><@simple_list publisherArr ';&#160;'/></td>
-                            </tr>
-                        </#if>
+
+
                         <#-- DC TERMS PROVENANCE----------------------------------------------------------------------->
-                        <#if isNonEmpty(provenanceArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dcterms_provenance_t' />:</th>
-                                <td><@simple_list provenanceArr ';&#160;'/></td>
-                            </tr>
-                        </#if>
+                        <#--<#if isNonEmpty(provenanceArr)>-->
+                            <#--<tr>-->
+                                <#--<th scope="row"><@spring.message 'dcterms_provenance_t' />:</th>-->
+                                <#--<td><@simple_list provenanceArr ';&#160;'/></td>-->
+                            <#--</tr>-->
+                        <#--</#if>-->
 
-                        <#-- SUBJECTS, TEMPORAL, SPATIAL  ----------------------------------------------------------------->
-                        <#if isNonEmpty(arrsubj)>
-                            <tr>
-                                <th scope="row"><@spring.message 'Subject_t' />:</th>
-                                <td><@simple_list arrsubj ';&#160;'/></td>
-                            </tr>
-                        </#if>
-                        <#-- DC TYPE   -------------------------------------------------------------------------------->
-                        <#if isNonEmpty(typeArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_type_t' />:</th>
-                                <td><@simple_list typeArr ';&#160;'/></td>
-                            </tr>
-                        </#if>
 
-                        <#-- DC RELATIONS------------------------------------------------------------------------------>
-                        <#if isNonEmpty(relationsArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_relation_t' />:</th>
-                                <td><@simple_list relationsArr '<br/>'/></td>
-                            </tr>
-                        </#if>
+
 
                         <tr>
                             <th>&#160;</th>
-                            <td>
+                            <td> <br/>
                                 <#assign UrlRef = "#"/>
                                 <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
                                     <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
@@ -295,8 +332,9 @@
                                     target="_blank"
                                     alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
                                     title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                                 >
-                                    <@spring.message 'ViewInOriginalContext_t' />
+                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
                                 </a>
                             </td>
                         </tr>
