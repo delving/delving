@@ -145,14 +145,14 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
  */
 function checkSize(obj,type,w){
     if(type=="brief"){
-        if (w > 220) {
-            w = 220;
+        if (w > 150) {
+            w = 150;
             document.getElementById(obj).width=w;
         }        
     }
     else {
-        if (w > 285) {
-            w = 285;
+        if (w > 260) {
+            w = 260;
             document.getElementById(obj).width=w;
         }
     }
