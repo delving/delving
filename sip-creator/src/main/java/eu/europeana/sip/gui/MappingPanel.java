@@ -296,33 +296,21 @@ public class MappingPanel extends JPanel {
         EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
         if (field != null) {
             FieldMapping fresh = new FieldMapping(field);
-            if (field.europeana().constant()) {
+            Object[] selected = variablesList.getSelectedValues();
+            if (selected.length == 0) {
                 fresh.addCodeLine(String.format(
-                        "%s.%s %s",
+                        "%s.%s '%s'",
                         field.getPrefix(),
                         field.getLocalName(),
-                        field.getFieldNameString()
+                        constantField.getText()
                 ));
             }
             else {
-                Object[] selected = variablesList.getSelectedValues();
-                if (selected.length == 0) {
-                    fresh.addCodeLine(String.format(
-                            "%s.%s '%s'",
-                            field.getPrefix(),
-                            field.getLocalName(),
-                            constantField.getText()
-                    ));
-                }
-                else {
-                    for (Object variableHolderObject : variablesList.getSelectedValues()) {
-                        VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) variableHolderObject;
-                        generateCopyCode(fresh.getEuropeanaField(), variableHolder.getNode(), fresh);
-                    }
+                for (Object variableHolderObject : variablesList.getSelectedValues()) {
+                    VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) variableHolderObject;
+                    generateCopyCode(fresh.getEuropeanaField(), variableHolder.getNode(), fresh);
                 }
             }
-
-
             sipModel.addFieldMapping(fresh);
         }
         else {

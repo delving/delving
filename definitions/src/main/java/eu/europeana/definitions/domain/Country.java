@@ -48,7 +48,8 @@ public enum Country {
     SWEDEN("Sweden"),
     SWITZERLAND("Switzerland"),
     TURKEY("Turkey"),
-    UK("United Kingdom"),
+    UNITED_KINGDOM("United Kingdom"),
+    UK("UK"), // todo: remove this eventually
     UKRAINE("Ukraine");
 
     private String englishName;
