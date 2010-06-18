@@ -199,7 +199,7 @@
                         <europeana.test.external.host>${europeana.test.external.host}</europeana.test.external.host>
                     </systemPropertyVariables>
                 </configuration>
-            </plugin>                                                              
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -542,7 +542,7 @@
     </dependencyManagement>
     <properties>
         <europeana.definitions.version>1.01</europeana.definitions.version>
-        <europeana.core.version>1.26</europeana.core.version>
+        <europeana.core.version>1.40</europeana.core.version>
         <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
         <europeana.portal.version>0.6.2</europeana.portal.version>
         <europeana.api.version>0.12</europeana.api.version>
