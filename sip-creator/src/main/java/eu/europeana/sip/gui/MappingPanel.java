@@ -41,6 +41,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableColumnModel;
@@ -214,7 +217,7 @@ public class MappingPanel extends JPanel {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
-                prepareCreateMappingButton();
+//                prepareCreateMappingButton();
             }
         });
         removeMappingButton.setEnabled(false);
@@ -224,7 +227,6 @@ public class MappingPanel extends JPanel {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
                     sipModel.removeFieldMapping(fieldMapping);
-                    prepareCreateMappingButton();
                 }
             }
         });
@@ -260,6 +262,22 @@ public class MappingPanel extends JPanel {
                 }
             }
         });
+        sipModel.getFieldMappingListModel().addListDataListener(new ListDataListener() {
+            @Override
+            public void intervalAdded(ListDataEvent e) {
+                prepareCreateMappingButton();
+            }
+
+            @Override
+            public void intervalRemoved(ListDataEvent e) {
+                prepareCreateMappingButton();
+            }
+
+            @Override
+            public void contentsChanged(ListDataEvent e) {
+                prepareCreateMappingButton();
+            }
+        });
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -269,27 +287,32 @@ public class MappingPanel extends JPanel {
     }
 
     private void prepareCreateMappingButton() {
-        String fieldName = null;
-        boolean obvious = false;
-        EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
-        if (field != null) {
-            fieldName = field.getFieldNameString();
-        }
-        else {
-            field = getObviousMappingField();
-            if (field != null) {
-                fieldName = field.getFieldNameString();
-                obvious = true;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                String fieldName = null;
+                boolean obvious = false;
+                EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
+                if (field != null) {
+                    fieldName = field.getFieldNameString();
+                }
+                else {
+                    field = getObviousMappingField();
+                    if (field != null) {
+                        fieldName = field.getFieldNameString();
+                        obvious = true;
+                    }
+                }
+                if (fieldName != null) {
+                    createMappingButton.setText(String.format(obvious ? CREATE_OBVIOUS_FOR : CREATE_FOR, field.getFieldNameString()));
+                    createMappingButton.setEnabled(true);
+                }
+                else {
+                    createMappingButton.setText(CREATE);
+                    createMappingButton.setEnabled(false);
+                }
             }
-        }
-        if (fieldName != null) {
-            createMappingButton.setText(String.format(obvious ? CREATE_OBVIOUS_FOR : CREATE_FOR, field.getFieldNameString()));
-            createMappingButton.setEnabled(true);
-        }
-        else {
-            createMappingButton.setText(CREATE);
-            createMappingButton.setEnabled(false);
-        }
+        });
     }
 
     private void addFieldMapping() {
