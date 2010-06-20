@@ -26,13 +26,7 @@ import java.util.Map.Entry
 
 class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
 
-  private val IDENTIFIER = "identifier"
-  private val METADATA_FORMAT = "metadataPrefix"
   private val VERB = "verb"
-  private val RESUMPTION_TOKEN = "resumptionToken"
-  private val SET = "set"
-  private val FROM = "from"
-  private val UNTIL = "until"
   private val legalParameterKeys = List("verb", "identifier", "metadataPrefix", "set", "from", "until", "resumptionToken")
 
   /**
@@ -290,8 +284,9 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def createPmhRequest(params: Map[String, String], verb: PmhVerbs) = {
     def getParam(key: String) = params.getOrElse(key, "")
-    val pmh: PmhRequest = new PmhRequestImpl(verb, getParam(SET), getParam(FROM), getParam(UNTIL),
-      getParam(METADATA_FORMAT), getParam(IDENTIFIER), getParam(RESUMPTION_TOKEN))
+    val pmh: PmhRequest = new PmhRequestImpl(verb,
+      getParam("set"), getParam("from"), getParam("until"),
+      getParam("metadataPrefix"), getParam("identifier"), getParam("resumptionToken"))
     pmh
   }
 
