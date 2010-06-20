@@ -4,6 +4,12 @@
                     <#assign max=3/><!-- max shown in list -->
                     <#list result.relatedItems as doc>
                         <#if doc_index &gt; 2><#break/></#if>
+                         <#-- empty image checker -->
+                        <#if doc.thumbnail = " ">
+                            <#assign thumbnail = "noImageFound"/>
+                        <#else>
+                            <#assign thumbnail = "${doc.thumbnail}"/>
+                        </#if>
                         <tr>
                             <td width="45" valign="top">
                                 <div class="related-thumb-container">
@@ -13,9 +19,9 @@
                                         <a href="full-doc.html?uri=${doc.id}">
                                      </#if>
                                      <#if useCache="true">
-                                        <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35"/>
+                                        <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}',this.src)"/>
                                     <#else>
-                                        <img src="${doc.thumbnail}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}')"/>
+                                        <img src="${thumbnail}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}',this.src)"/>
                                     </#if>
 
                                         </a>
