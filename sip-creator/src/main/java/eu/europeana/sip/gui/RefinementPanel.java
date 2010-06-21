@@ -29,6 +29,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -190,7 +191,8 @@ public class RefinementPanel extends JPanel {
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
         JTextArea outputArea = new JTextArea(sipModel.getFieldMappingModel().getOutputDocument());
         outputArea.setEditable(false);
-        p.add(scroll(outputArea));
+        p.add(scroll(outputArea), BorderLayout.CENTER);
+        p.add(new JLabel("Note: URLs can be launched by double-clicking them.", JLabel.CENTER), BorderLayout.SOUTH);
         return p;
     }
 
