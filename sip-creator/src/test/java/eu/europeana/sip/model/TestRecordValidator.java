@@ -28,7 +28,6 @@ import static junit.framework.Assert.assertEquals;
  * <li> regular expression checking
  * <li> ids unique per collection
  * <li> todo: europeana_type: can only have four values that must be checked from enum and can only occur once
- * <li> todo: europeana_language: must come from enum. multivalue true
  * <li> todo: europeana_country: can only occur once and must be the same for every record
  * <li> todo: europeana_provider: must be a constant. can only occur one per record.
  * <li> todo: europeana_collectionName: must be a constant per collection. Can only occur once per record
@@ -39,14 +38,14 @@ import static junit.framework.Assert.assertEquals;
 
 public class TestRecordValidator {
     private static final String[] VALID_FIELDS = {
-            "<europeana:country>NETHERLANDS</europeana:country>",
+            "<europeana:country>netherlands</europeana:country>",
             "<europeana:collectionName>collectionName</europeana:collectionName>",
             "<europeana:isShownAt>http://is-shown-at.com/</europeana:isShownAt>",
             "<europeana:isShownBy>http://is-shown-by.com/</europeana:isShownBy>",
-            "<europeana:language>EN</europeana:language>",
+            "<europeana:language>en</europeana:language>",
             "<europeana:object>http://object.com/</europeana:object>",
             "<europeana:provider>provider</europeana:provider>",
-            "<europeana:type>IMAGE</europeana:type>",
+            "<europeana:type>image</europeana:type>",
             "<europeana:uri>http://uri.com/</europeana:uri>",
     };
     private RecordValidator recordValidator;

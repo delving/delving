@@ -51,7 +51,7 @@ public class EuropeanaField {
         if (europeanaAnnotation.enumClass() != Europeana.NO_ENUM.class) {
             enumValues = new TreeSet<String>();
             for (Enum e : europeanaAnnotation.enumClass().getEnumConstants()) {
-                enumValues.add(e.toString());
+                enumValues.add(e.toString().toLowerCase());
             }
         }
     }

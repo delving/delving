@@ -78,7 +78,7 @@ public class FullBean extends BriefBean implements FullDoc {
     String[] europeanaYear;
 
     @Europeana(category = ESE_PLUS)
-    @Solr(prefix = "europeana", required = true, localName = "hasObject", fieldType = "boolean")
+    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
     boolean europeanaHasObject;
 
     @Europeana(category = ESE_PLUS, required = true, constant = true)
