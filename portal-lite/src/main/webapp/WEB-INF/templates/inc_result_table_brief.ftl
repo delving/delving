@@ -51,7 +51,7 @@
                                     height="110"
                                     src="${thumbnail}"
                                     onerror="showDefaultSmall(this,'${cell.type}',this.src);"
-                                    onload="log.info('loading')"
+                                    onload="checkSize(this,'brief',this.width);"
                              />
 
                         </#if>
