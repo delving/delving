@@ -101,10 +101,12 @@ public class AnalysisTree implements Serializable {
         if (node.setRecordRoot(recordRoot)) {
             changedNodes.add(node);
         }
-        for (AnalysisTree.Node child : node.getChildNodes()) {
-            setRecordRoot(child, recordRoot, changedNodes);
+        if (recordRoot == null || !node.isRecordRoot()) {
+            for (AnalysisTree.Node child : node.getChildNodes()) {
+                setRecordRoot(child, recordRoot, changedNodes);
+            }
         }
-    }
+    }       
 
     private static void getVariables(QNameNode node, boolean withinRecord, List<Node> variables) {
         if (node.isLeaf()) {
