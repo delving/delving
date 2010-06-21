@@ -207,7 +207,7 @@ public class RecentFileSets {
     }
 
     private class FileSetImpl implements FileSet {
-        private File inputFile, statisticsFile, mappingFile, outputFile;
+        private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile;
         private UserNotifier userNotifier;
 
         private FileSetImpl(File inputFile) {
@@ -215,6 +215,7 @@ public class RecentFileSets {
             this.statisticsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".statistics");
             this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
             this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
+            this.discardedFile = new File(inputFile.getParentFile(), inputFile.getName() + ".discarded");
         }
 
         @Override
@@ -278,15 +279,30 @@ public class RecentFileSets {
         }
 
         @Override
+        public OutputStream getDiscardedStream() {
+            checkWorkerThread();
+            try {
+                return new FileOutputStream(discardedFile, true);
+            }
+            catch (FileNotFoundException e) {
+                userNotifier.tellUser("Unable to open discarded file "+discardedFile.getAbsolutePath(), e);
+            }
+            return null;
+        }
+
+        @Override
         public boolean hasOutputFile() {
             return outputFile.exists();
         }
 
         @Override
-        public void removeOutputFile() {
+        public void removeOutputFiles() {
             checkWorkerThread();
-            if (!outputFile.delete()) {
+            if (outputFile.exists() && !outputFile.delete()) {
                 LOG.warn("Unable to delete "+outputFile);
+            }
+            if (discardedFile.exists() && !discardedFile.delete()) {
+                LOG.warn("Unable to delete "+discardedFile);
             }
         }
 

@@ -32,8 +32,6 @@ import groovy.lang.MissingPropertyException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
@@ -47,6 +45,7 @@ public class Normalizer implements Runnable {
     private FileSet fileSet;
     private AnnotationProcessor annotationProcessor;
     private RecordValidator recordValidator;
+    private boolean discardInvalid;
     private MetadataParser.Listener parserListener;
     private Listener listener;
     private UserNotifier userNotifier;
@@ -54,6 +53,7 @@ public class Normalizer implements Runnable {
 
     public interface Listener {
         void invalidInput(MetadataRecord metadataRecord, MissingPropertyException exception);
+
         void invalidOutput(RecordValidationException exception);
     }
 
@@ -61,6 +61,7 @@ public class Normalizer implements Runnable {
             FileSet fileSet,
             AnnotationProcessor annotationProcessor,
             RecordValidator recordValidator,
+            boolean discardInvalid,
             UserNotifier userNotifier,
             MetadataParser.Listener parserListener,
             Listener listener
@@ -68,6 +69,7 @@ public class Normalizer implements Runnable {
         this.fileSet = fileSet;
         this.annotationProcessor = annotationProcessor;
         this.recordValidator = recordValidator;
+        this.discardInvalid = discardInvalid;
         this.userNotifier = userNotifier;
         this.parserListener = parserListener;
         this.listener = listener;
@@ -75,37 +77,57 @@ public class Normalizer implements Runnable {
 
     public void run() {
         try {
-            InputStream inputStream = fileSet.getInputStream();
-            OutputStream outputStream = fileSet.getOutputStream();
             String mapping = fileSet.getMapping();
             RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
             ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(mapping, annotationProcessor);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
-            final Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
-            writer.write("<?xml version='1.0' encoding='UTF-8'?>\n");
-            writer.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            fileSet.removeOutputFiles();
+            final Writer outputWriter = new OutputStreamWriter(fileSet.getOutputStream(), "UTF-8");
+            final Writer discardedWriter = discardInvalid ? new OutputStreamWriter(fileSet.getDiscardedStream(), "UTF-8") : null;
+            outputWriter.write("<?xml version='1.0' encoding='UTF-8'?>\n");
+            outputWriter.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel, new MappingRunner.Listener() {
                 @Override
                 public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
                     if (exception != null) {
-                        if (exception instanceof MissingPropertyException) {
-                            MissingPropertyException mpe = (MissingPropertyException)exception;
-                            userNotifier.tellUser("Missing property in record "+metadataRecord.getRecordNumber()+": "+mpe.getProperty(), exception);
-                            listener.invalidInput(metadataRecord, mpe);
+                        if (discardedWriter != null) {
+                            try {
+                                discardedWriter.write(metadataRecord.toString());
+                            }
+                            catch (IOException e1) {
+                                userNotifier.tellUser("Unable to write discarded record", e1);
+                            }
                         }
                         else {
-                            userNotifier.tellUser("Problem normalizing record "+metadataRecord.toString(), exception);
+                            if (exception instanceof MissingPropertyException) {
+                                MissingPropertyException mpe = (MissingPropertyException) exception;
+                                userNotifier.tellUser("Missing property in record " + metadataRecord.getRecordNumber() + ": " + mpe.getProperty(), exception);
+                                listener.invalidInput(metadataRecord, mpe);
+                            }
+                            else {
+                                userNotifier.tellUser("Problem normalizing record " + metadataRecord.toString(), exception);
+                            }
                         }
                     }
                     else {
                         try {
                             String validated = recordValidator.validate(metadataRecord, output);
-                            writer.write(validated);
+                            outputWriter.write(validated);
                         }
                         catch (RecordValidationException e) {
-                            userNotifier.tellUser("Invalid output record", e);
-                            listener.invalidOutput(e);
-                            running = false;
+                            if (discardedWriter != null) {
+                                try {
+                                    discardedWriter.write(metadataRecord.toString());
+                                }
+                                catch (IOException e1) {
+                                    userNotifier.tellUser("Unable to write discarded record", e1);
+                                }
+                            }
+                            else {
+                                userNotifier.tellUser("Invalid output record", e);
+                                listener.invalidOutput(e);
+                                running = false;
+                            }
                         }
                         catch (Exception e) {
                             userNotifier.tellUser("Problem writing output", e);
@@ -114,18 +136,21 @@ public class Normalizer implements Runnable {
                     }
                 }
             });
-            MetadataParser parser = new MetadataParser(inputStream, recordRoot, parserListener);
+            MetadataParser parser = new MetadataParser(fileSet.getInputStream(), recordRoot, parserListener);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 if (!mappingRunner.runMapping(record)) {
                     running = false;
                 }
             }
-            writer.write("</metadata>\n");
-            writer.close();
+            outputWriter.write("</metadata>\n");
+            outputWriter.close();
+            if (discardedWriter != null) {
+                discardedWriter.close();
+            }
             parser.close();
             if (!running) {
-                fileSet.removeOutputFile();
+                fileSet.removeOutputFiles();
                 parserListener.recordsParsed(0, true);
             }
         }

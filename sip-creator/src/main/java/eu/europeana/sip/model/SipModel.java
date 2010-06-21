@@ -252,13 +252,14 @@ public class SipModel {
         return normalizeProgressModel;
     }
 
-    public void normalize() {
+    public void normalize(final boolean discardInvalid) {
         checkSwingThread();
         abortNormalize();
         normalizer = new Normalizer(
                 fileSet,
                 annotationProcessor,
                 new RecordValidator(annotationProcessor, true),
+                discardInvalid,
                 userNotifier,
                 new MetadataParser.Listener() {
                     @Override
@@ -300,21 +301,16 @@ public class SipModel {
 
     public void abortNormalize() {
         checkSwingThread();
+        if (normalizer != null) {
+            normalizer.abort();
+            normalizer = null;
+        }
+        normalizeProgressModel.setValue(0);
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                if (normalizer != null) {
-                    normalizer.abort();
-                    normalizer = null;
-                }
                 if (fileSet.hasOutputFile()) {
-                    fileSet.removeOutputFile();
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            normalizeProgressModel.setValue(0);
-                        }
-                    });
+                    fileSet.removeOutputFiles();
                 }
             }
         });

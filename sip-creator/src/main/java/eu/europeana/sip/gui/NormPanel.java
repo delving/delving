@@ -25,6 +25,7 @@ import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -34,6 +35,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,6 +49,7 @@ import java.awt.event.ActionListener;
 
 public class NormPanel extends JPanel {
     private SipModel sipModel;
+    private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
     private JButton normalizeButton = new JButton("Normalize");
     private JButton abortButton = new JButton("Abort");
 
@@ -103,7 +106,10 @@ public class NormPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout(10, 10));
         JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
         progressBar.setBorderPainted(true);
-        p.add(normalizeButton, BorderLayout.WEST);
+        JPanel bp = new JPanel(new GridLayout(1, 0, 8, 8));
+        bp.add(normalizeButton);
+        bp.add(discardInvalidBox);
+        p.add(bp, BorderLayout.WEST);
         p.add(progressBar, BorderLayout.CENTER);
         p.add(abortButton, BorderLayout.EAST);
         return p;
@@ -113,7 +119,7 @@ public class NormPanel extends JPanel {
         normalizeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sipModel.normalize();
+                sipModel.normalize(discardInvalidBox.isSelected());
             }
         });
         abortButton.addActionListener(new ActionListener() {

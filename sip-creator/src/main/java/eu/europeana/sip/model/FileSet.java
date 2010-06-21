@@ -50,9 +50,11 @@ public interface FileSet {
 
     OutputStream getOutputStream();
 
+    OutputStream getDiscardedStream();
+
     boolean hasOutputFile();
 
-    void removeOutputFile();
+    void removeOutputFiles();
 
     List<Statistics> getStatistics();
 
