@@ -29,8 +29,8 @@
         </developer>
     </developers>
     <organization>
-        <name>Europeana Foundation</name>
-        <url>http://www.europeana.eu</url>
+        <name>Delving</name>
+        <url>http://www.delving.eu</url>
     </organization>
     <pluginRepositories>
         <pluginRepository>
@@ -46,6 +46,8 @@
         </pluginRepository>
     </pluginRepositories>
     <build>
+	    <sourceDirectory>src/main/scala</sourceDirectory>
+		<testSourceDirectory>src/test/scala</testSourceDirectory>
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
         <plugins>

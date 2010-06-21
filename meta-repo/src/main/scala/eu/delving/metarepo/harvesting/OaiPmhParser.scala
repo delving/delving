@@ -7,7 +7,7 @@ import xml.{Elem}
 import java.util.{Map, Date}
 import scala.collection.JavaConversions._
 import eu.delving.metarepo.core.MetaRepo
-import eu.delving.metarepo.core.MetaRepo.{PmhVerbs, PmhRequest, HarvestStep, Record}
+import eu.delving.metarepo.core.MetaRepo.{PmhVerb, PmhRequest, HarvestStep, Record}
 import eu.delving.metarepo.impl.PmhRequestImpl
 import collection.mutable.HashMap
 import java.util.Map.Entry
@@ -42,15 +42,15 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
     val params = HashMap[String, String]()
     requestParams.entrySet.foreach{entry: Entry[String, Array[String]] => params.put(entry.getKey, entry.getValue.head)}
 
-    def pmhRequest(verb: PmhVerbs) = createPmhRequest(params, verb)
+    def pmhRequest(verb: PmhVerb) : PmhRequestEntry = createPmhRequest(params, verb)
 
     val response = params.get(VERB).get match {
-        case "Identify" => processIdentify( pmhRequest(PmhVerbs.IDENTIFY) )
-        case "ListMetadataFormats" => processListMetadataFormats( pmhRequest(PmhVerbs.List_METADATA_FORMATS) )
-        case "ListSets" => processListSets( pmhRequest(PmhVerbs.LIST_SETS) )
-        case "ListRecords" => processListRecords( pmhRequest(PmhVerbs.LIST_RECORDS) )
-        case "ListIdentifiers" => processListIdentifiers( pmhRequest(PmhVerbs.LIST_IDENTIFIERS) )
-        case "GetRecord" => processGetRecord( pmhRequest(PmhVerbs.GET_RECORD) )
+        case "Identify" => processIdentify( pmhRequest(PmhVerb.IDENTIFY) )
+        case "ListMetadataFormats" => processListMetadataFormats( pmhRequest(PmhVerb.List_METADATA_FORMATS) )
+        case "ListSets" => processListSets( pmhRequest(PmhVerb.LIST_SETS) )
+        case "ListRecords" => processListRecords( pmhRequest(PmhVerb.LIST_RECORDS) )
+        case "ListIdentifiers" => processListIdentifiers( pmhRequest(PmhVerb.LIST_IDENTIFIERS) )
+        case "GetRecord" => processGetRecord( pmhRequest(PmhVerb.GET_RECORD) )
         case _ => createErrorResponse("badVerb")
       }
     response.toString
@@ -73,7 +73,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
   /**
    */
   // TODO: add values from a message.properties file and complete oai identifier block
-  def processIdentify(pmhRequest: PmhRequest) : Elem = {
+  def processIdentify(pmhRequestEntry: PmhRequestEntry) : Elem = {
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -106,7 +106,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
 </OAI-PMH>
   }
 
-  def processListSets(pmhRequest: PmhRequest) : Elem = {
+  def processListSets(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val collections = metaRepo.getCollectionNames
 
     // when there are no collections throw "noSetHierarchy" ErrorResponse
@@ -134,10 +134,10 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
   /**
    * This method can give back the following Error and Exception conditions: idDoesNotExist, noMetadataFormats.
    */
-  def processListMetadataFormats(pmhRequest: PmhRequest) : Elem = {
+  def processListMetadataFormats(pmhRequestEntry: PmhRequestEntry) : Elem = {
 
     // if no identifier present list all formats
-    val identifier = pmhRequest.getIdentifier
+    val identifier = pmhRequestEntry.pmhRequest.getIdentifier
 
     // otherwise only list the formats available for the identifier
     val metadataFormats = if (identifier.isEmpty) metaRepo.getMetadataFormats else metaRepo.getMetadataFormats(identifier)
@@ -173,9 +173,9 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
   /**
    * This method can give back the following Error and Exception conditions: BadResumptionToken, cannotDisseminateFormat, noRecordsMatch, noSetHierachy
    */
-  def processListIdentifiers(pmhRequest: PmhRequest) = {
+  def processListIdentifiers(pmhRequestEntry: PmhRequestEntry) = {
         // parse all the params from map
-    val harvestStep: HarvestStep = getHarvestStep(pmhRequest)
+    val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
 
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -204,8 +204,8 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
   }
 
 
-  def processListRecords(pmhRequest: PmhRequest) = {
-    val harvestStep: HarvestStep = getHarvestStep(pmhRequest)
+  def processListRecords(pmhRequestEntry: PmhRequestEntry) = {
+    val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
     val pmhObject = harvestStep.pmhRequest
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -225,7 +225,8 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
     </OAI-PMH>
   }
 
-  def processGetRecord(pmhRequest: PmhRequest) : Elem = {
+  def processGetRecord(pmhRequestEntry: PmhRequestEntry) : Elem = {
+    val pmhRequest = pmhRequestEntry.pmhRequest
     // get identifier and format from map else throw BadArgument Error
     if (pmhRequest.getIdentifier.isEmpty || pmhRequest.getMetadataPrefix.isEmpty) return createErrorResponse("badArgument")
     // if identifier/record is not found throw NoRecordsMatch error
@@ -252,11 +253,11 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
     </OAI-PMH>
   }
 
-  private def getHarvestStep(pmhRequest: PmhRequest) : HarvestStep = {
-    if (!pmhRequest.getResumptionToken.isEmpty)
-      metaRepo.getHarvestStep(pmhRequest.getResumptionToken)
+  private def getHarvestStep(pmhRequestEntry: PmhRequestEntry) : HarvestStep = {
+    if (!pmhRequestEntry.resumptionToken.isEmpty)
+      metaRepo.getHarvestStep(pmhRequestEntry.resumptionToken)
     else
-      metaRepo.getHarvestStep(pmhRequest)
+      metaRepo.getHarvestStep(pmhRequestEntry.pmhRequest)
   }
 
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
@@ -282,12 +283,12 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
       <resumptionToken/>
   }
 
-  private def createPmhRequest(params: Map[String, String], verb: PmhVerbs) = {
+  private def createPmhRequest(params: HashMap[String, String], verb: PmhVerb) : PmhRequestEntry = {
     def getParam(key: String) = params.getOrElse(key, "")
     val pmh: PmhRequest = new PmhRequestImpl(verb,
       getParam("set"), getParam("from"), getParam("until"),
-      getParam("metadataPrefix"), getParam("identifier"), getParam("resumptionToken"))
-    pmh
+      getParam("metadataPrefix"), getParam("identifier"))
+    PmhRequestEntry(pmh, getParam("resumptionToken"))
   }
 
   /**
@@ -314,6 +315,8 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
 </OAI-PMH>
   }
 
+case class PmhRequestEntry(pmhRequest: PmhRequest, resumptionToken: String)
+
 }
 object OaiPmhParser {
    def parseHttpServletRequest(request: HttpServletRequest, metaRepo: MetaRepo) : String = {
@@ -321,3 +324,5 @@ object OaiPmhParser {
      parser parseRequest
    }
  }
+
+

@@ -79,12 +79,11 @@ public interface MetaRepo {
     }
 
     public interface PmhRequest {
-        PmhVerbs getVerb();
+        PmhVerb getVerb();
         String getSet();
         String getFrom();
         String getUntil();
         String getMetadataPrefix();
-        String getResumptionToken();
         String getIdentifier(); // Only used GetRecord
     }
 
@@ -99,7 +98,7 @@ public interface MetaRepo {
         String getMetadataNameSpace();
     }
 
-    public enum PmhVerbs {
+    public enum PmhVerb {
         LIST_SETS("ListSets"),
         List_METADATA_FORMATS("ListMetadataFormats"),
         LIST_IDENTIFIERS("ListIdentifiers"),
@@ -109,7 +108,7 @@ public interface MetaRepo {
 
         private String pmhCommand;
 
-        PmhVerbs(String pmhCommand) {
+        PmhVerb(String pmhCommand) {
             this.pmhCommand = pmhCommand;
         }
 
