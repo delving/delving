@@ -22,10 +22,19 @@ public interface MetaRepo {
 
     Collection getCollection(String name);
 
-    HarvestStep getHarvestStep(ObjectId id);
+    List<MetadataFormat> getMetadataFormats();
+
+    List<MetadataFormat> getMetadataFormats(String id);
+
+    HarvestStep getHarvestStep(String resumptionToken);
+
+    HarvestStep getHarvestStep(PmhRequest request);
+
+    Record getRecord(String identifier, String metadataFormat);
 
     public interface Collection {
-        String name();
+        String setSpec();
+        String nameOfSet();
 //        Details details();
         Record fetch(ObjectId id);
 //        Record insert(String xml);
@@ -48,28 +57,46 @@ public interface MetaRepo {
     }
 
     public interface HarvestStep {
-        ObjectId identifier(); // is resumptionToken
+        ObjectId resumptionToken(); // is resumptionToken
         Date expiration();
         int listSize();
+        int cursor();
         List<? extends Record> records();
-        OaiPmhObject oaiPmhObject();
+        PmhRequest pmhRequest();
+        boolean hasNext();
         HarvestStep next();
     }
 
     public interface Record {
         ObjectId identifier();
         DBObject rootObject();
+        PmhSet set();
         Date modified();
+        boolean deleted();
+        // todo how to deal with formats
+        String format();
         String xml();
     }
 
-    public interface OaiPmhObject {
-        PmhVerbs verb();
-        String set();
-        String from();
-        String until();
-        String metadataPrefix();
-        String identifier(); // Only used GetRecord
+    public interface PmhRequest {
+        PmhVerbs getVerb();
+        String getSet();
+        String getFrom();
+        String getUntil();
+        String getMetadataPrefix();
+        String getResumptionToken();
+        String getIdentifier(); // Only used GetRecord
+    }
+
+    public interface PmhSet {
+        String getSetSpec();
+        String getSetName();
+    }
+
+    public interface MetadataFormat {
+        String getMetadataPrefix();
+        String getSchema();
+        String getMetadataNameSpace();
     }
 
     public enum PmhVerbs {

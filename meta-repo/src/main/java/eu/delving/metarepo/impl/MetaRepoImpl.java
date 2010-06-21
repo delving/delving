@@ -57,8 +57,28 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getHarvestStep(ObjectId id) {
-        return null;  // todo: implement
+    public List<MetadataFormat> getMetadataFormats() {
+        return new ArrayList<MetadataFormat>();  //TODO: implement this
+    }
+
+    @Override
+    public List<MetadataFormat> getMetadataFormats(String id) {
+        return new ArrayList<MetadataFormat>();  //TODO: implement this
+    }
+
+    @Override
+    public HarvestStep getHarvestStep(String resumptionToken) {
+        return null;  //TODO: implement this
+    }
+
+    @Override
+    public HarvestStep getHarvestStep(PmhRequest request) {
+        return null;  //TODO: implement this
+    }
+
+    @Override
+    public Record getRecord(String identifier, String metadataFormat) {
+        return null;  //TODO: implement this
     }
 
     private static class CollectionImpl implements Collection {
@@ -70,8 +90,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String name() {
+        public String setSpec() {
             return dbc.getName().substring(COLLECTION_PREFIX.length());
+        }
+
+        @Override
+        public String nameOfSet() {
+            return "nameOfSet";  //TODO: implement this
         }
 
         @Override
@@ -138,6 +163,12 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public PmhSet set() {
+            return null;  //TODO: implement this
+        }
+
+
+        @Override
         public Date modified() {
             Date modified = (Date) object.get(MODIFIED);
             if (modified == null) {
@@ -147,8 +178,19 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public boolean deleted() {
+            return false;  //TODO: implement this
+        }
+
+        @Override
+        public String format() {
+            return null;  //TODO: implement this
+        }
+
+        @Override
         public String xml() {
             return (String) object.get(ORIGINAL);
         }
     }
+
 }

@@ -51,7 +51,7 @@ public class MetaRepoController {
             @PathVariable String collectionId
     ) {
         MetaRepo.Collection collection = metaRepo.getCollection(collectionId);
-        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", collection.name()));
+        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", collection.setSpec()));
         for (MetaRepo.Record record : collection.records(0,10)) {
             String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
