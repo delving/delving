@@ -2,12 +2,15 @@ package eu.delving.metarepo.impl;
 
 import com.mongodb.DBObject;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static eu.delving.metarepo.core.Constant.MODIFIED;
 import static eu.delving.metarepo.core.Constant.ORIGINAL;
@@ -30,7 +33,8 @@ public class TestMongoObjectParser {
     @Test
     public void simple() throws XMLStreamException, IOException {
         InputStream input = getClass().getResourceAsStream(XML);
-        MongoObjectParser parser = new MongoObjectParser(input, RECORD_ROOT, UNIQUE_ELEMENT);
+        Map<String, String> namespaceMap = new TreeMap<String,String>();
+        MongoObjectParser parser = new MongoObjectParser(input, RECORD_ROOT, UNIQUE_ELEMENT, namespaceMap);
         DBObject object;
         while ((object = parser.nextRecord()) != null) {
             assertNotNull("Object", object);
@@ -42,5 +46,7 @@ public class TestMongoObjectParser {
 //            }
         }
         parser.close();
+        Assert.assertEquals("Namespace count", 2, namespaceMap.size());
+        LOG.info("namespaces:\n"+namespaceMap);
     }
 }

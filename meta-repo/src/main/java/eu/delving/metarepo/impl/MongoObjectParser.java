@@ -11,8 +11,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
-import static eu.delving.metarepo.core.Constant.*;
+import static eu.delving.metarepo.core.Constant.ORIGINAL;
+import static eu.delving.metarepo.core.Constant.TYPE;
+import static eu.delving.metarepo.core.Constant.TYPE_METADATA_RECORD;
+import static eu.delving.metarepo.core.Constant.UNIQUE;
 
 /**
  * Parse XML to produce DBObject instances
@@ -23,10 +27,12 @@ import static eu.delving.metarepo.core.Constant.*;
 public class MongoObjectParser {
     private XMLStreamReader2 input;
     private QName recordRoot, uniqueElement;
+    private Map<String, String> namespaceMap;
 
-    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException {
+    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement, Map<String, String> namespaceMap) throws XMLStreamException {
         this.recordRoot = recordRoot;
         this.uniqueElement = uniqueElement;
+        this.namespaceMap = namespaceMap;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -66,6 +72,11 @@ public class MongoObjectParser {
                         }
                         if (input.getName().equals(uniqueElement)) {
                             uniqueBuffer = new StringBuilder();
+                        }
+                        for (int walk=0; walk<input.getNamespaceCount(); walk++) {
+                            String prefix = input.getNamespacePrefix(walk);
+                            String uri = input.getNamespaceURI(walk);
+                            namespaceMap.put(prefix, uri);
                         }
                         contentBuffer.append("<").append(input.getPrefixedName());
                         if (input.getAttributeCount() > 0) {
@@ -122,9 +133,8 @@ public class MongoObjectParser {
                     }
                     depth--;
                     break;
-                case XMLEvent.END_DOCUMENT: {
+                case XMLEvent.END_DOCUMENT:
                     break;
-                }
             }
             if (!input.hasNext()) {
                 break;

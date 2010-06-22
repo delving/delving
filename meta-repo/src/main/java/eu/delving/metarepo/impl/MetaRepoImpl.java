@@ -16,8 +16,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import static eu.delving.metarepo.core.Constant.*;
+import static eu.delving.metarepo.core.Constant.COLLECTION_PREFIX;
+import static eu.delving.metarepo.core.Constant.DATABASE_NAME;
+import static eu.delving.metarepo.core.Constant.MODIFIED;
+import static eu.delving.metarepo.core.Constant.MONGO_ID;
+import static eu.delving.metarepo.core.Constant.ORIGINAL;
+import static eu.delving.metarepo.core.Constant.TYPE;
+import static eu.delving.metarepo.core.Constant.TYPE_MAPPING;
+import static eu.delving.metarepo.core.Constant.TYPE_METADATA_RECORD;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -107,16 +116,18 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException {
+            Map<String,String> namespaceMap = new TreeMap<String,String>();
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
                     recordRoot,
-                    uniqueElement
+                    uniqueElement,
+                    namespaceMap
             );
             DBObject object;
             while ((object = parser.nextRecord()) != null) {
-
                 dbc.insert(object);
             }
+            // todo: save the namespaces!
         }
 
         @Override
