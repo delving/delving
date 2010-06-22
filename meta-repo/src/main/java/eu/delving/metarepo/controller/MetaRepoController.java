@@ -36,8 +36,8 @@ public class MetaRepoController {
     @ResponseBody
     String list() {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
-        for (MetaRepo.DataSet name : metaRepo.getDataSets().values()) {
-            out.append(String.format("<li><a href=\"%s/index.html\">%s</a></li>", name, name));
+        for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
+            out.append(String.format("<li><a href=\"%s/index.html\">%s</a></li>", dataSet.setSpec(), dataSet.setSpec()));
         }
         out.append("</ul>");
         return out.toString();
