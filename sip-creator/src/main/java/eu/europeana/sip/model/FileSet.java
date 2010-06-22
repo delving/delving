@@ -43,8 +43,6 @@ public interface FileSet {
 
     boolean isValid();
 
-    void remove();
-
     File getDirectory();
 
     InputStream getInputStream();
@@ -56,6 +54,8 @@ public interface FileSet {
     String getMapping();
 
     void setMapping(String mapping);
+
+    File createZipFile();
 
     Report getReport();
 

@@ -56,6 +56,7 @@ public class NormPanel extends JPanel {
     private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
     private JButton normalizeButton = new JButton("Normalize");
     private JButton abortButton = new JButton("Abort");
+    private JButton createZipButton = new JButton("Create ZIP File");
     private JLabel normMessage = new JLabel("?", JLabel.CENTER);
 
     public NormPanel(SipModel sipModel) {
@@ -117,9 +118,12 @@ public class NormPanel extends JPanel {
         pp.add(bp, BorderLayout.WEST);
         pp.add(progressBar, BorderLayout.CENTER);
         pp.add(abortButton, BorderLayout.EAST);
+        JPanel mp = new JPanel(new BorderLayout(10, 10));
+        mp.add(normMessage, BorderLayout.CENTER);
+        mp.add(createZipButton, BorderLayout.EAST);
         JPanel p  = new JPanel(new GridLayout(0,1, 10, 10));
         p.add(pp);
-        p.add(normMessage);
+        p.add(mp);
         return p;
     }
 
@@ -136,6 +140,12 @@ public class NormPanel extends JPanel {
                 sipModel.abortNormalize();
             }
         });
+        createZipButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sipModel.createZipFile();
+            }
+        });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void templateApplied() {
@@ -143,6 +153,7 @@ public class NormPanel extends JPanel {
 
             @Override
             public void updatedFileSet(FileSet fileSet) {
+                createZipButton.setEnabled(fileSet.getReport() != null);
             }
 
             @Override
@@ -154,7 +165,8 @@ public class NormPanel extends JPanel {
             }
 
             @Override
-            public void normalizationMessage(String message) {
+            public void normalizationMessage(boolean complete, String message) {
+                createZipButton.setEnabled(complete);
                 normMessage.setText(message);
             }
         });

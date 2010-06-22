@@ -92,7 +92,7 @@ public class SipModel {
 
         void updatedConstantFieldModel(ConstantFieldModel constantFieldModel);
 
-        void normalizationMessage(String message);
+        void normalizationMessage(boolean complete, String message);
     }
 
     public interface AnalysisListener {
@@ -340,6 +340,16 @@ public class SipModel {
         }
     }
 
+    public void createZipFile() {
+        checkSwingThread();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                fileSet.createZipFile();
+            }
+        });
+    }
+
     public TreeModel getAnalysisTreeModel() {
         return analysisTreeModel;
     }
@@ -445,7 +455,7 @@ public class SipModel {
 
     private void normalizeMessage(String message) {
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.normalizationMessage(message);
+            updateListener.normalizationMessage(false, message);
         }
     }
 
@@ -457,7 +467,7 @@ public class SipModel {
                 report.getRecordsDiscarded()
         );
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.normalizationMessage(message);
+            updateListener.normalizationMessage(true, message);
         }
     }
 

@@ -219,7 +219,7 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void normalizationMessage(String message) {
+            public void normalizationMessage(boolean complete, String message) {
             }
         });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {

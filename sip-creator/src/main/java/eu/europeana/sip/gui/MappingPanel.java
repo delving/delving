@@ -211,7 +211,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void normalizationMessage(String message) {
+            public void normalizationMessage(boolean complete, String message) {
             }
         });
         createMappingButton.addActionListener(new ActionListener() {
