@@ -43,6 +43,7 @@ import java.io.Writer;
 
 public class Normalizer implements Runnable {
     private FileSet fileSet;
+    private FileSet.Output fileSetOutput;
     private AnnotationProcessor annotationProcessor;
     private RecordValidator recordValidator;
     private boolean discardInvalid;
@@ -55,6 +56,8 @@ public class Normalizer implements Runnable {
         void invalidInput(MetadataRecord metadataRecord, MissingPropertyException exception);
 
         void invalidOutput(RecordValidationException exception);
+
+        void finished(boolean success);
     }
 
     public Normalizer(
@@ -81,9 +84,9 @@ public class Normalizer implements Runnable {
             RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
             ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(mapping, annotationProcessor);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
-            fileSet.removeOutputFiles();
-            final Writer outputWriter = new OutputStreamWriter(fileSet.getOutputStream(), "UTF-8");
-            final Writer discardedWriter = discardInvalid ? new OutputStreamWriter(fileSet.getDiscardedStream(), "UTF-8") : null;
+            fileSetOutput = fileSet.prepareOutput();
+            final Writer outputWriter = new OutputStreamWriter(fileSetOutput.getOutputStream(), "UTF-8");
+            final Writer discardedWriter = discardInvalid ? new OutputStreamWriter(fileSetOutput.getDiscardedStream(), "UTF-8") : null;
             outputWriter.write("<?xml version='1.0' encoding='UTF-8'?>\n");
             outputWriter.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel, new MappingRunner.Listener() {
@@ -93,6 +96,7 @@ public class Normalizer implements Runnable {
                         if (discardedWriter != null) {
                             try {
                                 discardedWriter.write(metadataRecord.toString());
+                                fileSetOutput.recordDiscarded();
                             }
                             catch (IOException e1) {
                                 userNotifier.tellUser("Unable to write discarded record", e1);
@@ -107,17 +111,20 @@ public class Normalizer implements Runnable {
                             else {
                                 userNotifier.tellUser("Problem normalizing record " + metadataRecord.toString(), exception);
                             }
+                            fileSetOutput.close(true);
                         }
                     }
                     else {
                         try {
                             String validated = recordValidator.validate(metadataRecord, output);
                             outputWriter.write(validated);
+                            fileSetOutput.recordNormalized();
                         }
                         catch (RecordValidationException e) {
                             if (discardedWriter != null) {
                                 try {
                                     discardedWriter.write(metadataRecord.toString());
+                                    fileSetOutput.recordDiscarded();
                                 }
                                 catch (IOException e1) {
                                     userNotifier.tellUser("Unable to write discarded record", e1);
@@ -126,6 +133,7 @@ public class Normalizer implements Runnable {
                             else {
                                 userNotifier.tellUser("Invalid output record", e);
                                 listener.invalidOutput(e);
+                                fileSetOutput.close(true);
                                 running = false;
                             }
                         }
@@ -139,20 +147,19 @@ public class Normalizer implements Runnable {
             MetadataParser parser = new MetadataParser(fileSet.getInputStream(), recordRoot, parserListener);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
-                if (!mappingRunner.runMapping(record)) {
+                if (!mappingRunner.runMapping(record) && !discardInvalid) {
                     running = false;
                 }
             }
             outputWriter.write("</metadata>\n");
-            outputWriter.close();
             if (discardedWriter != null) {
                 discardedWriter.close();
             }
-            parser.close();
+            fileSetOutput.close(!running);
             if (!running) {
-                fileSet.removeOutputFiles();
                 parserListener.recordsParsed(0, true);
             }
+            listener.finished(running);
         }
         catch (XMLStreamException e) {
             throw new RuntimeException("XML Problem", e);

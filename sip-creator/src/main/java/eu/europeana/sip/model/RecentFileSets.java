@@ -40,9 +40,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -89,7 +91,7 @@ public class RecentFileSets {
     }
 
     public void setMostRecent(FileSet fileSet) {
-        FileSetImpl fileSetImpl = (FileSetImpl)fileSet;
+        FileSetImpl fileSetImpl = (FileSetImpl) fileSet;
         recent.remove(fileSetImpl);
         recent.add(0, fileSetImpl);
         try {
@@ -135,28 +137,11 @@ public class RecentFileSets {
         return recent;
     }
 
-    public File getCommonDirectory() {
-        Set<File> directories = new HashSet<File>();
-        for (FileSet fileSet : recent) {
-            directories.add(fileSet.getDirectory());
-        }
-        File highest = null;
-        for (File directory : directories) {
-            if (highest == null) {
-                highest = directory;
-            }
-            else {
-                highest = getDeepestCommonDirectory(highest, directory);
-            }
-        }
-        return highest;
-    }
-
     public List<File> getCommonDirectories() {
         Set<File> uniqueDirectories = new HashSet<File>();
         for (int walkA = 0; walkA < recent.size(); walkA++) {
             FileSet fsA = recent.get(walkA);
-            for (int walkB = walkA+1; walkB < recent.size(); walkB++) {
+            for (int walkB = walkA + 1; walkB < recent.size(); walkB++) {
                 FileSet fsB = recent.get(walkB);
                 uniqueDirectories.add(getDeepestCommonDirectory(fsA.getDirectory(), fsB.getDirectory()));
             }
@@ -207,15 +192,16 @@ public class RecentFileSets {
     }
 
     private class FileSetImpl implements FileSet {
-        private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile;
+        private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile, reportFile;
         private UserNotifier userNotifier;
 
         private FileSetImpl(File inputFile) {
             this.inputFile = inputFile;
             this.statisticsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".statistics");
             this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
-            this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
+            this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized");
             this.discardedFile = new File(inputFile.getParentFile(), inputFile.getName() + ".discarded");
+            this.reportFile = new File(inputFile.getParentFile(), inputFile.getName() + ".report");
         }
 
         @Override
@@ -264,46 +250,6 @@ public class RecentFileSets {
                 userNotifier.tellUser("Unable to open input file", e);
             }
             return null;
-        }
-
-        @Override
-        public OutputStream getOutputStream() {
-            checkWorkerThread();
-            try {
-                return new FileOutputStream(outputFile, true);
-            }
-            catch (FileNotFoundException e) {
-                userNotifier.tellUser("Unable to open output file "+outputFile.getAbsolutePath(), e);
-            }
-            return null;
-        }
-
-        @Override
-        public OutputStream getDiscardedStream() {
-            checkWorkerThread();
-            try {
-                return new FileOutputStream(discardedFile, true);
-            }
-            catch (FileNotFoundException e) {
-                userNotifier.tellUser("Unable to open discarded file "+discardedFile.getAbsolutePath(), e);
-            }
-            return null;
-        }
-
-        @Override
-        public boolean hasOutputFile() {
-            return outputFile.exists();
-        }
-
-        @Override
-        public void removeOutputFiles() {
-            checkWorkerThread();
-            if (outputFile.exists() && !outputFile.delete()) {
-                LOG.warn("Unable to delete "+outputFile);
-            }
-            if (discardedFile.exists() && !discardedFile.delete()) {
-                LOG.warn("Unable to delete "+discardedFile);
-            }
         }
 
         @Override
@@ -374,8 +320,156 @@ public class RecentFileSets {
             }
         }
 
+        @Override
+        public Report getReport() {
+            if (reportFile.exists()) {
+                try {
+                    return new ReportImpl();
+                }
+                catch (Exception e) {
+                    removeOutput();
+                    return null;
+                }
+            }
+            else {
+                return null;
+            }
+        }
+
+        @Override
+        public Output prepareOutput() {
+            return new OutputImpl();
+        }
+
         public String toString() {
             return getName();
+        }
+
+        private class OutputImpl implements Output {
+            private OutputStream outputStream, discardedStream, reportStream;
+            private int recordsNormalized, recordsDiscarded;
+
+            private OutputImpl() {
+                checkWorkerThread();
+                removeOutput();
+                try {
+                    this.outputStream = new FileOutputStream(outputFile);
+                    this.discardedStream = new FileOutputStream(discardedFile);
+                    this.reportStream = new FileOutputStream(reportFile);
+                }
+                catch (FileNotFoundException e) {
+                    userNotifier.tellUser("Unable to open output file " + outputFile.getAbsolutePath(), e);
+                }
+            }
+
+            @Override
+            public OutputStream getOutputStream() {
+                return outputStream;
+            }
+
+            @Override
+            public OutputStream getDiscardedStream() {
+                return discardedStream;
+            }
+
+            @Override
+            public void recordNormalized() {
+                recordsNormalized++;
+            }
+
+            @Override
+            public void recordDiscarded() {
+                recordsDiscarded++;
+            }
+
+            @Override
+            public void close(boolean abort) {
+                if (abort) {
+                    removeOutput();
+                }
+                else {
+                    try {
+                        outputStream.close();
+                        discardedStream.close();
+                        Properties properties = new Properties();
+                        properties.put("normalizationDate", String.valueOf(System.currentTimeMillis()));
+                        properties.put("recordsNormalized", String.valueOf(recordsNormalized));
+                        properties.put("recordsDiscarded", String.valueOf(recordsDiscarded));
+                        properties.store(reportStream, "Normalization Report");
+                        reportStream.close();
+                    }
+                    catch (IOException e) {
+                        userNotifier.tellUser("Unable to close output files", e);
+                    }
+                }
+            }
+        }
+
+        private class ReportImpl implements Report {
+            private Properties properties = new Properties();
+
+            private ReportImpl() throws Exception {
+                try {
+                    InputStream reportStream = new FileInputStream(reportFile);
+                    properties.load(reportStream);
+                }
+                catch (Exception e) {
+                    userNotifier.tellUser("Unable to load report file", e);
+                    throw e;
+                }
+            }
+
+            @Override
+            public Date getNormalizationDate() {
+                String s = (String) properties.get("normalizationDate");
+                if (s != null) {
+                    return new Date(Long.parseLong(s));
+                }
+                else {
+                    return null;
+                }
+            }
+
+            @Override
+            public int getRecordsNormalized() {
+                String s = (String) properties.get("recordsNormalized");
+                if (s != null) {
+                    return Integer.parseInt(s);
+                }
+                else {
+                    return 0;
+                }
+            }
+
+            @Override
+            public int getRecordsDiscarded() {
+                String s = (String) properties.get("recordsDiscarded");
+                if (s != null) {
+                    return Integer.parseInt(s);
+                }
+                else {
+                    return 0;
+                }
+            }
+
+            @Override
+            public void clear() {
+                checkWorkerThread();
+                removeOutput();
+            }
+
+        }
+
+        private void removeOutput() {
+            if (outputFile.exists() && !outputFile.delete()) {
+                LOG.warn("Unable to delete " + outputFile);
+            }
+            if (discardedFile.exists() && !discardedFile.delete()) {
+                LOG.warn("Unable to delete " + discardedFile);
+            }
+            if (reportFile.exists() && !reportFile.delete()) {
+                LOG.warn("Unable to delete " + reportFile);
+            }
         }
     }
 

@@ -209,6 +209,10 @@ public class MappingPanel extends JPanel {
             @Override
             public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
             }
+
+            @Override
+            public void normalizationMessage(String message) {
+            }
         });
         createMappingButton.addActionListener(new ActionListener() {
             @Override

@@ -21,12 +21,16 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -52,6 +56,7 @@ public class NormPanel extends JPanel {
     private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
     private JButton normalizeButton = new JButton("Normalize");
     private JButton abortButton = new JButton("Abort");
+    private JLabel normMessage = new JLabel("?", JLabel.CENTER);
 
     public NormPanel(SipModel sipModel) {
         super(new GridBagLayout());
@@ -103,15 +108,18 @@ public class NormPanel extends JPanel {
     }
 
     private JPanel createNormalizePanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel pp = new JPanel(new BorderLayout(10, 10));
         JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
         progressBar.setBorderPainted(true);
         JPanel bp = new JPanel(new GridLayout(1, 0, 8, 8));
         bp.add(normalizeButton);
         bp.add(discardInvalidBox);
-        p.add(bp, BorderLayout.WEST);
-        p.add(progressBar, BorderLayout.CENTER);
-        p.add(abortButton, BorderLayout.EAST);
+        pp.add(bp, BorderLayout.WEST);
+        pp.add(progressBar, BorderLayout.CENTER);
+        pp.add(abortButton, BorderLayout.EAST);
+        JPanel p  = new JPanel(new GridLayout(0,1, 10, 10));
+        p.add(pp);
+        p.add(normMessage);
         return p;
     }
 
@@ -126,6 +134,28 @@ public class NormPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sipModel.abortNormalize();
+            }
+        });
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+            @Override
+            public void templateApplied() {
+            }
+
+            @Override
+            public void updatedFileSet(FileSet fileSet) {
+            }
+
+            @Override
+            public void updatedRecordRoot(RecordRoot recordRoot) {
+            }
+
+            @Override
+            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            }
+
+            @Override
+            public void normalizationMessage(String message) {
+                normMessage.setText(message);
             }
         });
     }

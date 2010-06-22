@@ -217,6 +217,10 @@ public class AnalysisPanel extends JPanel {
             public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
                 constantFieldPanel.refresh();
             }
+
+            @Override
+            public void normalizationMessage(String message) {
+            }
         });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override

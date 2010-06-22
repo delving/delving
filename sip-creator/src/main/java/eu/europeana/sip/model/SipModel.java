@@ -91,6 +91,8 @@ public class SipModel {
         void updatedRecordRoot(RecordRoot recordRoot);
 
         void updatedConstantFieldModel(ConstantFieldModel constantFieldModel);
+
+        void normalizationMessage(String message);
     }
 
     public interface AnalysisListener {
@@ -148,7 +150,7 @@ public class SipModel {
             public void run() {
                 final List<Statistics> statistics = newFileSet.getStatistics();
                 final String mapping = newFileSet.getMapping();
-                final boolean outputFilePresent = newFileSet.hasOutputFile();
+                final FileSet.Report report = newFileSet.getReport();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -162,7 +164,14 @@ public class SipModel {
                         createMetadataParser(1);
                         if (recordRoot != null) {
                             normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
-                            normalizeProgressModel.setValue(outputFilePresent ? recordRoot.getRecordCount() : 0);
+                            if (report != null) {
+                                normalizeProgressModel.setValue(report.getRecordsNormalized() + report.getRecordsDiscarded());
+                                normalizeMessage(report);
+                            }
+                            else {
+                                normalizeProgressModel.setValue(0);
+                                normalizeMessage("Normalization not yet performed.");
+                            }
                         }
                         else {
                             normalizeProgressModel.setMaximum(100);
@@ -255,6 +264,7 @@ public class SipModel {
     public void normalize(final boolean discardInvalid) {
         checkSwingThread();
         abortNormalize();
+        normalizeMessage("Normalizing...");
         normalizer = new Normalizer(
                 fileSet,
                 annotationProcessor,
@@ -294,6 +304,21 @@ public class SipModel {
                             }
                         });
                     }
+
+                    @Override
+                    public void finished(final boolean success) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (success) {
+                                    normalizeMessage(fileSet.getReport());
+                                }
+                                else {
+                                    normalizeMessage("Normalization aborted");
+                                }
+                            }
+                        });
+                    }
                 }
         );
         executor.execute(normalizer);
@@ -301,19 +326,18 @@ public class SipModel {
 
     public void abortNormalize() {
         checkSwingThread();
-        if (normalizer != null) {
-            normalizer.abort();
-            normalizer = null;
-        }
         normalizeProgressModel.setValue(0);
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (fileSet.hasOutputFile()) {
-                    fileSet.removeOutputFiles();
+        normalizeMessage("Normalization not yet performed.");
+        final Normalizer existingNormalizer = normalizer;
+        normalizer = null;
+        if (existingNormalizer != null) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    existingNormalizer.abort(); // todo: make sure this deletes the files!
                 }
-            }
-        });
+            });
+        }
     }
 
     public TreeModel getAnalysisTreeModel() {
@@ -418,6 +442,24 @@ public class SipModel {
     }
 
     // === privates
+
+    private void normalizeMessage(String message) {
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.normalizationMessage(message);
+        }
+    }
+
+    private void normalizeMessage(FileSet.Report report) {
+        String message = String.format(
+                "Normalization completed on %s resulted in %d normalized records and %d discarded.",
+                report.getNormalizationDate().toString(),
+                report.getRecordsNormalized(),
+                report.getRecordsDiscarded()
+        );
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.normalizationMessage(message);
+        }
+    }
 
     private void setGlobalFieldModelInternal(ConstantFieldModel constantFieldModel) {
         checkSwingThread();

@@ -24,6 +24,7 @@ package eu.europeana.sip.model;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,14 +49,6 @@ public interface FileSet {
 
     InputStream getInputStream();
 
-    OutputStream getOutputStream();
-
-    OutputStream getDiscardedStream();
-
-    boolean hasOutputFile();
-
-    void removeOutputFiles();
-
     List<Statistics> getStatistics();
 
     void setStatistics(List<Statistics> statisticsList);
@@ -63,5 +56,35 @@ public interface FileSet {
     String getMapping();
 
     void setMapping(String mapping);
+
+    Report getReport();
+
+    Output prepareOutput();
+
+    public interface Output {
+
+        OutputStream getOutputStream();
+
+        OutputStream getDiscardedStream();
+
+        void recordNormalized();
+
+        void recordDiscarded();
+
+        void close(boolean abort);
+
+    }
+
+    public interface Report {
+
+        Date getNormalizationDate();
+
+        int getRecordsNormalized();
+
+        int getRecordsDiscarded();
+
+        void clear();
+        
+    }
 
 }
