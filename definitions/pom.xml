@@ -45,7 +45,7 @@
                 <role>consultant</role>
             </roles>
         </developer>
-        
+
     </developers>
     <organization>
         <name>Europeana Foundation</name>
@@ -65,5 +65,20 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
