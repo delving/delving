@@ -107,10 +107,10 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
   }
 
   def processListSets(pmhRequestEntry: PmhRequestEntry) : Elem = {
-    val collections = metaRepo.getCollectionNames
+    val dataSets = metaRepo.getDataSets
 
     // when there are no collections throw "noSetHierarchy" ErrorResponse
-    if (collections.size == 0) return createErrorResponse("noSetHierarchy")
+    if (dataSets.size == 0) return createErrorResponse("noSetHierarchy")
 
     // todo: implement harvest steps for this verb.
 
@@ -121,10 +121,10 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
      <responseDate>{new Date}</responseDate>
      <request verb="ListSets">{request.getRequestURL}</request>
       <ListSets>
-        { for (set <- collections) yield
+        { for (set <- dataSets.values) yield
           <set>
-            <setSpec>{set}</setSpec>
-            <setName>{set}</setName>
+            <setSpec>{set.setSpec}</setSpec>
+            <setName>{set.setName}</setName>
           </set>
         }
       </ListSets>

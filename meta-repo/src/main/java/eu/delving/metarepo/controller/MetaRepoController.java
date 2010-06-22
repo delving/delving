@@ -37,22 +37,22 @@ public class MetaRepoController {
     @ResponseBody
     String list() {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
-        for (String name : metaRepo.getCollectionNames()) {
+        for (MetaRepo.DataSet name : metaRepo.getDataSets().values()) {
             out.append(String.format("<li><a href=\"%s/index.html\">%s</a></li>", name, name));
         }
         out.append("</ul>");
         return out.toString();
     }
 
-    @RequestMapping("/{collectionId}/index.html")
+    @RequestMapping("/{dataSetSpec}/index.html")
     public
     @ResponseBody
     String listCollection(
-            @PathVariable String collectionId
+            @PathVariable String dataSetSpec
     ) {
-        MetaRepo.Collection collection = metaRepo.getCollection(collectionId);
-        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", collection.setSpec()));
-        for (MetaRepo.Record record : collection.records(0,10)) {
+        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", dataSet.setSpec()));
+        for (MetaRepo.Record record : dataSet.records(0,10)) {
             String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")
@@ -62,28 +62,33 @@ public class MetaRepoController {
         return out.toString();
     }
 
-    @RequestMapping("/submit/{collectionId}.zip")
+    @RequestMapping("/submit/{dataSetSpec}.zip")
     public
     @ResponseBody
     String submit(
-            @PathVariable String collectionId,
+            @PathVariable String dataSetSpec,
             InputStream inputStream
     ) throws IOException, XMLStreamException {
-        log.info("submit(" + collectionId + ")");
-        MetaRepo.Collection collection = metaRepo.getCollection(collectionId);
+        log.info("submit(" + dataSetSpec + ")");
+        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        if (dataSet == null) {
+            dataSet = metaRepo.createDataSet(
+                   dataSetSpec, "name", "providerName", "description" // todo: get them from a zip entry!
+            );
+        }
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
             log.info("entry: " + entry);
             if (entry.getName().endsWith(".xml")) {
-                collection.parseRecords(
+                dataSet.parseRecords(
                         zis,
                         QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record"),
                         QName.valueOf("{http://www.openarchives.org/OAI/2.0/}identifier")
                 );
             }
             else if (entry.getName().endsWith(".mapping")) {
-                collection.setMapping(Constant.MAPPING_TO_ESE, getMapping(zis));
+                dataSet.setMapping(Constant.DATASET_MAPPING_TO_ESE, getMapping(zis));
             }
             else {
                 byte[] buffer = new byte[2048];

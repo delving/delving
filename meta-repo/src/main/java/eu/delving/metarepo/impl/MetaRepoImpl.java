@@ -19,14 +19,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static eu.delving.metarepo.core.Constant.COLLECTION_PREFIX;
 import static eu.delving.metarepo.core.Constant.DATABASE_NAME;
+import static eu.delving.metarepo.core.Constant.DATASETS_COLLECTION;
+import static eu.delving.metarepo.core.Constant.DATASET_DESCRIPTION;
+import static eu.delving.metarepo.core.Constant.DATASET_MAPPINGS;
+import static eu.delving.metarepo.core.Constant.DATASET_NAME;
+import static eu.delving.metarepo.core.Constant.DATASET_NAMESPACES;
+import static eu.delving.metarepo.core.Constant.DATASET_PROVIDER_NAME;
+import static eu.delving.metarepo.core.Constant.DATASET_SPEC;
 import static eu.delving.metarepo.core.Constant.MODIFIED;
 import static eu.delving.metarepo.core.Constant.MONGO_ID;
 import static eu.delving.metarepo.core.Constant.ORIGINAL;
-import static eu.delving.metarepo.core.Constant.TYPE;
-import static eu.delving.metarepo.core.Constant.TYPE_MAPPING;
-import static eu.delving.metarepo.core.Constant.TYPE_METADATA_RECORD;
+import static eu.delving.metarepo.core.Constant.RECORD_COLLECTION_PREFIX;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -37,12 +41,13 @@ import static eu.delving.metarepo.core.Constant.TYPE_METADATA_RECORD;
 public class MetaRepoImpl implements MetaRepo {
     private Mongo mongo;
     private DB mongoDatabase;
+    private Map<String, DataSetImpl> datasets;
 
     public void setMongo(Mongo mongo) {
         this.mongo = mongo;
     }
 
-    private DB db() {
+    private synchronized DB db() {
         if (mongoDatabase == null) {
             mongoDatabase = mongo.getDB(DATABASE_NAME);
         }
@@ -50,19 +55,32 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public List<String> getCollectionNames() {
-        List<String> names = new ArrayList<String>();
-        for (String name : db().getCollectionNames()) {
-            if (name.startsWith(COLLECTION_PREFIX)) {
-                names.add(name.substring(COLLECTION_PREFIX.length()));
-            }
-        }
-        return names;
+    public DataSet createDataSet(String spec, String name, String providerName, String description) {
+        DBObject object = new BasicDBObject();
+        object.put(DATASET_SPEC, spec);
+        object.put(DATASET_NAME, name);
+        object.put(DATASET_PROVIDER_NAME, providerName);
+        object.put(DATASET_DESCRIPTION, description);
+        DataSetImpl impl = new DataSetImpl(object);
+        impl.saveObject();
+        getDataSets();
+        datasets.put(impl.setSpec(), impl);
+        return impl;
     }
 
     @Override
-    public Collection getCollection(String name) {
-        return new CollectionImpl(db().getCollection(COLLECTION_PREFIX + name));
+    public synchronized Map<String, ? extends DataSet> getDataSets() {
+        if (datasets == null) {
+            datasets = new TreeMap<String, DataSetImpl>();
+            DBCollection collection = db().getCollection(DATASETS_COLLECTION);
+            DBCursor cursor = collection.find();
+            while (cursor.hasNext()) {
+                DBObject object = cursor.next();
+                DataSetImpl impl = new DataSetImpl(object);
+                datasets.put(impl.setSpec(), impl);
+            }
+        }
+        return datasets;
     }
 
     @Override
@@ -90,68 +108,88 @@ public class MetaRepoImpl implements MetaRepo {
         return null;  //TODO: implement this
     }
 
-    private static class CollectionImpl implements Collection {
+    private class DataSetImpl implements DataSet {
+        private DBObject object;
+        private DBCollection recColl;
 
-        private DBCollection dbc;
+        private DataSetImpl(DBObject object) {
+            this.object = object;
+        }
 
-        private CollectionImpl(DBCollection dbc) {
-            this.dbc = dbc;
+        private DBCollection records() {
+            if (recColl == null) {
+                recColl = db().getCollection(RECORD_COLLECTION_PREFIX + setSpec());
+            }
+            return recColl;
         }
 
         @Override
         public String setSpec() {
-            return dbc.getName().substring(COLLECTION_PREFIX.length());
+            return (String)object.get(DATASET_SPEC);
         }
 
         @Override
-        public String nameOfSet() {
-            return "nameOfSet";  //TODO: implement this
+        public String setName() {
+            return (String)object.get(DATASET_NAME);
+        }
+
+        @Override
+        public String providerName() {
+            return (String)object.get(DATASET_PROVIDER_NAME);
+        }
+
+        @Override
+        public String description() {
+            return (String)object.get(DATASET_DESCRIPTION);
         }
 
         @Override
         public Record fetch(ObjectId id) {
             DBObject object = new BasicDBObject(MONGO_ID, id);
-            return new RecordImpl(dbc.findOne(object));
+            return new RecordImpl(records().findOne(object));
         }
 
         @Override
         public void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException {
-            Map<String,String> namespaceMap = new TreeMap<String,String>();
+            records().drop();
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
                     recordRoot,
-                    uniqueElement,
-                    namespaceMap
+                    uniqueElement
             );
-            DBObject object;
-            while ((object = parser.nextRecord()) != null) {
-                dbc.insert(object);
+            DBObject record;
+            while ((record = parser.nextRecord()) != null) {
+                records().insert(record);
             }
-            // todo: save the namespaces!
+            object.put(DATASET_NAMESPACES, parser.getNamespaces());
+            saveObject();
         }
 
         @Override
         public void setMapping(String mappingName, String mapping) {
-            DBObject query = new BasicDBObject(TYPE, TYPE_MAPPING);
-            DBObject result = dbc.findOne(query);
-            if (result == null) {
-                DBObject mappingObject = new BasicDBObject();
-                mappingObject.put(TYPE, TYPE_MAPPING);
-                mappingObject.put(mappingName, mapping);
+            DBObject mappings = (DBObject)object.get(DATASET_MAPPINGS);
+            if (mappings == null) {
+                mappings = new BasicDBObject();
+                object.put(DATASET_MAPPINGS, mappings);
             }
+            mappings.put(mappingName, mapping);
+            saveObject();
         }
 
         @Override
         public List<? extends Record> records(int start, int count) {
-            DBObject query = new BasicDBObject();
-            query.put(TYPE, TYPE_METADATA_RECORD);
             List<RecordImpl> list = new ArrayList<RecordImpl>();
-            DBCursor cursor = dbc.find(query, null, start, count);
+            DBCursor cursor = records().find(null, null, start, count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
                 list.add(new RecordImpl(object));
             }
             return list;
+        }
+
+        private void saveObject() {
+            DBCollection collection = db().getCollection(DATASETS_COLLECTION);
+            collection.save(object);
         }
     }
 
@@ -204,4 +242,29 @@ public class MetaRepoImpl implements MetaRepo {
         }
     }
 
+    private static class MetadataFormatImpl implements MetadataFormat {
+
+        private String metadataPrefix, schema, metadataNameSpace;
+
+        private MetadataFormatImpl(String metadataPrefix, String schema, String metadataNameSpace) {
+            this.metadataPrefix = metadataPrefix;
+            this.schema = schema;
+            this.metadataNameSpace = metadataNameSpace;
+        }
+
+        @Override
+        public String getMetadataPrefix() {
+            return metadataPrefix;
+        }
+
+        @Override
+        public String getSchema() {
+            return schema;
+        }
+
+        @Override
+        public String getMetadataNameSpace() {
+            return metadataNameSpace;
+        }
+    }
 }

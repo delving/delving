@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * todo: javadoc
@@ -18,9 +19,9 @@ import java.util.List;
 
 public interface MetaRepo {
 
-    List<String> getCollectionNames();
+    DataSet createDataSet(String spec, String name, String providerName, String description);
 
-    Collection getCollection(String name);
+    Map<String, ? extends DataSet> getDataSets();
 
     List<MetadataFormat> getMetadataFormats();
 
@@ -32,28 +33,15 @@ public interface MetaRepo {
 
     Record getRecord(String identifier, String metadataFormat);
 
-    public interface Collection {
+    public interface DataSet {
         String setSpec();
-        String nameOfSet();
-//        Details details();
-        Record fetch(ObjectId id);
-//        Record insert(String xml);
-        void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
-//        Record update(ObjectId id, String xml);
-        void setMapping(String mappingName, String mapping);
-//        View view(String mappingName);
-
-        List<? extends Record> records(int start, int count);
-    }
-
-    public interface Details {
+        String setName();
         String providerName();
         String description();
-    }
-
-    public interface View {
+        Record fetch(ObjectId id);
+        void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
+        void setMapping(String mappingName, String mapping);
         List<? extends Record> records(int start, int count);
-        List<? extends Record> records(Date startTime, int count);
     }
 
     public interface HarvestStep {
