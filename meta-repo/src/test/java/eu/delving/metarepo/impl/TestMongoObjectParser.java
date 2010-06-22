@@ -1,6 +1,7 @@
 package eu.delving.metarepo.impl;
 
 import com.mongodb.DBObject;
+import eu.delving.metarepo.core.MetaRepo;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,9 +11,6 @@ import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static eu.delving.metarepo.core.Constant.MODIFIED;
-import static eu.delving.metarepo.core.Constant.ORIGINAL;
-import static eu.delving.metarepo.core.Constant.UNIQUE;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -35,9 +33,9 @@ public class TestMongoObjectParser {
         DBObject object;
         while ((object = parser.nextRecord()) != null) {
             assertNotNull("Object", object);
-            assertNotNull("Metadata", object.get(ORIGINAL));
-            assertNull("Modified", object.get(MODIFIED));
-            LOG.info(object.get(UNIQUE));
+            assertNotNull("Metadata", object.get(MetaRepo.Record.ORIGINAL));
+            assertNull("Modified", object.get(MetaRepo.Record.MODIFIED));
+            LOG.info(object.get(MetaRepo.Record.UNIQUE));
 //            for (String line : object.get(Constant.ORIGINAL).toString().split("\n")) {
 //                LOG.info(line);
 //            }

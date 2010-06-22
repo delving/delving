@@ -19,19 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static eu.delving.metarepo.core.Constant.DATABASE_NAME;
-import static eu.delving.metarepo.core.Constant.DATASETS_COLLECTION;
-import static eu.delving.metarepo.core.Constant.DATASET_DESCRIPTION;
-import static eu.delving.metarepo.core.Constant.DATASET_MAPPINGS;
-import static eu.delving.metarepo.core.Constant.DATASET_NAME;
-import static eu.delving.metarepo.core.Constant.DATASET_NAMESPACES;
-import static eu.delving.metarepo.core.Constant.DATASET_PROVIDER_NAME;
-import static eu.delving.metarepo.core.Constant.DATASET_SPEC;
-import static eu.delving.metarepo.core.Constant.MODIFIED;
-import static eu.delving.metarepo.core.Constant.MONGO_ID;
-import static eu.delving.metarepo.core.Constant.ORIGINAL;
-import static eu.delving.metarepo.core.Constant.RECORD_COLLECTION_PREFIX;
-
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
  *
@@ -57,10 +44,10 @@ public class MetaRepoImpl implements MetaRepo {
     @Override
     public DataSet createDataSet(String spec, String name, String providerName, String description) {
         DBObject object = new BasicDBObject();
-        object.put(DATASET_SPEC, spec);
-        object.put(DATASET_NAME, name);
-        object.put(DATASET_PROVIDER_NAME, providerName);
-        object.put(DATASET_DESCRIPTION, description);
+        object.put(DataSet.DATASET_SPEC, spec);
+        object.put(DataSet.DATASET_NAME, name);
+        object.put(DataSet.DATASET_PROVIDER_NAME, providerName);
+        object.put(DataSet.DATASET_DESCRIPTION, description);
         DataSetImpl impl = new DataSetImpl(object);
         impl.saveObject();
         getDataSets();

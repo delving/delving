@@ -1,6 +1,5 @@
 package eu.delving.metarepo.controller;
 
-import eu.delving.metarepo.core.Constant;
 import eu.delving.metarepo.core.MetaRepo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +87,7 @@ public class MetaRepoController {
                 );
             }
             else if (entry.getName().endsWith(".mapping")) {
-                dataSet.setMapping(Constant.DATASET_MAPPING_TO_ESE, getMapping(zis));
+                dataSet.setMapping(MetaRepo.DataSet.DATASET_MAPPING_TO_ESE, getMapping(zis));
             }
             else {
                 byte[] buffer = new byte[2048];

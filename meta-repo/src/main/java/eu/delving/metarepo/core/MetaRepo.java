@@ -42,6 +42,15 @@ public interface MetaRepo {
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void setMapping(String mappingName, String mapping);
         List<? extends Record> records(int start, int count);
+        
+        String DATASET_SPEC = "dataset_spec";
+        String DATASET_NAME = "dataset_name";
+        String DATASET_PROVIDER_NAME = "dataset_provider_name";
+        String DATASET_DESCRIPTION = "dataset_desciption";
+        String DATASET_NAMESPACES = "dataset_namespaces";
+        String DATASET_MAPPINGS = "mappings";
+        String DATASET_MAPPING_TO_ESE = "to-ese";
+        
     }
 
     public interface HarvestStep {
@@ -64,6 +73,10 @@ public interface MetaRepo {
         // todo how to deal with formats
         String format();
         String xml();
+
+        String MODIFIED = "mod";
+        String UNIQUE = "uniq";
+        String ORIGINAL = "orig";
     }
 
     public interface PmhRequest {
@@ -104,6 +117,12 @@ public interface MetaRepo {
             return pmhCommand;
         }
     }
+    
+    String DATABASE_NAME = "MetaRepo";
+    String RECORD_COLLECTION_PREFIX = "Records_";
+    String DATASETS_COLLECTION = "Datasets";
+    String HARVEST_STEPS_COLLECTION = "HarvestSteps";
+    String MONGO_ID = "_id";
 }
 
 
