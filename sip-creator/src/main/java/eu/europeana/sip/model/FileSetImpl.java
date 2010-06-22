@@ -311,6 +311,7 @@ public class FileSetImpl implements FileSet {
     private void buildZipFile() throws IOException {
         OutputStream outputStream = new FileOutputStream(zipFile);
         ZipOutputStream zos = new ZipOutputStream(outputStream);
+        // todo: create an entry for the data set details!
         stream(inputFile, zos);
         stream(mappingFile, zos);
         zos.close();

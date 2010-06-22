@@ -77,6 +77,7 @@ public class SipModel {
     private FieldMappingListModel fieldMappingListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
+    private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
@@ -177,6 +178,8 @@ public class SipModel {
                             normalizeProgressModel.setMaximum(100);
                             normalizeProgressModel.setValue(0);
                         }
+                        uploadProgressModel.setMaximum(100);
+                        uploadProgressModel.setValue(0);
                         for (UpdateListener updateListener : updateListeners) {
                             updateListener.updatedFileSet(newFileSet);
                         }
@@ -261,6 +264,10 @@ public class SipModel {
         return normalizeProgressModel;
     }
 
+    public DefaultBoundedRangeModel getUploadProgress() {
+        return uploadProgressModel;
+    }
+
     public void normalize(final boolean discardInvalid) {
         checkSwingThread();
         abortNormalize();
@@ -340,14 +347,9 @@ public class SipModel {
         }
     }
 
-    public void createZipFile() {
+    public void createUploadZipFile() {
         checkSwingThread();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                fileSet.createZipFile();
-            }
-        });
+        executor.execute(new ZipUploader(fileSet, uploadProgressModel));
     }
 
     public TreeModel getAnalysisTreeModel() {

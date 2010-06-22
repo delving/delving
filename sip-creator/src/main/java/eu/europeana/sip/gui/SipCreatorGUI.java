@@ -63,6 +63,7 @@ public class SipCreatorGUI extends JFrame {
         tabs.addTab("Mapping", new MappingPanel(sipModel));
         tabs.addTab("Refinement", new RefinementPanel(sipModel));
         tabs.addTab("Normalization", new NormPanel(sipModel));
+        tabs.addTab("Repository", new MetaRepoPanel(sipModel));
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
