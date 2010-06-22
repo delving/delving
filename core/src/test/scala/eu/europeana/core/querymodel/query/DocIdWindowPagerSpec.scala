@@ -153,6 +153,15 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
       }
     }
 
+    describe("(when given an negative bounds record)") {
+
+      val (pager, uri) = createPager("-1", "-3", "*:*")
+
+      it("should return null") {
+        pager should equal(null)
+      }
+    }
+
     describe("(when given a a record coming from the brief-result page)") {
 
       val (pager, uri) = createPager("2", "1", "*:*")
