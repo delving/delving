@@ -196,11 +196,15 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet, DataSetDetails details) {
+            public void updatedFileSet(FileSet fileSet) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.clearSelection();
                 prepareCreateMappingButton();
+            }
+
+            @Override
+            public void updatedDetails(DataSetDetails dataSetDetails) {
             }
 
             @Override

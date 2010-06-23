@@ -44,6 +44,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import javax.xml.namespace.QName;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -92,7 +93,9 @@ public class SipModel {
 
         void templateApplied();
 
-        void updatedFileSet(FileSet fileSet, DataSetDetails dataSetDetails);
+        void updatedFileSet(FileSet fileSet);
+
+        void updatedDetails(DataSetDetails dataSetDetails);
 
         void updatedRecordRoot(RecordRoot recordRoot);
 
@@ -157,7 +160,7 @@ public class SipModel {
                 final List<Statistics> statistics = newFileSet.getStatistics();
                 final String mapping = newFileSet.getMapping();
                 final FileSet.Report report = newFileSet.getReport();
-                final DataSetDetails details = newFileSet.getDataSetDetails();
+                final DataSetDetails dataSetDetails = newFileSet.getDataSetDetails();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -166,6 +169,7 @@ public class SipModel {
                         recordMapping.setCode(mapping, europeanaFieldMap);
                         RecordRoot recordRoot = recordMapping.getRecordRoot();
                         setRecordRootInternal(recordRoot);
+                        setDataSetDetails(dataSetDetails);
                         setGlobalFieldModelInternal(recordMapping.getConstantFieldModel());
                         fieldCompileModel.getRecordMapping().setConstantFieldModel(recordMapping.getConstantFieldModel());
                         createMetadataParser(1);
@@ -187,7 +191,8 @@ public class SipModel {
                         uploadProgressModel.setMaximum(100);
                         uploadProgressModel.setValue(0);
                         for (UpdateListener updateListener : updateListeners) {
-                            updateListener.updatedFileSet(newFileSet, details);
+                            updateListener.updatedFileSet(newFileSet);
+                            updateListener.updatedDetails(dataSetDetails);
                         }
                     }
                 });
@@ -272,12 +277,10 @@ public class SipModel {
 
     public void setDataSetDetails(DataSetDetails dataSetDetails) {
         this.dataSetDetails = dataSetDetails;
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                fileSet.setDataSetDetails(SipModel.this.dataSetDetails);
-            }
-        });
+        executor.execute(new DetailsSetter(dataSetDetails));
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDetails(dataSetDetails);
+        }
     }
 
     public BoundedRangeModel getNormalizeProgress() {
@@ -389,10 +392,24 @@ public class SipModel {
         }
     }
 
+    public void setUniqueElement(QName uniqueElement) {
+        dataSetDetails.setUniqueElement(uniqueElement.toString());
+        executor.execute(new DetailsSetter(dataSetDetails));
+        AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDetails(dataSetDetails);
+        }
+    }
+
     public void setRecordRoot(RecordRoot recordRoot) {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
         createMetadataParser(1);
+        dataSetDetails.setRecordRoot(recordRoot.getRootQName().toString());
+        executor.execute(new DetailsSetter(dataSetDetails));
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDetails(dataSetDetails);
+        }
         recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
         String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
@@ -596,7 +613,19 @@ public class SipModel {
         @Override
         public void run() {
             fileSet.setMapping(mapping);
-//            log.info("Saving the mapping");
+        }
+    }
+
+    private class DetailsSetter implements Runnable {
+        private DataSetDetails details;
+
+        private DetailsSetter(DataSetDetails details) {
+            this.details = details;
+        }
+
+        @Override
+        public void run() {
+            fileSet.setDataSetDetails(details);
         }
     }
 

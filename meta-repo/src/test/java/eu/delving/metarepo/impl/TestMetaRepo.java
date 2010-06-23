@@ -62,8 +62,7 @@ public class TestMetaRepo {
         String responseString = EntityUtils.toString(response.getEntity());
         LOG.info("GET response content type:"+response.getEntity().getContentType());
         LOG.info("Entity returned: "+ responseString);
-        Assert.assertTrue("Response contents not right", responseString.contains("398fa12b-169d-4ae2-b086-0af78d4454d1"));
-        Assert.assertTrue("Response contents not right", responseString.contains("783972d2-b37b-4884-be6c-eacbf6183ac6"));
+        Assert.assertTrue("Response contents not right", responseString.contains("Solan og Ludvik, Reodor og r\u00E5skinnet Desperados endelig hjem."));
         httpClient.getConnectionManager().shutdown();
     }
 }

@@ -9,7 +9,6 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -59,17 +58,13 @@ public class MetaRepoPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet, DataSetDetails dataSetDetails) {
+            public void updatedFileSet(FileSet fileSet) {
                 createUploadZipButton.setEnabled(fileSet.getReport() != null);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        DataSetDetails details = sipModel.getDataSetDetails();
-                        if (details != null) {
-                            dataSetDetailsPanel.setDetails(sipModel.getDataSetDetails());
-                        }
-                    }
-                });
+            }
+
+            @Override
+            public void updatedDetails(DataSetDetails dataSetDetails) {
+                dataSetDetailsPanel.setDetails(sipModel.getDataSetDetails());
             }
 
             @Override

@@ -57,6 +57,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -73,6 +74,7 @@ public class AnalysisPanel extends JPanel {
     private static final String RECORDS = "%d Records";
     private static final String PERFORM_ANALYSIS = "Analyze %s";
     private JButton selectRecordRootButton = new JButton("Select Record Root");
+    private JButton selectUniqueElementButton = new JButton("Select Unique Element");
     private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0), JLabel.CENTER);
     private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
@@ -123,8 +125,14 @@ public class AnalysisPanel extends JPanel {
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         p.add(scroll(statisticsJTree), BorderLayout.CENTER);
+        JPanel bp = new JPanel(new GridLayout(1,0,10,10));
         selectRecordRootButton.setEnabled(false);
-        p.add(selectRecordRootButton, BorderLayout.SOUTH);
+        selectRecordRootButton.setForeground(Color.RED);
+        bp.add(selectRecordRootButton);
+        selectUniqueElementButton.setForeground(Color.GREEN);
+        selectUniqueElementButton.setEnabled(false);
+        bp.add(selectUniqueElementButton);
+        p.add(bp, BorderLayout.SOUTH);
         return p;
     }
 
@@ -202,11 +210,15 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet, DataSetDetails details) {
+            public void updatedFileSet(FileSet fileSet) {
                 setElementsProcessed(sipModel.getElementCount());
                 analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(false);
+            }
+
+            @Override
+            public void updatedDetails(DataSetDetails dataSetDetails) {
             }
 
             @Override
@@ -229,6 +241,7 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = event.getPath();
                 AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
+                selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
                 sipModel.selectNode(node);
             }
         });
@@ -239,6 +252,14 @@ public class AnalysisPanel extends JPanel {
                 QNameNode node = (QNameNode) path.getLastPathComponent();
                 RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
                 sipModel.setRecordRoot(recordRoot);
+            }
+        });
+        selectUniqueElementButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TreePath path = statisticsJTree.getSelectionPath();
+                QNameNode node = (QNameNode) path.getLastPathComponent();
+                sipModel.setUniqueElement(node.getQName());
             }
         });
         analyzeButton.addActionListener(new ActionListener() {
@@ -291,6 +312,9 @@ public class AnalysisPanel extends JPanel {
             label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
             if (node.isRecordRoot()) {
                 label.setForeground(Color.RED);
+            }
+            else if (node.isUniqueElement()) {
+                label.setForeground(Color.GREEN);
             }
             return label;
         }

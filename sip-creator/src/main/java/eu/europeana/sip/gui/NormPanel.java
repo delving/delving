@@ -143,7 +143,11 @@ public class NormPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet, DataSetDetails details) {
+            public void updatedFileSet(FileSet fileSet) {
+            }
+
+            @Override
+            public void updatedDetails(DataSetDetails dataSetDetails) {
             }
 
             @Override

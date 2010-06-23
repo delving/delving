@@ -170,6 +170,9 @@ public class MetaRepoImpl implements MetaRepo {
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
                 list.add(new RecordImpl(object));
+                if (count-- <= 0) { // todo: damn, why isn't count parameter working in the find() above?
+                    break;
+                }
             }
             return list;
         }
