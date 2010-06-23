@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,14 +134,26 @@ public class RecordValidator {
                 }
             }
         }
+        Map<String, Boolean> present = new TreeMap<String, Boolean>();
+        for (EuropeanaField field : fieldMap.values()) {
+            if (!field.europeana().requiredGroup().isEmpty()) {
+                present.put(field.europeana().requiredGroup(), false);
+            }
+        }
+        for (Entry entry : entries) {
+            EuropeanaField field = fieldMap.get(entry.tag);
+            if (field != null && !field.europeana().requiredGroup().isEmpty()) {
+                present.put(field.europeana().requiredGroup(), true);
+            }
+        }
+        for (Map.Entry<String,Boolean> entry : present.entrySet()) {
+            if (!entry.getValue()) {
+                problems.add(String.format("Required field violation for [%s]", entry.getKey()));
+            }
+        }
         for (EuropeanaField field : fieldMap.values()) {
             Counter counter = counterMap.get(field.getXmlName());
-            if (counter == null) {
-                if (field.europeana().required()) {
-                    problems.add(String.format("Required field [%s] was absent", field.getXmlName()));
-                }
-            }
-            else if (!field.solr().multivalued() && counter.count > 1) {
+            if (counter != null && !field.solr().multivalued() && counter.count > 1) {
                 problems.add(String.format("Single-valued field [%s] had %d values", field.getXmlName(), counter.count));
             }
         }

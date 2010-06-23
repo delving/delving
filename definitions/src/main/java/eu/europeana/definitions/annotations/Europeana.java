@@ -100,12 +100,13 @@ public @interface Europeana {
     boolean type() default false;
 
     /**
-     * Is this field required?
+     * If the field is required, then this value is the name of the requirement group.  Typically this is
+     * the field name itself, but sometimes two fields can share the same requirement group.
      *
      * @return true if it is
      */
 
-    boolean required() default false;
+    String requiredGroup() default "";
 
     /**
      * There are some fields that are added by the Europeana System during the IngestionPhase based on meta-information

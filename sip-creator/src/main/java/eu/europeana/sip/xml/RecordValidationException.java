@@ -23,6 +23,10 @@ public class RecordValidationException extends Exception {
         return metadataRecord;
     }
 
+    public List<String> getProblems() {
+        return problems;
+    }
+
     public String toString() {
         StringBuilder out = new StringBuilder("Problems:\n");
         for (String problem : problems) {

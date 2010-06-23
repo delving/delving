@@ -63,7 +63,7 @@ public enum Country {
     }
 
     public String getCode() {
-        return englishName;
+        return englishName.toLowerCase();
     }
 
     public static Country get(String string) {
