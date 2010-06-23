@@ -123,7 +123,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean couldBeRecordRoot() {
-        return statistics != null && statistics.getCounters().isEmpty();
+        return statistics != null && statistics.isEmpty();
     }
 
     @Override
@@ -181,13 +181,13 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean getAllowsChildren() {
-        return statistics != null && statistics.getCounters().isEmpty();
+        return statistics != null && statistics.isEmpty();
 //        return !children.isEmpty();
     }
 
     @Override
     public boolean isLeaf() {
-        return statistics != null && !statistics.getCounters().isEmpty();
+        return statistics != null && !statistics.isEmpty();
     }
 
     @Override

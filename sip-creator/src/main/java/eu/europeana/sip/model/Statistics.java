@@ -39,7 +39,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
     private static final long serialVersionUID = 21772426262368490L;
     private static final int MAX_STATISTICS_LIST_SIZE = 100;
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
-    private static final int MAXIMUM_LENGTH = 100;
+    private static final int MAXIMUM_LENGTH = 1000;
     private QNamePath path;
     private int total;
     private Map<String, CounterImpl> counterMap = new TreeMap<String, CounterImpl>();
@@ -87,14 +87,13 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
     public List<? extends Counter> getCounters() {
         List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
+        counterList.add(new CounterImpl(" Total Occurrences", total));
         Collections.sort(counterList);
         return counterList;
     }
 
-    public List<? extends Counter> getTotalAsCounter() {
-        List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
-        counterList.add(new CounterImpl("Total Occurrences", total));
-        return counterList;
+    public boolean isEmpty() {
+        return counterMap.isEmpty();
     }
 
     public String toString() {
@@ -150,7 +149,11 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
         @Override
         public int compareTo(CounterImpl counter) {
-            return counter.count - count;
+            int diff = counter.count - count;
+            if (diff == 0) {
+                return value.compareTo(counter.value);
+            }
+            return diff;
         }
 
         public String toString() {

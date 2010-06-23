@@ -383,12 +383,7 @@ public class SipModel {
         checkSwingThread();
         if (node != null && node.getStatistics() != null) {
             List<? extends Statistics.Counter> counters = node.getStatistics().getCounters();
-            if (!counters.isEmpty()) {
-                statisticsTableModel.setCounterList(counters);
-            }
-            else {
-                statisticsTableModel.setCounterList(node.getStatistics().getTotalAsCounter());
-            }
+            statisticsTableModel.setCounterList(counters);
         }
     }
 

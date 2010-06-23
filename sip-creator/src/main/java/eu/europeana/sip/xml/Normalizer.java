@@ -36,6 +36,7 @@ import groovy.lang.MissingPropertyException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Writer;
 
 /**
@@ -99,6 +100,8 @@ public class Normalizer implements Runnable {
                         if (discardedWriter != null) {
                             try {
                                 discardedWriter.write(metadataRecord.toString());
+                                exception.printStackTrace(new PrintWriter(discardedWriter));
+                                discardedWriter.write("\n========================================\n");
                                 fileSetOutput.recordDiscarded();
                             }
                             catch (IOException e1) {
@@ -127,6 +130,8 @@ public class Normalizer implements Runnable {
                             if (discardedWriter != null) {
                                 try {
                                     discardedWriter.write(metadataRecord.toString());
+                                    e.printStackTrace(new PrintWriter(discardedWriter));
+                                    discardedWriter.write("\n========================================\n");
                                     fileSetOutput.recordDiscarded();
                                 }
                                 catch (IOException e1) {
