@@ -72,9 +72,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>definitions</artifactId>
-            <version>${europeana.definitions.version}</version>
+            <groupId>eu.delving</groupId>
+            <artifactId>sip-core</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>javax.jnlp</groupId>
@@ -83,16 +83,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-lgpl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

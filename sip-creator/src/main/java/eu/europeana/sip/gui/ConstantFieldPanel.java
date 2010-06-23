@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;

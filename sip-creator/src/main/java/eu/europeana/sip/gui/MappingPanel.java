@@ -22,13 +22,14 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.model.AnalysisTree;
-import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.VariableListModel;
 
@@ -195,7 +196,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedFileSet(FileSet fileSet, DataSetDetails details) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.clearSelection();

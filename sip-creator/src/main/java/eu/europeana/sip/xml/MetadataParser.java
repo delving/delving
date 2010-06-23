@@ -21,8 +21,10 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.groovy.GroovyNode;
-import eu.europeana.sip.model.RecordRoot;
+import eu.europeana.sip.core.GroovyNode;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.core.Sanitizer;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 

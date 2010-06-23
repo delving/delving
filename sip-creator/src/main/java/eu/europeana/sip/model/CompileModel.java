@@ -21,12 +21,14 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.MappingRunner;
-import eu.europeana.sip.groovy.RecordMapping;
-import eu.europeana.sip.xml.MetadataRecord;
-import eu.europeana.sip.xml.RecordValidationException;
-import eu.europeana.sip.xml.RecordValidator;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.MappingRunner;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordMapping;
+import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.core.RecordValidator;
+import eu.europeana.sip.core.ToolCodeModel;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;

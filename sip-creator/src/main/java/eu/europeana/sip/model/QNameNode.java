@@ -20,7 +20,7 @@
  */
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.Sanitizer;
+import eu.europeana.sip.core.Sanitizer;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;

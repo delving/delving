@@ -23,14 +23,18 @@ package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.RecordMapping;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordMapping;
+import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.core.RecordValidator;
+import eu.europeana.sip.core.ToolCodeModel;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
-import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.Normalizer;
-import eu.europeana.sip.xml.RecordValidationException;
-import eu.europeana.sip.xml.RecordValidator;
 import groovy.lang.MissingPropertyException;
 
 import javax.swing.BoundedRangeModel;
@@ -80,6 +84,7 @@ public class SipModel {
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
+    private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
 
@@ -87,7 +92,7 @@ public class SipModel {
 
         void templateApplied();
 
-        void updatedFileSet(FileSet fileSet);
+        void updatedFileSet(FileSet fileSet, DataSetDetails dataSetDetails);
 
         void updatedRecordRoot(RecordRoot recordRoot);
 
@@ -152,6 +157,7 @@ public class SipModel {
                 final List<Statistics> statistics = newFileSet.getStatistics();
                 final String mapping = newFileSet.getMapping();
                 final FileSet.Report report = newFileSet.getReport();
+                final DataSetDetails details = newFileSet.getDataSetDetails();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -181,7 +187,7 @@ public class SipModel {
                         uploadProgressModel.setMaximum(100);
                         uploadProgressModel.setValue(0);
                         for (UpdateListener updateListener : updateListeners) {
-                            updateListener.updatedFileSet(newFileSet);
+                            updateListener.updatedFileSet(newFileSet, details);
                         }
                     }
                 });
@@ -258,6 +264,20 @@ public class SipModel {
             analysisParser.abort();
             analysisParser = null;
         }
+    }
+
+    public DataSetDetails getDataSetDetails() {
+        return dataSetDetails;
+    }
+
+    public void setDataSetDetails(DataSetDetails dataSetDetails) {
+        this.dataSetDetails = dataSetDetails;
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                fileSet.setDataSetDetails(SipModel.this.dataSetDetails);
+            }
+        });
     }
 
     public BoundedRangeModel getNormalizeProgress() {

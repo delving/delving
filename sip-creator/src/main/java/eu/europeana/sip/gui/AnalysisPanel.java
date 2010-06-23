@@ -21,11 +21,12 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.model.AnalysisTree;
-import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.QNameNode;
-import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -201,7 +202,7 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedFileSet(FileSet fileSet, DataSetDetails details) {
                 setElementsProcessed(sipModel.getElementCount());
                 analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
                 analyzeButton.setEnabled(true);

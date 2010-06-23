@@ -21,6 +21,8 @@
 
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.core.DataSetDetails;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,6 +56,10 @@ public interface FileSet {
     String getMapping();
 
     void setMapping(String mapping);
+
+    DataSetDetails getDataSetDetails();
+
+    void setDataSetDetails(DataSetDetails details);
 
     File createZipFile();
 

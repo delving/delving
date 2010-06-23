@@ -1,6 +1,8 @@
 package eu.delving.metarepo.controller;
 
+import com.thoughtworks.xstream.XStream;
 import eu.delving.metarepo.core.MetaRepo;
+import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,7 +53,7 @@ public class MetaRepoController {
     ) {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", dataSet.setSpec()));
-        for (MetaRepo.Record record : dataSet.records(0,10)) {
+        for (MetaRepo.Record record : dataSet.records(0, 10)) {
             String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")
@@ -70,36 +72,60 @@ public class MetaRepoController {
     ) throws IOException, XMLStreamException {
         log.info("submit(" + dataSetSpec + ")");
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
-        if (dataSet == null) {
-            dataSet = metaRepo.createDataSet(
-                   dataSetSpec, "name", "providerName", "description" // todo: get them from a zip entry!
-            );
-        }
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
+        DataSetDetails dataSetDetails = null;
         while ((entry = zis.getNextEntry()) != null) {
             log.info("entry: " + entry);
-            if (entry.getName().endsWith(".xml")) {
+            if (entry.getName().endsWith(".details")) {
+                dataSetDetails = getDetails(zis);
+                if (dataSet == null) {
+                    dataSet = metaRepo.createDataSet(
+                            dataSetSpec,
+                            dataSetDetails.getName(),
+                            dataSetDetails.getProviderName(),
+                            dataSetDetails.getDescription()
+                    );
+                }
+                else {
+                    // todo: update it!
+                }
+            }
+            else if (entry.getName().endsWith(".xml")) {
+                if (dataSet == null || dataSetDetails == null) {
+                    zis.close();
+                    throw new IOException("Data set details must come first in the uploaded zip file");
+                }
                 dataSet.parseRecords(
                         zis,
-                        QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record"),
-                        QName.valueOf("{http://www.openarchives.org/OAI/2.0/}identifier")
+                        QName.valueOf(dataSetDetails.getRecordRoot()),
+                        QName.valueOf(dataSetDetails.getUniqueElement())
                 );
             }
             else if (entry.getName().endsWith(".mapping")) {
+                if (dataSet == null) {
+                    zis.close();
+                    throw new IOException("Data set details must come first in the uploaded zip file");
+                }
                 dataSet.setMapping(MetaRepo.DataSet.DATASET_MAPPING_TO_ESE, getMapping(zis));
             }
             else {
                 byte[] buffer = new byte[2048];
                 int size;
                 while ((size = zis.read(buffer)) != -1) {
-                    log.info("buffer " + size);
+                    log.warn("SKIPPING " + size);
                 }
             }
         }
         zis.close();
         log.info("finished submit");
         return "OK";
+    }
+
+    private DataSetDetails getDetails(InputStream inputStream) {
+        XStream stream = new XStream();
+        stream.processAnnotations(DataSetDetails.class);
+        return (DataSetDetails) stream.fromXML(inputStream);
     }
 
 

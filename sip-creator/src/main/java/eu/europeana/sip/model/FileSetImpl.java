@@ -1,5 +1,7 @@
 package eu.europeana.sip.model;
 
+import com.thoughtworks.xstream.XStream;
+import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
@@ -31,7 +33,7 @@ import java.util.zip.ZipOutputStream;
 
 public class FileSetImpl implements FileSet {
     private final Logger LOG = Logger.getLogger(getClass());
-    private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile, reportFile, zipFile;
+    private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile, reportFile, dataSetDetailsFile, zipFile;
     private UserNotifier userNotifier;
 
     public FileSetImpl(File inputFile) {
@@ -41,6 +43,7 @@ public class FileSetImpl implements FileSet {
         this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized");
         this.discardedFile = new File(inputFile.getParentFile(), inputFile.getName() + ".discarded");
         this.reportFile = new File(inputFile.getParentFile(), inputFile.getName() + ".report");
+        this.dataSetDetailsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".details");
         this.zipFile = new File(inputFile.getParentFile(), inputFile.getName() + ".zip");
     }
 
@@ -150,6 +153,43 @@ public class FileSetImpl implements FileSet {
     }
 
     @Override
+    public DataSetDetails getDataSetDetails() {
+        checkWorkerThread();
+        DataSetDetails details = null;
+        if (dataSetDetailsFile.exists()) {
+            XStream stream = new XStream();
+            stream.processAnnotations(DataSetDetails.class);
+            try {
+                FileInputStream fis = new FileInputStream(dataSetDetailsFile);
+                details = (DataSetDetails) stream.fromXML(fis);
+                fis.close();
+            }
+            catch (IOException e) {
+                userNotifier.tellUser("Unable to load dataset details file", e);
+            }
+        }
+        if (details == null) {
+            details = new DataSetDetails();
+        }
+        return details;
+    }
+
+    @Override
+    public void setDataSetDetails(DataSetDetails details) {
+        checkWorkerThread();
+        try {
+            XStream stream = new XStream();
+            stream.processAnnotations(DataSetDetails.class);
+            FileOutputStream fos = new FileOutputStream(dataSetDetailsFile);
+            stream.toXML(details, fos);
+            fos.close();
+        }
+        catch (IOException e) {
+            userNotifier.tellUser("Unable to save dataset details file", e);
+        }
+    }
+
+    @Override
     public File createZipFile() {
         checkWorkerThread();
         if (zipFile.exists()) {
@@ -163,7 +203,7 @@ public class FileSetImpl implements FileSet {
         }
         catch (IOException e) {
             userNotifier.tellUser("Unable to build zip file", e);
-            LOG.warn("Unable to build zip file "+zipFile.getAbsolutePath(), e);
+            LOG.warn("Unable to build zip file " + zipFile.getAbsolutePath(), e);
         }
         return null;
     }
@@ -311,7 +351,7 @@ public class FileSetImpl implements FileSet {
     private void buildZipFile() throws IOException {
         OutputStream outputStream = new FileOutputStream(zipFile);
         ZipOutputStream zos = new ZipOutputStream(outputStream);
-        // todo: create an entry for the data set details!
+        stream(dataSetDetailsFile, zos);
         stream(inputFile, zos);
         stream(mappingFile, zos);
         zos.close();

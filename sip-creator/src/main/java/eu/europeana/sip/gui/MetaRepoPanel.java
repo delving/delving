@@ -1,13 +1,15 @@
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -36,7 +38,7 @@ public class MetaRepoPanel extends JPanel {
 //        gbc.weightx = gbc.weighty = 1;
         add(dataSetDetailsPanel, gbc);
         gbc.gridy++;
-        JPanel bl = new JPanel(new BorderLayout(10,10));
+        JPanel bl = new JPanel(new BorderLayout(10, 10));
         bl.add(new JProgressBar(sipModel.getUploadProgress()), BorderLayout.CENTER);
         bl.add(createUploadZipButton, BorderLayout.WEST);
         add(bl, gbc);
@@ -47,6 +49,7 @@ public class MetaRepoPanel extends JPanel {
         createUploadZipButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                sipModel.setDataSetDetails(dataSetDetailsPanel.getDetails());
                 sipModel.createUploadZipFile();
             }
         });
@@ -56,8 +59,17 @@ public class MetaRepoPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedFileSet(FileSet fileSet, DataSetDetails dataSetDetails) {
                 createUploadZipButton.setEnabled(fileSet.getReport() != null);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        DataSetDetails details = sipModel.getDataSetDetails();
+                        if (details != null) {
+                            dataSetDetailsPanel.setDetails(sipModel.getDataSetDetails());
+                        }
+                    }
+                });
             }
 
             @Override

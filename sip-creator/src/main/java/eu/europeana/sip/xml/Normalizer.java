@@ -22,11 +22,14 @@
 package eu.europeana.sip.xml;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.groovy.MappingRunner;
-import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.MappingRunner;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.core.RecordValidator;
+import eu.europeana.sip.core.ToolCodeModel;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.RecordRoot;
-import eu.europeana.sip.model.ToolCodeModel;
 import eu.europeana.sip.model.UserNotifier;
 import groovy.lang.MissingPropertyException;
 

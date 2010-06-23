@@ -21,9 +21,10 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.ConstantFieldModel;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -142,7 +143,7 @@ public class NormPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedFileSet(FileSet fileSet, DataSetDetails details) {
             }
 
             @Override

@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.DataSetDetails;
+import eu.europeana.sip.core.DataSetDetails;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
