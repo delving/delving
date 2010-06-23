@@ -2,6 +2,7 @@ package eu.delving.metarepo.impl;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import eu.delving.metarepo.core.MetaRepo;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -11,9 +12,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
-
-import static eu.delving.metarepo.core.Constant.ORIGINAL;
-import static eu.delving.metarepo.core.Constant.UNIQUE;
 
 /**
  * Parse XML to produce DBObject instances
@@ -83,7 +81,7 @@ public class MongoObjectParser {
                                 contentBuffer.append(' ').append(attrName).append("=\"").append(value).append("\"");
                             }
                         }
-                        contentBuffer.append(">\n");
+                        contentBuffer.append(">");
                     }
                     break;
                 case XMLEvent.CHARACTERS:
@@ -105,15 +103,14 @@ public class MongoObjectParser {
                         if (input.getName().equals(recordRoot) && depth == recordDepth) {
                             withinRecord = false;
                             record = new BasicDBObject();
-                            record.put(ORIGINAL, contentBuffer.toString());
+                            record.put(MetaRepo.Record.ORIGINAL, contentBuffer.toString());
                             if (uniqueContent != null) {
-                                record.put(UNIQUE, uniqueContent);
+                                record.put(MetaRepo.Record.UNIQUE, uniqueContent);
                             }
                             contentBuffer.setLength(0);
                         }
                         else {
                             if (contentPresent) {
-                                contentBuffer.append('\n');
                                 if (uniqueBuffer != null) {
                                     String unique = uniqueBuffer.toString().trim();
                                     if (!unique.isEmpty()) {
