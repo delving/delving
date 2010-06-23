@@ -8,6 +8,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -35,9 +36,10 @@ public class MetaRepoPanel extends JPanel {
 //        gbc.weightx = gbc.weighty = 1;
         add(dataSetDetailsPanel, gbc);
         gbc.gridy++;
-        add(new JProgressBar(sipModel.getUploadProgress()), gbc);
-        gbc.gridy++;
-        add(createUploadZipButton, gbc);
+        JPanel bl = new JPanel(new BorderLayout(10,10));
+        bl.add(new JProgressBar(sipModel.getUploadProgress()), BorderLayout.CENTER);
+        bl.add(createUploadZipButton, BorderLayout.WEST);
+        add(bl, gbc);
         wireUp();
     }
 

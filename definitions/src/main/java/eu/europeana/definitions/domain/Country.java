@@ -62,12 +62,16 @@ public enum Country {
         return englishName;
     }
 
-     public static Country get(String string) {
+    public String getCode() {
+        return englishName;
+    }
+
+    public static Country get(String string) {
         for (Country t : values()) {
             if (t.getEnglishName().equalsIgnoreCase(string)) {
                 return t;
             }
         }
-        throw new IllegalArgumentException("Did not recognize Country: ["+string+"]");
+        throw new IllegalArgumentException("Did not recognize Country: [" + string + "]");
     }
 }

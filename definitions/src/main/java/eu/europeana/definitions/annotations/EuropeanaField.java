@@ -21,6 +21,7 @@
 
 package eu.europeana.definitions.annotations;
 
+import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,9 +50,30 @@ public class EuropeanaField {
             throw new IllegalStateException("Field must have solrj @Solr annotation: " + field.getDeclaringClass().getName() + "." + field.getName());
         }
         if (europeanaAnnotation.enumClass() != Europeana.NO_ENUM.class) {
-            enumValues = new TreeSet<String>();
-            for (Enum e : europeanaAnnotation.enumClass().getEnumConstants()) {
-                enumValues.add(e.toString().toLowerCase());
+            collectEnumValues();
+        }
+    }
+
+    private void collectEnumValues() {
+        Method getCodeMethod = null;
+        try {
+            getCodeMethod = europeanaAnnotation.enumClass().getMethod("getCode");
+        }
+        catch (NoSuchMethodException e) {
+            // ok, so you don't have such a method, see if i care.
+        }
+        enumValues = new TreeSet<String>();
+        for (Enum e : europeanaAnnotation.enumClass().getEnumConstants()) {
+            if (getCodeMethod != null) {
+                try {
+                    enumValues.add((String)getCodeMethod.invoke(e));
+                }
+                catch (Exception ex) {
+                    throw new RuntimeException("Exception while executing getCode() on the enumeration "+europeanaAnnotation.enumClass().getName());
+                }
+            }
+            else {
+                enumValues.add(e.toString());
             }
         }
     }

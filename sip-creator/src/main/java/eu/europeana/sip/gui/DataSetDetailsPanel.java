@@ -41,14 +41,15 @@ import java.awt.Dimension;
  */
 
 public class DataSetDetailsPanel extends JPanel {
-    private JTextField specField = new JTextField();
-    private JTextField nameField = new JTextField();
-    private JTextField providerNameField = new JTextField();
-    private JTextArea descriptionField = new JTextArea(3, 60);
-    private JTextField namespaceField = new JTextField();
-    private JTextField schemaField = new JTextField();
-    private JTextField recordRootField = new JTextField();
-    private JTextField uniqueElementField = new JTextField();
+    private static final int FIELD_SIZE = 80;
+    private JTextField specField = new JTextField(FIELD_SIZE);
+    private JTextField nameField = new JTextField(FIELD_SIZE);
+    private JTextField providerNameField = new JTextField(FIELD_SIZE);
+    private JTextArea descriptionField = new JTextArea(3, 30);
+    private JTextField namespaceField = new JTextField(FIELD_SIZE);
+    private JTextField schemaField = new JTextField(FIELD_SIZE);
+    private JTextField recordRootField = new JTextField(FIELD_SIZE);
+    private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
 
     public DataSetDetailsPanel() {
         super(new SpringLayout());
@@ -65,7 +66,7 @@ public class DataSetDetailsPanel extends JPanel {
         uniqueElementField.setEditable(false);
         addField("Unique Element", uniqueElementField);
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
-        setPreferredSize(new Dimension(400, 400));
+        setPreferredSize(new Dimension(800, 340));
     }
 
     private void addField(String prompt, JTextComponent textComponent) {
