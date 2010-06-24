@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -28,7 +30,7 @@ import java.util.TreeMap;
 public class MetaRepoImpl implements MetaRepo {
     private Mongo mongo;
     private DB mongoDatabase;
-    private Map<String, DataSetImpl> datasets;
+    private Map<String, DataSetImpl> dataSets;
 
     public void setMongo(Mongo mongo) {
         this.mongo = mongo;
@@ -42,42 +44,73 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet createDataSet(String spec, String name, String providerName, String description) {
+    public DataSet createDataSet(
+            String spec,
+            String name,
+            String providerName,
+            String description,
+            String prefix,
+            String namespace,
+            String schema
+    ) {
         DBObject object = new BasicDBObject();
-        object.put(DataSet.DATASET_SPEC, spec);
-        object.put(DataSet.DATASET_NAME, name);
-        object.put(DataSet.DATASET_PROVIDER_NAME, providerName);
-        object.put(DataSet.DATASET_DESCRIPTION, description);
+        object.put(DataSet.SPEC, spec);
+        object.put(DataSet.NAME, name);
+        object.put(DataSet.PROVIDER_NAME, providerName);
+        object.put(DataSet.DESCRIPTION, description);
+        DBObject metadataFormat = new BasicDBObject();
+        metadataFormat.put(MetadataFormat.PREFIX, prefix);
+        metadataFormat.put(MetadataFormat.NAMESPACE, namespace);
+        metadataFormat.put(MetadataFormat.SCHEMA, schema);
+        object.put(DataSet.METADATA_FORMAT, metadataFormat);
         DataSetImpl impl = new DataSetImpl(object);
         impl.saveObject();
         getDataSets();
-        datasets.put(impl.setSpec(), impl);
+        dataSets.put(impl.setSpec(), impl);
         return impl;
     }
 
     @Override
     public synchronized Map<String, ? extends DataSet> getDataSets() {
-        if (datasets == null) {
-            datasets = new TreeMap<String, DataSetImpl>();
+        if (dataSets == null) {
+            dataSets = new TreeMap<String, DataSetImpl>();
             DBCollection collection = db().getCollection(DATASETS_COLLECTION);
             DBCursor cursor = collection.find();
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
                 DataSetImpl impl = new DataSetImpl(object);
-                datasets.put(impl.setSpec(), impl);
+                dataSets.put(impl.setSpec(), impl);
             }
         }
-        return datasets;
+        return dataSets;
     }
 
     @Override
-    public List<MetadataFormat> getMetadataFormats() {
-        return new ArrayList<MetadataFormat>();  //TODO: implement this
+    public Set<MetadataFormat> getMetadataFormats() {
+        Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
+        for (DataSet dataSet : getDataSets().values()) {
+            set.add(dataSet.metadataFormat());
+            for (Mapping mapping : dataSet.mappings()) {
+                set.add(mapping.metadataFormat());
+            }
+        }
+        return set;
     }
 
     @Override
-    public List<MetadataFormat> getMetadataFormats(String id) {
-        return new ArrayList<MetadataFormat>();  //TODO: implement this
+    public Set<MetadataFormat> getMetadataFormats(String id) {
+        Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
+        ObjectId objectId = new ObjectId(id);
+        for (DataSet dataSet : getDataSets().values()) {
+            Record record = dataSet.fetch(objectId);
+            if (record != null) {
+                set.add(dataSet.metadataFormat());
+                for (Mapping mapping : dataSet.mappings()) {
+                    set.add(mapping.metadataFormat());
+                }
+            }
+        }
+        return set;
     }
 
     @Override
@@ -98,9 +131,13 @@ public class MetaRepoImpl implements MetaRepo {
     private class DataSetImpl implements DataSet {
         private DBObject object;
         private DBCollection recColl;
+        private MetadataFormat metadataFormat;
 
         private DataSetImpl(DBObject object) {
             this.object = object;
+            if (object.get(METADATA_FORMAT) != null) {
+                this.metadataFormat = new MetadataFormatImpl((DBObject)object.get(METADATA_FORMAT));
+            }
         }
 
         private DBCollection records() {
@@ -112,28 +149,22 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public String setSpec() {
-            return (String)object.get(DATASET_SPEC);
+            return (String)object.get(SPEC);
         }
 
         @Override
         public String setName() {
-            return (String)object.get(DATASET_NAME);
+            return (String)object.get(NAME);
         }
 
         @Override
         public String providerName() {
-            return (String)object.get(DATASET_PROVIDER_NAME);
+            return (String)object.get(PROVIDER_NAME);
         }
 
         @Override
         public String description() {
-            return (String)object.get(DATASET_DESCRIPTION);
-        }
-
-        @Override
-        public Record fetch(ObjectId id) {
-            DBObject object = new BasicDBObject(MONGO_ID, id);
-            return new RecordImpl(records().findOne(object));
+            return (String)object.get(DESCRIPTION);
         }
 
         @Override
@@ -148,28 +179,61 @@ public class MetaRepoImpl implements MetaRepo {
             while ((record = parser.nextRecord()) != null) {
                 records().insert(record);
             }
-            object.put(DATASET_NAMESPACES, parser.getNamespaces());
+            object.put(NAMESPACES, parser.getNamespaces());
             saveObject();
         }
 
         @Override
-        public void setMapping(String mappingName, String mapping) {
-            DBObject mappings = (DBObject)object.get(DATASET_MAPPINGS);
+        public void setMapping(String mappingCode, String prefix, String namespace, String schema) {
+            DBObject mappings = (DBObject)object.get(MAPPINGS);
             if (mappings == null) {
                 mappings = new BasicDBObject();
-                object.put(DATASET_MAPPINGS, mappings);
+                object.put(MAPPINGS, mappings);
             }
-            mappings.put(mappingName, mapping);
+            DBObject format = new BasicDBObject();
+            format.put(MetadataFormat.PREFIX, prefix);
+            format.put(MetadataFormat.NAMESPACE, namespace);
+            format.put(MetadataFormat.SCHEMA, schema);
+            DBObject mapping = new BasicDBObject();
+            mapping.put(Mapping.FORMAT, format);
+            mapping.put(Mapping.CODE, mappingCode);
+            mappings.put(prefix, mapping);
             saveObject();
         }
 
         @Override
-        public List<? extends Record> records(int start, int count) {
+        public MetadataFormat metadataFormat() {
+            return metadataFormat;
+        }
+
+        @Override
+        public Set<? extends Mapping> mappings() {
+            Set<MappingImpl> mappingList = new TreeSet<MappingImpl>();
+            DBObject mappings = (DBObject) object.get(MAPPINGS);
+            if (mappings != null) {
+                for (String prefix : mappings.keySet()) {
+                    mappingList.add(new MappingImpl((DBObject) mappings.get(prefix)));
+                }
+            }
+            return mappingList;
+        }
+
+        @Override
+        public Record fetch(ObjectId id) {
+            DBObject object = new BasicDBObject(MONGO_ID, id);
+            return new RecordImpl(records().findOne(object), metadataFormat);
+        }
+
+        @Override
+        public List<? extends Record> records(String prefix, int start, int count) {
+            if (!"abm".equals(prefix)) {
+                throw new RuntimeException("Not yet ready for prefixes and on-the-fly mapping");
+            }
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = records().find(null, null, start, count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
-                list.add(new RecordImpl(object));
+                list.add(new RecordImpl(object, metadataFormat));
                 if (count-- <= 0) { // todo: damn, why isn't count parameter working in the find() above?
                     break;
                 }
@@ -183,12 +247,75 @@ public class MetaRepoImpl implements MetaRepo {
         }
     }
 
+    private static class MappingImpl implements Mapping, Comparable<Mapping> {
+        private DBObject object;
+        private MetadataFormat metadataFormat;
+
+        private MappingImpl(DBObject object) {
+            this.object = object;
+            this.metadataFormat = new MetadataFormatImpl((DBObject)object.get(FORMAT));
+        }
+
+        @Override
+        public MetadataFormat metadataFormat() {
+            return metadataFormat;
+        }
+
+        @Override
+        public String code() {
+            return (String) object.get(CODE);
+        }
+
+        @Override
+        public int compareTo(Mapping o) {
+            return metadataFormat().prefix().compareTo(o.metadataFormat().prefix());
+        }
+    }
+
+    private static class MetadataFormatImpl implements MetadataFormat, Comparable<MetadataFormat> {
+        private String prefix;
+        private DBObject object;
+
+        private MetadataFormatImpl(DBObject object) {
+            this.object = object;
+            if (object == null) {
+                throw new RuntimeException("MetdataFormat object missing!");
+            }
+            this.prefix = (String)object.get(PREFIX);
+            if (prefix == null || prefix.isEmpty()) {
+                throw new RuntimeException("MetdataFormat with no prefix!");
+            }
+        }
+
+        @Override
+        public String prefix() {
+            return prefix;
+        }
+
+        @Override
+        public String schema() {
+            return (String)object.get(SCHEMA);
+        }
+
+        @Override
+        public String namespace() {
+            return (String)object.get(NAMESPACE);
+        }
+
+        @Override
+        public int compareTo(MetadataFormat o) {
+            return prefix().compareTo(o.prefix());
+        }
+    }
+
     private static class RecordImpl implements Record {
 
         private DBObject object;
+        private MetadataFormat metadataFormat;
 
-        private RecordImpl(DBObject object) {
+        private RecordImpl(DBObject object, MetadataFormat metadataFormat) {
             this.object = object;
+            this.metadataFormat = metadataFormat;
         }
 
         @Override
@@ -222,39 +349,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String format() {
-            return null;  //TODO: implement this
+        public MetadataFormat metadataFormat() {
+            return metadataFormat;
         }
 
         @Override
         public String xml() {
             return (String) object.get(ORIGINAL);
-        }
-    }
-
-    private static class MetadataFormatImpl implements MetadataFormat {
-
-        private String metadataPrefix, schema, metadataNameSpace;
-
-        private MetadataFormatImpl(String metadataPrefix, String schema, String metadataNameSpace) {
-            this.metadataPrefix = metadataPrefix;
-            this.schema = schema;
-            this.metadataNameSpace = metadataNameSpace;
-        }
-
-        @Override
-        public String getMetadataPrefix() {
-            return metadataPrefix;
-        }
-
-        @Override
-        public String getSchema() {
-            return schema;
-        }
-
-        @Override
-        public String getMetadataNameSpace() {
-            return metadataNameSpace;
         }
     }
 }

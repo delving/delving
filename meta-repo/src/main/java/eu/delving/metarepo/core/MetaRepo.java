@@ -10,22 +10,25 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * todo: javadoc
+ * This interface and its sub-interfaces describe how the rest of the code interacts
+ * with the metadata repository.  The interfaces also conveniently define the constants
+ * used as MongoDB field names
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public interface MetaRepo {
 
-    DataSet createDataSet(String spec, String name, String providerName, String description);
+    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema);
 
     Map<String, ? extends DataSet> getDataSets();
 
-    List<MetadataFormat> getMetadataFormats();
+    Set<? extends MetadataFormat> getMetadataFormats();
 
-    List<MetadataFormat> getMetadataFormats(String id);
+    Set<? extends MetadataFormat> getMetadataFormats(String id);
 
     HarvestStep getHarvestStep(String resumptionToken);
 
@@ -38,19 +41,22 @@ public interface MetaRepo {
         String setName();
         String providerName();
         String description();
-        Record fetch(ObjectId id);
+
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
-        void setMapping(String mappingName, String mapping);
-        List<? extends Record> records(int start, int count);
+        void setMapping(String mappingCode, String prefix, String namespace, String schema);
+
+        MetadataFormat metadataFormat();
+        Set<? extends Mapping> mappings();
+        Record fetch(ObjectId id);
+        List<? extends Record> records(String prefix, int start, int count);
         
-        String DATASET_SPEC = "dataset_spec";
-        String DATASET_NAME = "dataset_name";
-        String DATASET_PROVIDER_NAME = "dataset_provider_name";
-        String DATASET_DESCRIPTION = "dataset_desciption";
-        String DATASET_NAMESPACES = "dataset_namespaces";
-        String DATASET_MAPPINGS = "mappings";
-        String DATASET_MAPPING_TO_ESE = "to-ese";
-        
+        String SPEC = "spec";
+        String NAME = "name";
+        String PROVIDER_NAME = "provider_name";
+        String DESCRIPTION = "description";
+        String NAMESPACES = "namespaces";
+        String METADATA_FORMAT = "metadata_format";
+        String MAPPINGS = "mappings";
     }
 
     public interface HarvestStep {
@@ -70,8 +76,7 @@ public interface MetaRepo {
         PmhSet set();
         Date modified();
         boolean deleted();
-        // todo how to deal with formats
-        String format();
+        MetadataFormat metadataFormat();
         String xml();
 
         String MODIFIED = "mod";
@@ -93,10 +98,22 @@ public interface MetaRepo {
         String getSetName();
     }
 
+    public interface Mapping {
+        MetadataFormat metadataFormat();
+        String code();
+
+        String CODE = "code";
+        String FORMAT = "format";
+    }
+
     public interface MetadataFormat {
-        String getMetadataPrefix();
-        String getSchema();
-        String getMetadataNameSpace();
+        String prefix();
+        String schema();
+        String namespace();
+
+        String PREFIX = "prefix";
+        String SCHEMA = "schema";
+        String NAMESPACE = "namespace";
     }
 
     public enum PmhVerb {

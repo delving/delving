@@ -156,9 +156,9 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
       <ListMetadataFormats>
        {for (format <- metadataFormats) yield
         <metadataFormat>
-          <metadataPrefix>{format.getMetadataPrefix}</metadataPrefix>
-          <schema>{format.getSchema}</schema>
-          <metadataNamespace>{format.getMetadataNameSpace}</metadataNamespace>
+          <metadataPrefix>{format.prefix}</metadataPrefix>
+          <schema>{format.schema}</schema>
+          <metadataNamespace>{format.namespace}</metadataNamespace>
        </metadataFormat>
         }
        <metadataFormat>
@@ -237,7 +237,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
     if (record == null) return createErrorResponse("idDoesNotExist")
 
     // if format is not found throw cannotDisseminateFormat error
-    if (record.format != metadataFormat) return createErrorResponse("cannotDisseminateFormat")
+    if (record.metadataFormat != metadataFormat) return createErrorResponse("cannotDisseminateFormat")
 
     // else  render identifier below
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"

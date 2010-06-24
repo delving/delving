@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -45,6 +46,18 @@ public class MetaRepoController {
         return out.toString();
     }
 
+    @RequestMapping("/formats.html")
+    public
+    @ResponseBody
+    String formats() {
+        StringBuilder out = new StringBuilder("<h1>MetaRepo Formats:</h1><ul>\n");
+        for (MetaRepo.MetadataFormat format : metaRepo.getMetadataFormats()) {
+            out.append(String.format("<li>%s : %s - %s</li>", format.prefix(), format.namespace(), format.schema()));
+        }
+        out.append("</ul>");
+        return out.toString();
+    }
+
     @RequestMapping("/{dataSetSpec}/index.html")
     public
     @ResponseBody
@@ -53,7 +66,7 @@ public class MetaRepoController {
     ) {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", dataSet.setSpec()));
-        for (MetaRepo.Record record : dataSet.records(0, 10)) {
+        for (MetaRepo.Record record : dataSet.records("abm", 0, 10)) { // todo: fetch format from request
             String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")
@@ -71,7 +84,8 @@ public class MetaRepoController {
             InputStream inputStream
     ) throws IOException, XMLStreamException {
         log.info("submit(" + dataSetSpec + ")");
-        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        Map<String, ? extends MetaRepo.DataSet> dataSets = metaRepo.getDataSets();
+        MetaRepo.DataSet dataSet = dataSets.get(dataSetSpec);
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
         DataSetDetails dataSetDetails = null;
@@ -84,7 +98,10 @@ public class MetaRepoController {
                             dataSetSpec,
                             dataSetDetails.getName(),
                             dataSetDetails.getProviderName(),
-                            dataSetDetails.getDescription()
+                            dataSetDetails.getDescription(),
+                            "abm", // todo: this should be passed in??
+                            dataSetDetails.getNamespace(),
+                            dataSetDetails.getSchema()
                     );
                 }
                 else {
@@ -107,7 +124,12 @@ public class MetaRepoController {
                     zis.close();
                     throw new IOException("Data set details must come first in the uploaded zip file");
                 }
-                dataSet.setMapping(MetaRepo.DataSet.DATASET_MAPPING_TO_ESE, getMapping(zis));
+                dataSet.setMapping(
+                        getMapping(zis),
+                        "ese", // todo: get this info from the mapping somehow
+                        "http://www.europeana.eu/schemas/ese/",
+                        "http://www.europeana.eu/schemas/ese/ESE-V3.2.xsd"
+                );
             }
             else {
                 byte[] buffer = new byte[2048];
