@@ -240,3 +240,14 @@ These three panels allow you to observe a dry-run of the normalization one recor
 
 When you are satisfied with the records that are being produced in the dry-run you can press the **Normalize** button to start the normalization of the entire input file to produce the output file.  While it is normalizing, the SIP-Creator shows its progress along the bottom.
 
+## Updates of Existing Files
+
+When your content provider sends you an update of an already mapped and normalized XML file, the normalization process has to be repeated. This is easy to do because, as long as the structure remains unchanged, the SIP-creator can apply the existing mapping to the updated XML file.
+
+To perform such an update do the following:
+
+   1. Store the new XML file next to the .mapping file that the SIP-Creator produced. 
+   1. Open the XML in the SIP-Creator
+   1. Perform the actions from Step One
+   1. Go straight to Step Four and perform the Normalization
+
