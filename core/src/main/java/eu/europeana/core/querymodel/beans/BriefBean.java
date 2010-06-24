@@ -40,7 +40,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     transient int index;
 
     @Europeana(validation = EsePlusRequired)
-    @Solr(namespace = "europeana", name = "europeanaCollectionName", multivalued = false, required = true)
+    @Solr(namespace = "europeana", name = "collectionName", multivalued = false, required = true)
     @Field("europeana_collectionName")
     String[] europeanaCollectionName;
 

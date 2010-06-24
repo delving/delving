@@ -316,7 +316,6 @@ public class ESEImporterImpl implements ESEImporter {
                         if (isRecordElement(xml)) {
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
-                            solrInputDocument.addField("europeana_collectionName", collection.getName()); // todo: can't just use a string field name here
                         }
                         else if (europeanaId != null) {
                             EuropeanaField field = getEuropeanaField(xml.getPrefix(), xml.getLocalName(), recordCount);
@@ -370,6 +369,9 @@ public class ESEImporterImpl implements ESEImporter {
                             }
                             else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
                                 log.warn("No object urls for "+europeanaId.getEuropeanaUri());
+                            }
+                            if (!solrInputDocument.containsKey("europeana_collectionName")) {
+                                solrInputDocument.addField("europeana_collectionName", collection.getName()); // todo: can't just use a string field name here
                             }
                             recordList.add(solrInputDocument);
                             dashboardDao.saveEuropeanaId(europeanaId);

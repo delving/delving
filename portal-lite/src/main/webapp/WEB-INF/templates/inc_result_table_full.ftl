@@ -35,24 +35,31 @@
                     <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
                     </#if>
-                       <a href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
-                          target="_blank"
-                          alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
-                          >
+                   <a href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                      target="_blank"
+                      alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
+                    >
+                    <#-- empty image checker -->
+                    <#if result.fullDoc.thumbnails[0] = " ">
+                        <#assign thumbnail = "noImageFound"/>
+                    <#else>
+                        <#assign thumbnail = "${result.fullDoc.thumbnails[0]}"/>
+                    </#if>
                         <#if useCache="true">
-                            <img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+                            <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
                                  class="full" 
                                  alt="Image title: ${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
-                                 onload="checkSize('full',this.width);"
+                                 onload="checkSize(this,'full',this.width);"
+                                 onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
                              />
                         <#else>
-
-                            <img src="${result.fullDoc.thumbnails[0]}"
+                            <img
                                  alt="Image title: ${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
-                                 onload="checkSize(this.id,'full',this.width);"
-                                 onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}')"
+                                 src="${thumbnail}"
+                                 onload="checkSize(this,'full',this.width);"
+                                 onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
                                  alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
                              />
                         </#if>
@@ -146,7 +153,7 @@
                         <#assign creatorArr = model.fullDoc.dcCreator />
                         <#if isNonEmpty(creatorArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'Creator_t' />:</th>
+                                <th scope="row"><@spring.message 'dc_creator_t' />:</th>
                                 <td><@simple_list model.fullDoc.dcCreator ';&#160;'/></td>
                             </tr>
                         </#if>

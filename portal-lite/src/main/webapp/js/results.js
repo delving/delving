@@ -19,26 +19,36 @@ function saveQuery(className, queryToSave, queryString){
      });
 }
 
-function showDefaultSmall(obj, iType) {
-    if(obj && iType){
-        switch (iType)
+function showDefaultSmall(obj, iType, src) {
+        if(!(src.indexOf('noImageFound'))){
+            obj.src = src;
+        } else {
+            if(obj && iType){
+                switch (iType)
                 {
-            case "TEXT":
-                obj.src = "images/item-page.gif";
-                break;
-            case "IMAGE":
-                obj.src = "images/item-image.gif";
-                break;
-            case "VIDEO":
-                obj.src = "images/item-video.gif";
-                break;
-            case "SOUND":
-                obj.src = "images/item-sound.gif";
-                break;
-            default:
-                obj.src = "images/item-page.gif";
-        }
-    }
+                    case "TEXT":
+                        obj.src = "images/item-page.gif";
+                        break;
+                    case "IMAGE":
+                        obj.src = "images/item-image.gif";
+                        break;
+                    case "VIDEO":
+                        obj.src = "images/item-video.gif";
+                        break;
+                    case "SOUND":
+                        obj.src = "images/item-sound.gif";
+                        break;
+                    default:
+                        obj.src = "images/item-page.gif";
+                }
+            }
+         }
+
+}
+
+
+function imgError(){
+    log.error("image not found");
 }
 /*
 
@@ -50,24 +60,28 @@ function refineSearch(query,qf){
 }*/
 
 /* ________________FULL DOC_______________________*/
-function showDefaultLarge(obj,iType){
-    if(obj && iType){
-        switch(iType)
-        {
-        case "TEXT":
-          obj.src="images/item-page-large.gif";
-          break;
-        case "IMAGE":
-          obj.src="images/item-image-large.gif";
-          break;
-        case "VIDEO":
-          obj.src="images/item-video-large.gif";
-          break;
-        case "SOUND":
-          obj.src="images/item-sound-large.gif";
-          break;
-        default:
-          obj.src="images/item-page-large.gif";
+function showDefaultLarge(obj,iType,src){
+    if(!(src.indexOf('noImageFound'))){
+        obj.src = src;
+    } else {
+        if(obj && iType){
+            switch(iType)
+            {
+            case "TEXT":
+              obj.src="images/item-page-large.gif";
+              break;
+            case "IMAGE":
+              obj.src="images/item-image-large.gif";
+              break;
+            case "VIDEO":
+              obj.src="images/item-video-large.gif";
+              break;
+            case "SOUND":
+              obj.src="images/item-sound-large.gif";
+              break;
+            default:
+              obj.src="images/item-page-large.gif";
+            }
         }
     }
 }
@@ -145,15 +159,15 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
  */
 function checkSize(obj,type,w){
     if(type=="brief"){
-        if (w > 220) {
-            w = 220;
-            document.getElementById(obj).width=w;
+        if (w > 150) {
+            w = 150;
+            obj.width=w;
         }        
     }
     else {
-        if (w > 285) {
-            w = 285;
-            document.getElementById(obj).width=w;
+        if (w > 215) {
+            w = 215;
+            obj.width=w;
         }
     }
 }
@@ -170,4 +184,13 @@ $(document).ready(function() {
     $('#opener').click(function() {
         $(".dialog").dialog('open');
     });
+
+//   var imgs = document.getElementsByTagName('img'), i = 0, img;
+//   while(i < imgs.length) {
+//      imgs[i].onerror = function() {
+//         log.error('imgerrorlog=true&src='+this.src);
+//         // you can add more params, such as time=1234567 etc.
+//      }
+//      i++;
+//   }
 });
