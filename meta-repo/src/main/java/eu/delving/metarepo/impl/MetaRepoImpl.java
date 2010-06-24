@@ -7,6 +7,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import eu.delving.metarepo.core.MetaRepo;
+import eu.europeana.sip.core.MappingRunner;
+import eu.europeana.sip.core.MetadataRecord;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -90,7 +92,7 @@ public class MetaRepoImpl implements MetaRepo {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         for (DataSet dataSet : getDataSets().values()) {
             set.add(dataSet.metadataFormat());
-            for (Mapping mapping : dataSet.mappings()) {
+            for (Mapping mapping : dataSet.mappings().values()) {
                 set.add(mapping.metadataFormat());
             }
         }
@@ -105,7 +107,7 @@ public class MetaRepoImpl implements MetaRepo {
             Record record = dataSet.fetch(objectId);
             if (record != null) {
                 set.add(dataSet.metadataFormat());
-                for (Mapping mapping : dataSet.mappings()) {
+                for (Mapping mapping : dataSet.mappings().values()) {
                     set.add(mapping.metadataFormat());
                 }
             }
@@ -207,15 +209,15 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Set<? extends Mapping> mappings() {
-            Set<MappingImpl> mappingList = new TreeSet<MappingImpl>();
+        public Map<String,? extends Mapping> mappings() {
+            Map<String, MappingImpl> mappingMap = new TreeMap<String, MappingImpl>();
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings != null) {
                 for (String prefix : mappings.keySet()) {
-                    mappingList.add(new MappingImpl((DBObject) mappings.get(prefix)));
+                    mappingMap.put(prefix, new MappingImpl((DBObject) mappings.get(prefix)));
                 }
             }
-            return mappingList;
+            return mappingMap;
         }
 
         @Override
@@ -226,8 +228,8 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public List<? extends Record> records(String prefix, int start, int count) {
-            if (!"abm".equals(prefix)) {
-                throw new RuntimeException("Not yet ready for prefixes and on-the-fly mapping");
+            if (!metadataFormat().prefix().equals(prefix)) {
+                throw new RuntimeException("Only prefix "+metadataFormat().prefix()+" supported so far");
             }
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = records().find(null, null, start, count);
@@ -250,6 +252,7 @@ public class MetaRepoImpl implements MetaRepo {
     private static class MappingImpl implements Mapping, Comparable<Mapping> {
         private DBObject object;
         private MetadataFormat metadataFormat;
+        private MappingRunner mappingRunner;
 
         private MappingImpl(DBObject object) {
             this.object = object;
@@ -333,7 +336,6 @@ public class MetaRepoImpl implements MetaRepo {
             return null;  //TODO: implement this
         }
 
-
         @Override
         public Date modified() {
             Date modified = (Date) object.get(MODIFIED);
@@ -356,6 +358,17 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public String xml() {
             return (String) object.get(ORIGINAL);
+        }
+
+        @Override
+        public MetadataRecord metadataRecord() {
+            MetadataRecord.Factory factory = new MetadataRecord.Factory();
+            try {
+                return factory.fromXml(xml());
+            }
+            catch (XMLStreamException e) {
+                throw new RuntimeException("Unable to produce MetadataRecord", e);
+            }
         }
     }
 }

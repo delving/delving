@@ -40,7 +40,14 @@ public class MetaRepoController {
     String list() {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
         for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
-            out.append(String.format("<li><a href=\"%s/index.html\">%s</a></li>", dataSet.setSpec(), dataSet.setSpec()));
+            out.append(String.format(
+                    "<li><a href=\"%s/abm.html\">abm:%s</a></li>",
+                    dataSet.setSpec(), dataSet.setSpec()
+            ));
+            out.append(String.format(
+                    "<li><a href=\"%s/ese.html\">ese:%s</a></li>",
+                    dataSet.setSpec(), dataSet.setSpec()
+            ));
         }
         out.append("</ul>");
         return out.toString();
@@ -58,15 +65,16 @@ public class MetaRepoController {
         return out.toString();
     }
 
-    @RequestMapping("/{dataSetSpec}/index.html")
+    @RequestMapping("/{dataSetSpec}/{prefix}.html")
     public
     @ResponseBody
     String listCollection(
-            @PathVariable String dataSetSpec
+            @PathVariable String dataSetSpec,
+            @PathVariable String prefix
     ) {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
-        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s</h1><ul>\n", dataSet.setSpec()));
-        for (MetaRepo.Record record : dataSet.records("abm", 0, 10)) { // todo: fetch format from request
+        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
+        for (MetaRepo.Record record : dataSet.records(prefix, 0, 10)) {
             String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")

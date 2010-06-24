@@ -1,6 +1,7 @@
 package eu.delving.metarepo.core;
 
 import com.mongodb.DBObject;
+import eu.europeana.sip.core.MetadataRecord;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -46,7 +47,7 @@ public interface MetaRepo {
         void setMapping(String mappingCode, String prefix, String namespace, String schema);
 
         MetadataFormat metadataFormat();
-        Set<? extends Mapping> mappings();
+        Map<String,? extends Mapping> mappings();
         Record fetch(ObjectId id);
         List<? extends Record> records(String prefix, int start, int count);
         
@@ -78,6 +79,7 @@ public interface MetaRepo {
         boolean deleted();
         MetadataFormat metadataFormat();
         String xml();
+        MetadataRecord metadataRecord();
 
         String MODIFIED = "mod";
         String UNIQUE = "uniq";
