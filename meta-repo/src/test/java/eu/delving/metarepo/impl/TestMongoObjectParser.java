@@ -1,7 +1,9 @@
 package eu.delving.metarepo.impl;
 
 import com.mongodb.DBObject;
+import com.thoughtworks.xstream.XStream;
 import eu.delving.metarepo.core.MetaRepo;
+import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,27 +24,32 @@ import static org.junit.Assert.assertNull;
 
 public class TestMongoObjectParser {
     private static final Logger LOG = Logger.getLogger(TestMongoObjectParser.class);
-    private static final String XML = "/92017_Ag_EU_TEL_a0233E.xml";
-    private static final QName RECORD_ROOT = QName.valueOf("{http://www.openarchives.org/OAI/2.0/}record");
-    private static final QName UNIQUE_ELEMENT = QName.valueOf("{http://www.openarchives.org/OAI/2.0/}identifier");
+    private static final String DETAILS = "/sffDf.xml.details";
+    private static final String XML = "/sffDf.xml";
 
     @Test
     public void simple() throws XMLStreamException, IOException {
+        XStream xs = new XStream();
+        xs.processAnnotations(DataSetDetails.class);
+        DataSetDetails details = (DataSetDetails)xs.fromXML(getClass().getResourceAsStream(DETAILS));
+        QName recordRoot = QName.valueOf(details.getRecordRoot());
+        QName uniqueElement = QName.valueOf(details.getUniqueElement());
         InputStream input = getClass().getResourceAsStream(XML);
-        MongoObjectParser parser = new MongoObjectParser(input, RECORD_ROOT, UNIQUE_ELEMENT);
+        MongoObjectParser parser = new MongoObjectParser(input, recordRoot, uniqueElement);
         DBObject object;
+        int count = 30;
         while ((object = parser.nextRecord()) != null) {
             assertNotNull("Object", object);
             assertNotNull("Metadata", object.get(MetaRepo.Record.ORIGINAL));
             assertNull("Modified", object.get(MetaRepo.Record.MODIFIED));
             LOG.info(object.get(MetaRepo.Record.UNIQUE));
-//            for (String line : object.get(Constant.ORIGINAL).toString().split("\n")) {
-//                LOG.info(line);
-//            }
+            if (count-- == 0) {
+                break;
+            }
         }
         parser.close();
         DBObject namespaces = parser.getNamespaces();
-        Assert.assertEquals("Namespace count", 2, namespaces.keySet().size());
         LOG.info("namespaces:\n"+namespaces);
+        Assert.assertEquals("Namespace count", 4, namespaces.keySet().size());
     }
 }

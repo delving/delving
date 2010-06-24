@@ -67,10 +67,13 @@ public class MongoObjectParser {
                         if (input.getName().equals(uniqueElement)) {
                             uniqueBuffer = new StringBuilder();
                         }
-                        for (int walk=0; walk<input.getNamespaceCount(); walk++) {
-                            String prefix = input.getNamespacePrefix(walk);
-                            String uri = input.getNamespaceURI(walk);
+                        String prefix = input.getPrefix();
+                        String uri = input.getNamespaceURI();
+                        if (prefix != null) {
                             namespaces.put(prefix, uri);
+                        }
+                        else {
+                            throw new XMLStreamException("Unexpected null prefix for namespace uri: "+uri);
                         }
                         contentBuffer.append("<").append(input.getPrefixedName());
                         if (input.getAttributeCount() > 0) {
