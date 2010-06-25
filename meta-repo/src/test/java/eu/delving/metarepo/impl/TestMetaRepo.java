@@ -52,9 +52,9 @@ public class TestMetaRepo {
     }
 
     @Test
-    public void queryRecords() throws IOException {
+    public void queryOriginalRecords() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/92017/index.html");
+        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/92017/abm.html");
         HttpResponse response = httpClient.execute(httpGet);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new IOException("Response not OK");
@@ -63,6 +63,25 @@ public class TestMetaRepo {
         LOG.info("GET response content type:"+response.getEntity().getContentType());
         LOG.info("Entity returned: "+ responseString);
         Assert.assertTrue("Response contents not right", responseString.contains("Solan og Ludvik, Reodor og r\u00E5skinnet Desperados endelig hjem."));
+        Assert.assertFalse("Response contents not right", responseString.contains("europeana:uri"));
+        Assert.assertTrue("Response contents not right", responseString.contains("abm:county"));
+        httpClient.getConnectionManager().shutdown();
+    }
+
+    @Test
+    public void queryMappedRecords() throws IOException {
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/92017/ese.html");
+        HttpResponse response = httpClient.execute(httpGet);
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new IOException("Response not OK");
+        }
+        String responseString = EntityUtils.toString(response.getEntity());
+        LOG.info("GET response content type:"+response.getEntity().getContentType());
+        LOG.info("Entity returned: "+ responseString);
+        Assert.assertTrue("Response contents not right", responseString.contains("Solan og Ludvik, Reodor og r\u00E5skinnet Desperados endelig hjem."));
+        Assert.assertTrue("Response contents not right", responseString.contains("europeana:uri"));
+        Assert.assertFalse("Response contents not right", responseString.contains("abm:county"));
         httpClient.getConnectionManager().shutdown();
     }
 

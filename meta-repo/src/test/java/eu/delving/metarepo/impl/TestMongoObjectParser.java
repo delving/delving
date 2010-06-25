@@ -26,6 +26,7 @@ public class TestMongoObjectParser {
     private static final Logger LOG = Logger.getLogger(TestMongoObjectParser.class);
     private static final String DETAILS = "/sffDf.xml.details";
     private static final String XML = "/sffDf.xml";
+    private static final String METADATA_PREFIX = "abm";
 
     @Test
     public void simple() throws XMLStreamException, IOException {
@@ -35,12 +36,12 @@ public class TestMongoObjectParser {
         QName recordRoot = QName.valueOf(details.getRecordRoot());
         QName uniqueElement = QName.valueOf(details.getUniqueElement());
         InputStream input = getClass().getResourceAsStream(XML);
-        MongoObjectParser parser = new MongoObjectParser(input, recordRoot, uniqueElement);
+        MongoObjectParser parser = new MongoObjectParser(input, recordRoot, uniqueElement, METADATA_PREFIX);
         DBObject object;
         int count = 30;
         while ((object = parser.nextRecord()) != null) {
             assertNotNull("Object", object);
-            assertNotNull("Metadata", object.get(MetaRepo.Record.ORIGINAL));
+            assertNotNull("Metadata", object.get(METADATA_PREFIX));
             assertNull("Modified", object.get(MetaRepo.Record.MODIFIED));
             LOG.info(object.get(MetaRepo.Record.UNIQUE));
             if (count-- == 0) {

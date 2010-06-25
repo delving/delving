@@ -1,7 +1,6 @@
 package eu.delving.metarepo.core;
 
 import com.mongodb.DBObject;
-import eu.europeana.sip.core.MetadataRecord;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -77,13 +76,10 @@ public interface MetaRepo {
         PmhSet set();
         Date modified();
         boolean deleted();
-        MetadataFormat metadataFormat();
-        String xml();
-        MetadataRecord metadataRecord();
+        String xml(String metadataPrefix);
 
         String MODIFIED = "mod";
         String UNIQUE = "uniq";
-        String ORIGINAL = "orig";
     }
 
     public interface PmhRequest {

@@ -23,6 +23,7 @@ package eu.europeana.sip.model;
 
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordMapping;
@@ -195,45 +196,40 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                 return;
             }
             String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel(), new MappingRunner.Listener() {
-                @Override
-                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
-                    if (exception == null) {
-                        if (multipleMappings) {
-                            try {
-                                String validated = recordValidator.validate(metadataRecord, output);
-                                compilationComplete(validated);
-                            }
-                            catch (RecordValidationException e) {
-                                compilationComplete(e.toString());
-                            }
-                        }
-                        else {
-                            compilationComplete(output);
-                            if (editedCode == null) {
-                                notifyStateChange(State.PRISTINE);
-                            }
-                            else {
-                                FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
-                                if (fieldMapping != null) {
-                                    fieldMapping.setCode(editedCode);
-                                    notifyStateChange(State.COMMITTED);
-                                    editedCode = null;
-                                    notifyStateChange(State.PRISTINE);
-                                }
-                                else {
-                                    notifyStateChange(State.EDITED);
-                                }
-                            }
-                        }
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel());
+            try {
+                String output = mappingRunner.runMapping(metadataRecord);
+                if (multipleMappings) {
+                    String validated = recordValidator.validate(metadataRecord, output);
+                    compilationComplete(validated);
+                }
+                else {
+                    compilationComplete(output);
+                    if (editedCode == null) {
+                        notifyStateChange(State.PRISTINE);
                     }
                     else {
-                        compilationComplete(output);
-                        notifyStateChange(State.ERROR);
+                        FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                        if (fieldMapping != null) {
+                            fieldMapping.setCode(editedCode);
+                            notifyStateChange(State.COMMITTED);
+                            editedCode = null;
+                            notifyStateChange(State.PRISTINE);
+                        }
+                        else {
+                            notifyStateChange(State.EDITED);
+                        }
                     }
                 }
-            });
-            mappingRunner.runMapping(metadataRecord);
+            }
+            catch (MappingException e) {
+                compilationComplete(e.getMessage());
+                notifyStateChange(State.ERROR);
+            }
+            catch (RecordValidationException e) {
+                compilationComplete(e.getMessage());
+                notifyStateChange(State.ERROR);
+            }
         }
 
         private void compilationComplete(final String result) {

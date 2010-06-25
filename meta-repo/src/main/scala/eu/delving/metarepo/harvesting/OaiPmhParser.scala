@@ -217,7 +217,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
      <ListRecords>
           <metadata>
             {for (record <- harvestStep.records) yield
-              renderRecord(record)
+              renderRecord(record, pmhObject.getMetadataPrefix)
             }
           </metadata>
        {renderResumptionToken(harvestStep)}
@@ -237,7 +237,9 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
     if (record == null) return createErrorResponse("idDoesNotExist")
 
     // if format is not found throw cannotDisseminateFormat error
-    if (record.metadataFormat != metadataFormat) return createErrorResponse("cannotDisseminateFormat")
+
+// todo: the record can have a number of metadata formats, you have to ask for them.
+//    if (record.metadataFormat != metadataFormat) return createErrorResponse("cannotDisseminateFormat")
 
     // else  render identifier below
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
@@ -248,7 +250,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
       <request verb="GetRecord" identifier={identifier}
                metadataPrefix={metadataFormat}>{request.getRequestURL}</request>
       <GetRecord>
-        {renderRecord(record)}
+        {renderRecord(record, metadataFormat)}
      </GetRecord>
     </OAI-PMH>
   }
@@ -262,7 +264,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
 
-  private def renderRecord(record: Record) : Elem = {
+  private def renderRecord(record: Record, format: String) : Elem = {
     <record>
         <header>
           <identifier>{record.identifier}</identifier>
@@ -270,7 +272,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
           <setSpec>{record.set}</setSpec>
         </header>
         <metadata>
-          {record.xml}
+          {record.xml(format)}
         </metadata>
     </record>
   }

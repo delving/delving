@@ -22,11 +22,13 @@ import java.io.InputStream;
 public class MongoObjectParser {
     private XMLStreamReader2 input;
     private QName recordRoot, uniqueElement;
+    private String metadataPrefix;
     private DBObject namespaces = new BasicDBObject();
 
-    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException {
+    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement, String metadataPrefix) throws XMLStreamException {
         this.recordRoot = recordRoot;
         this.uniqueElement = uniqueElement;
+        this.metadataPrefix = metadataPrefix;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -106,7 +108,7 @@ public class MongoObjectParser {
                         if (input.getName().equals(recordRoot) && depth == recordDepth) {
                             withinRecord = false;
                             record = new BasicDBObject();
-                            record.put(MetaRepo.Record.ORIGINAL, contentBuffer.toString());
+                            record.put(metadataPrefix, contentBuffer.toString());
                             if (uniqueContent != null) {
                                 record.put(MetaRepo.Record.UNIQUE, uniqueContent);
                             }

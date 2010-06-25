@@ -15,8 +15,21 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
+    <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
+        <property name="classes">
+            <util:list>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>
+            </util:list>
+        </property>
+    </bean>
+
+
     <bean id="metadataRepository" class="eu.delving.metarepo.impl.MetaRepoImpl">
         <property name="mongo" ref="mongo"/>
+        <property name="annotationProcessor" ref="annotationProcessor"/>
     </bean>
 
 </beans>

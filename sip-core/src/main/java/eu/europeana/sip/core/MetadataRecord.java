@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -105,17 +106,39 @@ public class MetadataRecord {
     }
 
     public static class Factory {
+        private Map<String, String> namespaces;
 
-        public MetadataRecord fromXml(String xml) throws XMLStreamException {
+        public Factory(Map<String, String> namespaces) {
+            this.namespaces = namespaces;
+        }
+
+        public MetadataRecord fromXml(String xmlRecord) throws XMLStreamException {
+//            String [] lines = xmlRecord.split("\n");
+//            if (!"<record>".equals(lines[0])) {
+//                throw new XMLStreamException("Expected the first line to be <record>");
+//            }
+//            if (!"</record>".equals(lines[lines.length-1])) {
+//                throw new XMLStreamException("Expected the last line to be </record>");
+//            }
             XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
             xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
             xmlif.configureForSpeed();
-            Reader reader = new StringReader("<?xml version=\"1.0\"?>\n<record>\n" + xml + "\n</record>\n");
+            StringBuilder out = new StringBuilder("<?xml version=\"1.0\"?>\n");
+            out.append("<record");
+            for (Map.Entry<String,String> namespace : namespaces.entrySet()) {
+                out.append(String.format(" xmlns:%s=\"%s\"", namespace.getKey(), namespace.getValue()));
+            }
+            out.append(">");
+//            for (int walk = 1; walk<lines.length - 1; walk++) {
+//                out.append(lines[walk]);
+//            }
+            out.append(xmlRecord);
+            out.append("</record>");
+            String recordString = out.toString();
+            Reader reader = new StringReader(recordString);
             XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(reader);
-            MetadataRecord metadataRecord = null;
-            GroovyNode rootNode = null;
             Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
             StringBuilder value = new StringBuilder();
             while (true) {
@@ -124,8 +147,7 @@ public class MetadataRecord {
                         break;
                     case XMLEvent.START_ELEMENT:
                         if (nodeStack.isEmpty()) {
-                            rootNode = new GroovyNode(null, "input");
-                            nodeStack.push(rootNode);
+                            nodeStack.push(new GroovyNode(null, "input"));
                         }
                         else {
                             GroovyNode parent = nodeStack.peek();

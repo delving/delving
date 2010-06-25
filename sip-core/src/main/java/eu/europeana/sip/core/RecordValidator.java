@@ -66,10 +66,10 @@ public class RecordValidator {
     }
 
     public String validate(MetadataRecord metadataRecord, String recordString) throws RecordValidationException {
-        List<Entry> entries = createNonemptyEntryList(recordString);
+        List<String> problems = new ArrayList<String>();
+        List<Entry> entries = createNonemptyEntryList(recordString, problems);
         Collections.sort(entries);
         eliminateDuplicates(entries);
-        List<String> problems = new ArrayList<String>();
         validateAgainstAnnotations(entries, problems);
         if (!problems.isEmpty()) {
             throw new RecordValidationException(metadataRecord, problems);
@@ -188,7 +188,7 @@ public class RecordValidator {
         }
     }
 
-    private List<Entry> createNonemptyEntryList(String recordString) {
+    private List<Entry> createNonemptyEntryList(String recordString, List<String> problems) {
         List<Entry> entries = new ArrayList<Entry>();
         for (String line : recordString.split("\n")) {
             line = line.trim();
@@ -207,7 +207,7 @@ public class RecordValidator {
                 }
             }
             else {
-                throw new RuntimeException("Mismatch!");
+                problems.add(String.format("Line [%s] does not look like a record field", line));
             }
         }
         return entries;

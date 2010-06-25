@@ -23,6 +23,7 @@ package eu.europeana.sip.xml;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordRoot;
@@ -31,7 +32,6 @@ import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.UserNotifier;
-import groovy.lang.MissingPropertyException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class Normalizer implements Runnable {
     private boolean running = true;
 
     public interface Listener {
-        void invalidInput(MetadataRecord metadataRecord, MissingPropertyException exception);
+        void invalidInput(MappingException exception);
 
         void invalidOutput(RecordValidationException exception);
 
@@ -93,69 +93,73 @@ public class Normalizer implements Runnable {
             final Writer discardedWriter = discardInvalid ? new OutputStreamWriter(fileSetOutput.getDiscardedStream(), "UTF-8") : null;
             outputWriter.write("<?xml version='1.0' encoding='UTF-8'?>\n");
             outputWriter.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel, new MappingRunner.Listener() {
-                @Override
-                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
-                    if (exception != null) {
-                        if (discardedWriter != null) {
-                            try {
-                                discardedWriter.write(metadataRecord.toString());
-                                exception.printStackTrace(new PrintWriter(discardedWriter));
-                                discardedWriter.write("\n========================================\n");
-                                fileSetOutput.recordDiscarded();
-                            }
-                            catch (IOException e1) {
-                                userNotifier.tellUser("Unable to write discarded record", e1);
-                            }
-                        }
-                        else {
-                            if (exception instanceof MissingPropertyException) {
-                                MissingPropertyException mpe = (MissingPropertyException) exception;
-                                userNotifier.tellUser("Missing property in record " + metadataRecord.getRecordNumber() + ": " + mpe.getProperty(), exception);
-                                listener.invalidInput(metadataRecord, mpe);
-                            }
-                            else {
-                                userNotifier.tellUser("Problem normalizing record " + metadataRecord.toString(), exception);
-                            }
-                            fileSetOutput.close(true);
-                        }
-                    }
-                    else {
-                        try {
-                            String validated = recordValidator.validate(metadataRecord, output);
-                            outputWriter.write(validated);
-                            fileSetOutput.recordNormalized();
-                        }
-                        catch (RecordValidationException e) {
-                            if (discardedWriter != null) {
-                                try {
-                                    discardedWriter.write(metadataRecord.toString());
-                                    e.printStackTrace(new PrintWriter(discardedWriter));
-                                    discardedWriter.write("\n========================================\n");
-                                    fileSetOutput.recordDiscarded();
-                                }
-                                catch (IOException e1) {
-                                    userNotifier.tellUser("Unable to write discarded record", e1);
-                                }
-                            }
-                            else {
-                                userNotifier.tellUser("Invalid output record", e);
-                                listener.invalidOutput(e);
-                                fileSetOutput.close(true);
-                                running = false;
-                            }
-                        }
-                        catch (Exception e) {
-                            userNotifier.tellUser("Problem writing output", e);
-                            running = false;
-                        }
-                    }
-                }
-            });
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel);
+//            ,new MappingRunner.Listener() {
+//                @Override
+//                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
+//                    if (exception != null) {
+//                    }
+//                    else {
+//                }
+//            });
             MetadataParser parser = new MetadataParser(fileSet.getInputStream(), recordRoot, parserListener);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
-                if (!mappingRunner.runMapping(record) && !discardInvalid) {
+                try {
+                    String output = mappingRunner.runMapping(record);
+                    String validated = recordValidator.validate(record, output);
+                    outputWriter.write(validated);
+                    fileSetOutput.recordNormalized();
+                }
+                catch (MappingException e) {
+                    if (discardedWriter != null) {
+                        try {
+                            discardedWriter.write(record.toString());
+                            e.printStackTrace(new PrintWriter(discardedWriter));
+                            discardedWriter.write("\n========================================\n");
+                            fileSetOutput.recordDiscarded();
+                        }
+                        catch (IOException e1) {
+                            userNotifier.tellUser("Unable to write discarded record", e1);
+                        }
+                    }
+                    else {
+                        userNotifier.tellUser("Problem normalizing " + record.toString(), e);
+                        listener.invalidInput(e);
+// todo: is this stuff necessary?
+//                        if (e instanceof MissingPropertyException) {
+//                            MissingPropertyException mpe = (MissingPropertyException) exception;
+//                            userNotifier.tellUser("Missing property in record " + metadataRecord.getRecordNumber() + ": " + mpe.getProperty(), exception);
+//                            listener.invalidInput(metadataRecord, mpe);
+//                        }
+//                        else {
+//                            userNotifier.tellUser("Problem normalizing record " + metadataRecord.toString(), exception);
+//                        }
+                        fileSetOutput.close(true);
+                        running = false;
+                    }
+                }
+                catch (RecordValidationException e) {
+                    if (discardedWriter != null) {
+                        try {
+                            discardedWriter.write(record.toString());
+                            e.printStackTrace(new PrintWriter(discardedWriter));
+                            discardedWriter.write("\n========================================\n");
+                            fileSetOutput.recordDiscarded();
+                        }
+                        catch (IOException e1) {
+                            userNotifier.tellUser("Unable to write discarded record", e1);
+                        }
+                    }
+                    else {
+                        userNotifier.tellUser("Invalid output record", e);
+                        listener.invalidOutput(e);
+                        fileSetOutput.close(true);
+                        running = false;
+                    }
+                }
+                catch (Exception e) {
+                    userNotifier.tellUser("Problem writing output", e);
                     running = false;
                 }
             }

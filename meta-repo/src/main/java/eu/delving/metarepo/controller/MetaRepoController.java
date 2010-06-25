@@ -75,7 +75,7 @@ public class MetaRepoController {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
         for (MetaRepo.Record record : dataSet.records(prefix, 0, 10)) {
-            String xml = record.xml().replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
+            String xml = record.xml(prefix).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")
                     .append(xml).append("</li>\n");

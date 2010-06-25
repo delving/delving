@@ -112,12 +112,12 @@ public class SipCreatorGUI extends JFrame {
                     JOptionPane.showMessageDialog(SipCreatorGUI.this, message);
                 }
             });
-            if (exception != null) {
-                log.warn(message, exception);
-            }
-            else {
-                log.warn(message);
-            }
+//            if (exception != null) {
+//                log.warn(message, exception);
+//            }
+//            else {
+//                log.warn(message);
+//            }
         }
 
         @Override

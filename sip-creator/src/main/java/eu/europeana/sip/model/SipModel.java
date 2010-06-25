@@ -26,6 +26,7 @@ import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordMapping;
 import eu.europeana.sip.core.RecordRoot;
@@ -35,7 +36,6 @@ import eu.europeana.sip.core.ToolCodeModel;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
-import groovy.lang.MissingPropertyException;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
@@ -316,11 +316,11 @@ public class SipModel {
                 },
                 new Normalizer.Listener() {
                     @Override
-                    public void invalidInput(final MetadataRecord metadataRecord, MissingPropertyException exception) {
+                    public void invalidInput(final MappingException exception) {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                createMetadataParser(metadataRecord.getRecordNumber());
+                                createMetadataParser(exception.getMetadataRecord().getRecordNumber());
                             }
                         });
                     }

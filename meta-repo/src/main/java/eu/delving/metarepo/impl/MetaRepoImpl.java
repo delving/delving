@@ -7,8 +7,13 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import eu.delving.metarepo.core.MetaRepo;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.ToolCodeModel;
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -30,12 +35,18 @@ import java.util.TreeSet;
  */
 
 public class MetaRepoImpl implements MetaRepo {
+    private Logger log = Logger.getLogger(getClass());
     private Mongo mongo;
+    private AnnotationProcessor annotationProcessor;
     private DB mongoDatabase;
     private Map<String, DataSetImpl> dataSets;
 
     public void setMongo(Mongo mongo) {
         this.mongo = mongo;
+    }
+
+    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
+        this.annotationProcessor = annotationProcessor;
     }
 
     private synchronized DB db() {
@@ -138,7 +149,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DataSetImpl(DBObject object) {
             this.object = object;
             if (object.get(METADATA_FORMAT) != null) {
-                this.metadataFormat = new MetadataFormatImpl((DBObject)object.get(METADATA_FORMAT));
+                this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(METADATA_FORMAT));
             }
         }
 
@@ -151,22 +162,22 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public String setSpec() {
-            return (String)object.get(SPEC);
+            return (String) object.get(SPEC);
         }
 
         @Override
         public String setName() {
-            return (String)object.get(NAME);
+            return (String) object.get(NAME);
         }
 
         @Override
         public String providerName() {
-            return (String)object.get(PROVIDER_NAME);
+            return (String) object.get(PROVIDER_NAME);
         }
 
         @Override
         public String description() {
-            return (String)object.get(DESCRIPTION);
+            return (String) object.get(DESCRIPTION);
         }
 
         @Override
@@ -175,7 +186,8 @@ public class MetaRepoImpl implements MetaRepo {
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
                     recordRoot,
-                    uniqueElement
+                    uniqueElement,
+                    metadataFormat().prefix()
             );
             DBObject record;
             while ((record = parser.nextRecord()) != null) {
@@ -187,7 +199,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public void setMapping(String mappingCode, String prefix, String namespace, String schema) {
-            DBObject mappings = (DBObject)object.get(MAPPINGS);
+            DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
                 mappings = new BasicDBObject();
                 object.put(MAPPINGS, mappings);
@@ -209,12 +221,12 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Map<String,? extends Mapping> mappings() {
+        public Map<String, ? extends Mapping> mappings() {
             Map<String, MappingImpl> mappingMap = new TreeMap<String, MappingImpl>();
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings != null) {
                 for (String prefix : mappings.keySet()) {
-                    mappingMap.put(prefix, new MappingImpl((DBObject) mappings.get(prefix)));
+                    mappingMap.put(prefix, new MappingImpl(this, (DBObject) mappings.get(prefix)));
                 }
             }
             return mappingMap;
@@ -223,22 +235,36 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public Record fetch(ObjectId id) {
             DBObject object = new BasicDBObject(MONGO_ID, id);
-            return new RecordImpl(records().findOne(object), metadataFormat);
+            return new RecordImpl(records().findOne(object));
         }
 
         @Override
         public List<? extends Record> records(String prefix, int start, int count) {
-            if (!metadataFormat().prefix().equals(prefix)) {
-                throw new RuntimeException("Only prefix "+metadataFormat().prefix()+" supported so far");
+            Map<String, ? extends Mapping> mappings = mappings();
+            Mapping mapping = mappings.get(prefix);
+            if (mapping == null && !metadataFormat().prefix().equals(prefix)) {
+                throw new RuntimeException(String.format(
+                        "Only original format %s and mapped formats %s supported so far",
+                        metadataFormat().prefix(),
+                        mappings.keySet().toString()
+                ));
             }
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = records().find(null, null, start, count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
-                list.add(new RecordImpl(object, metadataFormat));
+                list.add(new RecordImpl(object));
                 if (count-- <= 0) { // todo: damn, why isn't count parameter working in the find() above?
                     break;
                 }
+            }
+            if (mapping != null) {
+                Map<String, String> namespaces = new TreeMap<String,String>();
+                DBObject namespacesObject = (DBObject) object.get(NAMESPACES);
+                for (String nsPrefix : namespacesObject.keySet()) {
+                    namespaces.put(nsPrefix, (String)namespacesObject.get(nsPrefix));
+                }
+                ((MappingImpl) mapping).map(list, namespaces);
             }
             return list;
         }
@@ -249,14 +275,15 @@ public class MetaRepoImpl implements MetaRepo {
         }
     }
 
-    private static class MappingImpl implements Mapping, Comparable<Mapping> {
+    private class MappingImpl implements Mapping, Comparable<Mapping> {
+        private DataSetImpl dataSet;
         private DBObject object;
         private MetadataFormat metadataFormat;
-        private MappingRunner mappingRunner;
 
-        private MappingImpl(DBObject object) {
+        private MappingImpl(DataSetImpl dataSet, DBObject object) {
+            this.dataSet = dataSet;
             this.object = object;
-            this.metadataFormat = new MetadataFormatImpl((DBObject)object.get(FORMAT));
+            this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(FORMAT));
         }
 
         @Override
@@ -273,6 +300,27 @@ public class MetaRepoImpl implements MetaRepo {
         public int compareTo(Mapping o) {
             return metadataFormat().prefix().compareTo(o.metadataFormat().prefix());
         }
+
+        private void map(List<? extends Record> records, Map<String, String> namespaces) {
+            ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(code(), annotationProcessor);
+            ToolCodeModel toolCodeModel = new ToolCodeModel();
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code(), constantFieldModel);
+            MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
+            for (MetaRepo.Record record : records) {
+                try {
+                    MetadataRecord metadataRecord = factory.fromXml(record.xml(dataSet.metadataFormat().prefix()));
+                    String recordString = mappingRunner.runMapping(metadataRecord);
+                    RecordImpl recordImpl = (RecordImpl) record;
+                    recordImpl.addFormat(metadataFormat(), recordString);
+                }
+                catch (MappingException e) {
+                    log.info("Unable to map record due to: " + e.toString());
+                }
+                catch (XMLStreamException e) {
+                    log.warn("Unable to map record!", e);
+                }
+            }
+        }
     }
 
     private static class MetadataFormatImpl implements MetadataFormat, Comparable<MetadataFormat> {
@@ -284,7 +332,7 @@ public class MetaRepoImpl implements MetaRepo {
             if (object == null) {
                 throw new RuntimeException("MetdataFormat object missing!");
             }
-            this.prefix = (String)object.get(PREFIX);
+            this.prefix = (String) object.get(PREFIX);
             if (prefix == null || prefix.isEmpty()) {
                 throw new RuntimeException("MetdataFormat with no prefix!");
             }
@@ -297,12 +345,12 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public String schema() {
-            return (String)object.get(SCHEMA);
+            return (String) object.get(SCHEMA);
         }
 
         @Override
         public String namespace() {
-            return (String)object.get(NAMESPACE);
+            return (String) object.get(NAMESPACE);
         }
 
         @Override
@@ -314,11 +362,9 @@ public class MetaRepoImpl implements MetaRepo {
     private static class RecordImpl implements Record {
 
         private DBObject object;
-        private MetadataFormat metadataFormat;
 
-        private RecordImpl(DBObject object, MetadataFormat metadataFormat) {
+        private RecordImpl(DBObject object) {
             this.object = object;
-            this.metadataFormat = metadataFormat;
         }
 
         @Override
@@ -351,24 +397,16 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public MetadataFormat metadataFormat() {
-            return metadataFormat;
+        public String xml(String metadataPrefix) {
+            String x =  (String) object.get(metadataPrefix);
+            if (x == null) {
+                throw new RuntimeException(String.format("No record with prefix [%s]", metadataPrefix));
+            }
+            return x;
         }
 
-        @Override
-        public String xml() {
-            return (String) object.get(ORIGINAL);
-        }
-
-        @Override
-        public MetadataRecord metadataRecord() {
-            MetadataRecord.Factory factory = new MetadataRecord.Factory();
-            try {
-                return factory.fromXml(xml());
-            }
-            catch (XMLStreamException e) {
-                throw new RuntimeException("Unable to produce MetadataRecord", e);
-            }
+        void addFormat(MetadataFormat metadataFormat, String recordString) {
+            object.put(metadataFormat.prefix(), recordString);
         }
     }
 }

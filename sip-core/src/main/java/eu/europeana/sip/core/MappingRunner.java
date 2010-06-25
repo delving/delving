@@ -31,9 +31,8 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
-import java.io.PrintWriter;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * This class takes code, a record, and produces a record, using the code
@@ -46,25 +45,30 @@ public class MappingRunner {
     private String code;
     private Script script;
     private ConstantFieldModel constantFieldModel;
-    private Listener listener;
+    private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-    public interface Listener {
-        void complete(MetadataRecord metadataRecord, Exception exception, String output);
-    }
-
-    public MappingRunner(String code, ConstantFieldModel constantFieldModel, Listener listener) {
+    public MappingRunner(String code, ConstantFieldModel constantFieldModel) {
         this.code = code;
         this.constantFieldModel = constantFieldModel;
-        this.listener = listener;
     }
 
-    public boolean runMapping(MetadataRecord metadataRecord) {
+    public String runMapping(MetadataRecord metadataRecord) throws MappingException {
         if (metadataRecord == null) {
-            throw new RuntimeException("A record is needed for compile");
+            throw new RuntimeException("Null input metadata record");
         }
         try {
+            Binding binding = new Binding();
             StringWriter writer = new StringWriter();
-            Binding binding = createBinding(writer, constantFieldModel, metadataRecord);
+            MarkupBuilder builder = new MarkupBuilder(writer);
+            NamespaceBuilder xmlns = new NamespaceBuilder(builder);
+            binding.setVariable("output", builder);
+            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc")); // todo: this is ese-specific and shouldn't be
+            binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
+            binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
+            for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
+                binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
+            }
+            binding.setVariable("input", metadataRecord.getRootNode());
             if (script == null) {
                 script = new GroovyShell(binding).parse(code);
             }
@@ -72,12 +76,10 @@ public class MappingRunner {
                 script.setBinding(binding);
             }
             script.run();
-            listener.complete(metadataRecord, null, writer.toString());
-            return true;
+            return writer.toString();
         }
         catch (MissingPropertyException e) {
-            listener.complete(metadataRecord, e, "Missing Property: " + e.getProperty());
-            return false;
+            throw new MappingException(metadataRecord, "Missing Property "+e.getProperty(), e);
         }
         catch (MultipleCompilationErrorsException e) {
             StringBuilder out = new StringBuilder();
@@ -85,31 +87,12 @@ public class MappingRunner {
                 SyntaxErrorMessage message = (SyntaxErrorMessage) o;
                 SyntaxException se = message.getCause();
                 // line numbers will not match
-                out.append(String.format("Problem: %s", se.getOriginalMessage()));
+                out.append(String.format("Problem: %s\n", se.getOriginalMessage()));
             }
-            listener.complete(metadataRecord, e, out.toString());
-            return false;
+            throw new MappingException(metadataRecord, out.toString(), e);
         }
         catch (Exception e) {
-            StringWriter writer = new StringWriter();
-            e.printStackTrace(new PrintWriter(writer));
-            listener.complete(metadataRecord, e, writer.toString());
-            return false;
+            throw new MappingException(metadataRecord, "Unexpected", e);
         }
-    }
-
-    private static Binding createBinding(Writer writer, ConstantFieldModel constantFieldModel, MetadataRecord record) {
-        Binding binding = new Binding();
-        MarkupBuilder builder = new MarkupBuilder(writer);
-        NamespaceBuilder xmlns = new NamespaceBuilder(builder);
-        binding.setVariable("output", builder);
-        binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
-        binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
-        binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
-        for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
-            binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
-        }
-        binding.setVariable("input", record.getRootNode());
-        return binding;
     }
 }
