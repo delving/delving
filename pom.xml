@@ -549,13 +549,13 @@
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
     <properties>
         <europeana.definitions.version>1.0.19</europeana.definitions.version>
-        <europeana.core.version>1.0.43</europeana.core.version>
+        <europeana.core.version>1.0.44</europeana.core.version>
         <europeana.portal.version>0.7.3</europeana.portal.version>
         <europeana.api.version>0.5.24</europeana.api.version>
         <europeana.dashboard.version>0.3.10</europeana.dashboard.version>

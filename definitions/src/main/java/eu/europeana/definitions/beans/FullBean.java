@@ -77,10 +77,10 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-    @Europeana(category = ESE_PLUS)
-    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
-    boolean europeanaHasObject;
-
+//    @Europeana(category = ESE_PLUS)
+//    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
+//    boolean europeanaHasObject;
+//
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:provider", constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
@@ -263,11 +263,11 @@ public class FullBean extends BriefBean implements FullDoc {
         return returnArrayOrElse(europeanaUserTag);
     }
 
-    @Override
-    public Boolean getEuropeanaHasObject() {
-        return europeanaHasObject;
-    }
-
+//    @Override
+//    public Boolean getEuropeanaHasObject() {
+//        return europeanaHasObject;
+//    }
+//
     @Override
     public String[] getEuropeanaCountry() {
         final String[] countryArr = returnArrayOrElse(europeanaCountry, country);
