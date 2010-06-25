@@ -310,8 +310,19 @@ public class MetaRepoImpl implements MetaRepo {
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.xml(dataSet.metadataFormat().prefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
+                    String [] lines = recordString.split("\n");
+                    if (!"<record>".equals(lines[0])) {
+                        throw new XMLStreamException("Expected the first line to be <record>");
+                    }
+                    if (!"</record>".equals(lines[lines.length-1])) {
+                        throw new XMLStreamException("Expected the last line to be </record>");
+                    }
+                    StringBuilder recordLines = new StringBuilder();
+                    for (int walk = 1; walk<lines.length - 1; walk++) {
+                        recordLines.append(lines[walk]).append('\n');
+                    }
                     RecordImpl recordImpl = (RecordImpl) record;
-                    recordImpl.addFormat(metadataFormat(), recordString);
+                    recordImpl.addFormat(metadataFormat(), recordLines.toString());
                 }
                 catch (MappingException e) {
                     log.info("Unable to map record due to: " + e.toString());

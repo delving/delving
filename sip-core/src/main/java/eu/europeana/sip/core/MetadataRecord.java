@@ -113,13 +113,6 @@ public class MetadataRecord {
         }
 
         public MetadataRecord fromXml(String xmlRecord) throws XMLStreamException {
-//            String [] lines = xmlRecord.split("\n");
-//            if (!"<record>".equals(lines[0])) {
-//                throw new XMLStreamException("Expected the first line to be <record>");
-//            }
-//            if (!"</record>".equals(lines[lines.length-1])) {
-//                throw new XMLStreamException("Expected the last line to be </record>");
-//            }
             XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
             xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -131,9 +124,6 @@ public class MetadataRecord {
                 out.append(String.format(" xmlns:%s=\"%s\"", namespace.getKey(), namespace.getValue()));
             }
             out.append(">");
-//            for (int walk = 1; walk<lines.length - 1; walk++) {
-//                out.append(lines[walk]);
-//            }
             out.append(xmlRecord);
             out.append("</record>");
             String recordString = out.toString();
