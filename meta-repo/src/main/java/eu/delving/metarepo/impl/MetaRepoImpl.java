@@ -302,7 +302,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public long recordCount() {
-            return recColl.count();
+            return records().count();
         }
 
         @Override
