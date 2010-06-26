@@ -72,6 +72,12 @@ public interface MetaRepo {
         PmhRequest pmhRequest();
         boolean hasNext();
         HarvestStep next();
+
+        String EXPIRATION = "exp";
+        String LIST_SIZE = "listSize";
+        String CURSOR = "cursor";
+        String PMH_REQUEST = "pmhRequest";
+        String NEXT_ID = "next";
     }
 
     public interface Record {
@@ -80,6 +86,7 @@ public interface MetaRepo {
         PmhSet set();
         Date modified();
         boolean deleted();
+        String xml();
         String xml(String metadataPrefix);
 
         String MODIFIED = "mod";
@@ -89,10 +96,17 @@ public interface MetaRepo {
     public interface PmhRequest {
         PmhVerb getVerb();
         String getSet();
-        String getFrom();
-        String getUntil();
+        String getFrom(); // todo: a string?
+        String getUntil(); // todo: a string?
         String getMetadataPrefix();
         String getIdentifier(); // Only used GetRecord
+
+        String VERB = "verb";
+        String SET = "set";
+        String FROM = "from";
+        String UNTIL = "until";
+        String PREFIX = "prefix";
+        String IDENTIFIER = "id";
     }
 
     public interface PmhSet {

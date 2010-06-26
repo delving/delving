@@ -133,24 +133,35 @@ public class MetaRepoImpl implements MetaRepo {
 
     @Override
     public HarvestStep getHarvestStep(String resumptionToken) {
-        return null;  //TODO: implement this
+        ObjectId objectId = new ObjectId(resumptionToken);
+        DBCollection harvestSteps = db().getCollection(HARVEST_STEPS_COLLECTION);
+        DBObject query = new BasicDBObject(MONGO_ID, objectId);
+        DBObject harvestStepObject = harvestSteps.findOne(query);
+        if (harvestStepObject != null) {
+            return new HarvestStepImpl(harvestStepObject);
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
     public HarvestStep getHarvestStep(PmhRequest request) {
-        return null;  //TODO: implement this
+        return getHarvestStep(request.getIdentifier());
     }
 
     @Override
-    public Record getRecord(String identifier, String metadataFormat) {
+    public Record getRecord(String identifier, String metadataPrefix) {
         String[] elements = identifier.split(":");
         if (elements.length != 2) return null;
         String collId = elements[0];
         String recordId = elements[1];
         DBCollection collection = db().getCollection(RECORD_COLLECTION_PREFIX + collId);
+        // todo: should be fetching and querying DataSets
         DBObject object = new BasicDBObject(MONGO_ID, new ObjectId(recordId));
         DBObject object1 = collection.findOne(object);
-        return new RecordImpl(object1);
+        // todo: mapping
+        return new RecordImpl(object1, metadataPrefix);
     }
 
     @Override
@@ -250,9 +261,9 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Record fetch(ObjectId id) {
+        public Record fetch(ObjectId id) { // if prefix is passed in, mapping can be done
             DBObject object = new BasicDBObject(MONGO_ID, id);
-            return new RecordImpl(records().findOne(object));
+            return new RecordImpl(records().findOne(object), metadataFormat().prefix());
         }
 
         @Override
@@ -270,16 +281,16 @@ public class MetaRepoImpl implements MetaRepo {
             DBCursor cursor = records().find(null, null, start, count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
-                list.add(new RecordImpl(object));
+                list.add(new RecordImpl(object, metadataFormat().prefix()));
                 if (count-- <= 0) { // todo: damn, why isn't count parameter working in the find() above?
                     break;
                 }
             }
             if (mapping != null) {
-                Map<String, String> namespaces = new TreeMap<String,String>();
+                Map<String, String> namespaces = new TreeMap<String, String>();
                 DBObject namespacesObject = (DBObject) object.get(NAMESPACES);
                 for (String nsPrefix : namespacesObject.keySet()) {
-                    namespaces.put(nsPrefix, (String)namespacesObject.get(nsPrefix));
+                    namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
                 }
                 ((MappingImpl) mapping).map(list, namespaces);
             }
@@ -327,15 +338,15 @@ public class MetaRepoImpl implements MetaRepo {
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.xml(dataSet.metadataFormat().prefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
-                    String [] lines = recordString.split("\n");
+                    String[] lines = recordString.split("\n");
                     if (!"<record>".equals(lines[0])) {
                         throw new XMLStreamException("Expected the first line to be <record>");
                     }
-                    if (!"</record>".equals(lines[lines.length-1])) {
+                    if (!"</record>".equals(lines[lines.length - 1])) {
                         throw new XMLStreamException("Expected the last line to be </record>");
                     }
                     StringBuilder recordLines = new StringBuilder();
-                    for (int walk = 1; walk<lines.length - 1; walk++) {
+                    for (int walk = 1; walk < lines.length - 1; walk++) {
                         recordLines.append(lines[walk]).append('\n');
                     }
                     RecordImpl recordImpl = (RecordImpl) record;
@@ -390,9 +401,11 @@ public class MetaRepoImpl implements MetaRepo {
     private static class RecordImpl implements Record {
 
         private DBObject object;
+        private String defaultPrefix;
 
-        private RecordImpl(DBObject object) {
+        private RecordImpl(DBObject object, String defaultPrefix) {
             this.object = object;
+            this.defaultPrefix = defaultPrefix;
         }
 
         @Override
@@ -424,11 +437,15 @@ public class MetaRepoImpl implements MetaRepo {
             return false;  //TODO: implement this
         }
 
+        @Override
+        public String xml() {
+            return xml(defaultPrefix);
+        }
+
         // todo determine if the right format is returned after on-the-fly mapping
-        // todo use default format when metadataPrefix is empty
         @Override
         public String xml(String metadataPrefix) {
-            String x =  (String) object.get(metadataPrefix);
+            String x = (String) object.get(metadataPrefix);
             if (x == null) {
                 throw new RuntimeException(String.format("No record with prefix [%s]", metadataPrefix));
             }
@@ -437,6 +454,94 @@ public class MetaRepoImpl implements MetaRepo {
 
         void addFormat(MetadataFormat metadataFormat, String recordString) {
             object.put(metadataFormat.prefix(), recordString);
+        }
+    }
+
+    private static class HarvestStepImpl implements HarvestStep {
+
+        private DBObject object;
+
+        private HarvestStepImpl(DBObject object) {
+            this.object = object;
+        }
+
+        @Override
+        public ObjectId resumptionToken() {
+            return null;  // todo: implement
+        }
+
+        @Override
+        public Date expiration() {
+            return (Date) object.get(EXPIRATION);
+        }
+
+        @Override
+        public int listSize() {
+            return (Integer) object.get(LIST_SIZE);
+        }
+
+        @Override
+        public int cursor() {
+            return (Integer) object.get(CURSOR);
+        }
+
+        @Override
+        public List<? extends Record> records() {
+            return null;  // todo: implement
+        }
+
+        @Override
+        public PmhRequest pmhRequest() {
+            return new PmhRequestImpl((DBObject) object.get(PMH_REQUEST));
+        }
+
+        @Override
+        public boolean hasNext() {
+            return object.get(NEXT_ID) != null;
+        }
+
+        @Override
+        public HarvestStep next() {
+            return null;  // todo: fetch
+        }
+    }
+
+    private static class PmhRequestImpl implements PmhRequest {
+
+        private DBObject object;
+
+        private PmhRequestImpl(DBObject object) {
+            this.object = object;
+        }
+
+        @Override
+        public PmhVerb getVerb() {
+            return PmhVerb.valueOf((String) object.get(VERB));
+        }
+
+        @Override
+        public String getSet() {
+            return (String) object.get(SET);
+        }
+
+        @Override
+        public String getFrom() {
+            return (String) object.get(FROM);
+        }
+
+        @Override
+        public String getUntil() {
+            return (String) object.get(UNTIL);
+        }
+
+        @Override
+        public String getMetadataPrefix() {
+            return (String) object.get(PREFIX);
+        }
+
+        @Override
+        public String getIdentifier() {
+            return null;  // todo: implement
         }
     }
 }
