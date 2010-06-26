@@ -305,13 +305,10 @@ public class MetaRepoImpl implements MetaRepo {
                 ));
             }
             List<RecordImpl> list = new ArrayList<RecordImpl>();
-            DBCursor cursor = records().find(null, null, start, count);
+            DBCursor cursor = records().find().skip(start).limit(count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
                 list.add(new RecordImpl(object, metadataFormat().prefix()));
-                if (count-- <= 0) { // todo: damn, why isn't count parameter working in the find() above?
-                    break;
-                }
             }
             if (mapping != null) {
                 Map<String, String> namespaces = new TreeMap<String, String>();
