@@ -196,11 +196,6 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
           <setSpec>{record.set.getSetSpec}</setSpec>
        </header>
         }
-       <header>
-        <identifier>oai:arXiv.org:hep-th/9801002</identifier>
-        <datestamp>1999-03-20</datestamp>
-        <setSpec>physic:hep</setSpec>
-       </header>
         {renderResumptionToken(harvestStep)}
      </ListIdentifiers>
     </OAI-PMH>

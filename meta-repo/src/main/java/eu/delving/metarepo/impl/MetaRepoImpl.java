@@ -143,14 +143,10 @@ public class MetaRepoImpl implements MetaRepo {
 
     @Override
     public Record getRecord(String identifier, String metadataFormat) {
-        String[] elements = identifier.split(":");
-        if (elements.length != 2) return null;
-        String collId = elements[0];
-        String recordId = elements[1];
-        DBCollection collection = db().getCollection(RECORD_COLLECTION_PREFIX + collId);
-        DBObject object = new BasicDBObject(MONGO_ID, new ObjectId(recordId));
-        DBObject object1 = collection.findOne(object);
-        return new RecordImpl(object1);
+        RecordIdentifier recordIdentifier = new RecordIdentifier(identifier).invoke();
+        if (recordIdentifier == null) return null;
+        DBObject dbObject = recordIdentifier.findOne();
+        return new RecordImpl(dbObject);
     }
 
     @Override
@@ -426,6 +422,60 @@ public class MetaRepoImpl implements MetaRepo {
 
         void addFormat(MetadataFormat metadataFormat, String recordString) {
             object.put(metadataFormat.prefix(), recordString);
+        }
+    }
+
+    public class RecordIdentifier {
+
+        private String identifier;
+        private String collId;
+        private String recordId;
+
+        public RecordIdentifier(String identifier) {
+            this.identifier = identifier;
+        }
+
+        public RecordIdentifier(String collId, String recordId) {
+            this.collId = collId;
+            this.recordId = recordId;
+            this.identifier = collId + ":" + recordId;
+        }
+
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        public String getCollId() {
+            return collId;
+        }
+
+        public String getRecordId() {
+            return recordId;
+        }
+
+        public RecordIdentifier invoke() {
+            String[] elements = identifier.split(":");
+            if (elements.length != 2) return null;
+            collId = elements[0];
+            recordId = elements[1];
+            return this;
+        }
+
+
+        public ObjectId getObjectId() {
+            return new ObjectId(recordId);
+        }
+
+        public DBObject getDBObject() {
+            return new BasicDBObject(MONGO_ID, getObjectId());
+        }
+
+        public DBCollection getDBCollection() {
+            return db().getCollection(RECORD_COLLECTION_PREFIX + getCollId());
+        }
+
+        public DBObject findOne() {
+            return getDBCollection().findOne(getDBObject());
         }
     }
 }
