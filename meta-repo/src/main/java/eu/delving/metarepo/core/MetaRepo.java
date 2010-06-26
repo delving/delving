@@ -29,7 +29,7 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats(String id);
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String identifier);
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix);
 
     HarvestStep getHarvestStep(String resumptionToken);
 
@@ -82,8 +82,8 @@ public interface MetaRepo {
     public interface PmhRequest {
         PmhVerb getVerb();
         String getSet();
-        String getFrom(); // todo: a string?
-        String getUntil(); // todo: a string?
+        Date getFrom();
+        Date getUntil();
         String getMetadataPrefix();
         String getIdentifier(); // Only used GetRecord
 

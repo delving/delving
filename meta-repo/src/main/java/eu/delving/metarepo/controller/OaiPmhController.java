@@ -1,7 +1,7 @@
 package eu.delving.metarepo.controller;
 
 import eu.delving.metarepo.core.MetaRepo;
-import eu.delving.metarepo.harvesting.OaiPmhParser;
+import eu.delving.metarepo.harvesting.OaiPmhService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +29,6 @@ public class OaiPmhController {
     @ResponseBody
     String searchController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/xml");
-        return OaiPmhParser.parseHttpServletRequest(request, metaRepo);
+        return OaiPmhService.parseHttpServletRequest(request, metaRepo);
     }
 }

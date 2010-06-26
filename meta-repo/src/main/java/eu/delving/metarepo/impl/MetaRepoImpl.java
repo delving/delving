@@ -142,7 +142,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String identifier) {
+    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) {
         DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
         DBObject req = new BasicDBObject();
         req.put(PmhRequest.VERB, verb.toString());
@@ -150,7 +150,6 @@ public class MetaRepoImpl implements MetaRepo {
         req.put(PmhRequest.FROM, from);
         req.put(PmhRequest.UNTIL, until);
         req.put(PmhRequest.PREFIX, metadataPrefix);
-        req.put(PmhRequest.IDENTIFIER, identifier);
         DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
         firstStep.put(HarvestStep.LIST_SIZE, steps.getCount());
         firstStep.put(HarvestStep.CURSOR, 0);
@@ -557,13 +556,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getFrom() {
-            return (String) object.get(FROM);
+        public Date getFrom() {
+            return (Date) object.get(FROM);
         }
 
         @Override
-        public String getUntil() {
-            return (String) object.get(UNTIL);
+        public Date getUntil() {
+            return (Date) object.get(UNTIL);
         }
 
         @Override
