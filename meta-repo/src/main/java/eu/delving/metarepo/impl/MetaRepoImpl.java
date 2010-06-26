@@ -514,8 +514,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public int listSize() {
-            return (Integer) object.get(LIST_SIZE);
+        public long listSize() {
+            return (Long) object.get(LIST_SIZE);
         }
 
         @Override

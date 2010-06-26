@@ -66,7 +66,7 @@ public interface MetaRepo {
         ObjectId resumptionToken();
         // todo add Set information or just setSpec
         Date expiration();
-        int listSize();
+        long listSize();
         int cursor();
         List<? extends Record> records();
         PmhRequest pmhRequest();
