@@ -10,6 +10,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,7 +36,8 @@ public class MongoObjectParser {
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
         xmlif.configureForSpeed();
-        this.input = (XMLStreamReader2) xmlif.createXMLStreamReader(getClass().getName(), inputStream);
+        Source source = new StreamSource(inputStream, "UTF-8");
+        this.input = (XMLStreamReader2) xmlif.createXMLStreamReader(source);
     }
 
     @SuppressWarnings("unchecked")
