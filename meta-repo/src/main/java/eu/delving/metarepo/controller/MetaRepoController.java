@@ -101,6 +101,9 @@ public class MetaRepoController {
             log.info("entry: " + entry);
             if (entry.getName().endsWith(".details")) {
                 dataSetDetails = getDetails(zis);
+                if (!dataSetDetails.getSpec().equals(dataSetSpec)) {
+                    throw new IOException(String.format("Zip file [%s] should have the data spec name [%s]", dataSetSpec, dataSetDetails.getSpec()));
+                }
                 if (dataSet == null) {
                     dataSet = metaRepo.createDataSet(
                             dataSetSpec,

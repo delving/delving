@@ -24,7 +24,7 @@ import java.util.zip.ZipOutputStream;
  */
 
 public class ZipUploader {
-    private static File ZIP_FILE = new File("meta-repo/target/92017.zip");
+    private static File ZIP_FILE = new File("meta-repo/target/00101_Ag_NO_sffDF.zip");
     private Logger log = Logger.getLogger(ZipUploader.class);
 
     public void upload() throws IOException {
