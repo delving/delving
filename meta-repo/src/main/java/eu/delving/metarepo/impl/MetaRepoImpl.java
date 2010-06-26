@@ -478,7 +478,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
 
-    private static class HarvestStepImpl implements HarvestStep {
+    private class HarvestStepImpl implements HarvestStep {
 
         private DBObject object;
         private ObjectId nextStepId;
@@ -514,7 +514,9 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public List<? extends Record> records() {
-            return null;  // todo: implement
+            PmhRequest request = pmhRequest();
+            DataSet dataSet = getDataSets().get(request.getSet());
+            return dataSet.records(request.getMetadataPrefix(), cursor(), responseListSize);
         }
 
         @Override
@@ -571,7 +573,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public String getIdentifier() {
-            return null;  // todo: implement
+            return (String) object.get(IDENTIFIER);
         }
     }
 
