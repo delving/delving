@@ -40,6 +40,7 @@ public class MetaRepoImpl implements MetaRepo {
     private AnnotationProcessor annotationProcessor;
     private DB mongoDatabase;
     private Map<String, DataSetImpl> dataSets;
+    private MetaConfig metaRepoConfig;
 
     public void setMongo(Mongo mongo) {
         this.mongo = mongo;
@@ -47,6 +48,10 @@ public class MetaRepoImpl implements MetaRepo {
 
     public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
         this.annotationProcessor = annotationProcessor;
+    }
+
+    public void setMetaRepoConfig(MetaConfig metaConfig) {
+        this.metaRepoConfig = metaConfig;
     }
 
     private synchronized DB db() {
@@ -138,7 +143,19 @@ public class MetaRepoImpl implements MetaRepo {
 
     @Override
     public Record getRecord(String identifier, String metadataFormat) {
-        return null;  //TODO: implement this
+        String[] elements = identifier.split(":");
+        if (elements.length != 2) return null;
+        String collId = elements[0];
+        String recordId = elements[1];
+        DBCollection collection = db().getCollection(RECORD_COLLECTION_PREFIX + collId);
+        DBObject object = new BasicDBObject(MONGO_ID, new ObjectId(recordId));
+        DBObject object1 = collection.findOne(object);
+        return new RecordImpl(object1);
+    }
+
+    @Override
+    public MetaConfig getMetaRepoConfig() {
+        return metaRepoConfig;
     }
 
     private class DataSetImpl implements DataSet {
@@ -407,6 +424,8 @@ public class MetaRepoImpl implements MetaRepo {
             return false;  //TODO: implement this
         }
 
+        // todo determine if the right format is returned after on-the-fly mapping
+        // todo use default format when metadataPrefix is empty
         @Override
         public String xml(String metadataPrefix) {
             String x =  (String) object.get(metadataPrefix);

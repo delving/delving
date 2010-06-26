@@ -36,11 +36,14 @@ public interface MetaRepo {
 
     Record getRecord(String identifier, String metadataFormat);
 
+    MetaConfig getMetaRepoConfig();
+
     public interface DataSet {
         String setSpec();
         String setName();
         String providerName();
         String description();
+        // todo add record Separator for rendering
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void setMapping(String mappingCode, String prefix, String namespace, String schema);
@@ -49,7 +52,7 @@ public interface MetaRepo {
         Map<String,? extends Mapping> mappings();
         Record fetch(ObjectId id);
         List<? extends Record> records(String prefix, int start, int count);
-        
+
         String SPEC = "spec";
         String NAME = "name";
         String PROVIDER_NAME = "provider_name";
@@ -61,6 +64,7 @@ public interface MetaRepo {
 
     public interface HarvestStep {
         ObjectId resumptionToken(); // is resumptionToken
+        // todo add Set information or just setSpec
         Date expiration();
         int listSize();
         int cursor();
@@ -104,6 +108,15 @@ public interface MetaRepo {
         String FORMAT = "format";
     }
 
+
+    public interface MetaConfig {
+        String getRepositoryName();
+        String getAdminEmail();
+        String getEarliestDateStamp();
+        String getRepositoryIdentifier();
+        String getSampleIdentifier();
+    }
+
     public interface MetadataFormat {
         String prefix();
         String schema();
@@ -132,7 +145,7 @@ public interface MetaRepo {
             return pmhCommand;
         }
     }
-    
+
     String DATABASE_NAME = "MetaRepo";
     String RECORD_COLLECTION_PREFIX = "Records_";
     String DATASETS_COLLECTION = "Datasets";

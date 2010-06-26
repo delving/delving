@@ -3,7 +3,6 @@ package eu.delving.metarepo.harvesting
 import javax.servlet.http.{HttpServletRequest}
 
 import java.lang.String
-import xml.{Elem}
 import java.util.{Map, Date}
 import scala.collection.JavaConversions._
 import eu.delving.metarepo.core.MetaRepo
@@ -11,6 +10,7 @@ import eu.delving.metarepo.core.MetaRepo.{PmhVerb, PmhRequest, HarvestStep, Reco
 import eu.delving.metarepo.impl.PmhRequestImpl
 import collection.mutable.HashMap
 import java.util.Map.Entry
+import xml.{XML, Elem}
 
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
@@ -35,12 +35,11 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   def parseRequest() : String = {
 
-    val requestParams = request.getParameterMap.asInstanceOf[Map[String, Array[String]]]
+    val requestParams = getRequestParams(request)
 
     if (!isLegalPmhRequest(requestParams)) return createErrorResponse("badArgument").toString
 
-    val params = HashMap[String, String]()
-    requestParams.entrySet.foreach{entry: Entry[String, Array[String]] => params.put(entry.getKey, entry.getValue.head)}
+    val params = asSingleValueMap(requestParams)
 
     def pmhRequest(verb: PmhVerb) : PmhRequestEntry = createPmhRequest(params, verb)
 
@@ -54,6 +53,14 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
         case _ => createErrorResponse("badVerb")
       }
     response.toString
+  }
+
+  def getRequestParams(request: HttpServletRequest) : Map[String, Array[String]] = request.getParameterMap.asInstanceOf[Map[String, Array[String]]]
+
+  def asSingleValueMap(requestParams: Map[String, Array[String]]) : HashMap[String, String] = {
+    val params = HashMap[String, String]()
+    requestParams.entrySet.foreach{entry: Entry[String, Array[String]] => params.put(entry.getKey, entry.getValue.head)}
+    params
   }
 
   def isLegalPmhRequest(params: Map[String, Array[String]]) : Boolean = {
@@ -74,6 +81,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
    */
   // TODO: add values from a message.properties file and complete oai identifier block
   def processIdentify(pmhRequestEntry: PmhRequestEntry) : Elem = {
+    val config = metaRepo.getMetaRepoConfig
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -81,11 +89,11 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
       <responseDate>{new Date}</responseDate>
       <request verb="Identify">{request.getRequestURL}</request>
       <Identify>
-        <repositoryName>Delving MetaRepo</repositoryName>
+        <repositoryName>{config.getRepositoryName}</repositoryName>
         <baseURL>{request.getRequestURL}</baseURL>
         <protocolVersion>2.0</protocolVersion>
-        <adminEmail>somebody@delving.eu</adminEmail>
-        <earliestDatestamp>1990-02-01T12:00:00Z</earliestDatestamp>
+        <adminEmail>{config.getAdminEmail}</adminEmail>
+        <earliestDatestamp>{config.getEarliestDateStamp}</earliestDatestamp>
         <deletedRecord>persistent</deletedRecord>
         <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
         <compression>deflate</compression>
@@ -97,9 +105,9 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
                 "http://www.openarchives.org/OAI/2.0/oai-identifier
             http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
             <scheme>oai</scheme>
-            <repositoryIdentifier>lcoa1.loc.gov</repositoryIdentifier>
+            <repositoryIdentifier>{config.getRepositoryIdentifier}</repositoryIdentifier>
             <delimiter>:</delimiter>
-            <sampleIdentifier>oai:lcoa1.loc.gov:loc.music/musdi.002</sampleIdentifier>
+            <sampleIdentifier>{config.getSampleIdentifier}</sampleIdentifier>
           </oai-identifier>
         </description>
      </Identify>
@@ -161,11 +169,6 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
           <metadataNamespace>{format.namespace}</metadataNamespace>
        </metadataFormat>
         }
-       <metadataFormat>
-        <metadataPrefix>oai_dc</metadataPrefix>
-        <schema>http://www.openarchives.org/OAI/2.0/oai_dc.xsd</schema>
-        <metadataNamespace>http://www.openarchives.org/OAI/2.0/oai_dc/</metadataNamespace>
-       </metadataFormat>
       </ListMetadataFormats>
     </OAI-PMH>
   }
@@ -265,14 +268,17 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
 
   private def renderRecord(record: Record, format: String) : Elem = {
+    // todo get the record separator for rendering from somewhere
+    val elem = XML.loadString("<record>" + record.xml(format) + "</record>")
+    println (elem)
     <record>
-        <header>
+      <header>
           <identifier>{record.identifier}</identifier>
           <datestamp>{record.modified}</datestamp>
           <setSpec>{record.set}</setSpec>
         </header>
         <metadata>
-          {record.xml(format)}
+          {elem}
         </metadata>
     </record>
   }
@@ -285,7 +291,7 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
       <resumptionToken/>
   }
 
-  private def createPmhRequest(params: HashMap[String, String], verb: PmhVerb) : PmhRequestEntry = {
+  def createPmhRequest(params: HashMap[String, String], verb: PmhVerb) : PmhRequestEntry = {
     def getParam(key: String) = params.getOrElse(key, "")
     val pmh: PmhRequest = new PmhRequestImpl(verb,
       getParam("set"), getParam("from"), getParam("until"),
