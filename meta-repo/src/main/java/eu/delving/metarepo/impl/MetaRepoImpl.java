@@ -156,6 +156,7 @@ public class MetaRepoImpl implements MetaRepo {
             throw new RuntimeException(String.format("Cannot find set [%s]",set));
         }
         firstStep.put(HarvestStep.LIST_SIZE, dataSet.recordCount());
+        firstStep.put(HarvestStep.NAMESPACES, dataSet.namespaces());
         firstStep.put(HarvestStep.CURSOR, 0);
         firstStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
         steps.insert(firstStep);
@@ -180,6 +181,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
         if (harvestStep.listSize() > harvestStep.cursor() + responseListSize) {
             DBObject nextStep = new BasicDBObject(HarvestStep.PMH_REQUEST, step.get(HarvestStep.PMH_REQUEST));
+            nextStep.put(HarvestStep.NAMESPACES, step.get(HarvestStep.NAMESPACES));
             nextStep.put(HarvestStep.LIST_SIZE, step.get(HarvestStep.LIST_SIZE));
             nextStep.put(HarvestStep.CURSOR, harvestStep.cursor() + responseListSize);
             nextStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
@@ -239,6 +241,11 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public String description() {
             return (String) object.get(DESCRIPTION);
+        }
+
+        @Override
+        public DBObject namespaces() {
+            return (DBObject) object.get(NAMESPACES);
         }
 
         @Override
@@ -523,6 +530,8 @@ public class MetaRepoImpl implements MetaRepo {
             return (Integer) object.get(CURSOR);
         }
 
+
+
         @Override
         public List<? extends Record> records() {
             PmhRequest request = pmhRequest();
@@ -538,6 +547,11 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public boolean hasNext() {
             return nextStepId != null;
+        }
+
+        @Override
+        public DBObject namespaces() {
+            return (DBObject) object.get(NAMESPACES);
         }
 
         @Override

@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,10 +24,10 @@ public class OaiPmhController {
 
 
     @RequestMapping("/oai-pmh")
-    public
-    @ResponseBody
-    String searchController(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void searchController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/xml");
-        return OaiPmhService.parseHttpServletRequest(request, metaRepo);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(OaiPmhService.parseHttpServletRequest(request, metaRepo));
+        response.getWriter().close();
     }
 }

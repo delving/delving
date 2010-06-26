@@ -9,7 +9,7 @@ import eu.delving.metarepo.core.MetaRepo
 import collection.mutable.HashMap
 import java.util.Map.Entry
 import xml.{XML, Elem}
-import eu.delving.metarepo.core.MetaRepo.{PmhRequest, PmhVerb, HarvestStep, Record}
+import eu.delving.metarepo.core.MetaRepo.{PmhVerb, HarvestStep, Record}
 
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
@@ -286,7 +286,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   private def renderResumptionToken(step: HarvestStep) = {
     if (step.hasNext)
       <resumptionToken expirationDate={step.expiration.toString} completeListSize={step.listSize.toString}
-                       cursor={step.cursor.toString}>{step.resumptionToken.toString}</resumptionToken>
+                       cursor={step.cursor.toString}>{step.nextResumptionToken.toString}</resumptionToken>
     else
       <resumptionToken/>
   }

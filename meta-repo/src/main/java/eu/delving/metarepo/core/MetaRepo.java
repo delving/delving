@@ -1,5 +1,6 @@
 package eu.delving.metarepo.core;
 
+import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -42,6 +43,7 @@ public interface MetaRepo {
         String setName();
         String providerName();
         String description();
+        DBObject namespaces();
         // todo add record Separator for rendering
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
@@ -63,6 +65,7 @@ public interface MetaRepo {
     }
 
     public interface HarvestStep {
+
         ObjectId resumptionToken();
         // todo add Set information or just setSpec
         Date expiration();
@@ -71,13 +74,14 @@ public interface MetaRepo {
         List<? extends Record> records();
         PmhRequest pmhRequest();
         boolean hasNext();
+        DBObject namespaces();
         String nextResumptionToken();
 
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
         String PMH_REQUEST = "pmhRequest";
-        String HAS_NEXT = "hasNext";
+        String NAMESPACES = "namespaces";
     }
 
     public interface PmhRequest {
