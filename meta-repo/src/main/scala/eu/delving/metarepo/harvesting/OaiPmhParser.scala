@@ -257,7 +257,8 @@ class OaiPmhParser(request: HttpServletRequest, metaRepo: MetaRepo) {
     if (!pmhRequestEntry.resumptionToken.isEmpty)
       metaRepo.getHarvestStep(pmhRequestEntry.resumptionToken)
     else
-      metaRepo.getHarvestStep(pmhRequestEntry.pmhRequest)
+      return null; // todo: remove this
+//      metaRepo.getFirstHarvestStep(pmhRequestEntry.pmhRequest) todo: fix this
   }
 
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""

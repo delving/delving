@@ -38,6 +38,8 @@ public class MetaRepoImpl implements MetaRepo {
     private Logger log = Logger.getLogger(getClass());
     private Mongo mongo;
     private AnnotationProcessor annotationProcessor;
+    private int responseListSize = 5;
+    private int harvestStepSecondsToLive = 5;
     private DB mongoDatabase;
     private Map<String, DataSetImpl> dataSets;
     private MetaConfig metaRepoConfig;
@@ -52,6 +54,14 @@ public class MetaRepoImpl implements MetaRepo {
 
     public void setMetaRepoConfig(MetaConfig metaConfig) {
         this.metaRepoConfig = metaConfig;
+    }
+
+    public void setResponseListSize(int responseListSize) {
+        this.responseListSize = responseListSize;
+    }
+
+    public void setHarvestStepSecondsToLive(int harvestStepSecondsToLive) {
+        this.harvestStepSecondsToLive = harvestStepSecondsToLive;
     }
 
     private synchronized DB db() {
@@ -132,22 +142,45 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getHarvestStep(String resumptionToken) {
-        ObjectId objectId = new ObjectId(resumptionToken);
-        DBCollection harvestSteps = db().getCollection(HARVEST_STEPS_COLLECTION);
-        DBObject query = new BasicDBObject(MONGO_ID, objectId);
-        DBObject harvestStepObject = harvestSteps.findOne(query);
-        if (harvestStepObject != null) {
-            return new HarvestStepImpl(harvestStepObject);
-        }
-        else {
-            return null;
-        }
+    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String identifier) {
+        DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
+        DBObject req = new BasicDBObject();
+        req.put(PmhRequest.VERB, verb.toString());
+        req.put(PmhRequest.SET, set);
+        req.put(PmhRequest.FROM, from);
+        req.put(PmhRequest.UNTIL, until);
+        req.put(PmhRequest.PREFIX, metadataPrefix);
+        req.put(PmhRequest.IDENTIFIER, identifier);
+        DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
+        firstStep.put(HarvestStep.LIST_SIZE, steps.getCount());
+        firstStep.put(HarvestStep.CURSOR, 0);
+        firstStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
+        steps.insert(firstStep);
+        return createHarvestStep(firstStep, steps);
     }
 
     @Override
-    public HarvestStep getHarvestStep(PmhRequest request) {
-        return getHarvestStep(request.getIdentifier());
+    public HarvestStep getHarvestStep(String resumptionToken) {
+        ObjectId objectId = new ObjectId(resumptionToken);
+        DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
+        DBObject query = new BasicDBObject(MONGO_ID, objectId);
+        DBObject step = steps.findOne(query);
+        return createHarvestStep(step, steps);
+    }
+
+    private HarvestStep createHarvestStep(DBObject step, DBCollection steps) {
+        int cursor = (Integer) step.get(HarvestStep.CURSOR);
+        if (steps.getCount() > cursor + responseListSize) {
+            DBObject nextStep = new BasicDBObject(HarvestStep.PMH_REQUEST, step.get(HarvestStep.PMH_REQUEST));
+            nextStep.put(HarvestStep.LIST_SIZE, steps.getCount());
+            nextStep.put(HarvestStep.CURSOR, cursor + responseListSize);
+            nextStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
+            steps.insert(nextStep);
+            return new HarvestStepImpl(step, (ObjectId) nextStep.get(MONGO_ID));
+        }
+        else {
+            return new HarvestStepImpl(step);
+        }
     }
 
     @Override
@@ -408,11 +441,6 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public DBObject rootObject() {
-            return object;
-        }
-
-        @Override
         public PmhSet set() {
             return null;  //TODO: implement this
         }
@@ -437,6 +465,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         // todo determine if the right format is returned after on-the-fly mapping
+
         @Override
         public String xml(String metadataPrefix) {
             String x = (String) object.get(metadataPrefix);
@@ -452,9 +481,15 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
 
-      private static class HarvestStepImpl implements HarvestStep {
+    private static class HarvestStepImpl implements HarvestStep {
 
         private DBObject object;
+        private ObjectId nextStepId;
+
+        private HarvestStepImpl(DBObject object, ObjectId nextStepId) {
+            this.object = object;
+            this.nextStepId = nextStepId;
+        }
 
         private HarvestStepImpl(DBObject object) {
             this.object = object;
@@ -462,7 +497,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public ObjectId resumptionToken() {
-            return null;  // todo: implement
+            return (ObjectId) object.get(MONGO_ID);
         }
 
         @Override
@@ -492,12 +527,15 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public boolean hasNext() {
-            return object.get(NEXT_ID) != null;
+            return nextStepId != null;
         }
 
         @Override
-        public HarvestStep next() {
-            return null;  // todo: fetch
+        public String nextResumptionToken() {
+            if (!hasNext()) {
+                throw new RuntimeException("Should have checked hasNext()");
+            }
+            return nextStepId.toString();
         }
     }
 

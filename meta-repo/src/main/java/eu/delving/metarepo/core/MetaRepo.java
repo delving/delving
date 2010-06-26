@@ -1,6 +1,5 @@
 package eu.delving.metarepo.core;
 
-import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -30,9 +29,9 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats(String id);
 
-    HarvestStep getHarvestStep(String resumptionToken);
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String identifier);
 
-    HarvestStep getHarvestStep(PmhRequest request);
+    HarvestStep getHarvestStep(String resumptionToken);
 
     Record getRecord(String identifier, String metadataFormat);
 
@@ -63,7 +62,7 @@ public interface MetaRepo {
     }
 
     public interface HarvestStep {
-        ObjectId resumptionToken(); // is resumptionToken
+        ObjectId resumptionToken();
         // todo add Set information or just setSpec
         Date expiration();
         int listSize();
@@ -71,26 +70,13 @@ public interface MetaRepo {
         List<? extends Record> records();
         PmhRequest pmhRequest();
         boolean hasNext();
-        HarvestStep next();
+        String nextResumptionToken();
 
         String EXPIRATION = "exp";
         String LIST_SIZE = "listSize";
         String CURSOR = "cursor";
         String PMH_REQUEST = "pmhRequest";
-        String NEXT_ID = "next";
-    }
-
-    public interface Record {
-        ObjectId identifier();
-        DBObject rootObject();
-        PmhSet set();
-        Date modified();
-        boolean deleted();
-        String xml();
-        String xml(String metadataPrefix);
-
-        String MODIFIED = "mod";
-        String UNIQUE = "uniq";
+        String HAS_NEXT = "hasNext";
     }
 
     public interface PmhRequest {
@@ -107,6 +93,19 @@ public interface MetaRepo {
         String UNTIL = "until";
         String PREFIX = "prefix";
         String IDENTIFIER = "id";
+    }
+
+    public interface Record {
+        ObjectId identifier();
+
+        PmhSet set();
+        Date modified();
+        boolean deleted();
+        String xml();
+        String xml(String metadataPrefix);
+
+        String MODIFIED = "mod";
+        String UNIQUE = "uniq";
     }
 
     public interface PmhSet {
