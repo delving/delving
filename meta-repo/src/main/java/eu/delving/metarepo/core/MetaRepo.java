@@ -49,6 +49,7 @@ public interface MetaRepo {
 
         MetadataFormat metadataFormat();
         Map<String,? extends Mapping> mappings();
+        long recordCount();
         Record fetch(ObjectId id);
         List<? extends Record> records(String prefix, int start, int count);
 

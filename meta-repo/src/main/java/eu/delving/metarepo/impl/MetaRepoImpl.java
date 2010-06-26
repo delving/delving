@@ -151,7 +151,11 @@ public class MetaRepoImpl implements MetaRepo {
         req.put(PmhRequest.UNTIL, until);
         req.put(PmhRequest.PREFIX, metadataPrefix);
         DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
-        firstStep.put(HarvestStep.LIST_SIZE, steps.getCount());
+        DataSet dataSet = getDataSets().get(set);
+        if (dataSet == null) {
+            throw new RuntimeException(String.format("Cannot find set [%s]",set));
+        }
+        firstStep.put(HarvestStep.LIST_SIZE, dataSet.recordCount());
         firstStep.put(HarvestStep.CURSOR, 0);
         firstStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
         steps.insert(firstStep);
@@ -168,18 +172,21 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     private HarvestStep createHarvestStep(DBObject step, DBCollection steps) {
-        int cursor = (Integer) step.get(HarvestStep.CURSOR);
-        if (steps.getCount() > cursor + responseListSize) {
+        HarvestStepImpl harvestStep = new HarvestStepImpl(step);
+        String set = harvestStep.pmhRequest().getSet();
+        DataSet dataSet = getDataSets().get(set);
+        if (dataSet == null) {
+            throw new RuntimeException(String.format("Cannot find set [%s]",set));
+        }
+        if (harvestStep.listSize() > harvestStep.cursor() + responseListSize) {
             DBObject nextStep = new BasicDBObject(HarvestStep.PMH_REQUEST, step.get(HarvestStep.PMH_REQUEST));
-            nextStep.put(HarvestStep.LIST_SIZE, steps.getCount());
-            nextStep.put(HarvestStep.CURSOR, cursor + responseListSize);
+            nextStep.put(HarvestStep.LIST_SIZE, step.get(HarvestStep.LIST_SIZE));
+            nextStep.put(HarvestStep.CURSOR, harvestStep.cursor() + responseListSize);
             nextStep.put(HarvestStep.EXPIRATION, new Date(System.currentTimeMillis() + 1000 * harvestStepSecondsToLive));
             steps.insert(nextStep);
-            return new HarvestStepImpl(step, (ObjectId) nextStep.get(MONGO_ID));
+            harvestStep.nextStepId = (ObjectId) nextStep.get(MONGO_ID);
         }
-        else {
-            return new HarvestStepImpl(step);
-        }
+        return harvestStep;
     }
 
     @Override
@@ -284,6 +291,11 @@ public class MetaRepoImpl implements MetaRepo {
                 }
             }
             return mappingMap;
+        }
+
+        @Override
+        public long recordCount() {
+            return recColl.count();
         }
 
         @Override
