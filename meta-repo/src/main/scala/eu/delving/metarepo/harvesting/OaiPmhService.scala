@@ -147,7 +147,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   def processListMetadataFormats(pmhRequestEntry: PmhRequestEntry) : Elem = {
 
     // if no identifier present list all formats
-    val identifier = pmhRequestEntry.pmhRequestItem.identifier
+    val identifier = pmhRequestEntry.pmhRequestItem.identifier.split(":").last
 
     // otherwise only list the formats available for the identifier
     val metadataFormats = if (identifier.isEmpty) metaRepo.getMetadataFormats else metaRepo.getMetadataFormats(identifier)
