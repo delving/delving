@@ -8,8 +8,8 @@ import scala.collection.JavaConversions._
 import eu.delving.metarepo.core.MetaRepo
 import collection.mutable.HashMap
 import java.util.Map.Entry
-import xml.{XML, Elem}
 import eu.delving.metarepo.core.MetaRepo.{PmhVerb, HarvestStep, Record}
+import xml._
 
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
@@ -201,13 +201,11 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   }
 
 
-  def processListRecords(pmhRequestEntry: PmhRequestEntry) = {
+  def processListRecords(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
-    val namespaces = harvestStep.namespaces.toMap.toList
     val pmhObject = harvestStep.pmhRequest
 
-    val nameSpacesS = for (ns <- namespaces) yield format("%s=%s", ns._1, ns._2)
-
+    var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -224,6 +222,10 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
        {renderResumptionToken(harvestStep)}
      </ListRecords>
     </OAI-PMH>
+    for (entry <- harvestStep.namespaces.toMap.entrySet) {
+      elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey , entry.getValue.toString, Null )
+    }
+    elem
   }
 
   def processGetRecord(pmhRequestEntry: PmhRequestEntry) : Elem = {
@@ -273,11 +275,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def renderRecord(record: Record, format: String) : Elem = {
     // todo get the record separator for rendering from somewhere
-    // todo load the namespaces properly
     val recordAsString = record.xml(format).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     val response = try {
-      val elem = XML.loadString("""<record xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:abm="http://to_be_decided/abm/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:europeana="http://www.europeana.eu/schemas/ese/"
->""" + {recordAsString} + "</record>")
+      val elem = XML.loadString("<record>\n" + {recordAsString} + "</record>")
       <record>
         <header>
           <identifier>{record.identifier}</identifier>
@@ -285,7 +285,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
           <setSpec>{record.set}</setSpec>
         </header>
         <metadata>
-          {elem}
+{elem}
         </metadata>
       </record>
     } catch {
@@ -338,7 +338,6 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   case class PmhRequestItem(verb: PmhVerb, set: String, from: String, until: String, metadataPrefix: String, identifier: String)
   case class PmhRequestEntry(pmhRequestItem: PmhRequestItem, resumptionToken: String)
-
 
 }
 object OaiPmhService {
