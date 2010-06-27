@@ -2,6 +2,8 @@ package eu.delving.metarepo.controller;
 
 import com.thoughtworks.xstream.XStream;
 import eu.delving.metarepo.core.MetaRepo;
+import eu.delving.metarepo.exceptions.BadArgumentException;
+import eu.delving.metarepo.exceptions.CannotDisseminateFormatException;
 import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,7 @@ public class MetaRepoController {
     @RequestMapping("/index.html")
     public
     @ResponseBody
-    String list() {
+    String list() throws BadArgumentException {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
         for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
             out.append(String.format(
@@ -56,7 +58,7 @@ public class MetaRepoController {
     @RequestMapping("/formats.html")
     public
     @ResponseBody
-    String formats() {
+    String formats() throws BadArgumentException {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Formats:</h1><ul>\n");
         for (MetaRepo.MetadataFormat format : metaRepo.getMetadataFormats()) {
             out.append(String.format("<li>%s : %s - %s</li>", format.prefix(), format.namespace(), format.schema()));
@@ -71,7 +73,7 @@ public class MetaRepoController {
     String listCollection(
             @PathVariable String dataSetSpec,
             @PathVariable String prefix
-    ) {
+    ) throws CannotDisseminateFormatException, BadArgumentException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
         for (MetaRepo.Record record : dataSet.records(prefix, 0, 10)) {
@@ -90,7 +92,7 @@ public class MetaRepoController {
     String submit(
             @PathVariable String dataSetSpec,
             InputStream inputStream
-    ) throws IOException, XMLStreamException {
+    ) throws IOException, XMLStreamException, BadArgumentException {
         log.info("submit(" + dataSetSpec + ")");
         Map<String, ? extends MetaRepo.DataSet> dataSets = metaRepo.getDataSets();
         MetaRepo.DataSet dataSet = dataSets.get(dataSetSpec);

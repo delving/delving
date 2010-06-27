@@ -1,18 +1,13 @@
 package eu.delving.metarepo.impl;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import eu.delving.metarepo.core.MetaRepo;
+import eu.delving.metarepo.exceptions.BadArgumentException;
+import eu.delving.metarepo.exceptions.BadResumptionTokenException;
+import eu.delving.metarepo.exceptions.CannotDisseminateFormatException;
+import eu.delving.metarepo.exceptions.NoRecordsMatchException;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.MappingException;
-import eu.europeana.sip.core.MappingRunner;
-import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.ToolCodeModel;
+import eu.europeana.sip.core.*;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
@@ -20,13 +15,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -80,7 +69,7 @@ public class MetaRepoImpl implements MetaRepo {
             String prefix,
             String namespace,
             String schema
-    ) {
+    ) throws BadArgumentException {
         DBObject object = new BasicDBObject();
         object.put(DataSet.SPEC, spec);
         object.put(DataSet.NAME, name);
@@ -99,7 +88,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public synchronized Map<String, ? extends DataSet> getDataSets() {
+    public synchronized Map<String, ? extends DataSet> getDataSets() throws BadArgumentException {
         if (dataSets == null) {
             dataSets = new TreeMap<String, DataSetImpl>();
             DBCollection collection = db().getCollection(DATASETS_COLLECTION);
@@ -114,7 +103,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats() {
+    public Set<MetadataFormat> getMetadataFormats() throws BadArgumentException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         for (DataSet dataSet : getDataSets().values()) {
             set.add(dataSet.metadataFormat());
@@ -126,7 +115,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats(String id) {
+    public Set<MetadataFormat> getMetadataFormats(String id) throws BadArgumentException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
         for (DataSet dataSet : getDataSets().values()) {
@@ -142,7 +131,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) {
+    public HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) throws NoRecordsMatchException, BadArgumentException {
         DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
         DBObject req = new BasicDBObject();
         req.put(PmhRequest.VERB, verb.toString());
@@ -153,7 +142,9 @@ public class MetaRepoImpl implements MetaRepo {
         DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
         DataSet dataSet = getDataSets().get(set);
         if (dataSet == null) {
-            throw new RuntimeException(String.format("Cannot find set [%s]",set));
+            String errorMessage = String.format("Cannot find set [%s]",set);
+            log.error(errorMessage);
+            throw new NoRecordsMatchException(errorMessage);
         }
         firstStep.put(HarvestStep.LIST_SIZE, dataSet.recordCount());
         firstStep.put(HarvestStep.NAMESPACES, dataSet.namespaces());
@@ -164,20 +155,31 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public HarvestStep getHarvestStep(String resumptionToken) {
-        ObjectId objectId = new ObjectId(resumptionToken);
+    public HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException {
+        ObjectId objectId;
+        // otherwise a illegal resumptionToken from the mongodb perspective throws a general exception
+        try {
+            objectId = new ObjectId(resumptionToken);
+        } catch (Exception e) {
+            throw new BadResumptionTokenException("Unable to find resumptionToken: " + resumptionToken);
+        }
         DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
         DBObject query = new BasicDBObject(MONGO_ID, objectId);
         DBObject step = steps.findOne(query);
+        if (step == null) {
+            throw new BadResumptionTokenException("Unable to find resumptionToken: " + resumptionToken);
+        }
         return createHarvestStep(step, steps);
     }
 
-    private HarvestStep createHarvestStep(DBObject step, DBCollection steps) {
+    private HarvestStep createHarvestStep(DBObject step, DBCollection steps) throws NoRecordsMatchException, BadArgumentException {
         HarvestStepImpl harvestStep = new HarvestStepImpl(step);
         String set = harvestStep.pmhRequest().getSet();
         DataSet dataSet = getDataSets().get(set);
         if (dataSet == null) {
-            throw new RuntimeException(String.format("Cannot find set [%s]",set));
+            String errorMessage = String.format("Cannot find set [%s]",set);
+            log.error(errorMessage);
+            throw new NoRecordsMatchException(errorMessage);
         }
         if (harvestStep.listSize() > harvestStep.cursor() + responseListSize) {
             DBObject nextStep = new BasicDBObject(HarvestStep.PMH_REQUEST, step.get(HarvestStep.PMH_REQUEST));
@@ -209,7 +211,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DBCollection recColl;
         private MetadataFormat metadataFormat;
 
-        private DataSetImpl(DBObject object) {
+        private DataSetImpl(DBObject object) throws BadArgumentException {
             this.object = object;
             if (object.get(METADATA_FORMAT) != null) {
                 this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(METADATA_FORMAT));
@@ -289,7 +291,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Map<String, ? extends Mapping> mappings() {
+        public Map<String, ? extends Mapping> mappings() throws BadArgumentException {
             Map<String, MappingImpl> mappingMap = new TreeMap<String, MappingImpl>();
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings != null) {
@@ -312,15 +314,17 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> records(String prefix, int start, int count) {
+        public List<? extends Record> records(String prefix, int start, int count) throws CannotDisseminateFormatException, BadArgumentException {
             Map<String, ? extends Mapping> mappings = mappings();
             Mapping mapping = mappings.get(prefix);
             if (mapping == null && !metadataFormat().prefix().equals(prefix)) {
-                throw new RuntimeException(String.format(
+                String errorMessage = String.format(
                         "Only original format %s and mapped formats %s supported so far",
                         metadataFormat().prefix(),
                         mappings.keySet().toString()
-                ));
+                );
+                log.error(errorMessage);
+                throw new CannotDisseminateFormatException(errorMessage);
             }
             List<RecordImpl> list = new ArrayList<RecordImpl>();
             DBCursor cursor = records().find().skip(start).limit(count);
@@ -350,7 +354,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DBObject object;
         private MetadataFormat metadataFormat;
 
-        private MappingImpl(DataSetImpl dataSet, DBObject object) {
+        private MappingImpl(DataSetImpl dataSet, DBObject object) throws BadArgumentException {
             this.dataSet = dataSet;
             this.object = object;
             this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(FORMAT));
@@ -371,7 +375,7 @@ public class MetaRepoImpl implements MetaRepo {
             return metadataFormat().prefix().compareTo(o.metadataFormat().prefix());
         }
 
-        private void map(List<? extends Record> records, Map<String, String> namespaces) {
+        private void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
             ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(code(), annotationProcessor);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code(), constantFieldModel);
@@ -395,7 +399,9 @@ public class MetaRepoImpl implements MetaRepo {
                     recordImpl.addFormat(metadataFormat(), recordLines.toString());
                 }
                 catch (MappingException e) {
-                    log.info("Unable to map record due to: " + e.toString());
+                    String errorMessage = "Unable to map record due to: " + e.toString();
+                    log.info(errorMessage);
+                    throw new CannotDisseminateFormatException(errorMessage);
                 }
                 catch (XMLStreamException e) {
                     log.warn("Unable to map record!", e);
@@ -408,14 +414,14 @@ public class MetaRepoImpl implements MetaRepo {
         private String prefix;
         private DBObject object;
 
-        private MetadataFormatImpl(DBObject object) {
+        private MetadataFormatImpl(DBObject object) throws BadArgumentException {
             this.object = object;
             if (object == null) {
-                throw new RuntimeException("MetdataFormat object missing!");
+                throw new BadArgumentException("MetdataFormat object missing!");
             }
             this.prefix = (String) object.get(PREFIX);
             if (prefix == null || prefix.isEmpty()) {
-                throw new RuntimeException("MetdataFormat with no prefix!");
+                throw new BadArgumentException("MetdataFormat with no prefix!");
             }
         }
 
@@ -441,6 +447,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     private static class RecordImpl implements Record {
+        private Logger log = Logger.getLogger(getClass());
 
         private DBObject object;
         private String defaultPrefix;
@@ -475,17 +482,19 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String xml() {
+        public String xml() throws CannotDisseminateFormatException {
             return xml(defaultPrefix);
         }
 
         // todo determine if the right format is returned after on-the-fly mapping
 
         @Override
-        public String xml(String metadataPrefix) {
+        public String xml(String metadataPrefix) throws CannotDisseminateFormatException {
             String x = (String) object.get(metadataPrefix);
             if (x == null) {
-                throw new RuntimeException(String.format("No record with prefix [%s]", metadataPrefix));
+                String errorMessage = String.format("No record with prefix [%s]", metadataPrefix);
+                log.error(errorMessage);
+                throw new CannotDisseminateFormatException(errorMessage);
             }
             return x;
         }
@@ -533,7 +542,7 @@ public class MetaRepoImpl implements MetaRepo {
 
 
         @Override
-        public List<? extends Record> records() {
+        public List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException {
             PmhRequest request = pmhRequest();
             DataSet dataSet = getDataSets().get(request.getSet());
             return dataSet.records(request.getMetadataPrefix(), cursor(), responseListSize);

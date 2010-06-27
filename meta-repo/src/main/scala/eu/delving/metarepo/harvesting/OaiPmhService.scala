@@ -10,6 +10,9 @@ import collection.mutable.HashMap
 import java.util.Map.Entry
 import xml.{XML, Elem}
 import eu.delving.metarepo.core.MetaRepo.{PmhVerb, HarvestStep, Record}
+import org.apache.log4j.Logger
+import eu.delving.metarepo.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
+import java.text.{SimpleDateFormat, ParseException, DateFormat}
 
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
@@ -20,13 +23,13 @@ import eu.delving.metarepo.core.MetaRepo.{PmhVerb, HarvestStep, Record}
  * @since Jun 16, 2010 12:06:56 AM
  */
 
-// todo: determine if schema validation is necessary
-
-
 class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
+
+  private val log = Logger.getLogger(getClass());
 
   private val VERB = "verb"
   private val legalParameterKeys = List("verb", "identifier", "metadataPrefix", "set", "from", "until", "resumptionToken")
+  private val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
 
   /**
    * receive an HttpServletRequest with the OAI-PMH parameters and return the correctly formatted xml as a string.
@@ -42,7 +45,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
     def pmhRequest(verb: PmhVerb) : PmhRequestEntry = createPmhRequest(params, verb)
 
-    val response = params.get(VERB).get match {
+    val response = try {
+      params.get(VERB).get match {
         case "Identify" => processIdentify( pmhRequest(PmhVerb.IDENTIFY) )
         case "ListMetadataFormats" => processListMetadataFormats( pmhRequest(PmhVerb.List_METADATA_FORMATS) )
         case "ListSets" => processListSets( pmhRequest(PmhVerb.LIST_SETS) )
@@ -51,15 +55,16 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         case "GetRecord" => processGetRecord( pmhRequest(PmhVerb.GET_RECORD) )
         case _ => createErrorResponse("badVerb")
       }
+    } catch {
+      case nrm: NoRecordsMatchException => createErrorResponse("noRecordsMatch")
+      case cdf: CannotDisseminateFormatException => createErrorResponse("cannotDisseminateFormat")
+      case brt: BadResumptionTokenException => createErrorResponse("badResumptionToken")
+      // not caught explicitely MappingException, XMLStreamException todo what to do with these
+      case e: Exception =>
+        log.error(e.getMessage + e.getStackTraceString)
+        createErrorResponse("badArgument")
+    }
     response.toString
-  }
-
-  def getRequestParams(request: HttpServletRequest) : Map[String, Array[String]] = request.getParameterMap.asInstanceOf[Map[String, Array[String]]]
-
-  def asSingleValueMap(requestParams: Map[String, Array[String]]) : HashMap[String, String] = {
-    val params = HashMap[String, String]()
-    requestParams.entrySet.foreach{entry: Entry[String, Array[String]] => params.put(entry.getKey, entry.getValue.head)}
-    params
   }
 
   def isLegalPmhRequest(params: Map[String, Array[String]]) : Boolean = {
@@ -181,7 +186,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/              
+             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
       <responseDate>{new Date}</responseDate>
       <request verb="ListIdentifiers" from={harvestStep.pmhRequest.getFrom.toString} until={harvestStep.pmhRequest.getUntil.toString}
@@ -203,10 +208,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   def processListRecords(pmhRequestEntry: PmhRequestEntry) = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
-    val namespaces = harvestStep.namespaces.toMap.toList
     val pmhObject = harvestStep.pmhRequest
-
-    val nameSpacesS = for (ns <- namespaces) yield format("%s=%s", ns._1, ns._2)
+    val nameSpaces = harvestStep.namespaces.toMap.toList
+    val nameSpacesFormatted = for (ns <- nameSpaces) yield format("xmlns:%s=\"%s\"", ns._1, ns._2)
 
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -218,7 +222,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <ListRecords>
           <metadata>
             {for (record <- harvestStep.records) yield
-              renderRecord(record, pmhObject.getMetadataPrefix)
+              renderRecord(record, pmhObject.getMetadataPrefix, nameSpacesFormatted.mkString(" "))
             }
           </metadata>
        {renderResumptionToken(harvestStep)}
@@ -230,19 +234,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val pmhRequest = pmhRequestEntry.pmhRequestItem
     // get identifier and format from map else throw BadArgument Error
     if (pmhRequest.identifier.isEmpty || pmhRequest.metadataPrefix.isEmpty) return createErrorResponse("badArgument")
-    // if identifier/record is not found throw NoRecordsMatch error
+    // if identifier/record is not found throw BadResumptionTokenException error
     val identifier = pmhRequest.identifier
     val metadataFormat = pmhRequest.metadataPrefix
 
     val record = metaRepo.getRecord(identifier, metadataFormat)
     if (record == null) return createErrorResponse("idDoesNotExist")
 
-    // if format is not found throw cannotDisseminateFormat error
-
-// todo: the record can have a number of metadata formats, you have to ask for them.
-//    if (record.metadataFormat != metadataFormat) return createErrorResponse("cannotDisseminateFormat")
-
-    // else  render identifier below
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -251,7 +249,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <request verb="GetRecord" identifier={identifier}
                metadataPrefix={metadataFormat}>{request.getRequestURL}</request>
       <GetRecord>
-        {renderRecord(record, metadataFormat)}
+        {renderRecord(record, metadataFormat, null)}
      </GetRecord>
     </OAI-PMH>
   }
@@ -265,22 +263,34 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def createFirstHarvestStep(item: PmhRequestItem) : HarvestStep = {
     // todo implement proper date parsing
-    val from = new Date()
-    val until = new Date()
+    val from = new Date() //getDate(item.from)
+    val until = new Date() //getDate(item.until)
     metaRepo.getFirstHarvestStep(item.verb, item.set, from, until, item.metadataPrefix)
   }
+
+//  private def getDate(dateString: String): Date = {
+//    if (dateString.isEmpty) return null
+//    val date = try {
+//      return dateFormat.parse(dateString)
+//    } catch {
+//      case e: ParseException => throw new BadArgumentException("Unable to parse date: " + dateString)
+//    }
+//    date
+//  }
+
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
 
-  private def renderRecord(record: Record, format: String) : Elem = {
+  private def renderRecord(record: Record, metadataPrefix: String, nameSpaces: String) : Elem = {
+
+    val recordAsString = record.xml(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     // todo get the record separator for rendering from somewhere
-    // todo load the namespaces properly
-    val recordAsString = record.xml(format).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
+    val formattedRecord = format("<%s %s>\n%s</%s>\n", "record", nameSpaces, recordAsString, "record")
+
     val response = try {
-      val elem = XML.loadString("""<record xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:abm="http://to_be_decided/abm/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:europeana="http://www.europeana.eu/schemas/ese/"
->""" + {recordAsString} + "</record>")
+      val elem = XML.loadString(formattedRecord)
       <record>
         <header>
-          <identifier>{record.identifier}</identifier>
+          <identifier>{request.getParameter("set")}:{record.identifier}</identifier>
           <datestamp>{record.modified}</datestamp>
           <setSpec>{record.set}</setSpec>
         </header>
@@ -304,12 +314,20 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <resumptionToken/>
   }
 
-  def createPmhRequest(params: HashMap[String, String], verb: PmhVerb) : PmhRequestEntry = {
+  def createPmhRequest(params: HashMap[String, String], verb: PmhVerb): PmhRequestEntry = {
     def getParam(key: String) = params.getOrElse(key, "")
     val pmh = PmhRequestItem(verb,
       getParam("set"), getParam("from"), getParam("until"),
       getParam("metadataPrefix"), getParam("identifier"))
     PmhRequestEntry(pmh, getParam("resumptionToken"))
+  }
+
+  def getRequestParams(request: HttpServletRequest): Map[String, Array[String]] = request.getParameterMap.asInstanceOf[Map[String, Array[String]]]
+
+  def asSingleValueMap(requestParams: Map[String, Array[String]]): HashMap[String, String] = {
+    val params = HashMap[String, String]()
+    requestParams.entrySet.foreach {entry: Entry[String, Array[String]] => params.put(entry.getKey, entry.getValue.head)}
+    params
   }
 
   /**

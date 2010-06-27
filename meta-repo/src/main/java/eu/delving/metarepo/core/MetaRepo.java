@@ -1,6 +1,10 @@
 package eu.delving.metarepo.core;
 
 import com.mongodb.DBObject;
+import eu.delving.metarepo.exceptions.BadArgumentException;
+import eu.delving.metarepo.exceptions.BadResumptionTokenException;
+import eu.delving.metarepo.exceptions.CannotDisseminateFormatException;
+import eu.delving.metarepo.exceptions.NoRecordsMatchException;
 import org.bson.types.ObjectId;
 
 import javax.xml.namespace.QName;
@@ -22,17 +26,17 @@ import java.util.Set;
 
 public interface MetaRepo {
 
-    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema);
+    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema) throws BadArgumentException;
 
-    Map<String, ? extends DataSet> getDataSets();
+    Map<String, ? extends DataSet> getDataSets() throws BadArgumentException;
 
-    Set<? extends MetadataFormat> getMetadataFormats();
+    Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException;
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id);
+    Set<? extends MetadataFormat> getMetadataFormats(String id) throws BadArgumentException;
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix);
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) throws NoRecordsMatchException, BadArgumentException;
 
-    HarvestStep getHarvestStep(String resumptionToken);
+    HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException;
 
     Record getRecord(String identifier, String metadataFormat);
 
@@ -50,10 +54,10 @@ public interface MetaRepo {
         void setMapping(String mappingCode, String prefix, String namespace, String schema);
 
         MetadataFormat metadataFormat();
-        Map<String,? extends Mapping> mappings();
+        Map<String,? extends Mapping> mappings() throws BadArgumentException;
         long recordCount();
         Record fetch(ObjectId id);
-        List<? extends Record> records(String prefix, int start, int count);
+        List<? extends Record> records(String prefix, int start, int count) throws CannotDisseminateFormatException, BadArgumentException;
 
         String SPEC = "spec";
         String NAME = "name";
@@ -71,7 +75,7 @@ public interface MetaRepo {
         Date expiration();
         long listSize();
         int cursor();
-        List<? extends Record> records();
+        List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException;
         PmhRequest pmhRequest();
         boolean hasNext();
         DBObject namespaces();
@@ -106,8 +110,8 @@ public interface MetaRepo {
         PmhSet set();
         Date modified();
         boolean deleted();
-        String xml();
-        String xml(String metadataPrefix);
+        String xml() throws CannotDisseminateFormatException;
+        String xml(String metadataPrefix) throws CannotDisseminateFormatException;
 
         String MODIFIED = "mod";
         String UNIQUE = "uniq";
