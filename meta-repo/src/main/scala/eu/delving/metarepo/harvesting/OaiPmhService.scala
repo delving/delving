@@ -59,7 +59,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       case nrm: NoRecordsMatchException => createErrorResponse("noRecordsMatch")
       case cdf: CannotDisseminateFormatException => createErrorResponse("cannotDisseminateFormat")
       case brt: BadResumptionTokenException => createErrorResponse("badResumptionToken")
-      // not caught explicitely MappingException, XMLStreamException todo what to do with these
+      // not caught explicitly MappingException, XMLStreamException todo what to do with these
       case e: Exception =>
         log.error(e.getMessage + e.getStackTraceString)
         createErrorResponse("badArgument")
@@ -124,8 +124,6 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     // when there are no collections throw "noSetHierarchy" ErrorResponse
     if (dataSets.size == 0) return createErrorResponse("noSetHierarchy")
 
-    // todo: implement harvest steps for this verb.
-
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -183,6 +181,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   def processListIdentifiers(pmhRequestEntry: PmhRequestEntry) = {
         // parse all the params from map
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
+    val setSpec = harvestStep.pmhRequest.getSet
 
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -191,13 +190,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <responseDate>{new Date}</responseDate>
       <request verb="ListIdentifiers" from={harvestStep.pmhRequest.getFrom.toString} until={harvestStep.pmhRequest.getUntil.toString}
                metadataPrefix={harvestStep.pmhRequest.getMetadataPrefix}
-               set="physics:hep">{request.getRequestURL}</request>
+               set={setSpec}>{request.getRequestURL}</request>
       <ListIdentifiers>
         { for (record <- harvestStep.records) yield
         <header status={recordStatus(record)}>
-          <identifier>{record.identifier}</identifier>
+          <identifier>{setSpec}:{record.identifier}</identifier>
           <datestamp>{record.modified}</datestamp>
-          <setSpec>{pmhRequestEntry.pmhRequestItem.set}</setSpec>
+          <setSpec>{setSpec}</setSpec>
        </header>
         }
         {renderResumptionToken(harvestStep)}
@@ -222,7 +221,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <ListRecords>
           <metadata>
             {for (record <- harvestStep.records) yield
-              renderRecord(record, pmhObject.getMetadataPrefix, nameSpacesFormatted.mkString(" "))
+              renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet, nameSpacesFormatted.mkString(" "))
             }
           </metadata>
        {renderResumptionToken(harvestStep)}
@@ -238,6 +237,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val identifier = pmhRequest.identifier
     val metadataFormat = pmhRequest.metadataPrefix
 
+    // TODO add dynamic metadataNames resolving later
+    val nameSpaces = """xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:abm="http://to_be_decided/abm/" xmlns:dc="http://purl.org/dc/elements/1.1/" """
+
     val record = metaRepo.getRecord(identifier, metadataFormat)
     if (record == null) return createErrorResponse("idDoesNotExist")
 
@@ -249,7 +251,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <request verb="GetRecord" identifier={identifier}
                metadataPrefix={metadataFormat}>{request.getRequestURL}</request>
       <GetRecord>
-        {renderRecord(record, metadataFormat, null)}
+        {renderRecord(record, metadataFormat, identifier.split(":").head, nameSpaces)}
      </GetRecord>
     </OAI-PMH>
   }
@@ -278,9 +280,10 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 //    date
 //  }
 
+  // todo find a way to not show status namespace when not deleted
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
 
-  private def renderRecord(record: Record, metadataPrefix: String, nameSpaces: String) : Elem = {
+  private def renderRecord(record: Record, metadataPrefix: String, set: String, nameSpaces: String) : Elem = {
 
     val recordAsString = record.xml(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     // todo get the record separator for rendering from somewhere
@@ -290,9 +293,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       val elem = XML.loadString(formattedRecord)
       <record>
         <header>
-          <identifier>{request.getParameter("set")}:{record.identifier}</identifier>
+          <identifier>{set}:{record.identifier}</identifier>
           <datestamp>{record.modified}</datestamp>
-          <setSpec>{record.set}</setSpec>
+          <setSpec>{set}</setSpec>
         </header>
         <metadata>
           {elem}
