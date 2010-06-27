@@ -36,7 +36,7 @@
         <property name="mongo" ref="mongo"/>
         <property name="annotationProcessor" ref="annotationProcessor"/>
         <property name="metaRepoConfig" ref="metaRepoConfig"/>
-        <property name="responseListSize" value="10"/>
+        <property name="responseListSize" value="#{metaRepoProperties['responseListSize']}"/>
         <property name="harvestStepSecondsToLive" value="3000"/>
     </bean>
 

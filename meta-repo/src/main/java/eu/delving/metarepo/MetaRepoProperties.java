@@ -94,6 +94,7 @@ public class MetaRepoProperties extends Properties {
             "adminEmail",
             "earliestDateStamp",
             "repositoryIdentifier",
-            "sampleIdentifier"
-    };                     
+            "sampleIdentifier",
+            "responseListSize"
+    };
 }

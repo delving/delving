@@ -181,7 +181,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+             xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/              
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
       <responseDate>{new Date}</responseDate>
       <request verb="ListIdentifiers" from={harvestStep.pmhRequest.getFrom.toString} until={harvestStep.pmhRequest.getUntil.toString}
@@ -192,7 +192,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         <header status={recordStatus(record)}>
           <identifier>{record.identifier}</identifier>
           <datestamp>{record.modified}</datestamp>
-          <setSpec>{record.set.getSetSpec}</setSpec>
+          <setSpec>{pmhRequestEntry.pmhRequestItem.set}</setSpec>
        </header>
         }
         {renderResumptionToken(harvestStep)}
@@ -203,7 +203,11 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   def processListRecords(pmhRequestEntry: PmhRequestEntry) = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
+    val namespaces = harvestStep.namespaces.toMap.toList
     val pmhObject = harvestStep.pmhRequest
+
+    val nameSpacesS = for (ns <- namespaces) yield format("%s=%s", ns._1, ns._2)
+
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -269,10 +273,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def renderRecord(record: Record, format: String) : Elem = {
     // todo get the record separator for rendering from somewhere
-    val elem = XML.loadString("<record>" + record.xml(format) + "</record>")
-    println (elem)
-    <record>
-      <header>
+    // todo load the namespaces properly
+    val recordAsString = record.xml(format).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
+    val response = try {
+      val elem = XML.loadString("""<record xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:abm="http://to_be_decided/abm/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:europeana="http://www.europeana.eu/schemas/ese/"
+>""" + {recordAsString} + "</record>")
+      <record>
+        <header>
           <identifier>{record.identifier}</identifier>
           <datestamp>{record.modified}</datestamp>
           <setSpec>{record.set}</setSpec>
@@ -280,7 +287,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         <metadata>
           {elem}
         </metadata>
-    </record>
+      </record>
+    } catch {
+      case e: Exception =>
+          println (e.getMessage)
+          <record/>
+    }
+    response
   }
 
   private def renderResumptionToken(step: HarvestStep) = {
