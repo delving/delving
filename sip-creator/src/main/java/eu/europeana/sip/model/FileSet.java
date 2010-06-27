@@ -61,7 +61,7 @@ public interface FileSet {
 
     void setDataSetDetails(DataSetDetails details);
 
-    File createZipFile();
+    File createZipFile(String fileName);
 
     Report getReport();
 

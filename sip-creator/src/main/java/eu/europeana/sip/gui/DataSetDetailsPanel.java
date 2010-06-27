@@ -30,6 +30,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.Dimension;
 
@@ -55,6 +58,36 @@ public class DataSetDetailsPanel extends JPanel {
         super(new SpringLayout());
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));
         addField("Data Set Spec", specField);
+        specField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                noSpaces();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                noSpaces();
+            }
+
+            private void noSpaces() {
+                String with = specField.getText();
+                final String without = with.replaceAll("\\s+","");
+                if (!with.equals(without)) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            int dot = specField.getCaret().getDot();
+                            specField.setText(without);
+                            specField.getCaret().setDot(dot);
+                        }
+                    });
+                }
+            }
+        });
         addField("Name", nameField);
         addField("Provider Name", providerNameField);
         descriptionField.setLineWrap(true);

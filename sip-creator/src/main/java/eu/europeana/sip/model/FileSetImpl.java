@@ -33,7 +33,7 @@ import java.util.zip.ZipOutputStream;
 
 public class FileSetImpl implements FileSet {
     private final Logger LOG = Logger.getLogger(getClass());
-    private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile, reportFile, dataSetDetailsFile, zipFile;
+    private File inputFile, statisticsFile, mappingFile, outputFile, discardedFile, reportFile, dataSetDetailsFile;
     private UserNotifier userNotifier;
 
     public FileSetImpl(File inputFile) {
@@ -44,7 +44,6 @@ public class FileSetImpl implements FileSet {
         this.discardedFile = new File(inputFile.getParentFile(), inputFile.getName() + ".discarded");
         this.reportFile = new File(inputFile.getParentFile(), inputFile.getName() + ".report");
         this.dataSetDetailsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".details");
-        this.zipFile = new File(inputFile.getParentFile(), inputFile.getName() + ".zip");
     }
 
     @Override
@@ -190,15 +189,16 @@ public class FileSetImpl implements FileSet {
     }
 
     @Override
-    public File createZipFile() {
+    public File createZipFile(String zipFileName) {
         checkWorkerThread();
+        File zipFile = new File(inputFile.getParentFile(), zipFileName + ".zip");
         if (zipFile.exists()) {
             if (!zipFile.delete()) {
                 userNotifier.tellUser("Unable to delete zip file");
             }
         }
         try {
-            buildZipFile();
+            buildZipFile(zipFile);
             return zipFile;
         }
         catch (IOException e) {
@@ -348,7 +348,7 @@ public class FileSetImpl implements FileSet {
 
     }
 
-    private void buildZipFile() throws IOException {
+    private void buildZipFile(File zipFile) throws IOException {
         OutputStream outputStream = new FileOutputStream(zipFile);
         ZipOutputStream zos = new ZipOutputStream(outputStream);
         stream(dataSetDetailsFile, zos);

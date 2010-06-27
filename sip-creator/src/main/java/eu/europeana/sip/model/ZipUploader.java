@@ -27,16 +27,18 @@ public class ZipUploader implements Runnable {
     private static final int BLOCK_SIZE = 4096;
     private Logger log = Logger.getLogger(getClass());
     private FileSet fileSet;
+    private String zipFileName;
     private BoundedRangeModel progress;
 
-    public ZipUploader(FileSet fileSet, BoundedRangeModel progress) {
+    public ZipUploader(FileSet fileSet, String zipFileName, BoundedRangeModel progress) {
         this.fileSet = fileSet;
+        this.zipFileName = zipFileName;
         this.progress = progress;
     }
 
     @Override
     public void run() {
-        final File zipFile = fileSet.createZipFile();
+        final File zipFile = fileSet.createZipFile(zipFileName);
         if (zipFile != null) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -51,6 +53,11 @@ public class ZipUploader implements Runnable {
             }
             catch (IOException e) {
                 e.printStackTrace();  // todo: something
+            }
+            finally {
+                if (!zipFile.delete()) {
+                    log.warn("Unable to delete "+zipFile.getAbsolutePath());
+                }
             }
         }
     }

@@ -372,7 +372,8 @@ public class SipModel {
 
     public void createUploadZipFile() {
         checkSwingThread();
-        executor.execute(new ZipUploader(fileSet, uploadProgressModel));
+        String zipFileName = getDataSetDetails().getSpec();
+        executor.execute(new ZipUploader(fileSet, zipFileName, uploadProgressModel));
     }
 
     public TreeModel getAnalysisTreeModel() {
