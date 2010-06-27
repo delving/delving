@@ -8,11 +8,11 @@ import scala.collection.JavaConversions._
 import eu.delving.metarepo.core.MetaRepo
 import collection.mutable.HashMap
 import java.util.Map.Entry
-import xml.{XML, Elem}
 import eu.delving.metarepo.core.MetaRepo.{PmhVerb, HarvestStep, Record}
 import org.apache.log4j.Logger
 import eu.delving.metarepo.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
 import java.text.{SimpleDateFormat, ParseException, DateFormat}
+import xml._
 
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
@@ -155,8 +155,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     def formatRequest() : Elem = if (!identifier.isEmpty) <request verb="ListMetadataFormats" identifier={identifier}>{request.getRequestURL}</request>
                                     else <request verb="ListMetadataFormats">{request.getRequestURL}</request>
 
-    // todo: remove dummy metadataFormat entry later
-
+    val elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -173,6 +172,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         }
       </ListMetadataFormats>
     </OAI-PMH>
+    elem
   }
 
   /**
@@ -205,12 +205,11 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   }
 
 
-  def processListRecords(pmhRequestEntry: PmhRequestEntry) = {
+  def processListRecords(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
     val pmhObject = harvestStep.pmhRequest
-    val nameSpaces = harvestStep.namespaces.toMap.toList
-    val nameSpacesFormatted = for (ns <- nameSpaces) yield format("xmlns:%s=\"%s\"", ns._1, ns._2)
 
+    var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -221,12 +220,16 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <ListRecords>
           <metadata>
             {for (record <- harvestStep.records) yield
-              renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet, nameSpacesFormatted.mkString(" "))
+              renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet)
             }
           </metadata>
        {renderResumptionToken(harvestStep)}
      </ListRecords>
     </OAI-PMH>
+    for (entry <- harvestStep.namespaces.toMap.entrySet) {
+      elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey , entry.getValue.toString, Null )
+    }
+    elem
   }
 
   def processGetRecord(pmhRequestEntry: PmhRequestEntry) : Elem = {
@@ -238,11 +241,12 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val metadataFormat = pmhRequest.metadataPrefix
 
     // TODO add dynamic metadataNames resolving later
-    val nameSpaces = """xmlns:europeana="http://www.europeana.eu/schemas/ese/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:abm="http://to_be_decided/abm/" xmlns:dc="http://purl.org/dc/elements/1.1/" """
+    val nameSpaces = List("abm" -> "http://to_be_decided/abm/", "europeana" -> "http://www.europeana.eu/schemas/ese/", "dcterms" -> "http://purl.org/dc/terms/", "dc" -> "http://purl.org/dc/elements/1.1/")
 
     val record = metaRepo.getRecord(identifier, metadataFormat)
     if (record == null) return createErrorResponse("idDoesNotExist")
 
+    var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
@@ -251,9 +255,14 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <request verb="GetRecord" identifier={identifier}
                metadataPrefix={metadataFormat}>{request.getRequestURL}</request>
       <GetRecord>
-        {renderRecord(record, metadataFormat, identifier.split(":").head, nameSpaces)}
+        {renderRecord(record, metadataFormat, identifier.split(":").head)}
      </GetRecord>
     </OAI-PMH>
+    for (entry <- nameSpaces) {
+      elem = elem % new UnprefixedAttribute( "xmlns:"+entry._1 , entry._2, Null )
+    }
+    elem
+
   }
 
   private def getHarvestStep(pmhRequestEntry: PmhRequestEntry) : HarvestStep = {
@@ -283,14 +292,12 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   // todo find a way to not show status namespace when not deleted
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
 
-  private def renderRecord(record: Record, metadataPrefix: String, set: String, nameSpaces: String) : Elem = {
+  private def renderRecord(record: Record, metadataPrefix: String, set: String) : Elem = {
 
     val recordAsString = record.xml(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     // todo get the record separator for rendering from somewhere
-    val formattedRecord = format("<%s %s>\n%s</%s>\n", "record", nameSpaces, recordAsString, "record")
-
     val response = try {
-      val elem = XML.loadString(formattedRecord)
+      val elem = XML.loadString("<record>\n" + {recordAsString} + "</record>")
       <record>
         <header>
           <identifier>{set}:{record.identifier}</identifier>
@@ -298,7 +305,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
           <setSpec>{set}</setSpec>
         </header>
         <metadata>
-          {elem}
+{elem}
         </metadata>
       </record>
     } catch {
@@ -359,7 +366,6 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   case class PmhRequestItem(verb: PmhVerb, set: String, from: String, until: String, metadataPrefix: String, identifier: String)
   case class PmhRequestEntry(pmhRequestItem: PmhRequestItem, resumptionToken: String)
-
 
 }
 object OaiPmhService {
