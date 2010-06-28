@@ -32,13 +32,13 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException;
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id) throws BadArgumentException;
+    Set<? extends MetadataFormat> getMetadataFormats(String id) throws BadArgumentException, CannotDisseminateFormatException;
 
     HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) throws NoRecordsMatchException, BadArgumentException;
 
     HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException;
 
-    Record getRecord(String identifier, String metadataFormat);
+    Record getRecord(String identifier, String metadataFormat) throws CannotDisseminateFormatException, BadArgumentException;
 
     MetaConfig getMetaRepoConfig();
 
@@ -56,7 +56,7 @@ public interface MetaRepo {
         MetadataFormat metadataFormat();
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
         long recordCount();
-        Record fetch(ObjectId id);
+        Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
         List<? extends Record> records(String prefix, int start, int count) throws CannotDisseminateFormatException, BadArgumentException;
 
         String SPEC = "spec";
@@ -110,6 +110,7 @@ public interface MetaRepo {
         PmhSet set();
         Date modified();
         boolean deleted();
+        DBObject namespaces();
         String xml() throws CannotDisseminateFormatException;
         String xml(String metadataPrefix) throws CannotDisseminateFormatException;
 

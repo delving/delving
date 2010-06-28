@@ -1,13 +1,22 @@
 package eu.delving.metarepo.impl;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import eu.delving.metarepo.core.MetaRepo;
 import eu.delving.metarepo.exceptions.BadArgumentException;
 import eu.delving.metarepo.exceptions.BadResumptionTokenException;
 import eu.delving.metarepo.exceptions.CannotDisseminateFormatException;
 import eu.delving.metarepo.exceptions.NoRecordsMatchException;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.core.*;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.MappingException;
+import eu.europeana.sip.core.MappingRunner;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.ToolCodeModel;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
@@ -15,7 +24,13 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Wrap the mongo database so that what goes in and comes out is managed.
@@ -115,11 +130,11 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats(String id) throws BadArgumentException {
+    public Set<MetadataFormat> getMetadataFormats(String id) throws BadArgumentException, CannotDisseminateFormatException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
         for (DataSet dataSet : getDataSets().values()) {
-            Record record = dataSet.fetch(objectId);
+            Record record = dataSet.fetch(objectId, dataSet.metadataFormat().prefix());
             if (record != null) {
                 set.add(dataSet.metadataFormat());
                 for (Mapping mapping : dataSet.mappings().values()) {
@@ -142,7 +157,7 @@ public class MetaRepoImpl implements MetaRepo {
         DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
         DataSet dataSet = getDataSets().get(set);
         if (dataSet == null) {
-            String errorMessage = String.format("Cannot find set [%s]",set);
+            String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
             throw new NoRecordsMatchException(errorMessage);
         }
@@ -160,7 +175,8 @@ public class MetaRepoImpl implements MetaRepo {
         // otherwise a illegal resumptionToken from the mongodb perspective throws a general exception
         try {
             objectId = new ObjectId(resumptionToken);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new BadResumptionTokenException("Unable to find resumptionToken: " + resumptionToken);
         }
         DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
@@ -177,7 +193,7 @@ public class MetaRepoImpl implements MetaRepo {
         String set = harvestStep.pmhRequest().getSet();
         DataSet dataSet = getDataSets().get(set);
         if (dataSet == null) {
-            String errorMessage = String.format("Cannot find set [%s]",set);
+            String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
             throw new NoRecordsMatchException(errorMessage);
         }
@@ -194,11 +210,17 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public Record getRecord(String identifier, String metadataPrefix) {
-        RecordIdentifier recordIdentifier = new RecordIdentifier(identifier).invoke();
-        if (recordIdentifier == null) return null;
-        DBObject dbObject = recordIdentifier.findOne();
-        return new RecordImpl(dbObject, metadataPrefix);
+    public Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException, BadArgumentException {
+        RecordIdentifier recordIdentifier = createIdentifier(identifier);
+        return fetch(recordIdentifier, metadataPrefix);
+    }
+
+    public Record fetch(RecordIdentifier identifier, String metadataPrefix) throws CannotDisseminateFormatException, BadArgumentException {
+        DataSet dataSet = getDataSets().get(identifier.collectionId);
+        if (dataSet == null) {
+            throw new BadArgumentException(String.format("Do data set for identifier [%s]", identifier.collectionId));
+        }
+        return dataSet.fetch(identifier.objectId, metadataPrefix);
     }
 
     @Override
@@ -308,9 +330,34 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Record fetch(ObjectId id) { // if prefix is passed in, mapping can be done
+        public Record fetch(ObjectId id, String prefix) throws BadArgumentException, CannotDisseminateFormatException { // if prefix is passed in, mapping can be done
             DBObject object = new BasicDBObject(MONGO_ID, id);
-            return new RecordImpl(records().findOne(object), metadataFormat().prefix());
+            DBObject rawRecord = records().findOne(object);
+            if (rawRecord != null) {
+                Map<String, ? extends Mapping> mappings = mappings();
+                Mapping mapping = mappings.get(prefix);
+                if (mapping == null && !metadataFormat().prefix().equals(prefix)) {
+                    String errorMessage = String.format(
+                            "Only original format %s and mapped formats %s supported so far",
+                            metadataFormat().prefix(),
+                            mappings.keySet().toString()
+                    );
+                    log.error(errorMessage);
+                    throw new CannotDisseminateFormatException(errorMessage);
+                }
+                List<RecordImpl> list = new ArrayList<RecordImpl>();
+                list.add(new RecordImpl(records().findOne(object), metadataFormat().prefix(), namespaces()));
+                if (mapping != null) {
+                    Map<String, String> namespaces = new TreeMap<String, String>();
+                    DBObject namespacesObject = namespaces();
+                    for (String nsPrefix : namespacesObject.keySet()) {
+                        namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
+                    }
+                    ((MappingImpl) mapping).map(list, namespaces);
+                }
+                return list.get(0);
+            }
+            return null;
         }
 
         @Override
@@ -330,7 +377,7 @@ public class MetaRepoImpl implements MetaRepo {
             DBCursor cursor = records().find().skip(start).limit(count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
-                list.add(new RecordImpl(object, metadataFormat().prefix()));
+                list.add(new RecordImpl(object, metadataFormat().prefix(), namespaces()));
             }
             if (mapping != null) {
                 Map<String, String> namespaces = new TreeMap<String, String>();
@@ -451,10 +498,12 @@ public class MetaRepoImpl implements MetaRepo {
 
         private DBObject object;
         private String defaultPrefix;
+        private DBObject namespaces;
 
-        private RecordImpl(DBObject object, String defaultPrefix) {
+        private RecordImpl(DBObject object, String defaultPrefix, DBObject namespaces) {
             this.object = object;
             this.defaultPrefix = defaultPrefix;
+            this.namespaces = namespaces;
         }
 
         @Override
@@ -479,6 +528,11 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public boolean deleted() {
             return false;  //TODO: implement this
+        }
+
+        @Override
+        public DBObject namespaces() {
+            return namespaces;
         }
 
         @Override
@@ -538,7 +592,6 @@ public class MetaRepoImpl implements MetaRepo {
         public int cursor() {
             return (Integer) object.get(CURSOR);
         }
-
 
 
         @Override
@@ -611,57 +664,36 @@ public class MetaRepoImpl implements MetaRepo {
         }
     }
 
-    public class RecordIdentifier {
+    private RecordIdentifier createIdentifier(String delimitedString) throws BadArgumentException {
+        String[] parts = delimitedString.split(":");
+        if (parts.length != 2) {
+            throw new BadArgumentException("Identifier must have format <collection-id>:<object-id>");
+        }
+        try {
+            String collectionId = parts[0];
+            ObjectId objectId = new ObjectId(parts[1]);
+            return new RecordIdentifier(collectionId, objectId);
+        }
+        catch (IllegalArgumentException e) {
+            log.warn("Bad object id", e);
+            throw new BadArgumentException("Bad object id " + parts[1]);
+        }
+        catch (Exception e) {
+            throw new BadArgumentException(String.format("Unable to create identifier from [%s]", delimitedString));
+        }
+    }
 
-        private String identifier;
-        private String collId;
-        private String recordId;
+    private static class RecordIdentifier {
+        private String collectionId;
+        private ObjectId objectId;
 
-        public RecordIdentifier(String identifier) {
-            this.identifier = identifier;
+        private RecordIdentifier(String collectionId, ObjectId objectId) {
+            this.collectionId = collectionId;
+            this.objectId = objectId;
         }
 
-        public RecordIdentifier(String collId, String recordId) {
-            this.collId = collId;
-            this.recordId = recordId;
-            this.identifier = collId + ":" + recordId;
-        }
-
-        public String getIdentifier() {
-            return identifier;
-        }
-
-        public String getCollId() {
-            return collId;
-        }
-
-        public String getRecordId() {
-            return recordId;
-        }
-
-        public RecordIdentifier invoke() {
-            String[] elements = identifier.split(":");
-            if (elements.length != 2) return null;
-            collId = elements[0];
-            recordId = elements[1];
-            return this;
-        }
-
-
-        public ObjectId getObjectId() {
-            return new ObjectId(recordId);
-        }
-
-        public DBObject getDBObject() {
-            return new BasicDBObject(MONGO_ID, getObjectId());
-        }
-
-        public DBCollection getDBCollection() {
-            return db().getCollection(RECORD_COLLECTION_PREFIX + getCollId());
-        }
-
-        public DBObject findOne() {
-            return getDBCollection().findOne(getDBObject());
+        public String toString() {
+            return collectionId + ":" + objectId.toString();
         }
     }
 }
