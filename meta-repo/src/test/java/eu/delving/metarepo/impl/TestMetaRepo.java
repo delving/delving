@@ -54,7 +54,7 @@ public class TestMetaRepo {
     @Test
     public void queryOriginalRecords() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/92017/abm.html");
+        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/00101_Ag_NO_sffDF/abm.html");
         HttpResponse response = httpClient.execute(httpGet);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new IOException("Response not OK");
@@ -71,7 +71,7 @@ public class TestMetaRepo {
     @Test
     public void queryMappedRecords() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/92017/ese.html");
+        HttpGet httpGet = new HttpGet("http://localhost:8080/meta-repo/00101_Ag_NO_sffDF/ese.html");
         HttpResponse response = httpClient.execute(httpGet);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new IOException("Response not OK");

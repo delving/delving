@@ -75,8 +75,11 @@ public class MetaRepoController {
             @PathVariable String prefix
     ) throws CannotDisseminateFormatException, BadArgumentException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        if (dataSet == null) {
+            throw new RuntimeException(String.format("Dataset [%s] not found", dataSetSpec));
+        }
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
-        for (MetaRepo.Record record : dataSet.records(prefix, 0, 10)) {
+        for (MetaRepo.Record record : dataSet.records(prefix, 0, 10, null, null)) {
             String xml = record.xml(prefix).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")

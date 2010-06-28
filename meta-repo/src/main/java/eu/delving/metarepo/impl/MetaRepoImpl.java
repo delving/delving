@@ -370,7 +370,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public List<? extends Record> records(String prefix, int start, int count) throws CannotDisseminateFormatException, BadArgumentException {
+        public List<? extends Record> records(String prefix, int start, int count, Date from, Date until) throws CannotDisseminateFormatException, BadArgumentException {
             Map<String, ? extends Mapping> mappings = mappings();
             Mapping mapping = mappings.get(prefix);
             if (mapping == null && !metadataFormat().prefix().equals(prefix)) {
@@ -383,7 +383,7 @@ public class MetaRepoImpl implements MetaRepo {
                 throw new CannotDisseminateFormatException(errorMessage);
             }
             List<RecordImpl> list = new ArrayList<RecordImpl>();
-            DBCursor cursor = records().find().skip(start).limit(count);
+            DBCursor cursor = createCursor(from, until).skip(start).limit(count);
             while (cursor.hasNext()) {
                 DBObject object = cursor.next();
                 list.add(new RecordImpl(object, metadataFormat().prefix(), namespaces()));
@@ -397,6 +397,17 @@ public class MetaRepoImpl implements MetaRepo {
                 ((MappingImpl) mapping).map(list, namespaces);
             }
             return list;
+        }
+
+        private DBCursor createCursor(Date from, Date until) {
+            DBObject query = new BasicDBObject();
+            if (from != null) {
+                query.put(Record.MODIFIED, new BasicDBObject("$gte", from));
+            }
+            if (until != null) {
+                query.put(Record.MODIFIED, new BasicDBObject("$lte", until));
+            }
+            return records().find(query);
         }
 
         private void saveObject() {
@@ -527,11 +538,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public Date modified() {
-            Date modified = (Date) object.get(MODIFIED);
-            if (modified == null) {
-                modified = new Date(identifier().getTime());
-            }
-            return modified;
+            return (Date) object.get(MODIFIED);
         }
 
         @Override
@@ -607,7 +614,7 @@ public class MetaRepoImpl implements MetaRepo {
         public List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException {
             PmhRequest request = pmhRequest();
             DataSet dataSet = getDataSets().get(request.getSet());
-            return dataSet.records(request.getMetadataPrefix(), cursor(), responseListSize);
+            return dataSet.records(request.getMetadataPrefix(), cursor(), responseListSize, request.getFrom(), request.getUntil());
         }
 
         @Override

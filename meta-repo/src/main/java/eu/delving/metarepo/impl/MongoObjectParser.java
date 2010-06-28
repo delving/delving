@@ -14,6 +14,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * Parse XML to produce DBObject instances
@@ -112,6 +113,7 @@ public class MongoObjectParser {
                             withinRecord = false;
                             record = new BasicDBObject();
                             record.put(metadataPrefix, contentBuffer.toString());
+                            record.put(MetaRepo.Record.MODIFIED, new Date());
                             if (uniqueContent != null) {
                                 record.put(MetaRepo.Record.UNIQUE, uniqueContent);
                             }

@@ -59,7 +59,7 @@ public interface MetaRepo {
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
         long recordCount();
         Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
-        List<? extends Record> records(String prefix, int start, int count) throws CannotDisseminateFormatException, BadArgumentException;
+        List<? extends Record> records(String prefix, int start, int count, Date from, Date until) throws CannotDisseminateFormatException, BadArgumentException;
 
         String SPEC = "spec";
         String NAME = "name";
