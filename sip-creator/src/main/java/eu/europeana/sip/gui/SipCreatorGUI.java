@@ -54,10 +54,10 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI() {
+    public SipCreatorGUI(String metaRepoSubmitUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler());
+        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), metaRepoSubmitUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -126,12 +126,22 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
-                sipCreatorGUI.setVisible(true);
-            }
-        });
+    public static void main(final String[] args) {
+        if (args.length == 0) {
+            System.out.println("Requires an argument! SipCreatorGUI [MetaRepo subumit URL]");
+        }
+        else if (args[0].startsWith("http://")) {
+            final String serverUrl = args[0];
+            System.out.println("Server '" + serverUrl + "'");
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(args[0]);
+                    sipCreatorGUI.setVisible(true);
+                }
+            });
+        }
+        else {
+            throw new RuntimeException("Argument not understood");
+        }
     }
 }

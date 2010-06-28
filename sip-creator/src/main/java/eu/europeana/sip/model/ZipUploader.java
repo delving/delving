@@ -26,11 +26,13 @@ import java.io.OutputStream;
 public class ZipUploader implements Runnable {
     private static final int BLOCK_SIZE = 4096;
     private Logger log = Logger.getLogger(getClass());
+    private String metaRepoSubmitUrl;
     private FileSet fileSet;
     private String zipFileName;
     private BoundedRangeModel progress;
 
-    public ZipUploader(FileSet fileSet, String zipFileName, BoundedRangeModel progress) {
+    public ZipUploader(String metaRepoSubmitUrl, FileSet fileSet, String zipFileName, BoundedRangeModel progress) {
+        this.metaRepoSubmitUrl = metaRepoSubmitUrl;
         this.fileSet = fileSet;
         this.zipFileName = zipFileName;
         this.progress = progress;
@@ -64,7 +66,7 @@ public class ZipUploader implements Runnable {
 
     private void uploadFile(File file) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = "http://localhost:8080/meta-repo/submit/" + file.getName();
+        String postUrl = metaRepoSubmitUrl + file.getName();
         log.info("Posting to: " + postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         ZipEntity zipEntity = new ZipEntity(file, "application/zip");
