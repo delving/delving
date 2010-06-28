@@ -13,6 +13,12 @@
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
+    <bean id="metaRepoProperties" class="eu.delving.metarepo.MetaRepoProperties"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="metaRepoProperties"/>
+    </bean>
+
     <context:annotation-config/>
 
     <tx:annotation-driven proxy-target-class="true"/>
@@ -37,13 +43,27 @@
         <property name="annotationProcessor" ref="annotationProcessor"/>
         <property name="metaRepoConfig" ref="metaRepoConfig"/>
         <property name="responseListSize" value="#{metaRepoProperties['responseListSize']}"/>
-        <property name="harvestStepSecondsToLive" value="3000"/>
+        <property name="harvestStepSecondsToLive" value="180"/>
     </bean>
 
-    <bean id="metaRepoProperties" class="eu.delving.metarepo.MetaRepoProperties"/>
-
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties" ref="metaRepoProperties"/>
+    <bean id="cleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="metadataRepository"/>
+                <property name="targetMethod" value="removeExpiredHarvestSteps"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="#{metaRepoProperties['harvestStepCleanupDelay']}"/>
+        <property name="repeatInterval" value="#{metaRepoProperties['harvestStepCleanupDelay']}"/>
     </bean>
 
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="cleanupTrigger"/>
+            </list>
+        </property>
+    </bean>
+    
 </beans>

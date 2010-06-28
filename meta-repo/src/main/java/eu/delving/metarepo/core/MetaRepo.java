@@ -38,6 +38,8 @@ public interface MetaRepo {
 
     HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException;
 
+    void removeExpiredHarvestSteps();
+
     Record getRecord(String identifier, String metadataFormat) throws CannotDisseminateFormatException, BadArgumentException;
 
     MetaConfig getMetaRepoConfig();

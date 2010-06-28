@@ -188,6 +188,15 @@ public class MetaRepoImpl implements MetaRepo {
         return createHarvestStep(step, steps);
     }
 
+    @Override
+    public void removeExpiredHarvestSteps() {
+        DBCollection steps = db().getCollection(HARVEST_STEPS_COLLECTION);
+        Date now = new Date();
+        DBObject query = new BasicDBObject(HarvestStep.EXPIRATION, new BasicDBObject("$lt", now));
+        steps.remove(query);
+        log.info("vacuum harvest steps " + now);
+    }
+
     private HarvestStep createHarvestStep(DBObject step, DBCollection steps) throws NoRecordsMatchException, BadArgumentException {
         HarvestStepImpl harvestStep = new HarvestStepImpl(step);
         String set = harvestStep.pmhRequest().getSet();
