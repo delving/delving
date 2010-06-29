@@ -194,7 +194,6 @@ public class MetaRepoImpl implements MetaRepo {
         Date now = new Date();
         DBObject query = new BasicDBObject(HarvestStep.EXPIRATION, new BasicDBObject("$lt", now));
         steps.remove(query);
-        log.info("vacuum harvest steps " + now);
     }
 
     private HarvestStep createHarvestStep(DBObject step, DBCollection steps) throws NoRecordsMatchException, BadArgumentException {
@@ -282,6 +281,11 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public QName recordRoot() {
+            return QName.valueOf((String)(object.get(RECORD_ROOT)));
+        }
+
+        @Override
         public void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException {
             records().drop();
             MongoObjectParser parser = new MongoObjectParser(
@@ -295,6 +299,7 @@ public class MetaRepoImpl implements MetaRepo {
                 records().insert(record);
             }
             object.put(NAMESPACES, parser.getNamespaces());
+            object.put(RECORD_ROOT, recordRoot.toString());
             saveObject();
         }
 
@@ -608,7 +613,6 @@ public class MetaRepoImpl implements MetaRepo {
         public int cursor() {
             return (Integer) object.get(CURSOR);
         }
-
 
         @Override
         public List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException {

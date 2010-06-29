@@ -50,7 +50,7 @@ public interface MetaRepo {
         String providerName();
         String description();
         DBObject namespaces();
-        // todo add record Separator for rendering
+        QName recordRoot();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void setMapping(String mappingCode, String prefix, String namespace, String schema);
@@ -66,6 +66,7 @@ public interface MetaRepo {
         String PROVIDER_NAME = "provider_name";
         String DESCRIPTION = "description";
         String NAMESPACES = "namespaces";
+        String RECORD_ROOT = "record_root";
         String METADATA_FORMAT = "metadata_format";
         String MAPPINGS = "mappings";
     }
@@ -73,7 +74,6 @@ public interface MetaRepo {
     public interface HarvestStep {
 
         ObjectId resumptionToken();
-        // todo add Set information or just setSpec
         Date expiration();
         long listSize();
         int cursor();
