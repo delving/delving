@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import com.ctc.wstx.exc.WstxParsingException;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -113,75 +114,81 @@ public class MetadataRecord {
         }
 
         public MetadataRecord fromXml(String xmlRecord) throws XMLStreamException {
-            XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
-            xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
-            xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-            xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
-            xmlif.configureForSpeed();
-            StringBuilder out = new StringBuilder("<?xml version=\"1.0\"?>\n");
-            out.append("<record");
-            for (Map.Entry<String,String> namespace : namespaces.entrySet()) {
-                out.append(String.format(" xmlns:%s=\"%s\"", namespace.getKey(), namespace.getValue()));
-            }
-            out.append(">");
-            out.append(xmlRecord);
-            out.append("</record>");
-            String recordString = out.toString();
-            Reader reader = new StringReader(recordString);
-            XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(reader);
-            Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
-            StringBuilder value = new StringBuilder();
-            while (true) {
-                switch (input.getEventType()) {
-                    case XMLEvent.START_DOCUMENT:
-                        break;
-                    case XMLEvent.START_ELEMENT:
-                        if (nodeStack.isEmpty()) {
-                            nodeStack.push(new GroovyNode(null, "input"));
-                        }
-                        else {
-                            GroovyNode parent = nodeStack.peek();
-                            String nodeName;
-                            if (null == input.getPrefix()) {
-                                nodeName = Sanitizer.tagToVariable(input.getLocalName());
+            String recordString = null;
+            try {
+                XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
+                xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
+                xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+                xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
+                xmlif.configureForSpeed();
+                StringBuilder out = new StringBuilder("<?xml version=\"1.0\"?>\n");
+                out.append("<record");
+                for (Map.Entry<String, String> namespace : namespaces.entrySet()) {
+                    out.append(String.format(" xmlns:%s=\"%s\"", namespace.getKey(), namespace.getValue()));
+                }
+                out.append(">");
+                out.append(xmlRecord);
+                out.append("</record>");
+                recordString = out.toString();
+                Reader reader = new StringReader(recordString);
+                XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(reader);
+                Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
+                StringBuilder value = new StringBuilder();
+                while (true) {
+                    switch (input.getEventType()) {
+                        case XMLEvent.START_DOCUMENT:
+                            break;
+                        case XMLEvent.START_ELEMENT:
+                            if (nodeStack.isEmpty()) {
+                                nodeStack.push(new GroovyNode(null, "input"));
                             }
                             else {
-                                nodeName = input.getPrefix() + "_" + Sanitizer.tagToVariable(input.getLocalName());
-                            }
-                            GroovyNode node = new GroovyNode(parent, nodeName);
-                            if (input.getAttributeCount() > 0) {
-                                for (int walk = 0; walk < input.getAttributeCount(); walk++) {
-                                    QName attributeName = input.getAttributeName(walk);
-                                    node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));
+                                GroovyNode parent = nodeStack.peek();
+                                String nodeName;
+                                if (null == input.getPrefix()) {
+                                    nodeName = Sanitizer.tagToVariable(input.getLocalName());
                                 }
+                                else {
+                                    nodeName = input.getPrefix() + "_" + Sanitizer.tagToVariable(input.getLocalName());
+                                }
+                                GroovyNode node = new GroovyNode(parent, nodeName);
+                                if (input.getAttributeCount() > 0) {
+                                    for (int walk = 0; walk < input.getAttributeCount(); walk++) {
+                                        QName attributeName = input.getAttributeName(walk);
+                                        node.attributes().put(attributeName.getLocalPart(), input.getAttributeValue(walk));
+                                    }
+                                }
+                                nodeStack.push(node);
+                                value.setLength(0);
                             }
-                            nodeStack.push(node);
+                            break;
+                        case XMLEvent.CHARACTERS:
+                        case XMLEvent.CDATA:
+                            value.append(input.getText());
+                            break;
+                        case XMLEvent.END_ELEMENT:
+                            if (nodeStack.size() == 1) {
+                                return new MetadataRecord(nodeStack.peek(), -1);
+                            }
+                            GroovyNode node = nodeStack.pop();
+                            String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
                             value.setLength(0);
+                            if (valueString.length() > 0) {
+                                node.setValue(valueString);
+                            }
+                            break;
+                        case XMLEvent.END_DOCUMENT: {
+                            break;
                         }
-                        break;
-                    case XMLEvent.CHARACTERS:
-                    case XMLEvent.CDATA:
-                        value.append(input.getText());
-                        break;
-                    case XMLEvent.END_ELEMENT:
-                        if (nodeStack.size() == 1) {
-                            return new MetadataRecord(nodeStack.peek(), -1);
-                        }
-                        GroovyNode node = nodeStack.pop();
-                        String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
-                        value.setLength(0);
-                        if (valueString.length() > 0) {
-                            node.setValue(valueString);
-                        }
-                        break;
-                    case XMLEvent.END_DOCUMENT: {
+                    }
+                    if (!input.hasNext()) {
                         break;
                     }
+                    input.next();
                 }
-                if (!input.hasNext()) {
-                    break;
-                }
-                input.next();
+            }
+            catch (WstxParsingException e) {
+                throw new XMLStreamException("Problem parsing record:\n"+recordString, e);
             }
             throw new XMLStreamException("Unexpected end while parsing");
         }

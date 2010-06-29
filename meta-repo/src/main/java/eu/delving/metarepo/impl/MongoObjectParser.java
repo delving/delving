@@ -7,7 +7,6 @@ import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
@@ -33,9 +32,9 @@ public class MongoObjectParser {
         this.uniqueElement = uniqueElement;
         this.metadataPrefix = metadataPrefix;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
-        xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
-        xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-        xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
+//        xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
+//        xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+//        xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
         xmlif.configureForSpeed();
         Source source = new StreamSource(inputStream, "UTF-8");
         this.input = (XMLStreamReader2) xmlif.createXMLStreamReader(source);
@@ -79,7 +78,7 @@ public class MongoObjectParser {
                             namespaces.put(prefix, uri);
                         }
                         else {
-                            throw new XMLStreamException("Unexpected null prefix for namespace uri: "+uri);
+                            throw new XMLStreamException("Unexpected null prefix for namespace uri: " + uri);
                         }
                         contentBuffer.append("<").append(input.getPrefixedName());
                         if (input.getAttributeCount() > 0) {
@@ -100,7 +99,18 @@ public class MongoObjectParser {
                             contentPresent = !input.getText().trim().isEmpty();
                         }
                         if (contentPresent) {
-                            contentBuffer.append(input.getText());
+                            String text = input.getText();
+                            for (int walk = 0; walk < text.length(); walk++) { // return predeclared entities to escapes
+                                char c = text.charAt(walk);
+                                switch (c) {
+                                    case '&': contentBuffer.append("&amp;"); break;
+                                    case '<': contentBuffer.append("&lt;"); break;
+                                    case '>': contentBuffer.append("&gt;"); break;
+                                    case '"': contentBuffer.append("&quot;"); break;
+                                    case '\'': contentBuffer.append("&apos;"); break;
+                                    default : contentBuffer.append(c);
+                                }
+                            }
                             if (uniqueBuffer != null) {
                                 uniqueBuffer.append(input.getText());
                             }
@@ -112,7 +122,8 @@ public class MongoObjectParser {
                         if (input.getName().equals(recordRoot) && depth == recordDepth) {
                             withinRecord = false;
                             record = new BasicDBObject();
-                            record.put(metadataPrefix, contentBuffer.toString());
+                            String content = contentBuffer.toString();
+                            record.put(metadataPrefix, content);
                             record.put(MetaRepo.Record.MODIFIED, new Date());
                             if (uniqueContent != null) {
                                 record.put(MetaRepo.Record.UNIQUE, uniqueContent);
