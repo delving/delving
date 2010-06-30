@@ -248,7 +248,7 @@ When you are satisfied with the records that are being produced in the dry-run y
 
 The SIP-Creator is prepared to upload metadata to the metadata repository in the form of a ZIP-File which it constructs at the last moment for the purpose.  The ZIP-File contains the original metadata XML file, the mapping file that you have created with the SIP-Creator and another XML file which describes some important details about the ZIP package.
 
-The rightmost tab in the SIP-Creator has input fields where that details about the Data Set are to be filled in. The bottom two fields are not editable, since their values come from information that you have given by choosing the record root and the unique element on the analysis tab from step one.  The data set will be stored under the **Data Set Spec** name in the repository.
+The rightmost tab in the SIP-Creator has input fields where that details about the Data Set are to be filled in. The bottom two fields are not editable, since their values come from information that you have given by choosing the record root and the unique element on the analysis tab from step one.  The data set will be stored under the **Data Set Spec** name in the repository. The **namespace** and the **schema** field should contain the URI to the namespace and XML schema of the original metadata format.
 
 The metadata repository then makes this data available for harvesting in the original format, but it also allows for harvesting of metadata in the ESE format by executing the same mapping code on the fly from the SIP-Creator on a record-by-record basis.
 
