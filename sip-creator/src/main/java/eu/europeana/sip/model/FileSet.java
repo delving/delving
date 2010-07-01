@@ -25,7 +25,7 @@ import eu.europeana.sip.core.DataSetDetails;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Date;
 import java.util.List;
 
@@ -69,9 +69,9 @@ public interface FileSet {
 
     public interface Output {
 
-        OutputStream getOutputStream();
+        Writer getOutputWriter();
 
-        OutputStream getDiscardedStream();
+        Writer getDiscardedWriter();
 
         void recordNormalized();
 
