@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.groovy.FieldMapping;
+import eu.europeana.sip.core.FieldMapping;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
