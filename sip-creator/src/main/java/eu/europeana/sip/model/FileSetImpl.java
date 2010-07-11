@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -234,30 +237,33 @@ public class FileSetImpl implements FileSet {
     }
 
     private class OutputImpl implements Output {
-        private OutputStream outputStream, discardedStream, reportStream;
+        private Writer outputWriter, discardedWriter, reportWriter;
         private int recordsNormalized, recordsDiscarded;
 
         private OutputImpl() {
             checkWorkerThread();
             removeOutput();
             try {
-                this.outputStream = new FileOutputStream(outputFile);
-                this.discardedStream = new FileOutputStream(discardedFile);
-                this.reportStream = new FileOutputStream(reportFile);
+                this.outputWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+                this.discardedWriter = new OutputStreamWriter(new FileOutputStream(discardedFile), "UTF-8");
+                this.reportWriter = new OutputStreamWriter(new FileOutputStream(reportFile), "UTF-8");
             }
             catch (FileNotFoundException e) {
                 userNotifier.tellUser("Unable to open output file " + outputFile.getAbsolutePath(), e);
             }
+            catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
-        public OutputStream getOutputStream() {
-            return outputStream;
+        public Writer getOutputWriter() {
+            return outputWriter;
         }
 
         @Override
-        public OutputStream getDiscardedStream() {
-            return discardedStream;
+        public Writer getDiscardedWriter() {
+            return discardedWriter;
         }
 
         @Override
@@ -277,14 +283,14 @@ public class FileSetImpl implements FileSet {
             }
             else {
                 try {
-                    outputStream.close();
-                    discardedStream.close();
+                    outputWriter.close();
+                    discardedWriter.close();
                     Properties properties = new Properties();
                     properties.put("normalizationDate", String.valueOf(System.currentTimeMillis()));
                     properties.put("recordsNormalized", String.valueOf(recordsNormalized));
                     properties.put("recordsDiscarded", String.valueOf(recordsDiscarded));
-                    properties.store(reportStream, "Normalization Report");
-                    reportStream.close();
+                    properties.store(reportWriter, "Normalization Report");
+                    reportWriter.close();
                 }
                 catch (IOException e) {
                     userNotifier.tellUser("Unable to close output files", e);
@@ -314,7 +320,7 @@ public class FileSetImpl implements FileSet {
                 return new Date(Long.parseLong(s));
             }
             else {
-                return null;
+                return new Date();
             }
         }
 

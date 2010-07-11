@@ -35,9 +35,7 @@ import eu.europeana.sip.model.UserNotifier;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 
 /**
  * Take the input and config informationm and produce an output xml file
@@ -89,34 +87,24 @@ public class Normalizer implements Runnable {
             ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(mapping, annotationProcessor);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             fileSetOutput = fileSet.prepareOutput();
-            final Writer outputWriter = new OutputStreamWriter(fileSetOutput.getOutputStream(), "UTF-8");
-            final Writer discardedWriter = discardInvalid ? new OutputStreamWriter(fileSetOutput.getDiscardedStream(), "UTF-8") : null;
-            outputWriter.write("<?xml version='1.0' encoding='UTF-8'?>\n");
-            outputWriter.write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
+            fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel);
-//            ,new MappingRunner.Listener() {
-//                @Override
-//                public void complete(MetadataRecord metadataRecord, Exception exception, String output) {
-//                    if (exception != null) {
-//                    }
-//                    else {
-//                }
-//            });
             MetadataParser parser = new MetadataParser(fileSet.getInputStream(), recordRoot, parserListener);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {
                     String output = mappingRunner.runMapping(record);
                     String validated = recordValidator.validate(record, output);
-                    outputWriter.write(validated);
+                    fileSetOutput.getOutputWriter().write(validated);
                     fileSetOutput.recordNormalized();
                 }
                 catch (MappingException e) {
-                    if (discardedWriter != null) {
+                    if (fileSetOutput.getDiscardedWriter() != null) {
                         try {
-                            discardedWriter.write(record.toString());
-                            e.printStackTrace(new PrintWriter(discardedWriter));
-                            discardedWriter.write("\n========================================\n");
+                            fileSetOutput.getDiscardedWriter().write(record.toString());
+                            e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
+                            fileSetOutput.getDiscardedWriter().write("\n========================================\n");
                             fileSetOutput.recordDiscarded();
                         }
                         catch (IOException e1) {
@@ -140,11 +128,11 @@ public class Normalizer implements Runnable {
                     }
                 }
                 catch (RecordValidationException e) {
-                    if (discardedWriter != null) {
+                    if (fileSetOutput.getDiscardedWriter() != null) {
                         try {
-                            discardedWriter.write(record.toString());
-                            e.printStackTrace(new PrintWriter(discardedWriter));
-                            discardedWriter.write("\n========================================\n");
+                            fileSetOutput.getDiscardedWriter().write(record.toString());
+                            e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
+                            fileSetOutput.getDiscardedWriter().write("\n========================================\n");
                             fileSetOutput.recordDiscarded();
                         }
                         catch (IOException e1) {
@@ -163,10 +151,7 @@ public class Normalizer implements Runnable {
                     running = false;
                 }
             }
-            outputWriter.write("</metadata>\n");
-            if (discardedWriter != null) {
-                discardedWriter.close();
-            }
+            fileSetOutput.getOutputWriter().write("</metadata>\n");
             fileSetOutput.close(!running);
             if (!running) {
                 parserListener.recordsParsed(0, true);
