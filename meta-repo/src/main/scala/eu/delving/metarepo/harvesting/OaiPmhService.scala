@@ -236,12 +236,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val pmhRequest = pmhRequestEntry.pmhRequestItem
     // get identifier and format from map else throw BadArgument Error
     if (pmhRequest.identifier.isEmpty || pmhRequest.metadataPrefix.isEmpty) return createErrorResponse("badArgument")
-    // if identifier/record is not found throw BadResumptionTokenException error
+
     val identifier = pmhRequest.identifier
     val metadataFormat = pmhRequest.metadataPrefix
-
-    // TODO add dynamic metadataNames resolving later
-    val nameSpaces = List("abm" -> "http://to_be_decided/abm/", "europeana" -> "http://www.europeana.eu/schemas/ese/", "dcterms" -> "http://purl.org/dc/terms/", "dc" -> "http://purl.org/dc/elements/1.1/")
 
     val record = metaRepo.getRecord(identifier, metadataFormat)
     if (record == null) return createErrorResponse("idDoesNotExist")
@@ -258,11 +255,10 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         {renderRecord(record, metadataFormat, identifier.split(":").head)}
      </GetRecord>
     </OAI-PMH>
-    for (entry <- nameSpaces) {
+    for (entry <- record.namespaces.toMap.entrySet) {
       elem = elem % new UnprefixedAttribute( "xmlns:"+entry._1 , entry._2, Null )
     }
     elem
-
   }
 
   private def getHarvestStep(pmhRequestEntry: PmhRequestEntry) : HarvestStep = {

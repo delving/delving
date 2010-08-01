@@ -544,7 +544,6 @@
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
                 <version>${scala.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
