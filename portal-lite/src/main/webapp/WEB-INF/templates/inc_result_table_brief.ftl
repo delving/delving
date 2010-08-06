@@ -20,33 +20,43 @@
     <#list seq?chunk(4) as row>
     <tr>
         <#list row as cell>
-        <td valign="bottom" width="25%" class="${cell.type}">
-             <div class="brief-thumb-container">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
-                    <#if useCache="true">
-                         <img
-                                 class="thumb"
-                                 id="thumb_${cell.index?c}"
-                                 align="middle"
-                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />"
-                                 onload="checkSize(this.id,'brief',this.width);"
-                                 onerror="showDefaultSmall(this,'${cell.type}')"
-                                 height="110"
-                          />
-                    <#else>
-                        <img
-                                class="thumb"
-                                id="thumb_${cell.index?c}"
-                                align="middle"
-                                src="${cell.thumbnail}"
-                                alt="Click for more information"
-                                height="110"
-                                onload="checkSize(this.id,'brief',this.width);"
-                                onerror="showDefaultSmall(this,'${cell.type}')"
-                         />
-                    </#if>
-                </a>
-            </div>
+            <#-- empty image checker -->
+            <#if cell.thumbnail = " ">
+                <#assign thumbnail = "noImageFound"/>
+            <#else>
+                <#assign thumbnail = "${cell.thumbnail}"/>
+            </#if>
+
+           <td valign="bottom" width="25%" class="${cell.type}">
+                <div class="brief-thumb-container">
+                    <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                        <#if useCache="true">
+                             <img
+                                     class="thumb"
+                                     id="thumb_${cell.index?c}"
+                                     align="middle"
+                                     height="110"
+                                     src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />"
+                                     onload="checkSize(this,'brief',this.width);"
+                                     onerror="showDefaultSmall(this,'${cell.type}',this.src)"
+                              />
+
+                        <#else>
+
+                            <img
+                                    class="thumb"
+                                    id="thumb_${cell.index?c}"
+                                    align="middle"
+                                    alt="Click for more information"
+                                    height="110"
+                                    src="${thumbnail}"
+                                    onerror="showDefaultSmall(this,'${cell.type}',this.src);"
+                                    onload="checkSize(this,'brief',this.width);"
+                             />
+
+                        </#if>
+                    </a>
+                </div>
             <div class="brief-content-container">
                 <h6>
                     <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
