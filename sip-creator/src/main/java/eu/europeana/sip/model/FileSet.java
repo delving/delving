@@ -21,9 +21,12 @@
 
 package eu.europeana.sip.model;
 
+import eu.europeana.sip.core.DataSetDetails;
+
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Writer;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,17 +45,9 @@ public interface FileSet {
 
     boolean isValid();
 
-    void remove();
-
     File getDirectory();
 
     InputStream getInputStream();
-
-    OutputStream getOutputStream();
-
-    boolean hasOutputFile();
-
-    void removeOutputFile();
 
     List<Statistics> getStatistics();
 
@@ -61,5 +56,41 @@ public interface FileSet {
     String getMapping();
 
     void setMapping(String mapping);
+
+    DataSetDetails getDataSetDetails();
+
+    void setDataSetDetails(DataSetDetails details);
+
+    File createZipFile(String fileName);
+
+    Report getReport();
+
+    Output prepareOutput();
+
+    public interface Output {
+
+        Writer getOutputWriter();
+
+        Writer getDiscardedWriter();
+
+        void recordNormalized();
+
+        void recordDiscarded();
+
+        void close(boolean abort);
+
+    }
+
+    public interface Report {
+
+        Date getNormalizationDate();
+
+        int getRecordsNormalized();
+
+        int getRecordsDiscarded();
+
+        void clear();
+        
+    }
 
 }

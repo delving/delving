@@ -36,7 +36,7 @@ import java.util.Date;
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, required = true, url = true)
+    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, requiredGroup = "europeana:uri", url = true)
     @Solr(prefix = "europeana", localName = "uri", multivalued = false, required = true)
     @Field("europeana_uri")
     String europeanaUri;

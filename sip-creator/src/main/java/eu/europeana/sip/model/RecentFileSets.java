@@ -24,20 +24,11 @@ package eu.europeana.sip.model;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -89,7 +80,7 @@ public class RecentFileSets {
     }
 
     public void setMostRecent(FileSet fileSet) {
-        FileSetImpl fileSetImpl = (FileSetImpl)fileSet;
+        FileSetImpl fileSetImpl = (FileSetImpl) fileSet;
         recent.remove(fileSetImpl);
         recent.add(0, fileSetImpl);
         try {
@@ -135,28 +126,11 @@ public class RecentFileSets {
         return recent;
     }
 
-    public File getCommonDirectory() {
-        Set<File> directories = new HashSet<File>();
-        for (FileSet fileSet : recent) {
-            directories.add(fileSet.getDirectory());
-        }
-        File highest = null;
-        for (File directory : directories) {
-            if (highest == null) {
-                highest = directory;
-            }
-            else {
-                highest = getDeepestCommonDirectory(highest, directory);
-            }
-        }
-        return highest;
-    }
-
     public List<File> getCommonDirectories() {
         Set<File> uniqueDirectories = new HashSet<File>();
         for (int walkA = 0; walkA < recent.size(); walkA++) {
             FileSet fsA = recent.get(walkA);
-            for (int walkB = walkA+1; walkB < recent.size(); walkB++) {
+            for (int walkB = walkA + 1; walkB < recent.size(); walkB++) {
                 FileSet fsB = recent.get(walkB);
                 uniqueDirectories.add(getDeepestCommonDirectory(fsA.getDirectory(), fsB.getDirectory()));
             }
@@ -204,163 +178,6 @@ public class RecentFileSets {
             }
         }
         out.close();
-    }
-
-    private class FileSetImpl implements FileSet {
-        private File inputFile, statisticsFile, mappingFile, outputFile;
-        private UserNotifier userNotifier;
-
-        private FileSetImpl(File inputFile) {
-            this.inputFile = inputFile;
-            this.statisticsFile = new File(inputFile.getParentFile(), inputFile.getName() + ".statistics");
-            this.mappingFile = new File(inputFile.getParentFile(), inputFile.getName() + ".mapping");
-            this.outputFile = new File(inputFile.getParentFile(), inputFile.getName() + ".normalized.xml");
-        }
-
-        @Override
-        public void setExceptionHandler(UserNotifier handler) {
-            this.userNotifier = handler;
-        }
-
-        @Override
-        public String getName() {
-            return inputFile.getName();
-        }
-
-        @Override
-        public String getAbsolutePath() {
-            return inputFile.getAbsolutePath();
-        }
-
-        @Override
-        public boolean isValid() {
-            return inputFile.exists();
-        }
-
-        @Override
-        public void remove() {
-            recent.remove(this);
-            try {
-                saveList();
-            }
-            catch (IOException e) {
-                LOG.warn("Unable to save recent files list", e);
-            }
-        }
-
-        @Override
-        public File getDirectory() {
-            return inputFile.getParentFile();
-        }
-
-        @Override
-        public InputStream getInputStream() {
-            checkWorkerThread();
-            try {
-                return new FileInputStream(inputFile);
-            }
-            catch (FileNotFoundException e) {
-                userNotifier.tellUser("Unable to open input file", e);
-            }
-            return null;
-        }
-
-        @Override
-        public OutputStream getOutputStream() {
-            checkWorkerThread();
-            try {
-                return new FileOutputStream(outputFile, true);
-            }
-            catch (FileNotFoundException e) {
-                userNotifier.tellUser("Unable to open output file "+outputFile.getAbsolutePath(), e);
-            }
-            return null;
-        }
-
-        @Override
-        public boolean hasOutputFile() {
-            return outputFile.exists();
-        }
-
-        @Override
-        public void removeOutputFile() {
-            checkWorkerThread();
-            if (!outputFile.delete()) {
-                LOG.warn("Unable to delete "+outputFile);
-            }
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public List<Statistics> getStatistics() {
-            checkWorkerThread();
-            if (statisticsFile.exists()) {
-                try {
-                    ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(statisticsFile)));
-                    List<Statistics> statisticsList = (List<Statistics>) in.readObject();
-                    in.close();
-                    return statisticsList;
-                }
-                catch (Exception e) {
-                    userNotifier.tellUser("Unable to read statistics, please re-analyze", e);
-                    if (statisticsFile.delete()) {
-                        LOG.warn("Cannot delete statistics file");
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public void setStatistics(List<Statistics> statisticsList) {
-            checkWorkerThread();
-            try {
-                ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(statisticsFile)));
-                out.writeObject(statisticsList);
-                out.close();
-            }
-            catch (IOException e) {
-                userNotifier.tellUser("Unable to save statistics file", e);
-            }
-        }
-
-        @Override
-        public String getMapping() {
-            checkWorkerThread();
-            if (mappingFile.exists()) {
-                try {
-                    BufferedReader in = new BufferedReader(new FileReader(mappingFile));
-                    StringBuilder mapping = new StringBuilder();
-                    String line;
-                    while ((line = in.readLine()) != null) {
-                        mapping.append(line).append('\n');
-                    }
-                    in.close();
-                    return mapping.toString();
-                }
-                catch (IOException e) {
-                    userNotifier.tellUser("Unable to read mapping file", e);
-                }
-            }
-            return "";
-        }
-
-        @Override
-        public void setMapping(String mapping) {
-            checkWorkerThread();
-            try {
-                FileWriter out = new FileWriter(mappingFile);
-                out.write(mapping);
-                out.close();
-            }
-            catch (IOException e) {
-                userNotifier.tellUser("Unable to save mapping file", e);
-            }
-        }
-
-        public String toString() {
-            return getName();
-        }
     }
 
     private static void checkWorkerThread() {

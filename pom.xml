@@ -159,6 +159,8 @@
         <module>dashboard</module>
         <module>sip-creator</module>
         <module>integration-tests</module>
+        <module>sip-core</module>
+        <module>meta-repo</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
@@ -542,21 +544,20 @@
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
                 <version>${scala.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.definitions.version>1.14</europeana.definitions.version>
-        <europeana.core.version>1.34</europeana.core.version>
-        <europeana.portal.version>0.6.7</europeana.portal.version>
-        <europeana.api.version>0.19</europeana.api.version>
-        <europeana.dashboard.version>0.3.5</europeana.dashboard.version>
+        <europeana.definitions.version>1.0.20</europeana.definitions.version>
+        <europeana.core.version>1.0.44</europeana.core.version>
+        <europeana.portal.version>0.7.4</europeana.portal.version>
+        <europeana.api.version>0.5.25</europeana.api.version>
+        <europeana.dashboard.version>0.3.11</europeana.dashboard.version>
 
         <jdkLevel>1.6</jdkLevel>
 

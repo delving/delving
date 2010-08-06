@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.RecordMapping;
+import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;

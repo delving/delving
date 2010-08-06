@@ -50,7 +50,11 @@ public class AnalysisTree implements Serializable {
 
         boolean setRecordRoot(QName recordRoot);
 
+        boolean setUniqueElement(QName uniqueElemen);
+
         boolean isRecordRoot();
+
+        boolean isUniqueElement();
 
         Iterable<? extends Node> getChildNodes();
 
@@ -63,6 +67,15 @@ public class AnalysisTree implements Serializable {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
         List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
         setRecordRoot(node, recordRoot, changedNodes);
+        for (AnalysisTree.Node changedNode : changedNodes) {
+            model.nodeChanged(changedNode);
+        }
+    }
+
+    public static void setUniqueElement(DefaultTreeModel model, QName uniqueElement) {
+        AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
+        List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
+        setUniqueElement(node, uniqueElement, changedNodes);
         for (AnalysisTree.Node changedNode : changedNodes) {
             model.nodeChanged(changedNode);
         }
@@ -101,8 +114,21 @@ public class AnalysisTree implements Serializable {
         if (node.setRecordRoot(recordRoot)) {
             changedNodes.add(node);
         }
-        for (AnalysisTree.Node child : node.getChildNodes()) {
-            setRecordRoot(child, recordRoot, changedNodes);
+        if (recordRoot == null || !node.isRecordRoot()) {
+            for (AnalysisTree.Node child : node.getChildNodes()) {
+                setRecordRoot(child, recordRoot, changedNodes);
+            }
+        }
+    }       
+
+    private static void setUniqueElement(AnalysisTree.Node node, QName uniqueElement, List<Node> changedNodes) {
+        if (node.setUniqueElement(uniqueElement)) {
+            changedNodes.add(node);
+        }
+        if (uniqueElement == null || !node.isUniqueElement()) {
+            for (AnalysisTree.Node child : node.getChildNodes()) {
+                setUniqueElement(child, uniqueElement, changedNodes);
+            }
         }
     }
 

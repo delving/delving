@@ -20,7 +20,7 @@
  */
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.xml.Sanitizer;
+import eu.europeana.sip.core.Sanitizer;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -45,7 +45,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
     private List<QNameNode> children = new ArrayList<QNameNode>();
     private String tag;
     private QName qName;
-    private boolean recordRoot;
+    private boolean recordRoot, uniqueElement;
     private Statistics statistics;
 
     QNameNode(String tag) {
@@ -94,14 +94,26 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean setRecordRoot(QName recordRoot) {
-        boolean oldRecordRoot = this.recordRoot;
+        boolean oldValue = this.recordRoot;
         this.recordRoot = recordRoot != null && qName != null && qName.equals(recordRoot);
-        return this.recordRoot != oldRecordRoot;
+        return this.recordRoot != oldValue;
+    }
+
+    @Override
+    public boolean setUniqueElement(QName uniqueElement) {
+        boolean oldValue = this.uniqueElement;
+        this.uniqueElement = uniqueElement != null && qName != null && qName.equals(uniqueElement);
+        return this.uniqueElement != oldValue;
     }
 
     @Override
     public boolean isRecordRoot() {
         return recordRoot;
+    }
+
+    @Override
+    public boolean isUniqueElement() {
+        return uniqueElement;
     }
 
     @Override
@@ -111,7 +123,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean couldBeRecordRoot() {
-        return statistics != null && statistics.getCounters().isEmpty();
+        return statistics != null && statistics.isEmpty();
     }
 
     @Override
@@ -127,7 +139,7 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
         Iterator<QNameNode> nodeWalk = path.iterator();
         while (nodeWalk.hasNext()) {
             String nodeName = nodeWalk.next().toString();
-            out.append(Sanitizer.tag2variable(nodeName));
+            out.append(Sanitizer.tagToVariable(nodeName));
             if (nodeWalk.hasNext()) {
                 out.append('.');
             }
@@ -169,13 +181,13 @@ public class QNameNode implements AnalysisTree.Node, Serializable {
 
     @Override
     public boolean getAllowsChildren() {
-        return statistics != null && statistics.getCounters().isEmpty();
+        return statistics != null && statistics.isEmpty();
 //        return !children.isEmpty();
     }
 
     @Override
     public boolean isLeaf() {
-        return statistics != null && !statistics.getCounters().isEmpty();
+        return statistics != null && !statistics.isEmpty();
     }
 
     @Override

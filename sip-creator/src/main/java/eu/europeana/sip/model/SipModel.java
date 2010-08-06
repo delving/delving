@@ -23,15 +23,19 @@ package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.RecordMapping;
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.MappingException;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordMapping;
+import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.core.RecordValidator;
+import eu.europeana.sip.core.ToolCodeModel;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
-import eu.europeana.sip.xml.MetadataRecord;
 import eu.europeana.sip.xml.Normalizer;
-import eu.europeana.sip.xml.RecordValidationException;
-import eu.europeana.sip.xml.RecordValidator;
-import groovy.lang.MissingPropertyException;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
@@ -40,6 +44,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import javax.xml.namespace.QName;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -77,10 +82,13 @@ public class SipModel {
     private FieldMappingListModel fieldMappingListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
+    private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
+    private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
+    private String metaRepoSubmitUrl;
 
     public interface UpdateListener {
 
@@ -88,9 +96,13 @@ public class SipModel {
 
         void updatedFileSet(FileSet fileSet);
 
+        void updatedDetails(DataSetDetails dataSetDetails);
+
         void updatedRecordRoot(RecordRoot recordRoot);
 
         void updatedConstantFieldModel(ConstantFieldModel constantFieldModel);
+
+        void normalizationMessage(boolean complete, String message);
     }
 
     public interface AnalysisListener {
@@ -103,9 +115,10 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier) {
+    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String metaRepoSubmitUrl) {
         this.annotationProcessor = annotationProcessor;
         this.userNotifier = userNotifier;
+        this.metaRepoSubmitUrl = metaRepoSubmitUrl;
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
@@ -148,7 +161,8 @@ public class SipModel {
             public void run() {
                 final List<Statistics> statistics = newFileSet.getStatistics();
                 final String mapping = newFileSet.getMapping();
-                final boolean outputFilePresent = newFileSet.hasOutputFile();
+                final FileSet.Report report = newFileSet.getReport();
+                final DataSetDetails dataSetDetails = newFileSet.getDataSetDetails();
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -157,19 +171,30 @@ public class SipModel {
                         recordMapping.setCode(mapping, europeanaFieldMap);
                         RecordRoot recordRoot = recordMapping.getRecordRoot();
                         setRecordRootInternal(recordRoot);
+                        setDataSetDetails(dataSetDetails);
                         setGlobalFieldModelInternal(recordMapping.getConstantFieldModel());
                         fieldCompileModel.getRecordMapping().setConstantFieldModel(recordMapping.getConstantFieldModel());
                         createMetadataParser(1);
                         if (recordRoot != null) {
                             normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
-                            normalizeProgressModel.setValue(outputFilePresent ? recordRoot.getRecordCount() : 0);
+                            if (report != null) {
+                                normalizeProgressModel.setValue(report.getRecordsNormalized() + report.getRecordsDiscarded());
+                                normalizeMessage(report);
+                            }
+                            else {
+                                normalizeProgressModel.setValue(0);
+                                normalizeMessage("Normalization not yet performed.");
+                            }
                         }
                         else {
                             normalizeProgressModel.setMaximum(100);
                             normalizeProgressModel.setValue(0);
                         }
+                        uploadProgressModel.setMaximum(100);
+                        uploadProgressModel.setValue(0);
                         for (UpdateListener updateListener : updateListeners) {
                             updateListener.updatedFileSet(newFileSet);
+                            updateListener.updatedDetails(dataSetDetails);
                         }
                     }
                 });
@@ -248,17 +273,35 @@ public class SipModel {
         }
     }
 
+    public DataSetDetails getDataSetDetails() {
+        return dataSetDetails;
+    }
+
+    public void setDataSetDetails(DataSetDetails dataSetDetails) {
+        this.dataSetDetails = dataSetDetails;
+        executor.execute(new DetailsSetter(dataSetDetails));
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDetails(dataSetDetails);
+        }
+    }
+
     public BoundedRangeModel getNormalizeProgress() {
         return normalizeProgressModel;
     }
 
-    public void normalize() {
+    public DefaultBoundedRangeModel getUploadProgress() {
+        return uploadProgressModel;
+    }
+
+    public void normalize(final boolean discardInvalid) {
         checkSwingThread();
         abortNormalize();
+        normalizeMessage("Normalizing...");
         normalizer = new Normalizer(
                 fileSet,
                 annotationProcessor,
                 new RecordValidator(annotationProcessor, true),
+                discardInvalid,
                 userNotifier,
                 new MetadataParser.Listener() {
                     @Override
@@ -275,11 +318,11 @@ public class SipModel {
                 },
                 new Normalizer.Listener() {
                     @Override
-                    public void invalidInput(final MetadataRecord metadataRecord, MissingPropertyException exception) {
+                    public void invalidInput(final MappingException exception) {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                createMetadataParser(metadataRecord.getRecordNumber());
+                                createMetadataParser(exception.getMetadataRecord().getRecordNumber());
                             }
                         });
                     }
@@ -293,6 +336,21 @@ public class SipModel {
                             }
                         });
                     }
+
+                    @Override
+                    public void finished(final boolean success) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (success) {
+                                    normalizeMessage(fileSet.getReport());
+                                }
+                                else {
+                                    normalizeMessage("Normalization aborted");
+                                }
+                            }
+                        });
+                    }
                 }
         );
         executor.execute(normalizer);
@@ -300,24 +358,24 @@ public class SipModel {
 
     public void abortNormalize() {
         checkSwingThread();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (normalizer != null) {
-                    normalizer.abort();
-                    normalizer = null;
+        normalizeProgressModel.setValue(0);
+        normalizeMessage("Normalization not yet performed.");
+        final Normalizer existingNormalizer = normalizer;
+        normalizer = null;
+        if (existingNormalizer != null) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    existingNormalizer.abort(); // todo: make sure this deletes the files!
                 }
-                if (fileSet.hasOutputFile()) {
-                    fileSet.removeOutputFile();
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            normalizeProgressModel.setValue(0);
-                        }
-                    });
-                }
-            }
-        });
+            });
+        }
+    }
+
+    public void createUploadZipFile() {
+        checkSwingThread();
+        String zipFileName = getDataSetDetails().getSpec();
+        executor.execute(new ZipUploader(metaRepoSubmitUrl, fileSet, zipFileName, uploadProgressModel));
     }
 
     public TreeModel getAnalysisTreeModel() {
@@ -328,12 +386,16 @@ public class SipModel {
         checkSwingThread();
         if (node != null && node.getStatistics() != null) {
             List<? extends Statistics.Counter> counters = node.getStatistics().getCounters();
-            if (!counters.isEmpty()) {
-                statisticsTableModel.setCounterList(counters);
-            }
-            else {
-                statisticsTableModel.setCounterList(node.getStatistics().getTotalAsCounter());
-            }
+            statisticsTableModel.setCounterList(counters);
+        }
+    }
+
+    public void setUniqueElement(QName uniqueElement) {
+        dataSetDetails.setUniqueElement(uniqueElement.toString());
+        executor.execute(new DetailsSetter(dataSetDetails));
+        AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDetails(dataSetDetails);
         }
     }
 
@@ -341,6 +403,11 @@ public class SipModel {
         checkSwingThread();
         setRecordRootInternal(recordRoot);
         createMetadataParser(1);
+        dataSetDetails.setRecordRoot(recordRoot.getRootQName().toString());
+        executor.execute(new DetailsSetter(dataSetDetails));
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDetails(dataSetDetails);
+        }
         recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
         String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
         executor.execute(new MappingSetter(code));
@@ -422,6 +489,24 @@ public class SipModel {
     }
 
     // === privates
+
+    private void normalizeMessage(String message) {
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.normalizationMessage(false, message);
+        }
+    }
+
+    private void normalizeMessage(FileSet.Report report) {
+        String message = String.format(
+                "Normalization completed on %s resulted in %d normalized records and %d discarded.",
+                report.getNormalizationDate().toString(),
+                report.getRecordsNormalized(),
+                report.getRecordsDiscarded()
+        );
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.normalizationMessage(true, message);
+        }
+    }
 
     private void setGlobalFieldModelInternal(ConstantFieldModel constantFieldModel) {
         checkSwingThread();
@@ -526,7 +611,19 @@ public class SipModel {
         @Override
         public void run() {
             fileSet.setMapping(mapping);
-//            log.info("Saving the mapping");
+        }
+    }
+
+    private class DetailsSetter implements Runnable {
+        private DataSetDetails details;
+
+        private DetailsSetter(DataSetDetails details) {
+            this.details = details;
+        }
+
+        @Override
+        public void run() {
+            fileSet.setDataSetDetails(details);
         }
     }
 

@@ -21,11 +21,12 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.model.AnalysisTree;
-import eu.europeana.sip.model.ConstantFieldModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.QNameNode;
-import eu.europeana.sip.model.RecordRoot;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -56,6 +57,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,6 +74,7 @@ public class AnalysisPanel extends JPanel {
     private static final String RECORDS = "%d Records";
     private static final String PERFORM_ANALYSIS = "Analyze %s";
     private JButton selectRecordRootButton = new JButton("Select Record Root");
+    private JButton selectUniqueElementButton = new JButton("Select Unique Element");
     private JLabel recordCountLabel = new JLabel(String.format(RECORDS, 0), JLabel.CENTER);
     private JButton analyzeButton = new JButton("Analyze");
     private JLabel elementCountLabel = new JLabel(String.format(ELEMENTS_PROCESSED, 0L), JLabel.CENTER);
@@ -122,8 +125,14 @@ public class AnalysisPanel extends JPanel {
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         p.add(scroll(statisticsJTree), BorderLayout.CENTER);
+        JPanel bp = new JPanel(new GridLayout(1,0,10,10));
         selectRecordRootButton.setEnabled(false);
-        p.add(selectRecordRootButton, BorderLayout.SOUTH);
+        selectRecordRootButton.setForeground(Color.RED);
+        bp.add(selectRecordRootButton);
+        selectUniqueElementButton.setForeground(Color.GREEN);
+        selectUniqueElementButton.setEnabled(false);
+        bp.add(selectUniqueElementButton);
+        p.add(bp, BorderLayout.SOUTH);
         return p;
     }
 
@@ -209,6 +218,10 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
+            public void updatedDetails(DataSetDetails dataSetDetails) {
+            }
+
+            @Override
             public void updatedRecordRoot(RecordRoot recordRoot) {
                 recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
             }
@@ -217,6 +230,10 @@ public class AnalysisPanel extends JPanel {
             public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
                 constantFieldPanel.refresh();
             }
+
+            @Override
+            public void normalizationMessage(boolean complete, String message) {
+            }
         });
         statisticsJTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -224,6 +241,7 @@ public class AnalysisPanel extends JPanel {
                 TreePath path = event.getPath();
                 AnalysisTree.Node node = (AnalysisTree.Node) path.getLastPathComponent();
                 selectRecordRootButton.setEnabled(node.couldBeRecordRoot());
+                selectUniqueElementButton.setEnabled(!node.couldBeRecordRoot());
                 sipModel.selectNode(node);
             }
         });
@@ -234,6 +252,14 @@ public class AnalysisPanel extends JPanel {
                 QNameNode node = (QNameNode) path.getLastPathComponent();
                 RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
                 sipModel.setRecordRoot(recordRoot);
+            }
+        });
+        selectUniqueElementButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TreePath path = statisticsJTree.getSelectionPath();
+                QNameNode node = (QNameNode) path.getLastPathComponent();
+                sipModel.setUniqueElement(node.getQName());
             }
         });
         analyzeButton.addActionListener(new ActionListener() {
@@ -286,6 +312,9 @@ public class AnalysisPanel extends JPanel {
             label.setFont(node.getStatistics() != null ? getThickFont() : getNormalFont());
             if (node.isRecordRoot()) {
                 label.setForeground(Color.RED);
+            }
+            else if (node.isUniqueElement()) {
+                label.setForeground(Color.GREEN);
             }
             return label;
         }

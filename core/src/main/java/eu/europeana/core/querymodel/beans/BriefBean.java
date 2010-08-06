@@ -43,7 +43,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     transient int score;
     transient String debugQuery;
 
-    @Europeana(category = ESE_PLUS, required = true, constant = true)
+    @Europeana(category = ESE_PLUS, constant = true)
     @Solr(prefix = "europeana", localName = "collectionName", multivalued = false, required = true)
     @Field("europeana_collectionName")
     String[] europeanaCollectionName;
@@ -53,7 +53,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(required = true, briefDoc = true, object = true, url = true)
+    @Europeana(briefDoc = true, object = true, url = true) // todo: object is not required!!
     @Solr(prefix = "europeana", localName = "object")
     @Field("europeana_object")
     String[] europeanaObject;
