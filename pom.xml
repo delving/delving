@@ -161,6 +161,7 @@
         <module>integration-tests</module>
         <module>sip-core</module>
         <module>meta-repo</module>
+        <module>loganalyser</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
@@ -557,7 +558,8 @@
         <europeana.core.version>1.0.44</europeana.core.version>
         <europeana.portal.version>0.7.4</europeana.portal.version>
         <europeana.api.version>0.5.25</europeana.api.version>
-        <europeana.dashboard.version>0.3.11</europeana.dashboard.version>
+        <delving.metarepo.version>0.1.1</delving.metarepo.version>
+        <delving.loganalyser.version>0.0.1</delving.loganalyser.version>
 
         <jdkLevel>1.6</jdkLevel>
 
