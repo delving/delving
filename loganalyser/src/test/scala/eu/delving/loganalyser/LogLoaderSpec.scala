@@ -1,7 +1,7 @@
 package eu.delving.loganalyser
 
 import org.scalatest.matchers.ShouldMatchers
-import tools.cmd.Spec
+import org.scalatest.Spec
 
 /**
  *
@@ -10,5 +10,15 @@ import tools.cmd.Spec
  */
 
 class LogLoaderSpec extends Spec with ShouldMatchers {
-  
+
+  describe("A logloader") {
+
+      describe("(when given a gzipped file)") {
+
+        it("should process it in stream")(pending)
+
+      }
+
+    }
+
 }
