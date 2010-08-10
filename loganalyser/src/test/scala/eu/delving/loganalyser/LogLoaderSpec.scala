@@ -7,6 +7,7 @@ import java.util.zip.GZIPInputStream
 import scala.io.Source
 import com.mongodb._
 import scala.collection.JavaConversions._
+import collection.mutable.{HashMap, ListBuffer}
 
 /**
  *
@@ -71,18 +72,35 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
         logEntryList.last should equal("view", "brief-doc-window")
         logEntryList.length should equal(""", """.r.findAllIn(briefLogEntry).length + 1)
       }
+
+      it("should get the ip from logEnty and return the country 2 letter code") {
+        val logEntryList = loader.processLogEntry(briefLogEntry)
+        loader.createExpansions(logEntryList) should equal (List(("country_ip", "XX")))
+      }
     }
 
     describe("(when inserting entries in MongoDB)") {
 
       it("should insert new entries") {
         LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/compressed/portal4"))
+//        LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/compressed/"))
       }
-
-      it("should ")(pending)
-
     }
   }
+  describe("A IpToCountryConvertor") {
+
+      describe("(when given a ip adres)") {
+
+        it("should give back 'Unknown' when the ip adres cannot be resolved") {
+         IpToCountryConvertor.findCountryIpRecord("194.171.184.14").countryCode2 should equal ("XX")
+        }
+
+        it("should give back the country") {
+          IpToCountryConvertor.findCountryIpRecord("184.883.31.21").countryCode2 should equal ("NL")
+          IpToCountryConvertor.findCountryIpRecord("28.96.69.11").countryCode2 should equal ("CN")
+        }
+      }
+    }
 }
 
 private[loganalyser] class LogLoader(coll: DBCollection) {
@@ -111,14 +129,17 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
   def storeEntryList(entryList: List[(String, String)]): Unit = {
     require(!entryList.isEmpty)
 
+    val entriesWithExpantions = (entryList ++ createExpansions(entryList)).sortBy(f => f._1)
+
     def updateOrInsertRecord(query: BasicDBObject): Unit = {
       val dbObject = coll.findOne(query)
       if (dbObject != null) {
-        entryList.foreach(entry => dbObject.put(entry._1, entry._2))
+        // todo use keyset to remove fields that are no longer present.
+        entriesWithExpantions.foreach(entry => dbObject.put(entry._1, entry._2))
         coll.save(dbObject)
       } else {
         val doc = new BasicDBObject()
-        entryList.foreach(entry => doc.put(entry._1, entry._2))
+        entriesWithExpantions.foreach(entry => doc.put(entry._1, entry._2))
         coll.insert(doc)
       }
     }
@@ -131,7 +152,7 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
       val query = new BasicDBObject
       query.put("date", getField("date"))
       query.put("ip", getField("ip"))
-      updateOrInsertRecord(query) // this need to become more exact, double check against Ip
+      updateOrInsertRecord(query)
     }
   }
 
@@ -152,6 +173,13 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
     val contentEntries = for (EntryExtractor(key, value) <- EntryExtractor findAllIn withoutAmbiguousCommas) yield (key, value)
     val emptyEntries = for (EmptyEntryExtractor(key) <- EmptyEntryExtractor findAllIn withoutAmbiguousCommas) yield (key, "null")
     (contentEntries.toList ++ emptyEntries.toList).sortBy(f => f._1)
+  }
+
+  def createExpansions(entries: List[(String,String)]) : List[(String, String)] = {
+    val entryMap = new HashMap[String, String]
+    entries.foreach(entry => entryMap.put(entry._1, entry._2))
+    val country2 = IpToCountryConvertor.findCountryIpRecord(entryMap.get("ip").getOrElse("000000")).countryCode2
+    List(("country_ip", country2))
   }
 
   private def createInputStream(logFile: File): InputStream = {
@@ -191,3 +219,40 @@ object LogLoader {
   }
 
 }
+
+object IpToCountryConvertor {
+
+
+  val IpCountryExtractor = """^"(.+?)","(.+?)","(.+?)","(.+?)","(.+?)"$""".r
+  val countryList = initCountryIpList
+
+  private def initCountryIpList : List[CountryIpRecord] = {
+
+    val countryIpRecords = Source.fromInputStream(
+    new GZIPInputStream(
+      new FileInputStream(
+        new File("loganalyser/src/test/resources/ip2country/ip-to-country.csv.gz")
+        )
+      )
+    , "utf-8")
+    val countryIMList = new ListBuffer[CountryIpRecord]
+    countryIpRecords.getLines.toList.foreach(line =>
+            line match {
+              case IpCountryExtractor(ipFrom, ipTo, countryCode2, countryCode3, countryName) =>
+                countryIMList.add(CountryIpRecord(ipFrom.toLong, ipTo.toLong, countryCode2, countryCode3, countryName))
+              case _ => println ("unable to read line: " + line)
+            }
+      )
+     countryIMList.toList
+  }
+
+  def findCountryIpRecord(ip: String) = {
+    require(ip.matches("[0-9.]+"))
+    val cleanIp = ip.replaceAll("[^0-9]","").toLong
+    val results = countryList.filter(entry =>
+      entry.ipFrom <= cleanIp && entry.ipTo >= cleanIp)
+    if (!results.isEmpty) results.head else CountryIpRecord(000000, 000000, "XX", "XXX", "Unknown")
+  }
+}
+
+case class CountryIpRecord(ipFrom: Long, ipTo: Long, countryCode2: String, countryCode3: String, countryName: String)
