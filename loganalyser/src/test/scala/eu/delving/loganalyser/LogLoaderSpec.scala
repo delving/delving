@@ -75,7 +75,7 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
 
       it("should get the ip from logEnty and return the country 2 letter code") {
         val logEntryList = loader.processLogEntry(briefLogEntry)
-        loader.createExpansions(logEntryList) should equal (List(("country_ip", "XX")))
+        loader.createExpansions(logEntryList, List("country_ip")) should equal (List(("country_ip", "XX")))
       }
     }
 
@@ -129,17 +129,20 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
   def storeEntryList(entryList: List[(String, String)]): Unit = {
     require(!entryList.isEmpty)
 
-    val entriesWithExpantions = (entryList ++ createExpansions(entryList)).sortBy(f => f._1)
+    val expansions = List("country_ip")
+
+    val entriesWithExpansions = (entryList ++ createExpansions(entryList, expansions)).sortBy(f => f._1)
 
     def updateOrInsertRecord(query: BasicDBObject): Unit = {
       val dbObject = coll.findOne(query)
       if (dbObject != null) {
-        // todo use keyset to remove fields that are no longer present.
-        entriesWithExpantions.foreach(entry => dbObject.put(entry._1, entry._2))
+        // remove expansionFields
+        expansions.foreach(ex => dbObject.removeField(ex))
+        entriesWithExpansions.foreach(entry => dbObject.put(entry._1, entry._2))
         coll.save(dbObject)
       } else {
         val doc = new BasicDBObject()
-        entriesWithExpantions.foreach(entry => doc.put(entry._1, entry._2))
+        entriesWithExpansions.foreach(entry => doc.put(entry._1, entry._2))
         coll.insert(doc)
       }
     }
@@ -175,7 +178,8 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
     (contentEntries.toList ++ emptyEntries.toList).sortBy(f => f._1)
   }
 
-  def createExpansions(entries: List[(String,String)]) : List[(String, String)] = {
+  def createExpansions(entries: List[(String,String)], expansions: List[String]) : List[(String, String)] = {
+    // add recursive def for expansion list
     val entryMap = new HashMap[String, String]
     entries.foreach(entry => entryMap.put(entry._1, entry._2))
     val country2 = IpToCountryConvertor.findCountryIpRecord(entryMap.get("ip").getOrElse("000000")).countryCode2
@@ -221,7 +225,6 @@ object LogLoader {
 }
 
 object IpToCountryConvertor {
-
 
   val IpCountryExtractor = """^"(.+?)","(.+?)","(.+?)","(.+?)","(.+?)"$""".r
   val countryList = initCountryIpList
