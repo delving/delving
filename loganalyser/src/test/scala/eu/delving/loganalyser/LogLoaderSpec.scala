@@ -75,7 +75,8 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
 
       it("should get the ip from logEnty and return the country 2 letter code") {
         val logEntryList = loader.processLogEntry(briefLogEntry)
-        loader.createExpansions(logEntryList, List("country_ip")) should equal (List(("country_ip", "XX")))
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", true))) should equal (List(("country_ip", "XX")))
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", false))).isEmpty should equal (true)
       }
     }
 
@@ -83,7 +84,6 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
 
       it("should insert new entries") {
         LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/compressed/portal4"))
-//        LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/compressed/"))
       }
     }
   }
@@ -129,7 +129,7 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
   def storeEntryList(entryList: List[(String, String)]): Unit = {
     require(!entryList.isEmpty)
 
-    val expansions = List("country_ip")
+    val expansions = List(ExpansionPlugin("country_ip", false), ExpansionPlugin("locale", false))
 
     val entriesWithExpansions = (entryList ++ createExpansions(entryList, expansions)).sortBy(f => f._1)
 
@@ -137,7 +137,7 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
       val dbObject = coll.findOne(query)
       if (dbObject != null) {
         // remove expansionFields
-        expansions.foreach(ex => dbObject.removeField(ex))
+        expansions.foreach(ex => dbObject.removeField(ex.fieldname))
         entriesWithExpansions.foreach(entry => dbObject.put(entry._1, entry._2))
         coll.save(dbObject)
       } else {
@@ -178,12 +178,22 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
     (contentEntries.toList ++ emptyEntries.toList).sortBy(f => f._1)
   }
 
-  def createExpansions(entries: List[(String,String)], expansions: List[String]) : List[(String, String)] = {
+  def createExpansions(entries: List[(String, String)], expandFields: List[ExpansionPlugin]): List[(String, String)] = {
     // add recursive def for expansion list
     val entryMap = new HashMap[String, String]
     entries.foreach(entry => entryMap.put(entry._1, entry._2))
-    val country2 = IpToCountryConvertor.findCountryIpRecord(entryMap.get("ip").getOrElse("000000")).countryCode2
-    List(("country_ip", country2))
+    val expansions = new ListBuffer[(String, String)]
+    expandFields foreach {
+      field =>
+        field match {
+          case ExpansionPlugin("country_ip", true) =>
+            val country2 = IpToCountryConvertor.findCountryIpRecord(entryMap.get("ip").getOrElse("000000")).countryCode2
+            expansions.add(("country_ip", country2))
+          case ExpansionPlugin("extract_locale", true) =>
+          case _ =>
+        }
+    }
+    expansions.toList
   }
 
   private def createInputStream(logFile: File): InputStream = {
@@ -259,3 +269,4 @@ object IpToCountryConvertor {
 }
 
 case class CountryIpRecord(ipFrom: Long, ipTo: Long, countryCode2: String, countryCode3: String, countryName: String)
+case class ExpansionPlugin(fieldname: String, enabled: Boolean)
