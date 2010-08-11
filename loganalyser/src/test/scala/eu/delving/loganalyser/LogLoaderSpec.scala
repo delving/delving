@@ -78,12 +78,18 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
         loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", true))) should equal (List(("country_ip", "XX")))
         loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", false))).isEmpty should equal (true)
       }
+
+      it("should split date and time from the date string") {
+        val logEntryList = loader.processLogEntry(briefLogEntry)
+        val doc = new BasicDBObject ; doc.put("d", "2010-08-01");  doc.put("t", "00:00:12") // { "d" : "2010-08-01" , "t" : "00:00:12"}
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("invoked_at", true))) should equal (List(("invoked_at", doc)))
+      }
     }
 
     describe("(when inserting entries in MongoDB)") {
 
       it("should insert new entries") {
-        LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/compressed/portal4"))
+        LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/uncompressed/"))
       }
     }
   }
@@ -129,9 +135,9 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
   def storeEntryList(entryList: List[(String, String)]): Unit = {
     require(!entryList.isEmpty)
 
-    val expansions = List(ExpansionPlugin("country_ip", false), ExpansionPlugin("locale", false))
+    val expansions = List(ExpansionPlugin("country_ip", true), ExpansionPlugin("locale", false), ExpansionPlugin("invoked_at", true))
 
-    val entriesWithExpansions = (entryList ++ createExpansions(entryList, expansions)).sortBy(f => f._1)
+    val entriesWithExpansions: List[(String, Any)] = (entryList ++ createExpansions(entryList, expansions)).sortBy(f => f._1)
 
     def updateOrInsertRecord(query: BasicDBObject): Unit = {
       val dbObject = coll.findOne(query)
@@ -147,7 +153,7 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
       }
     }
 
-    def getField(fieldName: String): String = entryList.filter(_._1.equalsIgnoreCase(fieldName)).head._2
+    def getField(fieldName: String): String = entryList.filter(_._1.equalsIgnoreCase(fieldName)).head._2.toString
 
     val sessionPageId = getField("utmb")
     if (!sessionPageId.equalsIgnoreCase("null")) updateOrInsertRecord(new BasicDBObject("utmb", sessionPageId))
@@ -178,11 +184,11 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
     (contentEntries.toList ++ emptyEntries.toList).sortBy(f => f._1)
   }
 
-  def createExpansions(entries: List[(String, String)], expandFields: List[ExpansionPlugin]): List[(String, String)] = {
+  def createExpansions(entries: List[(String, String)], expandFields: List[ExpansionPlugin]): List[(String, Any)] = {
     // add recursive def for expansion list
     val entryMap = new HashMap[String, String]
     entries.foreach(entry => entryMap.put(entry._1, entry._2))
-    val expansions = new ListBuffer[(String, String)]
+    val expansions = new ListBuffer[(String, Any)]
     expandFields foreach {
       field =>
         field match {
@@ -190,6 +196,18 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
             val country2 = IpToCountryConvertor.findCountryIpRecord(entryMap.get("ip").getOrElse("000000")).countryCode2
             expansions.add(("country_ip", country2))
           case ExpansionPlugin("extract_locale", true) =>
+          case ExpansionPlugin("invoked_at", true) =>
+            val DateTimeExtractor =  """([0-9\-]+)T([^.]+).+""".r
+            // replace with extractor
+            val dateString = entryMap.get("date").get
+            dateString match {
+              case DateTimeExtractor(date, time) =>
+                val doc = new BasicDBObject
+                doc.put("d", date)
+                doc.put("t", time)
+                expansions.add(("invoked_at", doc))
+              case _ =>
+            }
           case _ =>
         }
     }
@@ -230,6 +248,11 @@ object LogLoader {
     val collIndices = for (index <- logEntryCollection.getIndexInfo) yield index.get("name").toString.replaceAll("_[-1]{1,2}", "")
     collIndices diff indices.keys.toList foreach (collIndex => logEntryCollection.createIndex(new BasicDBObject(collIndex, 1)))
     logEntryCollection
+  }
+
+  def main(args: Array[String]) {
+    require(!args.isEmpty)
+    args.foreach(arg => processLogFiles(new File(arg)))
   }
 
 }
