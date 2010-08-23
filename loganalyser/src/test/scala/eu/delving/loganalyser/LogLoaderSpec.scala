@@ -75,14 +75,16 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
 
       it("should get the ip from logEnty and return the country 2 letter code") {
         val logEntryList = loader.processLogEntry(briefLogEntry)
-        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", true))) should equal (List(("country_ip", "XX")))
-        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", false))).isEmpty should equal (true)
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", true))) should equal(List(("country_ip", "XX")))
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", false))).isEmpty should equal(true)
       }
 
       it("should split date and time from the date string") {
         val logEntryList = loader.processLogEntry(briefLogEntry)
-        val doc = new BasicDBObject ; doc.put("d", "2010-08-01");  doc.put("t", "00:00:12") // { "d" : "2010-08-01" , "t" : "00:00:12"}
-        loader.createExpansions(logEntryList, List(ExpansionPlugin("invoked_at", true))) should equal (List(("invoked_at", doc)))
+        val doc = new BasicDBObject;
+        doc.put("d", "2010-08-01");
+        doc.put("t", "00:00:12") // { "d" : "2010-08-01" , "t" : "00:00:12"}
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("invoked_at", true))) should equal(List(("invoked_at", doc)))
       }
     }
 
@@ -92,21 +94,28 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
         LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/uncompressed/"))
       }
     }
+
+    describe("(when creating a Session based collection)") {
+
+      it("should get all distinct session and iterate over it") {
+        LogLoader.createSessionBasedCollection("logEntries", "noBots")
+      }
+    }
   }
   describe("A IpToCountryConvertor") {
 
-      describe("(when given a ip adres)") {
+    describe("(when given a ip adres)") {
 
-        it("should give back 'Unknown' when the ip adres cannot be resolved") {
-         IpToCountryConvertor.findCountryIpRecord("194.171.184.14").countryCode2 should equal ("XX")
-        }
+      it("should give back 'Unknown' when the ip adres cannot be resolved") {
+        IpToCountryConvertor.findCountryIpRecord("194.171.184.14").countryCode2 should equal("XX")
+      }
 
-        it("should give back the country") {
-          IpToCountryConvertor.findCountryIpRecord("184.883.31.21").countryCode2 should equal ("NL")
-          IpToCountryConvertor.findCountryIpRecord("28.96.69.11").countryCode2 should equal ("CN")
-        }
+      it("should give back the country") {
+        IpToCountryConvertor.findCountryIpRecord("184.883.31.21").countryCode2 should equal("NL")
+        IpToCountryConvertor.findCountryIpRecord("28.96.69.11").countryCode2 should equal("CN")
       }
     }
+  }
 }
 
 private[loganalyser] class LogLoader(coll: DBCollection) {
@@ -197,7 +206,7 @@ private[loganalyser] class LogLoader(coll: DBCollection) {
             expansions.add(("country_ip", country2))
           case ExpansionPlugin("extract_locale", true) =>
           case ExpansionPlugin("invoked_at", true) =>
-            val DateTimeExtractor =  """([0-9\-]+)T([^.]+).+""".r
+            val DateTimeExtractor = """([0-9\-]+)T([^.]+).+""".r
             // replace with extractor
             val dateString = entryMap.get("date").get
             dateString match {
@@ -244,10 +253,99 @@ object LogLoader {
     else
       coll
     // add / check for indices
-    val indices = Map("utmb" -> 1, "date" -> 1, "ip" -> 1)
+    val indices = Map("utma" -> 1, "utmb" -> 1, "date" -> 1, "ip" -> 1)
     val collIndices = for (index <- logEntryCollection.getIndexInfo) yield index.get("name").toString.replaceAll("_[-1]{1,2}", "")
     collIndices diff indices.keys.toList foreach (collIndex => logEntryCollection.createIndex(new BasicDBObject(collIndex, 1)))
     logEntryCollection
+  }
+
+  private def freq[T](seq: Seq[T]) = seq.groupBy(x => x).mapValues(_.length)
+
+  private def fromMapToDBObject(itemList: List[String], dbObject: BasicDBObject) : BasicDBObject = {
+    val tfMap = freq(itemList)
+    tfMap.foreach(item => dbObject.put(item._1.replace(".", ";"), item._2))
+    dbObject
+  }
+
+  def createSessionBasedCollection(dbName: String, collName: String): Unit = {
+    val db: DB = mongoInstance.getDB(dbName)
+    val sourceColl: DBCollection = db.getCollection(collName)
+    val sessionCollection = "sessionDocs"
+    val sessionIdBasedCollection: DBCollection = if (db.collectionExists(sessionCollection)) {
+      db.getCollection(sessionCollection).drop
+      db.createCollection(sessionCollection, null)
+    }
+    else
+      db.createCollection(sessionCollection, null)
+    if (sourceColl == null) throw new RuntimeException("collections with logEntries must exist.")
+    val query = new BasicDBObject
+    query.put("utma", new BasicDBObject("$ne", "null"))
+    val sessions = sourceColl.distinct("utma", query)
+    println ("unique sessions: " + sessions.size)
+    sessions.foreach {
+      session =>
+        {
+          println("sessionId: " + session)
+          val cursor: DBCursor = sourceColl.find(new BasicDBObject("utma", session)).sort(new BasicDBObject("date", 1))
+          println ("entries for this sessionId: " + cursor.count)
+          val sessionDocument = new BasicDBObject()
+          sessionDocument.put("sessionId", session)
+
+          val entriesList: List[DBObject] = cursor.iterator.toList
+
+          // create ListBuffers for interesting sections
+          val queries, countries, languages, ipAddresses, actions, dates, userIds = new ListBuffer[String]
+
+          // create an ordered list of the session entries
+          val sessionEntries = new BasicDBObject
+          entriesList.foreach{entry =>
+            sessionEntries.put(entry.get("date").toString.replace(".", ";"), entry)
+            actions.add(entry.get("action").toString)
+            languages.add(entry.get("lang").toString)
+            if (entry.containsField("ip"))  ipAddresses.add(entry.get("ip").toString)
+            if (entry.containsField("userId"))  userIds.add(entry.get("userId").toString)
+            if (entry.containsField("country_ip")) countries.add(entry.get("country_ip").toString)
+            if (entry.containsField("invoked_at")) {
+              val invoked: DBObject = entry.get("invoked_at").asInstanceOf[DBObject]
+              dates.add(invoked.get("d").toString)
+            }
+            if (entry.containsField("query")) queries.add(entry.get("query").toString)
+          }
+
+          // create the session stats section
+          //how many pageviews. tf for the actions. main ip, main country, list of unique queries, etc
+          val sessionStats = new BasicDBObject()
+          sessionStats.put("pageViews", entriesList.size)
+          sessionStats.put("actions", fromMapToDBObject(actions.toList, new BasicDBObject()))
+          sessionStats.put("actionOrder", actions.toString)
+
+          val queryObject = fromMapToDBObject(queries.toList, new BasicDBObject())
+          sessionStats.put("queries", queryObject)
+          sessionStats.put("uniqueQueriesNr", queryObject.size)
+
+          val langObject = fromMapToDBObject(languages.toList, new BasicDBObject())
+          sessionStats.put("languages", langObject)
+          sessionStats.put("uniqueLanguagesNr", langObject.size)
+          sessionStats.put("hasLanguageChange", actions.contains("LANGUAGE_CHANGE"))
+
+          sessionStats.put("ip", ipAddresses.distinct.toArray)
+          sessionStats.put("uniqueIpNr", ipAddresses.distinct.size)
+
+          sessionStats.put("countries", countries.distinct.toArray)
+          sessionStats.put("uniqueCountriesNr", countries.distinct.size)
+
+          sessionStats.put("dates", dates.distinct.toArray)
+          sessionStats.put("uniqueDatesNr", dates.distinct.size)
+
+          sessionStats.put("userHasLoggedIn", userIds.forall(id => !id.equalsIgnoreCase("null")))
+
+          // write the subsections to the main session document
+          sessionDocument.put("sessionStats", sessionStats)
+          sessionDocument.put("logEntries", sessionEntries)
+          // save the session document
+          sessionIdBasedCollection.save(sessionDocument)
+        }
+    }
   }
 
   def main(args: Array[String]) {
@@ -258,33 +356,32 @@ object LogLoader {
 }
 
 object IpToCountryConvertor {
-
   val IpCountryExtractor = """^"(.+?)","(.+?)","(.+?)","(.+?)","(.+?)"$""".r
   val countryList = initCountryIpList
 
-  private def initCountryIpList : List[CountryIpRecord] = {
+  private def initCountryIpList: List[CountryIpRecord] = {
 
     val countryIpRecords = Source.fromInputStream(
-    new GZIPInputStream(
-      new FileInputStream(
-        new File("loganalyser/src/test/resources/ip2country/ip-to-country.csv.gz")
+      new GZIPInputStream(
+        new FileInputStream(
+          new File("loganalyser/src/test/resources/ip2country/ip-to-country.csv.gz")
+          )
         )
-      )
-    , "utf-8")
+      , "utf-8")
     val countryIMList = new ListBuffer[CountryIpRecord]
     countryIpRecords.getLines.toList.foreach(line =>
-            line match {
-              case IpCountryExtractor(ipFrom, ipTo, countryCode2, countryCode3, countryName) =>
-                countryIMList.add(CountryIpRecord(ipFrom.toLong, ipTo.toLong, countryCode2, countryCode3, countryName))
-              case _ => println ("unable to read line: " + line)
-            }
+      line match {
+        case IpCountryExtractor(ipFrom, ipTo, countryCode2, countryCode3, countryName) =>
+          countryIMList.add(CountryIpRecord(ipFrom.toLong, ipTo.toLong, countryCode2, countryCode3, countryName))
+        case _ => println("unable to read line: " + line)
+      }
       )
-     countryIMList.toList
+    countryIMList.toList
   }
 
   def findCountryIpRecord(ip: String) = {
     require(ip.matches("[0-9.]+"))
-    val cleanIp = ip.replaceAll("[^0-9]","").toLong
+    val cleanIp = ip.replaceAll("[^0-9]", "").toLong
     val results = countryList.filter(entry =>
       entry.ipFrom <= cleanIp && entry.ipTo >= cleanIp)
     if (!results.isEmpty) results.head else CountryIpRecord(000000, 000000, "XX", "XXX", "Unknown")
