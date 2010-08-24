@@ -294,7 +294,7 @@ object LogLoader {
           val entriesList: List[DBObject] = cursor.iterator.toList
 
           // create ListBuffers for interesting sections
-          val queries, countries, languages, ipAddresses, actions, dates, userIds = new ListBuffer[String]
+          val queries, countries, languages, ipAddresses, actions, dates, userIds, languageChange = new ListBuffer[String]
 
           // create an ordered list of the session entries
           val sessionEntries = new BasicDBObject
@@ -309,6 +309,7 @@ object LogLoader {
               val invoked: DBObject = entry.get("invoked_at").asInstanceOf[DBObject]
               dates.add(invoked.get("d").toString)
             }
+            if (entry.containsField("oldLang")) languageChange.add(entry.get("oldLang").toString + "->" + entry.get("lang").toString)
             if (entry.containsField("query")) queries.add(entry.get("query").toString)
           }
 
@@ -326,7 +327,9 @@ object LogLoader {
           val langObject = fromMapToDBObject(languages.toList, new BasicDBObject())
           sessionStats.put("languages", langObject)
           sessionStats.put("uniqueLanguagesNr", langObject.size)
-          sessionStats.put("hasLanguageChange", actions.contains("LANGUAGE_CHANGE"))
+          sessionStats.put("hasLanguageChange", !languageChange.isEmpty)
+          sessionStats.put("languageChangePairs", fromMapToDBObject(languageChange.toList, new BasicDBObject))
+
 
           sessionStats.put("ip", ipAddresses.distinct.toArray)
           sessionStats.put("uniqueIpNr", ipAddresses.distinct.size)
