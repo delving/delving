@@ -70,9 +70,9 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
       it("should format the href in same order as the FilterQueries") {
         val filterBreadCrumbList = list.tail
         for (index <- 0 until filterBreadCrumbList.length) {
-          filterBreadCrumbList(index).getHref should equal (
+          filterBreadCrumbList(index).getHref should equal {
             filterQueries.take(index + 1).mkString(start = queryPrefix + filterPrefix, sep = filterPrefix, end = "")
-            )
+          }
         }
       }
     }
