@@ -23,15 +23,13 @@ package eu.europeana.sip.model;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.groovy.FieldMapping;
-import eu.europeana.sip.groovy.RecordMapping;
+import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.core.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListModel;
-import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,17 +78,11 @@ public class FieldListModel extends AbstractListModel {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             EuropeanaField europeanaField = (EuropeanaField) value;
-            JLabel label = (JLabel) super.getListCellRendererComponent(list, europeanaField.getFieldNameString(), index, isSelected, cellHasFocus);
-            if (isSelected) {
-                label.setForeground(new Color(1f, 1f, 1f));
+            String string = europeanaField.getFieldNameString();
+            if (!europeanaField.europeana().requiredGroup().isEmpty()) {
+                string += " (required: "+ europeanaField.europeana().requiredGroup()+")";
             }
-            else if (europeanaField.europeana().required()) {
-                label.setForeground(new Color(0.3f, 0f, 0.3f));
-            }
-            else {
-                label.setForeground(new Color(0.5f, 0.5f, 0f));
-            }
-            return label;
+            return super.getListCellRendererComponent(list, string, index, isSelected, cellHasFocus);
         }
     }
 

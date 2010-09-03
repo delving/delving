@@ -21,8 +21,10 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.groovy.GroovyNode;
-import eu.europeana.sip.model.RecordRoot;
+import eu.europeana.sip.core.GroovyNode;
+import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.core.Sanitizer;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 
@@ -92,10 +94,10 @@ public class MetadataParser {
                         }
                         String nodeName;
                         if (null == input.getPrefix()) {
-                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : Sanitizer.tag2variable(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : Sanitizer.tagToVariable(input.getLocalName());
                         }
                         else {
-                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + Sanitizer.tag2variable(input.getLocalName());
+                            nodeName = input.getName().equals(recordRoot.getRootQName()) ? "input" : input.getPrefix() + "_" + Sanitizer.tagToVariable(input.getLocalName());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) { // todo: sometimes java.lang.IllegalStateException: Current state not START_ELEMENT        

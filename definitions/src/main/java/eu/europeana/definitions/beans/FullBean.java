@@ -44,7 +44,7 @@ import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 public class FullBean extends BriefBean implements FullDoc {
 
     // Europeana namespace
-    @Europeana(required = true, type = true, enumClass = DocType.class)
+    @Europeana(requiredGroup = "europeana:type", type = true, enumClass = DocType.class)
     @Solr(prefix = "europeana", localName = "type", multivalued = false, fieldType = "string", toCopyField = {"TYPE"})
     String europeanaType;
 
@@ -52,11 +52,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "userTag", toCopyField = {"text", "USERTAGS"})
     String[] europeanaUserTag;
 
-    @Europeana(category = ESE_PLUS, constant = true, required = true, enumClass = Language.class)
+    @Europeana(category = ESE_PLUS, constant = true, requiredGroup = "europeana:language", enumClass = Language.class)
     @Solr(prefix = "europeana", localName = "language", fieldType = "string", toCopyField = {"text", "LANGUAGE"})
     String[] europeanaLanguage;
 
-    @Europeana(category = ESE_PLUS, constant = true, required = true, enumClass = Country.class)
+    @Europeana(category = ESE_PLUS, constant = true, requiredGroup = "europeana:country", enumClass = Country.class)
     @Solr(prefix = "europeana", localName = "country", multivalued = false)
     String[] europeanaCountry;
 
@@ -65,11 +65,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "source")
     String[] europeanaSource;
 
-    @Europeana(required = true, url = true)
+    @Europeana(requiredGroup = "europeana:isShownAt or europeana:isShownBy", url = true)
     @Solr(prefix = "europeana", localName = "isShownAt", fieldType = "string", toCopyField = {"text"})
     String[] europeanaisShownAt;
 
-    @Europeana(required = true, url = true)
+    @Europeana(requiredGroup = "europeana:isShownAt or europeana:isShownBy", url = true)
     @Solr(prefix = "europeana", localName = "isShownBy", fieldType = "string", toCopyField = {"text"})
     String[] europeanaisShownBy;
 
@@ -77,11 +77,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-    @Europeana(category = ESE_PLUS)
-    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
-    boolean europeanahasObject;
-
-    @Europeana(category = ESE_PLUS, required = true, constant = true)
+//    @Europeana(category = ESE_PLUS)
+//    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
+//    boolean europeanaHasObject;
+//
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:provider", constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
 
@@ -263,11 +263,11 @@ public class FullBean extends BriefBean implements FullDoc {
         return returnArrayOrElse(europeanaUserTag);
     }
 
-    @Override
-    public Boolean getEuropeanaHasObject() {
-        return europeanahasObject;
-    }
-
+//    @Override
+//    public Boolean getEuropeanaHasObject() {
+//        return europeanaHasObject;
+//    }
+//
     @Override
     public String[] getEuropeanaCountry() {
         final String[] countryArr = returnArrayOrElse(europeanaCountry, country);

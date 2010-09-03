@@ -2,7 +2,7 @@
 <jnlp spec="1.0+" codebase="??? code base ???" href="sip-creator.jnlp">
     <information>
         <title>SIP-Creator</title>
-        <vendor>Europeana</vendor>
+        <vendor>Delving</vendor>
         <description kind="one-line">SIP-Creator</description>
         <description kind="short">Submission Information Package Creator</description>
         <icon href="code base/sip-creator.png" kind="default"/>
@@ -18,5 +18,7 @@
         <property name="jnlp.versionEnabled" value="false"/>
         $dependencies
     </resources>
-    <application-desc main-class="$mainClass"/>
+    <application-desc main-class="$mainClass">
+        <argument>??? MetaRepo submit URL ???</argument>
+    </application-desc>
 </jnlp>

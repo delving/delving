@@ -41,7 +41,7 @@ public interface FullDoc {
 
     String[] getEuropeanaUserTag();
 
-    Boolean getEuropeanaHasObject();
+//    Boolean getEuropeanaHasObject();
 
 //    Boolean getEuropeanaShowFull();
 //

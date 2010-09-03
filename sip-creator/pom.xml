@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>0.8.12</version>
+    <version>0.8.28</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -68,43 +68,38 @@
                     <verbose>false</verbose>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>eu.europeana.sip.gui.SipCreatorGUI</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>definitions</artifactId>
-            <version>${europeana.definitions.version}</version>
+            <groupId>eu.delving</groupId>
+            <artifactId>sip-core</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <groupId>javax.jnlp</groupId>
+            <artifactId>jnlp-api</artifactId>
+            <version>1.5.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-lgpl</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
