@@ -227,7 +227,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      </ListRecords>
     </OAI-PMH>
     for (entry <- harvestStep.namespaces.toMap.entrySet) {
-      elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey , entry.getValue.toString, Null )
+      elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey.toString, entry.getValue.toString, Null )
     }
     elem
   }
