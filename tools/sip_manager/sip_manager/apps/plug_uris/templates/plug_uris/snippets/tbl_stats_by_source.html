@@ -4,13 +4,19 @@
       <th><a href="{% url uri_stats 'imgs_waiting' %}">waiting</a></th>
       <th><a href="{% url uri_stats 'imgs_ok' %}">ok</a></th>
       <th><a href="{% url uri_stats 'imgs_bad' %}">bad</a></th>
+      <th>ratio</th>
     {% for uri_source in uri_sources %}
     <tr>
         <td>{{ uri_source.id }}</td>
-        <td>{{ uri_source.name_or_ip }}</td>
-        <td>{{ uri_source.imgs_waiting }}</td>
-        <td>{{ uri_source.imgs_ok }}</td>
-        <td><a href="{% url uri_problems uri_source.id %}">{{ uri_source.imgs_bad }}</a></td>
+        <td>{{ uri_source.name }}</td>
+        <td>{{ uri_source.waiting }}</td>
+        <td>{{ uri_source.good }}</td>
+        {% if uri_source.bad %}
+            <td><a href="{% url uri_problems uri_source.id %}">{{ uri_source.bad }}</a></td>
+        {% else %}
+            <td>0</td>
+        {% endif %}
+        <td>{{ uri_source.ratio }}</td>
     </tr>
     {% endfor %}
 </table>

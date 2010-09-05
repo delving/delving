@@ -9,17 +9,9 @@
     <#if RequestParameters.useCache??>
         <#assign useCache = "${RequestParameters.useCache}"/>
     </#if>
-    <#if startPage??><#assign startPage = startPage/></#if>
-    <#if RequestParameters.view??> <#assign view = "${RequestParameters.view}"/></#if>
-    <#if format??><#assign format = format/></#if>
     <#if pagination??>
         <#assign pagination = pagination/>
         <#assign queryStringForPaging = pagination.queryStringForPaging />
-    </#if>
-    <#if queryStringForPaging??>
-        <#assign defaultQueryParams = "full-doc.html?"+queryStringForPaging+"&start="+pagination.docIdWindow.offset?c+"&uri="+result.fullDoc.id+"&view="+view />
-        <#else>
-            <#assign defaultQueryParams = "full-doc.html?uri="+result.fullDoc.id />
     </#if>
     <#if result.fullDoc.dcTitle[0]?length &gt; 110>
         <#assign postTitle = result.fullDoc.dcTitle[0]?substring(0, 110)?url('utf-8') + "..."/>
@@ -39,10 +31,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="shortcut icon" href="/portal/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="css/reset-text-grid.css"/>
-        <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.7.2.custom.css"/>
-        <link rel="stylesheet" type="text/css" href="css/layout-common.css"/>
+        <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/css/reset-text-grid.css"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/css/jquery-ui-1.7.2.custom.css"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/css/layout-common.css"/>
     </head>
 
     <body>
@@ -63,10 +55,10 @@
 
     </div>
 
-    <script type="text/javascript" src="js/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.js"></script>
-    <script type="text/javascript" src="js/js_utilities.js"></script>
-    <script type="text/javascript" src="js/results.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery-1.4.1.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/js_utilities.js"></script>
+    <script type="text/javascript" src="/${portalName}/js/results.js"></script>
     </body>
 </html>
 

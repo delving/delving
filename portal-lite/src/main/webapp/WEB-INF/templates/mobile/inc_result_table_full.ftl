@@ -23,7 +23,7 @@
     </li>
     <li class="textbox" id="detailviewbox">
 		<#if useCache="true">
-			<img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}" 
+			<img src="${cacheUrl}uri=${result.fullDoc.thumbnails[0]?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
 			id="detailview" alt="Image title: ${result.fullDoc.dcTitle[0]}" />
 		<#else>
         	<script>
@@ -41,7 +41,7 @@
                 onload="checkSize(this.height);"
                 onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}')"
                 alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"/>
-		</#if>         
+		</#if>
 	</li>
 
 	<#-- TITLE   -------------------------------------------------------------------------------->
@@ -110,16 +110,16 @@
 			</#if>
 		</li>
 	</#if>
-                        
-    <#-- currently: fake geo data! TODO: change when geo data is available -->                    
+
+    <#-- currently: fake geo data! TODO: change when geo data is available -->
     <li class="textbox">
     	<a href="http://maps.google.com/maps/ms?f=q&hl=fr&geocode=&ie=UTF8&msa=0&msid=106431329189139452431.000458c25e140ead6df80&ll=43.313438,3.417091&spn=0.084934,0.22316&z=13">
-        	<img src="mobile/iwebkit/thumbs/maps.png" />
+        	<img src="/${portalName}/mobile/iwebkit/thumbs/maps.png" />
             <span class="maplink">Locate in map application</span>
             <span class="arrow"></span>
 		</a>
 	</li>
-                        
+
 	<li class="textbox">
     	<#assign UrlRef = "#"/>
 		<#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
@@ -127,12 +127,12 @@
 		<#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
         	<#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
 		</#if>
-        <a class="originalcontext" href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+        <a class="originalcontext" href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
 			target="_blank"
 			alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
 			title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>">
 			<@spring.message 'ViewInOriginalContext_t' />
 			<span class="arrow"></span>
 		</a>
-	</li>          
+	</li>
 </ul>

@@ -1,0 +1,29 @@
+requestmdrecord - set a unique index to avoid duplicates!
+
+
+Sample image from dashboard image cache
+
+http://dashboard.europeana.sara.nl/cache/image/?uri=http%3A%2F%2Fbvpb.mcu.es%2Fes%2Fcatalogo_imagenes%2Fimagen_id.cmd%3FidImagen%3D600940%26formato%3Djpg%26altoMaximo%3D200%26anchoMaximo%3D200
+
+with urllib.unquote_plus() on uri param we find the source url:
+
+img url http://bvpb.mcu.es/es/catalogo_imagenes/imagen_id.cmd?idImagen=600940&formato=jpg&altoMaximo=200&anchoMaximo=200
+
+
+calculate_hash() on this url with give cache item
+
+
+
+
+urllib.quote_plus('http://www.peoplesnetwork.gov.uk/dpp/resource/2301200/stream/thumbnail_image_jpeg')
+'http%3A%2F%2Fwww.peoplesnetwork.gov.uk%2Fdpp%2Fresource%2F2301200%2Fstream%2Fthumbnail_image_jpeg'
+>>>
+>>> urllib.unquote_plus('http%3A%2F%2Fwww.peoplesnetwork.gov.uk%2Fdpp%2Fresource%2F2301200%2Fstream%2Fthumbnail_image_jpeg')
+'http://www.peoplesnetwork.gov.uk/dpp/resource/2301200/stream/thumbnail_image_jpeg'
+
+
+
+I am just taking a look at the errors from 10001_L_CH_dodis.xml in
+http://sip-manager.isti.cnr.it:8383/uris/bad_by_req_e/19/1/.
+These are manly pdfs, error meassage "Failed to read content-length ".
+I don't really understand this.

@@ -9,6 +9,7 @@ BUILD_ALL=true
 # Installation of jar is m2 repository
 cd definitions; $INSTALL
 cd ../core; $INSTALL
+cd ../sip-core; $INSTALL
 
 # Packaging of War files
 cd ../portal-lite; $PACKAGE

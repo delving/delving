@@ -41,5 +41,31 @@ def calculate_hash(item):
       each line is separated by one \n character
       and finaly the <record> and </record> should be kept!
     """
-    r_hash = hashlib.sha256(item.upper()).hexdigest().upper()
+    r_hash = hashlib.sha256(item).hexdigest().upper()
     return r_hash
+
+
+def __db_is_mysql():
+    from django.db import connection
+    cursor = connection.cursor()
+    if hasattr(cursor, 'db'):
+        # if DEBUG=True its found here...
+        look_at = cursor.db
+    else:
+        # Otherwise we find it here
+        look_at = cursor
+    if look_at.__str__().find('mysql') > -1:
+        b = True
+    else:
+        b = False
+    return b
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print 'Param should be the item that should be hashed'
+        sys.exit(1)
+    print calculate_hash(sys.argv[1])
+else:
+    db_is_mysql = __db_is_mysql()

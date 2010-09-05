@@ -42,6 +42,7 @@ import java.util.Map;
  */
 public class ClickStreamLoggerImpl implements ClickStreamLogger {
     private Logger log = Logger.getLogger(getClass());
+    private static String VERSION = "1.0";
 
     @Override
     public void logUserAction(HttpServletRequest request, UserAction action, ModelAndView model) {
@@ -105,6 +106,18 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         }
 //        String pageId;
         // private String state;
+        UserAction userAction = UserAction.BRIEF_RESULT;
+        Map params = request.getParameterMap();
+        if (params.containsKey("bt")) {
+            if (request.getParameter("bt").equalsIgnoreCase("pacta")) {
+                userAction = UserAction.BRIEF_RESULT_FROM_PACTA;
+            }
+            else if (request.getParameter("bt").equalsIgnoreCase("savedSearch")) {
+                userAction = UserAction.BRIEF_RESULT_FROM_SAVED_SEARCH;
+            }
+        } else if (params.containsKey("rtr") && request.getParameter("rtr").equalsIgnoreCase("true")) {
+            userAction = UserAction.RETURN_TO_RESULTS;
+        }
         int pageNr = briefBeanView.getPagination().getPageNumber();
         int nrResults = briefBeanView.getPagination().getNumFound();
         String languageFacets = briefBeanView.getFacetLogs().get("LANGUAGE");
@@ -113,7 +126,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                 MessageFormat.format(
                         "[action={0}, view={1}, query={2}, queryType={7}, queryConstraints=\"{3}\", page={4}, " +
                                 "numFound={5}, langFacet={8}, countryFacet={9}, {6}]",
-                        UserAction.BRIEF_RESULT, page.getViewName(), query,
+                        userAction, page.getViewName(), query,
                         queryConstraints, pageNr, nrResults, printLogAffix(request), solrQuery.getQueryType(),
                         languageFacets, countryFacet));
     }
@@ -122,20 +135,39 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
     public void logFullResultView(HttpServletRequest request, FullBeanView fullResultView, ModelAndView page, String europeanaUri) {
         String originalQuery = "";
         String startPage = "";
+        String numFound = "";
         try {
             DocIdWindowPager idWindowPager = fullResultView.getDocIdWindowPager();
             originalQuery = idWindowPager.getQuery();
-            startPage = idWindowPager.getStartPage();
+            startPage = String.valueOf(idWindowPager.getFullDocUriInt());
+            numFound = idWindowPager.getDocIdWindow().getHitCount().toString();
         } catch (UnsupportedEncodingException e) {
             // todo decide what to do with this error
         } catch (Exception e) {
             // todo decide what to do with this error
         }
+
+        UserAction userAction = UserAction.FULL_RESULT;
+        Map params = request.getParameterMap();
+        if (params.containsKey("bt")) {
+            if (request.getParameter("bt").equalsIgnoreCase("carousel")) {
+                userAction = UserAction.FULL_RESULT_FROM_CAROUSEL;
+            }
+            else if (request.getParameter("bt").equalsIgnoreCase("savedItem")) {
+                userAction = UserAction.FULL_RESULT_FROM_SAVED_ITEM;
+            }
+            else if (request.getParameter("bt").equalsIgnoreCase("savedTag")) {
+                userAction = UserAction.FULL_RESULT_FROM_SAVED_TAG;
+            }
+            else if (request.getParameter("bt").equalsIgnoreCase("bob")) {
+                userAction = UserAction.FULL_RESULT_FROM_YEAR_GRID;
+            }
+        }
         log.info(
                 MessageFormat.format(
-                        "[action={0}, europeana_uri={2}, query={4}, start={3}, {1}]",
-                        UserAction.FULL_RESULT, printLogAffix(request), europeanaUri,
-                        startPage, originalQuery));
+                        "[action={0}, europeana_uri={2}, query={4}, start={3}, numFound={5}, {1}]",
+                        userAction, printLogAffix(request), europeanaUri,
+                        startPage, originalQuery, numFound));
     }
 
     private static String printLogAffix(HttpServletRequest request) {
@@ -154,8 +186,8 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         String userAgent = request.getHeader("User-Agent");
         String referer = request.getHeader("referer");
         return MessageFormat.format(
-                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}",
-                userId, language, date, ip, reqUrl, userAgent, referer);
+                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, v={7}",
+                userId, language, date, ip, reqUrl, userAgent, referer, VERSION);
     }
 
     private static String getRequestUrl(HttpServletRequest request) {

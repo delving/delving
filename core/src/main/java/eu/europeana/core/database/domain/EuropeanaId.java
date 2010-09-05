@@ -26,6 +26,7 @@ import org.hibernate.annotations.Index;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -80,12 +81,19 @@ public class EuropeanaId implements Serializable {
     @Index(name = "europeanauri_index")
     private String europeanaUri;
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.LAZY, mappedBy = "europeanaId")
+    private List<Annotation> annotations;
+    
+    //TODO is CascadeType.ALL really necessary?
     @OneToMany(cascade = CascadeType.ALL)
+    //TODO should rather use mappedBy here instead of @JoinColumn
     @JoinColumn(name = "europeanaid")
     private List<SocialTag> socialTags;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
-    @JoinColumn(name = "europeanaid")
+    //TODO is CascadeType.ALL really necessary?
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
+    //TODO this @JoinColumn can be removed (covered by mappedBy)
+	@JoinColumn(name = "europeanaid")
     private List<CarouselItem> carouselItems;
 
     @Column(nullable = true)
@@ -168,6 +176,17 @@ public class EuropeanaId implements Serializable {
     public void setSocialTags(List<SocialTag> socialTags) {
         this.socialTags = socialTags;
     }
+    
+    public List<Annotation> getAnnotations() {
+		if (annotations == null) {
+			annotations = new ArrayList<Annotation>();
+		}
+    	return annotations;
+	}
+
+	public void setAnnotations(List<Annotation> annotations) {
+		this.annotations = annotations;
+	}
 
     public List<CarouselItem> getCarouselItems() {
         if (carouselItems == null) {

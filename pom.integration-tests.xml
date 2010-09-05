@@ -39,9 +39,9 @@
 		<module>api</module>
 		<module>portal-lite</module>
 		<module>portal-full</module>
-		<module>dashboard</module>
 		<module>sip-creator</module>
 		<module>integration-tests</module>
+        <module>dashboard</module>
 	</modules>
 
 	<reporting>

@@ -30,7 +30,6 @@ from django.conf.urls.defaults import url, patterns
 import views
 
 
-
 def global_environ(request):
     """Insert some additional information into the template context
     from the settings.
@@ -38,13 +37,13 @@ def global_environ(request):
     """
     additions = {
         #'DJANGO_ROOT': request.META['SCRIPT_NAME'],
-        'europeana_item_count_mill': 6, # in miljons how large the dataset is
+        'europeana_item_count_mill': 7, # in miljons how large the dataset is
     }
     return additions
 
 
 
-def urls():
+def NOTurls():
     """
     (r'^about_us/$', common_index),
     (r'^about_us.html$', common_index),
@@ -53,9 +52,12 @@ def urls():
     lst = []
 
     for template in views.find_templates():
-        lst.append( (r'^%s/$' % template, views.show_page) )
-        lst.append( (r'^%s.html$' % template, views.show_page) )
-        lst.append(url(r'^%s_(?P<lang>\w+).html$' % template,
+        # by basename
+        lst.append( (r'^%s%s/$' % (PORTAL_PREFIX, template), views.show_page) )
+        # as base .html
+        lst.append( (r'^%s%s.html$' % (PORTAL_PREFIX, template), views.show_page) )
+        # with languagename
+        lst.append(url(r'^%s%s_(?P<lang>\w+).html$' % (PORTAL_PREFIX, template),
                        views.show_page,
                        name=template))
     lst.append(url(r'^%s_(?P<lang>\w+).properties$' % views.PROP_URL_NAME,

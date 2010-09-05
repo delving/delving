@@ -36,6 +36,8 @@ urlpatterns = patterns('',
 
     url(r'^statistics/$', views.statistics, name='uri_stats_idx'),
 
+    url(r'^dg1/$', views.dg1, name='uri_dg1'),
+
     url(r'^stats_reqs/$', views.stats_req_lst, name='uri_stats_req'),
     url(r'^stats_by_reqs/(?P<sreq_id>\d+)/$', views.stats_by_req, name='uri_stats_by_req'),
 
@@ -45,4 +47,12 @@ urlpatterns = patterns('',
     url(r'^problems/(?P<source_id>\S+)/$', views.problems, name='uri_problems'),
     url(r'^problems/$', views.problems, name='uri_problems'),
 
+
+    url(r'^bad_by_req_e/(?P<req_id>\d+)/(?P<err_code>\d+)/$', views.uri_bad_by_req_err, name='uri_bad_by_req_err'),
+    url(r'^bad_by_req_s/(?P<req_id>\d+)/(?P<webserver_id>\d+)/$', views.uri_bad_by_server, name='uri_bad_by_server'),
+    url(r'^bad_by_req_m/(?P<req_id>\d+)/(?P<mime_type>\S+)/$', views.uri_bad_by_req_mime, name='uri_bad_by_req_mime'),
+    url(r'^bad_by_req/(?P<offset>\d+)/$', views.uri_bad_by_request, name='uri_bad_by_request'),
+
+
+    url(r'^rescedule/$', views.rescedule, name='uri_bad_rescedule'),
 )

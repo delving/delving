@@ -26,7 +26,7 @@
     <artifactId>definitions</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Definitions</name>
-    <version>1.01</version>
+    <version>1.0.20</version>
     <description>Definition classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -45,6 +45,7 @@
                 <role>consultant</role>
             </roles>
         </developer>
+
     </developers>
     <organization>
         <name>Europeana Foundation</name>

@@ -27,30 +27,30 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <#-- favicon_red.ico is also available -->
-    <link rel="shortcut icon" href="/portal/favicon_red.ico"/>
+    <link rel="shortcut icon" href="/${portalName}/favicon_red.ico"/>
 <#assign useJawr = false/>
     <!--- make sure to enable/disable (comment-out) the appropriate JAWR servlets in the web.xml -->
 <#if useJawr >
-    <link rel="stylesheet" type="text/css" href="css/jawr/common.css"/>
-    <script type="text/javascript" src="js/jawr/global.js"></script>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/css/jawr/common.css"/>
+    <script type="text/javascript" src="/${portalName}/js/jawr/global.js"></script>
     <#else>
         <#if pageId??>
             <#switch pageId>
                 <#case "in">
                 <#-- js_utilities needed for language selection -->
-                    <script type="text/javascript" src="js/js_utilities.js"></script>
+                    <script type="text/javascript" src="/${portalName}/js/js_utilities.js"></script>
                 <#break/>
                 <#case "bd">
                 <#-- needed for image placeholder: showDefaultSmall(...) -->
-                    <script type="text/javascript" src="js/results.js"></script>
+                    <script type="text/javascript" src="/${portalName}/js/results.js"></script>
                 <#break/>
             </#switch>
         </#if>
         <#if is_IEMobile?? && is_IEMobile = true>
-            <script type="text/javascript" src="mobile/js/mobile.js"></script>
+            <script type="text/javascript" src="/${portalName}/mobile/js/mobile.js"></script>
         </#if>
 
-    <link rel="stylesheet" type="text/css" href="mobile/css/mobile.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/mobile/css/mobile.css"/>
 </#if>
 <#if device_screen_width??>
      <#if device_screen_height??>

@@ -21,67 +21,71 @@
 
 package eu.europeana.core.querymodel.beans;
 
-import eu.europeana.core.querymodel.annotation.Europeana;
-import eu.europeana.core.querymodel.annotation.Solr;
 import eu.europeana.core.querymodel.query.BriefDoc;
 import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.definitions.annotations.Europeana;
+import eu.europeana.definitions.annotations.Solr;
 import org.apache.solr.client.solrj.beans.Field;
 
-import static eu.europeana.core.querymodel.annotation.ValidationLevel.*;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
+import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:16:46 AM
+ * @since Jan 7, 2010 9:16:46 AM       
  */
 
 public class BriefBean extends IdBean implements BriefDoc {
 
     transient int index;
+    transient String fullDocUrl;
+    transient int score;
+    transient String debugQuery;
 
-    @Europeana(validation = EsePlusRequired)
-    @Solr(namespace = "europeana", name = "collectionName", multivalued = false, required = true)
+    @Europeana(category = ESE_PLUS, constant = true)
+    @Solr(prefix = "europeana", localName = "collectionName", multivalued = false, required = true)
     @Field("europeana_collectionName")
     String[] europeanaCollectionName;
 
     @Field("PROVIDER")
-    @Europeana(validation = CopyField, facet = true, facetPrefix = "prov", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "prov", briefDoc = true)
     @Solr(fieldType = "string")
     String[] provider;
 
-    @Europeana(validation = EseRequired, briefDoc = true, object = true, mappable = true)
-    @Solr(namespace = "europeana", name = "object")
+    @Europeana(briefDoc = true, object = true, url = true) // todo: object is not required!!
+    @Solr(prefix = "europeana", localName = "object")
     @Field("europeana_object")
     String[] europeanaObject;
 
     @Field("COUNTRY")
-    @Europeana(validation = CopyField, facet = true, facetPrefix = "coun")
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coun")
     @Solr(fieldType = "string")
     String[] country;
 
     @Field("TYPE")
-    @Europeana(validation = CopyField, facet = true, facetPrefix = "type", briefDoc = true, type = true)
-    @Solr(fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "type", briefDoc = true, type = true)
+    @Solr(localName = "type", fieldType = "string")
     String[] docType;
 
     @Field("LANGUAGE")
-    @Europeana(validation = CopyField, facet = true, facetPrefix = "lang", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "lang", briefDoc = true)
     @Solr(fieldType = "string")
     String[] language;
 
     @Field("YEAR")
-    @Europeana(validation = CopyField, facet = true, facetPrefix = "yr", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "yr", briefDoc = true, converter="extractYear")
     @Solr(fieldType = "string")
     String[] year;
 
     @Field
-    @Europeana(validation = CopyField, briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true)
     @Solr()
     String[] title;
 
     @Field
     @Solr()
-    @Europeana(validation = CopyField, briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true)
     String[] creator;
 
     @Override
@@ -90,8 +94,38 @@ public class BriefBean extends IdBean implements BriefDoc {
     }
 
     @Override
+    public String getFullDocUrl() {
+        return fullDocUrl;
+    }
+
+    @Override
+    public int getScore() {
+        return score;
+    }
+
+    @Override
+    public String getDebugQuery() {
+        return debugQuery;  
+    }
+
+    @Override
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public void setFullDocUrl(String fullDocUrl) {
+        this.fullDocUrl = fullDocUrl;
+    }
+
+    @Override
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    @Override
+    public void setDebugQuery(String debugQuery) {
+        this.debugQuery = debugQuery;
     }
 
     @Override

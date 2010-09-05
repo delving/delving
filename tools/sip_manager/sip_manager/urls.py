@@ -25,6 +25,8 @@
 """
 
 from django.conf.urls.defaults import *
+from django.shortcuts import render_to_response, redirect
+from django.contrib.auth import logout
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -33,13 +35,22 @@ admin.autodiscover()
 from django.contrib import databrowse
 
 
+def top_index(request):
+    return render_to_response("top_index.html", {'request': request,})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('top_index')
 
 
 urlpatterns = patterns('',
     # Example:
     # (r'^sip_web/', include('sip_web.foo.urls')),
+    url(r'^$', top_index, name='top_index'),
 
     (r'^uris/', include('apps.plug_uris.urls')),
+    (r'^sipm/', include('apps.sipmanager.urls')),
     (r'^stats/', include('apps.statistics.urls')),
 
     #(r'^databrowse/(.*)', databrowse.site.root),
@@ -50,10 +61,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^logout/$', logout_view, name='logout'),
+
 )
-
-
-
-
 
 

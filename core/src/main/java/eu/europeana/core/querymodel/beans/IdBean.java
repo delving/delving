@@ -21,15 +21,13 @@
 
 package eu.europeana.core.querymodel.beans;
 
-import eu.europeana.core.querymodel.annotation.Europeana;
-import eu.europeana.core.querymodel.annotation.Solr;
 import eu.europeana.core.querymodel.query.DocId;
+import eu.europeana.definitions.annotations.Europeana;
+import eu.europeana.definitions.annotations.FieldCategory;
+import eu.europeana.definitions.annotations.Solr;
 import org.apache.solr.client.solrj.beans.Field;
 
 import java.util.Date;
-
-import static eu.europeana.core.querymodel.annotation.ValidationLevel.EsePlusRequired;
-import static eu.europeana.core.querymodel.annotation.ValidationLevel.IndexTimeField;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -38,13 +36,13 @@ import static eu.europeana.core.querymodel.annotation.ValidationLevel.IndexTimeF
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true, validation = EsePlusRequired)
-    @Solr(namespace = "europeana", name = "uri", multivalued = false, required = true)
+    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, requiredGroup = "europeana:uri", url = true)
+    @Solr(prefix = "europeana", localName = "uri", multivalued = false, required = true)
     @Field("europeana_uri")
     String europeanaUri;
 
-    @Europeana(validation = IndexTimeField)
-    @Solr(name = "timestamp", multivalued = false, defaultValue = "NOW")
+    @Europeana(category = FieldCategory.INDEX_TIME_ADDITION)
+    @Solr(localName = "timestamp", multivalued = false, defaultValue = "NOW")
     @Field("timestamp")
     Date timestamp;
 

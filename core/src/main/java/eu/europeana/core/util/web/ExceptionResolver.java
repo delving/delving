@@ -56,6 +56,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{europeanaProperties['debug']}")
     private String debug;
 
+    @Value("#{europeanaProperties['portal.name']}")
+    private String portalName;
+
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
@@ -75,6 +78,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("request", ControllerUtil.formatFullRequestUrl(request));
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", cacheUrl);
+                model.put("portalName", portalName);
                 model.put("agent", request.getHeader("User-Agent"));
                 model.put("referer", request.getHeader("referer"));
                 model.put(EmailSender.SUBJECT, queryProblem.getFragment());
@@ -95,6 +99,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         mav.addObject("debug", debugMode);
         mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
         mav.addObject("cacheUrl", cacheUrl);
+        mav.addObject("portalName", portalName);
         mav.addObject("queryProblem", queryProblem);
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);

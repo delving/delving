@@ -65,12 +65,14 @@ mogrify -path BRIEF_DOC/subdir1/subdir2
 """
 
 import datetime
+import httplib
 import os
+import random
 import sys
 import time
 import urllib2
 import urlparse
-#from xml.dom.minidom import parseString
+from xml.sax.saxutils import unescape as unescapeXml
 
 
 # sudo ln -s /opt/local/lib/libMagickWand.dylib /opt/local/lib/libWand.dylib
@@ -80,7 +82,8 @@ from django.db import connection
 from django.conf import settings
 
 from apps.base_item import models as base_item
-from apps.process_monitor.sipproc import SipProcess
+from apps.log import models as log
+from apps.sipmanager import sip_task
 
 from utils.gen_utils import calculate_hash
 
@@ -128,6 +131,19 @@ if not USE_IMAGE_MAGIC:
 
 
 
+if not USE_IMAGE_MAGIC:
+    try:
+        from PIL import Image
+    except ImportError:
+        try:
+            import Image
+        except:
+            print '*** No module named PIL - needed by %s' % __file__
+            print '\tsuggested solution: sudo easy_install pil'
+            sys.exit(1)
+
+
+
 # To avoid typos, we define the dirnames here and later use theese vars
 REL_DIR_ORIGINAL = 'original'
 if OLD_STYLE_IMAGE_NAMES:
@@ -137,23 +153,28 @@ else:
     REL_DIR_BRIEF = 'BRIEF_DOC'
 
 
-class UriPepareStorageDirs(SipProcess):
+class UriPepareStorageDirs(sip_task.SipTask):
+    SHORT_DESCRIPTION = 'Creates storage dirs'
     INIT_PLUGIN = True
     PLUGIN_TAXES_DISK_IO = True
 
     def run_it(self):
         if OLD_STYLE_IMAGE_NAMES:
-            places = (REL_DIR_ORIGINAL, REL_DIR_BRIEF)
-            tst_dir = '6EA'
+            places = ((REL_DIR_ORIGINAL, False), (REL_DIR_BRIEF, True))
         else:
-            places = (REL_DIR_ORIGINAL, REL_DIR_FULL, REL_DIR_BRIEF)
-            tst_dir = '12/32'
+            places = ((REL_DIR_ORIGINAL, False),
+                      (REL_DIR_FULL, False), (REL_DIR_BRIEF, False))
 
-        for s in places:
+        for s, old_style in places:
+            if old_style:
+                tst_dir = '6EA' # just test something random for existance
+            else:
+                tst_dir = '12/32'  # just test something random for existance
+
             test_dir = os.path.join(SIP_OBJ_FILES, s, tst_dir)
             if not os.path.exists(test_dir):
                 self.task_starting('Creating dirs for %s' % s, 256)
-                if OLD_STYLE_IMAGE_NAMES:
+                if old_style:
                     self.pre_generate_uri_trees_old_style(s)
                 else:
                     self.pre_generate_uri_trees(s)
@@ -185,9 +206,11 @@ class UriPepareStorageDirs(SipProcess):
                     os.mkdir(new_dir)
 
 
-class UriCreate(SipProcess):
+
+
+class UriCreate(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Create new uri records'
-    EXECUTOR_STYLE = True
+    THREAD_MODE = sip_task.SIPT_SINGLE
 
     def prepare(self):
         self.cursor = connection.cursor()
@@ -195,9 +218,13 @@ class UriCreate(SipProcess):
         #   Finding MdRecords with no matching Uri items, since all MdRecords
         #   contains uri this indicates that this item is not processed
         # TODO: In desperate need of optimization!
-        self.cursor.execute(
-            "SELECT DISTINCT m.id FROM base_item_mdrecord m LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id WHERE u.mdr_id IS NULL")
+        sql = ["SELECT DISTINCT m.id FROM base_item_mdrecord m"]
+        sql.append("LEFT JOIN plug_uris_uri u ON m.id = u.mdr_id")
+        sql.append("WHERE u.mdr_id IS NULL and m.status != %i LIMIT 25000" % base_item.MDRS_BROKEN)
+        self.cursor.execute(" ".join(sql))
+
         if self.cursor.rowcount:
+            self.initial_message = 'Found %i records' % self.cursor.rowcount
             return True
         else:
             return False
@@ -211,6 +238,7 @@ class UriCreate(SipProcess):
                 break
             record_count += 1
             mdr_id = result[0]
+            # Normaly we wont change the mdr, so we dont need to lock it
             mdrs = base_item.MdRecord.objects.filter(pk=mdr_id,pid=0)
             if not mdrs:
                 # we know it exists, so must be busy, leave it for later processing
@@ -221,7 +249,7 @@ class UriCreate(SipProcess):
                                   base_item.MDRS_PROCESSING):
                 continue # never touch bad / completed items
             self.handle_md_record(mdr)
-            self.task_time_to_show(record_count)
+            self.task_time_to_show(record_count, terminate_on_high_load=True)
         return True
 
     def handle_md_record(self, mdr):
@@ -235,10 +263,29 @@ class UriCreate(SipProcess):
                            ):
             url = self.find_tag(tag, mdr.source_data)
             if url:
-                break
+                self.handle_uri(mdr, itype, url)
+                break # DEBUG for the moment abort as soon as we have at least one
+                      # uri, since we need one to indicate this mdrecord is
+                      # processed, remove this once we actually want to verify
+                      # all the uris
         if not url:
+            el = log.ErrLog(err_code=log.LOGE_NO_URIS,
+                            msg = 'MdRecord with no uris',
+                            item_id = 'MdRecord %i' % mdr.pk,
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
+            mdr_l = self.grab_item(base_item.MdRecord, mdr.pk, wait=10)
+            if not mdr_l:
+                raise sip_task.SipTaskException('Mdr %i missing any uri, failed to lock mdr' % mdr.pk)
+            mdr_l.status = base_item.MDRS_BROKEN
+            mdr_l.save()
+            self.release_item(base_item.MdRecord, mdr_l.pk)
             return False
+        return True
 
+
+    def handle_uri(self, mdr, itype, url):
         srvr_name = urlparse.urlsplit(url).netloc.lower()
         uri_sources = models.UriSource.objects.filter(name_or_ip=srvr_name)
         if uri_sources:
@@ -253,36 +300,46 @@ class UriCreate(SipProcess):
         # Do a mapping request - uri (to speed up statistics)
         #
         for req_md in base_item.RequestMdRecord.objects.filter(md_record=mdr):
-            req_uri = models.ReqUri(req=req_md.request, uri=uri)
+            req_uri = models.ReqUri(req=req_md.request,
+                                    uri=uri,
+                                    source_id=uri.uri_source.pk,
+                                    item_type=uri.item_type)
             req_uri.save()
         return True
+
 
     def find_tag(self, tag, source_data):
         parts = source_data.split(tag)
         if len(parts) == 1:
             return None
-        url = parts[1].split('<')[0]
+        url = unescapeXml(parts[1].split('<')[0])
         return url
 
 
 
-
-class UriValidateSave(SipProcess):
+class UriValidateSave(sip_task.SipTask):
     SHORT_DESCRIPTION = 'process new uri records'
     PLUGIN_TAXES_NET_IO = True
-    IS_THREADABLE = True
+    THREAD_MODE = sip_task.SIPT_THREADABLE
+    PRIORITY = sip_task.SIP_PRIO_HIGH
 
     def prepare(self):
-        urisources = models.UriSource.objects.filter(pid=0)
+        urisources = models.UriSource.objects.filter(pid=0).values('pk')
         if not urisources:
             return False
 
+        # in order to not try the same urisource all the time when one task
+        # previously was terminated due to high load, we randomize the order
+        lst = [p['pk'] for p in urisources]
+        random.shuffle(lst)
+
         self.urisource = None
-        for urisource in urisources:
+        for urisource_id in lst:
             # Loop over available sources, see if any of them has pending jobs
-            if models.Uri.objects.new_by_source_count(urisource.pk):
+            if models.Uri.objects.new_by_source_count(urisource_id):
                 # found one!  lets work on it
-                self.urisource = urisource
+                self.urisource = models.UriSource.objects.filter(pk=urisource_id)[0]
+                self.initial_message = self.urisource.name_or_ip
                 break
 
         if not self.urisource:
@@ -295,14 +352,10 @@ class UriValidateSave(SipProcess):
         # We must mark this item early, before possible threading kicks in
         # otherwise we might find it again before the thread actually starts
         # to work on the current set
-        if not self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source'):
+        self.urisource = self.grab_item(models.UriSource, self.urisource.pk,'processing all imgs for source')
+        if not self.urisource:
             return False
 
-        self.run_in_thread(self.do_one_source)
-        return True
-
-
-    def do_one_source(self):
         current_count = models.Uri.objects.new_by_source_count(self.urisource.pk)
         self.task_starting('', current_count, display=False)
         record_count = 0
@@ -317,7 +370,12 @@ class UriValidateSave(SipProcess):
 
             self.release_item(models.Uri, uri_id)
 
-            self.task_time_to_show(record_count)
+            try:
+                self.task_time_to_show(record_count, terminate_on_high_load=True)
+            except sip_task.SipSystemOverLoaded:
+                 # Terminate in a controled fashion so we can do cleanup
+                break
+
 
             if record_count > current_count:
                 # More items has turned up since we started this loop,
@@ -325,6 +383,7 @@ class UriValidateSave(SipProcess):
                 # we should terminate now, and things will continue on next call
                 # to this plugin
                 break
+
         self.release_item(models.UriSource, self.urisource.pk)
         return True
 
@@ -349,20 +408,29 @@ class UriValidateSave(SipProcess):
         try:
             itm = urllib2.urlopen(self.uri.url,timeout=URL_TIMEOUT)
         except urllib2.HTTPError, e:
-            return self.set_urierr(models.URIE_HTTP_ERROR, 'http error: %i' % e.code)
+            try:
+                err_msg = httplib.responses[e.code]
+            except:
+                err_msg = 'Unable to lookup error code'
+            return self.set_urierr(models.URIE_HTTP_ERROR, '[%i] - %s' % (e.code, err_msg))
+
         except urllib2.URLError, e:
             if str(e.reason) == 'timed out':
                 code = models.URIE_TIMEOUT
                 msg = ''
             else:
                 code = models.URIE_URL_ERROR
-                msg =  '%s: %s' % (models.URI_ERR_CODES[code], str(e.reason))
+                msg =  str(e.reason)
             return self.set_urierr(code, msg)
         except:
             return self.set_urierr(models.URIE_OTHER_ERROR, 'Unhandled error when checking url')
 
         if itm.code != 200:
-            return self.set_urierr(models.URIE_HTML_ERROR, 'HTML status: %i' % itm.code)
+            try:
+                err_msg = httplib.responses[itm.code]
+            except:
+                err_msg = 'Unable to lookup error code'
+            return self.set_urierr(models.URIE_HTML_ERROR, '[%i] - %s' % (itm.code, err_msg) )
         try:
             content_t = itm.headers['content-type']
         except:
@@ -388,8 +456,16 @@ class UriValidateSave(SipProcess):
             try:
                 content_length = int(itm.headers[HTTPH_CONT_LENGTH])
             except:
-                return self.set_urierr(models.URIE_OTHER_ERROR,
-                                       'Failed to read %s' % HTTPH_CONT_LENGTH)
+                # previously we aborted, if content lenght couldnt be read
+                # this proved to be to restrictive, now we just log a warning
+                # and accept the item
+                el = log.ErrLog(err_code=log.LOGE_WEB_SERV_RESP,
+                                msg = 'Failed to read %s' % HTTPH_CONT_LENGTH,
+                                item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                                plugin_module = self.__class__.__module__,
+                                plugin_name = self.__class__.__name__)
+                el.save()
+                content_length = 0
         try:
             data = itm.read()
         except:
@@ -398,17 +474,16 @@ class UriValidateSave(SipProcess):
 
         if content_length and (len(data) != content_length):
             return self.set_urierr(models.URIE_WRONG_FILESIZE,
-                                   'Wrong filesize, expected: %i recieved: %i' % (content_length, len(data)))
+                                   'Wrong filesize, expected: %i recieved: %i' % (
+                                       content_length, len(data)))
 
-        self.uri.url_hash = calculate_hash(self.uri.url)
         self.uri.content_hash = calculate_hash(data)
 
-        if OLD_STYLE_IMAGE_NAMES:
-            base_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
-        else:
-            base_fname = self.file_name_from_hash(self.uri.url_hash)
-        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, base_fname)
-        #self.make_needed_dirs(org_fname)
+        #
+        #  Store original
+        #
+        org_rel = self.file_name_from_hash(self.uri.content_hash)
+        org_fname = os.path.join(SIP_OBJ_FILES, REL_DIR_ORIGINAL, org_rel)
         try:
             fp = open(org_fname, 'w')
             fp.write(data)
@@ -418,14 +493,38 @@ class UriValidateSave(SipProcess):
                                    'Failed to save original')
         self.uri_state(models.URIS_ORG_SAVED)
 
-        if USE_IMAGE_MAGIC:
-            return self.generate_images_magic(base_fname, org_fname)
+
+        # Identify & store actual filetyp
+        retcode, stdout, stderr = self.cmd_execute_output('file %s' % org_fname)
+        if retcode:
+            msg = u'retcode: %s\nstdout: %s\nstderr: %s' % (retcode, stdout, stderr)
+            return self.set_urierr(models.URIE_OTHER_ERROR,
+                                   'Failed to identify file type\n%s' % msg)
+        f_type = stdout.split(org_fname)[-1].strip()
+        if f_type[0] == ':':
+            f_type = f_type[1:].strip()
+        self.uri.file_type = f_type[:149]
+        if f_type.lower().find('html') > -1:
+            return self.set_urierr(models.URIE_WAS_HTML_PAGE_ERROR,
+                                   'mime_type image, content html')
+
+
+        self.uri.url_hash = calculate_hash(self.uri.url)
+        if OLD_STYLE_IMAGE_NAMES:
+            thumb_fname = self.file_name_from_hash_old_style(self.uri.url_hash)
         else:
-            return self.generate_images_pil(base_fname, org_fname)
+            thumb_fname = self.file_name_from_hash(self.uri.url_hash)
+
+        if USE_IMAGE_MAGIC:
+            return self.generate_images_magic(thumb_fname, org_fname)
+        else:
+            return self.generate_images_pil(thumb_fname, org_fname)
+
 
     def file_name_from_hash(self, url_hash):
         fname = '%s/%s/%s' % (url_hash[:2], url_hash[2:4],url_hash)
         return fname
+
 
     def file_name_from_hash_old_style(self, url_hash):
         "Old style (<= 0.6 release) way of generating filenames from hash."
@@ -435,7 +534,7 @@ class UriValidateSave(SipProcess):
 
     def set_urierr(self, code, msg=''):
         if code not in models.URI_ERR_CODES:
-            raise SipProcessException('set_urierr called with invalid errcode')
+            raise SipTaskException('set_urierr called with invalid errcode')
         self.uri.err_code = code
         if msg:
             self.uri.err_msg = msg
@@ -450,12 +549,21 @@ class UriValidateSave(SipProcess):
             self.uri.status = models.URIS_FAILED
 
         self.uri.save()
+        for requri in models.ReqUri.objects.filter(uri=self.uri):
+            requri.err_code=code
+            requri.save()
         return False # propagate error
 
 
     def uri_state(self, state):
         self.uri.status = state
         self.uri.save()
+        for requri in models.ReqUri.objects.filter(uri=self.uri):
+            requri.status=state
+            requri.item_type = self.uri.item_type
+            requri.mime_type = self.uri.mime_type
+            requri.file_type = self.uri.file_type
+            requri.save()
 
 
     #--------------   ImageMagic utility methods   ----------------------------
@@ -483,14 +591,22 @@ class UriValidateSave(SipProcess):
                                   '%s%s' % (base_fname, ext))
         cmd = [CONVERT_COMMAND]
         cmd.append('-resize 200x')
-        cmd.append(org_fname)
+        cmd.append('%s[0]' % org_fname)
         cmd.append(fname_full)
-        output = self.cmd_execute1(cmd)
-        if output:
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode:
             self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate FULL_DOC\ncmd output %s' % output)
+            return self.set_urierr(models.URIE_OBJ_CONVERT_ERROR,
+                                   'Failed to generate FULL_DOC\ncmd output %s%s' % (stdout,stderr))
+        if stdout or stderr:
+            el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                            msg = u'FULL_DOC %s %s' % (stdout, stderr),
+                            item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
         self.uri_state(models.URIS_FULL_GENERATED)
+
 
         if OLD_STYLE_IMAGE_NAMES:
             ext = '.BRIEF_DOC.jpg'
@@ -500,20 +616,27 @@ class UriValidateSave(SipProcess):
                                    '%s%s' % (base_fname, ext))
         cmd = [CONVERT_COMMAND]
         cmd.append('-resize x110')
-        cmd.append(org_fname)
+        cmd.append('%s[0]' % org_fname)
         cmd.append(fname_brief)
-        output = self.cmd_execute1(cmd)
-        if output:
-            self.remove_file(fname_full)
-            return self.set_urierr(models.URIE_OBJ_CONVERTION_ERROR,
-                                   'Failed to generate BRIEF_DOC\ncmd output %s' % output)
+        retcode, stdout, stderr = self.cmd_execute_output(cmd)
+        if retcode:
+            self.remove_file(fname_brief)
+            return self.set_urierr(models.URIE_OBJ_CONVERT_ERROR,
+                                   'Failed to generate BRIEF_DOC\ncmd output %s%s' % (stdout,stderr))
+        if stdout or stderr:
+            el = log.ErrLog(err_code=log.LOGE_IMG_CONV_WARN,
+                            msg = u'BRIEF_DOC %s %s' % (stdout, stderr),
+                            item_id = '%s %i' % (self.uri._meta.db_table, self.uri.pk),
+                            plugin_module = self.__class__.__module__,
+                            plugin_name = self.__class__.__name__)
+            el.save()
         self.uri_state(models.URIS_BRIEF_GENERATED)
         return True
 
 
     def remove_file(self, full_path):
         if not SIP_OBJ_FILES in full_path:
-            raise SipProcessException('Attempt to remove illegal filename: %s' % full_path)
+            raise SipTaskException('Attempt to remove illegal filename: %s' % full_path)
         try:
             os.remove(full_path)
         except OSError:
@@ -565,7 +688,7 @@ class UriValidateSave(SipProcess):
 
 
 
-class UriCleanup(SipProcess):
+class UriCleanup(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Remove uri records no longer having a request'
 
     def run_it(self):
@@ -573,7 +696,7 @@ class UriCleanup(SipProcess):
         return True
 
 
-class UriFileTreeMonitor(SipProcess):
+class UriFileTreeMonitor(sip_task.SipTask):
     SHORT_DESCRIPTION = 'Walks file tree and finds orphan files'
 
     def run_it(self):

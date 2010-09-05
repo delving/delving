@@ -21,13 +21,19 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
-import eu.europeana.sip.io.GroovyService;
+import eu.europeana.sip.model.FileSet;
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.xml.namespace.QName;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -40,49 +46,56 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
-
-public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
+public class GroovyEditor extends JPanel {
 
     public final static int VALIDATION_DELAY = 500;
     private final static Logger LOG = Logger.getLogger(GroovyEditor.class.getName());
 
     private JEditorPane codeArea = new JEditorPane();
-    private JTextArea outputArea = new JTextArea();
+    private JTextArea outputArea;
     private CompileTimer compileTimer;
-    private GroovyService groovyService;
     private List<String> availableNodes;
 
-    public GroovyEditor() {
-        super(new BorderLayout());
-        add(createSplitPane());
-        outputArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Output"));
-        this.groovyService = new GroovyService(new GroovyService.Listener() {
-            @Override
-            public void setMapping(final String groovyCode) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        codeArea.setText(groovyCode);
-                        compileTimer.triggerSoon();
-                    }
-                });
-            }
+    public void updateCodeArea(String groovyCode) {
+        codeArea.setText(groovyCode);
+        compileTimer.triggerSoon();
+    }
 
-            @Override
-            public void setResult(final String result) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        outputArea.setText(result);
-                    }
-                });
-            }
-        });
+    public GroovyEditor(final JTextArea outputArea) {
+        super(new BorderLayout());
+        this.outputArea = outputArea;
+        add(createSplitPane());
+//        this.groovyService = new GroovyService(new GroovyService.Listener() {
+//            @Override
+//            public void setMapping(final String groovyCode) {
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        codeArea.setText(groovyCode);
+//                        compileTimer.triggerSoon();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void setResult(final String result) {
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        outputArea.setText(result);
+//                    }
+//                });
+//            }
+//        });
         this.compileTimer = new CompileTimer();
         this.codeArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent event) {
                 switch (event.getKeyCode()) {
+                    case KeyEvent.VK_ESCAPE:
+                        autoCompleteDialog.setVisible(false);
+                        codeArea.requestFocus();
+                        break;
                     case KeyEvent.VK_SPACE:
                         if (event.getModifiers() == KeyEvent.CTRL_MASK && validatePrefix(codeArea.getCaretPosition())) {
                             autoCompleteDialog.setVisible(true);
@@ -93,11 +106,13 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
                     case KeyEvent.VK_DOWN:
                         autoCompleteDialog.requestFocus(codeArea.getCaret().getMagicCaretPosition());
                         break;
+                    case KeyEvent.VK_ENTER:
+                        break;
                     default:
                         codeArea.requestFocus();
                 }
                 compileTimer.triggerSoon();
-                autoCompleteDialog.updateElements(autoComplete.complete(event, availableNodes));
+                autoCompleteDialog.updateElements(event, availableNodes);
                 autoCompleteDialog.updateLocation(codeArea.getCaret().getMagicCaretPosition(), event.getComponent().getLocationOnScreen());
             }
         });
@@ -105,15 +120,15 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
     }
 
     public void setFileSet(FileSet fileSet) {
-        groovyService.setFileSet(fileSet);
+//        groovyService.setFileSet(fileSet);
     }
 
     public void setRecordRoot(QName recordRoot) {
-        groovyService.setRecordRoot(recordRoot);
+//        groovyService.setRecordRoot(recordRoot);
     }
 
     public void nextRecord() {
-        groovyService.nextRecord();
+//        groovyService.nextRecord();
     }
 
     private JComponent createSplitPane() {
@@ -138,15 +153,14 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
 
     public boolean validatePrefix(int caretPosition) {
         String text = codeArea.getText();
-        if (text.length() < AutoComplete.DEFAULT_PREFIX.length()) {
+        if (text.length() < AutoCompleteDialog.DEFAULT_PREFIX.length()) {
             return false;
         }
-        String prefixArea = text.substring(caretPosition - AutoComplete.DEFAULT_PREFIX.length(), caretPosition);
+        String prefixArea = text.substring(caretPosition - AutoCompleteDialog.DEFAULT_PREFIX.length(), caretPosition);
         LOG.debug(String.format("This is the found prefix : '%s'%n", prefixArea));
-        return AutoComplete.DEFAULT_PREFIX.equals(prefixArea);
+        return AutoCompleteDialog.DEFAULT_PREFIX.equals(prefixArea);
     }
 
-    @Override
     public void updateAvailableNodes(java.util.List<String> nodes) {
         this.availableNodes = nodes;
     }
@@ -157,7 +171,7 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
         @Override
         public void actionPerformed(ActionEvent e) {
             timer.stop();
-            groovyService.setMapping(codeArea.getText());
+//            groovyService.setMapping(codeArea.getText());
         }
 
         public void triggerSoon() {
@@ -165,23 +179,11 @@ public class GroovyEditor extends JPanel implements AnalyzerPanel.Listener {
         }
     }
 
-    private final AutoComplete autoComplete = new AutoCompleteImpl(
-            new AutoCompleteImpl.Listener() {
-                @Override
-                public void cancelled() {
-                    autoCompleteDialog.setVisible(false);
-                }
-            }
-    );
-
     private final AutoCompleteDialog autoCompleteDialog = new AutoCompleteDialog(
             new AutoCompleteDialog.Listener() {
                 @Override
                 public void itemSelected(Object selectedItem) {
                     updateCodeArea(codeArea.getCaretPosition(), selectedItem);
-                    if (autoComplete instanceof AutoCompleteDialog.Listener) {
-                        ((AutoCompleteDialog.Listener) autoComplete).itemSelected(selectedItem);
-                    }
                 }
             },
             codeArea

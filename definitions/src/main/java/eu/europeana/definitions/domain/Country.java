@@ -48,7 +48,8 @@ public enum Country {
     SWEDEN("Sweden"),
     SWITZERLAND("Switzerland"),
     TURKEY("Turkey"),
-    UK("United Kingdom"),
+    UNITED_KINGDOM("United Kingdom"),
+    UK("UK"), // todo: remove this eventually
     UKRAINE("Ukraine");
 
     private String englishName;
@@ -61,12 +62,16 @@ public enum Country {
         return englishName;
     }
 
-     public static Country get(String string) {
+    public String getCode() {
+        return englishName.toLowerCase();
+    }
+
+    public static Country get(String string) {
         for (Country t : values()) {
             if (t.getEnglishName().equalsIgnoreCase(string)) {
                 return t;
             }
         }
-        throw new IllegalArgumentException("Did not recognize Country: ["+string+"]");
+        throw new IllegalArgumentException("Did not recognize Country: [" + string + "]");
     }
 }

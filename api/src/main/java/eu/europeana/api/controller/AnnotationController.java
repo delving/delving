@@ -166,10 +166,9 @@ public class AnnotationController {
 
     private User getUser() throws UserNotFoundException {
         User user = ControllerUtil.getUser();
-// todo: work out the security for API
-//        if (user == null) {
-//            throw new UserNotFoundException();
-//        }
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
         return user;
     }
 }

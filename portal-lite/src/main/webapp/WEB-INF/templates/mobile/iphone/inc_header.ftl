@@ -27,33 +27,33 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <#-- favicon_red.ico is also available -->
-    <link rel="shortcut icon" href="/portal/favicon_red.ico"/>
+    <link rel="shortcut icon" href="/${portalName}/favicon_red.ico"/>
 <#assign useJawr = false/>
     <!--- make sure to enable/disable (comment-out) the appropriate JAWR servlets in the web.xml -->
 <#if useJawr >
-    <link rel="stylesheet" type="text/css" href="css/jawr/common.css"/>
-    <script type="text/javascript" src="js/jawr/global.js"></script>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/css/jawr/common.css"/>
+    <script type="text/javascript" src="/${portalName}/js/jawr/global.js"></script>
     <#else>
 
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta name="viewport" content="minimum-scale=1.0, width=device-width, maximum-scale=1.0, user-scalable=no"/>
-        <link rel="apple-touch-startup-image" href="mobile/images/apple-startup.png"/>
-        <link rel="apple-touch-icon" href="mobile/images/apple-touch-icon.png"/>
+        <link rel="apple-touch-startup-image" href="/${portalName}/mobile/images/apple-startup.png"/>
+        <link rel="apple-touch-icon" href="/${portalName}/mobile/images/apple-touch-icon.png"/>
 
         <!-- iwebkit v5.x -->
-        <link rel="stylesheet" type="text/css" href="mobile/iwebkit/css/style.css"/>
-        <link rel="stylesheet" type="text/css" href="mobile/css/iwebkit_addon.css"/>
-        <script type="text/javascript" src="mobile/iwebkit/javascript/functions.js"></script>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/mobile/iwebkit/css/style.css"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/mobile/css/iwebkit_addon.css"/>
+        <script type="text/javascript" src="/${portalName}/mobile/iwebkit/javascript/functions.js"></script>
 
         <#if pageId??>
             <#switch pageId>
                 <#case "in">
                 <#-- js_utilities needed for language selection -->
-                    <script type="text/javascript" src="js/js_utilities.js"></script>
+                    <script type="text/javascript" src="/${portalName}/js/js_utilities.js"></script>
                     <#break/>
                 <#case "bd">
                 <#-- needed for image placeholder: showDefaultSmall(...) -->
-                    <script type="text/javascript" src="js/results.js"></script>
+                    <script type="text/javascript" src="/${portalName}/js/results.js"></script>
                     <#break/>
             </#switch>
         </#if>
@@ -117,7 +117,7 @@
 
     <#if pageId != "in">
         <#if pageId == "bd">
-            <div id="leftnav"><a href="index.html"><img alt="home" src="mobile/iwebkit/images/home.png"/></a></div>
+            <div id="leftnav"><a href="/${portalName}/index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a></div>
             <#elseif pageId == "fd">
                 <div id="leftnav">
                 <#-- on the full doc, we provide a link back to the result page with the appropriate icon -->
@@ -125,15 +125,15 @@
                         <a href="${pagination.returnToResults?html}">
                             <#switch view>
                                 <#case "text_only"><img class="titleresultnav"
-                                                        src="mobile/images/text_only.gif"/><#break/>
+                                                        src="/${portalName}/mobile/images/text_only.gif"/><#break/>
                                 <#case "image_only"><img class="titleresultnav"
-                                                         src="mobile/images/image_only.gif"/><#break/>
+                                                         src="/${portalName}/mobile/images/image_only.gif"/><#break/>
                                 <#default><#case "mixed"><img class="titleresultnav"
-                                                              src="mobile/images/mixed.gif"/><#break/>
+                                                              src="/${portalName}/mobile/images/mixed.gif"/><#break/>
                             </#switch>
                         </a>
                     </#if>
-                    <a href="index.html"><img alt="home" src="mobile/iwebkit/images/home.png"/></a>
+                    <a href="/${portalName}/index.html"><img alt="home" src="/${portalName}/mobile/iwebkit/images/home.png"/></a>
                 </div>
         </#if>
         <#else>

@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>${europeana.sip-creator.version}</version>
+    <version>0.8.28</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -38,64 +38,68 @@
         <defaultGoal>compile</defaultGoal>
         <plugins>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>eu.europeana.sip.gui.NormalizerPanel</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <groupId>org.codehaus.mojo.webstart</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-1-SNAPSHOT</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>attached</goal>
+                            <goal>jnlp-inline</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <libPath/>
+                    <jnlp>
+                        <outputFile>sip-creator.jnlp</outputFile>
+                        <mainClass>eu.europeana.sip.gui.SipCreatorGUI</mainClass>
+                    </jnlp>
+                    <sign>
+                      <keystore>${basedir}/src/main/jnlp/snakeoil.keystore</keystore>
+                      <keypass>sip-creator</keypass>
+                      <storepass>sip-creator</storepass>
+                      <alias>sip-creator</alias>
+                      <verify>true</verify>
+                    </sign>
+                    <pack200>false</pack200>
+                    <gzip>false</gzip>
+                    <outputJarVersions>false</outputJarVersions>
+                    <verbose>false</verbose>
+                </configuration>
             </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
+            <groupId>eu.delving</groupId>
+            <artifactId>sip-core</artifactId>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>jsyntaxpane</groupId>
-            <artifactId>jsyntaxpane</artifactId>
-            <version>0.9.5-b29</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <groupId>javax.jnlp</groupId>
+            <artifactId>jnlp-api</artifactId>
+            <version>1.5.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-lgpl</artifactId>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.htmlparser</groupId>
-            <artifactId>htmlparser</artifactId>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

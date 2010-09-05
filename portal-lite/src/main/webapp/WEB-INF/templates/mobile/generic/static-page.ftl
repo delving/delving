@@ -4,7 +4,7 @@
 <#include "../inc_header.ftl"/>
 
 <div id="logo">
-	<a href="index.html"><img src="mobile/images/logo_slogan.png" alt="Logo"/></a>
+	<a href="/${portalName}/index.html"><img src="/${portalName}/mobile/images/logo_slogan.png" alt="Logo"/></a>
 </div>
 
 <script>

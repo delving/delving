@@ -4,6 +4,9 @@ import _root_.org.junit.runner.RunWith
 import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.Spec
 import _root_.org.scalatest.junit.JUnitRunner
+import org.apache.solr.client.solrj.SolrQuery
+import scala.collection.JavaConversions._
+import java.util.List
 
 
 /**
@@ -14,148 +17,102 @@ import _root_.org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ResultPaginationSpec extends Spec with ShouldMatchers {
+  describe("A ResultPagination") {
 
-
-
-/*
-  @Test
-    public void smallPagination() throws Exception {
-        String page = makePage(30, 20, 0);
-        assertEquals(
-                "1\n" +
-                        "2(21)\n" +
-                        "next(21)\n",
-                page
-        );
+    describe("(when a start pagination range)") {
+      testPagination(300, 20, 0, "simple query")
     }
 
-    @Test
-    public void startPagination() throws Exception {
-        String page = makePage(300, 20, 0);
-        assertEquals(
-                "1\n" +
-                        "2(21)\n" +
-                        "3(41)\n" +
-                        "4(61)\n" +
-                        "5(81)\n" +
-                        "6(101)\n" +
-                        "7(121)\n" +
-                        "8(141)\n" +
-                        "9(161)\n" +
-                        "10(181)\n" +
-                        "next(21)\n",
-                page
-        );
+    describe("(when given a middle pagination range)"){
+      testPagination(300, 20, 140, "simple query")
     }
 
-    @Test
-    public void middlePagination() throws Exception {
-        String page = makePage(300, 20, 140);
-        assertEquals(
-                "prev(121)\n" +
-                        "3(41)\n" +
-                        "4(61)\n" +
-                        "5(81)\n" +
-                        "6(101)\n" +
-                        "7(121)\n" +
-                        "8\n" +
-                        "9(161)\n" +
-                        "10(181)\n" +
-                        "11(201)\n" +
-                        "12(221)\n" +
-                        "next(161)\n",
-                page
-        );
+    describe("(when given a near end pagination range)"){
+      testPagination(300, 20, 260, "simple query")
     }
 
-    @Test
-    public void nearEndPagination() throws Exception {
-        String page = makePage(300, 20, 260);
-        assertEquals(
-                "prev(241)\n" +
-                        "6(101)\n" +
-                        "7(121)\n" +
-                        "8(141)\n" +
-                        "9(161)\n" +
-                        "10(181)\n" +
-                        "11(201)\n" +
-                        "12(221)\n" +
-                        "13(241)\n" +
-                        "14\n" +
-                        "15(281)\n" +
-                        "next(281)\n",
-                page
-        );
+    describe("(when given an end pagination range)"){
+      testPagination(300, 20, 280, "simple query")
+    }
+
+    describe("(when given a non inclusive end pagination range)"){
+      testPagination(295, 20, 280, "simple query")
+    }
+  }
+
+  def testPagination(numFound: Int, rows: Int, start: Int, query: String) : Unit = {
+     val pager: ResultPagination = makePage(numFound, rows, start, query)
+
+    it("should not have a previous page if start is less then number of rows") {
+      if (rows > start)
+        pager.isPrevious should be (false)
+      else
+        pager.isPrevious should be (true)
 
     }
 
-    @Test
-    public void endPagination() throws Exception {
-        String page = makePage(300, 20, 280);
-        assertEquals(
-                "prev(261)\n" +
-                        "6(101)\n" +
-                        "7(121)\n" +
-                        "8(141)\n" +
-                        "9(161)\n" +
-                        "10(181)\n" +
-                        "11(201)\n" +
-                        "12(221)\n" +
-                        "13(241)\n" +
-                        "14(261)\n" +
-                        "15\n",
-                page
-        );
+    it("should have a next page when start + rows is smaller then numFound") {
+      if ((start + rows) >= numFound)
+        pager.isNext should be (false)
+      else
+        pager.isNext should be (true)
     }
 
-    private String makePage(int numFound, int rows, int start) throws Exception {
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setQuery("");
-        solrQuery.setStart(start);
-        solrQuery.setRows(rows);
-        return makePage(new ResultPaginationImpl(solrQuery, numFound, "queryString??"));
+    it("should start should be start + 1") {
+      pager.getStart should equal(start + 1)
     }
 
-    private String makePage(ResultPaginationImpl p) throws Exception {
-        Map<String, Object> model = new TreeMap<String, Object>();
-        model.put("pagination", p);
-        return FreemarkerUtil.processResource("/example-pagination.ftl", model);
-    }*/
+    it("should nextPage should be start + rows + 1") {
+      pager.getNextPage should equal(start + 1 + rows)
+    }
 
-  /*
-    def processResource(templateName: String, model: Map[_, _]): String = {
-  var out: StringWriter = new StringWriter
-getResourceTemplate(templateName).process(model, out)
-return out.toString
-}
+    it("should give back numFound unmodified") {
+      pager.getNumFound should equal(numFound)
+    }
 
+    it("should give back rows unmodified") {
+      pager.getRows should equal(rows)
+    }
 
+    it("should have pageNumber that is start divided by rows + 1") {
+      pager.getPageNumber should equal(start / rows + 1)
+    }
 
-  def processWebInf(templateName: String, model: Map[_, _]): String = {
-  var out: StringWriter = new StringWriter
-getWebInfTemplate(templateName).process(model, out)
-return out.toString
-}
+    it("should give back number of rows + start as last viewable record") {
+      val lastViewableRecord = if (start + rows > numFound) numFound else start + rows
+      pager.getLastViewableRecord should equal(lastViewableRecord)
+    }
 
+    it("should give back 10 pagelinks when numfound exceeds 10 times the number of rows") {
+      if (numFound > (10 * rows))
+        pager.getPageLinks.size should equal(10)
+    }
 
+    it("should give back numFound divided by rows with numFound is less then 10 times the number of rows") {
+      if (numFound < (10 * rows))
+        pager.getPageLinks.size should equal(numFound / rows)
+    }
 
-private   def getResourceTemplate(fileName: String): Template = {
-return getTemplate(fileName, new InputStreamReader(classOf[FreemarkerUtil].getResourceAsStream(fileName)))
-}
+    it("should have only the first pageLink marked as not linked") {
+      val notLinkedPageLink = pager.getPageLinks.filter(_.isLinked == false)
+      notLinkedPageLink.size should equal(1)
+      notLinkedPageLink.head.getDisplay should equal (start / rows + 1)
+    }
 
+    it("should have each pagelink, that is linked, as start the display value - 1 + number for rows") {
+      val pageLinks: List[PageLink] = pager.getPageLinks
+      pageLinks.tail.forall(pl => ((pl.getDisplay - 1) * rows + 1) == pl.getStart) should be(true)
+    }
+  }
 
-
-  def getWebInfTemplate(fileName: String): Template = {
-return getTemplate(fileName, new FileReader("./portal-full/src/main/webapp/WEB-INF/templates/" + fileName))
-}
-
-
-
-private   def getTemplate(name: String, reader: Reader): Template = {
-  var configuration: Configuration = new Configuration
-configuration.setLocale(new Locale("nl"))
-configuration.setObjectWrapper(new DefaultObjectWrapper)
-return new Template(name, reader, configuration)
-}
-   */
+  def makePage(numFound: Int, rows: Int, start: Int, query: String): ResultPagination = {
+    def createSolrQuery(): SolrQuery = {
+      val solrQuery = new SolrQuery
+      solrQuery setQuery query
+      solrQuery setRows rows
+      solrQuery setStart start
+      solrQuery
+    }
+    new ResultPaginationImpl(createSolrQuery, numFound, query, null)
+  }
 }

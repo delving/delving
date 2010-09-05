@@ -130,7 +130,7 @@
             <name>EBR External Release Repository</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
-          <repository>
+        <repository>
             <id>scala-tools.releases</id>
             <name>Scala-Tools Dependencies Repository for Releases</name>
             <url>http://scala-tools.org/repo-releases</url>
@@ -158,6 +158,8 @@
         <module>dashboard</module>
         <module>sip-creator</module>
         <module>integration-tests</module>
+        <module>sip-core</module>
+        <module>meta-repo</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
@@ -518,6 +520,12 @@
                 <artifactId>solr-solrj</artifactId>
                 <version>1.4.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.solr</groupId>
+                <artifactId>solr-core</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.scalatest</groupId>
@@ -535,18 +543,20 @@
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
                 <version>${scala.version}</version>
-                <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>1.7.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <properties>
-        <europeana.definitions.version>1.01</europeana.definitions.version>
-        <europeana.core.version>1.40</europeana.core.version>
-        <europeana.sip-creator.version>2.8</europeana.sip-creator.version>
-        <europeana.portal.version>0.6.2</europeana.portal.version>
-        <europeana.api.version>0.12</europeana.api.version>
-        <europeana.dashboard.version>0.3</europeana.dashboard.version>
+        <europeana.definitions.version>1.0.20</europeana.definitions.version>
+        <europeana.core.version>1.0.44</europeana.core.version>
+        <europeana.portal.version>0.7.4</europeana.portal.version>
+        <europeana.api.version>0.5.25</europeana.api.version>
+        <europeana.dashboard.version>0.3.11</europeana.dashboard.version>
 
         <jdkLevel>1.6</jdkLevel>
 

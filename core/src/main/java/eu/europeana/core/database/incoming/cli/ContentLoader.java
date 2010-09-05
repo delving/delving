@@ -56,6 +56,7 @@ public class ContentLoader {
     private ImportRepository repository;
     private List<Job> jobs = new ArrayList<Job>();
     private int simultaneousJobs = 5;
+    private static String baseUrl;
 
     private class Job {
         EuropeanaCollection collection;
@@ -82,6 +83,8 @@ public class ContentLoader {
         eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
         dashboardDao = (DashboardDao) context.getBean("dashboardDao");
         repository = (ImportRepository) context.getBean("normalizedImportRepository");
+        CommonsHttpSolrServer solrServer = (CommonsHttpSolrServer) context.getBean("solrUpdateServer");
+        baseUrl = solrServer.getBaseURL();
 
     }
 
@@ -129,9 +132,9 @@ public class ContentLoader {
         LOG.info("Committed Solr");
     }
 
-    private static boolean isSorlRunning() {
+    private boolean isSorlRunning() {
         try {
-            SolrServer server = new CommonsHttpSolrServer("http://kurikoer.org:8080/solr/");
+            SolrServer server = new CommonsHttpSolrServer(baseUrl);
             SolrPingResponse response = server.ping();
             return response.getResponse().get("status").toString().equalsIgnoreCase("ok");
         }
@@ -141,7 +144,9 @@ public class ContentLoader {
     }
 
     public static void main(String... commandLine) throws Exception {
-        if (!isSorlRunning()) {
+        ContentLoader contentLoader = new ContentLoader();
+        contentLoader.init();
+        if (!contentLoader.isSorlRunning()) {
             throw new Exception("Expected to find SOLR running.");
         }
         if (commandLine.length == 0) {
@@ -154,7 +159,6 @@ public class ContentLoader {
             }
         }
         else {
-            ContentLoader contentLoader = new ContentLoader();
             for (String command : commandLine) {
                 if (command.startsWith("-")) {
                     int simultaneousJobs = Integer.parseInt(command.substring(1));
@@ -164,7 +168,6 @@ public class ContentLoader {
                     contentLoader.addMetadataFile(command);
                 }
             }
-            contentLoader.init();
             LOG.info("start loading content");
             contentLoader.loadMetadata();
             LOG.info("finished loading content");

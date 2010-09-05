@@ -6,7 +6,7 @@ $(document).ready(function() {
     function removeRequest(className, id){
         $.ajax({
            type: "POST",
-           url: "remove.ajax",
+           url: "/portal/remove.ajax",
            data: "className="+className+"&id="+id,
            success: function(msg){
                 window.location.reload();
@@ -20,7 +20,7 @@ $(document).ready(function() {
     function saveRequest(className, id){
         $.ajax({
            type: "POST",
-           url: "save.ajax",
+           url: "/portal/save.ajax",
            data: "className="+className+"&id="+id,
            success: function(msg){
                 window.location.reload();
@@ -36,18 +36,18 @@ $(document).ready(function() {
         switch(iType)
         {
         case "TEXT":
-          obj.src="images/item-page.gif";
+          obj.src="/portal/images/item-page.gif";
           break;
         case "IMAGE":
-          obj.src="images/item-image.gif";
+          obj.src="/portal/images/item-image.gif";
           break;
         case "VIDEO":
-          obj.src="images/item-video.gif";
+          obj.src="/portal/images/item-video.gif";
           break;
         case "SOUND":
-          obj.src="images/item-sound.gif";
+          obj.src="/portal/images/item-sound.gif";
           break;
         default:
-          obj.src="images/item-page.gif";
+          obj.src="/portal/images/item-page.gif";
         }
      }

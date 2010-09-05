@@ -6,39 +6,43 @@ from django.core import exceptions
 
 
 try:
-    DATABASE_ENGINE
+    DATABASES
 except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_ENGINE - see local_settings_sample.py')
+    # old style single database
+    try:
+        DATABASE_ENGINE
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_ENGINE - see local_settings_sample.py')
 
 
-try:
-    DATABASE_NAME
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_NAME - see local_settings_sample.py')
+    try:
+        DATABASE_NAME
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_NAME - see local_settings_sample.py')
 
 
-try:
-    DATABASE_USER
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_USER - see local_settings_sample.py')
+    try:
+        DATABASE_USER
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_USER - see local_settings_sample.py')
 
 
-try:
-    DATABASE_PASSWORD
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PASSWORD - see local_settings_sample.py')
+    try:
+        DATABASE_PASSWORD
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PASSWORD - see local_settings_sample.py')
 
 
-try:
-    DATABASE_HOST
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_HOST - see local_settings_sample.py')
+    try:
+        DATABASE_HOST
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_HOST - see local_settings_sample.py')
 
 
-try:
-    DATABASE_PORT
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PORT - see local_settings_sample.py')
+    try:
+        DATABASE_PORT
+    except:
+        raise exceptions.ImproperlyConfigured('Missing setting DATABASE_PORT - see local_settings_sample.py')
 
 
 try:
@@ -46,11 +50,6 @@ try:
 except:
     raise exceptions.ImproperlyConfigured('Missing setting SECRET_KEY - see local_settings_sample.py')
 
-
-try:
-    IMPORT_SCAN_TREE
-except:
-    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE - see local_settings_sample.py')
 
 try:
     SIP_LOG_FILE
@@ -64,59 +63,110 @@ except:
 
 
 
-
 #
-#  Optional settings, if not given default is used
+# DummyIngestion settings
+#  Until integration with Repox I use the module dummy_ingester this module
+#  is pointed to a path, where it reads and parses all xml files found.
 #
 try:
-    DEBUG
+    IMPORT_SCAN_TREE
 except:
-    DEBUG = False
-
-
-try:
-    THREADING_PLUGINS
-except:
-    THREADING_PLUGINS = True
-
+    raise exceptions.ImproperlyConfigured('Missing setting IMPORT_SCAN_TREE - see local_settings_sample.py')
 
 try:
     TREE_IS_INGESTION_SVN
 except:
     TREE_IS_INGESTION_SVN = True
+    print 'Using default value for TREE_IS_INGESTION_SVN =', TREE_IS_INGESTION_SVN
 
 try:
     OLD_STYLE_IMAGE_NAMES
 except:
     OLD_STYLE_IMAGE_NAMES = False
+    print 'Using default value for OLD_STYLE_IMAGE_NAMES =', OLD_STYLE_IMAGE_NAMES
+
+
+
+
+#
+#  Optional settings, if not given default is used
+#
+try:
+    THREADING_PLUGINS
+except:
+    THREADING_PLUGINS = True
+    print 'Using default value for THREADING_PLUGINS =', THREADING_PLUGINS
 
 
 try:
     TASK_PROGRESS_INTERVALL
 except:
     TASK_PROGRESS_INTERVALL = 15
+    print 'Using default value for TASK_PROGRESS_INTERVALL =', TASK_PROGRESS_INTERVALL
 
 try:
     PROCESS_SLEEP_TIME
 except:
     PROCESS_SLEEP_TIME = 60
+    print 'Using default value for PROCESS_SLEEP_TIME =', PROCESS_SLEEP_TIME
 
 
 try:
-    SIP_PROCESS_DBG_LVL
+    SIPMANAGER_DBG_LVL
 except:
-    SIP_PROCESS_DBG_LVL = 3
+    SIPMANAGER_DBG_LVL = 7
+    print 'Using default value for SIPMANAGER_DBG_LVL =', SIPMANAGER_DBG_LVL
 
 
 try:
-    URIVALIDATE_MAX_LOAD
+    MAX_LOAD_NEW_TASKS
 except:
-    URIVALIDATE_MAX_LOAD = 2.0
+    MAX_LOAD_NEW_TASKS = (1.7, 1.8,  1.9)
+    print 'Using default value for MAX_LOAD_NEW_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_NEW_TASKS
+try:
+    float(MAX_LOAD_NEW_TASKS)
+    MAX_LOAD_NEW_TASKS = (MAX_LOAD_NEW_TASKS,
+                          MAX_LOAD_NEW_TASKS,
+                          MAX_LOAD_NEW_TASKS)
+except:
+    try:
+        a,b,c = MAX_LOAD_NEW_TASKS
+        float(a)
+        float(b)
+        float(c)
+    except:
+        raise exceptions.ImproperlyConfigured('MAX_LOAD_NEW_TASKS must be a float or a tupple of three floats - see local_settings_sample.py')
+
+
+try:
+    MAX_LOAD_RUNNING_TASKS
+except:
+    MAX_LOAD_RUNNING_TASKS = (3.0, 3.2, 4.0)
+    print 'Using default value for MAX_LOAD_RUNNING_TASKS = (%0.1f, %0.1f, %0.1f)' % MAX_LOAD_RUNNING_TASKS
+try:
+    float(MAX_LOAD_RUNNING_TASKS)
+    MAX_LOAD_RUNNING_TASKS = (MAX_LOAD_RUNNING_TASKS,
+                              MAX_LOAD_RUNNING_TASKS,
+                              MAX_LOAD_RUNNING_TASKS)
+except:
+    try:
+        a,b,c = MAX_LOAD_RUNNING_TASKS
+        float(a)
+        float(b)
+        float(c)
+    except:
+        raise exceptions.ImproperlyConfigured('MAX_LOAD_RUNNING_TASKS must be a float or a tupple of three floats - see local_settings_sample.py')
 
 
 #
 #   Debug settings
 #
+try:
+    DEBUG
+except:
+    DEBUG = False
+    print 'Using default value for DEBUG =', DEBUG
+
 try:
     PLUGIN_FILTER
 except:
@@ -132,7 +182,7 @@ except:
 # Django settings for sip_web project.
 
 #local_settings DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -154,6 +204,8 @@ MANAGERS = ADMINS
 # system time zone.
 TIME_ZONE = 'Europe/Amsterdam'
 
+DATETIME_FORMAT = 'y-m-d H:i'
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-uk'
@@ -166,12 +218,13 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '%s/static' % proj_root
-
+MEDIA_ROOT = '%s/media' % proj_root
+print '*** MEDIA_ROOT', MEDIA_ROOT
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/static_media/'
+print '*** MEDIA_URL', MEDIA_URL
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -191,8 +244,11 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    #'django.contrib.csrf.middleware.CsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
+
+
 
 ROOT_URLCONF = 'sip_manager.urls'
 
@@ -201,6 +257,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     '%s/templates' % proj_root,
+    '/Library/Python/2.6/site-packages/djblets/datagrid/templates',
 )
 
 INSTALLED_APPS = (
@@ -212,17 +269,21 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     #'dajaxice',
     #'dajax',
+    #'djblets.datagrid',
+    #'djblets.util',
 
-    'apps.base_item',
+    # base sipmanager modules
+    'apps.sipmanager',
     'apps.dummy_ingester',
-    'apps.plug_uris',
-    'apps.process_monitor',
+    'apps.base_item',
 
+    # plugins
+    'apps.plug_uris',
+
+    'apps.log',
     'apps.statistics',
 )
 
 DAJAXICE_FUNCTIONS = (
 	'examples.ajax.randomize',
 )
-
-

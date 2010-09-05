@@ -42,7 +42,7 @@ msgstr "Traducido"
 
 #: templates/rosetta/languages.html:18 templates/rosetta/pofile.html:48
 msgid "Fuzzy"
-msgstr "Velloso"
+msgstr "Revisar"
 
 #: templates/rosetta/languages.html:19
 msgid "Obsolete"

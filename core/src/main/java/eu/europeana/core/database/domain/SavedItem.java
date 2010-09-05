@@ -49,7 +49,7 @@ import java.util.Date;
 @Entity
 public class SavedItem implements Serializable {
     private static final long serialVersionUID = -7059004310525816113L;
-                         
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;

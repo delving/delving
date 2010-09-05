@@ -9,7 +9,7 @@
 <p><a href="${url}">${url}</a></p>
 
 <p>Many thanks,<br /><br />
-The Europeana Team</p>
+The Delving Team</p>
 
 </body>
 

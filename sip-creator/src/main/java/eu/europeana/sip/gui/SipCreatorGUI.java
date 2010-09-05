@@ -21,10 +21,27 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.io.FileSet;
+import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.definitions.beans.AllFieldBean;
+import eu.europeana.definitions.beans.BriefBean;
+import eu.europeana.definitions.beans.FullBean;
+import eu.europeana.definitions.beans.IdBean;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.SipModel;
+import eu.europeana.sip.model.UserNotifier;
+import org.apache.log4j.Logger;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The main GUI class for the sip creator
@@ -34,16 +51,20 @@ import java.awt.*;
  */
 
 public class SipCreatorGUI extends JFrame {
-    private AnalyzerPanel analyzerPanel = new AnalyzerPanel();
-    private NormalizerPanel normalizerPanel = new NormalizerPanel();
+    private Logger log = Logger.getLogger(getClass());
+    private SipModel sipModel;
 
-    public SipCreatorGUI() {
-        super("Europeana Ingestion SIP Creator");
+    public SipCreatorGUI(String metaRepoSubmitUrl) {
+        super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), metaRepoSubmitUrl);
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Analyzer", analyzerPanel);
-        tabs.addTab("Normalizer", normalizerPanel);
-        getContentPane().add(tabs);
+        tabs.addTab("Analysis", new AnalysisPanel(sipModel));
+        tabs.addTab("Mapping", new MappingPanel(sipModel));
+        tabs.addTab("Refinement", new RefinementPanel(sipModel));
+        tabs.addTab("Normalization", new NormPanel(sipModel));
+        tabs.addTab("Repository", new MetaRepoPanel(sipModel));
+        getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
@@ -52,27 +73,75 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar bar = new JMenuBar();
         FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
             @Override
-            public void select(FileSet fileSet) {
-                analyzerPanel.setFileSet(fileSet);
-                normalizerPanel.setFileSet(fileSet);
+            public boolean select(FileSet fileSet) {
+                if (!fileSet.isValid()) {
+                    return false;
+                }
+                else {
+                    fileSet.setExceptionHandler(new PopupExceptionHandler());
+                    sipModel.setFileSet(fileSet);
+                    setTitle(String.format("SIP Creator - %s", fileSet.getAbsolutePath()));
+                    return true;
+                }
             }
         });
-        analyzerPanel.setFileMenuEnablement(fileMenu.getEnablement());
         bar.add(fileMenu);
+        MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
+        bar.add(mappingTemplateMenu);
         return bar;
     }
 
-//    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
-//        List<Class<?>> classes = new ArrayList<Class<?>>();
-//        classes.add(beanClass);
-//        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-//        annotationProcessor.setClasses(classes);
-//        return annotationProcessor;
-//    }
-//
+    private AnnotationProcessor createAnnotationProcessor() {
+        List<Class<?>> list = new ArrayList<Class<?>>();
+        list.add(IdBean.class);
+        list.add(BriefBean.class);
+        list.add(FullBean.class);
+        list.add(AllFieldBean.class);
+        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
+        annotationProcessor.setClasses(list);
+        return annotationProcessor;
+    }
 
-    public static void main(String[] args) {
-        SipCreatorGUI sipCreatorGUI = new SipCreatorGUI();
-        sipCreatorGUI.setVisible(true);
+    private class PopupExceptionHandler implements UserNotifier {
+
+        @Override
+        public void tellUser(final String message, final Exception exception) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(SipCreatorGUI.this, message);
+                }
+            });
+//            if (exception != null) {
+//                log.warn(message, exception);
+//            }
+//            else {
+//                log.warn(message);
+//            }
+        }
+
+        @Override
+        public void tellUser(String message) {
+            tellUser(message, null);
+        }
+    }
+
+    public static void main(final String[] args) {
+        if (args.length == 0) {
+            System.out.println("Requires an argument! SipCreatorGUI [MetaRepo subumit URL]");
+        }
+        else if (args[0].startsWith("http://")) {
+            final String serverUrl = args[0];
+            System.out.println("Server '" + serverUrl + "'");
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(args[0]);
+                    sipCreatorGUI.setVisible(true);
+                }
+            });
+        }
+        else {
+            throw new RuntimeException("Argument not understood");
+        }
     }
 }

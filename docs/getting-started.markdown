@@ -1,4 +1,4 @@
-#Getting Started with Open Europeana Development
+#Getting Started with Delving Development
 
 <!--
 	TODO rewrite documentation to reflect changes after refactor (11-12-2009)
@@ -14,7 +14,7 @@ This document shows you how to setup your local development environment to start
 - ImageMagick 6.4 or higher
 
 
-## Open Europeana Modules ##
+## Delving Modules ##
 
 The Europeana Core environment contains the following modules:
 
@@ -34,7 +34,7 @@ We assume that you have postgres installed on your system and have access to the
 
 create 'europeana' user
 
-	createuser -U postgres -P -D -R europeana	
+	createuser -U postgres -P -D -R europeana
 
 create 'europeana' database and enter password 'culture' on the password prompt
 
@@ -48,6 +48,11 @@ You may see the error: "database creation failed: ERROR:  new encoding (UTF8) is
 test if you can login
 
 	psql europeana europeana
+
+If postgresql complains about "ident", edit the pg_hba.conf file and change 'ident' to 'md5' in this line:
+
+    # "local" is for Unix domain socket connections only
+    local   all         all                               md5 sameuser
 
 
 ## Build and install components in local maven2 repository ##

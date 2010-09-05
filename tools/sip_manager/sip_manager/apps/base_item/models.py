@@ -57,8 +57,8 @@ class MdRecordManager(models.Manager):
 
     def get_or_create(self, content_hash, source_data):
         cursor = connection.cursor()
-        cursor.execute("SELECT id FROM %s_mdrecord WHERE content_hash='%s'" % (
-            __name__.split('.')[-2], content_hash))
+        cursor.execute("SELECT id FROM %s WHERE content_hash='%s'" % (
+            self.model._meta.db_table, content_hash))
         if cursor.rowcount:
             # this can so not fail - i just refuse to do errorhandling for this call
             item = self.model.objects.filter(content_hash=content_hash)[0]

@@ -7,7 +7,7 @@
 <h3>The following static pages are available</h3>
 <p>
   {% for page in pages %}
-    <a href="/{{ page }}">{{ page }}</a>
+    <a href="/{{ portal_prefix }}/{{ page }}">{{ page }}</a>
     <br/>
   {% endfor %}
 </p>

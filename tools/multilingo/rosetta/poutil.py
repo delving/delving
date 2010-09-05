@@ -1,5 +1,7 @@
 import re, string, sys, os
 from django.conf import settings
+from rosetta.conf import settings as rosetta_settings
+
 try:
     set
 except NameError:
@@ -30,7 +32,11 @@ def find_pos(lang, include_djangos = False, include_rosetta = False):
     
     # project/app/locale
     for appname in settings.INSTALLED_APPS:
+        
         if 'rosetta' == appname and include_rosetta == False:
+            continue
+        
+        if rosetta_settings.EXCLUDED_APPLICATIONS and appname in rosetta_settings.EXCLUDED_APPLICATIONS:
             continue
             
         p = appname.rfind('.')
