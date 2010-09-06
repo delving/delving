@@ -90,48 +90,48 @@ public class FullBean extends BriefBean implements FullDoc {
     // todo: review these (also: what about querymodel.beans.*)
 
     @Europeana(category = ICN, converter = "extractYear")
-    @Solr(prefix = "icn", localName = "geboortejaarVervaardiger", multivalued = false)
-    String[] geboortejaarVervaardiger;
+    @Solr(prefix = "icn", localName = "creatorYearOfBirth", multivalued = false)
+    String[] creatorYearOfBirth;
 
     @Europeana(category = ICN, enumClass = Technique.class) // unless "other" is allowed, we have to remove this
-    @Solr(prefix = "icn", localName = "techniek")
-    String[] techniek;
+    @Solr(prefix = "icn", localName = "technique")
+    String[] technique;
 
     @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "materiaal")
-    String[] materiaal;
+    @Solr(prefix = "icn", localName = "material")
+    String[] material;
 
     @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "locatie")
-    String[] locatie;
+    @Solr(prefix = "icn", localName = "location")
+    String[] location;
 
     @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "provincie")
-    String[] provincie;
+    @Solr(prefix = "icn", localName = "province")
+    String[] province;
 
     @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "deelCollectie")
-    String[] deelcollectie;
+    @Solr(prefix = "icn", localName = "collectionPart")
+    String[] collectionPart;
 
     @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class)
-    @Solr(prefix = "icn", localName = "wijzeVanVerwering")
-    String[] wijzeVanVerwerving;
+    @Solr(prefix = "icn", localName = "acquisitionMeans")
+    String[] acquisitionMeans;
 
     @Europeana(category = ICN_RESEARCH, converter = "extractYear")
-    @Solr(prefix = "icn", localName = "jaarVanVerwerving", multivalued = false)
-    String[] jaarVanVerwerving;
+    @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
+    String[] acquisitionYear;
 
     @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class)
-    @Solr(prefix = "icn", localName = "aankoopbedrag", multivalued = false)
-    String[] aankoopbedrag;
+    @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
+    String[] purchasePrice;
 
     @Europeana(category = ICN_RESEARCH)
-    @Solr(prefix = "icn", localName = "verworvenMetSteunVan")
-    String[] verworvenMetSteunVan;
+    @Solr(prefix = "icn", localName = "acquiredWithHelpFrom")
+    String[] acquiredWithHelpFrom;
 
     @Europeana(category = ICN_RESEARCH)
-    @Solr(prefix = "icn", localName = "fysiekeStaat")
-    String[] fysiekeStaat;
+    @Solr(prefix = "icn", localName = "physicalState")
+    String[] physicalState;
 
     // todo: review the above
 
