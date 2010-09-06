@@ -444,8 +444,25 @@ public class SipModel {
         return fieldListModel.getUnmapped(recordCompileModel.getRecordMapping());
     }
 
+    public List<EuropeanaField> getUnmappedFields() {
+        List<EuropeanaField> fields = new ArrayList<EuropeanaField>();
+        ListModel listModel = getUnmappedFieldListModel();
+        for (int walkField = 0; walkField < listModel.getSize(); walkField++) {
+            fields.add((EuropeanaField) listModel.getElementAt(walkField));
+        }
+        return fields;
+    }
+
     public ListModel getVariablesListModel() {
         return variableListModel;
+    }
+
+    public List<VariableHolder> getVariables() {
+        List<VariableHolder> list = new ArrayList<VariableHolder>();
+        for (int walkVar = 0; walkVar < variableListModel.getSize(); walkVar++) {
+            list.add((VariableHolder) variableListModel.getElementAt(walkVar));
+        }
+        return list;
     }
 
     public ListModel getVariablesListWithCountsModel() {
