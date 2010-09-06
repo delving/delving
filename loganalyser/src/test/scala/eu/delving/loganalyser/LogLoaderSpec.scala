@@ -16,93 +16,92 @@ import collection.mutable.{HashMap, ListBuffer}
  */
 
 class LogLoaderSpec extends Spec with ShouldMatchers {
+  describe("A logloader") {
+    val compressedTestLogs = new File("loganalyser/src/test/resources/test_log_files/compressed")
+    val uncompressedTestLogs = new File("loganalyser/src/test/resources/test_log_files/uncompressed")
+    val coll = LogLoader.getMongoCollection("testLogEntries", "testCollection")
 
-    describe("A logloader") {
-      val compressedTestLogs = new File("loganalyser/src/test/resources/test_log_files/compressed")
-      val uncompressedTestLogs = new File("loganalyser/src/test/resources/test_log_files/uncompressed")
-      val coll = LogLoader.getMongoCollection("testLogEntries", "testCollection")
+    val loader = new LogLoader(coll)
 
-      val loader = new LogLoader(coll)
+    describe("(when given a directory)") {
 
-      describe("(when given a directory)") {
-
-        it("should recurse into all of them") {
-          var filesProcessed = 0
-          loader.processDirectory(compressedTestLogs) {
-            fileName =>
-              if (fileName.contains("ClickStreamLogger.log")) filesProcessed += 1
-          }
-          filesProcessed should equal(4)
+      it("should recurse into all of them") {
+        var filesProcessed = 0
+        loader.processDirectory(compressedTestLogs) {
+          fileName =>
+            if (fileName.contains("ClickStreamLogger.log")) filesProcessed += 1
         }
-      }
-
-      describe("(when given a gzipped file)") {
-
-        it("should process a gzipped file the same as a unzipped file") {
-          def logProcessor(file: String) = loader.processLogFile(new File(file)) {line =>}
-          val compressedLog = logProcessor("loganalyser/src/test/resources/test_log_files/compressed/portal4/portal4_ClickStreamLogger.log.gz")
-          val unCompressedLog = logProcessor("loganalyser/src/test/resources/test_log_files/uncompressed/portal4/portal4_ClickStreamLogger.log.2010-08-01.txt")
-          compressedLog should equal(unCompressedLog)
-        }
-      }
-
-      describe("(when receiving a log entry string)") {
-        val logEntry = "09:36:11:101 [action=FULL_RESULT, europeana_uri=http://www.europeana.eu/resolve/record/03905/B085BB6BEA78222D1C06F6B832D03C8046D19AE9, query=, start=, numFound=, userId=, lang=EN, req=http://www.europeana.eu:80/portal/record/03905/B085BB6BEA78222D1C06F6B832D03C8046D19AE9.html, date=2010-08-02T09:36:11.101+02:00, ip=93.158.150.20, user-agent=Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots), referer=null, utma=, utmb=, utmc=, v=1.0]"
-        val briefLogEntry = """00:00:12:981 [action=BRIEF_RESULT, view=brief-doc-window, query=Rugby, queryType=advanced, queryConstraints="YEAR:"1990",YEAR:"1981",YEAR:"1955"", page=1, numFound=6, langFacet=fr (3),nl (3), countryFacet=france (3),netherlands (3), userId=, lang=EN, req=http://europeana.eu:80/portal/brief-doc.html?query=Rugby&qf=YEAR:1990&qf=YEAR:1981&qf=YEAR:1955&view=table, date=2010-08-01T00:00:12.981+02:00, ip=66.249.66.101, user-agent=Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html), referer=null, utma=, utmb=, utmc=, v=1.0]"""
-        val unicodeLogEntry = """14:15:51:654 [action=BRIEF_RESULT_FROM_PACTA, view=brief-doc-window, query=Zoran MuÅ¡iÄ, queryType=advanced, queryConstraints="", page=1, numFound=0, langFacet=null, countryFacet=null, userId=, lang=EN, req=http://www.europeana.eu:80/portal/brief-doc.html?query=Zoran%20MuÃÂ¡iÃÂ%20&bt=pacta, date=2010-08-01T14:15:51.653+02:00, ip=207.46.13.52, user-agent=msnbot/2.0b (+http://search.msn.com/msnbot.htm), referer=null, utma=, utmb=, utmc=, v=1.0]"""
-
-        it("should extract the log entry from a string") {
-          val logEntryList = loader.processLogEntry(logEntry)
-          logEntryList.head should equal("action", "FULL_RESULT")
-          logEntryList.last should equal("v", "1.0")
-          logEntryList.length should equal("""=""".r.findAllIn(logEntry).length)
-        }
-
-        it("should process BRIEF_RESULT actions differently") {
-          val logEntryList = loader.processLogEntry(briefLogEntry)
-          logEntryList.head should equal("action", "BRIEF_RESULT")
-          logEntryList.last should equal("view", "brief-doc-window")
-          logEntryList.length should equal(""", """.r.findAllIn(briefLogEntry).length + 1)
-          logEntryList.filter(entries => entries._1.equalsIgnoreCase("langFacet")).head._2 should equal("fr (3);nl (3)")
-          logEntryList.filter(entries => entries._1.equalsIgnoreCase("queryConstraints")).head._2 should equal(""" "YEAR:"1990";YEAR:"1981";YEAR:"1955"" """.trim)
-        }
-
-        it("should deal with bodged unicode correctly") {
-          val logEntryList = loader.processLogEntry(briefLogEntry)
-          logEntryList.head should equal("action", "BRIEF_RESULT")
-          logEntryList.last should equal("view", "brief-doc-window")
-          logEntryList.length should equal(""", """.r.findAllIn(briefLogEntry).length + 1)
-        }
-
-        it("should get the ip from logEnty and return the country 2 letter code") {
-          val logEntryList = loader.processLogEntry(briefLogEntry)
-          loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", true))) should equal(List(("country_ip", "XX")))
-          loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", false))).isEmpty should equal(true)
-        }
-
-        it("should split date and time from the date string") {
-          val logEntryList = loader.processLogEntry(briefLogEntry)
-          val doc = new BasicDBObject;
-          doc.put("d", "2010-08-01");
-          doc.put("t", "00:00:12") // { "d" : "2010-08-01" , "t" : "00:00:12"}
-          loader.createExpansions(logEntryList, List(ExpansionPlugin("invoked_at", true))) should equal(List(("invoked_at", doc)))
-        }
-      }
-
-      describe("(when inserting entries in MongoDB)") {
-
-        it("should insert new entries") {
-          LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/uncompressed/"))
-        }
-      }
-
-      describe("(when creating a Session based collection)") {
-
-        it("should get all distinct session and iterate over it") {
-          LogLoader.createSessionBasedCollection("logEntries", "noBots")
-        }
+        filesProcessed should equal(4)
       }
     }
+
+    describe("(when given a gzipped file)") {
+
+      it("should process a gzipped file the same as a unzipped file") {
+        def logProcessor(file: String) = loader.processLogFile(new File(file)) {line =>}
+        val compressedLog = logProcessor("loganalyser/src/test/resources/test_log_files/compressed/portal4/portal4_ClickStreamLogger.log.gz")
+        val unCompressedLog = logProcessor("loganalyser/src/test/resources/test_log_files/uncompressed/portal4/portal4_ClickStreamLogger.log.2010-08-01.txt")
+        compressedLog should equal(unCompressedLog)
+      }
+    }
+
+    describe("(when receiving a log entry string)") {
+      val logEntry = "09:36:11:101 [action=FULL_RESULT, europeana_uri=http://www.europeana.eu/resolve/record/03905/B085BB6BEA78222D1C06F6B832D03C8046D19AE9, query=, start=, numFound=, userId=, lang=EN, req=http://www.europeana.eu:80/portal/record/03905/B085BB6BEA78222D1C06F6B832D03C8046D19AE9.html, date=2010-08-02T09:36:11.101+02:00, ip=93.158.150.20, user-agent=Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots), referer=null, utma=, utmb=, utmc=, v=1.0]"
+      val briefLogEntry = """00:00:12:981 [action=BRIEF_RESULT, view=brief-doc-window, query=Rugby, queryType=advanced, queryConstraints="YEAR:"1990",YEAR:"1981",YEAR:"1955"", page=1, numFound=6, langFacet=fr (3),nl (3), countryFacet=france (3),netherlands (3), userId=, lang=EN, req=http://europeana.eu:80/portal/brief-doc.html?query=Rugby&qf=YEAR:1990&qf=YEAR:1981&qf=YEAR:1955&view=table, date=2010-08-01T00:00:12.981+02:00, ip=66.249.66.101, user-agent=Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html), referer=null, utma=, utmb=, utmc=, v=1.0]"""
+      val unicodeLogEntry = """14:15:51:654 [action=BRIEF_RESULT_FROM_PACTA, view=brief-doc-window, query=Zoran MuÅ¡iÄ, queryType=advanced, queryConstraints="", page=1, numFound=0, langFacet=null, countryFacet=null, userId=, lang=EN, req=http://www.europeana.eu:80/portal/brief-doc.html?query=Zoran%20MuÃÂ¡iÃÂ%20&bt=pacta, date=2010-08-01T14:15:51.653+02:00, ip=207.46.13.52, user-agent=msnbot/2.0b (+http://search.msn.com/msnbot.htm), referer=null, utma=, utmb=, utmc=, v=1.0]"""
+
+      it("should extract the log entry from a string") {
+        val logEntryList = loader.processLogEntry(logEntry)
+        logEntryList.head should equal("action", "FULL_RESULT")
+        logEntryList.last should equal("v", "1.0")
+        logEntryList.length should equal("""=""".r.findAllIn(logEntry).length)
+      }
+
+      it("should process BRIEF_RESULT actions differently") {
+        val logEntryList = loader.processLogEntry(briefLogEntry)
+        logEntryList.head should equal("action", "BRIEF_RESULT")
+        logEntryList.last should equal("view", "brief-doc-window")
+        logEntryList.length should equal(""", """.r.findAllIn(briefLogEntry).length + 1)
+        logEntryList.filter(entries => entries._1.equalsIgnoreCase("langFacet")).head._2 should equal("fr (3);nl (3)")
+        logEntryList.filter(entries => entries._1.equalsIgnoreCase("queryConstraints")).head._2 should equal(""" "YEAR:"1990";YEAR:"1981";YEAR:"1955"" """.trim)
+      }
+
+      it("should deal with bodged unicode correctly") {
+        val logEntryList = loader.processLogEntry(briefLogEntry)
+        logEntryList.head should equal("action", "BRIEF_RESULT")
+        logEntryList.last should equal("view", "brief-doc-window")
+        logEntryList.length should equal(""", """.r.findAllIn(briefLogEntry).length + 1)
+      }
+
+      it("should get the ip from logEnty and return the country 2 letter code") {
+        val logEntryList = loader.processLogEntry(briefLogEntry)
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", true))) should equal(List(("country_ip", "XX")))
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("country_ip", false))).isEmpty should equal(true)
+      }
+
+      it("should split date and time from the date string") {
+        val logEntryList = loader.processLogEntry(briefLogEntry)
+        val doc = new BasicDBObject;
+        doc.put("d", "2010-08-01");
+        doc.put("t", "00:00:12") // { "d" : "2010-08-01" , "t" : "00:00:12"}
+        loader.createExpansions(logEntryList, List(ExpansionPlugin("invoked_at", true))) should equal(List(("invoked_at", doc)))
+      }
+    }
+
+    describe("(when inserting entries in MongoDB)") {
+
+      it("should insert new entries") {
+        LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/uncompressed/"))
+      }
+    }
+
+    describe("(when creating a Session based collection)") {
+
+      it("should get all distinct session and iterate over it") {
+        LogLoader.createSessionBasedCollection("logEntries", "noBots")
+      }
+    }
+  }
 
   describe("A IpToCountryConvertor") {
 
@@ -390,28 +389,49 @@ object LogLoader {
     if (sourceColl == null) throw new RuntimeException("collections with logEntries must exist.")
     val query = new BasicDBObject
     query.put("utma", new BasicDBObject("$ne", "null"))
-    val sessions = sourceColl.distinct("utma", query)
+    // todo replace with mapReduce
+    val output: MapReduceOutput = sourceColl.mapReduce(
+      "function() { emit(this.utma, 1); }",
+      """
+      function(k,vals) {
+            var sum=0;
+            for(var i in vals) sum += vals[i];
+            return sum;
+      }
+      """,
+      "listOfIds",
+      query
+      )
+    val result: DBCollection  = output.getOutputCollection
+    println ("ids found" + result.count)
+    val sessionsCursor: DBCursor = result.find()
+    val sessions: List[DBObject] = sessionsCursor.iterator.toList
     println("unique sessions: " + sessions.size)
     sessions.foreach {
       session =>
         {
+          val sessionString = session.get("_id")
           println("sessionId: " + session)
-          val cursor: DBCursor = sourceColl.find(new BasicDBObject("utma", session)).sort(new BasicDBObject("date", 1))
+          val cursor: DBCursor = sourceColl.find(new BasicDBObject("utma", sessionString)).sort(new BasicDBObject("date", 1))
           println("entries for this sessionId: " + cursor.count)
+          if (cursor.count > 0) {
           val sessionDocument = new BasicDBObject()
-          sessionDocument.put("sessionId", session)
+          sessionDocument.put("sessionId", sessionString)
 
           addSessionAndStatsSubdocuments(cursor.iterator.toList, sessionDocument)
 
           // save the session document
           sessionIdBasedCollection.save(sessionDocument)
+          }
+          else println ("unable to find entries for sessionId: " + sessionString)
         }
     }
   }
 
   def main(args: Array[String]) {
     require(!args.isEmpty)
-    args.foreach(arg => processLogFiles(new File(arg)))
+    if (args.contains("-createSession")) LogLoader.createSessionBasedCollection("logEntries", "noBots")
+    else args.foreach(arg => processLogFiles(new File(arg)))
   }
 
 }
