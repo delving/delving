@@ -30,5 +30,6 @@ public enum FieldCategory {
     ESE,
     ESE_PLUS,
     ICN,
+    ICN_RESEARCH,
     INDEX_TIME_ADDITION,
 }

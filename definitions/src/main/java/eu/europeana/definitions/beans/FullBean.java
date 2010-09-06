@@ -26,6 +26,8 @@ import eu.europeana.definitions.annotations.Solr;
 import eu.europeana.definitions.domain.AcquisitionType;
 import eu.europeana.definitions.domain.Country;
 import eu.europeana.definitions.domain.Language;
+import eu.europeana.definitions.domain.PurchasePrice;
+import eu.europeana.definitions.domain.Technique;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
 import eu.europeana.definitions.presentation.FullDoc;
@@ -35,6 +37,7 @@ import java.util.List;
 
 import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 import static eu.europeana.definitions.annotations.FieldCategory.ICN;
+import static eu.europeana.definitions.annotations.FieldCategory.ICN_RESEARCH;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -90,33 +93,13 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "geboortejaarVervaardiger", multivalued = false)
     String[] geboortejaarVervaardiger;
 
-    @Europeana(category = ICN, constant = true)
+    @Europeana(category = ICN, enumClass = Technique.class) // unless "other" is allowed, we have to remove this
     @Solr(prefix = "icn", localName = "techniek")
     String[] techniek;
 
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "materiaal")
     String[] materiaal;
-
-    @Europeana(category = ICN, enumClass = AcquisitionType.class)
-    @Solr(prefix = "icn", localName = "wijzeVanVerwering")
-    String[] wijzeVanVerwerving;
-
-    @Europeana(category = ICN, converter = "extractYear")
-    @Solr(prefix = "icn", localName = "jaarVanVerwerving", multivalued = false)
-    String[] jaarVanVerwerving;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "aankoopbedrag", multivalued = false)
-    String[] aankoopbedrag;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "verworvenMetSteunVan")
-    String[] verworvenMetSteunVan;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "fysiekeStaat")
-    String[] fysiekeStaat;
 
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "locatie")
@@ -129,6 +112,26 @@ public class FullBean extends BriefBean implements FullDoc {
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "deelCollectie")
     String[] deelcollectie;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class)
+    @Solr(prefix = "icn", localName = "wijzeVanVerwering")
+    String[] wijzeVanVerwerving;
+
+    @Europeana(category = ICN_RESEARCH, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "jaarVanVerwerving", multivalued = false)
+    String[] jaarVanVerwerving;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class)
+    @Solr(prefix = "icn", localName = "aankoopbedrag", multivalued = false)
+    String[] aankoopbedrag;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "verworvenMetSteunVan")
+    String[] verworvenMetSteunVan;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "fysiekeStaat")
+    String[] fysiekeStaat;
 
     // todo: review the above
 

@@ -7,10 +7,22 @@ package eu.europeana.definitions.domain;
  */
 
 public enum AcquisitionType {
-    PURCHASED,
-    GIFT,
-    INHERITANCE,
-    BORROWED,
-    ASSIGNMENT,
-    TRADE
+    PURCHASE("aankoop"),
+    GIFT("schenking"),
+    BORROW("bruikleen"),
+    TRADE("ruil"),
+    ASSIGNMENT("opdracht"),
+    WILL("legaat"),
+    TRANSFER("overdracht"),
+    INHERITANCE("successieregeling");
+
+    private String dutchName;
+
+    AcquisitionType(String dutchName) {
+        this.dutchName = dutchName;
+    }
+
+    public String getCode() {
+        return dutchName;
+    }
 }
