@@ -23,6 +23,7 @@ package eu.europeana.definitions.beans;
 
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
+import eu.europeana.definitions.domain.AcquisitionType;
 import eu.europeana.definitions.domain.Country;
 import eu.europeana.definitions.domain.Language;
 import eu.europeana.definitions.presentation.BriefDoc;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
+import static eu.europeana.definitions.annotations.FieldCategory.ICN;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -77,13 +79,58 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-//    @Europeana(category = ESE_PLUS)
-//    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
-//    boolean europeanaHasObject;
-//
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:provider", constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
+
+
+    // todo: review these (also: what about querymodel.beans.*)
+
+    @Europeana(category = ICN, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "geboortejaarVervaardiger", multivalued = false)
+    String[] geboortejaarVervaardiger;
+
+    @Europeana(category = ICN, constant = true)
+    @Solr(prefix = "icn", localName = "techniek")
+    String[] techniek;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "materiaal")
+    String[] materiaal;
+
+    @Europeana(category = ICN, enumClass = AcquisitionType.class)
+    @Solr(prefix = "icn", localName = "wijzeVanVerwering")
+    String[] wijzeVanVerwerving;
+
+    @Europeana(category = ICN, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "jaarVanVerwerving", multivalued = false)
+    String[] jaarVanVerwerving;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "aankoopbedrag", multivalued = false)
+    String[] aankoopbedrag;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "verworvenMetSteunVan")
+    String[] verworvenMetSteunVan;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "fysiekeStaat")
+    String[] fysiekeStaat;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "locatie")
+    String[] locatie;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "provincie")
+    String[] provincie;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "deelCollectie")
+    String[] deelcollectie;
+
+    // todo: review the above
 
 
     // Dublin Core / ESE fields
