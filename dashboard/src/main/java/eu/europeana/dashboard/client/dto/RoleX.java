@@ -10,6 +10,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public enum RoleX implements IsSerializable {
     ROLE_USER,  // general portal user, no dashboard access
+    ROLE_RESEARCH_USER,  // special fields appear, etc
     ROLE_CONTENT_TESTER, // a user of the special sandbox version of the dashboard
     ROLE_TRANSLATOR, // translation tab only
     ROLE_EDITOR, // translation + carousel + proposed search terms + partner Tab
