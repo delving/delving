@@ -6,6 +6,7 @@ package eu.europeana.core.database.domain;
 
 public enum Role {
     ROLE_USER,  // general portal user, no dashboard access
+    ROLE_RESEARCH_USER, // to be used for "museometrie"
     ROLE_CONTENT_TESTER, // a user of the special sandbox version of the dashboard
     ROLE_TRANSLATOR, // translation tab only
     ROLE_EDITOR, //  carousel + proposed search terms
