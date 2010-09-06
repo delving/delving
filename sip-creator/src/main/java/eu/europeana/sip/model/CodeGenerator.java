@@ -32,7 +32,54 @@ public class CodeGenerator {
         return fieldMapping;
     }
 
-    public void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, FieldMapping fieldMapping) {
+    public List<FieldMapping> createObviousFieldMappings(List<EuropeanaField> unmappedFields, List<VariableHolder> variables) {
+        List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
+        for (EuropeanaField field : unmappedFields) {
+            if (field.europeana().constant()) {
+                FieldMapping fieldMapping = createObviousMapping(field, variables);
+                if (fieldMapping != null) {
+                    fieldMappings.add(fieldMapping);
+                }
+            }
+            else {
+                for (VariableHolder variableHolder : variables) {
+                    String variableName = variableHolder.getVariableName();
+                    String fieldName = field.getFieldNameString();
+                    if (variableName.endsWith(fieldName)) {
+                        FieldMapping fieldMapping = createObviousMapping(field, variables);
+                        if (fieldMapping != null) {
+                            fieldMappings.add(fieldMapping);
+                        }
+                    }
+                }
+            }
+        }
+        return fieldMappings;
+    }
+
+    private FieldMapping createObviousMapping(EuropeanaField field, List<VariableHolder> variables) {
+        FieldMapping fieldMapping = new FieldMapping(field);
+        if (field.europeana().constant()) {
+            fieldMapping.addCodeLine(String.format(
+                    "%s.%s %s",
+                    field.getPrefix(),
+                    field.getLocalName(),
+                    field.getFieldNameString()
+            ));
+        }
+        else {
+            for (VariableHolder variableHolder : variables) {
+                String variableName = variableHolder.getVariableName();
+                String fieldName = field.getFieldNameString();
+                if (variableName.endsWith(fieldName)) {
+                    generateCopyCode(field, variableHolder.getNode(), fieldMapping);
+                }
+            }
+        }
+        return fieldMapping.isEmpty() ? null : fieldMapping;
+    }
+
+    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, FieldMapping fieldMapping) {
         if (field.solr().multivalued()) {
             fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
             if (field.europeana().converter().isEmpty()) {
@@ -61,52 +108,5 @@ public class CodeGenerator {
                 fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
             }
         }
-    }
-
-    public FieldMapping createObviousMapping(EuropeanaField field, List<VariableHolder> variables) {
-        FieldMapping fieldMapping = new FieldMapping(field);
-        if (field.europeana().constant()) {
-            fieldMapping.addCodeLine(String.format(
-                    "%s.%s %s",
-                    field.getPrefix(),
-                    field.getLocalName(),
-                    field.getFieldNameString()
-            ));
-        }
-        else {
-            for (VariableHolder variableHolder : variables) {
-                String variableName = variableHolder.getVariableName();
-                String fieldName = field.getFieldNameString();
-                if (variableName.endsWith(fieldName)) {
-                    generateCopyCode(field, variableHolder.getNode(), fieldMapping);
-                }
-            }
-        }
-        return fieldMapping.isEmpty() ? null : fieldMapping;
-    }
-
-    public List<FieldMapping> createObviousFieldMappings(List<EuropeanaField> unmappedFields, List<VariableHolder> variables) {
-        List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
-        for (EuropeanaField field : unmappedFields) {
-            if (field.europeana().constant()) {
-                FieldMapping fieldMapping = createObviousMapping(field, variables);
-                if (fieldMapping != null) {
-                    fieldMappings.add(fieldMapping);
-                }
-            }
-            else {
-                for (VariableHolder variableHolder : variables) {
-                    String variableName = variableHolder.getVariableName();
-                    String fieldName = field.getFieldNameString();
-                    if (variableName.endsWith(fieldName)) {
-                        FieldMapping fieldMapping = createObviousMapping(field, variables);
-                        if (fieldMapping != null) {
-                            fieldMappings.add(fieldMapping);
-                        }
-                    }
-                }
-            }
-        }
-        return fieldMappings;
     }
 }
