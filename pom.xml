@@ -153,12 +153,11 @@
     <modules>
         <module>definitions</module>
         <module>core</module>
-        <module>api</module>
         <module>portal</module>
         <module>dashboard</module>
         <module>sip-creator</module>
         <module>sip-core</module>
-        <module>meta-repo</module>
+        <module>services</module>
     </modules>
     <organization>
         <name>Europeana Foundation</name>
