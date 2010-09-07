@@ -413,8 +413,9 @@ object LogLoader {
           val sessionString = session.get("_id")
           println("sessionId: " + session)
           val cursor: DBCursor = sourceColl.find(new BasicDBObject("utma", sessionString)).sort(new BasicDBObject("date", 1))
-          println("entries for this sessionId: " + cursor.count)
-          if (cursor.count > 0) {
+          val sessionCount = cursor.count
+          println("entries for this sessionId: " + sessionCount)
+          if (sessionCount > 0 && sessionCount < 5000) {
           val sessionDocument = new BasicDBObject()
           sessionDocument.put("sessionId", sessionString)
 
@@ -423,7 +424,7 @@ object LogLoader {
           // save the session document
           sessionIdBasedCollection.save(sessionDocument)
           }
-          else println ("unable to find entries for sessionId: " + sessionString)
+          else println ("unable to process entries for sessionId: " + sessionString)
         }
     }
   }
@@ -440,7 +441,7 @@ object IpToCountryConvertor {
   val IpCountryExtractor = """^"(.+?)","(.+?)","(.+?)","(.+?)","(.+?)"$""".r
   val countryList = initCountryIpList
 
-  private def initCountryIpList: List[CountryIpRecord] = {
+  private def initCountryIpList: List[Coun tryIpRecord] = {
 
     val countryIpRecords = Source.fromInputStream(
       new GZIPInputStream(
