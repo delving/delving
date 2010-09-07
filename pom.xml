@@ -158,7 +158,6 @@
         <module>portal-full</module>
         <module>dashboard</module>
         <module>sip-creator</module>
-        <module>integration-tests</module>
         <module>sip-core</module>
         <module>meta-repo</module>
     </modules>
