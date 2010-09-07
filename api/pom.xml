@@ -5,15 +5,13 @@
     <artifactId>api</artifactId>
     <packaging>war</packaging>
     <name>Provide APIs for Cache, Resolving, WebSearch, etc</name>
-    <version>${europeana.api.version}</version>
+    <version>0.1.0</version>
     <description>Servlet</description>
     <inceptionYear>2008</inceptionYear>
 
     <build>
         <defaultGoal>package</defaultGoal>
         <finalName>api</finalName>
-        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -57,7 +55,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
