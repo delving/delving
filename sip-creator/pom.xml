@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>0.8.28</version>
+    <version>0.1.0</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.0.1</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>javax.jnlp</groupId>

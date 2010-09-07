@@ -26,7 +26,7 @@
     <artifactId>portal-lite</artifactId>
     <packaging>war</packaging>
     <name>Europeana Portal Web Application (Lite)</name>
-    <version>${europeana.portal.version}</version>
+    <version>0.1.0</version>
     <description>The lite version of the Europeana Portal contains all the core pages
         (index, brief-doc, full-doc, myEuropeana) and functionality of the production
         Europeana portal. This version is made open source to stimulate development
@@ -63,8 +63,6 @@
     <build>
         <defaultGoal>package</defaultGoal>
         <finalName>portal</finalName>
-        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -106,7 +104,7 @@
 		<dependency>
 			<groupId>eu.europeana</groupId>
 			<artifactId>core</artifactId>
-			<version>${europeana.core.version}</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>

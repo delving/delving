@@ -31,15 +31,13 @@
     <artifactId>dashboard</artifactId>
     <packaging>war</packaging>
     <name>Europeana Dashboard</name>
-    <version>${europeana.dashboard.version}</version>
+    <version>0.1.0</version>
     <organization>
         <name>Europeana Foundation</name>
         <url>http://www.europeana.eu</url>
     </organization>
     <build>
         <finalName>${project.artifactId}</finalName>
-        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -70,7 +68,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>quartz</groupId>

@@ -26,7 +26,7 @@
     <artifactId>portal-full</artifactId>
     <packaging>war</packaging>
     <name>Europeana Portal Web Application</name>
-    <version>${europeana.portal.version}</version>
+    <version>0.1.0</version>
     <description>The production version of the Europeana Portal Web Application</description>
     <inceptionYear>2009</inceptionYear>
 
@@ -75,8 +75,6 @@
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<finalName>portal</finalName>
-        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
 		<plugins>
 		    <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -129,25 +127,25 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>validate</phase>
-                        <configuration>
-                            <tasks>
-                                <echo message="Writing Revision ${buildNumber} built at ${timestamp} to build.txt"/>
-                                <echo message="Revision ${buildNumber} built at ${timestamp}" file="src/main/webapp/build.txt" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>compile</id>-->
+                        <!--<phase>validate</phase>-->
+                        <!--<configuration>-->
+                            <!--<tasks>-->
+                                <!--<echo message="Writing Revision ${buildNumber} built at ${timestamp} to build.txt"/>-->
+                                <!--<echo message="Revision ${buildNumber} built at ${timestamp}" file="src/main/webapp/build.txt" />-->
+                            <!--</tasks>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 
@@ -155,7 +153,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>${europeana.core.version}</version>
+            <version>0.1.0</version>
         </dependency>
 
         <dependency>
@@ -176,12 +174,6 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
         </dependency>
-        <!--
-        <dependency>
-                <groupId>net.jawr</groupId>
-                <artifactId>jawr</artifactId>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>

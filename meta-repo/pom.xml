@@ -5,7 +5,7 @@
     <artifactId>meta-repo</artifactId>
     <packaging>war</packaging>
     <name>Metadata Repository</name>
-    <version>0.1</version>
+    <version>0.1.0</version>
     <inceptionYear>2010</inceptionYear>
     <parent>
         <groupId>eu.europeana</groupId>
@@ -110,11 +110,6 @@
             <groupId>quartz</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.google.collections</groupId>-->
-            <!--<artifactId>google-collections</artifactId>-->
-            <!--<version>1.0</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
