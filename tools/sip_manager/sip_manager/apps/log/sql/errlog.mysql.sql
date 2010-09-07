@@ -1,2 +1,0 @@
-ALTER TABLE `log_errlog` CHANGE `msg`
-    `msg` LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
