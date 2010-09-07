@@ -18,7 +18,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
 package eu.europeana;
 
 import eu.europeana.core.util.StarterUtil;
@@ -26,28 +25,16 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
- * Bootstrap the backend and portal lite including the annotation services
+ * Bootstrap the jetty server
  *
- * @author Christian Sadilek
+ * @author Gerald de Jong <geralddejong@gmail.com>
  */
-public class PortalLiteWithAnnotation {
 
-	// do not forget to set -Deuropeana.properties and working directory -> see readme file
+public class PortalStarter {
+
     public static void main(String... args) throws Exception {
-    	System.setProperty("hibernate.bytecode.provider", "javassist");
-        
-    	// make sure the backend is running
-    	//new SolrStarter().start();
-    	
-    	String aitRoot = StarterUtil.getAITPath();
         Server server = new Server(8080);
-        server.addHandler(new WebAppContext(StarterUtil.getEuropeanaPath() + "/portal-lite/src/main/webapp", "/portal"));
-
-        // not needed anymore since we integrated the middleware code in the core module
-        //server.addHandler(new WebAppContext(aitRoot + "/annotation-middleware/target/annotation-middleware.war", "/annotation-middleware"));
-        
-        server.addHandler(new WebAppContext(aitRoot + "/image-annotation-frontend/target/image-annotation-frontend.war", "/image-annotation-frontend"));
+        server.setHandler(new WebAppContext(StarterUtil.getEuropeanaPath() + "/portal/src/main/webapp", "/portal"));
         server.start();
-
     }
 }

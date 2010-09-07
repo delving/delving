@@ -154,7 +154,7 @@
         <module>definitions</module>
         <module>core</module>
         <module>api</module>
-        <module>portal-lite</module>
+        <module>portal</module>
         <module>dashboard</module>
         <module>sip-creator</module>
         <module>sip-core</module>
