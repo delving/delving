@@ -23,7 +23,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europeana</groupId>
-    <artifactId>portal-lite</artifactId>
+    <artifactId>portal</artifactId>
     <packaging>war</packaging>
     <name>Europeana Portal Web Application (Lite)</name>
     <version>0.1.0</version>
@@ -76,7 +76,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>eu.europeana.PortalLiteStarter</mainClass>
+                    <mainClass>eu.europeana.PortalStarter</mainClass>
                     <classpathScope>test</classpathScope>
                 </configuration>
             </plugin>

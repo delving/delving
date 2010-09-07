@@ -26,7 +26,7 @@ setup please consult *develop.md*
 
 Maven 2 (2.10 or higher) is used to build the _Europeana Framework_ so make sure it is installed on your system and is available from the command-line. 
 
-Go to the root of the project, i.e. where you find the `definitions`, `core`, `portal-lite`, etc. module folders. You can build the components in two ways: run the `build_europeana.sh` build script or perform the steps manually.
+Go to the root of the project, i.e. where you find the `definitions`, `core`, `portal`, etc. module folders. You can build the components in two ways: run the `build_europeana.sh` build script or perform the steps manually.
 
 ### Build Script ###
 
@@ -54,9 +54,9 @@ Build `api` component.
 	cd ../api
 	mvn clean package
 
-Build `portal-lite` component. 
+Build `portal` component.
 
-	cd ../portal-lite
+	cd ../portal
 	mvn clean package
 
 Build `dashboard` component. 
@@ -64,7 +64,7 @@ Build `dashboard` component.
 	cd ../dashboard
 	mvn clean package
 
-You can find the web-applications (henceforth referred to as war-files) in the target directories of each of the module. So you can find the `portal.war` in `./portal-lite/target/portal.war`
+You can find the web-applications (henceforth referred to as war-files) in the target directories of each of the module. So you can find the `portal.war` in `./portal/target/portal.war`
 
 ## Deploy components in Tomcat ##
 
