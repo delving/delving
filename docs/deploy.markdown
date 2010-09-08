@@ -1,11 +1,11 @@
 Title:			How to Deploy Delving
-Author:			Sjoerd Siebinga  
+Author:			Sjoerd Siebinga
 Affiliation:	Delving
-Date:			January 30, 2010  
+Date:			January 30, 2010
 Copyright:		2010 Delving
-				This work is licensed under a Creative Commons License.  
+				This work is licensed under a Creative Commons License.
 				http://creativecommons.org/licenses/by-sa/2.5/
-Keywords:		
+Keywords:
 
 # How to deploy Delving #
 
@@ -24,7 +24,7 @@ setup please consult *develop.md*
 
 ## Build Components ##
 
-Maven 2 (2.10 or higher) is used to build the _Europeana Framework_ so make sure it is installed on your system and is available from the command-line. 
+Maven 2 (2.10 or higher) is used to build the _Europeana Framework_ so make sure it is installed on your system and is available from the command-line.
 
 Go to the root of the project, i.e. where you find the `definitions`, `core`, `portal`, etc. module folders. You can build the components in two ways: run the `build_europeana.sh` build script or perform the steps manually.
 
@@ -49,9 +49,9 @@ Build `core` component and install in your local maven2 repository (~/.m2/reposi
 	cd core
 	mvn clean install -Dmaven.test.skip=true
 
-Build `api` component.
+Build `services` component.
 
-	cd ../api
+	cd ../services
 	mvn clean package
 
 Build `portal` component.
@@ -59,7 +59,7 @@ Build `portal` component.
 	cd ../portal
 	mvn clean package
 
-Build `dashboard` component. 
+Build `dashboard` component.
 
 	cd ../dashboard
 	mvn clean package
@@ -100,6 +100,6 @@ server      # psql -U your_db_name europeana < your_dump_file
 If you do not have a development copy of the database you can use the following command to init the database.
 <!--
 	TODO add command to init db.
---> 
+-->
 
 To import and index the sample data please run the following command:
