@@ -37,7 +37,7 @@ import java.util.TreeMap;
 
 public class Statistics implements Comparable<Statistics>, Serializable {
     private static final long serialVersionUID = 21772426262368490L;
-    private static final int MAX_STATISTICS_LIST_SIZE = 100;
+    private static final int MAX_STATISTICS_LIST_SIZE = 1000;
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
     private static final int MAXIMUM_LENGTH = 1000;
     private QNamePath path;
@@ -87,7 +87,7 @@ public class Statistics implements Comparable<Statistics>, Serializable {
 
     public List<? extends Counter> getCounters() {
         List<CounterImpl> counterList = new ArrayList<CounterImpl>(counterMap.values());
-        counterList.add(new CounterImpl(" Total Occurrences", total));
+//        counterList.add(new CounterImpl(" Total Occurrences", total));
         Collections.sort(counterList);
         return counterList;
     }

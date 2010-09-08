@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class ValueMap {
     private static final String PREFIX = "/* ValueMap */ def ";
     private static final String PREFIX_RANGE = "// ";
-    private static final Pattern ENTRY_PATTERN = Pattern.compile("'([^']*)':'([^']*)'");
+    private static final Pattern ENTRY_PATTERN = Pattern.compile("'([^']*)':'([^']*)',");
     private String name;
     private Set<String> rangeValues;
     private Map<String, String> map = new TreeMap<String, String>();
@@ -99,7 +99,7 @@ public class ValueMap {
         }
         out.append('\n');
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            out.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("'\n");
+            out.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',\n");
         }
         out.append("]\n");
         return out.toString();
