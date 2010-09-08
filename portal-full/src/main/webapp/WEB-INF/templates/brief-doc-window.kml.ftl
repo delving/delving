@@ -1,1 +1,0 @@
-<kml>template for KML representation of brief results </kml>

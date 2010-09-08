@@ -26,7 +26,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Core</name>
-    <version>${europeana.core.version}</version>
+    <version>0.1.0</version>
     <description>Core classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -146,7 +146,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>definitions</artifactId>
-            <version>${europeana.definitions.version}</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>postgresql</groupId>

@@ -109,7 +109,7 @@ public class WhoOwnsWhat {
     private static boolean checkDirectory(File here) {
         File[] subdirs = getSubdirs(here);
         return
-                checkFor("portal-lite", subdirs)
+                checkFor("portal", subdirs)
                         && checkFor("api", subdirs)
                         && checkFor("core", subdirs);
     }

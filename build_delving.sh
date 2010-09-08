@@ -12,8 +12,7 @@ cd ../core; $INSTALL
 cd ../sip-core; $INSTALL
 
 # Packaging of War files
-cd ../portal-full; $PACKAGE
-cd ../portal-lite; $PACKAGE
+cd ../portal; $PACKAGE
 if [[ BUILD_ALL ]]; then
 	#statements
 	echo "building extra modules"

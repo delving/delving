@@ -98,7 +98,7 @@ public class StarterUtil {
     }
 
     private static boolean isEuropeanaRoot(File here) {
-        return checkFor(here, "core", "api", "portal-lite");
+        return checkFor(here, "core", "api", "portal");
     }
 
     private static boolean checkFor(File here, String... subDirectories) {
