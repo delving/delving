@@ -63,12 +63,12 @@ feedback.from  = noreply@europeana.eu
 #
 # other
 #
-cacheUrl = http://localhost:8983/api/image/?
+cacheUrl = http://localhost:8983/services/image/?
 
 #
 # Resolver Servlet
 #
-resolverUrlPrefix  = http://localhost:8983/api/resolve
+resolverUrlPrefix  = http://localhost:8983/services/resolve
 displayPageUrl     = http://localhost:8983/portal/full-doc.html
 
 #

@@ -44,8 +44,8 @@ public class BackendStarter {
             port = Integer.parseInt(args[0]);
         }
         Server server = new Server(port);
-        server.addHandler(new WebAppContext(root + "/api/src/main/webapp", "/api"));
-        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr.war", "/solr"));
+        server.addHandler(new WebAppContext(root + "/services/src/main/webapp", "/services"));
+        server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-1.4.1.war", "/solr"));
         server.start();
     }
 }

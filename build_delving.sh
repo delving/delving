@@ -16,7 +16,7 @@ cd ../portal; $PACKAGE
 if [[ BUILD_ALL ]]; then
 	#statements
 	echo "building extra modules"
-	cd ../api; $PACKAGE
+	cd ../services; $PACKAGE
 	cd ../dashboard; $PACKAGE
 	cd ../sip-creator; $PACKAGE
 fi
