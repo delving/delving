@@ -294,6 +294,14 @@
                 <version>4.0.2.GA</version>
             </dependency>
 
+
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>2.1</version>
+            </dependency>
+
+
             <!-- Spring -->
             <dependency>
                 <groupId>org.springframework</groupId>

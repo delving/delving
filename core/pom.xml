@@ -18,8 +18,7 @@
   ~ express or implied.
   ~ See the Licence for the specific language governing
   ~ permissions and limitations under the Licence.
-  -->
-
+-->
 <project>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europeana</groupId>
@@ -64,8 +63,6 @@
         <url>http://www.europeana.eu</url>
     </organization>
     <build>
-        <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
-        <!--<testSourceDirectory>src/test/scala</testSourceDirectory>-->
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
         <extensions>
@@ -323,6 +320,10 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
         </dependency>
     </dependencies>
 </project>

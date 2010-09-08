@@ -1,13 +1,13 @@
-package eu.delving.loganalyser
+package eu.delving.logging.loganalyser
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import java.io.{FileInputStream, InputStream, File}
 import java.util.zip.GZIPInputStream
 import scala.io.Source
-import com.mongodb._
 import scala.collection.JavaConversions._
 import collection.mutable.{HashMap, ListBuffer}
+import com.mongodb._
 
 /**
  *
@@ -389,7 +389,6 @@ object LogLoader {
     if (sourceColl == null) throw new RuntimeException("collections with logEntries must exist.")
     val query = new BasicDBObject
     query.put("utma", new BasicDBObject("$ne", "null"))
-    // todo replace with mapReduce
     val output: MapReduceOutput = sourceColl.mapReduce(
       "function() { emit(this.utma, 1); }",
       """
@@ -441,7 +440,7 @@ object IpToCountryConvertor {
   val IpCountryExtractor = """^"(.+?)","(.+?)","(.+?)","(.+?)","(.+?)"$""".r
   val countryList = initCountryIpList
 
-  private def initCountryIpList: List[Coun tryIpRecord] = {
+  private def initCountryIpList: List[CountryIpRecord] = {
 
     val countryIpRecords = Source.fromInputStream(
       new GZIPInputStream(
