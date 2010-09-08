@@ -65,6 +65,7 @@ public class MappingRunner {
             binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc")); // todo: this is ese-specific and shouldn't be
             binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
             binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
+            binding.setVariable("icn", xmlns.namespace("http://icn.nl/", "icn")); // todo: this is incorrect
             for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
                 binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
             }

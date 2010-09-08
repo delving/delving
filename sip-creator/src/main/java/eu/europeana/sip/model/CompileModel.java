@@ -195,8 +195,14 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             if (metadataRecord == null) {
                 return;
             }
-            String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel());
+            String mappingCode = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
+            StringBuilder valueMapCode = new StringBuilder();
+            for (FieldMapping fieldMapping : recordMapping) {
+                if (fieldMapping.getValueMap() != null) {
+                    valueMapCode.append(fieldMapping.getValueMap());
+                }
+            }
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + valueMapCode + mappingCode, recordMapping.getConstantFieldModel());
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (multipleMappings) {

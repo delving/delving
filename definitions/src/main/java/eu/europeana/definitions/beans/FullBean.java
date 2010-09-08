@@ -93,7 +93,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "creatorYearOfBirth", multivalued = false)
     String[] creatorYearOfBirth;
 
-    @Europeana(category = ICN, enumClass = Technique.class) // unless "other" is allowed, we have to remove this
+    @Europeana(category = ICN, enumClass = Technique.class, valueMapped = true)
     @Solr(prefix = "icn", localName = "technique")
     String[] technique;
 
@@ -113,7 +113,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "collectionPart")
     String[] collectionPart;
 
-    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class)
+    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true)
     @Solr(prefix = "icn", localName = "acquisitionMeans")
     String[] acquisitionMeans;
 
@@ -121,7 +121,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
     String[] acquisitionYear;
 
-    @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class)
+    @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class) // todo: converter to turn number into enum?
     @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
     String[] purchasePrice;
 

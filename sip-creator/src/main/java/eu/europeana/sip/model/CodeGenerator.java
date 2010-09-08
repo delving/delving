@@ -5,6 +5,8 @@ import eu.europeana.sip.core.FieldMapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Generate code snippets for field mappings
@@ -83,30 +85,54 @@ public class CodeGenerator {
         if (field.solr().multivalued()) {
             fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
             if (field.europeana().converter().isEmpty()) {
-                fieldMapping.addCodeLine(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
-            }
-            else if (field.europeana().converterMultipleOutput()) {
-                fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", field.europeana().converter()));
-                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
-                fieldMapping.addCodeLine("}");
+                if (!field.europeana().valueMapped()) {
+                    fieldMapping.addCodeLine(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
+                }
+                else {
+                    fieldMapping.createValueMap(getActualValues(node), field.getEnumValues());
+                    fieldMapping.addCodeLine(String.format("%s.%s %s[it]", field.getPrefix(), field.getLocalName(), field.getFieldNameString()));
+                }
             }
             else {
-                fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+                if (field.europeana().converterMultipleOutput()) {
+                    fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", field.europeana().converter()));
+                    fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
+                    fieldMapping.addCodeLine("}");
+                }
+                else {
+                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+                }
             }
             fieldMapping.addCodeLine("}");
         }
         else {
             if (field.europeana().converter().isEmpty()) {
-                fieldMapping.addCodeLine(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
-            }
-            else if (field.europeana().converterMultipleOutput()) {
-                fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", field.europeana().converter(), node.getVariableName()));
-                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
-                fieldMapping.addCodeLine("}");
+                if (!field.europeana().valueMapped()) {
+                    fieldMapping.addCodeLine(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
+                }
+                else {
+                    fieldMapping.createValueMap(getActualValues(node), field.getEnumValues());
+                    fieldMapping.addCodeLine(String.format("%s.%s %s[%s[0]]", field.getPrefix(), field.getLocalName(), node.getVariableName(), field.getFieldNameString()));
+                }
             }
             else {
-                fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
+                if (field.europeana().converterMultipleOutput()) {
+                    fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", field.europeana().converter(), node.getVariableName()));
+                    fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
+                    fieldMapping.addCodeLine("}");
+                }
+                else {
+                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
+                }
             }
         }
+    }
+
+    private Set<String> getActualValues(AnalysisTree.Node node) {
+        Set<String> values = new TreeSet<String>();
+        for (Statistics.Counter counter : node.getStatistics().getCounters()) {
+            values.add(counter.getValue());
+        }
+        return values;
     }
 }

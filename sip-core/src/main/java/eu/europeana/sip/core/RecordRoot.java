@@ -1,6 +1,7 @@
 package eu.europeana.sip.core;
 
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * Store the record root, along with the number of records
@@ -13,8 +14,8 @@ public class RecordRoot {
     private QName rootQName;
     private int recordCount;
 
-    public static RecordRoot fromMapping(String mapping) {
-        for (String line : mapping.split("\n")) {
+    public static RecordRoot fromMapping(List<String> mapping) {
+        for (String line : mapping) {
             RecordRoot recordRoot = fromLine(line);
             if (recordRoot != null) {
                 return recordRoot;
@@ -23,7 +24,7 @@ public class RecordRoot {
         return null;
     }
 
-    public static RecordRoot fromLine(String line) {
+    private static RecordRoot fromLine(String line) {
         if (line.startsWith(PREFIX)) {
             String recordRootString = line.substring(PREFIX.length());
             String[] parts = recordRootString.split(" ");

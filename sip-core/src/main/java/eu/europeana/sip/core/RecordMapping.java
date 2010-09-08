@@ -24,6 +24,7 @@ import eu.europeana.definitions.annotations.EuropeanaField;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -112,20 +113,24 @@ public class RecordMapping implements Iterable<FieldMapping> {
         constantFieldModel.clear();
         recordRoot = null;
         FieldMapping fieldMapping = null;
-        for (String line : code.split("\n")) {
-            RecordRoot root = RecordRoot.fromLine(line);
-            if (root != null) {
-                this.recordRoot = root;
-                continue;
-            }
-            if (!singleFieldMapping && constantFieldModel.fromLine(line)) {
-                continue;
-            }
+        List<String> lines = Arrays.asList(code.split("\n"));
+        this.recordRoot = RecordRoot.fromMapping(lines);
+        if (!singleFieldMapping) {
+            constantFieldModel.fromMapping(lines);
+        }
+        Map<String, ValueMap> valueMaps = ValueMap.fromMapping(lines);
+        for (String line : lines) {
             if (line.startsWith(MAPPING_PREFIX)) {
                 String europeanaFieldName = line.substring(MAPPING_PREFIX.length()).trim();
                 EuropeanaField europeanaField = fieldMap.get(europeanaFieldName);
                 if (europeanaField != null) {
-                    fieldMapping = new FieldMapping(europeanaField);
+                    ValueMap valueMap = valueMaps.get(europeanaField.getFieldNameString());
+                    if (valueMap != null) {
+                        fieldMapping = new FieldMapping(europeanaField, valueMap);
+                    }
+                    else {
+                        fieldMapping = new FieldMapping(europeanaField);
+                    }
                 }
                 else {
                     log.warn("Discarding unrecognized field "+europeanaFieldName);

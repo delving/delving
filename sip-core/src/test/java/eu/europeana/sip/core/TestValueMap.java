@@ -23,6 +23,10 @@ package eu.europeana.sip.core;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -32,11 +36,11 @@ import static org.junit.Assert.fail;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class TestValueMapModel {
+public class TestValueMap {
 
     @Test
-    public void extractVariables() {
-        ValueMapModel model = ValueMapModel.fromMapping(
+    public void writeAndRead() {
+        Map<String, ValueMap> maps = ValueMap.fromMapping(toLines(
                         "/* ValueMap */ def gumby = [ // one,two,three\n" +
                         "'uno':'one'\n" +
                         "'duo':'two'\n" +
@@ -46,20 +50,27 @@ public class TestValueMapModel {
                         "'fantastic':'yes'\n" +
                         "'terrible':'no'\n" +
                         "]\n"
-        );
-        assertEquals(2, model.getMaps().size());
-        String stringForm = model.toString();
-        System.out.println(stringForm);
-        ValueMapModel model2 = ValueMapModel.fromMapping(stringForm);
-        assertEquals(2, model2.getMaps().size());
-        assertEquals("yes", model2.getMaps().get("pokey").get("fantastic"));
-        model2.getMaps().get("gumby").put("whatever", "two");
+        ));
+        assertEquals(2, maps.size());
+        StringBuilder out = new StringBuilder();
+        for (ValueMap valueMap : maps.values()) {
+            out.append(valueMap.toString());
+        }
+        System.out.println(out);
+        maps = ValueMap.fromMapping(toLines(out.toString()));
+        assertEquals(2, maps.size());
+        assertEquals("yes", maps.get("pokey").get("fantastic"));
+        maps.get("gumby").put("whatever", "two");
         try {
-            model2.getMaps().get("gumby").put("noway", "six");
+            maps.get("gumby").put("noway", "six");
             fail();
         }
         catch (RuntimeException e) {
             // okay!
         }
+    }
+
+    private List<String> toLines(String code) {
+        return Arrays.asList(code.split("\n"));
     }
 }

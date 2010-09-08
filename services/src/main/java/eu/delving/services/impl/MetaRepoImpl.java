@@ -25,6 +25,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -282,7 +283,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public QName recordRoot() {
-            return QName.valueOf((String)(object.get(RECORD_ROOT)));
+            return QName.valueOf((String) (object.get(RECORD_ROOT)));
         }
 
         @Override
@@ -448,7 +449,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         private void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
-            ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(code(), annotationProcessor);
+            ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
+            constantFieldModel.fromMapping(Arrays.asList(code().split("\n")));
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code(), constantFieldModel);
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);

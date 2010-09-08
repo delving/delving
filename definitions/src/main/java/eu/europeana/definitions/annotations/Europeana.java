@@ -39,7 +39,6 @@ import static eu.europeana.definitions.annotations.FieldCategory.ESE;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Europeana {
-
     public enum NO_ENUM {
     }
 
@@ -175,4 +174,14 @@ public @interface Europeana {
      */
 
     Class<? extends Enum> enumClass() default NO_ENUM.class; // todo: use in validation
+
+    /**
+     * Flag whether the enum is value-mapped, meaning that there will be a map constructed
+     * from analyzed source values to the enum.
+     *
+     * @return true if a map is to be made
+     */
+
+    boolean valueMapped() default false;
+
 }

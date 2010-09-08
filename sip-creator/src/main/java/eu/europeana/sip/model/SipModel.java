@@ -122,13 +122,13 @@ public class SipModel {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
+        ToolCodeModel toolCodeModel = new ToolCodeModel();
         ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, new ConstantFieldModel.Listener() {
             @Override
             public void updatedConstant() {
                 recordCompileModel.compileSoon();
             }
         });
-        ToolCodeModel toolCodeModel = new ToolCodeModel();
         recordCompileModel = new CompileModel(toolCodeModel, constantFieldModel, new RecordValidator(annotationProcessor, false));
         fieldCompileModel = new CompileModel(toolCodeModel, constantFieldModel);
         parseListeners.add(recordCompileModel);

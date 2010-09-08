@@ -36,6 +36,8 @@ import eu.europeana.sip.model.UserNotifier;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Take the input and config informationm and produce an output xml file
@@ -82,9 +84,10 @@ public class Normalizer implements Runnable {
 
     public void run() {
         try {
-            String mapping = fileSet.getMapping();
+            List<String> mapping = Arrays.asList(fileSet.getMapping().split("\n"));
             RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
-            ConstantFieldModel constantFieldModel = ConstantFieldModel.fromMapping(mapping, annotationProcessor);
+            ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
+            constantFieldModel.fromMapping(mapping);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             fileSetOutput = fileSet.prepareOutput();
             fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
