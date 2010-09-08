@@ -1,19 +1,18 @@
-package eu.delving.metarepo.harvesting
+package eu.delving.services.harvesting
 
 import javax.servlet.http.{HttpServletRequest}
 
 import java.lang.String
 import java.util.{Map, Date}
 import scala.collection.JavaConversions._
-import eu.delving.metarepo.core.MetaRepo
 import collection.mutable.HashMap
 import java.util.Map.Entry
-import eu.delving.metarepo.core.MetaRepo.{PmhVerb, HarvestStep, Record}
 import org.apache.log4j.Logger
-import eu.delving.metarepo.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
-import java.text.{SimpleDateFormat, ParseException, DateFormat}
+import java.text.{SimpleDateFormat}
 import xml._
-
+import eu.delving.services.core.MetaRepo.{Record, HarvestStep, PmhVerb}
+import eu.delving.services.exceptions.{BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
+import eu.delving.services.core.MetaRepo
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
  *
