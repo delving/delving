@@ -156,7 +156,8 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
 
     @Override
     public void valueMapChanged() {
-        mappingChanged();
+        editedCode = recordMapping.getCodeForDisplay();
+        compileSoon();
     }
 
     public Document getInputDocument() {

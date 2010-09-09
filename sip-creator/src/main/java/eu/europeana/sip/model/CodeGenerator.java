@@ -90,7 +90,7 @@ public class CodeGenerator {
                 }
                 else {
                     fieldMapping.createValueMap(getActualValues(node), field.getEnumValues());
-                    fieldMapping.addCodeLine(String.format("%s.%s %s[it]", field.getPrefix(), field.getLocalName(), field.getFieldNameString()));
+                    fieldMapping.addCodeLine(String.format("%s.%s %s[it.toString()]", field.getPrefix(), field.getLocalName(), field.getFieldNameString()));
                 }
             }
             else {
@@ -112,7 +112,7 @@ public class CodeGenerator {
                 }
                 else {
                     fieldMapping.createValueMap(getActualValues(node), field.getEnumValues());
-                    fieldMapping.addCodeLine(String.format("%s.%s %s[%s[0]]", field.getPrefix(), field.getLocalName(), node.getVariableName(), field.getFieldNameString()));
+                    fieldMapping.addCodeLine(String.format("%s.%s %s[%s[0].toString()]", field.getPrefix(), field.getLocalName(), node.getVariableName(), field.getFieldNameString()));
                 }
             }
             else {
