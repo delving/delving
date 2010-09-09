@@ -13,6 +13,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
@@ -37,7 +39,9 @@ import java.util.Map;
 public class ValueMapDialog extends JDialog {
     private RecordMapping recordMapping;
     private ValueMap valueMap;
-    private JComboBox editorBox;
+    private JButton selectionSetButton;
+    private JComboBox editorBox, selectionEditorBox;
+    private JTable table;
 
     public ValueMapDialog(Frame owner, RecordMapping recordMapping) {
         super(owner, true);
@@ -53,6 +57,7 @@ public class ValueMapDialog extends JDialog {
                         BorderFactory.createTitledBorder(valueMap.getName())
                 )
         );
+        p.add(createSelectionSetter(), BorderLayout.NORTH);
         p.add(new JScrollPane(createTable()), BorderLayout.CENTER);
         p.add(createButton(), BorderLayout.SOUTH);
         getContentPane().add(p);
@@ -61,8 +66,36 @@ public class ValueMapDialog extends JDialog {
         setSize(owner.getWidth() / 2, owner.getHeight() - 60);
     }
 
+    private JPanel createSelectionSetter() {
+        selectionSetButton = new JButton("Set selected items to this value");
+        selectionSetButton.setEnabled(false);
+        selectionSetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int [] selectedRows = table.getSelectedRows();
+                for (int row : selectedRows) {
+                    table.getModel().setValueAt(selectionEditorBox.getSelectedItem(), row, 1);
+                }
+
+            }
+        });
+        selectionEditorBox = new JComboBox(new EditorModel());
+        JPanel p = new JPanel();
+        p.add(selectionEditorBox);
+        p.add(selectionSetButton);
+        return p;
+    }
+
     private JTable createTable() {
-        return new JTable(createTableModel(), createTableColumnModel());
+        table = new JTable(createTableModel(), createTableColumnModel());
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int [] selectedRows = table.getSelectedRows();
+                selectionSetButton.setEnabled(selectedRows.length > 0);
+            }
+        });
+        return table;
     }
 
     private JButton createButton() {
@@ -148,6 +181,7 @@ public class ValueMapDialog extends JDialog {
                 valueObject = "";
             }
             valueMap.put(rows.get(rowIndex)[0], rows.get(rowIndex)[1] = (String) valueObject);
+            fireTableCellUpdated(rowIndex, columnIndex);
         }
     }
 
