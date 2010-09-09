@@ -1,13 +1,16 @@
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.core.RecordMapping;
 import eu.europeana.sip.core.ValueMap;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -32,17 +35,30 @@ import java.util.Map;
  */
 
 public class ValueMapDialog extends JDialog {
+    private RecordMapping recordMapping;
     private ValueMap valueMap;
     private JComboBox editorBox;
 
-    public ValueMapDialog(Frame owner, ValueMap valueMap) {
+    public ValueMapDialog(Frame owner, RecordMapping recordMapping) {
         super(owner, true);
+        this.recordMapping = recordMapping;
+        this.valueMap = recordMapping.getOnlyFieldMapping().getValueMap();
         setTitle("Value Map for " + valueMap.getName());
         this.valueMap = valueMap;
         editorBox = new JComboBox(new EditorModel());
-        getContentPane().add(new JScrollPane(createTable()), BorderLayout.CENTER);
-        getContentPane().add(createButton(), BorderLayout.SOUTH);
-        pack();
+        JPanel p = new JPanel(new BorderLayout(6, 6));
+        p.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(6, 6, 6, 6),
+                        BorderFactory.createTitledBorder(valueMap.getName())
+                )
+        );
+        p.add(new JScrollPane(createTable()), BorderLayout.CENTER);
+        p.add(createButton(), BorderLayout.SOUTH);
+        getContentPane().add(p);
+        setLocationRelativeTo(owner);
+        setLocation(owner.getWidth() / 3, 20);
+        setSize(owner.getWidth() / 2, owner.getHeight() - 60);
     }
 
     private JTable createTable() {
@@ -55,6 +71,7 @@ public class ValueMapDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ValueMapDialog.this.setVisible(false);
+                recordMapping.notifyValueMapChange();
             }
         });
         return ok;

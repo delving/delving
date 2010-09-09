@@ -56,6 +56,8 @@ public class RecordMapping implements Iterable<FieldMapping> {
         void mappingRemoved(FieldMapping fieldMapping);
 
         void mappingsRefreshed(RecordMapping recordMapping);
+
+        void valueMapChanged();
     }
 
     public RecordMapping(boolean singleFieldMapping, ConstantFieldModel constantFieldModel) {
@@ -78,6 +80,12 @@ public class RecordMapping implements Iterable<FieldMapping> {
 
     public void addListener(Listener listener) {
         listeners.add(listener);
+    }
+
+    public void notifyValueMapChange() {
+        for (Listener listener : listeners) {
+            listener.valueMapChanged();
+        }
     }
 
     public void clear() {
@@ -194,15 +202,20 @@ public class RecordMapping implements Iterable<FieldMapping> {
         return getCode(!singleFieldMapping, true, true, false);
     }
 
-    private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited, boolean includesConstants) {
+    private String getCode(boolean wrappedInRecord, boolean indented, boolean delimited, boolean includesPreamble) {
         StringBuilder out = new StringBuilder();
         if (delimited) {
             out.append(HEADER).append('\n').append('\n');
-            if (includesConstants) {
+            if (includesPreamble) {
                 if (recordRoot != null) {
                     out.append(recordRoot.toString()).append('\n').append('\n');
                 }
                 out.append(constantFieldModel.toString()).append('\n');
+                for (FieldMapping mapping : fieldMappings) {
+                    if (mapping.getValueMap() != null) {
+                        out.append(mapping.getValueMap().toString());
+                    }
+                }
             }
         }
         int indent = 0;

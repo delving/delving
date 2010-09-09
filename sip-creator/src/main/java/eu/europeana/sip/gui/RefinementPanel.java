@@ -137,7 +137,7 @@ public class RefinementPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 ValueMapDialog dialog = new ValueMapDialog(
                         (Frame)SwingUtilities.getWindowAncestor(RefinementPanel.this),
-                        sipModel.getFieldMappingModel().getRecordMapping().getOnlyFieldMapping().getValueMap()
+                        sipModel.getFieldMappingModel().getRecordMapping()
                 );
                 dialog.setVisible(true);
             }

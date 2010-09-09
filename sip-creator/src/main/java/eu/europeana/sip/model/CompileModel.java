@@ -154,6 +154,11 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         mappingChanged();
     }
 
+    @Override
+    public void valueMapChanged() {
+        mappingChanged();
+    }
+
     public Document getInputDocument() {
         return inputDocument;
     }

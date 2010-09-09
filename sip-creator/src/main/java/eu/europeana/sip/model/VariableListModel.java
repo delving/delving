@@ -112,6 +112,10 @@ public class VariableListModel extends AbstractListModel {
             refresh();
         }
 
+        @Override
+        public void valueMapChanged() {
+        }
+
         private void refresh() {
             int sizeBefore = getSize();
             variableHolderList.clear();
