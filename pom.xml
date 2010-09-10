@@ -151,10 +151,8 @@
     </pluginRepositories>
 
     <modules>
-        <module>definitions</module>
         <module>core</module>
         <module>portal</module>
-        <module>dashboard</module>
         <module>sip-creator</module>
         <module>sip-core</module>
         <module>services</module>
