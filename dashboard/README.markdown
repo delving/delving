@@ -34,8 +34,8 @@ Development start-up on IntelliJ
 2. Launch dashboard with GWT toolkit
 
  - Create a 'GWT launch configuration' for module 'dashboard'.
-   You may want to add extra memory and explicit link to europeana.properties as VM parameters
-   -Xmx256m -Deuropeana.properties=D:/europeana/europeana/europeana.properties
+   You may want to add extra memory and explicit link to launch.properties as VM parameters
+   -Xmx256m -Dlaunch.properties=D:/path/to/launch.properties
  - On Windows, it may fail to find swt-win32-3235.dll and gwt-ll.dll.
    You whould extract them from
      .m2\repository\com\google\gwt\gwt-dev\1.5.3\gwt-dev-1.5.3-windows-libs.zip

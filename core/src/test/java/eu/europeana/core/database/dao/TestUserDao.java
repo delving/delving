@@ -1,7 +1,11 @@
 package eu.europeana.core.database.dao;
 
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.Role;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.definitions.domain.Language;
 import eu.europeana.fixture.DatabaseFixture;
@@ -19,7 +23,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test the UserDao methods
@@ -34,7 +42,7 @@ import static junit.framework.Assert.*;
 })
 
 @Transactional
-@Ignore("needs a reference to europeana.properties test file")
+@Ignore("needs a reference to launch.properties test file")
 public class TestUserDao {
     private Logger log = Logger.getLogger(TestUserDao.class);
 

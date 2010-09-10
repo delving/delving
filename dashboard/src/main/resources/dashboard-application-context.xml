@@ -50,7 +50,7 @@
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
     <bean id="sandboxImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
-        <property name="dataDirectory" value="#{europeanaProperties['dashboard.sandbox.import.repository']}"/>
+        <property name="dataDirectory" value="#{launchProperties['dashboard.sandbox.import.repository']}"/>
     </bean>
 
     <bean id="sandboxEseImporter" class="eu.europeana.core.database.incoming.ESEImporterImpl">
@@ -73,8 +73,8 @@
                 <property name="concurrent" value="false"/>
             </bean>
         </property>
-        <property name="startDelay" value="#{europeanaProperties['trigger.startDelay']}"/>
-        <property name="repeatInterval" value="#{europeanaProperties['trigger.repeatInterval']}"/>
+        <property name="startDelay" value="#{launchProperties['trigger.startDelay']}"/>
+        <property name="repeatInterval" value="#{launchProperties['trigger.repeatInterval']}"/>
     </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -89,7 +89,7 @@
         <property name="dashboardDao" ref="dashboardDao"/>
         <property name="staticInfoDao" ref="staticInfoDao"/>
         <property name="userDao" ref="userDao"/>
-        <property name="cacheUrl" value="#{europeanaProperties['cacheUrl']}"/>
+        <property name="cacheUrl" value="#{launchProperties['cacheUrl']}"/>
         <property name="normalizedImporter" ref="normalizedEseImporter"/>
         <property name="sandboxImporter" ref="sandboxEseImporter"/>
         <property name="solrServer" ref="solrUpdateServer"/>

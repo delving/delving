@@ -32,7 +32,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
  */
 public class PortalWithAnnotation {
 
-	// do not forget to set -Deuropeana.properties and working directory -> see readme file
+	// do not forget to set -Dlaunch.properties and working directory -> see readme file
     public static void main(String... args) throws Exception {
     	System.setProperty("hibernate.bytecode.provider", "javassist");
         
