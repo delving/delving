@@ -126,10 +126,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge.wurfl</groupId>
-            <artifactId>wurfl</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest</artifactId>
             <scope>test</scope>
