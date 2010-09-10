@@ -34,7 +34,6 @@
         ">
 
     <beans:import resource="classpath:/core-application-context.xml"/>
-    <beans:import resource="classpath:/mobile-application-context.xml"/>
 
     <authentication-manager alias="authenticationManager">
         <authentication-provider user-service-ref="daoUserDetailsService">

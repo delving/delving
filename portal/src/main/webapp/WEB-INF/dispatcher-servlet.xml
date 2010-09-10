@@ -63,8 +63,6 @@
         <property name="defaultLocale" value="nl"/>
     </bean>
 
-    <bean id="deviceRecognitionInterceptor" class="de.offis.europeana.mobile.DeviceRecognitionInterceptor"/>
-
     <bean id="formatInterceptor" class="eu.europeana.core.util.web.FormatInterceptor"/>
 
     <bean id="configInterceptor" class="eu.europeana.core.util.web.ConfigInterceptor"/>
@@ -77,7 +75,6 @@
                 <ref bean="localeChangeInterceptor"/>
                 <ref bean="formatInterceptor"/>
                 <ref bean="configInterceptor"/>
-                <ref bean="deviceRecognitionInterceptor"/>
             </list>
         </property>
     </bean>
