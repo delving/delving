@@ -10,8 +10,8 @@ import collection.mutable.HashMap
 import java.util.Map.Entry
 import eu.delving.services.core.MetaRepo.{PmhVerb, HarvestStep, Record}
 import org.apache.log4j.Logger
-import eu.delving.services.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
-import java.text.{SimpleDateFormat, ParseException, DateFormat}
+import eu.delving.services.exceptions.{BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
+import java.text.{SimpleDateFormat}
 import xml._
 
 /**
@@ -227,7 +227,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      </ListRecords>
     </OAI-PMH>
     for (entry <- harvestStep.namespaces.toMap.entrySet) {
-      elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey , entry.getValue.toString, Null )
+      elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey.toString, entry.getValue.toString, Null )
     }
     elem
   }

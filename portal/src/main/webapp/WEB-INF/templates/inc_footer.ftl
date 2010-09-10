@@ -1,12 +1,8 @@
-<div class="grid_12" id="footer">
-    <div class="inner">
-        <div id="delving">
-            <a href="http://www.delving.eu" target="_blank" title="Powerd by Delving">
-                <img src="images/poweredbydelving.png" alt="Powered by Delving"/>
-            </a>
+    <div class="grid_12" id="footer">
+        <div class="inner">
+            <#--<img src="images/poweredbydelving.png" alt="Powerd by Delving"/>-->
         </div>
-    </div>
-</div><!-- end footer -->
+    </div><!-- end footer -->
 </div><!-- end container_12 -->
 
 </body>

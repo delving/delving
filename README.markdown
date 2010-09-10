@@ -1,4 +1,4 @@
-# README for the Delving version of the Norvegiana Platform #
+# README for the Delving version of the Europeana Platform #
 
 **Europeana** is an European Commission initiative to bring together digital objects from the four cultural heritage domains: Archives, Audio-Visual, Archives, Libraries and Museums. The Europeana Framework is an innovative multilingual high volume, high scalability search platform for Cultural Heritage metadata. The framework is developed using best-of-breed open-source software.
 
