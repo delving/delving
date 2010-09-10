@@ -3,6 +3,8 @@ package eu.europeana.definitions.metadata;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
+import java.util.Arrays;
+
 /**
  * An XStream approach for replacing the annotated beans.
  *
@@ -181,8 +183,42 @@ public class MetadataField {
     @XStreamAsAttribute
     String defaultValue = "";
 
-    @XStreamAsAttribute
     String[] toCopyField = {};
 
-    
+
+    @Override
+    public String toString() {
+        return "MetadataField{" +
+                "facetPrefix='" + facetPrefix + '\'' +
+                ", briefDoc=" + briefDoc +
+                ", fullDoc=" + fullDoc +
+                ", hidden=" + hidden +
+                ", id=" + id +
+                ", object=" + object +
+                ", type=" + type +
+                ", requiredGroup='" + requiredGroup + '\'' +
+                ", constant=" + constant +
+                ", category='" + category + '\'' +
+                ", converter='" + converter + '\'' +
+                ", converterMultipleOutput=" + converterMultipleOutput +
+                ", url=" + url +
+                ", regularExpression='" + regularExpression + '\'' +
+                ", enumClass='" + enumClass + '\'' +
+                ", valueMapped=" + valueMapped +
+                ", prefix='" + prefix + '\'' +
+                ", localName='" + localName + '\'' +
+                ", fieldType='" + fieldType + '\'' +
+                ", multivalued=" + multivalued +
+                ", stored=" + stored +
+                ", indexed=" + indexed +
+                ", required=" + required +
+                ", compressed=" + compressed +
+                ", termVectors=" + termVectors +
+                ", termPositions=" + termPositions +
+                ", termOffsets=" + termOffsets +
+                ", omitNorms=" + omitNorms +
+                ", defaultValue='" + defaultValue + '\'' +
+                ", toCopyField=" + (toCopyField == null ? null : Arrays.asList(toCopyField)) +
+                '}';
+    }
 }
