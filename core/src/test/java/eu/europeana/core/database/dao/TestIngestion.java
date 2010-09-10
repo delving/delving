@@ -20,7 +20,7 @@
  */
 package eu.europeana.core.database.dao;
 
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.ImportFileState;
@@ -66,7 +66,7 @@ public class TestIngestion {
     private IngestionFixture ingestionFixture;
 
     @Autowired
-    private DashboardDao dashboardDao;
+    private ConsoleDao consoleDao;
 
     private static EuropeanaCollection collection;
     private static ImportFile importFile;
@@ -80,7 +80,7 @@ public class TestIngestion {
             assertEquals(1, importFiles.size());
             importFile = importFiles.get(0);
             log.info(importFile);
-            collection = dashboardDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
+            collection = consoleDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
             log.info(collection.getName());
             ingestionFixture.startSolr();
             log.info("started solr");
@@ -95,9 +95,9 @@ public class TestIngestion {
     @Test
     public void indexStateChange() {
         collection.setCollectionState(CollectionState.QUEUED);
-        collection = dashboardDao.updateCollection(collection);
+        collection = consoleDao.updateCollection(collection);
         assertEquals(CollectionState.QUEUED, collection.getCollectionState());
-        List<IndexingQueueEntry> queue = dashboardDao.fetchQueueEntries();
+        List<IndexingQueueEntry> queue = consoleDao.fetchQueueEntries();
         assertEquals(1, queue.size());
     }
 
@@ -105,12 +105,12 @@ public class TestIngestion {
     public void doImport() throws IOException, InterruptedException {
         importFile = ingestionFixture.getESEImporter().commenceImport(importFile, collection.getId());
         assertEquals(ImportFileState.IMPORTING, importFile.getState());
-        collection = dashboardDao.fetchCollection(collection.getId());
+        collection = consoleDao.fetchCollection(collection.getId());
         assertTrue(collection.getCollectionLastModified().compareTo(new Date()) < 0);
         do {
             log.info("importFileState="+ImportFileState.IMPORTING);
             Thread.sleep(1000);
-            collection = dashboardDao.fetchCollection(collection.getId());
+            collection = consoleDao.fetchCollection(collection.getId());
         }
         while (collection.getFileState() == ImportFileState.IMPORTING);
         assertEquals(ImportFileState.IMPORTED, collection.getFileState());

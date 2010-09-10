@@ -1,6 +1,6 @@
 package eu.europeana.core.database.dao;
 
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.CarouselItem;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 })
 
 @Ignore("needs a reference to launch.properties test file")    
-public class TestDashboardDao {
+public class TestConsoleDao {
     private Logger log = Logger.getLogger(getClass());
     // europeanaUri from 92001_Ag_EU_TELtreasures.xml
     public static final String EUROPEANA_URI_1 = "http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735"; // is orphan
@@ -46,7 +46,7 @@ public class TestDashboardDao {
     private User user2;
 
     @Autowired
-    private DashboardDao dashboardDao;
+    private ConsoleDao consoleDao;
 
     @Autowired
     private UserDao userDao; // todo: eliminate, because it should not be necessary
@@ -67,7 +67,7 @@ public class TestDashboardDao {
 
     @Test
     public void testFindOrphanedSavedItem() throws Exception {
-        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
+        EuropeanaId europeanaId = consoleDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
         User user = userDao.addUser(user1);
         user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_2);
@@ -83,7 +83,7 @@ public class TestDashboardDao {
 
     @Test
     public void testSavedItemToCarouselItem() throws Exception {
-        EuropeanaId europeanaId = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
+        EuropeanaId europeanaId = consoleDao.fetchEuropeanaId(EUROPEANA_URI_2);
         assertFalse("Orphan should be false", europeanaId.isOrphan());
         User user = userDao.addUser(user2);
         user = userDao.addSavedItem(user, new SavedItem(), EUROPEANA_URI_1);
@@ -117,8 +117,8 @@ public class TestDashboardDao {
 
     @Test
     public void testRemoveOrphanedCarouselItem() throws Exception {
-        EuropeanaId europeanaId1 = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_2);
-        EuropeanaId europeanaId2 = dashboardDao.fetchEuropeanaId(EUROPEANA_URI_1);
+        EuropeanaId europeanaId1 = consoleDao.fetchEuropeanaId(EUROPEANA_URI_2);
+        EuropeanaId europeanaId2 = consoleDao.fetchEuropeanaId(EUROPEANA_URI_1);
         assertFalse("Orphan should be false", europeanaId1.isOrphan());
         assertTrue("Orphan should be true", europeanaId2.isOrphan());
         User user = userDao.addUser(user2);

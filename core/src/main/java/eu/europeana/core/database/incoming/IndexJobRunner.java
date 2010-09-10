@@ -21,7 +21,7 @@
 
 package eu.europeana.core.database.incoming;
 
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.IndexingQueueEntry;
 import org.apache.log4j.Logger;
@@ -33,11 +33,11 @@ import org.apache.log4j.Logger;
 
 public class IndexJobRunner {
     private Logger log = Logger.getLogger(getClass());
-    private DashboardDao dashboardDao;
+    private ConsoleDao consoleDao;
     private ESEImporter eseImporter;
 
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
+    public void setConsoleDao(ConsoleDao consoleDao) {
+        this.consoleDao = consoleDao;
     }
 
     public void setEseImporter(ESEImporter eseImporter) {
@@ -45,13 +45,13 @@ public class IndexJobRunner {
     }
 
     public void runParallel() {
-        IndexingQueueEntry entry = dashboardDao.getEntryForIndexing();
+        IndexingQueueEntry entry = consoleDao.getEntryForIndexing();
         if (entry == null) {
             log.debug("no collection found for indexing");
         }
         else {
             log.info("found collection to index: " + entry.getCollection().getName());
-            entry = dashboardDao.startIndexing(entry);
+            entry = consoleDao.startIndexing(entry);
             EuropeanaCollection collection = entry.getCollection();
             ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
             eseImporter.commenceImport(importFile, entry.getCollection().getId());

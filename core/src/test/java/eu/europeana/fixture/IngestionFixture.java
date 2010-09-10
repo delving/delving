@@ -21,7 +21,7 @@
 package eu.europeana.fixture;
 
 import eu.europeana.core.BeanQueryModelFactory;
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.incoming.ESEImporter;
 import eu.europeana.core.database.incoming.ESEImporterImpl;
 import eu.europeana.core.database.incoming.ImportRepository;
@@ -50,7 +50,7 @@ public class IngestionFixture {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
-    private DashboardDao dashboardDao;
+    private ConsoleDao consoleDao;
 
     @Autowired
     private BeanQueryModelFactory beanQueryModelFactory;

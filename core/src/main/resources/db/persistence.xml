@@ -16,7 +16,7 @@
         <class>eu.europeana.core.database.domain.SearchTerm</class>
         <class>eu.europeana.core.database.domain.CarouselItem</class>
         <class>eu.europeana.core.database.domain.IndexingQueueEntry</class>
-        <class>eu.europeana.core.database.domain.DashboardLog</class>
+        <class>eu.europeana.core.database.domain.ConsoleLog</class>
         <class>eu.europeana.core.database.domain.Annotation</class>
     </persistence-unit>
 

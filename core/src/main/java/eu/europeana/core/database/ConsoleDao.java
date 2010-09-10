@@ -21,7 +21,7 @@
 
 package eu.europeana.core.database;
 
-import eu.europeana.core.database.domain.DashboardLog;
+import eu.europeana.core.database.domain.ConsoleLog;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.IndexingQueueEntry;
@@ -29,14 +29,14 @@ import eu.europeana.core.database.domain.IndexingQueueEntry;
 import java.util.List;
 
 /**
- * This interface represents the contract for data access that the Dashboard application needs, above and beyond
+ * This interface represents the contract for data access that the Console application needs, above and beyond
  * what the other DAO objects offer.
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  * @author Nicola Aloia   <nicola.aloia@isti.cnr.it>
  */
 
-public interface DashboardDao {
+public interface ConsoleDao {
 
     /**
      * Fetch all of the collections
@@ -236,7 +236,7 @@ public interface DashboardDao {
     EuropeanaCollection updateCollectionCounters(Long collectionId);
 
     /**
-     * Record in the audit log what the dashboard has just done, saving who did it and what they did
+     * Record in the audit log what the console has just done, saving who did it and what they did
      *
      * @param who  the username
      * @param what what did they do?
@@ -252,7 +252,7 @@ public interface DashboardDao {
      * @return the list of log entries
      */
 
-    List<DashboardLog> fetchLogEntriesFrom(Long bottomId, int pageSize);
+    List<ConsoleLog> fetchLogEntriesFrom(Long bottomId, int pageSize);
 
     /**
      * Fetch the log entries up to the given id
@@ -262,7 +262,7 @@ public interface DashboardDao {
      * @return the list of log entries
      */
 
-    List<DashboardLog> fetchLogEntriesTo(Long topId, int pageSize);
+    List<ConsoleLog> fetchLogEntriesTo(Long topId, int pageSize);
 
     List<EuropeanaCollection> fetchEnabledCollections();
     

@@ -76,7 +76,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
     private String portalName;
-    private UserDao dashboardDao;
+    private UserDao userDao;
     private DocIdWindowPagerFactory docIdWindowPagerFactory;
 
     @Autowired
@@ -102,8 +102,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     @Autowired
-    public void setDashboardDao(UserDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Autowired
@@ -400,7 +400,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
             // if the record is not found give usefull error message
             if (fullBean.size() == 0) {
-                QueryProblem problem = dashboardDao.whyIsEuropeanaIdNotFound(params.get("uri")[0]);
+                QueryProblem problem = userDao.whyIsEuropeanaIdNotFound(params.get("uri")[0]);
                 throw new EuropeanaQueryException(problem.toString());
             }
             return fullBean.get(0);

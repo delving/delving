@@ -22,7 +22,7 @@
 package eu.europeana.core.database.incoming;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
@@ -78,7 +78,7 @@ public class ESEImporterImpl implements ESEImporter {
     private static final DecimalFormat COUNT_FORMAT = new DecimalFormat("000000000");
     private static final String ESE_SCHEMA = "ESE-V3.2.xsd";
     private Logger log = Logger.getLogger(getClass());
-    private DashboardDao dashboardDao;
+    private ConsoleDao consoleDao;
     private ImportRepository importRepository;
     private SolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
@@ -99,8 +99,8 @@ public class ESEImporterImpl implements ESEImporter {
     }
 
     @Autowired
-    public void setDashboardDao(DashboardDao dashboardDao) {
-        this.dashboardDao = dashboardDao;
+    public void setConsoleDao(ConsoleDao consoleDao) {
+        this.consoleDao = consoleDao;
     }
 
     @Autowired
@@ -168,7 +168,7 @@ public class ESEImporterImpl implements ESEImporter {
                     return processor.getFile();
                 }
             }
-            ImportProcessor importProcessor = new ImportProcessor(importingFile, dashboardDao.prepareForImport(collectionId));
+            ImportProcessor importProcessor = new ImportProcessor(importingFile, consoleDao.prepareForImport(collectionId));
             processors.add(importProcessor);
             importProcessor.start();
             return importingFile;
@@ -246,7 +246,7 @@ public class ESEImporterImpl implements ESEImporter {
                 importXml(inputStream);
                 if (thread != null) {
                     log.info("Finished importing " + importFile);
-                    collection = dashboardDao.updateCollectionCounters(collection.getId());
+                    collection = consoleDao.updateCollectionCounters(collection.getId());
                     importFile = importRepository.transition(importFile, ImportFileState.IMPORTED);
                     collection.setFileState(ImportFileState.IMPORTED);
                     collection.setCollectionState(CollectionState.ENABLED);
@@ -263,15 +263,15 @@ public class ESEImporterImpl implements ESEImporter {
                         collection.setFileState(ImportFileState.VALIDATED);
                     }
                 }
-                collection = dashboardDao.updateCollection(collection);
-                dashboardDao.removeFromIndexQueue(collection);
+                collection = consoleDao.updateCollection(collection);
+                consoleDao.removeFromIndexQueue(collection);
             }
             catch (ImportException e) {
                 log.warn("Problem importing " + importFile + " to database, moving to error directory", e);
-                collection = dashboardDao.setImportError(collection.getId(), exceptionToErrorString(e));
+                collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
                 importFile = importRepository.transition(importFile, ImportFileState.ERROR);
                 collection.setFileState(ImportFileState.ERROR);
-                collection = dashboardDao.updateCollection(collection);
+                collection = consoleDao.updateCollection(collection);
             }
             finally {
                 processors.remove(this);
@@ -379,7 +379,7 @@ public class ESEImporterImpl implements ESEImporter {
                                 solrInputDocument.addField("europeana_collectionName", collection.getName()); // todo: can't just use a string field name here
                             }
                             recordList.add(solrInputDocument);
-                            dashboardDao.saveEuropeanaId(europeanaId);
+                            consoleDao.saveEuropeanaId(europeanaId);
                             europeanaId = null;
                             solrInputDocument = null;
                         }
@@ -472,7 +472,7 @@ public class ESEImporterImpl implements ESEImporter {
         public void run() {
             log.info("Validating " + importFile);
             try {
-                collection = dashboardDao.fetchCollection(collectionId);
+                collection = consoleDao.fetchCollection(collectionId);
                 if (collection == null) {
                     throw new ImportException("No collection found with id " + collectionId);
                 }
@@ -489,7 +489,7 @@ public class ESEImporterImpl implements ESEImporter {
             }
             catch (ImportException e) {
                 log.warn("Problem validating " + importFile + ", moving to error directory", e);
-                collection = dashboardDao.setImportError(collection.getId(), exceptionToErrorString(e));
+                collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
                 transition(ImportFileState.ERROR);
             }
             finally {
@@ -584,7 +584,7 @@ public class ESEImporterImpl implements ESEImporter {
         private void transition(ImportFileState state) {
             importFile = importRepository.transition(importFile, state);
             collection.setFileState(state);
-            collection = dashboardDao.updateCollection(collection);
+            collection = consoleDao.updateCollection(collection);
         }
     }
 

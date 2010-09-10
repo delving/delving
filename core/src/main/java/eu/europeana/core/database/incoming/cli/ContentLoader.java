@@ -21,7 +21,7 @@
 
 package eu.europeana.core.database.incoming.cli;
 
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.ImportFileState;
 import eu.europeana.core.database.incoming.ESEImporter;
@@ -52,7 +52,7 @@ import java.util.List;
 public class ContentLoader {
     private static final Logger LOG = Logger.getLogger(ContentLoader.class);
     private ESEImporter eseImporter;
-    private DashboardDao dashboardDao;
+    private ConsoleDao consoleDao;
     private ImportRepository repository;
     private List<Job> jobs = new ArrayList<Job>();
     private int simultaneousJobs = 5;
@@ -67,7 +67,7 @@ public class ContentLoader {
         }
 
         public boolean isFinished() {
-            collection = dashboardDao.fetchCollection(collection.getId());
+            collection = consoleDao.fetchCollection(collection.getId());
             return collection.getFileState() == ImportFileState.IMPORTED || collection.getFileState() == ImportFileState.ERROR;
         }
     }
@@ -81,7 +81,7 @@ public class ContentLoader {
                 "/core-application-context.xml"
         });
         eseImporter = (ESEImporter) context.getBean("normalizedEseImporter");
-        dashboardDao = (DashboardDao) context.getBean("dashboardDao");
+        consoleDao = (ConsoleDao) context.getBean("consoleDao");
         repository = (ImportRepository) context.getBean("normalizedImportRepository");
         CommonsHttpSolrServer solrServer = (CommonsHttpSolrServer) context.getBean("solrUpdateServer");
         baseUrl = solrServer.getBaseURL();
@@ -109,7 +109,7 @@ public class ContentLoader {
             while (activeJobs.size() < simultaneousJobs && !jobs.isEmpty()) {
                 Job job = jobs.remove(0);
                 ImportFile importFile = repository.copyToUploaded(job.file);
-                job.collection = dashboardDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
+                job.collection = consoleDao.fetchCollection(importFile.deriveCollectionName(), importFile.getFileName(), true);
                 importFile = eseImporter.commenceImport(importFile, job.collection.getId());
                 LOG.info(String.format("Importing commenced for %s", importFile));
                 activeJobs.add(job);
