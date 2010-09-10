@@ -21,7 +21,11 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.querymodel.query.BriefBeanView;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.FullBeanView;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.QueryType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -55,7 +59,7 @@ public class ResultController {
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
-    @Value("#{europeanaProperties['image.annotation.tool.base.url']}")
+    @Value("#{launchProperties['image.annotation.tool.base.url']}")
     private String imageAnnotationToolBaseUrl;
 
     @RequestMapping("/full-doc.html")

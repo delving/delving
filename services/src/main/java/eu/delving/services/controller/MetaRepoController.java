@@ -36,7 +36,7 @@ public class MetaRepoController {
     @Autowired
     private MetaRepo metaRepo;
 
-    @RequestMapping("/index.html")
+    @RequestMapping("/meta/index.html")
     public
     @ResponseBody
     String list() throws BadArgumentException {
@@ -55,7 +55,7 @@ public class MetaRepoController {
         return out.toString();
     }
 
-    @RequestMapping("/formats.html")
+    @RequestMapping("/meta/formats.html")
     public
     @ResponseBody
     String formats() throws BadArgumentException {
@@ -67,7 +67,7 @@ public class MetaRepoController {
         return out.toString();
     }
 
-    @RequestMapping("/{dataSetSpec}/{prefix}.html")
+    @RequestMapping("/meta/{dataSetSpec}/{prefix}.html")
     public
     @ResponseBody
     String listCollection(
@@ -89,7 +89,7 @@ public class MetaRepoController {
         return out.toString();
     }
 
-    @RequestMapping("/submit/{dataSetSpec}.zip")
+    @RequestMapping("/meta/submit/{dataSetSpec}.zip")
     public
     @ResponseBody
     String submit(

@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 
 public class MongoDaemonRunner extends Thread {
     private static final Logger LOG = Logger.getLogger(MongoDaemonRunner.class);
-    private static final File MONGO = new File("meta-repo/target/mongo");
+    private static final File MONGO = new File("services/target/mongo");
     private Process process;
     private boolean running = false;
     private boolean killed;

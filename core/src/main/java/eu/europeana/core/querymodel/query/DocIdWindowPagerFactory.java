@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class DocIdWindowPagerFactory {
 
-    @Value("#{europeanaProperties['portal.name']}")
+    @Value("#{launchProperties['portal.name']}")
     private String portalName = "portal"; // must be injected later
 
 

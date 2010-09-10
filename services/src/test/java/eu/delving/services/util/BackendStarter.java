@@ -34,6 +34,15 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class BackendStarter {
 
     public static void main(String... args) throws Exception {
+        final MongoDaemonRunner runner = new MongoDaemonRunner();
+        runner.start();
+        runner.waitUntilRunning();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                System.out.println("executing shutdown hook");
+                runner.kill();
+            }
+        });
         String root = StarterUtil.getEuropeanaPath();
         System.setProperty("solr.solr.home", root + "/core/src/test/solr/home");
         if (System.getProperty("solr.data.dir") == null) {

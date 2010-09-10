@@ -69,10 +69,10 @@ public class ServiceController {
     @Autowired
     private ObjectCache objectCache;
 
-    @Value("#{europeanaProperties['displayPageUrl']}")
+    @Value("#{launchProperties['displayPageUrl']}")
     private String displayPageUrl;
 
-    @Value("#{europeanaProperties['resolverUrlPrefix']}")
+    @Value("#{launchProperties['resolverUrlPrefix']}")
     private String resolverUrlPrefix;
 
     @RequestMapping("/resolve")

@@ -24,7 +24,7 @@ import java.util.zip.ZipOutputStream;
  */
 
 public class ZipUploader {
-    private static File ZIP_FILE = new File("meta-repo/target/00101_Ag_NO_sffDF.zip");
+    private static File ZIP_FILE = new File("services/target/00101_Ag_NO_sffDF.zip");
     private Logger log = Logger.getLogger(ZipUploader.class);
 
     public void upload() throws IOException {
@@ -63,7 +63,7 @@ public class ZipUploader {
 
     private void uploadFile(File file) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = "http://localhost:8080/meta-repo/submit/" + file.getName();
+        String postUrl = "http://localhost:8888/services/meta/submit/" + file.getName();
         log.info("Posting to: "+postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         FileEntity fileEntity = new FileEntity(file, "application/zip");

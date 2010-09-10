@@ -33,13 +33,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ConfigInterceptor extends HandlerInterceptorAdapter {
 
-    @Value("#{europeanaProperties['debug']}")
+    @Value("#{launchProperties['debug']}")
     private String debug;
 
-    @Value("#{europeanaProperties['cacheUrl']}")
+    @Value("#{launchProperties['cacheUrl']}")
     private String cacheUrl;
 
-    @Value("#{europeanaProperties['portal.name']}")
+    @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
     @Override

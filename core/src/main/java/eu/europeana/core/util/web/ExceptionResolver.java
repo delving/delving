@@ -50,13 +50,13 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Qualifier("emailSenderForExceptions")
     private EmailSender emailSender;
 
-    @Value("#{europeanaProperties['cacheUrl']}")
+    @Value("#{launchProperties['cacheUrl']}")
     private String cacheUrl;
 
-    @Value("#{europeanaProperties['debug']}")
+    @Value("#{launchProperties['debug']}")
     private String debug;
 
-    @Value("#{europeanaProperties['portal.name']}")
+    @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
     @Autowired

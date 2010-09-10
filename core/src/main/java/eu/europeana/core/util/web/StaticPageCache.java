@@ -20,17 +20,16 @@
  */
 package eu.europeana.core.util.web;
 
+import eu.europeana.definitions.domain.Language;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-
-import eu.europeana.definitions.domain.Language;
 
 /**
  * This class pays attention to a file system directory and delivers pages if they are present.
@@ -44,7 +43,7 @@ public class StaticPageCache {
 	private Map<String, Page> pageMapCache = new ConcurrentHashMap<String, Page>();
 	private String staticPagePath;
 
-	@Value("#{europeanaProperties['static.page.path']}")
+	@Value("#{launchProperties['static.page.path']}")
 	public void setStaticPagePath(String staticPagePath) {
 		this.staticPagePath = staticPagePath;
 	}
