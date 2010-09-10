@@ -43,6 +43,6 @@
         <mapping class="eu.europeana.core.database.domain.CarouselItem"/>
         <mapping class="eu.europeana.core.database.domain.IndexingQueueEntry"/>
         <mapping class="eu.europeana.core.database.domain.Annotation"/>
-        <mapping class="eu.europeana.core.database.domain.DashboardLog"/>
+        <mapping class="eu.europeana.core.database.domain.ConsoleLog"/>
     </session-factory>
 </hibernate-configuration>

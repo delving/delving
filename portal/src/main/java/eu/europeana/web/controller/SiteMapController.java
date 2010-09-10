@@ -1,6 +1,6 @@
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.querymodel.query.DocId;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
@@ -37,7 +37,7 @@ public class SiteMapController {
     private QueryModelFactory beanQueryModelFactory;
 
     @Autowired
-    DashboardDao dashboardDao;
+    ConsoleDao consoleDao;
 
     @RequestMapping("/sitemap.xml")
     public ModelAndView handleSitemap(
@@ -53,7 +53,7 @@ public class SiteMapController {
         ModelAndView mavPage;
         if (collection == null) {
             List<SitemapIndexEntry> entries = new ArrayList<SitemapIndexEntry>();
-            List<EuropeanaCollection> europeanaCollections = dashboardDao.fetchEnabledCollections();
+            List<EuropeanaCollection> europeanaCollections = consoleDao.fetchEnabledCollections();
             for (EuropeanaCollection europeanaCollection : europeanaCollections) {
                 for (int i = 0; i <= europeanaCollection.getTotalRecords() / MAX_RECORDS_PER_SITEMAP_FILE; i++) {
                     // add each page of a collection to the index.

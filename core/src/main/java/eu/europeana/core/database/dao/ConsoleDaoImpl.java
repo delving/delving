@@ -21,10 +21,10 @@
 
 package eu.europeana.core.database.dao;
 
-import eu.europeana.core.database.DashboardDao;
+import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.CarouselItem;
 import eu.europeana.core.database.domain.CollectionState;
-import eu.europeana.core.database.domain.DashboardLog;
+import eu.europeana.core.database.domain.ConsoleLog;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.ImportFileState;
@@ -43,14 +43,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class is an implementation of the DashboardDao using an injected JPA Entity Manager.
+ * This class is an implementation of the ConsoleDao using an injected JPA Entity Manager.
  *
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  * @author Nicola Aloia <nicola.aloia@isti.cnr.it>
  */
 
 @SuppressWarnings("unchecked")
-public class DashboardDaoImpl implements DashboardDao {
+public class ConsoleDaoImpl implements ConsoleDao {
     private Logger log = Logger.getLogger(getClass());
 
     @PersistenceContext
@@ -71,23 +71,23 @@ public class DashboardDaoImpl implements DashboardDao {
 
     @Override
     @Transactional
-    public List<DashboardLog> fetchLogEntriesFrom(Long bottomId, int pageSize) {
-        Query query = entityManager.createQuery("select log from DashboardLog log where log.id >= :bottomId order by log.id asc");
+    public List<ConsoleLog> fetchLogEntriesFrom(Long bottomId, int pageSize) {
+        Query query = entityManager.createQuery("select log from ConsoleLog log where log.id >= :bottomId order by log.id asc");
         query.setParameter("bottomId", bottomId);
         query.setMaxResults(pageSize);
-        return (List<DashboardLog>) query.getResultList();
+        return (List<ConsoleLog>) query.getResultList();
     }
 
     @Override
     @Transactional
-    public List<DashboardLog> fetchLogEntriesTo(Long topId, int pageSize) {
-        Query query = entityManager.createQuery("select log from DashboardLog log where log.id <= :bottomId order by log.id desc");
+    public List<ConsoleLog> fetchLogEntriesTo(Long topId, int pageSize) {
+        Query query = entityManager.createQuery("select log from ConsoleLog log where log.id <= :bottomId order by log.id desc");
         query.setParameter("bottomId", topId);
         query.setMaxResults(pageSize);
-        List<DashboardLog> entries = (List<DashboardLog>) query.getResultList();
-        Collections.sort(entries, new Comparator<DashboardLog>() {
+        List<ConsoleLog> entries = (List<ConsoleLog>) query.getResultList();
+        Collections.sort(entries, new Comparator<ConsoleLog>() {
             @Override
-            public int compare(DashboardLog a, DashboardLog b) {
+            public int compare(ConsoleLog a, ConsoleLog b) {
                 if (a.getId() > b.getId()) {
                     return 1;
                 }
@@ -102,13 +102,13 @@ public class DashboardDaoImpl implements DashboardDao {
         return entries;
     }
 
-    public List<DashboardLog> fetchLogEntries(java.util.Date from, int count) {
-        // Query query = entityManager.createQuery("select log from DashboardLog log where log.when > :from order by log.when ");
-        Query query = entityManager.createQuery("select log from DashboardLog log where log.time > :from order by log.time ");
+    public List<ConsoleLog> fetchLogEntries(java.util.Date from, int count) {
+        // Query query = entityManager.createQuery("select log from ConsoleLog log where log.when > :from order by log.when ");
+        Query query = entityManager.createQuery("select log from ConsoleLog log where log.time > :from order by log.time ");
         // todo: sjoerd added this. check if correct
         query.setParameter("from", from);
         query.setMaxResults(count);
-        return (List<DashboardLog>) query.getResultList();
+        return (List<ConsoleLog>) query.getResultList();
     }
 
     @Override
@@ -462,7 +462,7 @@ public class DashboardDaoImpl implements DashboardDao {
     @Override
     @Transactional
     public void log(String who, String what) {
-        DashboardLog log = new DashboardLog(who, new Date(), what);
+        ConsoleLog log = new ConsoleLog(who, new Date(), what);
         entityManager.persist(log);
     }
 

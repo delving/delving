@@ -40,7 +40,7 @@ import java.util.Date;
  */
 
 @Entity
-public class DashboardLog implements Serializable {
+public class ConsoleLog implements Serializable {
     private static final long serialVersionUID = -2184440316137953279L;
 
     @Id
@@ -59,10 +59,10 @@ public class DashboardLog implements Serializable {
     @Lob
     private String what;
 
-    public DashboardLog() {
+    public ConsoleLog() {
     }
 
-    public DashboardLog(String who, Date time, String what) {
+    public ConsoleLog(String who, Date time, String what) {
         this.who = who;
         this.time = time;
         this.what = what;
