@@ -25,7 +25,23 @@ import eu.europeana.core.database.UserDao;
 import eu.europeana.core.querymodel.beans.BriefBean;
 import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.beans.IdBean;
-import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.querymodel.query.BriefBeanView;
+import eu.europeana.core.querymodel.query.BriefDoc;
+import eu.europeana.core.querymodel.query.DocId;
+import eu.europeana.core.querymodel.query.DocIdWindowPager;
+import eu.europeana.core.querymodel.query.DocIdWindowPagerFactory;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.FacetQueryLinks;
+import eu.europeana.core.querymodel.query.FullBeanView;
+import eu.europeana.core.querymodel.query.FullDoc;
+import eu.europeana.core.querymodel.query.QueryAnalyzer;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.QueryProblem;
+import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.querymodel.query.ResultPagination;
+import eu.europeana.core.querymodel.query.ResultPaginationImpl;
+import eu.europeana.core.querymodel.query.SiteMapBeanView;
+import eu.europeana.core.querymodel.query.SolrQueryUtil;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
 import org.apache.log4j.Logger;
@@ -68,7 +84,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         this.docIdWindowPagerFactory = docIdWindowPagerFactory;
     }
 
-    @Value("#{europeanaProperties['portal.name']}")
+    @Value("#{launchProperties['portal.name']}")
     public void setPortalName(String portalName) {
         this.portalName = portalName;
     }

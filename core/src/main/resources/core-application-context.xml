@@ -165,26 +165,26 @@
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
-    <!--<bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">-->
-        <!--<property name="classes">-->
-            <!--<util:list>-->
-                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>-->
-            <!--</util:list>-->
-        <!--</property>-->
-    <!--</bean>-->
     <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
         <property name="classes">
             <util:list>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
             </util:list>
         </property>
     </bean>
+    <!--<bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">-->
+        <!--<property name="classes">-->
+            <!--<util:list>-->
+                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>-->
+                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>-->
+                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>-->
+                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>-->
+            <!--</util:list>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <bean id="normalizedImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
         <property name="dataDirectory" value="#{launchProperties['dashboard.normalized.import.repository']}"/>
@@ -348,7 +348,7 @@
         <property name="targetMethod" value="initLogging"/>
         <property name="arguments">
             <list>
-                <value>#{delvingProperties['log4j.xml']}</value>
+                <value>#{launchProperties['log4j.xml']}</value>
             </list>
         </property>
     </bean>

@@ -625,6 +625,9 @@ public class ESEImporterImpl implements ESEImporter {
     private EuropeanaBean getEuropeanaBean() {
         if (europeanaBean == null) {
             europeanaBean = annotationProcessor.getEuropeanaBean(beanClass);
+            if (europeanaBean == null) {
+                throw new RuntimeException("Expected to find bean for class "+beanClass);
+            }
         }
         return europeanaBean;
     }
