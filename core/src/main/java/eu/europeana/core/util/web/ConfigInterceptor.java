@@ -42,6 +42,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
+    @Value("#{launchProperties['portal.theme']}")
+    private String portalTheme;
+
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
@@ -50,6 +53,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));
             modelAndView.addObject("cacheUrl", cacheUrl);
             modelAndView.addObject("portalName", portalName);
+            modelAndView.addObject("portalTheme", portalTheme);
         }
     }
 }

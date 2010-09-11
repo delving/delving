@@ -105,6 +105,8 @@ log4j.xml=/tmp/log4j.xml
 # This is the name of the webapp used to prefix any urls in the freeMarker templates to images, css, and javascript files.
 #
 portal.name = portal
+portal.freemarker.path = WEB-INF/templates/theme/default
+portal.theme = theme/default
 
 
 #
