@@ -1,0 +1,104 @@
+#mainContent h1 {margin: 0 0 0 0;}
+
+
+ label {font-weight: bold; }
+ label.norm {font-weight: normal;}
+ input {display: block; margin-bottom: 1em; }
+ input.inline {display: inline; margin: 0 0 0 0; line-height: 2em;}
+ p {font-size: 85%; padding: 5px; font-weight: bold;}
+ p.failure {background-color: firebrick; color: #fff;}
+ p.success {background-color: green; color: #fff;}
+#regForm {
+    width: 700px;
+    height: 400px;
+    }
+#regForm fieldset {
+    /*height: 20em;*/
+    width: 200px;
+    border: 0;
+    margin: 0;
+    padding: 1em;
+    float: left;
+     }
+#regForm fieldset legend {
+    font-size: 4em;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    color: #888;
+    }
+#regForm fieldset legend span {
+    display: none;
+    }
+#regForm fieldset h3 {
+    /*height: 2em;*/
+    font-size: 1.25em;
+    margin: 0 0 20px 0;
+    }
+#regForm fieldset div.help {
+    color: #333;
+    font-size: 85% ;
+    font-weight: normal;
+    /*margin: 0 0 20px 0;*/
+    min-height: 6em;
+    }
+#regForm fieldset label {
+    /*font-size: ;*/
+    display: block;
+    line-height: 1.5em;
+    }
+#regForm fieldset input {
+    /*font-size: ;*/
+    /*height: 1.2em;*/
+    }
+
+/* Error Styling */
+#regForm fieldset.error,
+#regForm fieldset.error legend,
+#regForm fieldset.error div.help {
+    color: #FFCC33;
+    }
+#regForm fieldset strong.error {
+    color: #fff;
+    background-color: #CC0000;
+    padding: 0.2em;
+    font-size: 0.7em;
+    font-weight: bold;
+    display: block;
+    }
+
+/* Part 4 Styling */
+#regForm #pt4 {
+    clear: both;
+    width: 700px;
+    /*height: 2em;*/
+    border: 1px dotted #CCC;
+    border-width: 1px 0;
+    padding: 1em 0;
+    }
+#regForm #pt4 legend {
+    display: none;
+    }
+#regForm #pt4 h3 {
+    display: none;
+    }
+#regForm #pt4 #disclaimer {
+    width: 50em;
+    float: left;
+    font-size: 0.7em;
+    float: left;
+    margin-right: 10px;
+    }
+#regForm #pt4 #agree {
+    width: 15em;
+    float: left;
+    color: #000;
+    float: left;
+    }
+#regForm #pt4 #agree input {
+    float:left;
+    margin-right: 10px;
+}
+.button {
+    float: left;
+    margin-right: 10px;
+}
+    

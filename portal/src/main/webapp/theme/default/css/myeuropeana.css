@@ -1,0 +1,58 @@
+h3 {
+    font-size: 1em;
+    border-bottom: 4px solid #000;
+    padding: 6px 4px;
+}
+h3.items {
+     border-bottom-color: #26a097;
+         cursor: pointer;
+}
+h3.searches {
+    border-bottom-color: #FF1493;
+        cursor: pointer;
+}
+h3.tags {
+   border-bottom-color: #888;
+       cursor: pointer;
+}
+
+table.tbl-list {
+    border-width: 0;
+    margin: 0 0 20px 0;
+    z-index: 10001;
+    /*height: 300px;*/
+    overflow-x: hidden;
+    overflow-y: auto;
+     /*max-height: 300px;*/
+}
+.tbl-list td {
+    padding: 4px;
+    border-bottom: 1px solid #eaeaea;
+}
+.tbl-list .item-img {
+    width: 40px;
+}
+
+.tbl-list .item-info p {
+    font-size: 85%;
+}
+.tbl-list .item-info p em {
+    font-weight: bold;
+}
+.tbl-list .del-button {
+    font-size: 85%;
+    border: 1px solid #ccc;
+	background: #fff;
+	cursor: pointer;
+	margin: 2px 0 0 10px;
+	padding: 0 0 0 0;
+	font-weight: bold;
+	color: #797979;
+    vertical-align: middle; *vertical-align: text-bottom;
+    margin-top: 2px;
+}
+/*override from common.css */
+.button {margin-left: 0;}
+        .panel {height: 350px;}
+        .panel .bd { overflow-y: auto; overflow-x:none; height: 400px; }
+        .panel table {width: 95%; border-collapse:separate;}

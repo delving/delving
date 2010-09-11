@@ -5,15 +5,14 @@ import javax.servlet.http.{HttpServletRequest}
 import java.lang.String
 import java.util.{Map, Date}
 import scala.collection.JavaConversions._
-import eu.delving.services.core.MetaRepo
 import collection.mutable.HashMap
 import java.util.Map.Entry
-import eu.delving.services.core.MetaRepo.{PmhVerb, HarvestStep, Record}
 import org.apache.log4j.Logger
-import eu.delving.services.exceptions.{BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
 import java.text.{SimpleDateFormat}
 import xml._
-
+import eu.delving.services.core.MetaRepo.{Record, HarvestStep, PmhVerb}
+import eu.delving.services.exceptions.{BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
+import eu.delving.services.core.MetaRepo
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
  *
