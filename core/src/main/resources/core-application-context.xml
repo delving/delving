@@ -78,14 +78,16 @@
                 <value>message.cache.seconds</value>
                 <value>log4j.xml</value>
                 <value>portal.name</value>
-                
+                <value>portal.freemarker.path</value>
+                <value>portal.theme</value>
+
                 <value>repositoryName</value>
                 <value>adminEmail</value>
                 <value>earliestDateStamp</value>
                 <value>repositoryIdentifier</value>
                 <value>sampleIdentifier</value>
                 <value>responseListSize</value>
-                
+
             </list>
         </constructor-arg>
     </bean>
@@ -222,7 +224,7 @@
     </bean>
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <property name="templateLoaderPath" value="WEB-INF/templates/"/>
+        <property name="templateLoaderPath" value="#{launchProperties['portal.freemarker.path']}"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>
