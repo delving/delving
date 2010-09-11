@@ -44,17 +44,62 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean id="europeanaProperties" class="eu.europeana.core.querymodel.query.EuropeanaProperties"/>
+    <bean id="launchProperties" class="eu.delving.core.util.LaunchProperties">
+        <constructor-arg>
+            <list>
+                <value>db.driverClass</value>
+                <value>db.jdbcUrl</value>
+                <value>db.user</value>
+                <value>db.password</value>
+                <value>solr.selectUrl</value>
+                <value>solr.updateUrl</value>
+                <value>solr.timeout</value>
+                <value>solr.retries</value>
+                <value>solr.chunkSize</value>
+                <value>smtp.host</value>
+                <value>smtp.username</value>
+                <value>smtp.password</value>
+                <value>trigger.startDelay</value>
+                <value>trigger.repeatInterval</value>
+                <value>admin.to</value>
+                <value>system.from</value>
+                <value>feedback.to</value>
+                <value>exception.to</value>
+                <value>feedback.from</value>
+                <value>cacheUrl</value>
+                <value>resolverUrlPrefix</value>
+                <value>displayPageUrl</value>
+                <value>dashboard.normalized.import.repository</value>
+                <value>dashboard.sandbox.import.repository</value>
+                <value>cache.cacheRoot</value>
+                <value>debug</value>
+                <value>static.page.path</value>
+                <value>message.resource</value>
+                <value>message.cache.seconds</value>
+                <value>log4j.xml</value>
+                <value>portal.name</value>
+                
+                <value>repositoryName</value>
+                <value>adminEmail</value>
+                <value>earliestDateStamp</value>
+                <value>repositoryIdentifier</value>
+                <value>sampleIdentifier</value>
+                <value>responseListSize</value>
+                
+            </list>
+        </constructor-arg>
+    </bean>
+
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties" ref="europeanaProperties"/>
+        <property name="properties" ref="launchProperties"/>
     </bean>
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="driverClass" value="#{europeanaProperties['db.driverClass']}"/>
-        <property name="jdbcUrl" value="#{europeanaProperties['db.jdbcUrl']}"/>
-        <property name="user" value="#{europeanaProperties['db.user']}"/>
-        <property name="password" value="#{europeanaProperties['db.password']}"/>
+        <property name="driverClass" value="#{launchProperties['db.driverClass']}"/>
+        <property name="jdbcUrl" value="#{launchProperties['db.jdbcUrl']}"/>
+        <property name="user" value="#{launchProperties['db.user']}"/>
+        <property name="password" value="#{launchProperties['db.password']}"/>
     </bean>
 
     <!--todo: these declarations are related to using annotation-based validation-->
@@ -101,44 +146,54 @@
     <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-        <constructor-arg value="#{europeanaProperties['solr.selectUrl']}"/>
-        <property name="soTimeout" value="#{europeanaProperties['solr.timeout']}"/>
-        <property name="connectionTimeout" value="#{europeanaProperties['solr.timeout']}"/>
+        <constructor-arg value="#{launchProperties['solr.selectUrl']}"/>
+        <property name="soTimeout" value="#{launchProperties['solr.timeout']}"/>
+        <property name="connectionTimeout" value="#{launchProperties['solr.timeout']}"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
         <property name="maxTotalConnections" value="125"/>
         <property name="followRedirects" value="false"/>
-        <property name="maxRetries" value="#{europeanaProperties['solr.retries']}"/>
+        <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
     <bean id="solrUpdateServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-        <constructor-arg value="#{europeanaProperties['solr.updateUrl']}"/>
-        <property name="soTimeout" value="#{europeanaProperties['solr.timeout']}"/>
-        <property name="connectionTimeout" value="#{europeanaProperties['solr.timeout']}"/>
+        <constructor-arg value="#{launchProperties['solr.updateUrl']}"/>
+        <property name="soTimeout" value="#{launchProperties['solr.timeout']}"/>
+        <property name="connectionTimeout" value="#{launchProperties['solr.timeout']}"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
         <property name="maxTotalConnections" value="125"/>
         <property name="followRedirects" value="false"/>
-        <property name="maxRetries" value="#{europeanaProperties['solr.retries']}"/>
+        <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
+    <!--<bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">-->
+        <!--<property name="classes">-->
+            <!--<util:list>-->
+                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>-->
+                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>-->
+                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>-->
+                <!--<value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>-->
+            <!--</util:list>-->
+        <!--</property>-->
+    <!--</bean>-->
     <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
         <property name="classes">
             <util:list>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>
             </util:list>
         </property>
     </bean>
 
     <bean id="normalizedImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
-        <property name="dataDirectory" value="#{europeanaProperties['dashboard.normalized.import.repository']}"/>
+        <property name="dataDirectory" value="#{launchProperties['dashboard.normalized.import.repository']}"/>
     </bean>
 
     <bean id="normalizedEseImporter" class="eu.europeana.core.database.incoming.ESEImporterImpl">
         <property name="importRepository" ref="normalizedImportRepository"/>
         <property name="normalized" value="true"/>
-        <property name="chunkSize" value="#{europeanaProperties['solr.chunkSize']}"/>
+        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
         <property name="beanClass">
             <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
         </property>
@@ -162,7 +217,7 @@
     </bean>
 
     <bean id="objectCache" class="eu.europeana.core.database.incoming.cache.ObjectCacheImpl">
-        <property name="root" value="#{europeanaProperties['cache.cacheRoot']}"/>
+        <property name="root" value="#{launchProperties['cache.cacheRoot']}"/>
         <property name="fetchOriginal" value="false"/>
     </bean>
 
@@ -175,9 +230,9 @@
     <bean id="docIdWindowPagerFactory" class="eu.europeana.core.querymodel.query.DocIdWindowPagerFactory"/>
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="#{europeanaProperties['smtp.host']}"/>
-        <property name="username" value="#{europeanaProperties['smtp.username']}"/>
-        <property name="password" value="#{europeanaProperties['smtp.password']}"/>
+        <property name="host" value="#{launchProperties['smtp.host']}"/>
+        <property name="username" value="#{launchProperties['smtp.username']}"/>
+        <property name="password" value="#{launchProperties['smtp.password']}"/>
     </bean>
 
     <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
@@ -194,21 +249,21 @@
 
     <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/exception"/>
-        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
-        <property name="toEmail" value="#{europeanaProperties['exception.to']}"/>
+        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
+        <property name="toEmail" value="#{launchProperties['exception.to']}"/>
     </bean>
 
     <bean id="emailSenderForRegisterNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/register-notify"/>
-        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
-        <property name="toEmail" value="#{europeanaProperties['register.to']}"/>
+        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
+        <property name="toEmail" value="#{launchProperties['register.to']}"/>
         <property name="subject" value="Someone registered just now"/>
     </bean>
 
     <bean id="emailSenderForPasswordChangeNotify" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/password-change-notify"/>
-        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
-        <property name="toEmail" value="#{europeanaProperties['admin.to']}"/>
+        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
+        <property name="toEmail" value="#{launchProperties['admin.to']}"/>
         <property name="subject" value="Password has been changed"/>
     </bean>
 
@@ -220,14 +275,14 @@
 
     <bean id="emailSenderForUserFeedback" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback"/>
-        <property name="fromEmail" value="#{europeanaProperties['feedback.from']}"/>
-        <property name="toEmail" value="#{europeanaProperties['feedback.to']}"/>
+        <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
+        <property name="toEmail" value="#{launchProperties['feedback.to']}"/>
         <property name="subject" value="User Feedback"/>
     </bean>
 
     <bean id="emailSenderForUserFeedbackConfirmation" class="eu.europeana.core.util.web.EmailSender">
         <property name="template" value="/email/feedback-confirmation"/>
-        <property name="fromEmail" value="#{europeanaProperties['feedback.from']}"/>
+        <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
         <property name="subject" value="User Feedback"/>
     </bean>
 
@@ -273,14 +328,14 @@
                 <entry key="register">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/confirmation"/>
-                        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+                        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
                         <property name="subject" value="My Europeana email confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/forgot-password"/>
-                        <property name="fromEmail" value="#{europeanaProperties['system.from']}"/>
+                        <property name="fromEmail" value="#{launchProperties['system.from']}"/>
                         <property name="subject" value="My Europeana reset password"/>
                     </bean>
                 </entry>
@@ -293,7 +348,7 @@
         <property name="targetMethod" value="initLogging"/>
         <property name="arguments">
             <list>
-                <value>#{europeanaProperties['log4j.xml']}</value>
+                <value>#{delvingProperties['log4j.xml']}</value>
             </list>
         </property>
     </bean>

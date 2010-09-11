@@ -64,18 +64,17 @@ Build and install core module.
 	mvn clean install -Dmaven.test.skip=true
 
 
-##Prepare the europeana.properties file
+##Prepare the properties file
 
-Make a copy of the `europeana.properties.template` and rename it `europeana.properties`. Edit it to make it reflect your system. If you have Postgresql running on the same machine, then you don't have to change the database settings. Please do not commit this properties file to version control since it is customised for your development setup.
+Make a copy of the `launch.properties.template` and rename it `launch.properties`. Edit it to make it reflect your system. If you have Postgresql running on the same machine, then you don't have to change the database settings. Please do not commit this properties file to version control since it is customised for your development setup.
 
 **Note**, if you are running everything locally you will only have to edit the email addresses, imageMagick path and the smtp settings.
 
-Place europeana.properties somewhere. For launching, either
+Place launch.properties somewhere. For launching, either
 
-- Start the JVM with parameter -Deuropeana.properties=/path/to/europeana.properties, or
-- Set the environment variable 'EUROPEANA_PROPERTIES' to /path/to/europeana.properties
+- Start the JVM with parameter -Dlaunch.properties=/path/to/launch.properties, or
 
-Here /path/to/europeana.properties can be absolute or relative.
+Here /path/to/launch.properties can be absolute or relative.
 
 ## Setting up your IDE ##
 
@@ -95,7 +94,7 @@ if you have problems with finding the M2_REPO add it to Preferences > Java > Bui
 ## Initiate the Database and Index ##
 
 
-In order to load the static content and fill the index you have to run the class `./database/src/test/java/eu/europeana/bootstrap/LoadContent.java` from your IDE. (In eclipse make sure you run in from ${workspace_loc:europeana}, otherwise the europeana.properties file might not be found).
+In order to load the static content and fill the index you have to run the class `./database/src/test/java/eu/europeana/bootstrap/LoadContent.java` from your IDE. (In eclipse make sure you run in from ${workspace_loc:europeana}, otherwise the launch.properties file might not be found).
 
 ## Launch the Europeana environment ##
 

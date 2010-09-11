@@ -21,25 +21,6 @@
 
 package eu.europeana.core.database.dao;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.Assert.fail;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-
 import eu.europeana.core.database.AnnotationDao;
 import eu.europeana.core.database.domain.Annotation;
 import eu.europeana.core.database.domain.AnnotationType;
@@ -52,6 +33,24 @@ import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
 import eu.europeana.definitions.domain.Language;
 import eu.europeana.fixture.DatabaseFixture;
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.fail;
 
 /**
  * Test the AnnotationDao methods
@@ -65,7 +64,7 @@ import eu.europeana.fixture.DatabaseFixture;
         "/test-application-context.xml"
 })
 
-@Ignore("needs a reference to europeana.properties test file")
+@Ignore("needs a reference to launch.properties test file")
 @Transactional
 public class TestAnnotationDao {
     private Logger log = Logger.getLogger(TestAnnotationDao.class);

@@ -13,10 +13,8 @@
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-    <bean id="metaRepoProperties" class="eu.delving.services.MetaRepoProperties"/>
-
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties" ref="metaRepoProperties"/>
+        <property name="properties" ref="launchProperties"/>
     </bean>
 
     <context:annotation-config/>
@@ -25,24 +23,13 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
-        <property name="classes">
-            <util:list>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>
-                <value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>
-            </util:list>
-        </property>
-    </bean>
-
     <bean id="metaRepoConfig" class="eu.delving.services.impl.MetaConfigImpl"/>
 
     <bean id="metadataRepository" class="eu.delving.services.impl.MetaRepoImpl">
         <property name="mongo" ref="mongo"/>
         <property name="annotationProcessor" ref="annotationProcessor"/>
         <property name="metaRepoConfig" ref="metaRepoConfig"/>
-        <property name="responseListSize" value="#{metaRepoProperties['responseListSize']}"/>
+        <property name="responseListSize" value="#{launchProperties['responseListSize']}"/>
         <property name="harvestStepSecondsToLive" value="180"/>
     </bean>
 
@@ -54,8 +41,8 @@
                 <property name="concurrent" value="false"/>
             </bean>
         </property>
-        <property name="startDelay" value="#{metaRepoProperties['harvestStepCleanupDelay']}"/>
-        <property name="repeatInterval" value="#{metaRepoProperties['harvestStepCleanupDelay']}"/>
+        <property name="startDelay" value="#{launchProperties['harvestStepCleanupDelay']}"/>
+        <property name="repeatInterval" value="#{launchProperties['harvestStepCleanupDelay']}"/>
     </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

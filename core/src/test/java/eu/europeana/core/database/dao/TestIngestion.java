@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
         "/test-application-context.xml"
 })
 
-@Ignore("needs a reference to europeana.properties test file")
+@Ignore("needs a reference to launch.properties test file")
 public class TestIngestion {
     private static Logger log = Logger.getLogger(TestIngestion.class);
 
