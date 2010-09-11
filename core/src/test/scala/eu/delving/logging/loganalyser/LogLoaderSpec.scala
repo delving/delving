@@ -17,8 +17,8 @@ import com.mongodb._
 
 class LogLoaderSpec extends Spec with ShouldMatchers {
   describe("A logloader") {
-    val compressedTestLogs = new File("loganalyser/src/test/resources/test_log_files/compressed")
-    val uncompressedTestLogs = new File("loganalyser/src/test/resources/test_log_files/uncompressed")
+    val compressedTestLogs = new File("core/src/test/resources/test_log_files/compressed")
+    val uncompressedTestLogs = new File("core/src/test/resources/test_log_files/uncompressed")
     val coll = LogLoader.getMongoCollection("testLogEntries", "testCollection")
 
     val loader = new LogLoader(coll)
@@ -39,8 +39,8 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
 
       it("should process a gzipped file the same as a unzipped file") {
         def logProcessor(file: String) = loader.processLogFile(new File(file)) {line =>}
-        val compressedLog = logProcessor("loganalyser/src/test/resources/test_log_files/compressed/portal4/portal4_ClickStreamLogger.log.gz")
-        val unCompressedLog = logProcessor("loganalyser/src/test/resources/test_log_files/uncompressed/portal4/portal4_ClickStreamLogger.log.2010-08-01.txt")
+        val compressedLog = logProcessor("core/src/test/resources/test_log_files/compressed/portal4/portal4_ClickStreamLogger.log.gz")
+        val unCompressedLog = logProcessor("core/src/test/resources/test_log_files/uncompressed/portal4/portal4_ClickStreamLogger.log.2010-08-01.txt")
         compressedLog should equal(unCompressedLog)
       }
     }
@@ -91,7 +91,7 @@ class LogLoaderSpec extends Spec with ShouldMatchers {
     describe("(when inserting entries in MongoDB)") {
 
       it("should insert new entries") {
-        LogLoader.processLogFiles(new File("loganalyser/src/test/resources/test_log_files/uncompressed/"))
+        LogLoader.processLogFiles(new File("core/src/test/resources/test_log_files/uncompressed/"))
       }
     }
 
@@ -445,7 +445,7 @@ object IpToCountryConvertor {
     val countryIpRecords = Source.fromInputStream(
       new GZIPInputStream(
         new FileInputStream(
-          new File("loganalyser/src/test/resources/ip2country/ip-to-country.csv.gz")
+          new File("core/src/test/resources/ip2country/ip-to-country.csv.gz")
           )
         )
       , "utf-8")
