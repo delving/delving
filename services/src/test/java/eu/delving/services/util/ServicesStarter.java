@@ -31,7 +31,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class BackendStarter {
+public class ServicesStarter {
 
     public static void main(String... args) throws Exception {
         final MongoDaemonRunner runner = new MongoDaemonRunner();
