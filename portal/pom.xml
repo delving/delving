@@ -25,7 +25,7 @@
     <groupId>eu.europeana</groupId>
     <artifactId>portal</artifactId>
     <packaging>war</packaging>
-    <name>Europeana Portal Web Application (Lite)</name>
+    <name>Europeana Portal Web Application</name>
     <version>0.1.0</version>
     <description>The lite version of the Europeana Portal contains all the core pages
         (index, brief-doc, full-doc, myEuropeana) and functionality of the production
