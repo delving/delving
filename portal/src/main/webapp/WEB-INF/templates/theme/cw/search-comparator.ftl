@@ -15,7 +15,7 @@
 <div id="header">
 
     <div id="identity" class="grid_3">
-        <h1>Delving</h1>
+        <h1>ICN</h1>
         <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
     </div>
 

@@ -13,7 +13,7 @@
 
     <div id="identity">
             <h1>ICN</h1>
-           <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
+            <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
     </div>
 
 </div>

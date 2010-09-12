@@ -144,7 +144,7 @@
     </noscript>
     <div id="loading">
         <b>Loading images</b><br/>
-        <img src="images/loading.gif" width="208" height="13" alt="loading"/>
+        <img src="/${portalName}/${portalTheme}/images/loading.gif" width="208" height="13" alt="loading"/>
     </div>
     <div id="images">
         <#list seq as briefDoc>

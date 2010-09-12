@@ -31,10 +31,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="shortcut icon" href="/${portalName}/${portalTheme}/favicon.ico"/>
+        <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-        <link rel="stylesheet" type="text/css" href="/${portalName}${portalTheme}/css/jquery-ui-1.7.2.custom.css"/>
-        <link rel="stylesheet" type="text/css" href="/${portalName}${portalTheme}/css/layout-common.css"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.7.2.custom.css"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>
     </head>
 
     <body>
