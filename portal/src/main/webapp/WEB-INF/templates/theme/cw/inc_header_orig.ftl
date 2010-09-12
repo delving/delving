@@ -113,44 +113,46 @@
 </#macro>
 
 <#macro userbar>
-    <ul class="user_nav">
+    <div class="inner">
+    <ul>
         <#if !user??>
-            <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="login.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
+        <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
+                href="login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a>
+        </li>
         </#if>
         <#if user??>
-            <li>
-                <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-                    href="logout.html"><@spring.message 'LogOut_t' /></a>
-            </li>
-            <#if user.savedItems?exists>
-                <li>
-                    <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
-                        <@spring.message 'SavedItems_t' />
-                    </a>
-                    (<span id="savedItemsCount">${user.savedItems?size}</span>)
-                </li>
-            </#if>
-            <#if user.savedSearches?exists>
-                <li>
-                    <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
-                        <@spring.message 'SavedSearches_t' />
-                    </a>
-                    (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
-                </li>
-            </#if>
-            <#if user.socialTags?exists>
-                <li>
-                    <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
-                        <@spring.message 'SavedTags_t' />
-                    </a>
-                    (<span id="savedTagsCount">${user.socialTags?size}</span>)
-                </li>
-            </#if>
+        <li>
+            <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
+                href="logout.html"><@spring.message 'LogOut_t' /></a>
+        </li>
+        <#if user.savedItems?exists>
+        <li>
+            <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
+                <@spring.message 'SavedItems_t' />
+            </a>
+            (<span id="savedItemsCount">${user.savedItems?size}</span>)
+        </li>
         </#if>
-        <li><a href="">Hulp nodig?</a></li>
-        <li><a href="">Contact</a></li>
+        <#if user.savedSearches?exists>
+        <li>
+            <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
+                <@spring.message 'SavedSearches_t' />
+            </a>
+            (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
+        </li>
+        </#if>
+        <#if user.socialTags?exists>
+        <li>
+            <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
+                <@spring.message 'SavedTags_t' />
+            </a>
+            (<span id="savedTagsCount">${user.socialTags?size}</span>)
+        </li>
+        </#if>
+        </#if>
     </ul>
+    <#include "language_select.ftl">
+</div>
 </#macro>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -158,15 +160,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.custom.css"/>
-    <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/reset-text-grid.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/jquery-ui-1.8.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/layout-common.css"/>
 
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-ui-1.8.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.cookie.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.toggleElements.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.validate.js"></script>
@@ -273,32 +272,4 @@
 
 <body>
 
-<div class="container_12 azure page">
-
-    <div id="user-bar" class="grid_12">
-        <@userbar/>
-    </div>
-
-    <div class="header">
-
-        <div class="branding">
-            <img src="/${portalName}/${portalTheme}/RO_OCW_ICN.png" id="logo-home" alt="ICN"/>
-        </div>
-
-        <div class="title_bar">
-             Instituut Collectie Nederland  <em>De Collectie</em>
-        </div>
-
-        <div class="nav_bar">
-             <ul class="nav_main">
-                 <li><a href="">Home</a></li>
-                 <li><a href="">Over de Digitale Collectie Nederland</a></li>
-                 <li><a href="">Deelname</a></li>
-                 <li><a href="">Gebruik</a></li>
-             </ul>
-        </div>
-        <div class="nav_bottom">
-
-        </div>
-
-    </div>
+<div id="container" class="container_12">

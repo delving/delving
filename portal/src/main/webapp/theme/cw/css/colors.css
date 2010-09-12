@@ -1,0 +1,20 @@
+/*
+ * @classname       azure
+ * @colordef		#046f96; azure 1 (full)
+ * @colordef		#bddfed; azure 2 (lighter)
+ * @colordef		#deeff6; azure 3 (lightest)
+*/
+
+/* header elements */
+.azure .title_bar{background:#deeff6;}
+.azure .nav_bar{background:#046f96;}
+.azure .nav_main{background:#046f96;}
+.azure .nav_main a{color:#fff;}
+.azure .nav_main a:hover{background:#bddfed;}
+.azure .nav_bottom{background:#bddfed;}
+
+/* information boxes  */
+.azure .box{border:1px solid #deeff6;}
+.azure .box.open{background:transparent;}
+.azure .box.closed{background:#deeff6;}
+.azure .box h4{background:#bddfed;}

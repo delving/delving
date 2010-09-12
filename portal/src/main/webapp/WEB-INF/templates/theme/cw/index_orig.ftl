@@ -3,28 +3,17 @@
 <#assign pageId = "in">
 <#include "inc_header.ftl">
 
-<div id="top-bar" class="grid_12">
-    <@userbar/>
-</div>
-
-<div class="clear"></div>
-
-<div id="main" class="home">
 
 
+<div id="main">
 
-    <div class="grid_12">
-        <img src="/${portalName}/${portalTheme}/images/logo.png" id="logo-home" alt="ICN"/>
+    <div id="breadcrumbs" class="grid_12">
+        breadcrumbs
     </div>
-    <div class="grid_6 prefix_3 suffix_3" id="text-home">
-        <p>
-        Het ICN werkt aan het ontsluiten van de Digitale Collectie Nederland. De collecties van een groeiend aantal Nederlandse musea, de collectie van het Instituut Collectie Nederland, maar ook thematische en regionale verzamelingen worden daartoe binnen &eacute;&eacute;n omgeving bijeengebracht.
-        </p>
-        <p>
-        Deze site is een 'Proof of Concept' waarin gebruik wordt gemaakt van de open source versie van het Europeana framework (<a href="http://www.delving.eu" target="_blank">Delving</a>).
-        </p>
-    </div>
-    <div class="grid_12">
+
+    <div id="search" class="grid_8">
+
+        <h1>Vind objecten uit de Digitale Collectie Nederland. </h1>
 
          <noscript>
             <div class="ui-widget grid_5 alpha">
@@ -33,12 +22,58 @@
                 </div>
             </div>
         </noscript>
-     <div id="search">
-       <div class="inner">
+
         <@SearchForm "search_home"/>
-        </div>
-     </div>
+
     </div>
+
+    <div id="news" class="grid_4">
+        <h3>Nieuws</h3>
+        <ul>
+            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
+            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
+            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
+            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
+        </ul>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="grid_4">
+        <div class="box open">
+            <h4 class="head">Title</h4>
+            <p>
+                asdfasfasf dsaf asdf sdf dsfasdf asdf
+                asdf asdf asdfasdf asdf asdfadsf
+                asffaffdafdfsasfasf adsfdsafdasf asdf dsf
+                afafdfasdfsdfasdfadsfadsf
+            </p>
+        </div>
+    </div>
+    <div class="grid_4">
+        <div class="box open">
+            <h4 class="head">Title</h4>
+            <p>
+                asdfasfasf dsaf asdf sdf dsfasdf asdf
+                asdf asdf asdfasdf asdf asdfadsf
+                asffaffdafdfsasfasf adsfdsafdasf asdf dsf
+                afafdfasdfsdfasdfadsfadsf
+            </p>
+        </div>
+    </div>
+    <div class="grid_4">
+        <div class="box closed">
+            <h4 class="head">Collectiewijzer</h4>
+
+            <p class="intro">Netwerk voor het delen van kennis, praktijkervaring en nieuws over conservering, restauratie, beheer en behoud van cultureel erfgoed collecties. </p>
+            <ul>
+                <li><a href="http://www.collectiewijzer.nl">Lees het Collectiewijzer Blog</a></li>
+                <li><a href="http://wiki.collectiewijzer.nl">Maak gebruik van de wiki </a></li>
+                <li><a href="http://www.linkedin.com/groups?mostPopular=&amp;gid=2672013">Praat mee op LinkedIn </a> </li>
+            </ul>
+        </div>
+    </div>
+
 
 
 

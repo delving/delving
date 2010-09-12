@@ -1,0 +1,272 @@
+/* html element styles */
+
+body {
+    background: #F3F5F6
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul li {
+    background: url(skin/arrows.png) left 6px no-repeat;
+    margin: 0;
+    padding-left: 11px;
+}
+
+ul a:link {
+    color: #154273;
+    text-decoration: none;
+}
+
+ul a:visited {
+    text-decoration: none;
+}
+
+ul a:hover, ul a:visited:hover {
+    color: #154273;
+    text-decoration: underline;
+}
+
+.page {
+  background: #fff;
+  -moz-box-shadow: 0px 0px 8px 2px #bbb;
+  -webkit-box-shadow: 0px 0px 4px #bbb;
+  box-shadow: 0px 0px 8px #bbb;
+  overflow: hidden;
+  margin-top: 32px;
+}
+
+#user-bar {
+    position: absolute;
+    top: .5em;
+}
+
+/* User-bar navigation */
+
+.user_nav {
+    text-align: right;
+    list-style-type: none;
+}
+.user_nav li {
+    background: none;
+    display: inline;
+    list-style: none;
+    padding: 0 0 0 2em;
+    margin: 0;
+}
+
+.user_nav li a {
+    text-decoration: none;
+}
+
+/**
+ * Header
+ *
+ * @section			Header, main navigation and functional links style definitions
+ */
+
+.header {
+    text-align: center;
+}
+
+.header .branding {
+    font: 0/0 sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 87px;
+}
+
+.header .branding img {
+    margin: 0;
+}
+
+.nav_bar {
+    margin: 0;
+    padding: 4.8em 0 0;
+    text-align: left;
+    position: relative;
+}
+
+/* Main navigation */
+
+.nav_main {
+    font-size: 1.2em;
+    font-weight: bold;
+    list-style: none;
+    margin: 0;
+    padding: 0 24px;
+    position: absolute;
+    bottom: 0px;
+}
+
+.nav_main li {
+    background: none;
+    float: left;
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+.nav_main a {
+    display: block;
+    padding: 0.16em 0.9091em 0.24em;
+    text-decoration: none;
+}
+
+.nav_main a:hover {
+    color: #000;
+    text-decoration: none;
+}
+
+.nav_bottom {
+    height: 1em;
+}
+
+/* Title bar */
+
+.title_bar {
+    margin: 0;
+    padding: 0 0 0 24px;
+    text-align: left;
+    position: relative;
+}
+
+.title_bar em {
+    font-weight: normal;
+    font-style: italic;
+}
+
+.title_bar a {
+    color: #000;
+    text-decoration: none;
+}
+
+.title_bar a:hover {
+    text-decoration: none;
+}
+
+/* breadcrumbs bar */
+
+#breadcrumbs {
+    height: 32px;
+    line-height: 32px;
+    margin-bottom: 1em;
+}
+
+/* box styles */
+
+.box h2.head,
+.box h3.head,
+.box h4.head,
+.box h5.head,
+.box h6.head {
+    margin: 0;
+    padding: 0.2em 12px 0.3em;
+}
+
+.box p {
+    margin: 0;
+    padding: 1em;
+}
+
+/* Footer */
+
+#footer {
+    text-align: center;
+}
+
+/* Results page */
+
+.nav_facets li, .nav_types li {
+    background: none;
+    display: inline;
+    margin: 0;
+    padding: 0 1em 0 0;
+}
+
+/* UI Button styles */
+.fg-button {
+    outline: 0;
+    margin: 0 4px 0 0;
+    padding: .3em 0.5em;
+    text-decoration: none !important;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+    zoom: 1;
+    color: #154273;
+}
+
+.fg-button .ui-icon {
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    left: 50%;
+    margin-left: -8px;
+}
+
+a.fg-button {
+    float: left;
+}
+
+/* remove extra button width in IE */
+button.fg-button, input.fg-button {
+    width: auto;
+    overflow: visible;
+}
+
+.fg-button-icon-left {
+    padding-left: 2.1em;
+}
+
+.fg-button-icon-right {
+    padding-right: 2.1em;
+}
+
+.fg-button-icon-left .ui-icon {
+    right: auto;
+    left: .2em;
+    margin-left: 0;
+}
+
+.fg-button-icon-right .ui-icon {
+    left: auto;
+    right: .2em;
+    margin-left: 0;
+}
+
+.fg-button-icon-solo {
+    display: block;
+    width: 8px;
+    text-indent: -9999px;
+}
+
+/* solo icon buttons must have block properties for the text-indent to work */
+
+.fg-buttonset {
+    float: left;
+}
+
+.fg-buttonset .fg-button {
+    float: left;
+}
+
+.fg-buttonset-single .fg-button,
+.fg-buttonset-multi .fg-button {
+    margin-right: -1px;
+}
+
+.fg-toolbar {
+    padding: .15em .25em;
+    margin: 0;
+}
+
+.fg-toolbar .fg-buttonset {
+    margin-right: 1.5em;
+    padding-left: 1px;
+}
+
+.fg-toolbar .fg-button {
+    font-size: 1em;
+}
