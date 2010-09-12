@@ -68,23 +68,33 @@
             </div>
         </div>
 
-        <div id="query-presentation">
-            <h5><@spring.message 'MatchesFor_t' />:</h5>
-            <ul class="">
-            <#list breadcrumbs as crumb>
-                <#if !crumb.last>
-                    <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+        <div id="query_breadcrumbs">
+            <h3><@spring.message 'MatchesFor_t' />:</h3>
+            <ul class="nav_query_breadcrumbs">
+                <#if !result.matchDoc??>
+                    <#list breadcrumbs as crumb>
+                        <#if !crumb.last>
+                            <li <#if crumb_index == 0>class="first"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                        <#else>
+                            <li <#if crumb_index == 0>class="first"</#if>>${crumb.display?html}</li>
+                        </#if>
+                    </#list>
                 <#else>
-                    <li><strong>${crumb.display?html}</strong></li>
+                    <li class="first">
+                    <@spring.message 'ViewingRelatedItems_t' />
+                    <#assign match = result.matchDoc/>
+                    <a href="${match.fullDocUrl}">
+                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                        </#if>
+                    </a>
+                </li>
                 </#if>
-            </#list>
             </ul>
 
         </div>
 
-
-
-        <div id="result-count" style="float: left; margin-right: 1em;">
+        <div id="result-count">
             <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
         </div>
 
@@ -92,18 +102,19 @@
             <@typeTabs_plain/>
         </div>
 
-        <div id="view-select">
-            <@viewSelect/>
-        </div>
-
         <div class="pagination">
             <@resultnav_styled/>
         </div>
 
+        <div id="view-select">
+            <@viewSelect/>
+        </div>
+
         <div class="clearfix"></div>
 
-        <#include "inc_result_table_brief.ftl"/>
-
+        <div id="results">
+            <#include "inc_result_table_brief.ftl"/>
+        </div>
 
 
         <div class="pagination">
@@ -304,7 +315,6 @@
 </#macro>
 
 <#macro viewSelect>
-    <div id="viewselect" style="float:right">
         <#if queryStringForPresentation?exists>
         <#if view="table">
         <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
@@ -316,5 +326,4 @@
 
         </#if>
         </#if>
-    </div>
 </#macro>

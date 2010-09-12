@@ -35,6 +35,7 @@ ul a:hover, ul a:visited:hover {
   box-shadow: 0px 0px 8px #bbb;
   overflow: hidden;
   margin-top: 32px;
+  padding: 0 0 1em 0;
 }
 
 #user-bar {
@@ -170,13 +171,84 @@ ul a:hover, ul a:visited:hover {
     padding: 1em;
 }
 
+.box ul {
+    margin: 0 0 1em 1em;
+}
+
 /* Footer */
 
 #footer {
     text-align: center;
 }
 
-/* Results page */
+/* Results page ***************************************************************************/
+
+#query_breadcrumbs {
+    margin: 1em 0;
+}
+
+#query_breadcrumbs h3 {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+ul.nav_query_breadcrumbs {
+    padding: 0;
+    margin: 0;
+}
+
+ul.nav_query_breadcrumbs li {
+   display: inline;
+}
+
+ul.nav_query_breadcrumbs li.first {
+   background: none;
+}
+
+#result-count {
+    float: left;
+    margin-right: 1em;
+}
+
+#view-select {
+    margin: 1em 0;
+    float: right;
+}
+
+#view-select a {
+    text-decoration: none;
+}
+
+#results table caption {
+    display: none;
+    clear: both;
+}
+
+#results table td {
+    padding: 0;
+}
+
+.brief-thumb-container, .brief-thumb-container-listview, #img-full {
+    background: #e5e5e5;
+    overflow: hidden;
+    text-align: center;
+    padding: 0.5em;
+ }
+
+.brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img, #img-full img{
+    border: 4px solid #fff;
+    -moz-box-shadow: 3px 3px 4px #bbb;
+    -webkit-box-shadow: 3px 3px 4px #bbb;
+    box-shadow: 3px 3px 4px #bbb;
+ }
+.brief-content-container {
+    /*border: 1px solid #e5e5e5;*/
+    padding: .5em;
+    min-height: 75px;
+}
+
+/* Facets - Refine Search */
 
 .nav_facets li, .nav_types li {
     background: none;
@@ -185,7 +257,9 @@ ul a:hover, ul a:visited:hover {
     padding: 0 1em 0 0;
 }
 
+
 /* UI Button styles */
+
 .fg-button {
     outline: 0;
     margin: 0 4px 0 0;

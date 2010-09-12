@@ -65,7 +65,10 @@
         <div class="box closed">
             <h4 class="head">Collectiewijzer</h4>
 
-            <p class="intro">Netwerk voor het delen van kennis, praktijkervaring en nieuws over conservering, restauratie, beheer en behoud van cultureel erfgoed collecties. </p>
+            <p class="intro">
+                Netwerk voor het delen van kennis, praktijkervaring en nieuws over conservering, restauratie, beheer en behoud van cultureel erfgoed collecties.
+            </p>
+            
             <ul>
                 <li><a href="http://www.collectiewijzer.nl">Lees het Collectiewijzer Blog</a></li>
                 <li><a href="http://wiki.collectiewijzer.nl">Maak gebruik van de wiki </a></li>

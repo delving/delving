@@ -159,20 +159,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.4.custom.css"/>
     <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
 
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-ui-1.7.2.custom.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.toggleElements.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.validate.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js_utilities.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/myEuropeana.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.1.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>
