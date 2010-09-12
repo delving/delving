@@ -22,11 +22,9 @@
 package eu.europeana.core;
 
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Role;
-import eu.europeana.core.database.domain.SocialTag;
-import eu.europeana.core.database.domain.User;
+import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.query.*;
-import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
 import eu.europeana.definitions.domain.CollectionDisplayType;
@@ -152,7 +150,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Override
     public FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException {
         QueryResponse response = getSolrResponse(solrQuery);
-        List<? extends FullDoc> fullBeanList = response.getBeans(fullBean);
+        List<FullBean> fullBeanList = getFullDocFromSolrResponse(response);
         if (fullBeanList.size() != 1) {
             throw new EuropeanaQueryException("Full Doc not found");
         }
@@ -171,7 +169,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         // Fetch results from server
         QueryResponse queryResponse = solrServer.query(solrQuery);
         // fetch beans
-        return queryResponse.getBeans(idBean);
+        return getIdBeanFromQueryResponse(queryResponse);
     }
 
     /**
@@ -203,7 +201,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         public SiteMapBeanViewImpl(String europeanaCollectionName, QueryResponse response, int rowsToBeReturned) {
             this.europeanaCollectionName = europeanaCollectionName;
             this.numFound = (int) response.getResults().getNumFound();
-            this.docIds = response.getBeans(idBean);
+            this.docIds = getIdBeanFromQueryResponse(response);
             this.maxPageForCollection = numFound / rowsToBeReturned + 1;
         }
 
@@ -242,7 +240,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             // todo: convert this list into briefdoc instances
 //            SolrDocumentList list = solrResponse.getResults();
-            briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean), solrResponse);
+            briefDocs = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
             facetLogs = createFacetLogs(solrResponse);
             matchDoc = createMatchDoc(solrResponse);
@@ -253,7 +251,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             BriefDoc briefDoc = null;
             SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
             if (matchDoc != null) {
-                List<? extends BriefDoc> briefBeanList = solrServer.getBinder().getBeans(briefBean, matchDoc);
+                List<BriefBean> briefBeanList = getMatchDocFromDocumentList(matchDoc);
                 if (briefBeanList.size() > 0) {
                     briefDoc = briefBeanList.get(0);
                     String europeanaId = createFullDocUrl(briefDoc.getId());
@@ -349,7 +347,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             this.solrResponse = solrResponse;
             this.params = params;
             fullDoc = createFullDoc();
-            relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(briefBean), solrResponse);
+            relatedItems = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
             docIdWindowPager = createDocIdPager(params);
             userTags = fetchUserTags(params.get("uri")[0]);
         }
@@ -395,7 +393,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
         private FullDoc createFullDoc() throws EuropeanaQueryException {
             SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
-            List<? extends FullDoc> fullBeanItem = solrServer.getBinder().getBeans(fullBean, matchDoc);
+            List<FullBean> fullBean = getFullDocFromSolrResponse(matchDoc);
 
             // if the record is not found give useful error message
             if (fullBeanItem.size() == 0) {
@@ -404,7 +402,31 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             }
             return fullBeanItem.get(0);
         }
+
     }
+
+    //todo refactor out the getBeans methods from solrj
+    private List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc) {
+        return solrServer.getBinder().getBeans(FullBean.class, matchDoc);
+    }
+
+    private List<FullBean> getFullDocFromSolrResponse(QueryResponse response) {
+        return response.getBeans(FullBean.class);
+    }
+
+    private List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
+        return queryResponse.getBeans(idBean);
+    }
+
+    private List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse) {
+        return (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
+    }
+
+    private List<BriefBean> getMatchDocFromDocumentList(SolrDocumentList matchDoc) {
+        return solrServer.getBinder().getBeans(BriefBean.class, matchDoc);
+    }
+
+    //todo end part to refactor
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException {
