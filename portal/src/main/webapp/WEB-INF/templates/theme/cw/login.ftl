@@ -5,118 +5,101 @@
 
 <#include "inc_header.ftl">
 
-<div id="sidebar" class="grid_3">
+<div id="main" class="grid_16">
 
-    <div id="identity">
-        <h1>ICN</h1>
-        <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
+
+    <div id="login-div" class="grid_4 prefix_2 login-register">
+
+        <h2><@spring.message 'LogIn_t' /></h2>
+        <#if register == true>
+            <form id="loginForm" name='f1' action='j_spring_security_check' method='POST' accept-charset="UTF-8">
+
+                <fieldset>
+                    <legend></legend>
+                    <label for="j_username"><@spring.message 'EmailAddress_t' /></label>
+                    <input type='text' id="j_username" name="j_username" value="" maxlength="50">
+                    <label for="j_password"><@spring.message "Password_t" /></label>
+                    <input type='password' id="j_password" name='j_password' maxlength="50"/>
+
+                <#-- _spring_security_remember_me should always be true.
+                    The user shouldn't have an option to uncheck it.
+                    That's why this is a hidden field and not a checkbox -->
+                    <input class="inline" type='hidden' value="true" id='_spring_security_remember_me'
+                           name='_spring_security_remember_me'/>
+
+                    <input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />" class="button"/>
+                    </fieldset>
+                    <#if errorMessage??>
+                        <div class="ui-widget">
+                            <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
+                                <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+                                <strong><@spring.message 'Error_t' />: </strong> ${errorMessage}
+                            </div>
+                        </div>
+                    </#if>
+                    <a id="forgotPassword" href="#" class="frm_head"
+                       onclick="$('#request-password').show('blind', { direction: 'horizontal' }, 2000);"><@spring.message 'ForgotPassword_t' /></a>
+
+
+            </form>
+        <#else>
+            Login is not enabled yet.
+        </#if>
     </div>
 
-</div>
+    <div id="register-div" class="grid_3 prefix_1 login-register">
+        <h2><@spring.message 'Register_t' /></h2>
+        <#if register == true>
+            <form id="registrationForm" name='f3' action='' method='POST' accept-charset="UTF-8">
+                <input type="hidden" name="submit_login" value="Register"/>
+                <fieldset>
+                    <legend></legend>
+                    <label for="email"><@spring.message 'EmailAddress_t' /></label>
+                    <input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8">
+                    <input id="register" name="submit_button" type="submit" value="<@spring.message 'Register_t' />"
+                           class="button"/>
 
-<div id="main" class="grid_9">
+                </fieldset>
+                <#if success>
+                    <p id="success" class="success">
+                    <@spring.message 'AnEmailHasBeenSentTo_t' />: <span class="fg-gold">${email}</span>.
+                    <@spring.message 'PleaseFollowTheLinkProvided_t' />.
+                    </p>
+                </#if>
 
-    <div id="top-bar">
-    <@userbar/>
+                <#if failureFormat>
+                    <div class="ui-widget">
+                        <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
+                            <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+                            <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailFormatError_t' />.
+                        </div>
+                    </div>
+                </#if>
+
+                <#if failureExists>
+                    <div class="ui-widget">
+                        <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
+                            <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+                            <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.
+                        </div>
+                    </div>
+                </#if>
+            </form>
+        <#else>
+            Registration is not enabled yet.
+        </#if>
     </div>
 
     <div class="clear"></div>
 
 
 
-    <div id="login-div" class="grid_3 alpha login-register">
-
-        <h3><@spring.message 'LogIn_t' /></h3>
-    <#if register == true>
-        <form id="loginForm" name='f1' action='j_spring_security_check' method='POST' accept-charset="UTF-8">
-
-            <fieldset>
-                <legend></legend>
-                <label for="j_username"><@spring.message 'EmailAddress_t' /></label>
-                <input type='text' id="j_username" name="j_username" value="" maxlength="50">
-                <label for="j_password"><@spring.message "Password_t" /></label>
-                <input type='password' id="j_password" name='j_password' maxlength="50"/>
-
-            <#-- _spring_security_remember_me should always be true.
-                The user shouldn't have an option to uncheck it.
-                That's why this is a hidden field and not a checkbox -->
-                <input class="inline" type='hidden' value="true" id='_spring_security_remember_me'
-                       name='_spring_security_remember_me'/>
-
-                <input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />" class="button"/>
-
-                <#if errorMessage??>
-                <#--<p class="failure">-->
-                <#--<@spring.message 'Error_t' />!<br/>${errorMessage}-->
-                <#--</p>-->
-                    <div class="ui-widget">
-                        <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
-                            <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                            <strong><@spring.message 'Error_t' />: </strong> ${errorMessage}
-                        </div>
-                    </div>
-                </#if>
-                <a id="forgotPassword" href="#" class="frm_head"
-                   onclick="$('#request-password').show('blind', { direction: 'horizontal' }, 2000);"><@spring.message 'ForgotPassword_t' /></a>
-            </fieldset>
-
-        </form>
-        <#else>
-            Login is not enabled yet.
-    </#if>
-    </div>
-
-    <div id="register-div" class="grid_3 login-register">
-        <h3><@spring.message 'Register_t' /></h3>
-    <#if register == true>
-        <form id="registrationForm" name='f3' action='' method='POST' accept-charset="UTF-8">
-            <input type="hidden" name="submit_login" value="Register"/>
-            <fieldset>
-                <legend></legend>
-                <label for="email"><@spring.message 'EmailAddress_t' /></label>
-                <input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8">
-                <input id="register" name="submit_button" type="submit" value="<@spring.message 'Register_t' />"
-                       class="button"/>
-
-            </fieldset>
-            <#if success>
-                <p id="success" class="success">
-                <@spring.message 'AnEmailHasBeenSentTo_t' />: <span class="fg-gold">${email}</span>.
-                <@spring.message 'PleaseFollowTheLinkProvided_t' />.
-                </p>
-            </#if>
-
-            <#if failureFormat>
-                <div class="ui-widget">
-                    <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
-                        <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                        <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailFormatError_t' />.
-                    </div>
-                </div>
-            </#if>
-
-            <#if failureExists>
-                <div class="ui-widget">
-                    <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
-                        <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                        <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.
-                    </div>
-                </div>
-            </#if>
-        </form>
-        <#else>
-            Registration is not enabled yet.
-    </#if>
-    </div>
-
-
-
 <#if failureForgotFormat || failureForgotDoesntExist || forgotSuccess>
-<div id="request-password" class="grid_3 omega login-register">
+<div id="request-password" class="grid_4 prefix_3 omega login-register">
     <#else >
-    <div style="display:none;" id="request-password" class="grid_3 login-register">
+    <div style="display:none;" id="request-password" class="grid_4 prefix_2 login-register">
 </#if>
-    <h3>Request password</h3>
+    <h2>Request password</h2>
 
     <form id="forgotemailForm" name='f2' action='' method='POST' accept-charset="UTF-8">
         <fieldset>
@@ -132,14 +115,18 @@
         </p>
     </#if>
     <#if failureForgotFormat>
-        <p class="failure">
+                    <div class="ui-widget">
+                        <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
+                            <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
         <@spring.message 'Error_t' />!<br/><@spring.message 'EmailFormatError_t' />.
-        </p>
+        </div>
     </#if>
     <#if failureForgotDoesntExist>
-        <p class="failure">
+                    <div class="ui-widget">
+                        <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
+                            <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
         <@spring.message 'Error_t' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
-        </p>
+        </div>
     </#if>
     </form>
 </div>

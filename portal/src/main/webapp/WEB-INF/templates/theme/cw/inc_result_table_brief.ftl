@@ -15,7 +15,7 @@
 
 
 <#macro show_result_table seq>
-<table id="multi" summary="gallery view all search results" border="0" width="100%">
+<table summary="gallery view all search results" border="0" width="100%">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>

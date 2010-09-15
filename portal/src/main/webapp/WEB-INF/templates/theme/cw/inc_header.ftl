@@ -159,20 +159,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.4.custom.css"/>
     <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
 
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery-ui-1.7.2.custom.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.toggleElements.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/jquery.validate.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js_utilities.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/myEuropeana.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.1.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>
@@ -231,6 +231,7 @@
     <#break>
     <#case "login.html">
     <#assign pageId = "li"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <script type="text/javascript">
         $(document).ready(function() {
             $("#loginForm").validate({
@@ -258,13 +259,16 @@
     <#break>
     <#case "register.html">
     <#assign pageId = "rg"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <title>Instituut Collectie Nederland - Registration</title>
     <#break>
     <#case "forgotPassword.html">
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <#assign pageId = "fp"/>
     <title>Instituut Collectie Nederland - Forgot Password</title>
     <#break>
     <#case "register-success.html">
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <title>Instituut Collectie Nederland - Registration continued</title>
     <#break>
     </#switch>
@@ -282,21 +286,28 @@
     <div class="header">
 
         <div class="branding">
-            <img src="/${portalName}/${portalTheme}/RO_OCW_ICN.png" id="logo-home" alt="ICN"/>
+            <img src="/${portalName}/${portalTheme}/images/RO_OCW_ICN.png" id="logo-home" alt="ICN" widht="500"/>
         </div>
-
+        <div class="clear"></div>
         <div class="title_bar">
-             Instituut Collectie Nederland  <em>De Collectie</em>
-        </div>
+            <div class="grid_12">
 
-        <div class="nav_bar">
-             <ul class="nav_main">
-                 <li><a href="">Home</a></li>
-                 <li><a href="">Over de Digitale Collectie Nederland</a></li>
-                 <li><a href="">Deelname</a></li>
-                 <li><a href="">Gebruik</a></li>
-             </ul>
+                Instituut Collectie Nederland  <em>De Collectie</em>
+            </div>
         </div>
+        <div class="clear"></div>
+        <div class="nav_bar">
+            <div class="grid_12">
+
+                <ul class="nav_main">
+                    <li <#if pageId="in">class="current"</#if>><a href="index.html">Home</a></li>
+                    <li><a href="">Over de Digitale Collectie Nederland</a></li>
+                    <li><a href="">Deelname</a></li>
+                    <li><a href="">Gebruik</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="clear"></div>
         <div class="nav_bottom">
 
         </div>

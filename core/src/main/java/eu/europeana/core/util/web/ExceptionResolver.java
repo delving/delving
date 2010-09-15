@@ -59,6 +59,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
+    @Value("#{launchProperties['portal.theme']}")
+    private String portalTheme;
+
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
@@ -79,6 +82,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("stackTrace", stackTrace);
                 model.put("cacheUrl", cacheUrl);
                 model.put("portalName", portalName);
+                model.put("portalTheme", portalTheme);
                 model.put("agent", request.getHeader("User-Agent"));
                 model.put("referer", request.getHeader("referer"));
                 model.put(EmailSender.SUBJECT, queryProblem.getFragment());
@@ -100,6 +104,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         mav.addObject("interfaceLanguage", ControllerUtil.getLocale(request));
         mav.addObject("cacheUrl", cacheUrl);
         mav.addObject("portalName", portalName);
+        mav.addObject("portalTheme", portalTheme);
         mav.addObject("queryProblem", queryProblem);
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);

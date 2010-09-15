@@ -7,8 +7,10 @@
 
 <div id="main">
 
-    <div id="breadcrumbs" class="grid_12">
-        breadcrumbs
+
+    <div class="grid_12 breadcrumb">
+        <em>U bevindt zich op: </em>
+        <span><a href="index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Onderwerpen
     </div>
 
     <div id="search" class="grid_8">
@@ -30,10 +32,10 @@
     <div id="news" class="grid_4">
         <h3>Nieuws</h3>
         <ul>
-            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
-            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
-            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
-            <li><a href="">Hkj;io aoiafia faifaif af</a></li>
+            <li><a href="">Lorem ipsum dolor sit amet</a></li>
+            <li><a href="">Duis quam risus, aliquet ut interdum lobortis</a></li>
+            <li><a href="">Fusce feugiat auctor turpis</a></li>
+            <li><a href="">Cras dapibus luctus aliquam</a></li>
         </ul>
     </div>
 
@@ -43,10 +45,7 @@
         <div class="box open">
             <h4 class="head">Title</h4>
             <p>
-                asdfasfasf dsaf asdf sdf dsfasdf asdf
-                asdf asdf asdfasdf asdf asdfadsf
-                asffaffdafdfsasfasf adsfdsafdasf asdf dsf
-                afafdfasdfsdfasdfadsfadsf
+                Sed consectetur purus ac erat semper condimentum. Nunc ultricies commodo velit, non posuere ligula ullamcorper porta. Sed sed turpis magna, vel mattis tellus. Donec sed mi dolor. Nam luctus massa eget odio accumsan vel dapibus quam varius. Donec ut mi nulla. Aliquam in consectetur purus. Nunc nec dui est. Suspendisse et gravida neque. Ut egestas purus justo. 
             </p>
         </div>
     </div>
@@ -54,10 +53,7 @@
         <div class="box open">
             <h4 class="head">Title</h4>
             <p>
-                asdfasfasf dsaf asdf sdf dsfasdf asdf
-                asdf asdf asdfasdf asdf asdfadsf
-                asffaffdafdfsasfasf adsfdsafdasf asdf dsf
-                afafdfasdfsdfasdfadsfadsf
+                Etiam consequat egestas vehicula. Vivamus augue nulla, aliquam ut blandit et, vestibulum eu ligula. Suspendisse euismod dapibus tellus auctor convallis. Aliquam felis nulla, adipiscing ac ornare vitae, consectetur non odio. Nam in magna sit amet urna malesuada ultricies. 
             </p>
         </div>
     </div>
@@ -65,7 +61,10 @@
         <div class="box closed">
             <h4 class="head">Collectiewijzer</h4>
 
-            <p class="intro">Netwerk voor het delen van kennis, praktijkervaring en nieuws over conservering, restauratie, beheer en behoud van cultureel erfgoed collecties. </p>
+            <p class="intro">
+                Netwerk voor het delen van kennis, praktijkervaring en nieuws over conservering, restauratie, beheer en behoud van cultureel erfgoed collecties.
+            </p>
+            
             <ul>
                 <li><a href="http://www.collectiewijzer.nl">Lees het Collectiewijzer Blog</a></li>
                 <li><a href="http://wiki.collectiewijzer.nl">Maak gebruik van de wiki </a></li>
@@ -74,10 +73,7 @@
         </div>
     </div>
 
-
-
-
-
+    <div class="clear"></div>
 
 </div>
 

@@ -35,6 +35,7 @@ ul a:hover, ul a:visited:hover {
   box-shadow: 0px 0px 8px #bbb;
   overflow: hidden;
   margin-top: 32px;
+  padding: 0;
 }
 
 #user-bar {
@@ -88,6 +89,10 @@ ul a:hover, ul a:visited:hover {
     position: relative;
 }
 
+#main {
+    overflow: hidden;
+}
+
 /* Main navigation */
 
 .nav_main {
@@ -95,7 +100,7 @@ ul a:hover, ul a:visited:hover {
     font-weight: bold;
     list-style: none;
     margin: 0;
-    padding: 0 24px;
+    padding: 0;
     position: absolute;
     bottom: 0px;
 }
@@ -110,7 +115,8 @@ ul a:hover, ul a:visited:hover {
 
 .nav_main a {
     display: block;
-    padding: 0.16em 0.9091em 0.24em;
+    /*padding: 0.16em 0.9091em 0.24em;*/
+    padding: 0.15em 1em 0.25em 1em;
     text-decoration: none;
 }
 
@@ -127,9 +133,8 @@ ul a:hover, ul a:visited:hover {
 
 .title_bar {
     margin: 0;
-    padding: 0 0 0 24px;
+    padding: 0;
     text-align: left;
-    position: relative;
 }
 
 .title_bar em {
@@ -146,21 +151,37 @@ ul a:hover, ul a:visited:hover {
     text-decoration: none;
 }
 
-/* breadcrumbs bar */
+/* breadcrumbs bar ****************************************************************************/
 
-#breadcrumbs {
+.breadcrumb {
     height: 32px;
     line-height: 32px;
-    margin-bottom: 1em;
 }
 
-/* box styles */
+.breadcrumb em {
+    display: none;
+}
+
+.breadcrumb span {
+    whitespace: nowrap;
+}
+
+.breadcrumb .imgreplacement {
+    background-image: url(../css/skin/arrows.png);
+    height: 7px;
+    margin: 0px 3px;
+    width: 7px;
+}
+
+
+/* box styles *************************************************************************************/
 
 .box h2.head,
 .box h3.head,
 .box h4.head,
 .box h5.head,
 .box h6.head {
+    
     margin: 0;
     padding: 0.2em 12px 0.3em;
 }
@@ -170,13 +191,100 @@ ul a:hover, ul a:visited:hover {
     padding: 1em;
 }
 
-/* Footer */
+.box ul {
+    margin: 0 0 1em 1em;
+}
+
+/* Footer ****************************************************************************************/
 
 #footer {
     text-align: center;
 }
 
-/* Results page */
+/* Search Forms **********************************************************************************/
+
+#search #search_simple {
+    padding: 2em 1em;  
+}
+
+#search .search_home input.txt-input,
+#search .search_result input.txt-input{
+    width: 400px;
+}
+
+#search .search_advanced {
+    background: #fff;
+}
+
+/* Results page **********************************************************************************/
+
+#query_breadcrumbs {
+    margin: 1em 0;
+    padding: 0;
+}
+
+#query_breadcrumbs h3 {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+ul.nav_query_breadcrumbs {
+    padding: 0;
+    margin: 0;
+}
+
+ul.nav_query_breadcrumbs li {
+   display: inline;
+}
+
+ul.nav_query_breadcrumbs li.first {
+   background: none;
+}
+
+#result-count {
+    float: left;
+    margin-right: 1em;
+}
+
+#view-select {
+    margin: 1em 0;
+    float: right;
+}
+
+#view-select a {
+    text-decoration: none;
+}
+
+#results table caption {
+    display: none;
+    clear: both;
+}
+
+#results table td {
+    padding: 0;
+}
+
+.brief-thumb-container, .brief-thumb-container-listview {
+    background: #e5e5e5;
+    overflow: hidden;
+    text-align: center;
+    padding: 0.5em;
+ }
+
+.brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img{
+    border: 4px solid #fff;
+    -moz-box-shadow: 3px 3px 4px #bbb;
+    -webkit-box-shadow: 3px 3px 4px #bbb;
+    box-shadow: 3px 3px 4px #bbb;
+ }
+.brief-content-container {
+    /*border: 1px solid #e5e5e5;*/
+    padding: .5em;
+    min-height: 75px;
+}
+
+/* Facets - Refine Search */
 
 .nav_facets li, .nav_types li {
     background: none;
@@ -185,7 +293,27 @@ ul a:hover, ul a:visited:hover {
     padding: 0 1em 0 0;
 }
 
-/* UI Button styles */
+/* Items page **********************************************************************************/
+.pagination {
+    margin: 1em 0;
+}
+#item-detail {
+    clear: both;
+    overflow: hidden;
+    margin: 1em 0 0 0;
+}
+
+table.item {
+    margin: 0;
+    padding: 0;
+}
+
+table.item caption {
+    display: none;
+}
+
+/* UI Button styles ******************************************************************************/
+
 .fg-button {
     outline: 0;
     margin: 0 4px 0 0;
@@ -269,4 +397,16 @@ button.fg-button, input.fg-button {
 
 .fg-toolbar .fg-button {
     font-size: 1em;
+}
+
+/* FOOTER */
+
+#footer {
+    padding: 1em 0 0 0;
+}
+
+/* Exceptions ********************************************************************/
+
+.exceptions {
+    margin: 2em 0;
 }
