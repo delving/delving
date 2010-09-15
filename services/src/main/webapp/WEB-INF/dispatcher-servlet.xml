@@ -34,25 +34,32 @@
 
     <context:component-scan base-package="eu.delving.services.controller"/>
 
-    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">-->
-        <!--<property name="defaultContentType" value="text/plain"/>-->
-    <!--</bean>-->
-
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-        <property name="suffix" value=".ftl"/>
-        <property name="exposeSpringMacroHelpers" value="true"/>
-        <property name="exposeSessionAttributes" value="true"/>
-        <property name="exposeRequestAttributes" value="false"/>
-        <property name="requestContextAttribute" value="requestContext"/>
-    </bean>
-
-    <bean id="viewXmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
-        <property name="suffix" value=".xml.ftl"/>
-        <property name="contentType" value="text/xml; charset=utf-8"/>
-        <property name="exposeSpringMacroHelpers" value="true"/>
-        <property name="exposeSessionAttributes" value="true"/>
-        <property name="exposeRequestAttributes" value="false"/>
-        <property name="requestContextAttribute" value="requestContext"/>
+    <bean id="viewNegotiatingResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="mediaTypes">
+            <map>
+                <entry key="html" value="text/html"/>
+                <entry key="xml" value="text/xml"/>
+            </map>
+        </property>
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+                    <property name="suffix" value=".ftl"/>
+                    <property name="exposeSpringMacroHelpers" value="true"/>
+                    <property name="exposeSessionAttributes" value="true"/>
+                    <property name="exposeRequestAttributes" value="false"/>
+                    <property name="requestContextAttribute" value="requestContext"/>
+                </bean>
+                <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+                    <property name="suffix" value=".xml.ftl"/>
+                    <property name="contentType" value="text/xml; charset=utf-8"/>
+                    <property name="exposeSpringMacroHelpers" value="true"/>
+                    <property name="exposeSessionAttributes" value="true"/>
+                    <property name="exposeRequestAttributes" value="false"/>
+                    <property name="requestContextAttribute" value="requestContext"/>
+                </bean>
+            </list>
+        </property>
     </bean>
 
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
