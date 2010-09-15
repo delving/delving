@@ -35,7 +35,7 @@ ul a:hover, ul a:visited:hover {
   box-shadow: 0px 0px 8px #bbb;
   overflow: hidden;
   margin-top: 32px;
-  padding: 0 0 1em 0;
+  padding: 0;
 }
 
 #user-bar {
@@ -89,6 +89,10 @@ ul a:hover, ul a:visited:hover {
     position: relative;
 }
 
+#main {
+    overflow: hidden;
+}
+
 /* Main navigation */
 
 .nav_main {
@@ -96,7 +100,7 @@ ul a:hover, ul a:visited:hover {
     font-weight: bold;
     list-style: none;
     margin: 0;
-    padding: 0 24px;
+    padding: 0;
     position: absolute;
     bottom: 0px;
 }
@@ -111,7 +115,8 @@ ul a:hover, ul a:visited:hover {
 
 .nav_main a {
     display: block;
-    padding: 0.16em 0.9091em 0.24em;
+    /*padding: 0.16em 0.9091em 0.24em;*/
+    padding: 0.15em 1em 0.25em 1em;
     text-decoration: none;
 }
 
@@ -128,9 +133,8 @@ ul a:hover, ul a:visited:hover {
 
 .title_bar {
     margin: 0;
-    padding: 0 0 0 24px;
+    padding: 0;
     text-align: left;
-    position: relative;
 }
 
 .title_bar em {
@@ -147,15 +151,30 @@ ul a:hover, ul a:visited:hover {
     text-decoration: none;
 }
 
-/* breadcrumbs bar */
+/* breadcrumbs bar ****************************************************************************/
 
-#breadcrumbs {
+.breadcrumb {
     height: 32px;
     line-height: 32px;
-    margin-bottom: 1em;
 }
 
-/* box styles */
+.breadcrumb em {
+    display: none;
+}
+
+.breadcrumb span {
+    whitespace: nowrap;
+}
+
+.breadcrumb .imgreplacement {
+    background-image: url(../css/skin/arrows.png);
+    height: 7px;
+    margin: 0px 3px;
+    width: 7px;
+}
+
+
+/* box styles *************************************************************************************/
 
 .box h2.head,
 .box h3.head,
@@ -175,16 +194,28 @@ ul a:hover, ul a:visited:hover {
     margin: 0 0 1em 1em;
 }
 
-/* Footer */
+/* Footer ****************************************************************************************/
 
 #footer {
     text-align: center;
 }
 
-/* Results page ***************************************************************************/
+/* Search Forms **********************************************************************************/
+
+#search #search_simple {
+    padding: 2em 1em;  
+}
+
+#search .search_home input.txt-input,
+#search .search_result input.txt-input{
+    width: 400px;
+}
+
+/* Results page **********************************************************************************/
 
 #query_breadcrumbs {
     margin: 1em 0;
+    padding: 0;
 }
 
 #query_breadcrumbs h3 {
@@ -229,14 +260,14 @@ ul.nav_query_breadcrumbs li.first {
     padding: 0;
 }
 
-.brief-thumb-container, .brief-thumb-container-listview, #img-full {
+.brief-thumb-container, .brief-thumb-container-listview {
     background: #e5e5e5;
     overflow: hidden;
     text-align: center;
     padding: 0.5em;
  }
 
-.brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img, #img-full img{
+.brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img{
     border: 4px solid #fff;
     -moz-box-shadow: 3px 3px 4px #bbb;
     -webkit-box-shadow: 3px 3px 4px #bbb;
@@ -257,8 +288,26 @@ ul.nav_query_breadcrumbs li.first {
     padding: 0 1em 0 0;
 }
 
+/* Items page **********************************************************************************/
+.pagination {
+    margin: 1em 0;
+}
+#item-detail {
+    clear: both;
+    overflow: hidden;
+    margin: 1em 0 0 0;
+}
 
-/* UI Button styles */
+table.item {
+    margin: 0;
+    padding: 0;
+}
+
+table.item caption {
+    display: none;
+}
+
+/* UI Button styles ******************************************************************************/
 
 .fg-button {
     outline: 0;
@@ -343,4 +392,16 @@ button.fg-button, input.fg-button {
 
 .fg-toolbar .fg-button {
     font-size: 1em;
+}
+
+/* FOOTER */
+
+#footer {
+    padding: 1em 0 0 0;
+}
+
+/* Exceptions ********************************************************************/
+
+.exceptions {
+    margin: 2em 0;
 }

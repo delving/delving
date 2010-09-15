@@ -50,9 +50,11 @@
 
 <div id="main">
 
-    <div id="breadcrumbs" class="grid_12">
-        breadcrumbs
+    <div class="grid_12 breadcrumb">
+        <em>U bevindt zich op: </em>
+        <span><a href="index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
     </div>
+
 
     <div id="left-col" class="grid_3">
 
@@ -63,9 +65,7 @@
     <div id="right-col" class="grid_9">
 
          <div id="search">
-            <div class="inner">
-                <@SearchForm "search_result"/>
-            </div>
+             <@SearchForm "search_result"/>
         </div>
 
         <div id="query_breadcrumbs">

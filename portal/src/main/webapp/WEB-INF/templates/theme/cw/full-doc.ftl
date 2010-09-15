@@ -32,72 +32,73 @@
     <#include "inc_header.ftl">
 
 
-<div id="sidebar" class="grid_3">
-    <div id="identity">
-        <h1>ICN</h1>
-        <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
-    </div>
+<div id="main">
 
-    <div id="facet-list">
-        <#include "inc_related_content.ftl"/>
-    </div>
-</div>
-
-
-<div id="main" class="grid_9 page">
-
-    <div id="top-bar">
-    <@userbar/>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-        <div class="inner">
-        <@SearchForm "search_result"/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="breadcrumbs">
-        <div class="inner">
+    <div class="grid_12 breadcrumb">
+        <em>U bevindt zich op: </em>
+        <span>
+            <a href="index.html" title="Homepagina">Home</a>
+            <span class="imgreplacement">&rsaquo;</span>
             <#if pagination??>
-                <ul>
-                    <#if !query?starts_with("europeana_uri:")>
-                        <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-                        <#list pagination.breadcrumbs as crumb><#if !crumb.last>
-                            <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
-                            <#else>
-                                <li><strong>${crumb.display?html}</strong></li>
-                        </#if></#list>
-                        <#else>
-                            <li class="first">
-
-                            <@spring.message 'ViewingRelatedItems_t' />
-                                <#assign match = result.fullDoc />
-                                <a href="full-doc.html?&amp;uri=${match.id}">
-                                    <#if useCache="true"><img
-                                            src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
-                                            alt="${match.title}" height="25"/>
-                                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                                    </#if>
-                                </a>
-
-                            </li>
-                    </#if>
-                </ul>
-                <#else>
-                    <ul>
-                        <li>&#160;</li>
-                    </ul>
+                <a href="${pagination.returnToResults?html}" title="Zoekresultaten">Zoekresultaten</a>
+                <span class="imgreplacement">&rsaquo;</span>
             </#if>
-        </div>
+        </span>
+        Object
     </div>
 
-    <div class="clear"></div>
+    <div id="left-col" class="grid_3">
 
-    <div class="inner">
+        <#include "inc_related_content.ftl"/>
+
+    </div>
+
+    <div id="right-col" class="grid_9">
+
+        <div id="search">
+            <@SearchForm "search_result"/>
+        </div>
+
+        <div class="clear"></div>
+
+        <div id="query_breadcrumbs">
+                <#if pagination??>
+                    <ul class="nav_query_breadcrumbs">
+                        <#if !query?starts_with("europeana_uri:")>
+                            <li class="first"><@spring.message 'MatchesFor_t' />:</li>
+                            <#list pagination.breadcrumbs as crumb>
+                                <#if !crumb.last>
+                                    <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>
+                                <#else>
+                                    <li><strong>${crumb.display?html}</strong></li>
+                                </#if>
+                            
+                            </#list>
+                            <#else>
+                                <li class="first">
+
+                                <@spring.message 'ViewingRelatedItems_t' />
+                                    <#assign match = result.fullDoc />
+                                    <a href="full-doc.html?&amp;uri=${match.id}">
+                                        <#if useCache="true"><img
+                                                src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
+                                                alt="${match.title}" height="25"/>
+                                            <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                                        </#if>
+                                    </a>
+
+                                </li>
+                        </#if>
+                    </ul>
+                    <#else>
+                        <ul>
+                            <li>&#160;</li>
+                        </ul>
+                </#if>
+        </div>
+
+        <div class="clear"></div>
+
         <div class="pagination fg-buttonset">
 
             <#assign uiClassStatePrev = ""/>
@@ -154,6 +155,7 @@
 
         <div class="clear"></div>
     </div>
+
 </div>
 
     <#include "inc_footer.ftl"/>

@@ -10,7 +10,8 @@
 .azure .nav_bar{background:#046f96;}
 .azure .nav_main{background:#046f96;}
 .azure .nav_main a{color:#fff;}
-.azure .nav_main a:hover{background:#bddfed;}
+.azure .nav_main a:hover,
+.azure .nav_main li.current {background:#bddfed;}
 .azure .nav_bottom{background:#bddfed;}
 
 /* information boxes  */
@@ -18,3 +19,10 @@
 .azure .box.open{background:transparent;}
 .azure .box.closed{background:#deeff6;}
 .azure .box h4{background:#bddfed;}
+
+/* breadcrumbs */
+.azure .breadcrumb {color: #767676;}
+.azure .breadcrumb a:link, .azure .breadcrumb a:visited {color: #154273; text-decoration: underline;}
+
+/* search forms */
+.azure #search #search_simple {background: #eaeaea;}

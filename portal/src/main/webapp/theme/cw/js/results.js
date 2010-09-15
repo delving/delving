@@ -165,8 +165,8 @@ function checkSize(obj,type,w){
         }        
     }
     else {
-        if (w > 215) {
-            w = 215;
+        if (w > 235) {
+            w = 235;
             obj.width=w;
         }
     }

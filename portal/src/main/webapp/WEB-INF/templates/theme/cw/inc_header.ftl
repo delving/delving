@@ -231,6 +231,7 @@
     <#break>
     <#case "login.html">
     <#assign pageId = "li"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <script type="text/javascript">
         $(document).ready(function() {
             $("#loginForm").validate({
@@ -258,13 +259,16 @@
     <#break>
     <#case "register.html">
     <#assign pageId = "rg"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <title>Instituut Collectie Nederland - Registration</title>
     <#break>
     <#case "forgotPassword.html">
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <#assign pageId = "fp"/>
     <title>Instituut Collectie Nederland - Forgot Password</title>
     <#break>
     <#case "register-success.html">
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <title>Instituut Collectie Nederland - Registration continued</title>
     <#break>
     </#switch>
@@ -282,21 +286,28 @@
     <div class="header">
 
         <div class="branding">
-            <img src="/${portalName}/${portalTheme}/RO_OCW_ICN.png" id="logo-home" alt="ICN"/>
+            <img src="/${portalName}/${portalTheme}/images/RO_OCW_ICN.png" id="logo-home" alt="ICN" widht="500"/>
         </div>
-
+        <div class="clear"></div>
         <div class="title_bar">
-             Instituut Collectie Nederland  <em>De Collectie</em>
-        </div>
+            <div class="grid_12">
 
-        <div class="nav_bar">
-             <ul class="nav_main">
-                 <li><a href="">Home</a></li>
-                 <li><a href="">Over de Digitale Collectie Nederland</a></li>
-                 <li><a href="">Deelname</a></li>
-                 <li><a href="">Gebruik</a></li>
-             </ul>
+                Instituut Collectie Nederland  <em>De Collectie</em>
+            </div>
         </div>
+        <div class="clear"></div>
+        <div class="nav_bar">
+            <div class="grid_12">
+
+                <ul class="nav_main">
+                    <li <#if pageId="in">class="current"</#if>><a href="">Home</a></li>
+                    <li><a href="">Over de Digitale Collectie Nederland</a></li>
+                    <li><a href="">Deelname</a></li>
+                    <li><a href="">Gebruik</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="clear"></div>
         <div class="nav_bottom">
 
         </div>

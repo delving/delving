@@ -28,7 +28,7 @@
         <@stringLimiter "${tl}" "150"/>
     </h1>
 
-                <div class="grid_4 alpha" id="img-full">
+                <div class="grid_3 alpha" id="img-full">
                     <#assign imageRef = "#"/>
                     <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
@@ -66,7 +66,7 @@
                     </a>
                 </div>
 
-                <div id="item-detail" class="grid_8 omega">
+                <div class="grid_6 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
                         <#assign showFieldNames = true />
@@ -126,7 +126,7 @@
                         <@show_array_values "dc:type" doc.dcType  showFieldNames />
                     <#else>
 
-                    <table width="100%" summary="This table contains the metadata for the object being viewed">
+                    <table width="100%" class="item" summary="This table contains the metadata for the object being viewed">
                         <col style="width:120px"/><col/>
                         <caption>Object metadata</caption>
                         <tbody>
