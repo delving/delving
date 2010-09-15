@@ -624,6 +624,18 @@
              <field name="dcterms_tableOfContents" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="dcterms_temporal" type="text" indexed="true" stored="true" multiValued="true" />
 
+     <!-- Special fields for Instituut Collectie Nederland -->
+
+             <field name="icn_creatorYearOfBirth" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_technique" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_material" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_location" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_province" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_collectionPart" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_acquisitionMeans" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_acquisitionYear" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_acquiredWithHelpFrom" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_physicalState" type="text" indexed="true" stored="true" multiValued="true" />
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.
