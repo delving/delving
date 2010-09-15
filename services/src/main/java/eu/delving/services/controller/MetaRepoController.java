@@ -43,10 +43,10 @@ public class MetaRepoController {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
         for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
             out.append(String.format(
-                    "<li><a href=\"%s/abm.html\">abm:%s</a></li>",
-                    dataSet.setSpec(), dataSet.setSpec()
+                    "<li><a href=\"%s/%s.html\">%s:%s</a></li>",
+                    dataSet.setSpec(), dataSet.metadataFormat().prefix(), dataSet.metadataFormat().prefix(), dataSet.setSpec()
             ));
-            out.append(String.format(
+            out.append(String.format( // todo: the mappings should be scanned for these extra formats
                     "<li><a href=\"%s/ese.html\">ese:%s</a></li>",
                     dataSet.setSpec(), dataSet.setSpec()
             ));
@@ -115,7 +115,7 @@ public class MetaRepoController {
                             dataSetDetails.getName(),
                             dataSetDetails.getProviderName(),
                             dataSetDetails.getDescription(),
-                            "abm", // todo: this should be passed in??
+                            dataSetDetails.getPrefix(),
                             dataSetDetails.getNamespace(),
                             dataSetDetails.getSchema()
                     );
@@ -140,12 +140,7 @@ public class MetaRepoController {
                     zis.close();
                     throw new IOException("Data set details must come first in the uploaded zip file");
                 }
-                dataSet.setMapping(
-                        getMapping(zis),
-                        "ese", // todo: get this info from the mapping somehow
-                        "http://www.europeana.eu/schemas/ese/",
-                        "http://www.europeana.eu/schemas/ese/ESE-V3.2.xsd"
-                );
+                dataSet.addMapping(getMapping(zis));
             }
             else {
                 byte[] buffer = new byte[2048];

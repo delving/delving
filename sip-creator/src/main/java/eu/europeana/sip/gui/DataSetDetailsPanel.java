@@ -49,6 +49,7 @@ public class DataSetDetailsPanel extends JPanel {
     private JTextField nameField = new JTextField(FIELD_SIZE);
     private JTextField providerNameField = new JTextField(FIELD_SIZE);
     private JTextArea descriptionField = new JTextArea(3, 30);
+    private JTextField prefixField = new JTextField(FIELD_SIZE);
     private JTextField namespaceField = new JTextField(FIELD_SIZE);
     private JTextField schemaField = new JTextField(FIELD_SIZE);
     private JTextField recordRootField = new JTextField(FIELD_SIZE);
@@ -92,6 +93,7 @@ public class DataSetDetailsPanel extends JPanel {
         addField("Provider Name", providerNameField);
         descriptionField.setLineWrap(true);
         addField("Description", descriptionField);
+        addField("Prefix", prefixField);
         addField("Namespace", namespaceField);
         addField("Schema", schemaField);
         recordRootField.setEditable(false);
@@ -122,6 +124,7 @@ public class DataSetDetailsPanel extends JPanel {
         nameField.setText(details.getName());
         providerNameField.setText(details.getProviderName());
         descriptionField.setText(details.getDescription());
+        prefixField.setText(details.getPrefix());
         namespaceField.setText(details.getNamespace());
         schemaField.setText(details.getSchema());
         recordRootField.setText(details.getRecordRoot());
@@ -134,6 +137,7 @@ public class DataSetDetailsPanel extends JPanel {
         details.setName(nameField.getText().trim());
         details.setProviderName(providerNameField.getText().trim());
         details.setDescription(descriptionField.getText().trim());
+        details.setPrefix(prefixField.getText().trim());
         details.setNamespace(namespaceField.getText().trim());
         details.setSchema(schemaField.getText().trim());
         details.setRecordRoot(recordRootField.getText().trim());

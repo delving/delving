@@ -24,13 +24,14 @@ import java.util.Date;
 public class MongoObjectParser {
     private XMLStreamReader2 input;
     private QName recordRoot, uniqueElement;
-    private String metadataPrefix;
+    private String metadataPrefix, namespaceUri;
     private DBObject namespaces = new BasicDBObject();
 
-    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement, String metadataPrefix) throws XMLStreamException {
+    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement, String metadataPrefix, String namespaceUri) throws XMLStreamException {
         this.recordRoot = recordRoot;
         this.uniqueElement = uniqueElement;
         this.metadataPrefix = metadataPrefix;
+        this.namespaceUri = namespaceUri;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
 //        xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
 //        xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -78,7 +79,7 @@ public class MongoObjectParser {
                             namespaces.put(prefix, uri);
                         }
                         else {
-                            throw new XMLStreamException("Unexpected null prefix for namespace uri: " + uri);
+                            namespaces.put(metadataPrefix, namespaceUri); // todo: set it up as the default namespace
                         }
                         contentBuffer.append("<").append(input.getPrefixedName());
                         if (input.getAttributeCount() > 0) {
@@ -103,12 +104,23 @@ public class MongoObjectParser {
                             for (int walk = 0; walk < text.length(); walk++) { // return predeclared entities to escapes
                                 char c = text.charAt(walk);
                                 switch (c) {
-                                    case '&': contentBuffer.append("&amp;"); break;
-                                    case '<': contentBuffer.append("&lt;"); break;
-                                    case '>': contentBuffer.append("&gt;"); break;
-                                    case '"': contentBuffer.append("&quot;"); break;
-                                    case '\'': contentBuffer.append("&apos;"); break;
-                                    default : contentBuffer.append(c);
+                                    case '&':
+                                        contentBuffer.append("&amp;");
+                                        break;
+                                    case '<':
+                                        contentBuffer.append("&lt;");
+                                        break;
+                                    case '>':
+                                        contentBuffer.append("&gt;");
+                                        break;
+                                    case '"':
+                                        contentBuffer.append("&quot;");
+                                        break;
+                                    case '\'':
+                                        contentBuffer.append("&apos;");
+                                        break;
+                                    default:
+                                        contentBuffer.append(c);
                                 }
                             }
                             if (uniqueBuffer != null) {

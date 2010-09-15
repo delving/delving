@@ -293,7 +293,8 @@ public class MetaRepoImpl implements MetaRepo {
                     inputStream,
                     recordRoot,
                     uniqueElement,
-                    metadataFormat().prefix()
+                    metadataFormat().prefix(),
+                    metadataFormat().namespace()
             );
             DBObject record;
             while ((record = parser.nextRecord()) != null) {
@@ -305,7 +306,14 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void setMapping(String mappingCode, String prefix, String namespace, String schema) {
+        public void addMapping(String mappingCode) {
+            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
+            String prefix = "ese";
+            String namespace = "http://www.europeana.eu/schemas/ese/";
+            String schema = "http://www.europeana.eu/schemas/ese/ESE-V3.2.xsd";
+
+            
+
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
                 mappings = new BasicDBObject();

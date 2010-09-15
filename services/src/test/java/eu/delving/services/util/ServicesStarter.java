@@ -39,6 +39,11 @@ public class ServicesStarter {
         runner.waitUntilRunning();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
+                runner.kill();
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
                 System.out.println("executing shutdown hook");
                 runner.kill();
             }

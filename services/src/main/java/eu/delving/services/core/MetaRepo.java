@@ -53,7 +53,7 @@ public interface MetaRepo {
         QName recordRoot();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
-        void setMapping(String mappingCode, String prefix, String namespace, String schema);
+        void addMapping(String mappingCode);
 
         MetadataFormat metadataFormat();
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
