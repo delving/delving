@@ -363,12 +363,7 @@ public class SipModel {
         final Normalizer existingNormalizer = normalizer;
         normalizer = null;
         if (existingNormalizer != null) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    existingNormalizer.abort(); // todo: make sure this deletes the files!
-                }
-            });
+            existingNormalizer.abort();
         }
     }
 

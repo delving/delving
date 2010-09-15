@@ -54,7 +54,7 @@ public class Normalizer implements Runnable {
     private MetadataParser.Listener parserListener;
     private Listener listener;
     private UserNotifier userNotifier;
-    private boolean running = true;
+    private volatile boolean running = true;
 
     public interface Listener {
         void invalidInput(MappingException exception);
@@ -104,7 +104,7 @@ public class Normalizer implements Runnable {
                     fileSetOutput.recordNormalized();
                 }
                 catch (MappingException e) {
-                    if (fileSetOutput.getDiscardedWriter() != null) {
+                    if (discardInvalid && fileSetOutput.getDiscardedWriter() != null) {
                         try {
                             fileSetOutput.getDiscardedWriter().write(record.toString());
                             e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));
@@ -132,7 +132,7 @@ public class Normalizer implements Runnable {
                     }
                 }
                 catch (RecordValidationException e) {
-                    if (fileSetOutput.getDiscardedWriter() != null) {
+                    if (discardInvalid && fileSetOutput.getDiscardedWriter() != null) {
                         try {
                             fileSetOutput.getDiscardedWriter().write(record.toString());
                             e.printStackTrace(new PrintWriter(fileSetOutput.getDiscardedWriter()));

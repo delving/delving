@@ -233,7 +233,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                 notifyStateChange(State.ERROR);
             }
             catch (RecordValidationException e) {
-                compilationComplete(e.getMessage());
+                compilationComplete(e.toString());
                 notifyStateChange(State.ERROR);
             }
         }

@@ -92,7 +92,7 @@ public class RecordValidator {
                 }
                 counter.count++;
                 Set<String> enumValues = field.getEnumValues();
-                if (enumValues != null && !enumValues.contains(entry.value)) {
+                if (enumValues != null && !field.europeana().valueMapped() && !enumValues.contains(entry.value)) {
                     StringBuilder enumString = new StringBuilder();
                     Iterator<String> walk = enumValues.iterator();
                     while (walk.hasNext()) {

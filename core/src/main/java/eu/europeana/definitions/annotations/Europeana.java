@@ -165,7 +165,7 @@ public @interface Europeana {
      * @return a regular expression string
      */
 
-    String regularExpression() default ""; // todo: use it in validation
+    String regularExpression() default "";
 
     /**
      * Fetch the enum class to which this field's value must belong
@@ -173,11 +173,13 @@ public @interface Europeana {
      * @return an enum class
      */
 
-    Class<? extends Enum> enumClass() default NO_ENUM.class; // todo: use in validation
+    Class<? extends Enum> enumClass() default NO_ENUM.class;
 
     /**
      * Flag whether the enum is value-mapped, meaning that there will be a map constructed
      * from analyzed source values to the enum.
+     *
+     * Note: when a field is valueMapped, its enum is no longer used for validation
      *
      * @return true if a map is to be made
      */
