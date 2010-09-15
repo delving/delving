@@ -300,7 +300,7 @@
             <div class="grid_12">
 
                 <ul class="nav_main">
-                    <li <#if pageId="in">class="current"</#if>><a href="">Home</a></li>
+                    <li <#if pageId="in">class="current"</#if>><a href="index.html">Home</a></li>
                     <li><a href="">Over de Digitale Collectie Nederland</a></li>
                     <li><a href="">Deelname</a></li>
                     <li><a href="">Gebruik</a></li>

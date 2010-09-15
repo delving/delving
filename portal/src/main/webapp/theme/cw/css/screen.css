@@ -181,6 +181,7 @@ ul a:hover, ul a:visited:hover {
 .box h4.head,
 .box h5.head,
 .box h6.head {
+    
     margin: 0;
     padding: 0.2em 12px 0.3em;
 }
@@ -209,6 +210,10 @@ ul a:hover, ul a:visited:hover {
 #search .search_home input.txt-input,
 #search .search_result input.txt-input{
     width: 400px;
+}
+
+#search .search_advanced {
+    background: #fff;
 }
 
 /* Results page **********************************************************************************/
