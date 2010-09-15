@@ -84,15 +84,16 @@ public class Normalizer implements Runnable {
 
     public void run() {
         try {
-            List<String> mapping = Arrays.asList(fileSet.getMapping().split("\n"));
-            RecordRoot recordRoot = RecordRoot.fromMapping(mapping);
+            String mappingCode = fileSet.getMapping();
+            List<String> mappingLines = Arrays.asList(mappingCode.split("\n"));
+            RecordRoot recordRoot = RecordRoot.fromMapping(mappingLines);
             ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
-            constantFieldModel.fromMapping(mapping);
+            constantFieldModel.fromMapping(mappingLines);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             fileSetOutput = fileSet.prepareOutput();
             fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
             fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mapping, constantFieldModel);
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mappingCode, constantFieldModel);
             MetadataParser parser = new MetadataParser(fileSet.getInputStream(), recordRoot, parserListener);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {

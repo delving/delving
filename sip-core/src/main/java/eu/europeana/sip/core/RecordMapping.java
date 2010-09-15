@@ -190,6 +190,16 @@ public class RecordMapping implements Iterable<FieldMapping> {
         return out.toString();
     }
 
+    public String getValueMapCode() {
+        StringBuilder valueMapCode = new StringBuilder();
+        for (FieldMapping fieldMapping : fieldMappings) {
+            if (fieldMapping.getValueMap() != null) {
+                valueMapCode.append(fieldMapping.getValueMap());
+            }
+        }
+        return valueMapCode.toString();
+    }
+
     public String getCodeForPersistence() {
         return getCode(true, false, true, true);
     }
@@ -211,11 +221,7 @@ public class RecordMapping implements Iterable<FieldMapping> {
                     out.append(recordRoot.toString()).append('\n').append('\n');
                 }
                 out.append(constantFieldModel.toString()).append('\n');
-                for (FieldMapping mapping : fieldMappings) {
-                    if (mapping.getValueMap() != null) {
-                        out.append(mapping.getValueMap().toString());
-                    }
-                }
+                out.append(getValueMapCode());
             }
         }
         int indent = 0;

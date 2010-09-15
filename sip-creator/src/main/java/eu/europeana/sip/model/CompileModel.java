@@ -202,13 +202,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                 return;
             }
             String mappingCode = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            StringBuilder valueMapCode = new StringBuilder();
-            for (FieldMapping fieldMapping : recordMapping) {
-                if (fieldMapping.getValueMap() != null) {
-                    valueMapCode.append(fieldMapping.getValueMap());
-                }
-            }
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + valueMapCode + mappingCode, recordMapping.getConstantFieldModel());
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + recordMapping.getValueMapCode() + mappingCode, recordMapping.getConstantFieldModel());
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (multipleMappings) {

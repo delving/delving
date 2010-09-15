@@ -41,14 +41,14 @@ public class TestValueMap {
     @Test
     public void writeAndRead() {
         Map<String, ValueMap> maps = ValueMap.fromMapping(toLines(
-                        "/* ValueMap */ def gumby = [ // one,two,three\n" +
-                        "'uno':'one'\n" +
-                        "'duo':'two'\n" +
-                        "'trezz':'three'\n" +
+                        "/* ValueMap */ def gumbyMap = [ // one,two,three\n" +
+                        "'uno':'one',\n" +
+                        "'duo':'two',\n" +
+                        "'trezz':'three',\n" +
                         "]\n" +
-                        "/* ValueMap */ def pokey = [ // no,yes\n" +
-                        "'fantastic':'yes'\n" +
-                        "'terrible':'no'\n" +
+                        "/* ValueMap */ def pokeyMap = [ // no,yes\n" +
+                        "'fantastic':'yes',\n" +
+                        "'terrible':'no',\n" +
                         "]\n"
         ));
         assertEquals(2, maps.size());

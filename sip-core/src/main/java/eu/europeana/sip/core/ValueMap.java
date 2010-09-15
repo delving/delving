@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 
 public class ValueMap {
-    private static final String PREFIX = "/* ValueMap */ def ";
+    private static final String MAP_PREFIX = "/* ValueMap */ def ";
     private static final String PREFIX_RANGE = "// ";
     private static final Pattern ENTRY_PATTERN = Pattern.compile("'([^']*)':'([^']*)',");
     private String name;
@@ -27,10 +27,10 @@ public class ValueMap {
         Map<String, ValueMap> maps = new TreeMap<String, ValueMap>();
         ValueMap valueMap = null;
         for (String line : mapping) {
-            if (line.startsWith(PREFIX)) {
-                String def = line.substring(PREFIX.length());
-                int eq = def.indexOf('=');
-                if (eq < 0) throw new RuntimeException("No equals sign found");
+            if (line.startsWith(MAP_PREFIX)) {
+                String def = line.substring(MAP_PREFIX.length());
+                int eq = def.indexOf("Map =");
+                if (eq < 0) throw new RuntimeException("No 'Map =' found");
                 String name = def.substring(0, eq).trim();
                 int range = def.indexOf(PREFIX_RANGE);
                 if (range < 0) throw new RuntimeException("No range values");
@@ -93,7 +93,8 @@ public class ValueMap {
     }
 
     public String toString() {
-        StringBuilder out = new StringBuilder(PREFIX + name + " = [ // ");
+        StringBuilder out = new StringBuilder();
+        out.append(MAP_PREFIX).append(name).append("Map = [ // ");
         for (String rangeValue : rangeValues) {
             out.append(rangeValue).append(',');
         }
@@ -102,6 +103,7 @@ public class ValueMap {
             out.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',\n");
         }
         out.append("]\n");
+        out.append(String.format("def %s = { def v = %sMap[it.toString()]; return v ? v : it }\n", name, name));
         return out.toString();
     }
 }
