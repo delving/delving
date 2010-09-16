@@ -73,6 +73,13 @@
         <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
+            <select name="zoeken_in" class="form_11">
+                    <option selected="selected">Alles</option>
+                    <option>Titel</option>
+                    <option>Vervaardiger</option>
+                    <option>Onderwerp</option>
+                    <option>Collectie</option>
+                  </select>
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
             <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
@@ -173,7 +180,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
+    <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>-->
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>

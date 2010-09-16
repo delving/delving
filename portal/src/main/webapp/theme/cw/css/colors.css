@@ -26,3 +26,4 @@
 
 /* search forms */
 .azure #search #search_simple {background: #eaeaea;}
+.azure #search .search_advanced table td {background: #eaeaea;}

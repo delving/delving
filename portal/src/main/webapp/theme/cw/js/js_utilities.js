@@ -77,10 +77,10 @@ $(document).ready(function() {
         width: 355
     });
     // click event on advanced search href
-    $('#href-advanced').click(function() {
-            $('#search_advanced').dialog('open');
-            return false;
-     });
+//    $('#href-advanced').click(function() {
+//            $('#search_advanced').dialog('open');
+//            return false;
+//     });
 
     // style all the submit and button elements.
 
