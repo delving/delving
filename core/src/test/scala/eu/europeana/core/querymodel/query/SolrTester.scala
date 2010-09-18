@@ -31,13 +31,14 @@ trait SolrTester {
     server.commit // commit so that data becomes available immediately
   }
 
-  def createEuropeanaUri(identifier: String, collId: String) : String = format("http://www.europeana.eu/resolve/record/%s/%s", collId, identifier)
+  def createEuropeanaUri(identifier: String, collId: String) : String = format("" +
+          "", collId, identifier)
 
 
   private def createSolrRecord(identifier: String, collId: String) : SolrInputDocument = {
     val doc = new SolrInputDocument
     doc.addField("europeana_uri", createEuropeanaUri(identifier, collId))
-    List("dc_title", "dc_creator", "dc_date", "europeana_collectionName").foreach(field =>
+    List("dc_title", "dc_creator", "dc_date", "europeana_collectionName", "europeana_provider").foreach(field =>
       doc.addField(field, format("%s=%s", field, identifier)))
     doc
   }

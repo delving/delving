@@ -21,9 +21,12 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.beans.FullBean;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -53,4 +56,15 @@ public interface QueryModelFactory {
     QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException;
 
     SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException;
+
+    //todo refactor out the getBeans methods from solrj
+    List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc);
+
+    FullBean getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException;
+
+    List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse);
+
+    List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse);
+
+    List<BriefBean> getMatchDocFromDocumentList(SolrDocumentList matchDoc);
 }

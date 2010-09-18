@@ -2,8 +2,11 @@ package eu.europeana.core.querymodel.query
 
 import _root_.org.junit.runner.RunWith
 import _root_.org.scalatest.matchers.ShouldMatchers
-import _root_.org.scalatest.Spec
+import _root_.org.scalatest.{BeforeAndAfterAll, Spec}
 import _root_.org.scalatest.junit.JUnitRunner
+import eu.europeana.core.BeanQueryModelFactory
+import org.apache.solr.client.solrj.SolrQuery
+import eu.europeana.core.querymodel.beans.FullBean
 
 
 /**
@@ -13,8 +16,33 @@ import _root_.org.scalatest.junit.JUnitRunner
  */
 
 @RunWith(classOf[JUnitRunner])
-class BeanQueryModelFactorySpec extends Spec with ShouldMatchers {
+class BeanQueryModelFactorySpec extends Spec with BeforeAndAfterAll with ShouldMatchers with SolrTester {
 
+  override def afterAll() = stopSolrServer
+
+  val testCollId = "00101"
+  val solrSever = getSolrSever
+  loadDefaultData(solrSever, 14, testCollId)
+  val queryModelFactory = new BeanQueryModelFactory
+
+  describe("A SolrResponse that comes from the server") {
+
+      describe("(when retrieving a FullDoc)") {
+        val europeana_uri = "http://www.europeana.eu/resolve/record/00101/"
+        val query = new SolrQuery("europeana_uri:\"" + europeana_uri + "\"")
+        val response = solrServer.query(query)
+        println (query)
+
+
+        it("should return a valid FullDoc") {
+          val fullBean : FullBean = queryModelFactory.getFullDocFromSolrResponse(response)
+          fullBean.getEuropeanaUri should be (europeana_uri)
+          response.getResults.getNumFound should be (1)
+        }
+
+      }
+
+    }
 
 
 //  Old test class

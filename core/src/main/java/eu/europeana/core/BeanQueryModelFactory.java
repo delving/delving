@@ -154,11 +154,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Override
     public FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException {
         QueryResponse response = getSolrResponse(solrQuery);
-        List<FullBean> fullBeanList = getFullDocFromSolrResponse(response);
-        if (fullBeanList.size() != 1) {
-            throw new EuropeanaQueryException("Full Doc not found");
-        }
-        return fullBeanList.get(0);
+        return getFullDocFromSolrResponse(response);
     }
 
     @Override
@@ -392,23 +388,32 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     //todo refactor out the getBeans methods from solrj
-    private List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc) {
+    @Override
+    public List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc) {
         return solrServer.getBinder().getBeans(FullBean.class, matchDoc);
     }
 
-    private List<FullBean> getFullDocFromSolrResponse(QueryResponse response) {
-        return response.getBeans(FullBean.class);
+    @Override
+    public FullBean getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException {
+        List<FullBean> fullBeanList = response.getBeans(FullBean.class);
+        if (fullBeanList.size() != 1) {
+            throw new EuropeanaQueryException("Full Doc not found");
+        }
+        return fullBeanList.get(0);
     }
 
-    private List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
+    @Override
+    public List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
         return queryResponse.getBeans(idBean);
     }
 
-    private List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse) {
+    @Override
+    public List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse) {
         return (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
     }
 
-    private List<BriefBean> getMatchDocFromDocumentList(SolrDocumentList matchDoc) {
+    @Override
+    public List<BriefBean> getMatchDocFromDocumentList(SolrDocumentList matchDoc) {
         return solrServer.getBinder().getBeans(BriefBean.class, matchDoc);
     }
 
