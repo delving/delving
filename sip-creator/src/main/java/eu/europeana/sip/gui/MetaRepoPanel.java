@@ -7,9 +7,9 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -34,13 +34,20 @@ public class MetaRepoPanel extends JPanel {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
-//        gbc.weightx = gbc.weighty = 1;
+        gbc.gridwidth = 2;
         add(dataSetDetailsPanel, gbc);
         gbc.gridy++;
-        JPanel bl = new JPanel(new BorderLayout(10, 10));
-        bl.add(new JProgressBar(sipModel.getUploadProgress()), BorderLayout.CENTER);
-        bl.add(createUploadZipButton, BorderLayout.WEST);
-        add(bl, gbc);
+        add(createUploadZipButton, gbc);
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        add(new JLabel("Create ZIP File:", JLabel.RIGHT), gbc);
+        gbc.gridy++;
+        add(new JLabel("Upload ZIP File:", JLabel.RIGHT), gbc);
+        gbc.gridy--;
+        gbc.gridx++;
+        add(new JProgressBar(sipModel.getZipProgress()), gbc);
+        gbc.gridy++;
+        add(new JProgressBar(sipModel.getUploadProgress()), gbc);
         wireUp();
     }
 

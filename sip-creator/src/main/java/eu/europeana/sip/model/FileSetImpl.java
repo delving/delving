@@ -18,15 +18,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Implementing FileSet, handling all the files related to the original xml file.]
@@ -192,23 +190,12 @@ public class FileSetImpl implements FileSet {
     }
 
     @Override
-    public File createZipFile(String zipFileName) {
-        checkWorkerThread();
-        File zipFile = new File(inputFile.getParentFile(), zipFileName + ".zip");
-        if (zipFile.exists()) {
-            if (!zipFile.delete()) {
-                userNotifier.tellUser("Unable to delete zip file");
-            }
-        }
-        try {
-            buildZipFile(zipFile);
-            return zipFile;
-        }
-        catch (IOException e) {
-            userNotifier.tellUser("Unable to build zip file", e);
-            LOG.warn("Unable to build zip file " + zipFile.getAbsolutePath(), e);
-        }
-        return null;
+    public List<File> getUploadFiles() {
+        List<File> files = new ArrayList<File>();
+        files.add(dataSetDetailsFile);
+        files.add(inputFile);
+        files.add(mappingFile);
+        return files;
     }
 
     @Override
@@ -352,26 +339,6 @@ public class FileSetImpl implements FileSet {
             removeOutput();
         }
 
-    }
-
-    private void buildZipFile(File zipFile) throws IOException {
-        OutputStream outputStream = new FileOutputStream(zipFile);
-        ZipOutputStream zos = new ZipOutputStream(outputStream);
-        stream(dataSetDetailsFile, zos);
-        stream(inputFile, zos);
-        stream(mappingFile, zos);
-        zos.close();
-    }
-
-    private void stream(File file, ZipOutputStream zos) throws IOException {
-        InputStream in = new FileInputStream(file);
-        zos.putNextEntry(new ZipEntry(file.getName()));
-        byte[] buffer = new byte[4096];
-        int length;
-        while ((length = in.read(buffer)) > 0) {
-            zos.write(buffer, 0, length);
-        }
-        zos.closeEntry();
     }
 
     private void removeOutput() {

@@ -101,7 +101,7 @@ public class DataSetDetailsPanel extends JPanel {
         uniqueElementField.setEditable(false);
         addField("Unique Element", uniqueElementField);
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
-        setPreferredSize(new Dimension(800, 340));
+        setPreferredSize(new Dimension(800, 500));
     }
 
     private void addField(String prompt, JTextComponent textComponent) {
