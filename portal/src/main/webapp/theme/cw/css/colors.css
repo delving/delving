@@ -27,3 +27,40 @@
 /* search forms */
 .azure #search #search_simple {background: #eaeaea;}
 .azure #search .search_advanced table td {background: #eaeaea;}
+
+/* results pages */
+.azure .brief-thumb-container,
+.azure .brief-thumb-container-listview {background: #e5e5e5;}
+
+/*
+ * @colordef		#876220; brown 1 (full)
+ * @colordef		#e0d4bc; brown 2 (lighter)
+ * @colordef		#f0eade; brown 3 (lightest)
+*/
+
+/* header elements */
+.brown .title_bar{background:#f0eade;}
+.brown .nav_bar{background:#876220;}
+.brown .nav_main{background:#876220;}
+.brown .nav_main a{color:#fff;}
+.brown .nav_main a:hover,
+.brown .nav_main li.current {background:#e0d4bc;}
+.brown .nav_bottom{background:#e0d4bc;}
+
+/* information boxes  */
+.brown .box{border:1px solid #f0eade;}
+.brown .box.open{background:transparent;}
+.brown .box.closed{background:#f0eade;}
+.brown .box h4{background:#f0eade;}
+
+/* breadcrumbs */
+.brown .breadcrumb {color: #767676;}
+.brown .breadcrumb a:link, .brown .breadcrumb a:visited {color: #154273; text-decoration: underline;}
+
+/* search forms */
+.brown #search #search_simple {background: #f0eade;}
+.brown #search .search_advanced table td {background: #f0eade;}
+
+/* results pages */
+.brown .brief-thumb-container,
+.brown .brief-thumb-container-listview {background: #f0eade;}

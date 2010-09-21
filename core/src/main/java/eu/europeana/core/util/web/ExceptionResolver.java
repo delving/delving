@@ -62,6 +62,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{launchProperties['portal.theme']}")
     private String portalTheme;
 
+    @Value("#{launchProperties['portal.color']}")
+    private String portalColor;
+
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
@@ -83,6 +86,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("cacheUrl", cacheUrl);
                 model.put("portalName", portalName);
                 model.put("portalTheme", portalTheme);
+                model.put("portalColor", portalColor);
                 model.put("agent", request.getHeader("User-Agent"));
                 model.put("referer", request.getHeader("referer"));
                 model.put(EmailSender.SUBJECT, queryProblem.getFragment());

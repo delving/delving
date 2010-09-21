@@ -1,12 +1,11 @@
 <#assign thisPage = "myeuropeana.html">
-
 <#compress>
 <#include "inc_header.ftl">
-<style>
-.ui-tabs .ui-tabs-hide {
-     display: none;
-}
-</style>
+<#--<style>-->
+<#--.ui-tabs .ui-tabs-hide {-->
+     <#--display: none;-->
+<#--}-->
+<#--</style>-->
 <script type="text/javascript">
 
     $(function() {
@@ -16,33 +15,12 @@
 
 </script>
 
-<div id="sidebar" class="grid_3">
+<div id="main">
 
-    <div id="identity">
-            <h1>ICN</h1>
-            <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
-    </div>
 
-</div>
+    <div id="user-info" class="grid_12">
 
-<div id="main" class="grid_9">
-
-    <div id="top-bar">
-        <@userbar/>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="search">
-        <div class="inner">
-            <@SearchForm "search_result"/>
-        </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div id="myeuropeana">
-            <h1>My Europeana</h1>
+        <h1>Administratie</h1>
 
                <div id="savedItems">
                     <ul>
@@ -101,7 +79,9 @@
                                             <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
                                             <br/><br/>
                                         </td>
-                                        <td width="60"><button  onclick="removeRequest('SavedItem',${item.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
+                                        <td width="60">
+                                            <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedItem',${item.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a>
+                                        </td>
                                     </tr>
                                 </#list>
 
@@ -119,7 +99,7 @@
                                             <a href="brief-doc.html?${search.query}">${search.queryString}</a>
                                             <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
                                         </td>
-                                        <td width="60"><button onclick="removeRequest('SavedSearch',${search.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
+                                        <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
                                     </tr>
                                 </#list>
                             <#else>
@@ -157,7 +137,7 @@
                                          <a href="full-doc.html?uri=${tag.europeanaUri}">${tag.title}</a><br/>
                                          <p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>
                                      </td>
-                                     <td width="60"><button onclick="removeRequest('SocialTag',${tag.id?string("0")});"><@spring.message 'Delete_t'/></button></td>
+                                     <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
                                    </tr>
                                 </#list>
 
@@ -171,6 +151,7 @@
                 </div>
             </div>
 </div>
-	    <#include "inc_footer.ftl"/>
+
+<#include "inc_footer.ftl"/>
 
 </#compress>

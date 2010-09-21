@@ -135,6 +135,7 @@ ul a:hover, ul a:visited:hover {
     margin: 0;
     padding: 0;
     text-align: left;
+    height: 32px;
 }
 
 .title_bar em {
@@ -282,7 +283,6 @@ ul.nav_query_breadcrumbs li.first {
 }
 
 .brief-thumb-container, .brief-thumb-container-listview {
-    background: #e5e5e5;
     overflow: hidden;
     text-align: center;
     padding: 0.5em;
@@ -299,6 +299,10 @@ ul.nav_query_breadcrumbs li.first {
 /*border: 1px solid #e5e5e5;*/
     padding: .5em;
     min-height: 75px;
+}
+
+#no-result {
+    font-size: large;
 }
 
 /* Facets - Refine Search */
@@ -328,6 +332,13 @@ table.item {
 
 table.item caption {
     display: none;
+}
+
+
+/* USER section styles ***************************************************************************/
+
+#user-info {
+    margin-top: 1em;
 }
 
 /* UI Button styles ******************************************************************************/
