@@ -309,11 +309,10 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void addMapping(String mappingCode) {
             // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
-            String prefix = "ese";
-            String namespace = "http://www.europeana.eu/schemas/ese/";
-            String schema = "http://www.europeana.eu/schemas/ese/ESE-V3.2.xsd";
-
-            
+            String prefix = "icn";
+            String namespace = "http://www.icn.nl/";
+            String schema = "http://www.icn.nl/schemas/ICN-V3.2.xsd";
+            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
 
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
