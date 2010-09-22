@@ -66,6 +66,7 @@ public class ZipUploader implements Runnable {
         }
         catch (IOException e) {
             userNotifier.tellUser("Unable to build zip file", e);
+            log.warn("Unable to build zip file", e);
             if (!zipFile.delete()) {
                 userNotifier.tellUser("Unable to delete zip file");
                 return;
@@ -85,6 +86,7 @@ public class ZipUploader implements Runnable {
             }
             catch (IOException e) {
                 userNotifier.tellUser("Unable to upload zip file");
+                log.warn("Unable to upload zip file", e);
             }
             finally {
                 if (!zipFile.delete()) {
