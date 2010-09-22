@@ -168,6 +168,7 @@ public class SipModel {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
+                        variableListModel.clear();
                         RecordMapping recordMapping = recordCompileModel.getRecordMapping();
                         recordMapping.setCode(mapping, europeanaFieldMap);
                         RecordRoot recordRoot = recordMapping.getRecordRoot();
