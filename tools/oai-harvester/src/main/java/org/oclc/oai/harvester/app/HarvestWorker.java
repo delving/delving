@@ -96,7 +96,6 @@ public class HarvestWorker implements Runnable {
                     }
                     while (listRecords != null || continueFlag) {
                         if (continueFlag && listRecords != null) {
-                            log.info("Let's put the flag back to false since everything is normal so far");
                             continueFlag = false;
                         }
                         if (task.hasLastToken()) {
@@ -144,7 +143,6 @@ public class HarvestWorker implements Runnable {
                             log.info("Resuming " + task + ", hit number " + hit + " with token " + token);
                             task.saveToken(token);
                             if (token != null) {
-                                log.info("token not null, let's continue");
                                 continueFlag = true;
                             }
                             try {
