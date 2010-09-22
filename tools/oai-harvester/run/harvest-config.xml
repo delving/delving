@@ -1,0 +1,1270 @@
+<harvest-config outputDirectory="../oai_xml">
+
+    <harvest id="020_BNF_gallica_full" output="020_BNF_gallica_full.xml">
+      <spec>gallica</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>02015</publisher>
+      <lastHarvest>2008-10-15 18:52:52.624 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="020_BNF_gallica_generalities" output="020_BNF_gallica_generalities.xml">
+      <spec>gallica:0</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>020</publisher>
+      <lastHarvest>2008-10-15 19:01:17.228 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="021_BNF_gallica_philosophy_and_psychology" output="021_BNF_gallica_philosophy_and_psychology.xml">
+      <spec>gallica:1</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>021</publisher>
+      <lastHarvest>2008-10-15 19:01:33.135 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="022_BNF_gallica_religion" output="022_BNF_gallica_religion.xml">
+      <spec>gallica:2</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>022</publisher>
+      <lastHarvest>2008-10-15 19:02:02.324 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="023_BNF_gallica_social_sciences" output="023_BNF_gallica_social_sciences.xml">
+      <spec>gallica:3</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>023</publisher>
+      <lastHarvest>2008-10-15 19:03:36.16 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="024_BNF_gallica_language" output="024_BNF_gallica_language.xml">
+      <spec>gallica:4</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>024</publisher>
+      <lastHarvest>2008-10-15 19:03:44.48 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="025_BNF_gallica_sciences" output="025_BNF_gallica_sciences.xml">
+      <spec>gallica:5</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>025</publisher>
+      <lastHarvest>2008-10-15 19:04:21.956 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="026_BNF_gallica_technologies" output="026_BNF_gallica_technologies.xml">
+      <spec>gallica:6</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>026</publisher>
+      <lastHarvest>2008-10-15 19:04:53.754 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="027_BNF_gallica_arts" output="027_BNF_gallica_arts.xml">
+      <spec>gallica:7</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>027</publisher>
+      <lastHarvest>2008-10-15 19:05:19.178 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="028_BNF_gallica_literature" output="028_BNF_gallica_literature.xml">
+      <spec>gallica:8</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>028</publisher>
+      <lastHarvest>2008-10-15 19:06:59.589 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="029_BNF_gallica_history_and_geography" output="029_BNF_gallica_history_and_geography.xml">
+      <spec>gallica:9</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>029</publisher>
+      <lastHarvest>2008-10-15 19:09:11.721 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="0210_BNF_gallica_travels_in_Africa" output="0210_BNF_gallica_travels_in_Africa.xml">
+      <spec>gallica:afrique</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>0210</publisher>
+      <lastHarvest>2008-10-15 19:09:24.268 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="0211_BNF_gallica_France_in_America" output="0211_BNF_gallica_France_in_America.xml">
+      <spec>gallica:amerique</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>0211</publisher>
+      <lastHarvest>2008-10-15 19:09:28.315 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="0212_BNF_gallica_travels_in_France" output="0212_BNF_gallica_travels_in_France.xml">
+      <spec>gallica:france</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>0212</publisher>
+      <lastHarvest>2008-10-15 19:09:41.769 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="0213_BNF_gallica_printed_press" output="0213_BNF_gallica_printed_press.xml">
+      <spec>gallica:periodiques</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>0213</publisher>
+      <lastHarvest>2008-10-15 19:26:52.744 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="0214_BNF_gallica_images" output="0214_BNF_gallica_images.xml">
+      <spec>gallica:images</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>0214</publisher>
+      <lastHarvest>2008-10-15 19:28:06.448 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="0215_BNF_gallica_travels_in_Italy" output="0215_BNF_gallica_travels_in_Italy.xml">
+      <spec>gallica:italie</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>0215</publisher>
+      <lastHarvest>2008-10-15 19:28:13.273 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="040_NKP_kramerius" output="040_NKP_kramerius.xml">
+      <spec></spec>
+      <prefix>oai_dc</prefix>
+      <publisher>040</publisher>
+      <lastHarvest>2008-10-01 10:51:33.356 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://kramerius.nkp.cz/kramerius/oai</baseUrl>
+    </harvest>
+    <harvest id="030_ONB_bildarchiv" output="030_ONB_bildarchiv.xml">
+      <spec>Bildarchiv</spec>
+      <prefix>tel_onbba</prefix>
+      <publisher>030</publisher>
+      <lastHarvest>2008-10-01 10:51:39.512 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+    </harvest>
+    <harvest id="050_RR_Digar" output="050_RR_Digar_oai_dc.xml">
+      <prefix>oai_dc</prefix>
+      <publisher>050</publisher>
+      <lastHarvest>2008-10-01 12:05:36.001 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://digar.nlib.ee/otsing/oai.jsp</baseUrl>
+    </harvest>
+    <harvest id="IT-FL-Bertini" output="IT-FL-Bertini.xml">
+      <spec>Bertini</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>050</publisher>
+      <lastHarvest>2008-10-01 15:05:36.001 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://teca.bncf.firenze.sbn.it/OAI/servlet/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="IT-FL-ManoscrittiInRete" output="IT-FL-ManoscrittiInRete.xml">
+      <spec>ManoscrittiInRete</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>050</publisher>
+      <lastHarvest>2008-10-01 15:05:36.001 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://teca.bncf.firenze.sbn.it/OAI/servlet/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="IT-FL-Arsbni1" output="IT-FL-Arsbni1.xml">
+      <spec>Arsbni1</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>050</publisher>
+      <lastHarvest>2008-10-01 15:05:36.001 CEST</lastHarvest>
+      <successful>false</successful>
+      <baseUrl>http://teca.bncf.firenze.sbn.it/OAI/servlet/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="IT-FL-Arsbni2" output="IT-FL-Arsbni2.xml">
+      <spec>Arsbni2</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>050</publisher>
+      <lastHarvest>2008-10-02 15:05:36.001 CEST</lastHarvest>
+      <successful>false</successful>
+      <baseUrl>http://teca.bncf.firenze.sbn.it/OAI/servlet/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="PL_czasopismaMiedzywojenne" output="PL_czasopismaMiedzywojenne.xml">
+        <spec>CBNPolona:kolekcjeTematyczne:czasopismaMiedzywojenne</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 12:05:36.001 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_skarbyBN" output="PL_skarbyBN.xml">
+        <spec>CBNPolona:kolekcjeTematyczne:skarbyBN</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-01 12:05:36.001 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_mickiewicz" output="PL_mickiewicz.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:mickiewicz</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 12:49:40.468 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_kochanowski" output="PL_kochanowski.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:kochanowski</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 12:50:43.640 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_slowacki" output="PL_slowacki.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:slowacki</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 12:51:32.609 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_dzieci" output="PL_dzieci.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:dzieci</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 12:53:19.499 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_norwid" output="PL_norwid.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:norwid</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:00:59.781 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_wydawnictwaKonspiracyjne" output="PL_wydawnictwaKonspiracyjne.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:wydawnictwaKonspiracyjne</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:03:02.265 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_powstanieStyczniowe" output="PL_powstanieStyczniowe.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:powstanieStyczniowe</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:04:11.296 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_Yiddish_literature" output="PL_Yiddish_literature.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:literaturaJidysz</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:04:49.890 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_Warsaw_in_Words_and_Images" output="PL_Warsaw_in_Words_and_Images.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:Warszawa</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:05:35.249 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_Frederic_Chopin" output="PL_Frederic_Chopin.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:fryderykChopin</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:25:25.484 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_Mikolaj_Rej " output="PL_Mikolaj_Rej .xml">
+      <spec>CBNPolona:kolekcjeTematyczne:mikolajrej</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:25:34.968 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_Kresy_Wschodnie" output="PL_Kresy_Wschodnie.xml">
+      <spec>CBNPolona:kolekcjeTematyczne:kresy</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 13:32:19.562 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="PL_polona" output="PL_polona.xml">
+      <spec>CBNPolona</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>060</publisher>
+      <lastHarvest>2008-10-03 14:31:06.769 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+    </harvest>
+    <harvest id="SK_memoria_Slovaca" output="SK_memoria_Slovaca.xml">
+      <prefix>oai_dc</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-27 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://zeus.vs.chtf.stuba.sk:8080/fedora/oai</baseUrl>
+    </harvest>
+    <harvest id="90302_L_SR_NatLib_diglib_tel" output="90302_L_SR_NatLib_diglib_tel.xml">
+      <prefix>tel</prefix>
+      <publisher>90302</publisher>
+      <lastHarvest>2008-10-27 11:36:14.675 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://digital.nb.rs/oai/oai2.php</baseUrl>
+    </harvest>
+    <harvest id="AT_Ariane" output="AT_Ariane.xml">
+      <spec>ARI_TEL</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 17:36:13.971 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://aleph.onb.ac.at/OAI</baseUrl>
+    </harvest>
+    <harvest id="AT_ONB01" output="AT_ONB01.xml">
+      <spec>ONB01_TEL</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 21:07:17.483 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://aleph.onb.ac.at/OAI</baseUrl>
+    </harvest>
+    <harvest id="AT_Map_coll" output="AT_Map_coll.xml">
+      <spec>MAP_COL_TEL</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 21:16:50.816 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://aleph.onb.ac.at/OAI</baseUrl>
+    </harvest>
+    <harvest id="AT_none" output="AT_none.xml">
+      <spec>NONE</spec>
+      <prefix>tel_onbba</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 18:00:31.994 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+    </harvest>
+    <harvest id="AT_Ruebelt_Bilddaten" output="AT_Ruebelt_Bilddaten.xml">
+      <spec>Ruebelt_Bilddaten</spec>
+      <prefix>tel_onbba</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 18:03:02.510 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+    </harvest>
+    <harvest id="AT_Portraet" output="AT_Portraet.xml">
+      <spec>Portraet</spec>
+      <prefix>tel_onbba</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 18:03:05.525 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+    </harvest>
+    <harvest id="AT_USIS" output="AT_USIS.xml">
+      <spec>USIS</spec>
+      <prefix>tel_onbba</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 18:10:08.807 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+    </harvest>
+    <harvest id="AT_Wien" output="AT_Wien.xml">
+      <spec>Wien</spec>
+      <prefix>tel_onbba</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 18:10:10.963 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+    </harvest>
+    <harvest id="HU_corvina" output="HU_corvina.xml">
+      <prefix>oai_dc</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-10-28 17:29:49.627 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://mek.oszk.hu:8180/oai/oai</baseUrl>
+    </harvest>
+    <harvest id="NKP_mets_monograph" output="NKP_mets_monograph.xml">
+      <spec>type:monograph</spec>
+      <prefix>mets</prefix>
+      <publisher>070</publisher>
+      <lastHarvest>2008-10-13 14:40:02.819 CEST</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://kramerius.nkp.cz/kramerius/oai</baseUrl>
+    </harvest>
+    <harvest id="053_L_ES_XuntaGalicia_oai_dc" output="053_L_ES_XuntaGalicia_oai_dc.xml">
+      <prefix>oai_dc</prefix>
+      <publisher>053</publisher>
+      <lastHarvest>2008-10-28 15:10:26.62 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://galiciana.bngalicia.org/i18n/oai/oai.cmd</baseUrl>
+    </harvest>
+    <harvest id="07301_L_BE_KBR_medals_ese" output="07301_L_BE_KBR_medals_ese.xml">
+      <prefix>ese</prefix>
+      <publisher>07301</publisher>
+      <lastHarvest>2008-10-27 12:07:18.832 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://opteron1.kbr.be/cgi-bin/dupcall.cgi</baseUrl>
+    </harvest>
+    <harvest id="07303_L_BE_KBR_newspapers_ese" output="07303_L_BE_KBR_newspapers_ese.xml">
+      <prefix>ese</prefix>
+      <publisher>07303</publisher>
+      <lastHarvest>2008-10-27 12:10:11.988 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://opteron1.kbr.be/cgi-bin/jrncall.cgi</baseUrl>
+    </harvest>
+    <harvest id="07304_L_BE_KBR_estampes_ese" output="07304_L_BE_KBR_estampes_ese.xml">
+      <prefix>ese</prefix>
+      <publisher>07304</publisher>
+      <lastHarvest>2008-10-27 12:14:36.785 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://opteron1.kbr.be/cgi-bin/prcall.cgi</baseUrl>
+    </harvest>
+    <harvest id="SL_slobib" output="SL_Slobib.xml">
+      <prefix>oai_dc</prefix>
+      <publisher>080</publisher>
+      <lastHarvest>2008-11-10 12:18:51.241 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://nukweb1.nuk.uni-lj.si/SloBibOAI/OAIHandler</baseUrl>
+    </harvest>
+    <harvest id="Civil2GE" output="Civil2GE.xml">
+      <spec>civil2</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>02015</publisher>
+      <lastHarvest>2008-12-29 14:50:59.823 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://217.147.235.101/gsdl/cgi-bin/oaiserver</baseUrl>
+    </harvest>
+    <harvest id="PeriodicGE" output="PeriodicGE.xml">
+      <spec>periodic</spec>
+      <prefix>oai_dc</prefix>
+      <publisher>02015</publisher>
+      <lastHarvest>2008-12-29 14:51:15.776 CET</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://217.147.235.101/gsdl/cgi-bin/oaiserver</baseUrl>
+    </harvest>
+    <harvest id="digitalThesesGE" output="digitalThesesGE.xml">
+      <prefix>oai_dc</prefix>
+      <publisher>02015</publisher>
+      <lastHarvest>2008-09-01</lastHarvest>
+      <successful>true</successful>
+      <baseUrl>http://www.nplg.gov.ge/dlibrary/oai/oai2.php</baseUrl>
+    </harvest>
+    
+  <harvest id="901_L_PT_NatLib_bnd_dc" output="901_L_PT_NatLib_bnd_dc.xml">
+    <spec>bnd</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>901</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai.bn.pt/servlet/OAIHandler</baseUrl>
+  </harvest>
+  <harvest id="901_L_PT_NatLib_bnd_tel" output="901_L_PT_NatLib_bnd_tel.xml">
+    <spec>bnd</spec>
+    <prefix>tel</prefix>
+    <publisher>901</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai.bn.pt/servlet/OAIHandler</baseUrl>
+  </harvest>
+  <harvest id="901_L_PT_NatLib_bnd_mods" output="901_L_PT_NatLib_bnd_mods.xml">
+    <spec>bnd</spec>
+    <prefix>mods</prefix>
+    <publisher>901</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai.bn.pt/servlet/OAIHandler</baseUrl>
+  </harvest>
+  <harvest id="901_L_PT_NatLib_bnd_marcxchange" output="901_L_PT_NatLib_bnd_marcxchange.xml">
+    <spec>bnd</spec>
+    <prefix>marcxchange</prefix>
+    <publisher>901</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai.bn.pt/servlet/OAIHandler</baseUrl>
+  </harvest>
+  <harvest id="03101_L_CZ_NatLib_Manuscriptorium_dc" output="03101_L_CZ_NatLib_Manuscriptorium_dc.xml">
+    <prefix>oai_dc</prefix>
+    <publisher>031</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.manuscriptorium.com/oai-pmh/MnOai.php</baseUrl>
+  </harvest>
+  <harvest id="03102_L_CZ_NatLib_kramerius_dc" output="03102_L_CZ_NatLib_kramerius_dc.xml">
+    <prefix>oai_dc</prefix>
+    <publisher>031</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://kramerius.nkp.cz/kramerius/oai</baseUrl>
+  </harvest>
+  <harvest id="900_L_AT_NatLib_Bildarchiv_dc" output="900_L_AT_NatLib_Bildarchiv_dc.xml">
+    <spec>Bildarchiv</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>900</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+  </harvest>
+  <harvest id="900_L_AT_NatLib_Bildarchiv_tel_onbba" output="900_L_AT_NatLib_Bildarchiv_tel_onbba.xml">
+    <spec>Bildarchiv</spec>
+    <prefix>tel_onbba</prefix>
+    <publisher>900</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai-bdb.onb.ac.at/Script/oai2.aspx</baseUrl>
+  </harvest>
+  <harvest id="03601_L_HU_NatLib_hel_dc" output="03601_L_HU_NatLib_hel_dc.xml">
+    <spec>HEL</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>036</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://mek.oszk.hu:8180/oai/oai</baseUrl>
+  </harvest>
+  <harvest id="03601_L_HU_NatLib_hel_nda_bibliographic" output="03601_L_HU_NatLib_hel_nda_bibliographic.xml">
+    <spec>HEL</spec>
+    <prefix>nda_bibliographic</prefix>
+    <publisher>036</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://mek.oszk.hu:8180/oai/oai</baseUrl>
+  </harvest>
+  <harvest id="03602_L_HU_NatLib_epa_dc" output="03602_L_HU_NatLib_epa_dc.xml">
+    <prefix>oai_dc</prefix>
+    <publisher>036</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://mek.oszk.hu:8180/epaoai/oai</baseUrl>
+  </harvest>
+  <harvest id="03602_L_HU_NatLib_epa_nda_bibliographic" output="03602_L_HU_NatLib_epa_nda_bibliographic.xml">
+    <prefix>nda_bibliographic</prefix>
+    <publisher>036</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://mek.oszk.hu:8180/epaoai/oai</baseUrl>
+  </harvest>
+  <harvest id="03501_L_FR_NatLib_gallica_dc" output="03501_L_FR_NatLib_gallica_dc.xml">
+    <spec>gallica</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>03501</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://oai.bnf.fr/oai2/OAIHandler</baseUrl>
+  </harvest>
+  <harvest id="014_L_PL_NatLib_polona_dc" output="014_L_PL_NatLib_polona_dc.xml">
+    <spec>CBNPolona</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>014</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+  </harvest>
+  <harvest id="01401_PL_NatLib_January_dc" output="01401_PL_NatLib_January_dc.xml">
+    <spec>CBNPolona:kolekcjeTematyczne:skarbyBN</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>014</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+  </harvest>
+  <harvest id="01401_PL_NatLib_Chopin_dc" output="01401_PL_NatLib_Chopin_dc.xml">
+    <spec>CBNPolona%3AkolekcjeTematyczne%3AfryderykChopin</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>014</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+  </harvest>
+  <harvest id="01404_PL_NatLib_Warsaw_dc" output="01404_PL_NatLib_Warsaw_dc.xml">
+    <spec>CBNPolona%3AkolekcjeTematyczne%3AWarszawa</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>014</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+  </harvest>
+  <harvest id="01404_PL_NatLib_Underground_dc" output="01404_PL_NatLib_Underground_dc.xml">
+    <spec>CBNPolona%3AkolekcjeTematyczne%3AwydawnictwaKonspiracyjne</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>014</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.polona.pl/dlibra/oai-pmh-repository.xml</baseUrl>
+  </harvest>
+  <harvest id="00501_L_GR_UniPatras_kosmopolis_dc" output="00501_L_GR_UniPatras_kosmopolis_dc.xml">
+    <spec></spec>
+    <prefix>oai_dc</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/kosmopolis/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00501_L_GR_UniPatras_kosmopolis_oai_marc" output="00501_L_GR_UniPatras_kosmopolis_oai_marc.xml">
+    <spec></spec>
+    <prefix>oai_marc</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/kosmopolis/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00501_L_GR_UniPatras_kosmopolis_marcxml" output="00501_L_GR_UniPatras_kosmopolis_marcxml.xml">
+    <spec></spec>
+    <prefix>marcxml</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/kosmopolis/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00501_L_GR_UniPatras_kosmopolis_rfc1807" output="00501_L_GR_UniPatras_kosmopolis_rfc1807.xml">
+    <spec></spec>
+    <prefix>rfc1807</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/kosmopolis/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00502_L_GR_UniPatras_pleias_dc" output="00502_L_GR_UniPatras_pleias_dc.xml">
+    <spec></spec>
+    <prefix>oai_dc</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/pleias/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00502_L_GR_UniPatras_pleias_oai_marc" output="00502_L_GR_UniPatras_pleias_oai_marc.xml">
+    <spec></spec>
+    <prefix>oai_marc</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/pleias/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00502_L_GR_UniPatras_pleias_marcxml" output="00502_L_GR_UniPatras_pleias_marcxml.xml">
+    <spec></spec>
+    <prefix>marcxml</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/pleias/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="00502_L_GR_UniPatras_pleias_rfc1807" output="00502_L_GR_UniPatras_pleias_rfc1807.xml">
+    <spec></spec>
+    <prefix>rfc1807</prefix>
+    <publisher>005</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+      <successful>true</successful>
+    <baseUrl>http://xantho.lis.upatras.gr/pleias/index.php/index/oai</baseUrl>
+  </harvest>
+  <harvest id="01801_MLA_UK_BeamishT_dc" output="01801_MLA_UK_BeamishT_dc.xml">
+    <spec>INODE-LOCAL/BeamishT</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01802_MLA_BedesWorld_dc" output="01802_MLA_BedesWorld_dc.xml">
+    <spec>INODE-LOCAL/BedesWorld</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01803_MLA_CollectBritain_dc" output="01803_MLA_CollectBritain_dc.xml">
+    <spec>CollectBritain</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01804_MLA_Commanet_dc" output="01804_MLA_Commanet_dc.xml">
+    <spec>Commanet</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01805_MLA_dcda_dc" output="01805_MLA_dcda_dc.xml">
+    <spec>dcda</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01806_MLA_Devon_dc" output="01806_MLA_Devon_dc.xml">
+    <spec>Devon</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01807_MLA_DurhamCC_dc" output="01807_MLA_DurhamCC_dc.xml">
+    <spec>INODE-LOCAL/DurhamCC</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01808_MLA_Viewfinder_dc" output="01808_MLA_Viewfinder_dc.xml">
+    <spec>Viewfinder</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01809_MLA_Farne_dc" output="01809_MLA_Farne_dc.xml">
+    <spec>INODE-LOCAL/Farne</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01810_MLA_Fitzwilliam_dc" output="01810_MLA_Fitzwilliam_dc.xml">
+    <spec>Fitzwilliam</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01811_MLA_iSeeGateshead_dc" output="01811_MLA_iSeeGateshead_dc.xml">
+    <spec>iSeeGateshead</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01812_MLA_Lambeth_dc" output="01812_MLA_Lambeth_dc.xml">
+    <spec>Lambeth</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01813_MLA_Leodis_dc" output="01813_MLA_Leodis_dc.xml">
+    <spec>Leodis</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01814_MLA_Mcag_dc" output="01814_MLA_Mcag_dc.xml">
+    <spec>Mcag</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01815_MLA_PictureThePast_dc" output="01815_MLA_PictureThePast_dc.xml">
+    <spec>PictureThePast</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01816_MLA_PAS_dc" output="01816_MLA_PAS_dc.xml">
+    <spec>PAS</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01817_MLA_SOPSE_dc" output="01817_MLA_SOPSE_dc.xml">
+    <spec>SOPSE</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="01818_MLA_SevenStories_dc" output="01818_MLA_SevenStories_dc.xml">
+    <spec>SevenStories</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>018</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.peoplesnetwork.gov.uk/discover/OAI.do</baseUrl>
+  </harvest>
+  <harvest id="02301_M_IT_IMSS_bibdig_dc" output="02301_M_IT_IMSS_bibdig_dc.xml">
+    <spec>bibdig</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02302_M_IT_IMSS_luoghi_dc" output="02302_M_IT_IMSS_luoghi_dc.xml">
+    <spec>luoghi</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02303_M_IT_IMSS_gallerie_dc" output="02303_M_IT_IMSS_gallerie_dc.xml">
+    <spec>gallerie</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02304_M_IT_IMSS_immagini_dc" output="02304_M_IT_IMSS_immagini_dc.xml">
+    <spec>immagini</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02305_M_IT_IMSS_geoitin_dc" output="02305_M_IT_IMSS_geoitin_dc.xml">
+    <spec>geoitin</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02306_M_IT_IMSS_temitin_dc" output="02306_M_IT_IMSS_temitin_dc.xml">
+    <spec>temitin</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02307_M_IT_IMSS_multim_dc" output="02307_M_IT_IMSS_multim_dc.xml">
+    <spec>multim</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>023</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://fermi.imss.fi.it/oai2/</baseUrl>
+  </harvest>
+  <harvest id="02401_L_ES_NatLib_carcgc_dc" output="02401_L_ES_NatLib_carcgc_dc.xml">
+    <spec>carteles:carcgc</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02401_L_ES_NatLib_carcgc_marc21" output="02401_L_ES_NatLib_carcgc_marc21.xml">
+    <spec>carteles:carcgc</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+      <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02402_L_ES_NatLib_graih_dc" output="02402_L_ES_NatLib_graih_dc.xml">
+    <spec>grabados:graih</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02402_L_ES_NatLib_graih_marc21" output="02402_L_ES_NatLib_graih_marc21.xml">
+    <spec>grabados:graih</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02403_L_ES_NatLib_graga_dc" output="02403_L_ES_NatLib_graga_dc.xml">
+    <spec>grabados:graga</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02403_L_ES_NatLib_graga_marc21" output="02403_L_ES_NatLib_graga_marc21.xml">
+    <spec>grabados:graga</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02404_L_ES_NatLib_mapme_dc" output="02404_L_ES_NatLib_mapme_dc.xml">
+    <spec>mapas:mapme</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02404_L_ES_NatLib_mapme_marc21" output="02404_L_ES_NatLib_mapme_marc21.xml">
+    <spec>mapas:mapme</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02405_L_ES_NatLib_dibng_dc" output="02405_L_ES_NatLib_dibng_dc.xml">
+    <spec>dibujos:dibng</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02405_L_ES_NatLib_dibng_marc21" output="02405_L_ES_NatLib_dibng_marc21.xml">
+    <spec>dibujos:dibng</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02406_L_ES_NatLib_hisia_dc" output="02406_L_ES_NatLib_hisia_dc.xml">
+    <spec>hispanoamerica:hisia</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02406_L_ES_NatLib_hisia_marc21" output="02406_L_ES_NatLib_hisia_marc21.xml">
+    <spec>hispanoamerica:hisia</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02412_L_ES_NatLib_obrfg_dc" output="02412_L_ES_NatLib_obrfg_dc.xml">
+    <spec>obrasm:obrfg</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02412_L_ES_NatLib_obrfg_marc21" output="02412_L_ES_NatLib_obrfg_marc21.xml">
+    <spec>obrasm:obrfg</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02413_L_ES_NatLib_obrh_dc" output="02413_L_ES_NatLib_obrh_dc.xml">
+    <spec>obrasm:obrh</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02413_L_ES_NatLib_obrh_marc21" output="02413_L_ES_NatLib_obrh_marc21.xml">
+    <spec>obrasm:obrh</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02414_L_ES_NatLib_obrha_dc" output="02414_L_ES_NatLib_obrha_dc.xml">
+    <spec>obrasm:obrha</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02414_L_ES_NatLib_obrha_marc21" output="02414_L_ES_NatLib_obrha_marc21.xml">
+    <spec>obrasm:obrha</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02415_L_ES_NatLib_obrhc_dc" output="02415_L_ES_NatLib_obrhc_dc.xml">
+    <spec>obrasm:obrhc</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02415_L_ES_NatLib_obrhc_marc21" output="02415_L_ES_NatLib_obrhc_marc21.xml">
+    <spec>obrasm:obrhc</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02416_L_ES_NatLib_obrhl_dc" output="02416_L_ES_NatLib_obrhl_dc.xml">
+    <spec>obrasm:obrhl</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02416_L_ES_NatLib_obrhl_marc21" output="02416_L_ES_NatLib_obrhl_marc21.xml">
+    <spec>obrasm:obrhl</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02417_L_ES_NatLib_obrl_dc" output="02417_L_ES_NatLib_obrl_dc.xml">
+    <spec>obrasm:obrl</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02417_L_ES_NatLib_obrl_marc21" output="02417_L_ES_NatLib_obrl_marc21.xml">
+    <spec>obrasm:obrl</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02418_L_ES_NatLib_obrm_dc" output="02418_L_ES_NatLib_obrm_dc.xml">
+    <spec>obrasm:obrm</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02418_L_ES_NatLib_obrm_marc21" output="02418_L_ES_NatLib_obrm_marc21.xml">
+    <spec>obrasm:obrm</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02419_L_ES_NatLib_obra_dc" output="02419_L_ES_NatLib_obra_dc.xml">
+    <spec>obrasm:obrm</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="02419_L_ES_NatLib_obra_marc21" output="02419_L_ES_NatLib_obra_marc21.xml">
+    <spec>obrasm:obrm</spec>
+    <prefix>marc21</prefix>
+    <publisher>024</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bibliotecadigitalhispanica.bne.es/OAI-PUB</baseUrl>
+  </harvest>
+  <harvest id="01701_L_PT_UnivPorto_dc" output="01701_L_PT_UnivPorto_dc.xml">
+    <spec></spec>
+    <prefix>oai_dc</prefix>
+    <publisher>017</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>false</successful>
+    <baseUrl>https://museuvirtual.up.pt/up/oai</baseUrl>
+  </harvest>
+  <harvest id="03409_L_DE_Bavaria_dc" output="03409_L_DE_Bavaria_dc.xml">
+    <spec>1176801317</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03412_L_DE_Bavaria_dc" output="03412_L_DE_Bavaria_dc.xml">
+    <spec>1123596568</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03413_L_DE_Bavaria_dc" output="03413_L_DE_Bavaria_dc.xml">
+    <spec>1115215331</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03420_L_DE_Bavaria_dc" output="03420_L_DE_Bavaria_dc.xml">
+    <spec>0000000000</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03423_L_DE_Bavaria_dc" output="03423_L_DE_Bavaria_dc.xml">
+    <spec>1047388830</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>false</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03429_L_DE_Bavaria_dc" output="03429_L_DE_Bavaria_dc.xml">
+    <spec>1176973246</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03430_L_DE_Bavaria_dc" output="03430_L_DE_Bavaria_dc.xml">
+    <spec>1133451997</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03444_L_DE_Bavaria_dc" output="03444_L_DE_Bavaria_dc.xml">
+    <spec>1047917417</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03448_L_DE_Bavaria_dc" output="03448_L_DE_Bavaria_dc.xml">
+    <spec>1169457579</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03449_L_DE_Bavaria_dc" output="03449_L_DE_Bavaria_dc.xml">
+    <spec>1176802596</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03451_L_DE_Bavaria_dc" output="03451_L_DE_Bavaria_dc.xml">
+    <spec>1170676695</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03462_L_DE_Bavaria_dc" output="03462_L_DE_Bavaria_dc.xml">
+    <spec>1193139330</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03463_L_DE_Bavaria_dc" output="03463_L_DE_Bavaria_dc.xml">
+    <spec>1149750448</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03482_L_DE_Bavaria_dc" output="03482_L_DE_Bavaria_dc.xml">
+    <spec>1153295428</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>034</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mdz1.bib-bvb.de/~db/OAI/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="03702_M_FR_CiteMus_CO_dc" output="03702_M_FR_CiteMus_CO_dc.xml">
+    <spec>CO</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>037</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://194.250.19.133/scripts/oaiserver.asp</baseUrl>
+  </harvest>
+  <harvest id="03702_M_FR_CiteMus_CO_mods" output="03702_M_FR_CiteMus_CO_mods.xml">
+    <spec>CO</spec>
+    <prefix>mods</prefix>
+    <publisher>037</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://194.250.19.133/scripts/oaiserver.asp</baseUrl>
+  </harvest>
+  <harvest id="03701_M_FR_CiteMus_IM_dc" output="03701_M_FR_CiteMus_IM_dc.xml">
+    <spec>IM</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>037</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://194.250.19.133/scripts/oaiserver.asp</baseUrl>
+  </harvest>
+  <harvest id="03701_M_FR_CiteMus_IM_mods" output="03701_M_FR_CiteMus_IM_mods.xml">
+    <spec>IM</spec>
+    <prefix>mods</prefix>
+    <publisher>037</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://194.250.19.133/scripts/oaiserver.asp</baseUrl>
+  </harvest>
+  <harvest id="04001_L_FI_Seinajoki_dc" output="04001_L_FI_Seinajoki_dc.xml">
+    <spec></spec>
+    <prefix>oai_dc</prefix>
+    <publisher>040</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>false</successful>
+    <baseUrl>http://www.porstuakirjastot.fi/porstua-oai/oai2.php</baseUrl>
+  </harvest>
+  <harvest id="05002_L_ES_MinCult_biblio_dc" output="05002_L_ES_MinCult_biblio_dc.xml">
+    <spec></spec>
+    <prefix>oai_dc</prefix>
+    <publisher>050</publisher>
+    <lastHarvest>1970-01-01 11:00:00.0 CET</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://bvpb.mcu.es/i18n/oai/oai.cmd</baseUrl>
+  </harvest>
+  <harvest id="05001_L_ES_MinCult_prensa_dc" output="05001_L_ES_MinCult_prensa_dc.xml">
+    <spec></spec>
+    <prefix>oai_dc</prefix>
+    <publisher>050</publisher>
+    <lastHarvest>2008-05-28 09:52:33.160 CEST</lastHarvest>
+    <successful>false</successful>
+    <baseUrl>http://prensahistorica.mcu.es/OAIHandler</baseUrl>
+  </harvest>
+</harvest-config>
