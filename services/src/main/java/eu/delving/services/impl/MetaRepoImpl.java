@@ -13,6 +13,7 @@ import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -466,19 +467,10 @@ public class MetaRepoImpl implements MetaRepo {
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.xml(dataSet.metadataFormat().prefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
-                    String[] lines = recordString.split("\n");
-                    if (!"<record>".equals(lines[0])) {
-                        throw new XMLStreamException("Expected the first line to be <record>");
-                    }
-                    if (!"</record>".equals(lines[lines.length - 1])) {
-                        throw new XMLStreamException("Expected the last line to be </record>");
-                    }
-                    StringBuilder recordLines = new StringBuilder();
-                    for (int walk = 1; walk < lines.length - 1; walk++) {
-                        recordLines.append(lines[walk]).append('\n');
-                    }
+                    List<FieldEntry> entries = FieldEntry.createList(recordString);
+                    String recordLines = FieldEntry.toString(entries, false);
                     RecordImpl recordImpl = (RecordImpl) record;
-                    recordImpl.addFormat(metadataFormat(), recordLines.toString());
+                    recordImpl.addFormat(metadataFormat(), recordLines);
                 }
                 catch (MappingException e) {
                     String errorMessage = "Unable to map record due to: " + e.toString();
