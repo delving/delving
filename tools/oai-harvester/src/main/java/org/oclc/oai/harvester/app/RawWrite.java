@@ -84,7 +84,7 @@ public class RawWrite {
 
     public static void run(String baseURL, String resumptionToken, OutputStream out)
             throws IOException, ParserConfigurationException, SAXException, TransformerException, NoSuchFieldException {
-        ListRecords listRecords = new ListRecords(baseURL, resumptionToken);
+        ListRecords listRecords = new ListRecords(baseURL, resumptionToken, "?set?", "??prefix??");
         while (listRecords != null) {
             NodeList errors = listRecords.getErrors();
             if (errors != null && errors.getLength() > 0) {
@@ -105,7 +105,7 @@ public class RawWrite {
                 listRecords = null;
             }
             else {
-                listRecords = new ListRecords(baseURL, resumptionToken);
+                listRecords = new ListRecords(baseURL, resumptionToken, "?set?", "??prefix??");
             }
         }
         out.write("</harvest>\n".getBytes("UTF-8"));
@@ -145,7 +145,7 @@ public class RawWrite {
                 listRecords = null;
             }
             else {
-                listRecords = new ListRecords(baseURL, resumptionToken);
+                listRecords = new ListRecords(baseURL, resumptionToken, "?set?", "??prefix??");
             }
         }
         out.write("</harvest>\n".getBytes("UTF-8"));

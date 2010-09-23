@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
 import org.xml.sax.SAXException;
 
 /**
@@ -36,9 +37,22 @@ public class ListRecords extends HarvesterVerb {
         super(getRequestURL(baseURL, from, until, set, metadataPrefix));
     }
 
-    public ListRecords(String baseURL, String resumptionToken)
+    public ListRecords(String baseURL, String resumptionToken, String set, String metadataPrefix)
             throws IOException, ParserConfigurationException, SAXException, TransformerException {
-        super(getRequestURL(baseURL, resumptionToken));
+        super(getRequestURL(baseURL, resumptionToken, set, metadataPrefix));
+    }
+
+    private static String getRequestURL(String baseURL, String resumptionToken, String set, String metadataPrefix) throws UnsupportedEncodingException {
+        StringBuffer requestURL = new StringBuffer(baseURL);
+        requestURL.append("?verb=ListRecords");
+        if (resumptionToken == null || resumptionToken.isEmpty()) {
+            if (metadataPrefix != null) requestURL.append("&metadataPrefix=").append(metadataPrefix);
+            if (set != null) requestURL.append("&set=").append(set);
+        }
+        else {
+            requestURL.append("&resumptionToken=").append(URLEncoder.encode(resumptionToken, "UTF-8"));
+        }
+        return requestURL.toString();
     }
 
     private static String getRequestURL(String baseURL, String from, String until, String set, String metadataPrefix) {
@@ -69,10 +83,4 @@ public class ListRecords extends HarvesterVerb {
         }
     }
 
-    private static String getRequestURL(String baseURL, String resumptionToken) throws UnsupportedEncodingException {
-        StringBuffer requestURL = new StringBuffer(baseURL);
-        requestURL.append("?verb=ListRecords");
-        requestURL.append("&resumptionToken=").append(URLEncoder.encode(resumptionToken, "UTF-8"));
-        return requestURL.toString();
-    }
 }

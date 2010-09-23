@@ -134,7 +134,7 @@ public abstract class HarvesterVerb {
 
     public void harvest(String requestURL) throws IOException, ParserConfigurationException, SAXException, TransformerException {
         this.requestURL = requestURL;
-        LOG.debug("requestURL=" + requestURL);
+        LOG.info("requesting:" + requestURL);
         GetMethod getMethod = new GetMethod(requestURL);
         getMethod.setRequestHeader("User-Agent", "OAIHarvester/2.0");
         getMethod.setRequestHeader("Accept-Encoding", "compress, gzip, identify");
@@ -146,6 +146,7 @@ public abstract class HarvesterVerb {
             }
             throw new IOException("HTTP response: " + HttpStatus.getStatusText(httpStatus));
         }
+        LOG.info("received OK for:" + requestURL);
         Header contentEncodingHeader = getMethod.getResponseHeader("Content-Encoding");
         String contentEncoding = contentEncodingHeader == null ? "unknown" : contentEncodingHeader.getValue();
         LOG.debug("contentEncoding=" + contentEncoding);

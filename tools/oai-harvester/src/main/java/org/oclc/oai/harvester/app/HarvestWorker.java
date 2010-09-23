@@ -77,7 +77,7 @@ public class HarvestWorker implements Runnable {
                 writer.write("<harvest>\n");
                 log.info("Starting request series for " + task);
                 try {
-                    ListRecords listRecords = null;
+                    ListRecords listRecords;
                     boolean continueFlag = false;
                     int hit = 0;
                     int totalRecordCount = 0;
@@ -91,8 +91,14 @@ public class HarvestWorker implements Runnable {
                         );
                     }
                     else {
-                        listRecords = null;
-                        continueFlag = true;
+                        listRecords = new ListRecords(
+                                task.getBaseUrl(),
+                                task.getLastToken(),
+                                task.getSpec(),
+                                task.getPrefix());
+//                        log.info("First:\n"+listRecords);
+//                        listRecords = null;
+//                        continueFlag = true;
                     }
                     while (listRecords != null || continueFlag) {
                         if (continueFlag && listRecords != null) {
@@ -131,7 +137,10 @@ public class HarvestWorker implements Runnable {
                                 continueFlag = false;
                             }
                         }
-                        if (token == null) {
+                        else {
+                            token = listRecords.getResumptionToken();
+                        }
+                        if (token == null || token.isEmpty()) {
                             listRecords = null;
                         }
                         else if (task.getStatus() != HarvestTask.Status.PROCESSING || thread == null) {
@@ -146,7 +155,11 @@ public class HarvestWorker implements Runnable {
                                 continueFlag = true;
                             }
                             try {
-                                listRecords = new ListRecords(task.getBaseUrl(), task.getLastToken());
+                                listRecords = new ListRecords(
+                                        task.getBaseUrl(),
+                                        task.getLastToken(),
+                                        task.getSpec(), 
+                                        task.getPrefix());
                             }
                             catch (Exception e) {
                                 log.info("Exception caught...: " + e);

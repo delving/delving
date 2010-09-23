@@ -136,6 +136,7 @@ public class HarvesterGUI extends JFrame {
     }
 
     private void fetchLocalLog() {
+        // todo: when the log is very very large, this fails with OutOfMemoryError
         final File logFile = new File(outputDirectory, selectedTask.getOutput() + ".log");
         logTab.setTitleAt(1, "Local log: " + logFile.getName());
         if (logFile.exists()) {
