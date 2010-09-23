@@ -82,6 +82,7 @@ public class SipModel {
     private FieldMappingListModel fieldMappingListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
+    private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
@@ -167,6 +168,7 @@ public class SipModel {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
+                        variableListModel.clear();
                         RecordMapping recordMapping = recordCompileModel.getRecordMapping();
                         recordMapping.setCode(mapping, europeanaFieldMap);
                         RecordRoot recordRoot = recordMapping.getRecordRoot();
@@ -293,6 +295,10 @@ public class SipModel {
         return uploadProgressModel;
     }
 
+    public DefaultBoundedRangeModel getZipProgress() {
+        return zipProgressModel;
+    }
+
     public void normalize(final boolean discardInvalid) {
         checkSwingThread();
         abortNormalize();
@@ -370,7 +376,7 @@ public class SipModel {
     public void createUploadZipFile() {
         checkSwingThread();
         String zipFileName = getDataSetDetails().getSpec();
-        executor.execute(new ZipUploader(metaRepoSubmitUrl, fileSet, zipFileName, uploadProgressModel));
+        executor.execute(new ZipUploader(metaRepoSubmitUrl, fileSet, zipFileName, zipProgressModel, uploadProgressModel, userNotifier));
     }
 
     public TreeModel getAnalysisTreeModel() {

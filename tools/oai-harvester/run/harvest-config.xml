@@ -1,0 +1,53 @@
+<harvest-config outputDirectory="../oai_xml">
+  <harvest id="GVN" output="GVN.xml">
+    <spec>gvn</spec>
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2008-10-15 19:01:17.228 CEST</lastHarvest>
+    <successful>false</successful>
+    <baseUrl>http://services.kb.nl/mdo/oai?verb=ListRecords&amp;set=GVN</baseUrl>
+    <lastToken></lastToken>
+  </harvest>
+  <harvest id="erfgoed-utrecht" output="00101_Ag_NL_erfgoed_utrecht">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.erfgoed-utrecht.nl/oai/oai.aspx</baseUrl>
+  </harvest>
+  <harvest id="hmr" output="00201_M_NL_hmr">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://collectie.hmr.rotterdam.nl/oai/oai.aspx</baseUrl>
+  </harvest>
+  <harvest id="igem" output="00401_Ag_NL_igem">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://igem.adlibsoft.com/wwwopac/wwwopac.exe</baseUrl>
+  </harvest>
+  <harvest id="maritiem_digitaal" output="00501_M_NL_maritiem_digitaal">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://www.maritiemdigitaal.nl/oaiserver/wwwopac.exe</baseUrl>
+  </harvest>
+  <harvest id="centraal-museum" output="00601_M_NL_centraal-museum">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://mail.centraalmuseum.nl/adlibext/wwwopac/wwwopac.exe</baseUrl>
+  </harvest>
+  <harvest id="JHM" output="00701_M_NL_joods_histories">
+    <prefix>oai_dc</prefix>
+    <publisher>ICN</publisher>
+    <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
+    <successful>true</successful>
+    <baseUrl>http://vorig.jhm.nl/adlib/bin/wwwopac.exe</baseUrl>
+  </harvest>
+</harvest-config>

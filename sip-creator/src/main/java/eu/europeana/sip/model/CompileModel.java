@@ -132,6 +132,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         this.metadataRecord = metadataRecord;
         if (metadataRecord == null) {
             SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No input"));
+            SwingUtilities.invokeLater(new DocumentSetter(outputDocument, ""));
         }
         else {
             updateInputDocument(metadataRecord);

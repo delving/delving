@@ -13,6 +13,7 @@ import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -308,11 +309,10 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void addMapping(String mappingCode) {
             // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
-            String prefix = "ese";
-            String namespace = "http://www.europeana.eu/schemas/ese/";
-            String schema = "http://www.europeana.eu/schemas/ese/ESE-V3.2.xsd";
-
-            
+            String prefix = "icn";
+            String namespace = "http://www.icn.nl/";
+            String schema = "http://www.icn.nl/schemas/ICN-V3.2.xsd";
+            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
 
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
@@ -466,19 +466,10 @@ public class MetaRepoImpl implements MetaRepo {
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.xml(dataSet.metadataFormat().prefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
-                    String[] lines = recordString.split("\n");
-                    if (!"<record>".equals(lines[0])) {
-                        throw new XMLStreamException("Expected the first line to be <record>");
-                    }
-                    if (!"</record>".equals(lines[lines.length - 1])) {
-                        throw new XMLStreamException("Expected the last line to be </record>");
-                    }
-                    StringBuilder recordLines = new StringBuilder();
-                    for (int walk = 1; walk < lines.length - 1; walk++) {
-                        recordLines.append(lines[walk]).append('\n');
-                    }
+                    List<FieldEntry> entries = FieldEntry.createList(recordString);
+                    String recordLines = FieldEntry.toString(entries, false);
                     RecordImpl recordImpl = (RecordImpl) record;
-                    recordImpl.addFormat(metadataFormat(), recordLines.toString());
+                    recordImpl.addFormat(metadataFormat(), recordLines);
                 }
                 catch (MappingException e) {
                     String errorMessage = "Unable to map record due to: " + e.toString();

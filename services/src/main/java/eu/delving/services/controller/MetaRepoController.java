@@ -5,6 +5,7 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.FieldEntry;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -43,11 +46,15 @@ public class MetaRepoController {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
         for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
             out.append(String.format(
-                    "<li><a href=\"%s/%s.html\">%s:%s</a></li>",
-                    dataSet.setSpec(), dataSet.metadataFormat().prefix(), dataSet.metadataFormat().prefix(), dataSet.setSpec()
+                    "<li><a href=\"%s/%s.html\">%s in %s format</a></li>",
+                    dataSet.setSpec(), dataSet.metadataFormat().prefix(), dataSet.setSpec(), dataSet.metadataFormat().prefix()
             ));
             out.append(String.format( // todo: the mappings should be scanned for these extra formats
-                    "<li><a href=\"%s/ese.html\">ese:%s</a></li>",
+                    "<li><a href=\"%s/icn.html\">%s in icn format</a></li>",
+                    dataSet.setSpec(), dataSet.setSpec()
+            ));
+            out.append(String.format( // todo: the mappings should be scanned for these extra formats
+                    "<li><a href=\"%s/ese.html\">%s in ese format</a></li>",
                     dataSet.setSpec(), dataSet.setSpec()
             ));
         }
@@ -78,9 +85,22 @@ public class MetaRepoController {
         if (dataSet == null) {
             throw new RuntimeException(String.format("Dataset [%s] not found", dataSetSpec));
         }
+        boolean eseStripWorkaround = "ese".equals(prefix);
         StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
-        for (MetaRepo.Record record : dataSet.records(prefix, 0, 10, null, null)) {
-            String xml = record.xml(prefix).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
+        for (MetaRepo.Record record : dataSet.records(eseStripWorkaround ? "icn" : prefix, 0, 10, null, null)) {
+            String xml = record.xml(eseStripWorkaround ? "icn" : prefix);
+            if (eseStripWorkaround) {
+                List<FieldEntry> entries = FieldEntry.createList(xml);
+                Iterator<FieldEntry> walk = entries.iterator();
+                while (walk.hasNext()) {
+                    FieldEntry entry = walk.next();
+                    if (entry.getTag().startsWith("icn")) {
+                        walk.remove();
+                    }
+                }
+                xml = FieldEntry.toString(entries, false);
+            }
+            xml = xml.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
             out.append("<li>").append(record.identifier()).append("<br>")
                     .append(record.modified().toString()).append("<br>")
                     .append(xml).append("</li>\n");
