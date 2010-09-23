@@ -49,13 +49,13 @@
                 <div class="clear"></div>
 
             <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
-            <#--<div class="toggler-c"title="<@spring.message 'UserTags_t' />">-->
-                <#--<p>-->
-                    <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
-                    <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
-                    <#--</#list>-->
-                <#--</p>-->
-            <#--</div>-->
+            <div class="toggler-c"title="<@spring.message 'UserTags_t' />">
+                <p>
+                    <#list model.fullDoc.europeanaUserTag as userTag>
+                    <a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
+                    </#list>
+                </p>
+            </div>
 
             <h3><@spring.message 'Actions_t' />:</h3>
             <#if user??>				

@@ -135,6 +135,7 @@ ul a:hover, ul a:visited:hover {
     margin: 0;
     padding: 0;
     text-align: left;
+    height: 32px;
 }
 
 .title_bar em {
@@ -282,7 +283,6 @@ ul.nav_query_breadcrumbs li.first {
 }
 
 .brief-thumb-container, .brief-thumb-container-listview {
-    background: #e5e5e5;
     overflow: hidden;
     text-align: center;
     padding: 0.5em;
@@ -299,6 +299,10 @@ ul.nav_query_breadcrumbs li.first {
 /*border: 1px solid #e5e5e5;*/
     padding: .5em;
     min-height: 75px;
+}
+
+#no-result {
+    font-size: large;
 }
 
 /* Facets - Refine Search */
@@ -328,6 +332,17 @@ table.item {
 
 table.item caption {
     display: none;
+}
+
+table#tbl-related-items td {
+    background: #fff;
+}
+
+
+/* USER section styles ***************************************************************************/
+
+#user-info {
+    margin-top: 1em;
 }
 
 /* UI Button styles ******************************************************************************/
@@ -427,4 +442,74 @@ button.fg-button, input.fg-button {
 
 .exceptions {
     margin: 2em 0;
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * toggleElements.css - Stylesheet for jQuery-Plugin toggleElements
+ * ----------------------------------------------------------------------------
+ */
+
+/* Screen ------------------------------------------------------------------- */
+
+@media projection, screen {
+
+/* Toggler - default style */
+    .toggler {
+        margin: 10px 0;
+        border-bottom: solid 1px #ccc;
+        cursor: pointer;
+        font-size: 1.0em;
+        font-weight: bold;
+        line-height: 30px;
+        display: block;
+        text-decoration: none;
+    }
+
+    .toggler-closed {
+        color: #333;
+        padding-left: 8px;
+        height: 30px;
+        background: #fff url(../images/togglerc.gif) center right no-repeat;
+
+    }
+
+    .toggler-closed:hover {
+        color: #0162CD;
+        padding-left: 8px;
+        height: 30px;
+        background: #fff url(../images/togglerch.gif) center right no-repeat;
+    }
+
+    .toggler-opened {
+        color: #333;
+        padding-left: 8px;
+        height: 30px;
+        background: #fff url(../images/togglero.gif) center right no-repeat;
+    }
+
+    .toggler-opened:hover {
+        color: #0162CD;
+        padding-left: 8px;
+        height: 30px;
+        background: #fff url(../images/toggleroh.gif) center right no-repeat;
+
+    }
+
+/* Container - default style */
+    .toggler-c {
+    }
+
+    .toggler-c-closed {
+        background: transparent;
+        margin: -10px 0px 10px 0px;
+        padding: 4px;
+    }
+
+    .toggler-c-opened {
+        margin: -10px 0px 10px 0px;
+        padding: 4px;
+        background: #fff;
+    }
+
 }

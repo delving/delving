@@ -12,6 +12,7 @@
 <#assign query = "">
 <#assign cacheUrl = cacheUrl>
 <#assign view = "table">
+<#assign enableRefinedSearch="true"/>
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}">
 </#if>
@@ -84,6 +85,9 @@
             <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
+        <#--<#if query?? && query?length &gt; 0 && enableRefinedSearch??>-->
+            <#--<a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search" rel="nofollow">Refine Search</a>-->
+        <#--</#if>-->
     </div>
 
     <div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">
@@ -167,17 +171,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.4.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.4.custom.css"/>
     <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
 
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.4.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
     <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>-->
@@ -226,13 +230,15 @@
     <#break>
     <#case "myeuropeana.html">
     <#assign pageId = "me"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
     <script type="text/javascript">
+
         $(document).ready(function() {
             $("#savedItems").tabs('select', $.cookie('ui-tabs-3'));
             $("#savedItems").tabs({ cookie: { expires: 30 } });
         });
     </script>
-    <title>Instituut Collectie Nederland - My Open-Europeana</title>
+    <title>Instituut Collectie Nederland - Mijn Gegevens</title>
     <#break>
     <#case "exception.html">
     <title>Europeana - Exception</title>
@@ -285,7 +291,7 @@
 
 <body>
 
-<div class="container_12 azure page">
+<div class="container_12 page ${portalColor}">
 
     <div id="user-bar" class="grid_12">
         <@userbar/>
