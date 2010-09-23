@@ -2,14 +2,13 @@
   <harvest id="GVN" output="GVN.xml">
     <spec>gvn</spec>
     <prefix>oai_dc</prefix>
-    <publisher>0001</publisher>
+    <publisher>ICN</publisher>
     <lastHarvest>2008-10-15 19:01:17.228 CEST</lastHarvest>
     <successful>false</successful>
     <baseUrl>http://services.kb.nl/mdo/oai?verb=ListRecords&amp;set=GVN</baseUrl>
     <lastToken></lastToken>
   </harvest>
-
- <harvest id="erfgoed-utrecht" output="00101_Ag_NL_erfgoed_utrecht">
+  <harvest id="erfgoed-utrecht" output="00101_Ag_NL_erfgoed_utrecht">
     <prefix>oai_dc</prefix>
     <publisher>ICN</publisher>
     <lastHarvest>2001-06-27 10:43:22.820 CEST</lastHarvest>
