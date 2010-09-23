@@ -85,9 +85,9 @@
             <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
-        <#if query?? && query?length &gt; 0 && enableRefinedSearch??>
-            <a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search" rel="nofollow">Refine Search</a>
-        </#if>
+        <#--<#if query?? && query?length &gt; 0 && enableRefinedSearch??>-->
+            <#--<a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search" rel="nofollow">Refine Search</a>-->
+        <#--</#if>-->
     </div>
 
     <div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">
@@ -181,7 +181,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.4.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
     <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>-->

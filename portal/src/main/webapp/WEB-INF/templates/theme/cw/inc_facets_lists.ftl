@@ -8,6 +8,7 @@
 </noscript>
 
      <#list next as facet>
+
         <#assign togglerClass="toggler-c-closed"/>
         <#switch facet.type>
             <#case "LANGUAGE">
@@ -21,7 +22,7 @@
             <#case "YEAR">
                 <#if facet.links?size &gt; 0>
                     <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
-                   <div class="toggler-c ${togglerClass}>" title="<@spring.message 'Bydate_t' />">
+                   <div class="toggler-c ${togglerClass}>" title="<@spring.message 'ByYear_t' />">
                    <noscript><h4><@spring.message 'Bydate_t' />:</h4></noscript>
                    <#assign columsize = 2>
                </#if>
