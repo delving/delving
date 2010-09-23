@@ -100,7 +100,7 @@ public class CodeGenerator {
                     fieldMapping.addCodeLine("}");
                 }
                 else {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
+                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)[0]", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
                 }
             }
             fieldMapping.addCodeLine("}");
@@ -122,7 +122,7 @@ public class CodeGenerator {
                     fieldMapping.addCodeLine("}");
                 }
                 else {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
+                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])[0]", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
                 }
             }
         }
