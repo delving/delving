@@ -48,40 +48,22 @@
 
                 <div class="clear"></div>
 
-            <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
-            <div class="toggler-c"title="<@spring.message 'UserTags_t' />">
-                <p>
-                    <#list model.fullDoc.europeanaUserTag as userTag>
-                    <a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
-                    </#list>
-                </p>
-            </div>
 
-            <h3><@spring.message 'Actions_t' />:</h3>
-            <#if user??>				
+                <h3><@spring.message 'Actions_t' />:</h3>
+                <#if user??>
 
-                <p class="linetop">
-                    <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToMyEuropeana_t' /></a>
-                    <div id="msg-save-item" class="msg-hide"></div>
-                </p>
-                
-                <#if result.fullDoc.europeanaType == "IMAGE">		            
-                	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-	                    <p class="linetop">	                	
-		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>              
-		                </p>
-	                </#if>
-                </#if>
+                    <p>
+                        <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToMyEuropeana_t' /></a>
+                        <div id="msg-save-item" class="msg-hide"></div>
+                    </p>
 
-            <h6><@spring.message 'AddATag_t' /></h6>
-
-                <#--<div id="ysearchautocomplete">-->
-                      <form action="#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;"  id="form-addtag" name="form-addtag" accept-charset="UTF-8">
-                        <input type="text" name="tag" id="tag" maxlength="50" class="text"/>
-                        <input type="submit" class="button" value="Add"/>
-                    </form>
-                    <div id="msg-save-tag" class="hide"></div>
-                <#--</div>-->
+                    <#if result.fullDoc.europeanaType == "IMAGE">
+                        <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+                            <p class="linetop">
+                                <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
+                            </p>
+                        </#if>
+                    </#if>
 
                 <h6><@spring.message 'ShareWithAFriend_t' /></h6>
                 <form action="#" method="post" onsubmit='sendEmail("${result.fullDoc.id}"); return false;' id="form-sendtoafriend" accept-charset="UTF-8">
@@ -92,6 +74,32 @@
 
                 </form>
                 <div id="msg-send-email" class="hide"></div>
+
+                <h6><@spring.message 'AddATag_t' /></h6>
+
+                <#--<div id="ysearchautocomplete">-->
+                <form action="#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;"  id="form-addtag" name="form-addtag" accept-charset="UTF-8">
+                          <input type="text" name="tag" id="tag" maxlength="50" class="text"/>
+                          <input type="submit" class="button tag" value="<@spring.message 'Add_t' />"/>
+                      </form>
+                <div id="msg-save-tag-success" class="ui-info hide"></div>
+                <div id="msg-save-tag-fail" class="ui-error hide"></div>
+                <#--</div>-->
+
+            <h6><@spring.message 'UserTags_t' /></h6>
+
+            <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
+            <div class="toggler-c ui-icon-circle-triangle-s"title="<@spring.message 'UserTags_t' />">
+                <#assign usertags = ["Manuscript","Treasure","Religion"]/>
+                <#--<p>-->
+                    <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
+                    <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
+                    <#--</#list>-->
+                <#--</p>-->
+                <#list usertags as tag>
+                    ${tag}<br/>
+                </#list>
+            </div>
 
 
         <#else>

@@ -60,12 +60,12 @@
                                             <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}">
                                              <#if useCache="true">
                                                 <img class="thumb" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
-                                             <#--<#else>-->
-                                                <#--<#if item.docType??>-->
-                                                  <#--<img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefault(this,'${item.docType}')"/>-->
-                                                <#--<#else>-->
-                                                  <#--<img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefault(this)"/>-->
-                                                <#--</#if>-->
+                                             <#else>
+                                                <#if item.docType??>
+                                                  <img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefault(this,'${item.docType}')"/>
+                                                <#else>
+                                                  <img class="thumb" align="middle" src="${item.europeanaObject}" alt="Click for more information" height="50" style="float:left" onerror="showDefault(this)"/>
+                                                </#if>
                                              </#if>
                                             </a>
                                         </td>
@@ -95,6 +95,7 @@
                             <#if user.savedSearches?size &gt; 0>
                                 <#list user.savedSearches as search>
                                     <tr>
+                                        <td width="5"><a href="brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                                         <td valign="top" class="item-info">
                                             <a href="brief-doc.html?${search.query}">${search.queryString}</a>
                                             <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
@@ -108,7 +109,7 @@
                         </table>
                     </div>
                    <div id="fragment-3">
-                    <table width="100%" class="tbl-list" summary="list with saved searches" id="tbl-tags">
+                    <table width="100%" class="tbl-list" summary="list with saved tags" id="tbl-tags">
                         <#if user.socialTags?size &gt; 0>
                             <#list user.socialTagLists as count>
                                 <#assign tagQuery = "europeana_uri:("/>
@@ -118,11 +119,11 @@
                                 </#list>
                                 <#assign tagQuery = tagQuery + ")"/>
                                 <tr>
-                                    <td valign="top" class="item-info" colspan="3">
+                                    <th valign="top" class="item-info" colspan="3">
                                         <#--${tagQuery}-->
                                         <#--<a href="brief-doc.html?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>-->
-                                        <strong>${count.tag} (${count.list?size})</strong>
-                                    </td>
+                                        <span class="ui-icon ui-icon-tag"></span><strong>${count.tag} (${count.list?size})</strong>
+                                    </th>
                                 </tr>
                                 <#list count.list as tag>
                                    <tr>

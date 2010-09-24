@@ -115,21 +115,32 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
         rules: {tag: "required"}
     });
     if ($("#form-addtag").valid()){
-        var sr = document.getElementById("msg-save-tag");
-        sr.style.display = 'block';
+        var success = $("div#msg-save-tag-success");
+        var fail = $("div#msg-save-tag-fail");
+        var messageSuccess = $("div#msg-save-tag-success p span.message");
+        var messageFail = $("div#msg-save-tag-fail p span.message");
         $.ajax({
            type: "POST",
            url: "save.ajax",
            data: "className="+className+"&europeanaUri="+fullDocId+"&europeanaObject="+thumbnailId+"&title="+objTitle+"&tag=" + encodeURIComponent(tagText) +"&docType="+objType,
            success: function(msg){
-                sr.innerHTML = " tag saved";
+
+                success.css("display","block");
+                messageSuccess.html("Tag bewaard");
                 document.getElementById("tag").value = "";
                 var ss = document.getElementById("savedTagsCount");
                 var currentCount = parseInt(ss.innerHTML, 10);
                 ss.innerHTML = currentCount + 1;
+
+                   success.delay("5000").fadeOut('slow');
+
+
            },
            error: function(msg) {
-                sr.innerHTML = "<span class='fg-red'>"+strTagAdditionFailed+"</span>";
+                fail.css("display","block");
+                messageFail.html(strTagAdditionFailed);
+               fail.delay("5000").fadeOut('slow');
+
            }
         });
     }

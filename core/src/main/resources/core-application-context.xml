@@ -80,6 +80,7 @@
                 <value>portal.name</value>
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
+                <value>portal.color</value>
 
                 <value>repositoryName</value>
                 <value>adminEmail</value>

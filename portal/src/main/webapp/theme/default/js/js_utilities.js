@@ -64,6 +64,7 @@ $(document).ready(function() {
             return false;
      });
 
+
     // style all the submit and button elements.
 
     var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");
@@ -101,4 +102,6 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+
 });
