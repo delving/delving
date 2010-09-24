@@ -86,6 +86,14 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
 
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:dataProvider", constant = true)
+    @Solr(prefix = "europeana", localName = "dataProvider", multivalued = false)
+    String[] europeanaDataProvider;
+
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
+    @Solr(prefix = "europeana", localName = "rights", multivalued = false)
+    String[] europeanaRights;
+
 
     // todo: review these (also: what about querymodel.beans.*)
 
@@ -351,6 +359,14 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String[] getEuropeanaYear() {
         return returnArrayOrElse(europeanaYear);
+    }
+
+    public String[] getEuropeanaDataProvider() {
+        return returnArrayOrElse(europeanaDataProvider);
+    }
+
+    public String[] getEuropeanaRights() {
+        return returnArrayOrElse(europeanaRights);
     }
 
     // DCTERMS fields
