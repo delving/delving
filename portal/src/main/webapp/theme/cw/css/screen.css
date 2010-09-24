@@ -229,8 +229,16 @@ ul a:hover, ul a:visited:hover {
     text-align: left;
 }
 
-#search .search_advanced table td:nth-child(3) input[type=text] {
-    width: 300px
+/*#search .search_advanced table td:nth-child(3) input[type=text] {*/
+    /*width: 300px*/
+/*}*/
+
+#search #province-list table td, #search #collectiebalans-list table td {
+    text-align: left;
+}
+
+#search input.in-small {
+    width: 75px;
 }
 
 /* Results page **********************************************************************************/
@@ -328,6 +336,16 @@ ul.nav_query_breadcrumbs li.first {
 table.item {
     margin: 0;
     padding: 0;
+}
+
+table.item th {
+    background: #fff;
+    text-align: right;
+    font-weight: bold;
+}
+
+table.item td {
+    background: #fff;
 }
 
 table.item caption {

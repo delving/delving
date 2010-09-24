@@ -171,14 +171,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.4.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.5.custom.css"/>
     <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
 
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.4.custom.min.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
@@ -230,6 +230,7 @@
     <#break>
     <#case "myeuropeana.html">
     <#assign pageId = "me"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/myeuropeana.css"/>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
     <script type="text/javascript">
 

@@ -86,6 +86,7 @@ $(document).ready(function() {
 
     var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");
         buttons.addClass("fg-button ui-state-default ui-corner-all");
+        buttons.css({'padding':'0.2em'});
 // Todo: when icons added FF does not render them in the desired position
 //        buttons.filter(".btn-search")
 //                .addClass("fg-button-icon-right")
@@ -119,4 +120,21 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+
+    var infoboxes = $(document).find("div.ui-info");
+
+        if(infoboxes){
+            infoboxes.addClass("ui-state-highlight ui-corner-all");
+            infoboxes.css({'margin-top':'20px','padding':'0pt 0.7em'});
+            infoboxes.append('<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span><span class="message">Test</span></p>');
+        }
+
+        var errorboxes = $(document).find("div.ui-error");
+
+        if(errorboxes){
+            errorboxes.addClass("ui-state-error ui-corner-all");
+            errorboxes.css({'margin-top':'20px','padding':'0pt 0.7em'});
+            errorboxes.append('<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span><span class="message">Test</span></p>');
+        }
 });

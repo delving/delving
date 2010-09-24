@@ -16,44 +16,23 @@ h3.tags {
        cursor: pointer;
 }
 
-table.tbl-list {
-    border-width: 0;
-    margin: 0 0 20px 0;
-    z-index: 10001;
-    /*height: 300px;*/
-    overflow-x: hidden;
-    overflow-y: auto;
-     /*max-height: 300px;*/
-    border-collapse: separate;
-}
-.tbl-list td {
-    padding: 0px;
-    border-bottom: 1px solid #eaeaea;
-}
 .tbl-list .item-img {
     width: 40px;
 }
 
-.tbl-list .item-info  {
-    border-bottom: 1px solid #ccc;
-}
 .tbl-list .item-info em {
     font-weight: bold;
 }
-.tbl-list .del-button {
-    font-size: 85%;
-    border: 1px solid #ccc;
-	background: #fff;
-	cursor: pointer;
-	margin: 2px 0 0 10px;
-	padding: 0 0 0 0;
-	font-weight: bold;
-	color: #797979;
-    vertical-align: middle; *vertical-align: text-bottom;
-    margin-top: 2px;
+.tbl-list .item-info span.ui-icon  {
+    float: left;
+    margin-right: .25em;
 }
-/*override from common.css */
-.button {margin-left: 0;}
-        .panel {height: 350px;}
-        .panel .bd { overflow-y: auto; overflow-x:none; height: 400px; }
-        .panel table {width: 95%; border-collapse:separate;}
+
+.tbl-list td.item-info-header {
+    background: #fff;
+}
+
+.tbl-list .item-info p {
+    padding: 0;
+    margin: 0;
+}
