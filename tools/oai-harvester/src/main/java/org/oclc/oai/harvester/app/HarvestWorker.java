@@ -7,7 +7,6 @@ import org.oclc.oai.harvester.verb.ListRecords;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
