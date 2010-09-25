@@ -7,40 +7,60 @@
 
     <div id="administration-page" class="grid_16">
 
-        <form method="post" action="administration.html" id="administration-form">
+        <#if !userList??>
+            <form method="post" action="administration.html" id="search-form">
+                <table>
+                    <tr>
+                        <td>Vind een gebruiker</td>
+                        <td><input type="text" name="searchPattern"/></td>
+                        <td><input type="submit" value="vind"/> </td>
+                    </tr>
+                </table>
+                <#if targetUser??>
+                    <p>
+                        ${targetUser.email} heeft nu de rol van
+                        <#if targetUser.role = 'ROLE_RESEARCH_USER'>
+                            Museometrie Gebruiker
+                        </#if>
+                        <#if targetUser.role = 'ROLE_ADMINISTRATOR'>
+                            Administrator
+                        </#if>
+                        <#if targetUser.role = 'ROLE_USER'>
+                            Gewoon Gebruiker
+                        </#if>
+                    </p>
+                </#if>
+            </form>
+        </#if>
+
+        <#if userList??>
             <table>
-            <#if !userList??>
-                <tr>
-                    <td>Vind een gebruiker (email)</td>
-                    <td><input type="text" name="searchPattern"/></td>
-                    <td><input type="submit" value="vind"/> </td>
-                </tr>
-            </#if>
-            <#if userList??>
                 <tr>
                     <th>Email</th>
                     <th>Huidige Rol</th>
                     <th>Nieuwe Rol</th>
+                    <th>Zetten</th>
                 </tr>
                 <#list userList as user>
-                    <tr>
-                        <td><input type="text" name="" value="${user.email}"/></td>
-                        <td>${user.role}</td>
-                        <td>
-                            <select name="newRole">
-                                <option>Kies een rol</option>
-                                <option value="ROLE_RESEARCH_USER">Researcherr</option>
-                                <option value="ROLE_ADMINISTRATOR">Administrator</option>
-                                <option value="ROLE_USER">User</option>
-                            </select>
-                        </td>
-                    </tr>
+                    <form method="post" action="administration.html" id="set-form">
+                        <input type="hidden" name="userEmail" value="${user.email}"/>
+                        <tr>
+                            <td>${user.email}</td>
+                            <td>${user.role}</td>
+                            <td>
+                                <select name="newRole">
+                                    <option>Kies een rol</option>
+                                    <option value="ROLE_RESEARCH_USER">Museometrie Gebruiker</option>
+                                    <option value="ROLE_ADMINISTRATOR">Administrator</option>
+                                    <option value="ROLE_USER">Gewoon Gebruiker</option>
+                                </select>
+                            </td>
+                            <td><input type="submit" value="zet nu"/> </td>
+                        </tr>
+                    </form>
                 </#list>
-            </#if>
             </table>
-
-        </form>
-
+        </#if>
     </div>
 
 </div>

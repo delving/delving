@@ -58,7 +58,7 @@ public class AdministrationController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView adminPost(
-            @ModelAttribute("command") AdminForm adminForm
+            AdminForm adminForm
     ) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("administration");
         if (adminForm.getUserEmail().isEmpty()) {

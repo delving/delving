@@ -22,7 +22,12 @@
 package eu.europeana.core.database.dao;
 
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CollectionState;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -265,6 +270,7 @@ public class UserDaoImpl implements UserDao {
                 cleanPattern.append(pattern.charAt(walk));
             }
         }
+        cleanPattern.insert(0, "%");
         cleanPattern.append("%");
         query.setParameter("searchField", cleanPattern.toString().toLowerCase());
         return (List<User>) query.getResultList();
