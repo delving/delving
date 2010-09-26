@@ -27,19 +27,19 @@ function showDefaultSmall(obj, iType, src) {
                 switch (iType)
                 {
                     case "TEXT":
-                        obj.src = "images/item-page.gif";
+                        obj.src = baseThemePath+"/images/item-page.gif";
                         break;
                     case "IMAGE":
-                        obj.src = "images/item-image.gif";
+                        obj.src = baseThemePath+"/images/item-image.gif";
                         break;
                     case "VIDEO":
-                        obj.src = "images/item-video.gif";
+                        obj.src = baseThemePath+"/images/item-video.gif";
                         break;
                     case "SOUND":
-                        obj.src = "images/item-sound.gif";
+                        obj.src = baseThemePath+"/images/item-sound.gif";
                         break;
                     default:
-                        obj.src = "images/item-page.gif";
+                        obj.src = baseThemePath+"/images/item-page.gif";
                 }
             }
          }
@@ -68,19 +68,19 @@ function showDefaultLarge(obj,iType,src){
             switch(iType)
             {
             case "TEXT":
-              obj.src="images/item-page-large.gif";
+              obj.src=baseThemePath+"/images/item-page-large.gif";
               break;
             case "IMAGE":
-              obj.src="images/item-image-large.gif";
+              obj.src=baseThemePath+"/images/item-image-large.gif";
               break;
             case "VIDEO":
-              obj.src="images/item-video-large.gif";
+              obj.src=baseThemePath+"/images/item-video-large.gif";
               break;
             case "SOUND":
-              obj.src="images/item-sound-large.gif";
+              obj.src=baseThemePath+"/images/item-sound-large.gif";
               break;
             default:
-              obj.src="images/item-page-large.gif";
+              obj.src=baseThemePath+"/images/item-page-large.gif";
             }
         }
     }

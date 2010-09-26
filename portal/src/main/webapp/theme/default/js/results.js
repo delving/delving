@@ -20,23 +20,24 @@ function saveQuery(className, queryToSave, queryString){
 }
 
 function showDefaultSmall(obj, iType) {
+    alert(baseThemePath);
     if(obj && iType){
         switch (iType)
                 {
             case "TEXT":
-                obj.src = "/portal/images/item-page.gif";
+                obj.src = baseThemePath+"/images/item-page.gif";
                 break;
             case "IMAGE":
-                obj.src = "/portal/images/item-image.gif";
+                obj.src = baseThemePath+"/images/item-image.gif";
                 break;
             case "VIDEO":
-                obj.src = "/portal/images/item-video.gif";
+                obj.src = baseThemePath+"/images/item-video.gif";
                 break;
             case "SOUND":
-                obj.src = "/portal/images/item-sound.gif";
+                obj.src = baseThemePath+"/images/item-sound.gif";
                 break;
             default:
-                obj.src = "/portal/images/item-page.gif";
+                obj.src = baseThemePath+"/images/item-page.gif";
         }
     }
 }
@@ -55,19 +56,19 @@ function showDefaultLarge(obj,iType){
         switch(iType)
         {
         case "TEXT":
-          obj.src="/portal/images/item-page-large.gif";
+          obj.src=baseThemePath+"/images/item-page-large.gif";
           break;
         case "IMAGE":
-          obj.src="/portal/images/item-image-large.gif";
+          obj.src=baseThemePath+"/images/item-image-large.gif";
           break;
         case "VIDEO":
-          obj.src="/portal/images/item-video-large.gif";
+          obj.src=baseThemePath+"/images/item-video-large.gif";
           break;
         case "SOUND":
-          obj.src="/portal/images/item-sound-large.gif";
+          obj.src=baseThemePath+"/images/item-sound-large.gif";
           break;
         default:
-          obj.src="/portal/images/item-page-large.gif";
+          obj.src=baseThemePath+"/images/item-page-large.gif";
         }
     }
 }
@@ -144,6 +145,7 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
 ** Resizes displayed images in the brief and full doc displays
  */
 function checkSize(obj,type,w){
+    alert('foo');
     if(type=="brief"){
         if (w > 220) {
             w = 220;

@@ -41,6 +41,7 @@
                                      onerror="showDefaultSmall(this,'${cell.type}',this.src)"
                               />
 
+
                         <#else>
 
                             <img

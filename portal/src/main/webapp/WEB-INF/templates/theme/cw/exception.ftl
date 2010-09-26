@@ -13,6 +13,7 @@
 <#if RequestParameters.query??>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
+
 <#include "inc_header.ftl">
 
 

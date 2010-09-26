@@ -40,7 +40,7 @@
                 <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
                <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
-               <#assign columsize = 2>
+               <#assign columsize = 1>
                </#if>
                <#break/>
             <#case "PROVIDER">
@@ -65,7 +65,7 @@
         <#assign facet_max = 20/>
 
         <#if facet.links?size &gt; 0 && facet.type != "TYPE"> <#--dirty hack to make sure TYPE isn't rendered-->
-            <div  style="width: 100%; overflow-x: hidden; overflow-y: auto; max-height: 200px;">
+            <div class="scroll" id="facet-list">
                 <table width="100%">
                     <#list facet.links?chunk(columsize) as row>
                         <tr>
@@ -76,12 +76,12 @@
                                    <#if !link.remove = true>
                                         <a class="add" href="${thisPage}?query=${query?html}${link.url?html}" title="${link.value}">
                                             <#--<input type="checkbox" value="" onclick="document.location.href='${thisPage}?query=${query?html}${link.url}';"/>-->
-                                            <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                            <@stringLimiter "${link.value}" "100"/>(${link.count})
                                         </a>
                                 <#else>
                                          <a class="remove" href="${thisPage}?query=${query?html}${link.url?html}" title="${link.value}">
 
-                                             <@stringLimiter "${link.value}" "25"/>
+                                             <@stringLimiter "${link.value}" "100"/>
                                              (${link.count})
 
                                         </a>

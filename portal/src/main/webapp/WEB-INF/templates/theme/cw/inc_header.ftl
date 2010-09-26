@@ -171,7 +171,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.5.custom.css"/>
+    <#if portalColor??>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.5.custom.css"/>
+    <#else>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.5.custom.css"/>
+    </#if>
     <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
@@ -187,6 +191,7 @@
     <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>-->
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
+        var baseThemePath = "/${portalName}/${portalTheme}";
     </script>
     <#switch thisPage>
     <#case "index.html">
@@ -292,7 +297,7 @@
 
 <body>
 
-<div class="container_12 page ${portalColor}">
+<div class="container_12 page <#if portalColor??>${portalColor}</#if>">
 
     <div id="user-bar" class="grid_12">
         <@userbar/>

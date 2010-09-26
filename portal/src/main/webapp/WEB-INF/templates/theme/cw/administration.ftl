@@ -7,11 +7,13 @@
 
     <div id="administration-page" class="grid_16">
 
+        <h2>Gebruikers Administratie</h2>
+
         <#if !userList??>
             <form method="post" action="administration.html" id="search-form">
                 <table>
                     <tr>
-                        <td>Vind een gebruiker</td>
+                        <td width="150":><h4>Vind een gebruiker</h4></td>
                         <td><input type="text" name="searchPattern"/></td>
                         <td><input type="submit" value="vind"/> </td>
                     </tr>
@@ -45,9 +47,9 @@
                     <form method="post" action="administration.html" id="set-form">
                         <input type="hidden" name="userEmail" value="${user.email}"/>
                         <tr>
-                            <td>${user.email}</td>
-                            <td>${user.role}</td>
-                            <td>
+                            <td width="150">${user.email}</td>
+                            <td width="150">${user.role}</td>
+                            <td width="200">
                                 <select name="newRole">
                                     <option>Kies een rol</option>
                                     <option value="ROLE_RESEARCH_USER">Museometrie Gebruiker</option>

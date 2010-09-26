@@ -21,7 +21,7 @@
                                      <#if useCache="true">
                                         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}',this.src)"/>
                                     <#else>
-                                        <img src="${thumbnail}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}',this.src)"/>
+                                        <img src="${thumbnail}" alt="Click here to view related item" width="35" onerror="showDefaultSmall(this,'${doc.type}',this.src)"/>
                                     </#if>
 
                                         </a>

@@ -514,20 +514,45 @@ button.fg-button, input.fg-button {
 
     }
 
-/* Container - default style */
-    .toggler-c {
-    }
+}
 
-    .toggler-c-closed {
-        background: transparent;
-        margin: -10px 0px 10px 0px;
-        padding: 4px;
-    }
+/* Facet title toggles  ********************************************************************/
 
-    .toggler-c-opened {
-        margin: -10px 0px 10px 0px;
-        padding: 4px;
-        background: #fff;
-    }
+.toggler-c-closed {
+    background: transparent;
+    margin: -10px 0px 10px 0px;
+    padding: 4px;
+}
 
+.toggler-c-opened {
+    margin: -10px 0px 10px 0px;
+    padding: 4px;
+    background: #fff;
+}
+
+
+
+/* Facet list ********************************************************************/
+
+#facet-list.scroll {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 200px;
+    margin-bottom: 10px;
+
+}
+
+#facet-list .add {
+    background: transparent url(../images/toggle_plus.gif) no-repeat top left;
+    padding: 0 0 0 16px;
+    height: 32px;
+}
+
+
+#facet-list .remove {
+    background: transparent url(../images/toggle_minus.gif) no-repeat top left;
+    color: #555;
+    padding: 0 0 0 16px;
+    font-weight: bold;
+    text-decoration: none;
 }

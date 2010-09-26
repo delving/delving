@@ -11,26 +11,13 @@
 </#if>
 <#include "inc_header.ftl">
 
-<div id="sidebar" class="grid_3">
+<div id="main" class="grid_12">
 
-    <div id="identity">
-            <h1>${portalDisplayName}</h1>
-            <a href="/${portalName}/index.html" title="${portalDisplayName}"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="${portalDisplayName} Home"/></a>
-    </div>
-
-</div>
-
-<div id="main" class="grid_9">
-
-    <div id="top-bar">
-
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
-
-    <h3 style="margin: 60px 0 20px 0">Something went wrong! An email has been sent to inform our technical staff.</h3>
-    <p style="margin: 0 0 240px 0">Please try another search.</p>
+    <h3>Er is een fout opgetreden! Een email is verstuurd naar de website administrator.</h3>
+    <p>Probeer een andere zoekopdracht</p>
+         <div id="search" style="margin-bottom: 12em;">
+            <@SearchForm "search_home"/>
+        </div>
 
 </div>
 
