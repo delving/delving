@@ -14,7 +14,7 @@
 
 
     <div class="grid_12">
-        <img src="i/${portalName}/${portalTheme}/mages/logo.png" id="logo-home" alt="ICN"/>
+        <img src="i/${portalName}/${portalTheme}/mages/logo.png" id="logo-home" alt="${portalDisplayName}"/>
     </div>
     <div class="grid_6 prefix_3 suffix_3" id="text-home">
         <p>

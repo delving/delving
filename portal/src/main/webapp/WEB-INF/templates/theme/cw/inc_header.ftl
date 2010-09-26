@@ -94,7 +94,7 @@
        <form method="get" action="brief-doc.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
-           
+
         <table >
             <tr>
                 <td>&#160;</td>
@@ -301,7 +301,7 @@
     <div class="header">
 
         <div class="branding">
-            <img src="/${portalName}/${portalTheme}/images/RO_OCW_ICN.png" id="logo-home" alt="ICN" widht="500"/>
+            <img src="/${portalName}/${portalTheme}/images/RO_OCW_ICN.png" id="logo-home" alt="${portalDisplayName}" widht="500"/>
         </div>
         <div class="clear"></div>
         <div class="title_bar">

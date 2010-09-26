@@ -15,8 +15,8 @@
 <div id="header">
 
     <div id="identity" class="grid_3">
-        <h1>ICN</h1>
-        <a href="/${portalName}/index.html" title="ICN"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="ICN Home"/></a>
+        <h1>${portalDisplayName}</h1>
+        <a href="/${portalName}/index.html" title="${portalDisplayName}"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="${portalDisplayName} Home"/></a>
     </div>
 
     <div class="grid_9">
