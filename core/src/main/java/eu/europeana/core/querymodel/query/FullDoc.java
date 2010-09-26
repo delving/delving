@@ -134,4 +134,28 @@ public interface FullDoc {
     BriefDoc getBriefDoc();
 
     String getEuropeanaCollectionName();
+
+    /* ICN specific fields */
+
+    String[] getCreatorYearOfBirth();
+
+    String[] getTechnique();
+
+    String[] getMaterial();
+
+    String[] getLocation();
+
+    String[] getProvince();
+
+    String[] getCollectionPart();
+
+    String[] getAcquisitionMeans();
+
+    String[] getAcquisitionYear();
+
+    String[] getPurchasePrice();
+
+    String[] getAcquiredWithHelpFrom();
+
+    String[] getPhysicalState();
 }

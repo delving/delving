@@ -26,8 +26,7 @@ import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.querymodel.query.FullDoc;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.domain.Country;
-import eu.europeana.definitions.domain.Language;
+import eu.europeana.definitions.domain.*;
 import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -36,9 +35,9 @@ import java.util.List;
 
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
-import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
+import static eu.europeana.definitions.annotations.FieldCategory.*;
+import static eu.europeana.definitions.annotations.FieldCategory.ICN;
+import static eu.europeana.definitions.annotations.FieldCategory.ICN_RESEARCH;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -302,6 +301,55 @@ public class FullBean extends BriefBean implements FullDoc {
     }
 
 
+    // todo: review these (also: what about querymodel.beans.*)
+
+    @Europeana(category = ICN, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "creatorYearOfBirth", multivalued = false)
+    String[] creatorYearOfBirth;
+
+    @Europeana(category = ICN, enumClass = Technique.class, valueMapped = true)
+    @Solr(prefix = "icn", localName = "technique")
+    String[] technique;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "material")
+    String[] material;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "location")
+    String[] location;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "province")
+    String[] province;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "collectionPart")
+    String[] collectionPart;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true)
+    @Solr(prefix = "icn", localName = "acquisitionMeans")
+    String[] acquisitionMeans;
+
+    @Europeana(category = ICN_RESEARCH, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
+    String[] acquisitionYear;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class) // todo: converter to turn number into enum?
+    @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
+    String[] purchasePrice;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "acquiredWithHelpFrom")
+    String[] acquiredWithHelpFrom;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "physicalState")
+    String[] physicalState;
+
+
+    // todo: review above
+
 
     @Override
     public String[] getThumbnails() {
@@ -558,6 +606,61 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String getEuropeanaCollectionName() {
         return returnStringOrElse(europeanaCollectionName);
+    }
+
+    @Override
+    public String[] getCreatorYearOfBirth() {
+        return returnArrayOrElse(creatorYearOfBirth);
+    }
+
+    @Override
+    public String[] getTechnique() {
+        return returnArrayOrElse(technique);
+    }
+
+    @Override
+    public String[] getMaterial() {
+        return returnArrayOrElse(material);
+    }
+
+    @Override
+    public String[] getLocation() {
+        return returnArrayOrElse(location);
+    }
+
+    @Override
+    public String[] getProvince() {
+        return returnArrayOrElse(province);
+    }
+
+    @Override
+    public String[] getCollectionPart() {
+        return returnArrayOrElse(collectionPart);
+    }
+
+    @Override
+    public String[] getAcquisitionMeans() {
+        return returnArrayOrElse(acquisitionMeans);
+    }
+
+    @Override
+    public String[] getAcquisitionYear() {
+        return returnArrayOrElse(acquisitionYear);
+    }
+
+    @Override
+    public String[] getPurchasePrice() {
+        return returnArrayOrElse(purchasePrice);
+    }
+
+    @Override
+    public String[] getAcquiredWithHelpFrom() {
+        return returnArrayOrElse(acquiredWithHelpFrom);
+    }
+
+    @Override
+    public String[] getPhysicalState() {
+        return returnArrayOrElse(physicalState);
     }
 }
 

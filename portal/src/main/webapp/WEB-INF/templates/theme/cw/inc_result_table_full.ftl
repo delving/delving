@@ -47,7 +47,7 @@
                     </#if>
                         <#if useCache="true">
                             <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
-                                 class="full" 
+                                 class="full"
                                  alt="Image title: ${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
                                  onload="checkSize(this,'full',this.width);"
@@ -236,7 +236,7 @@
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_source_t' />:</td>
+                                <th scope="row"><@spring.message 'dc_source_t' />:</th>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
@@ -283,7 +283,18 @@
                                 <td><@simple_list relationsArr '<br/>'/></td>
                             </tr>
                         </#if>
-                     
+
+                        <#-- ICN FIELDS
+                        todo: add other fields and switch for controlled fields
+                        ------------------------------------------------------------------------------>
+                        <#assign techniqueArr = result.fullDoc.technique />
+                        <#if isNonEmpty(techniqueArr)>
+                            <tr>
+                                <th scope="row">technique:</th>
+                                <td><@simple_list techniqueArr '<br/>'/></td>
+                            </tr>
+                        </#if>
+
                     <#-- check if there is more content, if so show 'more' link and render content -->
                     <#--<#if isNonEmpty(moreArr) >-->
                     <#--<p id="morelink">-->
@@ -311,7 +322,7 @@
                     <#--</p>-->
                     <#--<div class="clearfix"></div>-->
                     <#--<div id="moremetadata" style="display:none  ">-->
-                     
+
 
 
                         <#-- DC TERMS PROVENANCE----------------------------------------------------------------------->
