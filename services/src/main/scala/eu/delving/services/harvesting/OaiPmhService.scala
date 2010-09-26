@@ -13,6 +13,7 @@ import eu.delving.services.core.MetaRepo.{Record, HarvestStep, PmhVerb}
 import eu.delving.services.core.MetaRepo
 import eu.delving.services.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
 import java.text.{ParseException, SimpleDateFormat}
+import org.joda.time.DateTime
 
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
@@ -29,7 +30,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private val VERB = "verb"
   private val legalParameterKeys = List("verb", "identifier", "metadataPrefix", "set", "from", "until", "resumptionToken")
-  private[harvesting] val dateFormat = new SimpleDateFormat("dd-MM-yyyy")
+  private[harvesting] val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+  private[harvesting] val utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   /**
    * receive an HttpServletRequest with the OAI-PMH parameters and return the correctly formatted xml as a string.
@@ -81,6 +83,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     isValid
   }
 
+  private def toUtcDateTime(date: DateTime) : String = date.toString("yyyy-MM-dd'T'HH:mm:ss'Z'")
+  private def currentDate = toUtcDateTime (new DateTime())
+
   /**
    */
   // TODO: add values from a message.properties file and complete oai identifier block
@@ -90,7 +95,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-      <responseDate>{new Date}</responseDate>
+      <responseDate>{currentDate}</responseDate>
       <request verb="Identify">{request.getRequestURL}</request>
       <Identify>
         <repositoryName>{config.getRepositoryName}</repositoryName>
@@ -128,7 +133,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-     <responseDate>{new Date}</responseDate>
+     <responseDate>{currentDate}</responseDate>
      <request verb="ListSets">{request.getRequestURL}</request>
       <ListSets>
         { for (set <- dataSets.values) yield
@@ -167,7 +172,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-      <responseDate>{new Date}</responseDate>
+      <responseDate>{currentDate}</responseDate>
       {formatRequest}
       <ListMetadataFormats>
        {for (format <- metadataFormats) yield
@@ -195,7 +200,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-      <responseDate>{new Date}</responseDate>
+      <responseDate>{currentDate}</responseDate>
       <request verb="ListIdentifiers" from={harvestStep.pmhRequest.getFrom.toString} until={harvestStep.pmhRequest.getUntil.toString}
                metadataPrefix={harvestStep.pmhRequest.getMetadataPrefix}
                set={setSpec}>{request.getRequestURL}</request>
@@ -216,15 +221,14 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   def processListRecords(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
     val pmhObject = harvestStep.pmhRequest
-    // todo implement with Joda time
-    def printDate(date: Date) : String = if (date != null) date.toString else ""
+    def printDate(date: Date) : String = if (date != null) toUtcDateTime(new DateTime(date)) else ""
 
     var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-     <responseDate>{new Date}</responseDate>
+     <responseDate>{currentDate}</responseDate>
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
@@ -258,7 +262,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-      <responseDate>{new Date}</responseDate>
+      <responseDate>{currentDate}</responseDate>
       <request verb="GetRecord" identifier={identifier}
                metadataPrefix={metadataFormat}>{request.getRequestURL}</request>
       <GetRecord>
@@ -287,12 +291,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   private[harvesting] def getDate(dateString: String): Date = {
     if (dateString.isEmpty) return null
     val date = try {
-      if (!dateString.matches("^[0-9]{2}-[0-9]{2}-[0-9]{4}.*")) throw new ParseException("not a legal date string", 0)
-      else dateFormat.parse(dateString)
+      if (dateString.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")) utcDateFormat.parse(dateString)
+      else if (dateString.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}.*")) dateFormat.parse(dateString)
+      else throw new ParseException("not a legal date string", 0)
     } catch {
       case e: ParseException => throw new BadArgumentException("Unable to parse date: " + dateString)
     }
-    date //todo: found out why including a date causes a harvesting error
+    date
   }
 
   // todo find a way to not show status namespace when not deleted
@@ -354,7 +359,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-      <responseDate>{new Date}</responseDate>
+      <responseDate>{currentDate}</responseDate>
       <request>{request.getRequestURL}</request>
       {errorCode match {
       case "badArgument" => <error code="badArgument">The request includes illegal arguments, is missing required arguments, includes a repeated argument, or values for arguments have an illegal syntax.</error>

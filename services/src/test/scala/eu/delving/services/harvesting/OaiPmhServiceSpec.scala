@@ -73,16 +73,20 @@ class OaiPmhServiceSpec extends Spec with ShouldMatchers {
       val parser = new OaiPmhService(request, metaRepo)
 
       it("should parse a default date correctly") {
-        parser.getDate("01-01-1970").toString should equal ("Thu Jan 01 00:00:00 CET 1970")
+        parser.getDate("1970-01-01").toString should equal ("Thu Jan 01 00:00:00 CET 1970")
       }
 
       it("should ignore time") {
-        parser.getDate("01-01-1970 00:00:01").toString should equal ("Thu Jan 01 00:00:00 CET 1970")
+        parser.getDate("1970-01-01 00:00:01").toString should equal ("Thu Jan 01 00:00:00 CET 1970")
+      }
+
+      it("should parse utc time string correctly") {
+        parser.getDate("1970-01-01T00:00:01Z").toString should equal ("Thu Jan 01 00:00:01 CET 1970")
       }
 
       it("should complain when given a bad dateString") {
           evaluating { parser getDate ("01/01/1970") } should produce [BadArgumentException]
-          evaluating { parser getDate ("1970-01-01") } should produce [BadArgumentException]
+          evaluating { parser getDate ("01-01-1970") } should produce [BadArgumentException]
       }
 
     }
