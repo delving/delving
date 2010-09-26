@@ -19,6 +19,14 @@
                    <#assign columsize = 2>
                 </#if>
                    <#break/>
+            <#case "COLLECTION">
+                <#if facet.links?size &gt; 0>
+                   <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
+                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="Collectie">
+                   <noscript><h4>Collectie:</h4></noscript>
+                   <#assign columsize = 1>
+                </#if>
+                   <#break/>
             <#case "YEAR">
                 <#if facet.links?size &gt; 0>
                     <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
@@ -27,7 +35,7 @@
                    <#assign columsize = 2>
                </#if>
                <#break/>
-            <#case "TYPE">
+            <#case "DCTYPE"> <#--note: was type before-->
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
@@ -51,10 +59,12 @@
                    <#assign columsize = 1>
                 </#if>
                <#break/>
+            <#default>
+                <#break/>
         </#switch>
         <#assign facet_max = 20/>
 
-        <#if facet.links?size &gt; 0>
+        <#if facet.links?size &gt; 0 && facet.type != "TYPE"> <#--dirty hack to make sure TYPE isn't rendered-->
             <div  style="width: 100%; overflow-x: hidden; overflow-y: auto; max-height: 200px;">
                 <table width="100%">
                     <#list facet.links?chunk(columsize) as row>

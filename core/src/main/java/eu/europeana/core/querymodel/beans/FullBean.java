@@ -38,6 +38,7 @@ import static eu.europeana.core.querymodel.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
 import static eu.europeana.definitions.annotations.FieldCategory.ESE;
 import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
+import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -98,6 +99,10 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("europeana_provider")
     String[] europeanaProvider;
 
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coll", briefDoc = true)
+    @Solr(fieldType = "string")
+    @Field("COLLECTION")
+    String[] collection;
 
     // Dublin Core / ESE fields
     @Europeana
@@ -175,6 +180,10 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("dc_type")
     String[] dcType;
 
+    @Field("DCTYPE")
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "dctype") // removed facetPrefix = "type",
+    @Solr(localName = "dctype", fieldType = "string")
+    String[] DCTYPE;
 
     // Dublin Core Terms extended / ESE fields
     @Europeana
@@ -292,7 +301,7 @@ public class FullBean extends BriefBean implements FullDoc {
         return europeanaUri;
     }
 
-    
+
 
     @Override
     public String[] getThumbnails() {

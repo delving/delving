@@ -33,7 +33,7 @@ import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDI
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:16:46 AM       
+ * @since Jan 7, 2010 9:16:46 AM
  */
 
 public class BriefBean extends IdBean implements BriefDoc {
@@ -49,7 +49,7 @@ public class BriefBean extends IdBean implements BriefDoc {
     String[] europeanaCollectionName;
 
     @Field("PROVIDER")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "prov", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true) // facetPrefix = "prov",
     @Solr(fieldType = "string")
     String[] provider;
 
@@ -59,22 +59,22 @@ public class BriefBean extends IdBean implements BriefDoc {
     String[] europeanaObject;
 
     @Field("COUNTRY")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coun")
+    @Europeana(category = INDEX_TIME_ADDITION) // removed facetPrefix = "coun"
     @Solr(fieldType = "string")
     String[] country;
 
     @Field("TYPE")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "type", briefDoc = true, type = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "type", type = true) // removed facetPrefix = "type",
     @Solr(localName = "type", fieldType = "string")
     String[] docType;
 
     @Field("LANGUAGE")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "lang", briefDoc = true)
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true) // facetPrefix = "lang",
     @Solr(fieldType = "string")
     String[] language;
 
     @Field("YEAR")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "yr", briefDoc = true, converter="extractYear")
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "yr", converter = "extractYear")
     @Solr(fieldType = "string")
     String[] year;
 
@@ -105,7 +105,7 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     @Override
     public String getDebugQuery() {
-        return debugQuery;  
+        return debugQuery;
     }
 
     @Override
