@@ -78,6 +78,7 @@
                 <value>message.cache.seconds</value>
                 <value>log4j.xml</value>
                 <value>portal.name</value>
+                <value>portal.displayName</value>
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
                 <value>portal.color</value>
