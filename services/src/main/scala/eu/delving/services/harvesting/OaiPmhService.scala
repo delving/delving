@@ -8,11 +8,12 @@ import scala.collection.JavaConversions._
 import collection.mutable.HashMap
 import java.util.Map.Entry
 import org.apache.log4j.Logger
-import java.text.{SimpleDateFormat}
 import xml._
 import eu.delving.services.core.MetaRepo.{Record, HarvestStep, PmhVerb}
-import eu.delving.services.exceptions.{BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
 import eu.delving.services.core.MetaRepo
+import eu.delving.services.exceptions.{BadArgumentException, BadResumptionTokenException, CannotDisseminateFormatException, NoRecordsMatchException}
+import java.text.{ParseException, SimpleDateFormat}
+
 /**
  *  This class is used to parse an OAI-PMH instruction from an HttpServletRequest and return the proper XML response
  *
@@ -28,7 +29,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private val VERB = "verb"
   private val legalParameterKeys = List("verb", "identifier", "metadataPrefix", "set", "from", "until", "resumptionToken")
-  private val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+  private[harvesting] val dateFormat = new SimpleDateFormat("dd-MM-yyyy")
 
   /**
    * receive an HttpServletRequest with the OAI-PMH parameters and return the correctly formatted xml as a string.
@@ -145,6 +146,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
    */
   def processListMetadataFormats(pmhRequestEntry: PmhRequestEntry) : Elem = {
 
+    val eseSchema =
+      <metadataFormat>
+          <metadataPrefix>ese</metadataPrefix>
+          <schema>http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd</schema>
+          <metadataNamespace>http://www.europeana.eu/schemas/ese/</metadataNamespace>
+       </metadataFormat>
+
     // if no identifier present list all formats
     val identifier = pmhRequestEntry.pmhRequestItem.identifier.split(":").last
 
@@ -169,6 +177,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
           <metadataNamespace>{format.namespace}</metadataNamespace>
        </metadataFormat>
         }
+        {eseSchema}
       </ListMetadataFormats>
     </OAI-PMH>
     elem
@@ -207,6 +216,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   def processListRecords(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
     val pmhObject = harvestStep.pmhRequest
+    // todo implement with Joda time
+    def printDate(date: Date) : String = if (date != null) date.toString else ""
 
     var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
@@ -214,8 +225,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
      <responseDate>{new Date}</responseDate>
-     <request verb="ListRecords" from={pmhObject.getFrom.toString}
-              until={pmhObject.getUntil.toString} metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
+     <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
+              metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
           <metadata>
             {for (record <- harvestStep.records) yield
@@ -268,21 +279,21 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   }
 
   private def createFirstHarvestStep(item: PmhRequestItem) : HarvestStep = {
-    // todo implement proper date parsing
-    val from = new Date() //getDate(item.from)
-    val until = new Date() //getDate(item.until)
+    val from = getDate(item.from)
+    val until = getDate(item.until)
     metaRepo.getFirstHarvestStep(item.verb, item.set, from, until, item.metadataPrefix)
   }
 
-//  private def getDate(dateString: String): Date = {
-//    if (dateString.isEmpty) return null
-//    val date = try {
-//      return dateFormat.parse(dateString)
-//    } catch {
-//      case e: ParseException => throw new BadArgumentException("Unable to parse date: " + dateString)
-//    }
-//    date
-//  }
+  private[harvesting] def getDate(dateString: String): Date = {
+    if (dateString.isEmpty) return null
+    val date = try {
+      if (!dateString.matches("^[0-9]{2}-[0-9]{2}-[0-9]{4}.*")) throw new ParseException("not a legal date string", 0)
+      else dateFormat.parse(dateString)
+    } catch {
+      case e: ParseException => throw new BadArgumentException("Unable to parse date: " + dateString)
+    }
+    date //todo: found out why including a date causes a harvesting error
+  }
 
   // todo find a way to not show status namespace when not deleted
   private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
