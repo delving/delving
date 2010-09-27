@@ -38,6 +38,11 @@ solr.timeout = 60000
 solr.retries = 1
 
 #
+# services connection settings
+#
+services.url = http://localhost:8983/services/
+
+#
 # smtp server settings
 #
 smtp.host = localhost

@@ -56,6 +56,7 @@
                 <value>solr.timeout</value>
                 <value>solr.retries</value>
                 <value>solr.chunkSize</value>
+                <value>services.url</value>
                 <value>smtp.host</value>
                 <value>smtp.username</value>
                 <value>smtp.password</value>
