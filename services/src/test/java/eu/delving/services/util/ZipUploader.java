@@ -45,17 +45,17 @@ public class ZipUploader {
     }
 
     private void zipToOutputStream(OutputStream outputStream) throws IOException {
-        InputStream detailsInput = ZipUploader.class.getResourceAsStream("/sffDF.xml.details");
-        InputStream xmlInput = ZipUploader.class.getResourceAsStream("/sffDF.xml");
-        InputStream mappingInput = ZipUploader.class.getResourceAsStream("/sffDF.xml.mapping");
+        InputStream detailsInput = ZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.details");
+        InputStream xmlInput = ZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml");
+        InputStream mappingInput = ZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.mapping");
         ZipOutputStream zos = new ZipOutputStream(outputStream);
-        zos.putNextEntry(new ZipEntry("sffDF.xml.details"));
+        zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml.details"));
         stream(detailsInput, zos);
         zos.closeEntry();
-        zos.putNextEntry(new ZipEntry("sffDF.xml"));
+        zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml"));
         stream(xmlInput, zos);
         zos.closeEntry();
-        zos.putNextEntry(new ZipEntry("sffDF.xml.mapping"));
+        zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml.mapping"));
         stream(mappingInput, zos);
         zos.closeEntry();
         zos.close();
