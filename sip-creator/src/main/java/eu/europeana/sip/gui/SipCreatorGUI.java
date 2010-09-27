@@ -63,7 +63,7 @@ public class SipCreatorGUI extends JFrame {
         tabs.addTab("Mapping", new MappingPanel(sipModel));
         tabs.addTab("Refinement", new RefinementPanel(sipModel));
         tabs.addTab("Normalization", new NormPanel(sipModel));
-        tabs.addTab("Repository", new MetaRepoPanel(sipModel));
+        tabs.addTab("Repository", new DataSetPanel(sipModel));
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -128,7 +128,7 @@ public class SipCreatorGUI extends JFrame {
 
     public static void main(final String[] args) {
         if (args.length == 0) {
-            System.out.println("Requires an argument! SipCreatorGUI [MetaRepo subumit URL]");
+            System.out.println("Requires an argument! SipCreatorGUI [Services Dataset URL]");
         }
         else if (args[0].startsWith("http://")) {
             final String serverUrl = args[0];
