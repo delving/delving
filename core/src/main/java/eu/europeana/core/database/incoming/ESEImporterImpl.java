@@ -54,10 +54,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -304,8 +302,6 @@ public class ESEImporterImpl implements ESEImporter {
             XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
-            BufferedWriter fetchScript = new BufferedWriter(new FileWriter(objectCache.getFetchScriptFile(collection)));
-            fetchScript.write(objectCache.createFetchScriptBegin(collection.getName()));
             EuropeanaId europeanaId = null;
             int recordCount = 0;
             int objectCount = 0;
@@ -368,8 +364,6 @@ public class ESEImporterImpl implements ESEImporter {
                             if (objectUrls != null) {
                                 for (Object object : objectUrls) {
                                     String url = (String) object;
-                                    fetchScript.write(objectCache.createFetchScriptItem(collection.getName(), europeanaId.getEuropeanaUri(), url));
-                                    fetchScript.flush();
                                 }
                             }
                             else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
@@ -402,10 +396,8 @@ public class ESEImporterImpl implements ESEImporter {
             }
             long elapsedMillis = System.currentTimeMillis() - startTime;
             String scriptEnd = objectCache.createFetchScriptEnd(collection.getName(), recordCount, objectCount, elapsedMillis, indexErrorCount);
-            fetchScript.write(scriptEnd);
             log.info(scriptEnd);
             inputStream.close();
-            fetchScript.close();
         }
 
         private void indexRecordList() throws IOException, SolrServerException {
