@@ -85,7 +85,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def toUtcDateTime(date: DateTime) : String = date.toString("yyyy-MM-dd'T'HH:mm:ss'Z'")
   private def currentDate = toUtcDateTime (new DateTime())
-
+  private def printDate(date: Date) : String = if (date != null) toUtcDateTime(new DateTime(date)) else ""
   /**
    */
   // TODO: add values from a message.properties file and complete oai identifier block
@@ -221,7 +221,6 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   def processListRecords(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
     val pmhObject = harvestStep.pmhRequest
-    def printDate(date: Date) : String = if (date != null) toUtcDateTime(new DateTime(date)) else ""
 
     var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
@@ -312,7 +311,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <record>
         <header>
           <identifier>{set}:{record.identifier}</identifier>
-          <datestamp>{record.modified}</datestamp>
+          <datestamp>{printDate(record.modified)}</datestamp>
           <setSpec>{set}</setSpec>
         </header>
         <metadata>
