@@ -110,7 +110,8 @@
                     </tr>
                 </table>
             </form>
-
+            <#if user??>
+                <#if user.role == "ROLE_RESEARCH_USER">
              <h2>Uitegebreid zoeken Museometrie</h2>
 
             <form method="get" action="brief-doc.html" accept-charset="UTF-8">
@@ -289,6 +290,8 @@
                         </form>
             
         </div>
+            </#if>
+            </#if>
 
     </div>
 
