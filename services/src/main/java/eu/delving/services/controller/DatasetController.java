@@ -1,17 +1,20 @@
 package eu.delving.services.controller;
 
 import com.thoughtworks.xstream.XStream;
+import eu.delving.core.rest.DataSetInfo;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
-import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.FieldEntry;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -19,106 +22,89 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * The controller for the metadata repository
+ * Provide a REST interface for managing datasets.
+ *
+ * - API Key authentication
+ * - list all collections (some details: size, indexing status, available formats)
+ * - for each collection
+ *          - enable/disable for indexing
+ *          - abort indexing
+ *          - enable/disable for harvesting
+ *          - enable/disable per metadata format
+ *          - full statistics
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 @Controller
-public class MetaRepoController {
+@RequestMapping("/dataset")
+public class DatasetController {
 
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
     private MetaRepo metaRepo;
 
-    @RequestMapping("/meta/index.html")
-    public
-    @ResponseBody
-    String list() throws BadArgumentException {
-        StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
-        for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
-            out.append(String.format(
-                    "<li><a href=\"%s/%s.html\">%s in %s format</a></li>",
-                    dataSet.setSpec(), dataSet.metadataFormat().prefix(), dataSet.setSpec(), dataSet.metadataFormat().prefix()
-            ));
-            out.append(String.format( // todo: the mappings should be scanned for these extra formats
-                    "<li><a href=\"%s/icn.html\">%s in icn format</a></li>",
-                    dataSet.setSpec(), dataSet.setSpec()
-            ));
-            out.append(String.format( // todo: the mappings should be scanned for these extra formats
-                    "<li><a href=\"%s/ese.html\">%s in ese format</a></li>",
-                    dataSet.setSpec(), dataSet.setSpec()
-            ));
-        }
-        out.append("</ul>");
-        return out.toString();
+    @RequestMapping
+    public ModelAndView pokey() throws BadArgumentException {
+        return view(metaRepo.getDataSets().values());
     }
 
-    @RequestMapping("/meta/formats.html")
-    public
-    @ResponseBody
-    String formats() throws BadArgumentException {
-        StringBuilder out = new StringBuilder("<h1>MetaRepo Formats:</h1><ul>\n");
-        for (MetaRepo.MetadataFormat format : metaRepo.getMetadataFormats()) {
-            out.append(String.format("<li>%s : %s - %s</li>", format.prefix(), format.namespace(), format.schema()));
-        }
-        out.append("</ul>");
-        return out.toString();
-    }
-
-    @RequestMapping("/meta/{dataSetSpec}/{prefix}.html")
-    public
-    @ResponseBody
-    String listCollection(
+    @RequestMapping(value = "/indexing/{dataSetSpec}")
+    public ModelAndView indexingControl(
             @PathVariable String dataSetSpec,
-            @PathVariable String prefix
-    ) throws CannotDisseminateFormatException, BadArgumentException {
+            @RequestParam(required = false) Boolean enable,
+            @RequestParam(required = false) Boolean abort
+    ) throws BadArgumentException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
-        if (dataSet == null) {
-            throw new RuntimeException(String.format("Dataset [%s] not found", dataSetSpec));
+        if (abort != null && abort) {
+            log.info(String.format("Indexing of %s to be aborted", dataSetSpec));
         }
-        boolean eseStripWorkaround = "ese".equals(prefix);
-        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
-        for (MetaRepo.Record record : dataSet.records(eseStripWorkaround ? "icn" : prefix, 0, 10, null, null)) {
-            String xml = record.xml(eseStripWorkaround ? "icn" : prefix);
-            if (eseStripWorkaround) {
-                List<FieldEntry> entries = FieldEntry.createList(xml);
-                Iterator<FieldEntry> walk = entries.iterator();
-                while (walk.hasNext()) {
-                    FieldEntry entry = walk.next();
-                    if (entry.getTag().startsWith("icn")) {
-                        walk.remove();
-                    }
-                }
-                xml = FieldEntry.toString(entries, false);
-            }
-            xml = xml.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
-            out.append("<li>").append(record.identifier()).append("<br>")
-                    .append(record.modified().toString()).append("<br>")
-                    .append(xml).append("</li>\n");
+        else if (enable != null) {
+            log.info(String.format("Indexing of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
         }
-        out.append("</ul>");
-        return out.toString();
+        else {
+            log.info(String.format("Just showing %s", dataSetSpec));
+        }
+        return view(dataSet);
     }
 
-    @RequestMapping("/meta/submit/{dataSetSpec}.zip")
-    public
-    @ResponseBody
+    @RequestMapping(value = "/harvesting/{dataSetSpec}")
+    public ModelAndView harvestingControl(
+            @PathVariable String dataSetSpec,
+            @RequestParam(required = false) Boolean enable,
+            @RequestParam(required = false) String prefix
+    ) throws BadArgumentException {
+        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        if (enable != null) {
+            if (prefix != null) {
+                log.info(String.format("Harvesting of %s prefix %s to be %s", dataSetSpec, prefix, enable ? "enabled" : "disabled"));
+            }
+            else {
+                log.info(String.format("Harvesting of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
+            }
+        }
+        else {
+            log.info(String.format("Just showing %s", dataSetSpec));
+        }
+        return view(dataSet);
+    }
+
+    @RequestMapping(value = "/submit/{dataSetSpec}.zip", method= RequestMethod.POST)
+    public @ResponseBody
     String submit(
             @PathVariable String dataSetSpec,
             InputStream inputStream
     ) throws IOException, XMLStreamException, BadArgumentException {
         log.info("submit(" + dataSetSpec + ")");
-        Map<String, ? extends MetaRepo.DataSet> dataSets = metaRepo.getDataSets();
-        MetaRepo.DataSet dataSet = dataSets.get(dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
         DataSetDetails dataSetDetails = null;
@@ -141,7 +127,7 @@ public class MetaRepoController {
                     );
                 }
                 else {
-                    // todo: update it!
+                    // todo: update the details!
                 }
             }
             else if (entry.getName().endsWith(".xml")) {
@@ -175,12 +161,35 @@ public class MetaRepoController {
         return "OK";
     }
 
+    private ModelAndView view(MetaRepo.DataSet dataSet) {
+        if (dataSet == null) {
+            throw new RuntimeException("DataSet not found!"); // todo: better solution
+        }
+        return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "dataset", getInfo(dataSet));
+    }
+
+    private ModelAndView view(Collection<? extends MetaRepo.DataSet> dataSetList) {
+        List<DataSetInfo> list = new ArrayList<DataSetInfo>();
+        for (MetaRepo.DataSet dataSet : dataSetList) {
+            list.add(getInfo(dataSet));
+        }
+        return new ModelAndView("dataSetXmlView", BindingResult.MODEL_KEY_PREFIX + "list", list);
+    }
+
+    private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
+        DataSetInfo info = new DataSetInfo();
+        info.spec = dataSet.setSpec();
+        info.name = dataSet.setName();
+        info.providerName = dataSet.providerName();
+        info.prefix = dataSet.metadataFormat().prefix();
+        return info;
+    }
+
     private DataSetDetails getDetails(InputStream inputStream) {
         XStream stream = new XStream();
         stream.processAnnotations(DataSetDetails.class);
         return (DataSetDetails) stream.fromXML(inputStream);
     }
-
 
     private String getMapping(InputStream inputStream) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));

@@ -63,7 +63,7 @@ public class ZipUploader {
 
     private void uploadFile(File file) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = "http://localhost:8983/services/meta/submit/" + file.getName();
+        String postUrl = "http://localhost:8983/services/dataset/submit/" + file.getName();
         log.info("Posting to: "+postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         FileEntity fileEntity = new FileEntity(file, "application/zip");
