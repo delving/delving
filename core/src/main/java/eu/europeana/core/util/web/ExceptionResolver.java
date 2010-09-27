@@ -65,6 +65,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     @Value("#{launchProperties['portal.color']}")
     private String portalColor;
 
+    @Value("#{launchProperties['portal.displayName']}")
+    private String portalDisplayName;
+
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
@@ -87,6 +90,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
                 model.put("portalName", portalName);
                 model.put("portalTheme", portalTheme);
                 model.put("portalColor", portalColor);
+                model.put("portalDisplayName", portalDisplayName);
                 model.put("agent", request.getHeader("User-Agent"));
                 model.put("referer", request.getHeader("referer"));
                 model.put(EmailSender.SUBJECT, queryProblem.getFragment());
@@ -109,6 +113,8 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         mav.addObject("cacheUrl", cacheUrl);
         mav.addObject("portalName", portalName);
         mav.addObject("portalTheme", portalTheme);
+        mav.addObject("portalColor", portalColor);
+        mav.addObject("portalDisplayName", portalDisplayName);
         mav.addObject("queryProblem", queryProblem);
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);
