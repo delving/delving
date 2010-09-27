@@ -24,10 +24,10 @@
 
                <div id="savedItems">
                     <ul>
-                        <li><a href="#fragment-0" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
-                        <li><a href="#fragment-1" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
-                        <li><a href="#fragment-2" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
-                        <li><a href="#fragment-3" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
+                        <li><a href="#fragment-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
+                        <li><a href="#fragment-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
+                        <li><a href="#fragment-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
+                        <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
                     </ul>
                    <div id="fragment-0">
                       <table width="100%" class="tbl-list" summary="table with user information" id="tbl-user" height="300">
@@ -129,9 +129,22 @@
                                    <tr>
                                      <td width="35" align="right">
                                          <#if tag.europeanaObject??>
+                                            <a href="full-doc.html?uri=${tag.europeanaUri}">
                                             <#if useCache = "true">
                                                 <img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="25"/>
                                             </#if>
+
+                                             <#if useCache="true">
+                                                <img class="thumb" align="middle" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" height="50"/>
+                                             <#else>
+                                                <#if tag.docType??>
+                                                  <img class="thumb" align="middle" src="${tag.europeanaObject}" height="50" onerror="showDefault(this,'${tag.docType}')"/>
+                                                <#else>
+                                                  <img class="thumb" align="middle" src="${tag.europeanaObject}" height="50" onerror="showDefault(this)"/>
+                                                </#if>
+                                             </#if>
+                                             </a>
+
                                          </#if>
                                      </td>
                                      <td valign="top" class="item-info">

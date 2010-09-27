@@ -1,4 +1,6 @@
-        <h3><@spring.message 'RelatedContent_t' />:</h3>
+         
+
+        <h6><@spring.message 'RelatedContent_t' />:</h6>
 
                 <table summary="related items" id="tbl-related-items" width="100%">
                     <#assign max=3/><!-- max shown in list -->
@@ -38,34 +40,23 @@
                         </tr>
                     </#list>
                 </table>
-        
+
                 <#if result.relatedItems?size &gt; max>
-
-                    <a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}' class="fg-button ui-state-default fg-button-icon-left ui-corner-all">
-                    <span class="ui-icon ui-icon-circle-plus"></span><@spring.message 'SeeAllRelatedItems_t' /></a>
-
+                <p>
+                    <a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'>
+                    <@spring.message 'SeeAllRelatedItems_t' /></a>
+                </p>
                 </#if>
 
                 <div class="clear"></div>
 
 
-                <h3><@spring.message 'Actions_t' />:</h3>
+                <#--<h3><@spring.message 'Actions_t' />:</h3>-->
+
                 <#if user??>
 
-                    <p>
-                        <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToMyEuropeana_t' /></a>
-                        <div id="msg-save-item" class="msg-hide"></div>
-                    </p>
-
-                    <#if result.fullDoc.europeanaType == "IMAGE">
-                        <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-                            <p class="linetop">
-                                <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
-                            </p>
-                        </#if>
-                    </#if>
-
                 <h6><@spring.message 'ShareWithAFriend_t' /></h6>
+
                 <form action="#" method="post" onsubmit='sendEmail("${result.fullDoc.id}"); return false;' id="form-sendtoafriend" accept-charset="UTF-8">
                     <label for="friendEmail"></label>
                     <input type="text" name="friendEmail" class="required email text" id="friendEmail" maxlength="50" value="<@spring.message 'EmailAddress_t' />"
@@ -73,7 +64,8 @@
                     <input type="submit" id="mailer" class="button" value="<@spring.message 'Send_t' />"/>
 
                 </form>
-                <div id="msg-send-email" class="hide"></div>
+
+                <span id="msg-send-email" class="hide"></span>
 
                 <h6><@spring.message 'AddATag_t' /></h6>
 
@@ -82,25 +74,41 @@
                           <input type="text" name="tag" id="tag" maxlength="50" class="text"/>
                           <input type="submit" class="button tag" value="<@spring.message 'Add_t' />"/>
                       </form>
-                <div id="msg-save-tag-success" class="ui-info hide"></div>
-                <div id="msg-save-tag-fail" class="ui-error hide"></div>
+                <span id="msg-save-tag" class="hide"></span>
                 <#--</div>-->
 
-            <h6><@spring.message 'UserTags_t' /></h6>
+                <h6><@spring.message 'UserTags_t' /></h6>
 
-            <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
-            <div class="toggler-c ui-icon-circle-triangle-s"title="<@spring.message 'UserTags_t' />">
-                <#assign usertags = ["Manuscript","Treasure","Religion"]/>
+                <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
+                <div class="toggler-c ui-icon-circle-triangle-s"title="<@spring.message 'UserTags_t' />">
+                    <#assign usertags = ["Manuscript","Treasure","Religion"]/>
+                    <#--<p>-->
+                        <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
+                        <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
+                        <#--</#list>-->
+                    <#--</p>-->
+                    <#list usertags as tag>
+                        ${tag}<br/>
+                    </#list>
+                </div>
+
                 <#--<p>-->
-                    <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
-                    <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
-                    <#--</#list>-->
-                <#--</p>-->
-                <#list usertags as tag>
-                    ${tag}<br/>
-                </#list>
-            </div>
+                    <#--<a href="#"  class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">-->
+                        <#--<span class="ui-icon ui-icon-disk"></span><@spring.message 'SaveToMyEuropeana_t' />-->
+                    <#--</a>-->
 
+                    <#--<div id="msg-save-item" class="msg-hide"></div>-->
+
+                <#--</p>-->
+
+                    <#if result.fullDoc.europeanaType == "IMAGE">
+                        <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+                            <p class="linetop">
+                                <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
+                            </p>
+                        </#if>
+                    </#if>
+                <div class="clear"></div>
 
         <#else>
             <div class="related-links">

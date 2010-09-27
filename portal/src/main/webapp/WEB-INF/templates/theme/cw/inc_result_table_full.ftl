@@ -295,6 +295,32 @@
                             </tr>
                         </#if>
 
+                     <#assign materialArr = result.fullDoc.material />
+                        <#if isNonEmpty(materialArr)>
+                            <tr>
+                                <th scope="row">materiaal:</th>
+                                <td><@simple_list materialArr '<br/>'/></td>
+                            </tr>
+                        </#if>
+
+                     <#assign provinceArr = result.fullDoc.province />
+                        <#if isNonEmpty(provinceArr)>
+                            <tr>
+                                <th scope="row">provincie:</th>
+                                <td><@simple_list provinceArr '<br/>'/></td>
+                            </tr>
+                        </#if>
+                         <#assign collectionPartArr = result.fullDoc.collectionPart />
+                        <#if isNonEmpty(collectionPartArr)>
+                            <tr>
+                                <th scope="row">collection:</th>
+                                <td><@simple_list collectionPartArr '<br/>'/></td>
+                            </tr>
+                        </#if>
+
+
+
+                     
                     <#-- check if there is more content, if so show 'more' link and render content -->
                     <#--<#if isNonEmpty(moreArr) >-->
                     <#--<p id="morelink">-->
@@ -336,26 +362,38 @@
 
 
 
-                        <tr>
-                            <th>&#160;</th>
-                            <td> <br/>
-                                <#assign UrlRef = "#"/>
-                                <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
-                                    <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
-                                <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
-                                    <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
-                                </#if>
-                                <a
-                                    href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
-                                    target="_blank"
-                                    alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                                >
-                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
-                                </a>
-                            </td>
-                        </tr>
+                        <#--<tr>-->
+                            <#--<th>&#160;</th>-->
+                            <#--<td>-->
+                                <#--<#assign UrlRef = "#"/>-->
+                                <#--<#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>-->
+                                    <#--<#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>-->
+                                <#--<#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>-->
+                                    <#--<#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>-->
+                                <#--</#if>-->
+                                <#--<a-->
+                                    <#--href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
+                                    <#--target="_blank"-->
+                                    <#--alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
+                                <#-->-->
+                                    <#--<span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />-->
+                                <#--</a>-->
+                            <#--</td>-->
+                        <#--</tr>-->
+                        <#--<tr>-->
+                            <#--<th>&#160;</th>-->
+                            <#--<td>-->
+
+                    <#--<a href="#"  class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">-->
+                        <#--<span class="ui-icon ui-icon-disk"></span><@spring.message 'SaveToMyEuropeana_t' />-->
+                    <#--</a>-->
+
+                    <#--<div id="msg-save-item" class="msg-hide"></div>-->
+
+                            <#--</td>-->
+                        <#--</tr>-->
 
                     </tbody>
                     </table>

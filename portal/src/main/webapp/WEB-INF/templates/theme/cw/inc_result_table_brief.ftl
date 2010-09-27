@@ -101,6 +101,8 @@
                              src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message 'AltMoreInfo_t' />"
                              height="50"
+                             onerror="showDefaultSmall(this,'${cell.type}',this.src);"
+
                           />
                     <#else>
                         <img class="thumb"
@@ -109,7 +111,7 @@
                              src="${cell.thumbnail}"
                              alt="Click for more information"
                              height="50"
-                             onerror="showDefaultSmall(this,'${cell.type}')"
+                             onerror="showDefaultSmall(this,'${cell.type}',this.src);"
                          />
                     </#if>
                 </a>

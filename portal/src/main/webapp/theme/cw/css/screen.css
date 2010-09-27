@@ -175,7 +175,9 @@ ul a:hover, ul a:visited:hover {
 }
 
 /* box styles *************************************************************************************/
-
+.box {
+    margin: 0 0 1em 0;
+}
 .box h2.head,
 .box h3.head,
 .box h4.head,
@@ -246,12 +248,15 @@ ul a:hover, ul a:visited:hover {
 #query_breadcrumbs {
     margin: 1em 0;
     padding: 0;
+    height: 22px;
+    line-height: 22px;
 }
 
 #query_breadcrumbs h3 {
     float: left;
-    margin: 0;
     padding: 0;
+    margin: 2px 0 0 0;
+    font-weight: normal;
 }
 
 ul.nav_query_breadcrumbs {
@@ -261,9 +266,10 @@ ul.nav_query_breadcrumbs {
 
 ul.nav_query_breadcrumbs li {
     display: inline;
+    font-size: 1.2em;
 }
 
-ul.nav_query_breadcrumbs li.first {
+ul.nav_query_breadcrumbs li.nobg {
     background: none;
 }
 
@@ -354,6 +360,15 @@ table.item caption {
 
 table#tbl-related-items td {
     background: #fff;
+}
+
+#left-col h3 {
+    margin: 0 0 1em 0;
+    padding: 0;
+}
+
+#left-col h6 {
+    margin: 2em 0 0 0;
 }
 
 
@@ -474,7 +489,7 @@ button.fg-button, input.fg-button {
 
 /* Toggler - default style */
     .toggler {
-        margin: 10px 0;
+        margin: 1.5em 0;
         border-bottom: solid 1px #ccc;
         cursor: pointer;
         font-size: 1.0em;
@@ -556,3 +571,7 @@ button.fg-button, input.fg-button {
     font-weight: bold;
     text-decoration: none;
 }
+
+/* General rules ********************************************************************/
+
+a.disabled {color: #999999;}

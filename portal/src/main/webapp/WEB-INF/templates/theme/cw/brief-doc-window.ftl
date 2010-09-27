@@ -56,18 +56,21 @@
         </div>
 
         <div id="query_breadcrumbs">
-            <h3><@spring.message 'MatchesFor_t' />:</h3>
+            <h3>
+                <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+                voor:
+            </h3>
             <ul class="nav_query_breadcrumbs">
                 <#if !result.matchDoc??>
                     <#list breadcrumbs as crumb>
                         <#if !crumb.last>
-                            <li <#if crumb_index == 0>class="first"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>
                         <#else>
-                            <li <#if crumb_index == 0>class="first"</#if>>${crumb.display?html}</li>
+                            <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
                         </#if>
                     </#list>
                 <#else>
-                    <li class="first">
+                    <li class="nobg">
                     <@spring.message 'ViewingRelatedItems_t' />
                     <#assign match = result.matchDoc/>
                     <a href="${match.fullDocUrl}">
@@ -81,13 +84,13 @@
 
         </div>
 
-        <div id="result-count">
-            <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-        </div>
+        <#--<div id="result-count">-->
+            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
+        <#--</div>-->
 
-        <div id="object-types">
-            <@typeTabs_plain/>
-        </div>
+        <#--<div id="object-types">-->
+            <#--<@typeTabs_plain/>-->
+        <#--</div>-->
 
         <div class="pagination">
             <@resultnav_styled/>

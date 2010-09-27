@@ -1,24 +1,5 @@
 /* ________________BRIEF DOC_______________________*/
 
-function saveQuery(className, queryToSave, queryString){
-    var sr = document.getElementById("msg-save-search");
-    sr.style.display = 'block';
-    $.ajax({
-       type: "POST",
-       url: "save.ajax",
-       data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
-       success: function(msg){
-           sr.innerHTML = msgSearchSaveSuccess;
-           var ss = document.getElementById("savedSearchesCount");
-           var currentCount = parseInt(ss.innerHTML, 10);
-           ss.innerHTML = currentCount + 1;
-       },
-       error: function(msg) {
-            sr.innerHTML = msgSearchSaveFail;
-       }
-     });
-}
-
 function showDefaultSmall(obj, iType, src) {
         if(!(src.indexOf('noImageFound'))){
             obj.src = src;
@@ -47,17 +28,6 @@ function showDefaultSmall(obj, iType, src) {
 }
 
 
-function imgError(){
-    log.error("image not found");
-}
-/*
-
-function refineSearch(query,qf){
-   $("input#query-get").val(query);
-    var strqf = $("input#qf-get").val(qf.replace("&qf=",""));
-    strqf = strqf.replace("&amp;","&");
-    $("#form-refine-search").submit();
-}*/
 
 /* ________________FULL DOC_______________________*/
 function showDefaultLarge(obj,iType,src){
@@ -86,60 +56,89 @@ function showDefaultLarge(obj,iType,src){
     }
 }
 
+function imgError(){
+    log.error("image not found");
+}
+/*
+
+function refineSearch(query,qf){
+   $("input#query-get").val(query);
+    var strqf = $("input#qf-get").val(qf.replace("&qf=",""));
+    strqf = strqf.replace("&amp;","&");
+    $("#form-refine-search").submit();
+}*/
+
 function sendEmail(objId){
     $("#form-sendtoafriend").validate({
         rules: {friendEmail: "required"},
         messages: {friendEmail:{required:msgRequired,email:msgEmailValid}}
     });
     if ($("#form-sendtoafriend").valid()){
-        var sr = document.getElementById("msg-send-email");
-        sr.style.display = 'block';
+         var message = $("#msg-send-email");
         var email = document.getElementById("friendEmail").value;
         $.ajax({
            type: "POST",
            url: "email-to-friend.ajax",
            data: encodeURI("uri="+objId+"&email=" + email),
            success: function(msg){
-                sr.innerHTML = msgEmailSendSuccess;
+                message.css({"display":"block","color":"green"}).html(msgSearchSaveSuccess);
                 document.getElementById("friendEmail").value = "";
+               message.delay("5000").fadeOut('slow');
            },
            error: function(msg) {
-                //sr.innerHTML = "<span class='fg-red'>"+msgEmailSendFail+"<span>";
+               message.css({"display":"block","color":"red"}).html(msgEmailSendFail);
+               message.delay("5000").fadeOut('slow');
            }
          });
     }
     return false;
 }
+
+
+function saveQuery(className, queryToSave, queryString){
+    var message = $("#msg-save-search");
+    $.ajax({
+       type: "POST",
+       url: "save.ajax",
+       data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
+       success: function(msg){
+           message.css({"display":"block","color":"green"}).html(msgSearchSaveSuccess);
+           var ss = document.getElementById("savedSearchesCount");
+           var currentCount = parseInt(ss.innerHTML, 10);
+           ss.innerHTML = currentCount + 1;
+           highLight("href-saved-searches");
+           message.delay("5000").fadeOut('slow');
+       },
+       error: function(msg) {
+           message.css({"display":"block","color":"red"}).html(msgSearchSaveFail);
+           message.delay("5000").fadeOut('slow');
+       }
+     });
+}
+
+
 function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
      $("#form-addtag").validate({
         rules: {tag: "required"}
     });
     if ($("#form-addtag").valid()){
-        var success = $("div#msg-save-tag-success");
-        var fail = $("div#msg-save-tag-fail");
-        var messageSuccess = $("div#msg-save-tag-success p span.message");
-        var messageFail = $("div#msg-save-tag-fail p span.message");
+        var message = $("span#msg-save-tag");
         $.ajax({
            type: "POST",
            url: "save.ajax",
            data: "className="+className+"&europeanaUri="+fullDocId+"&europeanaObject="+thumbnailId+"&title="+objTitle+"&tag=" + encodeURIComponent(tagText) +"&docType="+objType,
            success: function(msg){
-
-                success.css("display","block");
-                messageSuccess.html("Tag bewaard");
+                message.css({"display":"block","color":"green"}).html("Tag bewaard");
                 document.getElementById("tag").value = "";
                 var ss = document.getElementById("savedTagsCount");
                 var currentCount = parseInt(ss.innerHTML, 10);
                 ss.innerHTML = currentCount + 1;
-
-                   success.delay("5000").fadeOut('slow');
-
-
+                highLight("href-saved-tags");
+                message.delay("5000").fadeOut('slow');
            },
            error: function(msg) {
-                fail.css("display","block");
-                messageFail.html(strTagAdditionFailed);
-               fail.delay("5000").fadeOut('slow');
+               message.css({"display":"block","color":"red"}).html(strTagAdditionFailed);
+               message.delay("5000").fadeOut('slow');
 
            }
         });
@@ -147,20 +146,24 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
     return false;
 }
 function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
-    var sr = document.getElementById("msg-save-item");
-    sr.style.display = 'block';
+    //var sr = document.getElementById("msg-save-item");
+    //sr.style.display = 'block';
+    var message = $("span#msg-save-item");
     $.ajax({
        type: "POST",
        url: "save.ajax",
        data: "className="+className+"&title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
        success: function(msg){
-           sr.innerHTML = msgItemSaveSuccess;
+           message.css({"display":"block","float":"left","color":"green"}).html(msgItemSaveSuccess);
+           message.delay("5000").fadeOut('slow')
            var ss = document.getElementById("savedItemsCount");
            var currentCount = parseInt(ss.innerHTML, 10);
            ss.innerHTML = currentCount + 1;
+           highLight("href-saved-items");
        },
        error: function(msg) {
-            sr.innerHTML = "<span class='fg-red'>"+msgItemSaveFail+"</span>";
+           message.css({"display":"block","float":"left","color":"red"}).html(msgItemSaveFail);
+           message.delay("5000").fadeOut('slow');
        }
      });
     return false;

@@ -63,19 +63,31 @@
 
         <div id="query_breadcrumbs">
                 <#if pagination??>
+                    <h3 style="float:left"><@spring.message 'MatchesFor_t' />:</h3>
                     <ul class="nav_query_breadcrumbs">
                         <#if !query?starts_with("europeana_uri:")>
-                            <li class="first"><@spring.message 'MatchesFor_t' />:</li>
-                            <#list pagination.breadcrumbs as crumb>
-                                <#if !crumb.last>
-                                    <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>
-                                <#else>
-                                    <li><strong>${crumb.display?html}</strong></li>
-                                </#if>
-                            
-                            </#list>
+                            <#--<#list pagination.breadcrumbs as crumb>-->
+                                <#--<#if crumb_index==0 && !crumb.last>-->
+                                   <#--<li class="nobg"><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>-->
+                                <#--<#elseif crumb_index==0 && crumb.last>-->
+                                   <#--<li class="nobg"><strong>${crumb.display?html}</strong></li>-->
+                                <#--<#elseif crumb_index &gt; 0 && !crumb.last>-->
+                                    <#--<li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>-->
+                                <#--<#else>-->
+                                    <#--<li><strong>${crumb.display?html}</strong></li>-->
+                                <#--</#if>-->
+                            <#---->
+                            <#--</#list>-->
+
+                     <#list pagination.breadcrumbs as crumb>
+                        <#if !crumb.last>
+                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="brief-doc.html?${crumb.href}">${crumb.display?html}</a></li>
+                        <#else>
+                            <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
+                        </#if>
+                    </#list>
                             <#else>
-                                <li class="first">
+                                <li class="nobg">
 
                                 <@spring.message 'ViewingRelatedItems_t' />
                                     <#assign match = result.fullDoc />
@@ -143,6 +155,29 @@
                         &#160;
                 </#if>
 
+                                 <#assign UrlRef = "#"/>
+                                <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
+                                    <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
+                                <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
+                                    <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
+                                </#if>
+                                <a
+                                    href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                                    target="_blank"
+                                    alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                                    title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+                                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                                >
+                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
+                                </a>
+
+                <#if user??>
+                <a href="#"  class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">
+                    <span class="ui-icon ui-icon-disk"></span>Bewaar
+                </a>
+                <span id="msg-save-item" class="hide"></span>
+                </#if>
+ 
             </#if>
 
         </div>
