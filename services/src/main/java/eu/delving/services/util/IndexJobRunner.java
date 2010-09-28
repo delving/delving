@@ -19,12 +19,15 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.incoming;
+package eu.delving.services.util;
 
 import eu.delving.core.database.incoming.PmhImporter;
+import eu.delving.services.core.MetaRepo;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.IndexingQueueEntry;
+import eu.europeana.core.database.incoming.ESEImporter;
+import eu.europeana.core.database.incoming.ImportFile;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,6 +43,9 @@ public class IndexJobRunner {
 
     @Autowired
     private PmhImporter pmhImporter;
+
+    @Autowired
+    private MetaRepo metaRepo;
 
     public void setConsoleDao(ConsoleDao consoleDao) {
         this.consoleDao = consoleDao;
@@ -64,6 +70,7 @@ public class IndexJobRunner {
     }
 
     public void runParallelPmh() {
+        // todo: get dataset for indexing from meta repo
         IndexingQueueEntry entry = consoleDao.getEntryForIndexing();
         if (entry == null) {
             log.debug("no collection found for indexing");

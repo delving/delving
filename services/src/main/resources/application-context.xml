@@ -45,7 +45,7 @@
         <property name="repeatInterval" value="#{launchProperties['harvestStepCleanupDelay']}"/>
     </bean>
 
-     <bean id="indexJobRunner" class="eu.europeana.core.database.incoming.IndexJobRunner">
+     <bean id="indexJobRunner" class="eu.delving.services.util.IndexJobRunner">
         <property name="consoleDao" ref="consoleDao"/>
         <property name="eseImporter" ref="normalizedEseImporter"/>
     </bean>
