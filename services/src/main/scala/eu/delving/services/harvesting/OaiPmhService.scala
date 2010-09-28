@@ -231,11 +231,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
-          <metadata>
             {for (record <- harvestStep.records) yield
               renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet)
             }
-          </metadata>
        {renderResumptionToken(harvestStep)}
      </ListRecords>
     </OAI-PMH>
