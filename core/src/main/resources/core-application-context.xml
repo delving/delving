@@ -83,6 +83,7 @@
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
                 <value>portal.color</value>
+                <value>services.password</value>
 
                 <value>repositoryName</value>
                 <value>adminEmail</value>

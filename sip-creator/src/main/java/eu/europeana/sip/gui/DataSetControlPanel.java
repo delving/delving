@@ -29,7 +29,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -58,23 +57,28 @@ public class DataSetControlPanel extends JPanel {
     private static final String BUTTON_DEFAULT = "Enable / Disable";
     private Executor executor = Executors.newSingleThreadExecutor();
     private DataSetTableModel dataSetTableModel = new DataSetTableModel();
-    private  JTable table = new JTable(dataSetTableModel);
+    private JTable table = new JTable(dataSetTableModel);
     private JButton toggleButton = new JButton(BUTTON_DEFAULT);
     private RestTemplate restTemplate;
-    private String dataSetControllerUrl;
+    private String dataSetControllerUrl, accessKey;
 
     public DataSetControlPanel(String dataSetControllerUrl) {
         super(new BorderLayout(8,8));
         this.dataSetControllerUrl = dataSetControllerUrl;
         setBorder(BorderFactory.createTitledBorder("Control of all data sets"));
-        add(createDataSetTable(), BorderLayout.CENTER);
+        add(new JScrollPane(table), BorderLayout.CENTER);
         add(toggleButton, BorderLayout.SOUTH);
         toggleButton.setEnabled(false);
         setPreferredSize(new Dimension(600, 500));
+        wireUp();
+    }
+
+    public void refreshList(String accessKey) {
+        this.accessKey = accessKey;
         executor.execute(new ListFetcher());
     }
 
-    private JComponent createDataSetTable() {
+    private void wireUp() {
         ListSelectionModel select = table.getSelectionModel();
         select.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         select.addListSelectionListener(new ListSelectionListener() {
@@ -101,7 +105,6 @@ public class DataSetControlPanel extends JPanel {
                 }
             }
         });
-        return new JScrollPane(table);
     }
 
     private void setButton(final DataSetInfo info) {
@@ -195,7 +198,12 @@ public class DataSetControlPanel extends JPanel {
         @Override
         public void run() {
             try {
-                final List list = rest().getForObject(dataSetControllerUrl, List.class);
+                String url = String.format(
+                        "%s?accessKey=%s",
+                        dataSetControllerUrl,
+                        accessKey
+                );
+                final List list = rest().getForObject(url, List.class);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -222,10 +230,11 @@ public class DataSetControlPanel extends JPanel {
         public void run() {
             try {
                 String url = String.format(
-                        "%s/indexing/%s?enable=%s",
+                        "%s/indexing/%s?enable=%s?accessKey=%s",
                         dataSetControllerUrl,
                         spec,
-                        String.valueOf(enable)
+                        String.valueOf(enable),
+                        accessKey
                 );
                 final DataSetInfo info = rest().getForObject(url, DataSetInfo.class);
                 SwingUtilities.invokeLater(new Runnable() {
