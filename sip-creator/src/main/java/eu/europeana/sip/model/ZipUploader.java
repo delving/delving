@@ -148,7 +148,7 @@ public class ZipUploader implements Runnable {
 
     private void uploadFile() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = dataSetControllerUrl + zipFile.getName();
+        String postUrl = dataSetControllerUrl + "/submit/" + zipFile.getName();
         log.info("Posting to: " + postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         ZipEntity zipEntity = new ZipEntity(zipFile, "application/zip");
