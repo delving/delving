@@ -33,7 +33,7 @@ public interface MetaRepo {
 
     DataSet getDataSet(String spec) throws BadArgumentException;
 
-    DataSet getFirstDataSet(IndexState indexState) throws BadArgumentException;
+    DataSet getFirstDataSet(DataSetState dataSetState) throws BadArgumentException;
 
     void incrementRecordCount(String spec, int increment);
 
@@ -63,7 +63,9 @@ public interface MetaRepo {
         QName recordRoot();
         void setRecordRoot(QName root);
         int recordsIndexed();
-        IndexState indexState();
+        void setRecordsIndexed(int count);
+        DataSetState getState();
+        void setState(DataSetState dataSetState);
         MetadataFormat metadataFormat();
         void save();
 
@@ -87,7 +89,7 @@ public interface MetaRepo {
         String DATA_SET_STATE = "state";
     }
 
-    public enum IndexState {
+    public enum DataSetState {
         DISABLED,
         UPLOADED,
         QUEUED,
@@ -95,13 +97,13 @@ public interface MetaRepo {
         ENABLED,
         ERROR;
 
-        public static IndexState get(String string) {
-        for (IndexState t : values()) {
+        public static DataSetState get(String string) {
+        for (DataSetState t : values()) {
             if (t.toString().equalsIgnoreCase(string)) {
                 return t;
             }
         }
-        throw new IllegalArgumentException("Did not recognize IndexState: ["+string+"]");
+        throw new IllegalArgumentException("Did not recognize DataSetState: ["+string+"]");
     }
     }
 

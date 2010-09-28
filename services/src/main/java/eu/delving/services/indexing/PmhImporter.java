@@ -1,4 +1,4 @@
-package eu.delving.core.database.incoming;
+package eu.delving.services.indexing;
 
 import eu.europeana.core.database.domain.EuropeanaCollection;
 

@@ -19,10 +19,10 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.delving.services.util;
+package eu.delving.services.indexing;
 
-import eu.delving.core.database.incoming.PmhImporter;
 import eu.delving.services.core.MetaRepo;
+import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.IndexingQueueEntry;
@@ -70,16 +70,23 @@ public class IndexJobRunner {
     }
 
     public void runParallelPmh() {
-        // todo: get dataset for indexing from meta repo
-        IndexingQueueEntry entry = consoleDao.getEntryForIndexing();
-        if (entry == null) {
-            log.debug("no collection found for indexing");
+        try {
+            MetaRepo.DataSet dataSet = metaRepo.getFirstDataSet(MetaRepo.DataSetState.QUEUED);
+            if (dataSet == null) {
+                log.debug("no collection found for indexing");
+            }
+            else {
+                log.info("found collection to index: " + dataSet.setSpec());
+                EuropeanaCollection collection = consoleDao.fetchCollection(dataSet.setSpec(), dataSet.setSpec()+".xml", true);
+                dataSet.setState(MetaRepo.DataSetState.INDEXING);
+                dataSet.setRecordsIndexed(0);
+                dataSet.save();
+                pmhImporter.commenceImport(collection.getId());
+            }
         }
-        else {
-            log.info("found collection to index: " + entry.getCollection().getName());
-            entry = consoleDao.startIndexing(entry);
-            EuropeanaCollection collection = entry.getCollection();
-            pmhImporter.commenceImport(collection.getId());
+        catch (BadArgumentException e) {
+            e.printStackTrace();  // todo: something
         }
+
     }
 }

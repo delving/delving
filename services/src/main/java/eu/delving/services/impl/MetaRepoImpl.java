@@ -93,7 +93,7 @@ public class MetaRepoImpl implements MetaRepo {
         object.put(DataSet.PROVIDER_NAME, providerName);
         object.put(DataSet.DESCRIPTION, description);
         object.put(DataSet.RECORDS_INDEXED, 0);
-        object.put(DataSet.DATA_SET_STATE, IndexState.UPLOADED.toString());
+        object.put(DataSet.DATA_SET_STATE, DataSetState.UPLOADED.toString());
         DBObject metadataFormat = new BasicDBObject();
         metadataFormat.put(MetadataFormat.PREFIX, prefix);
         metadataFormat.put(MetadataFormat.NAMESPACE, namespace);
@@ -127,9 +127,9 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet getFirstDataSet(IndexState indexState) throws BadArgumentException {
+    public DataSet getFirstDataSet(DataSetState dataSetState) throws BadArgumentException {
         DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-        DBObject object = collection.findOne(new BasicDBObject(DataSet.DATA_SET_STATE, indexState.toString()));
+        DBObject object = collection.findOne(new BasicDBObject(DataSet.DATA_SET_STATE, dataSetState.toString()));
         if (object == null) {
             return null;
         }
@@ -348,8 +348,18 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public IndexState indexState() {
-            return IndexState.get((String) object.get(DATA_SET_STATE));
+        public void setRecordsIndexed(int count) {
+            object.put(RECORDS_INDEXED, count);
+        }
+
+        @Override
+        public DataSetState getState() {
+            return DataSetState.get((String) object.get(DATA_SET_STATE));
+        }
+
+        @Override
+        public void setState(DataSetState dataSetState) {
+            object.put(DATA_SET_STATE, dataSetState.toString());
         }
 
         @Override

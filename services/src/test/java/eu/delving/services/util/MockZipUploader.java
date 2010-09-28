@@ -24,7 +24,7 @@ import java.util.zip.ZipOutputStream;
  */
 
 public class MockZipUploader {
-    private static File ZIP_FILE = new File("services/target/00101_Ag_NO_sffDF.zip");
+    private static File ZIP_FILE = new File("services/target/92001_Ag_EU_TELtreasures.zip");
     private Logger log = Logger.getLogger(MockZipUploader.class);
     private String serviceKey;
 
@@ -50,17 +50,17 @@ public class MockZipUploader {
     }
 
     private void zipToOutputStream(OutputStream outputStream) throws IOException {
-        InputStream detailsInput = MockZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.details");
-        InputStream xmlInput = MockZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml");
-        InputStream mappingInput = MockZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.mapping");
+        InputStream detailsInput = MockZipUploader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml.details");
+        InputStream xmlInput = MockZipUploader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml");
+        InputStream mappingInput = MockZipUploader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml.mapping");
         ZipOutputStream zos = new ZipOutputStream(outputStream);
-        zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml.details"));
+        zos.putNextEntry(new ZipEntry("testdata/treasures/92001_Ag_EU_TELtreasures.xml.details"));
         stream(detailsInput, zos);
         zos.closeEntry();
-        zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml"));
+        zos.putNextEntry(new ZipEntry("testdata/treasures/92001_Ag_EU_TELtreasures.xml"));
         stream(xmlInput, zos);
         zos.closeEntry();
-        zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml.mapping"));
+        zos.putNextEntry(new ZipEntry("testdata/treasures/92001_Ag_EU_TELtreasures.xml.mapping"));
         stream(mappingInput, zos);
         zos.closeEntry();
         zos.close();

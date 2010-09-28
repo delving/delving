@@ -50,7 +50,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:/secure-application-context.xml
-            classpath:/application-context.xml
+            classpath:/services-application-context.xml
         </param-value>
     </context-param>
 

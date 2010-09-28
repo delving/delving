@@ -1,5 +1,6 @@
-package eu.delving.core.database.incoming;
+package eu.delving.services.indexing;
 
+import eu.delving.services.core.MetaRepo;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import org.apache.commons.httpclient.HttpClient;
@@ -22,9 +23,8 @@ import java.io.InputStream;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/core-application-context.xml")
+@ContextConfiguration(locations = {"/services-application-context.xml","/core-application-context.xml"})
 public class TestPmhImporterImpl {
-
 
     @Autowired
     private PmhImporter pmhImporter;
@@ -34,6 +34,9 @@ public class TestPmhImporterImpl {
 
     @Autowired
     private HttpClient httpClient;
+
+    @Autowired
+    private MetaRepo metaRepo;
 
     @Value("#{launchProperties['services.url']}")
     private String servicesUrl;
@@ -57,6 +60,9 @@ public class TestPmhImporterImpl {
 
     @Test
     public void testCommenceImport() throws Exception {
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet("92001_Ag_EU_TELtreasures");
+        dataSet.setState(MetaRepo.DataSetState.INDEXING);
+        dataSet.save();
         EuropeanaCollection collection = consoleDao.fetchCollection("92001_Ag_EU_TELtreasures", "92001_Ag_EU_TELtreasures.xml", false);
         pmhImporter.commenceImport(collection.getId());
         while (!pmhImporter.getActiveImports().isEmpty()) {

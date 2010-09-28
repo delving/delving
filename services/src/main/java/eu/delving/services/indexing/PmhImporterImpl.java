@@ -1,6 +1,8 @@
-package eu.delving.core.database.incoming;
+package eu.delving.services.indexing;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import eu.delving.services.core.MetaRepo;
+import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
@@ -58,6 +60,9 @@ public class PmhImporterImpl implements PmhImporter {
 
     @Value("#{launchProperties['services.url']}")
     private String servicesUrl;
+
+    @Autowired
+    private MetaRepo metaRepo;
 
     @Autowired
     public void setConsoleDao(ConsoleDao consoleDao) {
@@ -178,12 +183,22 @@ public class PmhImporterImpl implements PmhImporter {
                 }
                 collection = consoleDao.updateCollection(collection);
                 consoleDao.removeFromIndexQueue(collection);
+                MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
+                if (dataSet == null) {
+                    throw new RuntimeException("Expected to find data set for "+collection.getName());
+                }
+                dataSet.setState(MetaRepo.DataSetState.ENABLED);
+                dataSet.save();
             } catch (ImportException e) {
                 log.warn("Problem importing " + collection + " to database, moving to error directory", e);
                 collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
                 collection.setFileState(ImportFileState.ERROR);
                 collection = consoleDao.updateCollection(collection);
-            } finally {
+            }
+            catch (BadArgumentException e) {
+                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
+            }
+            finally {
                 processors.remove(this);
                 thread = null;
             }
@@ -200,6 +215,13 @@ public class PmhImporterImpl implements PmhImporter {
                     httpClient.executeMethod(method);
                     inputStream = method.getResponseBodyAsStream();
                     resumptionToken = importXmlInternal(inputStream);
+                    MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
+                    if (dataSet == null) {
+                        throw new RuntimeException("Data set not found!");
+                    }
+                    if (dataSet.getState() != MetaRepo.DataSetState.INDEXING) {
+                        break;
+                    }
                 }
             } catch (IOException e) {
                 throw new ImportException("Problem reading the XML file", e);
@@ -309,7 +331,6 @@ public class PmhImporterImpl implements PmhImporter {
             if (!recordList.isEmpty()) {
                 indexRecordList();
             }
-            long elapsedMillis = System.currentTimeMillis() - startTime;
             inputStream.close();
             return resumptionToken;
         }
@@ -318,6 +339,7 @@ public class PmhImporterImpl implements PmhImporter {
             log.info("sending " + recordList.size() + " records to solr");
             try {
                 solrServer.add(recordList);
+                metaRepo.incrementRecordCount(collection.getName(), recordList.size());
             } catch (SolrServerException e) {
                 log.error("unable to index this batch");
                 log.error(recordList.toString());

@@ -205,13 +205,6 @@
         </property>
     </bean>
 
-    <bean id="pmhImporter" class="eu.delving.core.database.incoming.PmhImporterImpl">
-        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
-        <property name="beanClass">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
-        </property>
-    </bean>
-
      <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
         <property name="maxTotalConnections" value="56"/>
         <property name="defaultMaxConnectionsPerHost" value="28"/>

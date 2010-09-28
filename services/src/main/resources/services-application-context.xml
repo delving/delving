@@ -45,7 +45,14 @@
         <property name="repeatInterval" value="#{launchProperties['harvestStepCleanupDelay']}"/>
     </bean>
 
-     <bean id="indexJobRunner" class="eu.delving.services.util.IndexJobRunner">
+    <bean id="pmhImporter" class="eu.delving.services.indexing.PmhImporterImpl">
+        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
+        <property name="beanClass">
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
+        </property>
+    </bean>
+
+    <bean id="indexJobRunner" class="eu.delving.services.indexing.IndexJobRunner">
         <property name="consoleDao" ref="consoleDao"/>
         <property name="eseImporter" ref="normalizedEseImporter"/>
     </bean>
@@ -58,8 +65,8 @@
                 <property name="concurrent" value="false"/>
             </bean>
         </property>
-        <property name="startDelay" value="${trigger.startDelay}"/>
-        <property name="repeatInterval" value="${trigger.repeatInterval}"/>
+        <property name="startDelay" value="#{launchProperties['trigger.startDelay']}"/>
+        <property name="repeatInterval" value="#{launchProperties['trigger.repeatInterval']}"/>
     </bean>
 
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
