@@ -23,9 +23,14 @@ import java.util.zip.ZipOutputStream;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ZipUploader {
+public class MockZipUploader {
     private static File ZIP_FILE = new File("services/target/00101_Ag_NO_sffDF.zip");
-    private Logger log = Logger.getLogger(ZipUploader.class);
+    private Logger log = Logger.getLogger(MockZipUploader.class);
+    private String serviceKey;
+
+    public MockZipUploader(String serviceKey) {
+        this.serviceKey = serviceKey;
+    }
 
     public void upload() throws IOException {
         if (!ZIP_FILE.getParentFile().exists() && !ZIP_FILE.getParentFile().mkdirs()) {
@@ -45,9 +50,9 @@ public class ZipUploader {
     }
 
     private void zipToOutputStream(OutputStream outputStream) throws IOException {
-        InputStream detailsInput = ZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.details");
-        InputStream xmlInput = ZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml");
-        InputStream mappingInput = ZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.mapping");
+        InputStream detailsInput = MockZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.details");
+        InputStream xmlInput = MockZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml");
+        InputStream mappingInput = MockZipUploader.class.getResourceAsStream("/testdata/sffDF/sffDF.xml.mapping");
         ZipOutputStream zos = new ZipOutputStream(outputStream);
         zos.putNextEntry(new ZipEntry("testdata/sffDF/sffDF.xml.details"));
         stream(detailsInput, zos);
@@ -63,8 +68,12 @@ public class ZipUploader {
 
     private void uploadFile(File file) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = "http://localhost:8983/services/dataset/submit/" + file.getName();
-        log.info("Posting to: "+postUrl);
+        String postUrl = String.format(
+                "http://localhost:8983/services/dataset/submit/%s?accessKey=%s",
+                file.getName(),
+                serviceKey
+        );
+        log.info("Posting to: " + postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         FileEntity fileEntity = new FileEntity(file, "application/zip");
         fileEntity.setChunked(true);
@@ -82,7 +91,12 @@ public class ZipUploader {
     }
 
     public static void main(String[] args) throws IOException {
-        ZipUploader uploader = new ZipUploader();
-        uploader.upload();
+        if (args.length == 0) {
+            System.out.println("Usage: <accessKey>");
+        }
+        else {
+            MockZipUploader uploader = new MockZipUploader(args[0]);
+            uploader.upload();
+        }
     }
 }

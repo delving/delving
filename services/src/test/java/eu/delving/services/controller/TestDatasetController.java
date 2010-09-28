@@ -1,8 +1,8 @@
 package eu.delving.services.controller;
 
 import eu.delving.core.rest.DataSetInfo;
+import eu.delving.services.util.MockZipUploader;
 import eu.delving.services.util.MongoDaemonRunner;
-import eu.delving.services.util.ZipUploader;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -47,7 +47,7 @@ public class TestDatasetController {
             server.setHandler(new WebAppContext("services/src/main/webapp", "/services"));
             server.start();
             LOG.info("Uploading test collection");
-            ZipUploader zipUploader = new ZipUploader();
+            MockZipUploader zipUploader = new MockZipUploader("");
             zipUploader.upload();
             LOG.info("Collection ready");
         }

@@ -2,6 +2,7 @@ package eu.delving.services.controller;
 
 import com.thoughtworks.xstream.XStream;
 import eu.delving.core.rest.DataSetInfo;
+import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.sip.core.DataSetDetails;
@@ -52,8 +53,14 @@ public class DatasetController {
     @Autowired
     private MetaRepo metaRepo;
 
+    @Autowired
+    private ServiceAccessToken serviceAccessToken;
+
     @RequestMapping
-    public ModelAndView pokey() throws BadArgumentException {
+    public ModelAndView listAll(
+            @RequestParam(required = false) String accessKey
+    ) throws BadArgumentException {
+        checkAccessKey(accessKey);
         return view(metaRepo.getDataSets().values());
     }
 
@@ -61,8 +68,10 @@ public class DatasetController {
     public ModelAndView indexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
-            @RequestParam(required = false) Boolean abort
+            @RequestParam(required = false) Boolean abort,
+            @RequestParam(required = false) String accessKey
     ) throws BadArgumentException {
+        checkAccessKey(accessKey);
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         if (abort != null && abort) {
             log.info(String.format("Indexing of %s to be aborted", dataSetSpec));
@@ -80,8 +89,10 @@ public class DatasetController {
     public ModelAndView harvestingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
-            @RequestParam(required = false) String prefix
+            @RequestParam(required = false) String prefix,
+            @RequestParam(required = false) String accessKey
     ) throws BadArgumentException {
+        checkAccessKey(accessKey);
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         if (enable != null) {
             if (prefix != null) {
@@ -101,8 +112,10 @@ public class DatasetController {
     public @ResponseBody
     String submit(
             @PathVariable String dataSetSpec,
-            InputStream inputStream
+            InputStream inputStream,
+            @RequestParam(required = false) String accessKey
     ) throws IOException, XMLStreamException, BadArgumentException {
+        checkAccessKey(accessKey);
         log.info("submit(" + dataSetSpec + ")");
         MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
         ZipInputStream zis = new ZipInputStream(inputStream);
@@ -159,6 +172,17 @@ public class DatasetController {
         zis.close();
         log.info("finished submit");
         return "OK";
+    }
+
+    private void checkAccessKey(String accessKey) {
+        if (accessKey == null) {
+            log.warn("!!! Service Access Key missing!");
+            // todo: really fail
+        }
+        else if (!serviceAccessToken.checkKey(accessKey)) {
+            log.warn(String.format("!!! Service Access Key %s invalid!", accessKey));
+            // todo: really fail
+        }
     }
 
     private ModelAndView view(MetaRepo.DataSet dataSet) {
