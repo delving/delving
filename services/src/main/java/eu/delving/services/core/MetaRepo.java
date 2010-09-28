@@ -51,6 +51,8 @@ public interface MetaRepo {
         String description();
         DBObject namespaces();
         QName recordRoot();
+        int recordsIndexed();
+        IndexState indexState();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void addMapping(String mappingCode);
@@ -69,6 +71,26 @@ public interface MetaRepo {
         String RECORD_ROOT = "record_root";
         String METADATA_FORMAT = "metadata_format";
         String MAPPINGS = "mappings";
+        String RECORDS_INDEXED = "rec_indexed";
+        String DATA_SET_STATE = "state";
+    }
+
+    public enum IndexState {
+        DISABLED,
+        UPLOADED,
+        QUEUED,
+        INDEXING,
+        ENABLED,
+        ERROR;
+
+        public static IndexState get(String string) {
+        for (IndexState t : values()) {
+            if (t.toString().equalsIgnoreCase(string)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("Did not recognize IndexState: ["+string+"]");
+    }
     }
 
     public interface HarvestStep {

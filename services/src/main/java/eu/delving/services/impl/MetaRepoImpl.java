@@ -92,6 +92,8 @@ public class MetaRepoImpl implements MetaRepo {
         object.put(DataSet.NAME, name);
         object.put(DataSet.PROVIDER_NAME, providerName);
         object.put(DataSet.DESCRIPTION, description);
+        object.put(DataSet.RECORDS_INDEXED, 0);
+        object.put(DataSet.DATA_SET_STATE, IndexState.DISABLED.toString());
         DBObject metadataFormat = new BasicDBObject();
         metadataFormat.put(MetadataFormat.PREFIX, prefix);
         metadataFormat.put(MetadataFormat.NAMESPACE, namespace);
@@ -285,6 +287,16 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public QName recordRoot() {
             return QName.valueOf((String) (object.get(RECORD_ROOT)));
+        }
+
+        @Override
+        public int recordsIndexed() {
+            return Integer.parseInt((String) object.get(RECORDS_INDEXED));
+        }
+
+        @Override
+        public IndexState indexState() {
+            return IndexState.get((String) object.get(DATA_SET_STATE));
         }
 
         @Override
