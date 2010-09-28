@@ -61,7 +61,7 @@ public class DatasetController {
             @RequestParam(required = false) String accessKey
     ) throws BadArgumentException {
         checkAccessKey(accessKey);
-        return view(metaRepo.getDataSets().values());
+        return view(metaRepo.getDataSets());
     }
 
     @RequestMapping(value = "/indexing/{dataSetSpec}")
@@ -72,7 +72,7 @@ public class DatasetController {
             @RequestParam(required = false) String accessKey
     ) throws BadArgumentException {
         checkAccessKey(accessKey);
-        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (abort != null && abort) {
             log.info(String.format("Indexing of %s to be aborted", dataSetSpec));
         }
@@ -93,7 +93,7 @@ public class DatasetController {
             @RequestParam(required = false) String accessKey
     ) throws BadArgumentException {
         checkAccessKey(accessKey);
-        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (enable != null) {
             if (prefix != null) {
                 log.info(String.format("Harvesting of %s prefix %s to be %s", dataSetSpec, prefix, enable ? "enabled" : "disabled"));
@@ -117,41 +117,48 @@ public class DatasetController {
     ) throws IOException, XMLStreamException, BadArgumentException {
         checkAccessKey(accessKey);
         log.info("submit(" + dataSetSpec + ")");
-        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         ZipInputStream zis = new ZipInputStream(inputStream);
         ZipEntry entry;
-        DataSetDetails dataSetDetails = null;
+        DataSetDetails details = null;
         while ((entry = zis.getNextEntry()) != null) {
             log.info("entry: " + entry);
             if (entry.getName().endsWith(".details")) {
-                dataSetDetails = getDetails(zis);
-                if (!dataSetDetails.getSpec().equals(dataSetSpec)) {
-                    throw new IOException(String.format("Zip file [%s] should have the data spec name [%s]", dataSetSpec, dataSetDetails.getSpec()));
+                details = getDetails(zis);
+                if (!details.getSpec().equals(dataSetSpec)) {
+                    throw new IOException(String.format("Zip file [%s] should have the data spec name [%s]", dataSetSpec, details.getSpec()));
                 }
                 if (dataSet == null) {
                     dataSet = metaRepo.createDataSet(
                             dataSetSpec,
-                            dataSetDetails.getName(),
-                            dataSetDetails.getProviderName(),
-                            dataSetDetails.getDescription(),
-                            dataSetDetails.getPrefix(),
-                            dataSetDetails.getNamespace(),
-                            dataSetDetails.getSchema()
+                            details.getName(),
+                            details.getProviderName(),
+                            details.getDescription(),
+                            details.getPrefix(),
+                            details.getNamespace(),
+                            details.getSchema()
                     );
                 }
                 else {
-                    // todo: update the details!
+                    dataSet.setName(details.getName());
+                    dataSet.setProviderName(details.getProviderName());
+                    dataSet.setDescription(details.getDescription());
+                    dataSet.setRecordRoot(QName.valueOf(details.getRecordRoot()));
+                    dataSet.metadataFormat().setPrefix(details.getPrefix());
+                    dataSet.metadataFormat().setNamespace(details.getNamespace());
+                    dataSet.metadataFormat().setSchema(details.getSchema());
+                    dataSet.save();
                 }
             }
             else if (entry.getName().endsWith(".xml")) {
-                if (dataSet == null || dataSetDetails == null) {
+                if (dataSet == null || details == null) {
                     zis.close();
                     throw new IOException("Data set details must come first in the uploaded zip file");
                 }
                 dataSet.parseRecords(
                         zis,
-                        QName.valueOf(dataSetDetails.getRecordRoot()),
-                        QName.valueOf(dataSetDetails.getUniqueElement())
+                        QName.valueOf(details.getRecordRoot()),
+                        QName.valueOf(details.getUniqueElement())
                 );
             }
             else if (entry.getName().endsWith(".mapping")) {

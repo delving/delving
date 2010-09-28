@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,13 @@ public interface MetaRepo {
 
     DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema) throws BadArgumentException;
 
-    Map<String, ? extends DataSet> getDataSets() throws BadArgumentException;
+    Collection<? extends DataSet> getDataSets() throws BadArgumentException;
+
+    DataSet getDataSet(String spec) throws BadArgumentException;
+
+    DataSet getFirstDataSet(IndexState indexState) throws BadArgumentException;
+
+    void incrementRecordCount(String spec, int increment);
 
     Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException;
 
@@ -47,17 +54,22 @@ public interface MetaRepo {
     public interface DataSet {
         String setSpec();
         String setName();
+        void setName(String value);
         String providerName();
+        void setProviderName(String value);
         String description();
+        void setDescription(String value);
         DBObject namespaces();
         QName recordRoot();
+        void setRecordRoot(QName root);
         int recordsIndexed();
         IndexState indexState();
+        MetadataFormat metadataFormat();
+        void save();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void addMapping(String mappingCode);
 
-        MetadataFormat metadataFormat();
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
         long recordCount();
         Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
@@ -166,8 +178,11 @@ public interface MetaRepo {
 
     public interface MetadataFormat {
         String prefix();
+        void setPrefix(String value);
         String schema();
+        void setSchema(String value);
         String namespace();
+        void setNamespace(String value);
 
         String PREFIX = "prefix";
         String SCHEMA = "schema";

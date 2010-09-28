@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,6 @@ public class MetaRepoImpl implements MetaRepo {
     private int responseListSize = 5;
     private int harvestStepSecondsToLive = 5;
     private DB mongoDatabase;
-    private Map<String, DataSetImpl> dataSets;
     private MetaConfig metaRepoConfig;
 
     public void setMongo(Mongo mongo) {
@@ -93,7 +93,7 @@ public class MetaRepoImpl implements MetaRepo {
         object.put(DataSet.PROVIDER_NAME, providerName);
         object.put(DataSet.DESCRIPTION, description);
         object.put(DataSet.RECORDS_INDEXED, 0);
-        object.put(DataSet.DATA_SET_STATE, IndexState.DISABLED.toString());
+        object.put(DataSet.DATA_SET_STATE, IndexState.UPLOADED.toString());
         DBObject metadataFormat = new BasicDBObject();
         metadataFormat.put(MetadataFormat.PREFIX, prefix);
         metadataFormat.put(MetadataFormat.NAMESPACE, namespace);
@@ -101,30 +101,63 @@ public class MetaRepoImpl implements MetaRepo {
         object.put(DataSet.METADATA_FORMAT, metadataFormat);
         DataSetImpl impl = new DataSetImpl(object);
         impl.saveObject();
-        getDataSets();
-        dataSets.put(impl.setSpec(), impl);
         return impl;
     }
 
     @Override
-    public synchronized Map<String, ? extends DataSet> getDataSets() throws BadArgumentException {
-        if (dataSets == null) {
-            dataSets = new TreeMap<String, DataSetImpl>();
-            DBCollection collection = db().getCollection(DATASETS_COLLECTION);
-            DBCursor cursor = collection.find();
-            while (cursor.hasNext()) {
-                DBObject object = cursor.next();
-                DataSetImpl impl = new DataSetImpl(object);
-                dataSets.put(impl.setSpec(), impl);
-            }
+    public synchronized Collection<? extends DataSet> getDataSets() throws BadArgumentException {
+        List<DataSetImpl> sets = new ArrayList<DataSetImpl>();
+        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
+        DBCursor cursor = collection.find();
+        while (cursor.hasNext()) {
+            DBObject object = cursor.next();
+            sets.add(new DataSetImpl(object));
         }
-        return dataSets;
+        return sets;
+    }
+
+    @Override
+    public DataSet getDataSet(String spec) throws BadArgumentException {
+        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
+        DBObject object = collection.findOne(new BasicDBObject(DataSet.SPEC, spec));
+        if (object == null) {
+            return null;
+        }
+        return new DataSetImpl(object);
+    }
+
+    @Override
+    public DataSet getFirstDataSet(IndexState indexState) throws BadArgumentException {
+        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
+        DBObject object = collection.findOne(new BasicDBObject(DataSet.DATA_SET_STATE, indexState.toString()));
+        if (object == null) {
+            return null;
+        }
+        return new DataSetImpl(object);
+    }
+
+    @Override
+    public void incrementRecordCount(String spec, int increment) {
+        DBCollection collection = db().getCollection(DATASETS_COLLECTION);
+        collection.update(
+                new BasicDBObject(
+                        DataSet.SPEC,
+                        spec
+                ),
+                new BasicDBObject(
+                        "$inc",
+                        new BasicDBObject(
+                                DataSet.RECORDS_INDEXED,
+                                increment
+                        )
+                )
+        );
     }
 
     @Override
     public Set<MetadataFormat> getMetadataFormats() throws BadArgumentException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
-        for (DataSet dataSet : getDataSets().values()) {
+        for (DataSet dataSet : getDataSets()) {
             set.add(dataSet.metadataFormat());
             for (Mapping mapping : dataSet.mappings().values()) {
                 set.add(mapping.metadataFormat());
@@ -137,7 +170,7 @@ public class MetaRepoImpl implements MetaRepo {
     public Set<MetadataFormat> getMetadataFormats(String id) throws BadArgumentException, CannotDisseminateFormatException {
         Set<MetadataFormat> set = new TreeSet<MetadataFormat>();
         ObjectId objectId = new ObjectId(id);
-        for (DataSet dataSet : getDataSets().values()) {
+        for (DataSet dataSet : getDataSets()) {
             Record record = dataSet.fetch(objectId, dataSet.metadataFormat().prefix());
             if (record != null) {
                 set.add(dataSet.metadataFormat());
@@ -159,7 +192,7 @@ public class MetaRepoImpl implements MetaRepo {
         req.put(PmhRequest.UNTIL, until);
         req.put(PmhRequest.PREFIX, metadataPrefix);
         DBObject firstStep = new BasicDBObject(HarvestStep.PMH_REQUEST, req);
-        DataSet dataSet = getDataSets().get(set);
+        DataSet dataSet = getDataSet(set);
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
@@ -203,7 +236,7 @@ public class MetaRepoImpl implements MetaRepo {
     private HarvestStep createHarvestStep(DBObject step, DBCollection steps) throws NoRecordsMatchException, BadArgumentException {
         HarvestStepImpl harvestStep = new HarvestStepImpl(step);
         String set = harvestStep.pmhRequest().getSet();
-        DataSet dataSet = getDataSets().get(set);
+        DataSet dataSet = getDataSet(set);
         if (dataSet == null) {
             String errorMessage = String.format("Cannot find set [%s]", set);
             log.error(errorMessage);
@@ -228,7 +261,7 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     public Record fetch(RecordIdentifier identifier, String metadataPrefix) throws CannotDisseminateFormatException, BadArgumentException {
-        DataSet dataSet = getDataSets().get(identifier.collectionId);
+        DataSet dataSet = getDataSet(identifier.collectionId);
         if (dataSet == null) {
             throw new BadArgumentException(String.format("Do data set for identifier [%s]", identifier.collectionId));
         }
@@ -270,13 +303,28 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public void setName(String value) {
+            object.put(NAME, value);
+        }
+
+        @Override
         public String providerName() {
             return (String) object.get(PROVIDER_NAME);
         }
 
         @Override
+        public void setProviderName(String value) {
+            object.put(PROVIDER_NAME, value);
+        }
+
+        @Override
         public String description() {
             return (String) object.get(DESCRIPTION);
+        }
+
+        @Override
+        public void setDescription(String value) {
+            object.put(DESCRIPTION, value);
         }
 
         @Override
@@ -287,6 +335,11 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public QName recordRoot() {
             return QName.valueOf((String) (object.get(RECORD_ROOT)));
+        }
+
+        @Override
+        public void setRecordRoot(QName root) {
+            object.put(RECORD_ROOT, root.toString());
         }
 
         @Override
@@ -345,6 +398,11 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public MetadataFormat metadataFormat() {
             return metadataFormat;
+        }
+
+        @Override
+        public void save() {
+            saveObject();
         }
 
         @Override
@@ -516,13 +574,28 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public void setPrefix(String value) {
+            object.put(PREFIX, value);
+        }
+
+        @Override
         public String schema() {
             return (String) object.get(SCHEMA);
         }
 
         @Override
+        public void setSchema(String value) {
+            object.put(SCHEMA, value);
+        }
+
+        @Override
         public String namespace() {
             return (String) object.get(NAMESPACE);
+        }
+
+        @Override
+        public void setNamespace(String value) {
+            object.put(NAMESPACE, value);
         }
 
         @Override
@@ -630,7 +703,10 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException {
             PmhRequest request = pmhRequest();
-            DataSet dataSet = getDataSets().get(request.getSet());
+            DataSet dataSet = getDataSet(request.getSet());
+            if (dataSet == null) {
+                throw new BadArgumentException("No data set found by the name " + request.getSet());
+            }
             return dataSet.records(request.getMetadataPrefix(), cursor(), responseListSize, request.getFrom(), request.getUntil());
         }
 

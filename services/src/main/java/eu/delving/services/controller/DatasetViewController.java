@@ -30,7 +30,7 @@ public class DatasetViewController {
     @ResponseBody
     String list() throws BadArgumentException {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Collections:</h1><ul>\n");
-        for (MetaRepo.DataSet dataSet : metaRepo.getDataSets().values()) {
+        for (MetaRepo.DataSet dataSet : metaRepo.getDataSets()) {
             out.append(String.format(
                     "<li><a href=\"%s/%s.html\">%s in %s format</a></li>",
                     dataSet.setSpec(), dataSet.metadataFormat().prefix(), dataSet.setSpec(), dataSet.metadataFormat().prefix()
@@ -67,7 +67,7 @@ public class DatasetViewController {
             @PathVariable String dataSetSpec,
             @PathVariable String prefix
     ) throws CannotDisseminateFormatException, BadArgumentException {
-        MetaRepo.DataSet dataSet = metaRepo.getDataSets().get(dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (dataSet == null) {
             throw new RuntimeException(String.format("Dataset [%s] not found", dataSetSpec));
         }

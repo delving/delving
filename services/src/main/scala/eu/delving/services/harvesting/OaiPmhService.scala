@@ -136,7 +136,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <responseDate>{currentDate}</responseDate>
      <request verb="ListSets">{request.getRequestURL}</request>
       <ListSets>
-        { for (set <- dataSets.values) yield
+        { for (set <- dataSets) yield
           <set>
             <setSpec>{set.setSpec}</setSpec>
             <setName>{set.setName}</setName>
