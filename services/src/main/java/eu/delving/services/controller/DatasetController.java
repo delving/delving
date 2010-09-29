@@ -31,15 +31,15 @@ import java.util.zip.ZipInputStream;
 
 /**
  * Provide a REST interface for managing datasets.
- *
+ * <p/>
  * - API Key authentication
  * - list all collections (some details: size, indexing status, available formats)
  * - for each collection
- *          - enable/disable for indexing
- *          - abort indexing
- *          - enable/disable for harvesting
- *          - enable/disable per metadata format
- *          - full statistics
+ * - enable/disable for indexing
+ * - abort indexing
+ * - enable/disable for harvesting
+ * - enable/disable per metadata format
+ * - full statistics
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -68,38 +68,36 @@ public class DatasetController {
     public ModelAndView indexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
-            @RequestParam(required = false) Boolean abort,
-            @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException {
-        checkAccessKey(accessKey);
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        if (abort != null && abort) {
-            log.info(String.format("Indexing of %s to be aborted", dataSetSpec));
-        }
-        else if (enable != null) {
-            log.info(String.format("Indexing of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
-        }
-        else {
-            log.info(String.format("Just showing %s", dataSetSpec));
-        }
-        return view(dataSet);
-    }
-
-    @RequestMapping(value = "/harvesting/{dataSetSpec}")
-    public ModelAndView harvestingControl(
-            @PathVariable String dataSetSpec,
-            @RequestParam(required = false) Boolean enable,
-            @RequestParam(required = false) String prefix,
             @RequestParam(required = false) String accessKey
     ) throws BadArgumentException {
         checkAccessKey(accessKey);
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (enable != null) {
-            if (prefix != null) {
-                log.info(String.format("Harvesting of %s prefix %s to be %s", dataSetSpec, prefix, enable ? "enabled" : "disabled"));
+            MetaRepo.DataSetState oldState = dataSet.getState();
+            switch (dataSet.getState()) {
+                case UPLOADED:
+                case INDEXING:
+                case ENABLED:
+                    if (!enable) {
+                        dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                    }
+                    break;
+                case DISABLED:
+                    if (enable) {
+                        dataSet.setState(MetaRepo.DataSetState.QUEUED);
+                    }
+                    break;
+                case ERROR:
+                case QUEUED:
+                    log.info(String.format("Indexing of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
+                    break;
+            }
+            if (oldState != dataSet.getState()) {
+                dataSet.save();
+                log.info(String.format("State of %s changed from %s to %s", dataSetSpec, oldState, dataSet.getState()));
             }
             else {
-                log.info(String.format("Harvesting of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
+                log.info(String.format("State of %s unchanged at %s", dataSetSpec, dataSet.getState()));
             }
         }
         else {
@@ -108,8 +106,32 @@ public class DatasetController {
         return view(dataSet);
     }
 
-    @RequestMapping(value = "/submit/{dataSetSpec}.zip", method= RequestMethod.POST)
-    public @ResponseBody
+//    @RequestMapping(value = "/harvesting/{dataSetSpec}")
+//    public ModelAndView harvestingControl(
+//            @PathVariable String dataSetSpec,
+//            @RequestParam(required = false) Boolean enable,
+//            @RequestParam(required = false) String prefix,
+//            @RequestParam(required = false) String accessKey
+//    ) throws BadArgumentException {
+//        checkAccessKey(accessKey);
+//        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+//        if (enable != null) {
+//            if (prefix != null) {
+//                log.info(String.format("Harvesting of %s prefix %s to be %s", dataSetSpec, prefix, enable ? "enabled" : "disabled"));
+//            }
+//            else {
+//                log.info(String.format("Harvesting of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
+//            }
+//        }
+//        else {
+//            log.info(String.format("Just showing %s", dataSetSpec));
+//        }
+//        return view(dataSet);
+//    }
+
+    @RequestMapping(value = "/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
+    public
+    @ResponseBody
     String submit(
             @PathVariable String dataSetSpec,
             InputStream inputStream,
@@ -144,9 +166,9 @@ public class DatasetController {
                     dataSet.setProviderName(details.getProviderName());
                     dataSet.setDescription(details.getDescription());
                     dataSet.setRecordRoot(QName.valueOf(details.getRecordRoot()));
-                    dataSet.metadataFormat().setPrefix(details.getPrefix());
-                    dataSet.metadataFormat().setNamespace(details.getNamespace());
-                    dataSet.metadataFormat().setSchema(details.getSchema());
+                    dataSet.getMetadataFormat().setPrefix(details.getPrefix());
+                    dataSet.getMetadataFormat().setNamespace(details.getNamespace());
+                    dataSet.getMetadataFormat().setSchema(details.getSchema());
                     dataSet.save();
                 }
             }
@@ -209,10 +231,10 @@ public class DatasetController {
 
     private DataSetInfo getInfo(MetaRepo.DataSet dataSet) {
         DataSetInfo info = new DataSetInfo();
-        info.spec = dataSet.setSpec();
-        info.name = dataSet.setName();
-        info.providerName = dataSet.providerName();
-        info.prefix = dataSet.metadataFormat().prefix();
+        info.spec = dataSet.getSpec();
+        info.name = dataSet.getName();
+        info.providerName = dataSet.getProviderName();
+        info.prefix = dataSet.getMetadataFormat().getPrefix();
         return info;
     }
 

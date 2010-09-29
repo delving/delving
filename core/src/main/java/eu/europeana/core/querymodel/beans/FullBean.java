@@ -26,7 +26,10 @@ import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.querymodel.query.FullDoc;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.domain.*;
+import eu.europeana.definitions.domain.AcquisitionType;
+import eu.europeana.definitions.domain.Country;
+import eu.europeana.definitions.domain.Language;
+import eu.europeana.definitions.domain.Technique;
 import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -35,9 +38,11 @@ import java.util.List;
 
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
-import static eu.europeana.definitions.annotations.FieldCategory.*;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 import static eu.europeana.definitions.annotations.FieldCategory.ICN;
 import static eu.europeana.definitions.annotations.FieldCategory.ICN_RESEARCH;
+import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -335,7 +340,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
     String[] acquisitionYear;
 
-    @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class) // todo: converter to turn number into enum?
+    @Europeana(category = ICN_RESEARCH)
     @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
     String[] purchasePrice;
 

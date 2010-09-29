@@ -33,15 +33,15 @@ public class DatasetViewController {
         for (MetaRepo.DataSet dataSet : metaRepo.getDataSets()) {
             out.append(String.format(
                     "<li><a href=\"%s/%s.html\">%s in %s format</a></li>",
-                    dataSet.setSpec(), dataSet.metadataFormat().prefix(), dataSet.setSpec(), dataSet.metadataFormat().prefix()
+                    dataSet.getSpec(), dataSet.getMetadataFormat().getPrefix(), dataSet.getSpec(), dataSet.getMetadataFormat().getPrefix()
             ));
             out.append(String.format( // todo: the mappings should be scanned for these extra formats
                     "<li><a href=\"%s/icn.html\">%s in icn format</a></li>",
-                    dataSet.setSpec(), dataSet.setSpec()
+                    dataSet.getSpec(), dataSet.getSpec()
             ));
             out.append(String.format( // todo: the mappings should be scanned for these extra formats
                     "<li><a href=\"%s/ese.html\">%s in ese format</a></li>",
-                    dataSet.setSpec(), dataSet.setSpec()
+                    dataSet.getSpec(), dataSet.getSpec()
             ));
         }
         out.append("</ul>");
@@ -54,7 +54,7 @@ public class DatasetViewController {
     String formats() throws BadArgumentException {
         StringBuilder out = new StringBuilder("<h1>MetaRepo Formats:</h1><ul>\n");
         for (MetaRepo.MetadataFormat format : metaRepo.getMetadataFormats()) {
-            out.append(String.format("<li>%s : %s - %s</li>", format.prefix(), format.namespace(), format.schema()));
+            out.append(String.format("<li>%s : %s - %s</li>", format.getPrefix(), format.getNamespace(), format.getSchema()));
         }
         out.append("</ul>");
         return out.toString();
@@ -72,9 +72,9 @@ public class DatasetViewController {
             throw new RuntimeException(String.format("Dataset [%s] not found", dataSetSpec));
         }
         boolean eseStripWorkaround = "ese".equals(prefix);
-        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.setSpec(), prefix));
+        StringBuilder out = new StringBuilder(String.format("<h1>MetaRepo Collection %s in %s format</h1><ul>\n", dataSet.getSpec(), prefix));
         for (MetaRepo.Record record : dataSet.records(eseStripWorkaround ? "icn" : prefix, 0, 10, null, null)) {
-            String xml = record.xml(eseStripWorkaround ? "icn" : prefix);
+            String xml = record.getXmlString(eseStripWorkaround ? "icn" : prefix);
             if (eseStripWorkaround) {
                 List<FieldEntry> entries = FieldEntry.createList(xml);
                 Iterator<FieldEntry> walk = entries.iterator();
@@ -87,8 +87,8 @@ public class DatasetViewController {
                 xml = FieldEntry.toString(entries, false);
             }
             xml = xml.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\n", "<br>");
-            out.append("<li>").append(record.identifier()).append("<br>")
-                    .append(record.modified().toString()).append("<br>")
+            out.append("<li>").append(record.getIdentifier()).append("<br>")
+                    .append(record.getModifiedDate().toString()).append("<br>")
                     .append(xml).append("</li>\n");
         }
         out.append("</ul>");

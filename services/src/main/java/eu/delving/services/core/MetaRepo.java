@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This interface and its sub-interfaces describe how the rest of the code interacts
+ * This interface and its sub-interfaces describe how the rest of the getGroovyCode interacts
  * with the metadata repository.  The interfaces also conveniently define the constants
  * used as MongoDB field names
  *
@@ -52,28 +52,28 @@ public interface MetaRepo {
     MetaConfig getMetaRepoConfig();
 
     public interface DataSet {
-        String setSpec();
-        String setName();
+        String getSpec();
+        String getName();
         void setName(String value);
-        String providerName();
+        String getProviderName();
         void setProviderName(String value);
-        String description();
+        String getDescription();
         void setDescription(String value);
-        DBObject namespaces();
-        QName recordRoot();
+        DBObject getNamespaces();
+        QName getRecordRoot();
         void setRecordRoot(QName root);
-        int recordsIndexed();
+        int getRecordsIndexed();
         void setRecordsIndexed(int count);
         DataSetState getState();
         void setState(DataSetState dataSetState);
-        MetadataFormat metadataFormat();
+        MetadataFormat getMetadataFormat();
         void save();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void addMapping(String mappingCode);
 
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
-        long recordCount();
+        long getRecordCount();
         Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
         List<? extends Record> records(String prefix, int start, int count, Date from, Date until) throws CannotDisseminateFormatException, BadArgumentException;
 
@@ -98,25 +98,25 @@ public interface MetaRepo {
         ERROR;
 
         public static DataSetState get(String string) {
-        for (DataSetState t : values()) {
-            if (t.toString().equalsIgnoreCase(string)) {
-                return t;
+            for (DataSetState t : values()) {
+                if (t.toString().equalsIgnoreCase(string)) {
+                    return t;
+                }
             }
+            throw new IllegalArgumentException("Did not recognize DataSetState: [" + string + "]");
         }
-        throw new IllegalArgumentException("Did not recognize DataSetState: ["+string+"]");
-    }
     }
 
     public interface HarvestStep {
 
-        ObjectId resumptionToken();
-        Date expiration();
-        long listSize();
-        int cursor();
-        List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException;
-        PmhRequest pmhRequest();
+        ObjectId getResumptionToken();
+        Date getExpiration();
+        long getListSize();
+        int getCursor();
+        List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException;
+        PmhRequest getPmhRequest();
+        DBObject getNamespaces();
         boolean hasNext();
-        DBObject namespaces();
         String nextResumptionToken();
 
         String EXPIRATION = "exp";
@@ -143,14 +143,13 @@ public interface MetaRepo {
     }
 
     public interface Record {
-        ObjectId identifier();
-
-        PmhSet set();
-        Date modified();
-        boolean deleted();
-        DBObject namespaces();
-        String xml() throws CannotDisseminateFormatException;
-        String xml(String metadataPrefix) throws CannotDisseminateFormatException;
+        ObjectId getIdentifier();
+        PmhSet getPmhSet();
+        Date getModifiedDate();
+        boolean isDeleted();
+        DBObject getNamespaces();
+        String getXmlString() throws CannotDisseminateFormatException;
+        String getXmlString(String metadataPrefix) throws CannotDisseminateFormatException;
 
         String MODIFIED = "mod";
         String UNIQUE = "uniq";
@@ -162,8 +161,8 @@ public interface MetaRepo {
     }
 
     public interface Mapping {
-        MetadataFormat metadataFormat();
-        String code();
+        MetadataFormat getMetadataFormat();
+        String getGroovyCode();
 
         String CODE = "code";
         String FORMAT = "format";
@@ -179,11 +178,11 @@ public interface MetaRepo {
     }
 
     public interface MetadataFormat {
-        String prefix();
+        String getPrefix();
         void setPrefix(String value);
-        String schema();
+        String getSchema();
         void setSchema(String value);
-        String namespace();
+        String getNamespace();
         void setNamespace(String value);
 
         String PREFIX = "prefix";

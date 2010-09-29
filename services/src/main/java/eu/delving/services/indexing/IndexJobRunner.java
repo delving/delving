@@ -76,8 +76,8 @@ public class IndexJobRunner {
                 log.debug("no collection found for indexing");
             }
             else {
-                log.info("found collection to index: " + dataSet.setSpec());
-                EuropeanaCollection collection = consoleDao.fetchCollection(dataSet.setSpec(), dataSet.setSpec()+".xml", true);
+                log.info("found collection to index: " + dataSet.getSpec());
+                EuropeanaCollection collection = consoleDao.fetchCollection(dataSet.getSpec(), dataSet.getSpec()+".xml", true);
                 dataSet.setState(MetaRepo.DataSetState.INDEXING);
                 dataSet.setRecordsIndexed(0);
                 dataSet.save();
