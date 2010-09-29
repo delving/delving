@@ -1,0 +1,11 @@
+<dataset-details>
+  <spec>92001_Ag_EU_TELtreasures</spec>
+  <name>Tel Treasures</name>
+  <providerName>The European Library</providerName>
+  <description>treasures</description>
+  <prefix>ese</prefix>
+  <namespace>http://www.europeana.eu/schemas/ese/</namespace>
+  <schema>http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd</schema>
+  <recordRoot>record</recordRoot>
+  <uniqueElement>{http://www.europeana.eu}uri</uniqueElement>
+</dataset-details>

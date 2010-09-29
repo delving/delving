@@ -89,7 +89,7 @@ public class SipModel {
     private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
-    private String metaRepoSubmitUrl;
+    private String dataSetControllerUrl;
 
     public interface UpdateListener {
 
@@ -116,10 +116,10 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String metaRepoSubmitUrl) {
+    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String dataSetControllerUrl) {
         this.annotationProcessor = annotationProcessor;
         this.userNotifier = userNotifier;
-        this.metaRepoSubmitUrl = metaRepoSubmitUrl;
+        this.dataSetControllerUrl = dataSetControllerUrl;
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
@@ -279,6 +279,10 @@ public class SipModel {
         return dataSetDetails;
     }
 
+    public String getDataSetControllerUrl() {
+        return dataSetControllerUrl;
+    }
+
     public void setDataSetDetails(DataSetDetails dataSetDetails) {
         this.dataSetDetails = dataSetDetails;
         executor.execute(new DetailsSetter(dataSetDetails));
@@ -376,7 +380,7 @@ public class SipModel {
     public void createUploadZipFile() {
         checkSwingThread();
         String zipFileName = getDataSetDetails().getSpec();
-        executor.execute(new ZipUploader(metaRepoSubmitUrl, fileSet, zipFileName, zipProgressModel, uploadProgressModel, userNotifier));
+        executor.execute(new ZipUploader(dataSetControllerUrl, fileSet, zipFileName, zipProgressModel, uploadProgressModel, userNotifier));
     }
 
     public TreeModel getAnalysisTreeModel() {

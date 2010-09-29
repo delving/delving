@@ -85,7 +85,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def toUtcDateTime(date: DateTime) : String = date.toString("yyyy-MM-dd'T'HH:mm:ss'Z'")
   private def currentDate = toUtcDateTime (new DateTime())
-
+  private def printDate(date: Date) : String = if (date != null) toUtcDateTime(new DateTime(date)) else ""
   /**
    */
   // TODO: add values from a message.properties file and complete oai identifier block
@@ -136,10 +136,10 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <responseDate>{currentDate}</responseDate>
      <request verb="ListSets">{request.getRequestURL}</request>
       <ListSets>
-        { for (set <- dataSets.values) yield
+        { for (set <- dataSets) yield
           <set>
-            <setSpec>{set.setSpec}</setSpec>
-            <setName>{set.setName}</setName>
+            <setSpec>{set.getSpec}</setSpec>
+            <setName>{set.getName}</setName>
           </set>
         }
       </ListSets>
@@ -177,9 +177,9 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
       <ListMetadataFormats>
        {for (format <- metadataFormats) yield
         <metadataFormat>
-          <metadataPrefix>{format.prefix}</metadataPrefix>
-          <schema>{format.schema}</schema>
-          <metadataNamespace>{format.namespace}</metadataNamespace>
+          <metadataPrefix>{format.getPrefix}</metadataPrefix>
+          <schema>{format.getSchema}</schema>
+          <metadataNamespace>{format.getNamespace}</metadataNamespace>
        </metadataFormat>
         }
         {eseSchema}
@@ -194,21 +194,21 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   def processListIdentifiers(pmhRequestEntry: PmhRequestEntry) = {
         // parse all the params from map
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
-    val setSpec = harvestStep.pmhRequest.getSet
+    val setSpec = harvestStep.getPmhRequest.getSet
 
       <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
       <responseDate>{currentDate}</responseDate>
-      <request verb="ListIdentifiers" from={harvestStep.pmhRequest.getFrom.toString} until={harvestStep.pmhRequest.getUntil.toString}
-               metadataPrefix={harvestStep.pmhRequest.getMetadataPrefix}
+      <request verb="ListIdentifiers" from={harvestStep.getPmhRequest.getFrom.toString} until={harvestStep.getPmhRequest.getUntil.toString}
+               metadataPrefix={harvestStep.getPmhRequest.getMetadataPrefix}
                set={setSpec}>{request.getRequestURL}</request>
       <ListIdentifiers>
-        { for (record <- harvestStep.records) yield
+        { for (record <- harvestStep.getRecords) yield
         <header status={recordStatus(record)}>
-          <identifier>{setSpec}:{record.identifier}</identifier>
-          <datestamp>{record.modified}</datestamp>
+          <identifier>{setSpec}:{record.getIdentifier}</identifier>
+          <datestamp>{record.getModifiedDate}</datestamp>
           <setSpec>{setSpec}</setSpec>
        </header>
         }
@@ -220,8 +220,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   def processListRecords(pmhRequestEntry: PmhRequestEntry) : Elem = {
     val harvestStep: HarvestStep = getHarvestStep(pmhRequestEntry)
-    val pmhObject = harvestStep.pmhRequest
-    def printDate(date: Date) : String = if (date != null) toUtcDateTime(new DateTime(date)) else ""
+    val pmhObject = harvestStep.getPmhRequest
 
     var elem : Elem =
     <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
@@ -232,15 +231,13 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
      <request verb="ListRecords" from={printDate(pmhObject.getFrom)} until={printDate(pmhObject.getUntil)}
               metadataPrefix={pmhObject.getMetadataPrefix}>{request.getRequestURL}</request>
      <ListRecords>
-          <metadata>
-            {for (record <- harvestStep.records) yield
+            {for (record <- harvestStep.getRecords) yield
               renderRecord(record, pmhObject.getMetadataPrefix, pmhObject.getSet)
             }
-          </metadata>
        {renderResumptionToken(harvestStep)}
      </ListRecords>
     </OAI-PMH>
-    for (entry <- harvestStep.namespaces.toMap.entrySet) {
+    for (entry <- harvestStep.getNamespaces.toMap.entrySet) {
       elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey.toString, entry.getValue.toString, Null )
     }
     elem
@@ -269,7 +266,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
         {renderRecord(record, metadataFormat, identifier.split(":").head)}
      </GetRecord>
     </OAI-PMH>
-    for (entry <- record.namespaces.toMap.entrySet) {
+    for (entry <- record.getNamespaces.toMap.entrySet) {
       elem = elem % new UnprefixedAttribute( "xmlns:"+entry.getKey.toString , entry.getValue.toString, Null )
     }
     elem
@@ -301,18 +298,18 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   }
 
   // todo find a way to not show status namespace when not deleted
-  private def recordStatus(record: Record) : String = if (record.deleted) "deleted" else ""
+  private def recordStatus(record: Record) : String = if (record.isDeleted) "deleted" else ""
 
   private def renderRecord(record: Record, metadataPrefix: String, set: String) : Elem = {
 
-    val recordAsString = record.xml(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
+    val recordAsString = record.getXmlString(metadataPrefix).replaceAll("<[/]{0,1}(br|BR)>", "<br/>").replaceAll("&((?!amp;))","&amp;$1")
     // todo get the record separator for rendering from somewhere
     val response = try {
       val elem = XML.loadString("<record>\n" + {recordAsString} + "</record>")
       <record>
         <header>
-          <identifier>{set}:{record.identifier}</identifier>
-          <datestamp>{record.modified}</datestamp>
+          <identifier>{set}:{record.getIdentifier}</identifier>
+          <datestamp>{printDate(record.getModifiedDate)}</datestamp>
           <setSpec>{set}</setSpec>
         </header>
         <metadata>
@@ -329,8 +326,8 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def renderResumptionToken(step: HarvestStep) = {
     if (step.hasNext)
-      <resumptionToken expirationDate={step.expiration.toString} completeListSize={step.listSize.toString}
-                       cursor={step.cursor.toString}>{step.nextResumptionToken.toString}</resumptionToken>
+      <resumptionToken expirationDate={step.getExpiration.toString} completeListSize={step.getListSize.toString}
+                       cursor={step.getCursor.toString}>{step.nextResumptionToken.toString}</resumptionToken>
     else
       <resumptionToken/>
   }

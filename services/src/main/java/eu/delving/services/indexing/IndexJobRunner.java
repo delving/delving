@@ -19,12 +19,17 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.incoming;
+package eu.delving.services.indexing;
 
+import eu.delving.services.core.MetaRepo;
+import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.IndexingQueueEntry;
+import eu.europeana.core.database.incoming.ESEImporter;
+import eu.europeana.core.database.incoming.ImportFile;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -35,6 +40,12 @@ public class IndexJobRunner {
     private Logger log = Logger.getLogger(getClass());
     private ConsoleDao consoleDao;
     private ESEImporter eseImporter;
+
+    @Autowired
+    private PmhImporter pmhImporter;
+
+    @Autowired
+    private MetaRepo metaRepo;
 
     public void setConsoleDao(ConsoleDao consoleDao) {
         this.consoleDao = consoleDao;
@@ -56,5 +67,26 @@ public class IndexJobRunner {
             ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
             eseImporter.commenceImport(importFile, entry.getCollection().getId());
         }
+    }
+
+    public void runParallelPmh() {
+        try {
+            MetaRepo.DataSet dataSet = metaRepo.getFirstDataSet(MetaRepo.DataSetState.QUEUED);
+            if (dataSet == null) {
+                log.debug("no collection found for indexing");
+            }
+            else {
+                log.info("found collection to index: " + dataSet.getSpec());
+                EuropeanaCollection collection = consoleDao.fetchCollection(dataSet.getSpec(), dataSet.getSpec()+".xml", true);
+                dataSet.setState(MetaRepo.DataSetState.INDEXING);
+                dataSet.setRecordsIndexed(0);
+                dataSet.save();
+                pmhImporter.commenceImport(collection.getId());
+            }
+        }
+        catch (BadArgumentException e) {
+            e.printStackTrace();  // todo: something
+        }
+
     }
 }

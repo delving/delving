@@ -26,7 +26,6 @@ import eu.europeana.definitions.annotations.Solr;
 import eu.europeana.definitions.domain.AcquisitionType;
 import eu.europeana.definitions.domain.Country;
 import eu.europeana.definitions.domain.Language;
-import eu.europeana.definitions.domain.PurchasePrice;
 import eu.europeana.definitions.domain.Technique;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
@@ -129,7 +128,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
     String[] acquisitionYear;
 
-    @Europeana(category = ICN_RESEARCH, enumClass = PurchasePrice.class) // todo: converter to turn number into enum?
+    @Europeana(category = ICN_RESEARCH)
     @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
     String[] purchasePrice;
 

@@ -1,0 +1,114 @@
+// SIP-Creator Mapping file
+
+// ## RecordRoot record 216
+
+// ConstantField collectionId 92001
+// ConstantField europeana_provider The European Library
+// ConstantField europeana_dataProvider The European Library
+// ConstantField europeana_language mul
+// ConstantField europeana_collectionName 92001_Ag_EU_TELtreasures
+// ConstantField europeana_country europe
+// ConstantField europeana_rights unknown
+
+output.record {
+
+//<<<europeana_collectionName
+europeana.collectionName europeana_collectionName
+//>>>
+
+//<<<europeana_dataProvider
+europeana.dataProvider europeana_dataProvider
+//>>>
+
+//<<<europeana_language
+europeana.language europeana_language
+//>>>
+
+//<<<europeana_provider
+europeana.provider europeana_provider
+//>>>
+
+//<<<dc_creator
+input.dc_creator.each {
+dc.creator it
+}
+//>>>
+
+//<<<dc_date
+input.dc_date.each {
+dc.date extractYear(it)[0]
+}
+//>>>
+
+//<<<dc_description
+input.dc_description.each {
+dc.description it
+}
+//>>>
+
+//<<<dc_subject
+input.dc_subject.each {
+dc.subject it
+}
+//>>>
+
+//<<<dc_title
+input.dc_title.each {
+dc.title it
+}
+//>>>
+
+//<<<dc_type
+input.dc_type.each {
+dc.type it
+}
+//>>>
+
+//<<<dcterms_alternative
+input.dcterms_alternative.each {
+dcterms.alternative it
+}
+//>>>
+
+//<<<dcterms_extent
+input.dcterms_extent.each {
+dcterms.extent it
+}
+//>>>
+
+//<<<europeana_isShownBy
+input.europeana_isShownBy.each {
+europeana.isShownBy it
+}
+//>>>
+
+//<<<europeana_object
+input.europeana_object.each {
+europeana.object it
+}
+//>>>
+
+//<<<europeana_uri
+europeana.uri input.europeana_uri[0]
+//>>>
+
+//<<<europeana_year
+input.europeana_year.each {
+for (part in extractYear(it)) {
+europeana.year part
+}
+}
+//>>>
+
+//<<<europeana_type
+europeana.type 'IMAGE'
+//>>>
+
+//<<<europeana_country
+europeana.country 'europe'
+//>>>
+
+//<<<europeana_rights
+europeana.rights 'unknown'
+//>>>
+}

@@ -30,21 +30,21 @@ import java.util.zip.ZipOutputStream;
 public class ZipUploader implements Runnable {
     private static final int BLOCK_SIZE = 4096;
     private Logger log = Logger.getLogger(getClass());
-    private String metaRepoSubmitUrl;
+    private String dataSetControllerUrl;
     private FileSet fileSet;
     private File zipFile;
     private BoundedRangeModel zipProgress, uploadProgress;
     private UserNotifier userNotifier;
 
     public ZipUploader(
-            String metaRepoSubmitUrl,
+            String dataSetControllerUrl,
             FileSet fileSet,
             String zipFileName,
             BoundedRangeModel zipProgress,
             BoundedRangeModel uploadProgress,
             UserNotifier userNotifier
     ) {
-        this.metaRepoSubmitUrl = metaRepoSubmitUrl;
+        this.dataSetControllerUrl = dataSetControllerUrl;
         this.fileSet = fileSet;
         this.zipFile = new File(fileSet.getDirectory(), zipFileName + ".zip");
         this.zipProgress = zipProgress;
@@ -148,7 +148,7 @@ public class ZipUploader implements Runnable {
 
     private void uploadFile() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
-        String postUrl = metaRepoSubmitUrl + zipFile.getName();
+        String postUrl = dataSetControllerUrl + "/submit/" + zipFile.getName();
         log.info("Posting to: " + postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
         ZipEntity zipEntity = new ZipEntity(zipFile, "application/zip");

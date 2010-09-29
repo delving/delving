@@ -83,6 +83,7 @@
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
                 <value>portal.color</value>
+                <value>services.password</value>
 
                 <value>repositoryName</value>
                 <value>adminEmail</value>
@@ -202,6 +203,19 @@
         <property name="beanClass">
             <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
         </property>
+    </bean>
+
+     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+        <property name="maxTotalConnections" value="56"/>
+        <property name="defaultMaxConnectionsPerHost" value="28"/>
+    </bean>
+
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg>
+            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+                <property name="params" ref="connectionManagerParams"/>
+            </bean>
+        </constructor-arg>
     </bean>
 
     <bean id="queryAnalyser" class="eu.europeana.core.querymodel.query.QueryAnalyzer">

@@ -21,11 +21,17 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.DataSetDetails;
+import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -35,6 +41,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -45,6 +53,7 @@ import java.awt.Dimension;
 
 public class DataSetDetailsPanel extends JPanel {
     private static final int FIELD_SIZE = 80;
+    private SipModel sipModel;
     private JTextField specField = new JTextField(FIELD_SIZE);
     private JTextField nameField = new JTextField(FIELD_SIZE);
     private JTextField providerNameField = new JTextField(FIELD_SIZE);
@@ -54,9 +63,11 @@ public class DataSetDetailsPanel extends JPanel {
     private JTextField schemaField = new JTextField(FIELD_SIZE);
     private JTextField recordRootField = new JTextField(FIELD_SIZE);
     private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
+    private JButton createUploadZipButton = new JButton("Create and upload ZIP File");
 
-    public DataSetDetailsPanel() {
+    public DataSetDetailsPanel(SipModel sipModel) {
         super(new SpringLayout());
+        this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));
         addField("Data Set Spec", specField);
         specField.getDocument().addDocumentListener(new DocumentListener() {
@@ -100,8 +111,18 @@ public class DataSetDetailsPanel extends JPanel {
         addField("Record Root", recordRootField);
         uniqueElementField.setEditable(false);
         addField("Unique Element", uniqueElementField);
+        // button line
+        add(new JLabel(""));
+        add(createUploadZipButton);
+        // progress bars
+        add(new JLabel("Create ZIP File:", JLabel.RIGHT));
+        add(new JProgressBar(sipModel.getZipProgress()));
+        add(new JLabel("Upload ZIP File:", JLabel.RIGHT));
+        add(new JProgressBar(sipModel.getUploadProgress()));
+        // finish up
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(800, 500));
+        wireUp();
     }
 
     private void addField(String prompt, JTextComponent textComponent) {
@@ -119,7 +140,7 @@ public class DataSetDetailsPanel extends JPanel {
         }
     }
 
-    public void setDetails(DataSetDetails details) {
+    private void setDetails(DataSetDetails details) {
         specField.setText(details.getSpec());
         nameField.setText(details.getName());
         providerNameField.setText(details.getProviderName());
@@ -131,7 +152,7 @@ public class DataSetDetailsPanel extends JPanel {
         uniqueElementField.setText(details.getUniqueElement());
     }
 
-    public DataSetDetails getDetails() {
+    private DataSetDetails getDetails() {
         DataSetDetails details = new DataSetDetails();
         details.setSpec(specField.getText().trim());
         details.setName(nameField.getText().trim());
@@ -145,4 +166,41 @@ public class DataSetDetailsPanel extends JPanel {
         return details;
     }
 
+    private void wireUp() {
+        createUploadZipButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sipModel.setDataSetDetails(getDetails());
+                sipModel.createUploadZipFile();
+            }
+        });
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+            @Override
+            public void templateApplied() {
+            }
+
+            @Override
+            public void updatedFileSet(FileSet fileSet) {
+                createUploadZipButton.setEnabled(fileSet.getReport() != null);
+            }
+
+            @Override
+            public void updatedDetails(DataSetDetails dataSetDetails) {
+                setDetails(sipModel.getDataSetDetails());
+            }
+
+            @Override
+            public void updatedRecordRoot(RecordRoot recordRoot) {
+            }
+
+            @Override
+            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            }
+
+            @Override
+            public void normalizationMessage(boolean complete, String message) {
+                createUploadZipButton.setEnabled(complete);
+            }
+        });
+    }
 }
