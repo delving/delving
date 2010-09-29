@@ -84,6 +84,7 @@
         </div>
         </#if>
     </#list>
+    <#if seq?size &gt; 0>
         <h4><@spring.message 'Actions_t'/>:</h4>
         <div class="related-links">
             <p class="linetop">
@@ -95,4 +96,5 @@
             </p>
             <div id="msg-save-search" class="msg-hide fg-pink"></div>
         </div>
+    </#if>
 </#compress>

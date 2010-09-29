@@ -33,6 +33,44 @@
 .azure .brief-thumb-container-listview {background: #e5e5e5;}
 
 /*
+ * @classname       azure
+ * @colordef		#01689b; azure 1 (full)
+ * @colordef		#cce0f1; azure 2 (lighter)
+ * @colordef		#deeff6; azure 3 (lightest)
+*/
+
+/* hyperlinks */
+a:link { color: #154273; text-decoration: none; }
+a:visited { color: #696969; }
+a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: underline; }
+
+/* header elements */
+.blue .title_bar{background:#ffffff;}
+.blue .nav_bar{background:#01689b;}
+.blue .nav_main{background:#01689b;}
+.blue .nav_main a{color:#fff;}
+.blue .nav_main a:hover,
+.blue .nav_main li.current {background:#cce0f1;}
+.blue .nav_main li.current a:link,
+.blue .nav_main li.current a:visited {color: #000000}
+.blue .nav_bottom{background:#cce0f1;}
+
+/* information boxes  */
+.blue .box{border:1px solid #deeff6;}
+.blue .box.open{background:transparent;}
+.blue .box.closed{background:#deeff6;}
+.blue .box h4{background:#cce0f1;}
+
+/* breadcrumbs */
+.blue .breadcrumb {color: #767676;}
+.blue .breadcrumb a:link, .blue .breadcrumb a:visited {color: #154273; text-decoration: underline;}
+
+/* search forms */
+.blue #search #search_simple {background: #eaeaea;}
+.blue #search .search_advanced table td {background: #eaeaea;}
+
+
+/*
  * @colordef		#876220; brown 1 (full)
  * @colordef		#e0d4bc; brown 2 (lighter)
  * @colordef		#f0eade; brown 3 (lightest)
@@ -64,3 +102,6 @@
 /* results pages */
 .brown .brief-thumb-container,
 .brown .brief-thumb-container-listview {background: #f0eade;}
+
+/* non-color class global definitions */
+

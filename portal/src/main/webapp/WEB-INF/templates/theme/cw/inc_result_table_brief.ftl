@@ -15,7 +15,7 @@
 
 
 <#macro show_result_table seq>
-<table summary="gallery view all search results" border="0" width="100%">
+<table summary="gallery view all search results" border="0" width="100%" class="grid">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
@@ -88,7 +88,7 @@
 </#macro>
 
 <#macro show_result_list seq>
-<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" id="multi">
+<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="list">
     <#list seq as cell>
     <tr>
         <td valign="top" width="50">
@@ -118,6 +118,8 @@
             </div>
         </td>
         <td class="${cell.type} ">
+            <div class="brief-content-container">
+
                 <h6>
                     <a class="fg-gray" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "100"/></a>
@@ -134,6 +136,7 @@
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message 'Date_t' />: </span>${cell.year}<br/></#if></#if>
                 <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
+            </div>
         </td>
     </tr>
     </#list>

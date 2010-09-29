@@ -13,7 +13,7 @@
                             <#assign thumbnail = "${doc.thumbnail}"/>
                         </#if>
                         <tr>
-                            <td width="45" valign="top">
+                            <td width="35" valign="top">
                                 <div class="related-thumb-container">
                                     <#if queryStringForPaging??>
                                         <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
@@ -30,7 +30,7 @@
                                 </div>
                             </td>
 
-                            <td class="item-titles" valign="top" width="130">
+                            <td class="item-titles" valign="top" width="300">
                                 <#if queryStringForPaging??>
                                 <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
                                 <#else>
@@ -81,15 +81,15 @@
 
                 <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
                 <div class="toggler-c ui-icon-circle-triangle-s"title="<@spring.message 'UserTags_t' />">
-                    <#assign usertags = ["Manuscript","Treasure","Religion"]/>
-                    <#--<p>-->
-                        <#--<#list model.fullDoc.europeanaUserTag as userTag>-->
-                        <#--<a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>-->
-                        <#--</#list>-->
-                    <#--</p>-->
-                    <#list usertags as tag>
-                        ${tag}<br/>
-                    </#list>
+                    <#--<#assign usertags = ["Manuscript","Treasure","Religion"]/>-->
+                    <p>
+                        <#list model.fullDoc.europeanaUserTag as userTag>
+                            <a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
+                        </#list>
+                    </p>
+                    <#--<#list usertags as tag>-->
+                        <#--${tag}<br/>-->
+                    <#--</#list>-->
                 </div>
 
                 <#--<p>-->

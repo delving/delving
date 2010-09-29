@@ -280,7 +280,7 @@
     }
 
     #view-select {
-        margin: 1em 0;
+        /*margin: 1em 0;*/
         float: right;
     }
 
@@ -288,14 +288,20 @@
         text-decoration: none;
     }
 
+    #results table {
+        margin: 1em 0;
+    }
+
     #results table caption {
         display: none;
         clear: both;
     }
 
-    #results table td {
+    #results table td{
         padding: 0;
     }
+
+
 
     .brief-thumb-container, .brief-thumb-container-listview {
         overflow: hidden;
@@ -303,7 +309,7 @@
         padding: 0.5em;
     }
 
-    .brief-thumb-container img, .brief-thumb-container-listview img, .related-thumb-container img {
+    .brief-thumb-container img, .brief-thumb-container-listview img{
         border: 4px solid #fff;
         -moz-box-shadow: 3px 3px 4px #bbb;
         -webkit-box-shadow: 3px 3px 4px #bbb;
@@ -316,8 +322,14 @@
         min-height: 75px;
     }
 
+.related-thumb-container {
+    padding: 0;
+}
+
     #no-result {
         font-size: large;
+        color: #990033;
+        margin: 1em .5em 2em .5em;
     }
 
 /* Facets - Refine Search */

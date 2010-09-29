@@ -95,14 +95,15 @@
         </div>
         </#if>
     </#list>
+    <#if seq?size &gt; 0>
         <h3><@spring.message 'Actions_t'/>:</h3>
-
-            <p>
-                <#if user??>
-                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
-                <#else>
-                    <a class="disabled" href="#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
-                </#if>
-            </p>
-            <span id="msg-save-search" class="hide"></span>
+        <p>
+            <#if user??>
+                <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
+            <#else>
+                <a class="disabled" href="#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+            </#if>
+        </p>
+        <span id="msg-save-search" class="hide"></span>
+     </#if>
 </#compress>

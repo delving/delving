@@ -307,12 +307,20 @@
 <#macro viewSelect>
         <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">
+            <img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" />
+        </a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >
+            <img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" />
+        </a>
 
         <#else>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">
+            <img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />"/>
+        </a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">
+            <img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" />
+        </a>
 
         </#if>
         </#if>

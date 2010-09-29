@@ -63,9 +63,9 @@ p { font-size: 1.1em; margin-bottom: 1.4545em; }
 p img.left { float: left; margin: 1.5em 1.5em 1.5em 0; padding: 0; }
 p img.right { float: right; margin: 1.5em 0 1.5em 1.5em; }
 
-a:link { color: #154273; text-decoration: none; }
-a:visited { color: #696969; }
-a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: underline; }
+/*a:link { color: #154273; text-decoration: none; }*/
+/*a:visited { color: #696969; }*/
+/*a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: underline; }*/
 
 blockquote { margin: 1.4545em; color: #474747; font-style: italic; font-weight: bold; }
 blockquote p { margin-bottom: 0.4em; }
