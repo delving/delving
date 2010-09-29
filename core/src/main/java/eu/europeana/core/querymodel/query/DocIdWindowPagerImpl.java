@@ -200,7 +200,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private void setNextFullDocUrl(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
-        out.append(MessageFormat.format("/{0}{1}.html?", portalName, nextUri.replaceAll("http://www.europeana.eu/resolve", "")));
+        out.append(MessageFormat.format("/{0}{1}.html?", portalName, nextUri));
         out.append("query=").append(encode(query));
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
@@ -230,7 +230,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private void setPreviousFullDocUrl(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
-        out.append(MessageFormat.format("/{0}{1}.html?", portalName, previousUri.replaceAll("http://www.europeana.eu/resolve", "")));
+        out.append(MessageFormat.format("/{0}{1}.html?", portalName, previousUri));
         out.append("query=").append(encode(query));
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {

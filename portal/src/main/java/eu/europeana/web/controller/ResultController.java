@@ -102,7 +102,7 @@ public class ResultController {
         String format = (String) params.get("format");
         boolean srwFormat = format != null && format.equals("srw");
 
-        String uri = "http://www.europeana.eu/resolve/record/" + collId + "/" + recordHash;
+        String uri = collId + "/" + recordHash;
         Map fullParams = new HashMap<String, String[]>();
         fullParams.putAll(params);
         fullParams.put("uri", new String[]{uri});

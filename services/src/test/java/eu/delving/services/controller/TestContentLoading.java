@@ -77,7 +77,7 @@ public class TestContentLoading {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet("92001_Ag_EU_TELtreasures");
         dataSet.setState(MetaRepo.DataSetState.INDEXING);
         dataSet.save();
-        EuropeanaCollection collection = consoleDao.fetchCollection("92001_Ag_EU_TELtreasures", "92001_Ag_EU_TELtreasures.xml", false);
+        EuropeanaCollection collection = consoleDao.fetchCollection("92001_Ag_EU_TELtreasures", "92001_Ag_EU_TELtreasures.xml", true);
         harvindexer.commenceImport(collection.getId());
         while (!harvindexer.getActiveImports().isEmpty()) {
             Thread.sleep(500);

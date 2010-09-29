@@ -73,7 +73,6 @@ def createEuropeanaURI(identifier) {
   if (!identifier) {
     throw new MissingPropertyException("Identifier passed to createEuropeanaURI", String.class)
   }
-  def resolveUrl = 'http://www.europeana.eu/resolve/record';
   def uriBytes = identifier.toString().getBytes("UTF-8");
   def digest = MessageDigest.getInstance("SHA-1");
   def hash = ''
@@ -81,7 +80,7 @@ def createEuropeanaURI(identifier) {
     hash += '0123456789ABCDEF'[(b & 0xF0) >> 4]
     hash += '0123456789ABCDEF'[b & 0x0F]
   }
-  return "$resolveUrl/$collectionId/$hash";
+  return "$collectionId/$hash";
 }
 
 def removeAccents(String string) {

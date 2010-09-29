@@ -74,7 +74,7 @@
                                 <#list user.savedItems as item>
                                     <tr>
                                         <td valign="top" class="item-img">
-                                            <a href='/${portalName}/${item.europeanaId.europeanaUri?replace("http://www.europeana.eu/resolve/", "")}.html?bt=savedItem'>
+                                            <a href='/${portalName}/${item.europeanaId.europeanaUri}.html?bt=savedItem'>
                                              <#if useCache="true">
                                                 <img class="thumb" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                              <#--<#else>-->
@@ -87,7 +87,7 @@
                                             </a>
                                         </td>
                                         <td valign="top" class="item-info">
-                                            <a href='/${portalName}/${item.europeanaId.europeanaUri?replace("http://www.europeana.eu/resolve/", "")}.html?bt=savedItem'><strong><@stringLimiter "${item.title}" "50"/></strong></a>
+                                            <a href='/${portalName}/${item.europeanaId.europeanaUri}.html?bt=savedItem'><strong><@stringLimiter "${item.title}" "50"/></strong></a>
                                             <p>
                                             creator: <em>${item.author}</em></p><p>
                                                 <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
@@ -147,7 +147,7 @@
                                      </td>
                                      <td valign="top" class="item-info">
 
-                                         <a href='/${portalName}/${tag.europeanaUri?replace("http://www.europeana.eu/resolve/", "")}.html?bt=savedTag'>${tag.title}</a><br/>
+                                         <a href='/${portalName}/${tag.europeanaUri}.html?bt=savedTag'>${tag.title}</a><br/>
                                          <p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>
                                      </td>
                                      <td width="60"><button onclick="removeRequest('SocialTag',${tag.id?string("0")});"><@spring.message 'Delete_t'/></button></td>

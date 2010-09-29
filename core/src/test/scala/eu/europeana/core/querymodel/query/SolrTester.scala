@@ -31,7 +31,7 @@ trait SolrTester {
     server.commit // commit so that data becomes available immediately
   }
 
-  def createEuropeanaUri(identifier: String, collId: String) : String = format("http://www.europeana.eu/resolve/record/%s/%s", collId, identifier)
+  def createEuropeanaUri(identifier: String, collId: String) : String = format("%s/%s", collId, identifier)
 
 
   private def createSolrRecord(identifier: String, collId: String) : SolrInputDocument = {

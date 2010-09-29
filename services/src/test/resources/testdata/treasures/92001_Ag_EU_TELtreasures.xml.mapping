@@ -89,7 +89,7 @@ europeana.object it
 //>>>
 
 //<<<europeana_uri
-europeana.uri input.europeana_uri[0]
+europeana.uri createEuropeanaURI(input.europeana_uri[0])
 //>>>
 
 //<<<europeana_year

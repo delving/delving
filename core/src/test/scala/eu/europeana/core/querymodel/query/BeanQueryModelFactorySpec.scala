@@ -75,7 +75,7 @@ class BeanQueryModelFactorySpec extends Spec with ShouldMatchers {
 
     @Test
     public void testGetFullSolrResponse() throws Exception {
-        SolrQuery solrQuery = new SolrQuery("europeana_uri:\"http://www.europeana.eu/resolve/record/92001/79F2A36A85CE59D4343770F4A560EBDF5F207735\"");
+        SolrQuery solrQuery = new SolrQuery("europeana_uri:\"92001/79F2A36A85CE59D4343770F4A560EBDF5F207735\"");
         solrQuery.setQueryType(QueryType.MORE_LIKE_THIS_QUERY.toString());
 
         BeanQueryModelFactory queryModel = new BeanQueryModelFactory();

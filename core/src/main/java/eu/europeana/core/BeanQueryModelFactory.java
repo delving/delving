@@ -353,7 +353,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private String createFullDocUrl(String europeanaId) {
-        return MessageFormat.format("/{0}{1}.html", portalName, europeanaId.replaceAll("http://www.europeana.eu/resolve", ""));
+        return MessageFormat.format("/{0}{1}.html", portalName, europeanaId);
     }
 
     private class FullBeanViewImpl implements FullBeanView {
