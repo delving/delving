@@ -30,25 +30,41 @@
                         <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
                     </ul>
                    <div id="fragment-0">
-                      <table width="100%" class="tbl-list" summary="table with user information" id="tbl-user" height="300">
+                      <table width="100%" class="tbl-list" summary="table with user information" id="tbl-user" >
                         <tr>
-                            <td valign="top">
+                            <td width="150">
                                 <h4><@spring.message 'Username_t' />:</h4>
-                                <p>${user.userName}</p>
-                                <br />
-
-                                <h4><@spring.message 'EmailAddress_t'/>:</h4>
-                                <p>${user.email}</p>
-
-                            <#if user.firstName??>
-                                First name: ${user.firstName}
-                            </#if>
-                            <#if user.lastName??>
-                                Last name: ${user.lastName}
-                            </#if>
-
                             </td>
+                            <td>${user.userName}</td>
                         </tr>
+                        <tr>
+                          <td><h4><@spring.message 'EmailAddress_t'/>:<h/4></td>
+                          <td>${user.email}</td>
+                        </tr>
+                        <#if user.firstName??>
+                        <tr>
+                          <td><h4>Voornaam:</h4></td>
+                          <td>${user.firstName}</td>
+                        </tr>
+                        </#if>
+                        <#if user.lastName??>
+                        <tr>
+                          <td><h4>Achternaam:</h4></td>
+                          <td>${user.lastName}</td>
+                        </tr>
+                        </#if>
+                        <#if user.registrationDate??>
+                        <tr>
+                          <td><h4>Registratiedatum:</h4></td>
+                          <td>${user.registrationDate}</td>
+                        </tr>
+                        </#if>
+                        <#if user.lastLogin??>
+                        <tr>
+                          <td><h4>Laatste inlogdatum:</h4></td>
+                          <td>${user.lastLogin?string("yyyy-MM-dd HH:mm:ss")}</td>
+                        </tr>
+                        </#if>
                     </table>
                    </div>
                     <div id="fragment-1">

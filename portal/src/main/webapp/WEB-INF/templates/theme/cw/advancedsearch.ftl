@@ -206,13 +206,13 @@
             <tr>
                 <td>Provincie</td>
                 <td>
-                    <select>
-                        <option>Alle provincies</option>
-                        <option>Selecteer provincies</option>
+                    <select name="provinces" id="sel-province">
+                        <option value="all">Alle provincies</option>
+                        <option value="select">Selecteer provincies</option>
                     </select>
                 </td>
                 <td>
-                    <div id="province-list">
+                    <div id="province-list" style="display:none;">
                         <table>
                             <tr>
                                 <td width="140">
@@ -246,14 +246,14 @@
             <tr>
                 <td>Collectie</td>
                 <td>
-                    <select name="collections">
-                        <option>Alle collecties</option>
-                        <option>Alle deelnemers Collectiebalans</option>
-                        <option>Selecteer deelnemers Collectiebalans</option>
+                    <select name="collections" id="sel-collections">
+                        <option value="all">Alle collecties</option>
+                        <option value="all-cb">Alle deelnemers Collectiebalans</option>
+                        <option value="select">Selecteer deelnemers Collectiebalans</option>
                     </select>
                 </td>
                 <td>
-                    <div id="collectiebalans-list">
+                    <div id="collectiebalans-list" style="display:none;">
                         <table>
                             <tr>
                                 <td width="140">
@@ -321,5 +321,26 @@
 
 </div>
 
-    <#include "inc_footer.ftl"/>
+<#include "inc_footer.ftl"/>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+       $("#sel-province").change(function(){
+           if($("#sel-province :selected").val()=="select"){
+               $("#province-list").show("slow");
+           };
+           if($("#sel-province :selected").val()=="all"){
+               $("#province-list").hide();
+           };
+       })
+       $("#sel-collections").change(function(){
+           if($("#sel-collections :selected").val()=="select"){
+               $("#collectiebalans-list").show("slow");
+           };
+           if($("#sel-collections :selected").val()=="all"||$("#sel-collections :selected").val()=="all-cb"){
+               $("#collectiebalans-list").hide();
+           };
+       })
+    });
+</script>
 </#compress>

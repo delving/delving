@@ -352,6 +352,12 @@
         margin: 1em 0 0 0;
     }
 
+    #item-detail h1 {
+        font-size: 1.5em;
+        line-height: 1.5em;
+        padding: .5em;
+    }
+
     table.item {
         margin: 0;
         padding: 0;
@@ -369,10 +375,6 @@
 
     table.item caption {
         display: none;
-    }
-
-    table#tbl-related-items td {
-        background: #fff;
     }
 
     #left-col h3 {

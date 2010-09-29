@@ -61,7 +61,7 @@
             <div class="brief-content-container">
                 <h6>
                     <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
-                        <@stringLimiter "${cell.title}" "40"/>
+                        <@stringLimiter "${cell.title}" "80"/>
                     </a>
                 </h6>
                 <ul>

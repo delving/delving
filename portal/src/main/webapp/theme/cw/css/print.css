@@ -5,6 +5,10 @@
         background: #ffffff;
     }
 
+    /*.container_12, .container_16 {*/
+        /*width: 100%;*/
+    /*}*/
+
     #user-bar,
     .nav_bar,
     .breadcrumb,
@@ -41,5 +45,10 @@
         content: " (" attr(href) ") ";
         font-size: 90%;
     }
+
+    table.item, table.grid, table.list {
+        width: 100%;
+    }
+
 
 }

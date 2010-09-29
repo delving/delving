@@ -25,7 +25,7 @@
             <#assign tl = result.fullDoc.dcDescription[0]?substring(0, 50) + "..."/>
         </#if>
 </#if>
-        <@stringLimiter "${tl}" "150"/>
+        <@stringLimiter "${tl}" "190"/>
 </h1>
 
 <div class="grid_3 alpha" id="img-full">

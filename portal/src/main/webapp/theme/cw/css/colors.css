@@ -32,6 +32,8 @@
 .azure .brief-thumb-container,
 .azure .brief-thumb-container-listview {background: #e5e5e5;}
 
+.azure #item-detail h1 {background: #046f96; color:#ffffff;}
+
 /*
  * @classname       azure
  * @colordef		#01689b; azure 1 (full)
@@ -69,6 +71,10 @@ a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: u
 .blue #search #search_simple {background: #eaeaea;}
 .blue #search .search_advanced table td {background: #eaeaea;}
 
+/* results pages */
+.brown .brief-thumb-container,
+.brown .brief-thumb-container-listview {}
+.blue #item-detail h1 {background: #01689b; color:#ffffff;}
 
 /*
  * @colordef		#876220; brown 1 (full)
@@ -103,5 +109,4 @@ a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: u
 .brown .brief-thumb-container,
 .brown .brief-thumb-container-listview {background: #f0eade;}
 
-/* non-color class global definitions */
-
+.brown #item-detail h1 {background: #876220; color:#ffffff;}
