@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.incoming.cache;
+package eu.delving.services.cache;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>

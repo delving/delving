@@ -90,12 +90,6 @@ public class EuropeanaId implements Serializable {
     @JoinColumn(name = "europeanaid")
     private List<SocialTag> socialTags;
 
-    //TODO is CascadeType.ALL really necessary?
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "europeanaId")
-    //TODO this @JoinColumn can be removed (covered by mappedBy)
-	@JoinColumn(name = "europeanaid")
-    private List<CarouselItem> carouselItems;
-
     @Column(nullable = true)
     private Float boostFactor;
 
@@ -187,30 +181,6 @@ public class EuropeanaId implements Serializable {
 	public void setAnnotations(List<Annotation> annotations) {
 		this.annotations = annotations;
 	}
-
-    public List<CarouselItem> getCarouselItems() {
-        if (carouselItems == null) {
-            carouselItems = new ArrayList<CarouselItem>();
-        }
-        return carouselItems;
-    }
-
-    public void setCarouselItems(List<CarouselItem> carouselItems) {
-        this.carouselItems = carouselItems;
-    }
-
-//    @Transactional
-//    public boolean hasCarouselItem() {
-//        boolean foundCarousel = false;
-//        if (carouselItems != null && carouselItems.size() != 0) {
-//            foundCarousel = true;
-//        }
-//        return foundCarousel;
-//    }
-//
-//    public void setCarouselItems(List<CarouselItem> carouselItems) {
-//        this.carouselItems = carouselItems;
-//    }
 
     public Float getBoostFactor() {
         return boostFactor;

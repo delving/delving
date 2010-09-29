@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.incoming.cache;
+package eu.delving.services.cache;
 
 import eu.europeana.core.database.domain.EuropeanaCollection;
 
@@ -31,6 +31,7 @@ import java.io.File;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public interface ObjectCache {
 
     /**

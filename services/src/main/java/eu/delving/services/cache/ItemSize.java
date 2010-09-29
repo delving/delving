@@ -1,7 +1,7 @@
 /*
  * Copyright 2007 EDL FOUNDATION
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.0 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -19,18 +19,17 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.incoming.cli;
+package eu.delving.services.cache;
 
 /**
- * Load content into the index for the purposes of testing
+ * The cache stores these different-sized versions of the item.
  *
- * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ContentLoaderLauncher {
-
-    public static void main(String... commandLine) throws Exception {
-        ContentLoader.main(commandLine);
-    }
+@Deprecated
+public enum ItemSize {
+    ORIGINAL,
+    FULL_DOC,
+    BRIEF_DOC
 }

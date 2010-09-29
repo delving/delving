@@ -21,9 +21,9 @@
 
 package eu.delving.services.controller;
 
-import eu.europeana.core.database.incoming.cache.ItemSize;
-import eu.europeana.core.database.incoming.cache.MimeType;
-import eu.europeana.core.database.incoming.cache.ObjectCache;
+import eu.delving.services.cache.ItemSize;
+import eu.delving.services.cache.MimeType;
+import eu.delving.services.cache.ObjectCache;
 import eu.europeana.core.querymodel.query.DocType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

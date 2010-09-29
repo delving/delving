@@ -24,10 +24,10 @@ import java.io.InputStream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/services-application-context.xml","/core-application-context.xml"})
-public class TestPmhImporterImpl {
+public class TestHarvindexer {
 
     @Autowired
-    private PmhImporter pmhImporter;
+    private Harvindexer harvindexer;
 
     @Autowired
     private ConsoleDao consoleDao;
@@ -64,8 +64,8 @@ public class TestPmhImporterImpl {
         dataSet.setState(MetaRepo.DataSetState.INDEXING);
         dataSet.save();
         EuropeanaCollection collection = consoleDao.fetchCollection("92001_Ag_EU_TELtreasures", "92001_Ag_EU_TELtreasures.xml", false);
-        pmhImporter.commenceImport(collection.getId());
-        while (!pmhImporter.getActiveImports().isEmpty()) {
+        harvindexer.commenceImport(collection.getId());
+        while (!harvindexer.getActiveImports().isEmpty()) {
             Thread.sleep(500);
         }
     }

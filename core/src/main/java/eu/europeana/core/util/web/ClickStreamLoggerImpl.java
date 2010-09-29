@@ -102,20 +102,18 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             for (String filterQuery : filterQueries) {
                 out.append(filterQuery).append(",");
             }
-            queryConstraints = out.toString().substring(0, out.toString().length() -1);
+            queryConstraints = out.toString().substring(0, out.toString().length() - 1);
         }
 //        String pageId;
         // private String state;
         UserAction userAction = UserAction.BRIEF_RESULT;
         Map params = request.getParameterMap();
         if (params.containsKey("bt")) {
-            if (request.getParameter("bt").equalsIgnoreCase("pacta")) {
-                userAction = UserAction.BRIEF_RESULT_FROM_PACTA;
-            }
-            else if (request.getParameter("bt").equalsIgnoreCase("savedSearch")) {
+            if (request.getParameter("bt").equalsIgnoreCase("savedSearch")) {
                 userAction = UserAction.BRIEF_RESULT_FROM_SAVED_SEARCH;
             }
-        } else if (params.containsKey("rtr") && request.getParameter("rtr").equalsIgnoreCase("true")) {
+        }
+        else if (params.containsKey("rtr") && request.getParameter("rtr").equalsIgnoreCase("true")) {
             userAction = UserAction.RETURN_TO_RESULTS;
         }
         int pageNr = briefBeanView.getPagination().getPageNumber();
@@ -141,19 +139,18 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             originalQuery = idWindowPager.getQuery();
             startPage = String.valueOf(idWindowPager.getFullDocUriInt());
             numFound = idWindowPager.getDocIdWindow().getHitCount().toString();
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             // todo decide what to do with this error
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // todo decide what to do with this error
         }
 
         UserAction userAction = UserAction.FULL_RESULT;
         Map params = request.getParameterMap();
         if (params.containsKey("bt")) {
-            if (request.getParameter("bt").equalsIgnoreCase("carousel")) {
-                userAction = UserAction.FULL_RESULT_FROM_CAROUSEL;
-            }
-            else if (request.getParameter("bt").equalsIgnoreCase("savedItem")) {
+            if (request.getParameter("bt").equalsIgnoreCase("savedItem")) {
                 userAction = UserAction.FULL_RESULT_FROM_SAVED_ITEM;
             }
             else if (request.getParameter("bt").equalsIgnoreCase("savedTag")) {
