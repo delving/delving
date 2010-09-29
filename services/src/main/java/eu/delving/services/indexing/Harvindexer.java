@@ -101,9 +101,9 @@ public class Harvindexer {
                     return processor.getCollection();
                 }
             }
-            PmhImportProcessor pmhImportProcessor = new PmhImportProcessor(collection);
-            processors.add(pmhImportProcessor);
-            pmhImportProcessor.start();
+            Processor processor = new Processor(collection);
+            processors.add(processor);
+            processor.start();
             return collection;
         }
         return null;
@@ -127,34 +127,38 @@ public class Harvindexer {
         return active;
     }
 
-    public class PmhImportProcessor implements Runnable, Processor {
+    public void commitSolr() throws IOException, SolrServerException {
+        solrServer.commit();
+    }
+
+    public class Processor implements Runnable {
         private Thread thread;
         private EuropeanaCollection collection;
         private List<SolrInputDocument> recordList = new ArrayList<SolrInputDocument>();
 
-        private PmhImportProcessor(EuropeanaCollection collection) {
+        private Processor(EuropeanaCollection collection) {
             this.collection = collection;
         }
 
-        @Override
         public void start() {
             if (this.thread == null) {
                 this.thread = new Thread(this);
                 thread.setName(collection.getFileName());
                 thread.start();
-            } else {
+            }
+            else {
                 log.warn("Import processor already started for " + collection.getName());
             }
         }
 
-        @Override
         public EuropeanaCollection stop() {
             if (thread != null) {
                 Thread threadToJoin = thread;
                 thread = null;
                 try {
                     threadToJoin.join();
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     log.error("Interrupted!", e);
                 }
             }
@@ -170,18 +174,20 @@ public class Harvindexer {
                     log.info("Finished importing " + collection);
                     collection = consoleDao.updateCollectionCounters(collection.getId());
                     collection.setCollectionState(CollectionState.ENABLED);
-                } else {
+                }
+                else {
                     log.info("Aborted importing " + collection);
                     collection.setCollectionState(CollectionState.EMPTY);
                 }
                 collection = consoleDao.updateCollection(collection);
                 MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
                 if (dataSet == null) {
-                    throw new RuntimeException("Expected to find data set for "+collection.getName());
+                    throw new RuntimeException("Expected to find data set for " + collection.getName());
                 }
                 dataSet.setState(MetaRepo.DataSetState.ENABLED);
                 dataSet.save();
-            } catch (ImportException e) {
+            }
+            catch (ImportException e) {
                 log.warn("Problem importing " + collection + " to database, moving to error directory", e);
                 collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
                 collection = consoleDao.updateCollection(collection);
@@ -214,15 +220,20 @@ public class Harvindexer {
                         break;
                     }
                 }
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 throw new ImportException("Problem reading the XML file", e);
-            } catch (TransformerException e) {
+            }
+            catch (TransformerException e) {
                 throw new ImportException("Problem transforming the XML file", e);
-            } catch (XMLStreamException e) {
+            }
+            catch (XMLStreamException e) {
                 throw new ImportException("Problem streaming the XML file", e);
-            } catch (SolrServerException e) {
+            }
+            catch (SolrServerException e) {
                 throw new ImportException("Problem sending to Solr", e);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new ImportException("Unknown problem", e);
             }
         }
@@ -248,20 +259,25 @@ public class Harvindexer {
                     case XMLStreamConstants.START_ELEMENT:
                         if (isMetadataElement(xml)) {
                             isInMetadataBlock = true;
-                        } else if (isRecordElement(xml) && isInMetadataBlock) {
+                        }
+                        else if (isRecordElement(xml) && isInMetadataBlock) {
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
-                        } else if (isResumptionToken(xml)) {
+                        }
+                        else if (isResumptionToken(xml)) {
                             resumptionToken = xml.getElementText();
-                        } else if (europeanaId != null) {
+                        }
+                        else if (europeanaId != null) {
                             EuropeanaField field = getEuropeanaField(xml.getPrefix(), xml.getLocalName(), recordCount);
 //                            String language = fetchLanguage(xml);
                             String text = xml.getElementText();
                             if (field.europeana().id()) {
                                 europeanaId.setEuropeanaUri(text);
-                            } else if (field.europeana().object()) {
+                            }
+                            else if (field.europeana().object()) {
                                 objectCount++;
-                            } else if (field.europeana().type()) {
+                            }
+                            else if (field.europeana().type()) {
                                 DocType.get(text); // checking if it matches one of them
                                 SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                 if (objectField != null) {
@@ -291,7 +307,8 @@ public class Harvindexer {
                                 for (Object object : objectUrls) {
                                     String url = (String) object;
                                 }
-                            } else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
+                            }
+                            else if ("true".equals(solrInputDocument.getFieldValue("europeana_hasObject"))) {
                                 log.warn("No object urls for " + europeanaId.getEuropeanaUri());
                             }
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {
@@ -331,11 +348,13 @@ public class Harvindexer {
             try {
                 solrServer.add(recordList);
                 metaRepo.incrementRecordCount(collection.getName(), recordList.size());
-            } catch (SolrServerException e) {
+            }
+            catch (SolrServerException e) {
                 log.error("unable to index this batch");
                 log.error(recordList.toString());
                 e.printStackTrace();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
 //            solrServer.commit();       // It is better to use the  autocommit from solr
@@ -357,7 +376,6 @@ public class Harvindexer {
         }
 
 
-
         private boolean isRecordElement(XMLStreamReader xml) {
             return "record".equals(xml.getName().getLocalPart());
         }
@@ -370,7 +388,6 @@ public class Harvindexer {
             return "resumptionToken".equals(xml.getName().getLocalPart());
         }
 
-        @Override
         public EuropeanaCollection getCollection() {
             return collection;
         }
@@ -398,17 +415,5 @@ public class Harvindexer {
             cause = cause.getCause();
         }
         return out.toString();
-    }
-
-    /**
-     * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
-     * @since Sep 27, 2010 9:35:41 PM
-     */
-    public static interface Processor {
-        EuropeanaCollection getCollection();
-
-        EuropeanaCollection stop();
-
-        void start();
     }
 }

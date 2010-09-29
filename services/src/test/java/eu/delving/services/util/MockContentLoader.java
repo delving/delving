@@ -23,16 +23,16 @@ import java.util.zip.ZipOutputStream;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MockZipUploader {
+public class MockContentLoader {
     private static File ZIP_FILE = new File("services/target/92001_Ag_EU_TELtreasures.zip");
-    private Logger log = Logger.getLogger(MockZipUploader.class);
+    private Logger log = Logger.getLogger(MockContentLoader.class);
     private String serviceKey;
 
-    public MockZipUploader(String serviceKey) {
+    public MockContentLoader(String serviceKey) {
         this.serviceKey = serviceKey;
     }
 
-    public void upload() throws IOException {
+    public void run() throws IOException {
         if (!ZIP_FILE.getParentFile().exists() && !ZIP_FILE.getParentFile().mkdirs()) {
             throw new RuntimeException("Can't create the zip file");
         }
@@ -50,9 +50,9 @@ public class MockZipUploader {
     }
 
     private void zipToOutputStream(OutputStream outputStream) throws IOException {
-        InputStream detailsInput = MockZipUploader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml.details");
-        InputStream xmlInput = MockZipUploader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml");
-        InputStream mappingInput = MockZipUploader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml.mapping");
+        InputStream detailsInput = MockContentLoader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml.details");
+        InputStream xmlInput = MockContentLoader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml");
+        InputStream mappingInput = MockContentLoader.class.getResourceAsStream("/testdata/treasures/92001_Ag_EU_TELtreasures.xml.mapping");
         ZipOutputStream zos = new ZipOutputStream(outputStream);
         zos.putNextEntry(new ZipEntry("testdata/treasures/92001_Ag_EU_TELtreasures.xml.details"));
         stream(detailsInput, zos);
@@ -95,8 +95,8 @@ public class MockZipUploader {
             System.out.println("Usage: <accessKey>");
         }
         else {
-            MockZipUploader uploader = new MockZipUploader(args[0]);
-            uploader.upload();
+            MockContentLoader uploader = new MockContentLoader(args[0]);
+            uploader.run();
         }
     }
 }

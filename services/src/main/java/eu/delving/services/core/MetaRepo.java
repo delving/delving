@@ -210,7 +210,7 @@ public interface MetaRepo {
     }
 
     String DATABASE_NAME = "MetaRepo";
-    String RECORD_COLLECTION_PREFIX = "Records_";
+    String RECORD_COLLECTION_PREFIX = "Records.";
     String DATASETS_COLLECTION = "Datasets";
     String HARVEST_STEPS_COLLECTION = "HarvestSteps";
     String MONGO_ID = "_id";
