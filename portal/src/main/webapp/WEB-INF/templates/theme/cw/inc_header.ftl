@@ -172,15 +172,15 @@
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
     <#if portalColor??>
-        <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.5.custom.css"/>
+        <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${portalColor}/jquery-ui-1.8.5.custom.css" />
     <#else>
         <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.5.custom.css"/>
     </#if>
     <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css" />
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
-
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/print.css" media="print"/>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
