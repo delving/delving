@@ -21,79 +21,97 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.domain.StaticPageType;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import eu.europeana.core.database.domain.Role;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
-import eu.europeana.core.util.web.StaticPageCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Genereric controller for static pages. Badly deprecated, see StaticPageCOntroller in portal-full
+ * Serve up pages from MongoDB
  *
- * @author Eric van der Meulen <eric.meulen@gmail.com>
+ * @author Gerald de Jong <gerald@delving.eu>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
 @Controller
-@Deprecated
+@RequestMapping("_{pageName}.html")
 public class StaticPageController {
+    private static final String DB_NAME = "StaticPages";
+    private static final String COLLECTION_NAME = "pages";
+    private static final String CONTENT = "content";
 
     @Autowired
-    private StaticPageCache staticPageCache;
+    private Mongo mongo;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
-    /**
-     * All of the pages are served up from here
-     *
-     * @param pageName name of the page
-     * @param request  where we find locale
-     * @throws Exception something went wrong
-     * @return ModelAndView
-     */
-
-    @RequestMapping("/{pageName}.html")
+    @RequestMapping(method = RequestMethod.GET)
     public ModelAndView fetchStaticPage(
-            @PathVariable("pageName") String pageName,
+            @PathVariable String pageName,
+            @RequestParam(required = false) boolean edit,
             HttpServletRequest request
     ) {
-        String pageValue = staticPageCache.getPage(null, pageName, ControllerUtil.getLocale(request));
-        ModelAndView pageModel = ControllerUtil.createModelAndViewPage("static-page");
-        if (pageValue != null) {
-            pageModel.addObject("pageValue", pageValue);
+        String content = getPage(pageName);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + pageName);
+        ModelAndView mav = new ModelAndView("static-page", "content", content == null ? "This page does not exist." : content);
+        mav.addObject("pageName", pageName);
+        if (isEditor()) {
+            mav.addObject("edit", edit);
         }
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view="+ pageName);
-        return pageModel;
+        return mav;
     }
 
-    /*
-    * freemarker template not loadable from database
-    */
+    @RequestMapping(method = RequestMethod.POST)
+    public String createStaticPage(
+            @PathVariable String pageName,
+            String content
+    ) {
+        if (isEditor()) {
+            putPage(pageName, content);
+        }
+        return String.format("redirect:_%s.html", pageName);
+    }
 
-//    @RequestMapping("/advancedsearch.html")
-//    public ModelAndView advancedSearchHandler(HttpServletRequest request) {
-//        StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
-//        clickStreamLogger.logStaticPageView(request, pageType);
-//        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
-//    }
-//
+    private boolean isEditor() {
+        User user = ControllerUtil.getUser();
+        return user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD);
+    }
 
-    /*
-     * freemarker Template not loadable from database
-     */
 
-    @RequestMapping("/error.html")
-    public ModelAndView errorPageHandler(HttpServletRequest request) {
-        StaticPageType pageType = StaticPageType.ERROR;
-        clickStreamLogger.logStaticPageView(request, pageType);
-        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+    private void putPage(String pageName, String content) {
+        DBObject object = db().findOne(new BasicDBObject("_id", pageName));
+        if (object != null) {
+            object.put(CONTENT, content);
+            db().save(object);
+        }
+        else {
+            object = new BasicDBObject("_id", pageName);
+            object.put(CONTENT, content);
+            db().insert(object);
+        }
+    }
+
+    private String getPage(String pageName) {
+        DBObject object = db().findOne(new BasicDBObject("_id", pageName));
+        return object == null ? null : (String) object.get(CONTENT);
+    }
+
+    private DBCollection db() {
+        return mongo.getDB(DB_NAME).getCollection(COLLECTION_NAME);
     }
 
 }

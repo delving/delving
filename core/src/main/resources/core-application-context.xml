@@ -135,8 +135,6 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean name="staticPageCache" class="eu.europeana.core.util.web.StaticPageCache"/>
-
     <bean name="userDao" class="eu.europeana.core.database.dao.UserDaoImpl"/>
 
     <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
@@ -275,18 +273,6 @@
         <property name="template" value="/email/feedback-confirmation"/>
         <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
         <property name="subject" value="User Feedback"/>
-    </bean>
-
-    <bean id="staticPageCacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="staticPageCache"/>
-                <property name="targetMethod" value="invalidate"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="600000"/>
-        <property name="repeatInterval" value="600000"/>
     </bean>
 
     <bean id="registrationEmailSender" class="eu.europeana.core.util.web.TokenReplyEmailSender">
