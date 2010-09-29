@@ -39,10 +39,6 @@
         <mapping class="eu.europeana.core.database.domain.EuropeanaCollection"/>
         <mapping class="eu.europeana.core.database.domain.AuthenticationToken"/>
         <mapping class="eu.europeana.core.database.domain.Token"/>
-        <mapping class="eu.europeana.core.database.domain.SearchTerm"/>
-        <mapping class="eu.europeana.core.database.domain.CarouselItem"/>
-        <mapping class="eu.europeana.core.database.domain.IndexingQueueEntry"/>
         <mapping class="eu.europeana.core.database.domain.Annotation"/>
-        <mapping class="eu.europeana.core.database.domain.ConsoleLog"/>
     </session-factory>
 </hibernate-configuration>

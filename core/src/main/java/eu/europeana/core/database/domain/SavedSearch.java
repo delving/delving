@@ -33,7 +33,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
@@ -72,10 +71,6 @@ public class SavedSearch implements Serializable {
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateSaved;
-
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "searchtermid")
-    private SearchTerm searchTerm;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "userid", insertable = false, updatable = false)
@@ -116,29 +111,6 @@ public class SavedSearch implements Serializable {
 
     public void setDateSaved(Date dateSaved) {
         this.dateSaved = dateSaved;
-    }
-
-    public SearchTerm getSearchTerm() {
-        return searchTerm;
-    }
-
-    public void setSearchTerm(SearchTerm searchTerm) {
-        this.searchTerm = searchTerm;
-    }
-
-    public Boolean hasSearchTerm() {
-        return searchTerm != null;
-    }
-
-    public SearchTerm createSearchTerm() {
-        SearchTerm searchTerm = new SearchTerm();
-        searchTerm.setDate(new Date());
-        searchTerm.setLanguage(language);
-        searchTerm.setProposedSearchTerm(queryString);
-        searchTerm.setUriQueryString(query);
-        searchTerm.setSavedSearch(this);
-        this.setSearchTerm(searchTerm);
-        return searchTerm;
     }
 
     public User getUser() {

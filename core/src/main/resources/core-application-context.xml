@@ -141,8 +141,6 @@
 
     <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
 
-    <bean name="staticInfoDao" class="eu.europeana.core.database.dao.StaticInfoDaoImpl"/>
-
     <bean name="consoleDao" class="eu.europeana.core.database.dao.ConsoleDaoImpl"/>
 
     <bean name="tokenRepositoryService" class="eu.europeana.core.util.web.TokenRepositoryService"/>
@@ -192,19 +190,6 @@
         <!--</property>-->
     <!--</bean>-->
 
-    <bean id="normalizedImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
-        <property name="dataDirectory" value="#{launchProperties['dashboard.normalized.import.repository']}"/>
-    </bean>
-
-    <bean id="normalizedEseImporter" class="eu.europeana.core.database.incoming.ESEImporterImpl">
-        <property name="importRepository" ref="normalizedImportRepository"/>
-        <property name="normalized" value="true"/>
-        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
-        <property name="beanClass">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
-        </property>
-    </bean>
-
      <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
         <property name="maxTotalConnections" value="56"/>
         <property name="defaultMaxConnectionsPerHost" value="28"/>
@@ -235,11 +220,6 @@
         </property>
     </bean>
 
-    <bean id="objectCache" class="eu.europeana.core.database.incoming.cache.ObjectCacheImpl">
-        <property name="root" value="#{launchProperties['cache.cacheRoot']}"/>
-        <property name="fetchOriginal" value="false"/>
-    </bean>
-
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPath" value="#{launchProperties['portal.freemarker.path']}"/>
     </bean>
@@ -256,14 +236,6 @@
 
     <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
         <property name="userDao" ref="userDao"/>
-    </bean>
-
-    <bean id="proposedSearchTermSampler" class="eu.europeana.core.util.web.ProposedSearchTermSampler">
-        <property name="displayCount" value="3"/>
-    </bean>
-
-    <bean id="carouselItemSampler" class="eu.europeana.core.util.web.CarouselItemSampler">
-        <property name="displayCount" value="40"/>
     </bean>
 
     <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
@@ -303,30 +275,6 @@
         <property name="template" value="/email/feedback-confirmation"/>
         <property name="fromEmail" value="#{launchProperties['feedback.from']}"/>
         <property name="subject" value="User Feedback"/>
-    </bean>
-
-    <bean id="proposedSearchTermRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="proposedSearchTermSampler"/>
-                <property name="targetMethod" value="refresh"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="0"/>
-        <property name="repeatInterval" value="10000"/>
-    </bean>
-
-    <bean id="carouselItemRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="carouselItemSampler"/>
-                <property name="targetMethod" value="refresh"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="0"/>
-        <property name="repeatInterval" value="11000"/>
     </bean>
 
     <bean id="staticPageCacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">

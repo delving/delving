@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.database.incoming.cache;
+package eu.delving.services.cache;
 
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import org.apache.commons.httpclient.Header;
@@ -52,6 +52,7 @@ import java.util.Map;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 public class ObjectCacheImpl implements ObjectCache {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss");
     private static final String SLASH = File.separator;

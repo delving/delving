@@ -79,10 +79,8 @@ public interface ClickStreamLogger {
 
         // search related actions
         BRIEF_RESULT,
-        BRIEF_RESULT_FROM_PACTA,
         BRIEF_RESULT_FROM_SAVED_SEARCH,
         FULL_RESULT,
-        FULL_RESULT_FROM_CAROUSEL,
         FULL_RESULT_FROM_SAVED_ITEM,
         FULL_RESULT_FROM_SAVED_TAG,
         FULL_RESULT_FROM_YEAR_GRID,
@@ -100,13 +98,9 @@ public interface ClickStreamLogger {
         SAVE_ITEM,
         SAVE_SEARCH,
         SAVE_SOCIAL_TAG,
-        SAVE_CAROUSEL_ITEM,
-        SAVE_SEARCH_TERM,
         REMOVE_SAVED_ITEM,
         REMOVE_SAVED_SEARCH,
         REMOVE_SOCIAL_TAG,
-        REMOVE_CAROUSEL_ITEM,
-        REMOVE_SEARCH_TERM,
         SEND_EMAIL_TO_FRIEND,
         TAG_AUTOCOMPLETE,
 

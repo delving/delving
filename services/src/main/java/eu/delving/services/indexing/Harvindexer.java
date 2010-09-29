@@ -3,12 +3,11 @@ package eu.delving.services.indexing;
 import com.ctc.wstx.stax.WstxInputFactory;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
+import eu.delving.services.exceptions.ImportException;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.ImportFileState;
-import eu.europeana.core.database.incoming.ImportException;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
@@ -45,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @since Sep 27, 2010 9:24:53 PM
  */
 
-public class PmhImporterImpl implements PmhImporter {
+public class Harvindexer {
     private ConsoleDao consoleDao;
     private SolrServer solrServer;
     private EuropeanaBean europeanaBean;
@@ -94,8 +93,6 @@ public class PmhImporterImpl implements PmhImporter {
         this.chunkSize = chunkSize;
     }
 
-
-    @Override
     public EuropeanaCollection commenceImport(Long collectionId) {
         EuropeanaCollection collection = consoleDao.fetchCollection(collectionId);
         if (collectionId != null) {
@@ -112,7 +109,6 @@ public class PmhImporterImpl implements PmhImporter {
         return null;
     }
 
-    @Override
     public EuropeanaCollection abortImport(Long collectionId) {
         EuropeanaCollection collection = consoleDao.fetchCollection(collectionId);
         for (Processor processor : processors) {
@@ -123,7 +119,6 @@ public class PmhImporterImpl implements PmhImporter {
         return collection;
     }
 
-    @Override
     public List<EuropeanaCollection> getActiveImports() {
         List<EuropeanaCollection> active = new ArrayList<EuropeanaCollection>();
         for (Processor processor : processors) {
@@ -174,15 +169,12 @@ public class PmhImporterImpl implements PmhImporter {
                 if (thread != null) {
                     log.info("Finished importing " + collection);
                     collection = consoleDao.updateCollectionCounters(collection.getId());
-                    collection.setFileState(ImportFileState.IMPORTED);
                     collection.setCollectionState(CollectionState.ENABLED);
                 } else {
                     log.info("Aborted importing " + collection);
                     collection.setCollectionState(CollectionState.EMPTY);
-                    collection.setFileState(ImportFileState.UPLOADED);
                 }
                 collection = consoleDao.updateCollection(collection);
-                consoleDao.removeFromIndexQueue(collection);
                 MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
                 if (dataSet == null) {
                     throw new RuntimeException("Expected to find data set for "+collection.getName());
@@ -192,7 +184,6 @@ public class PmhImporterImpl implements PmhImporter {
             } catch (ImportException e) {
                 log.warn("Problem importing " + collection + " to database, moving to error directory", e);
                 collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
-                collection.setFileState(ImportFileState.ERROR);
                 collection = consoleDao.updateCollection(collection);
             }
             catch (BadArgumentException e) {

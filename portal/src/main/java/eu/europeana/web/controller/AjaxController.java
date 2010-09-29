@@ -21,12 +21,9 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.CarouselItem;
 import eu.europeana.core.database.domain.SavedItem;
 import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.SearchTerm;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
@@ -69,9 +66,6 @@ public class AjaxController {
     private UserDao userDao;
 
     @Autowired
-    private StaticInfoDao staticInfoDao;
-
-    @Autowired
     private ClickStreamLogger clickStreamLogger;
 
     @Autowired
@@ -101,10 +95,6 @@ public class AjaxController {
 
         User user;
         switch (findModifiable(className)) {
-            case CAROUSEL_ITEM:
-                user = staticInfoDao.removeCarouselItemFromSavedItem(id);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_CAROUSEL_ITEM);
-                break;
             case SAVED_ITEM:
                 user = userDao.removeSavedItem(id);
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
@@ -112,10 +102,6 @@ public class AjaxController {
             case SAVED_SEARCH:
                 user = userDao.removeSavedSearch(id);
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
-                break;
-            case SEARCH_TERM:
-                user = staticInfoDao.removeSearchTerm(id);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 user = userDao.removeSocialTag(id);
@@ -151,14 +137,6 @@ public class AjaxController {
         }
 
         switch (findModifiable(className)) {
-            case CAROUSEL_ITEM:
-                SavedItem savedItemForCarousel = userDao.fetchSavedItemById(Long.valueOf(idString));
-                CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItemForCarousel.getId());
-                if (carouselItem == null) {
-                    return false;
-                }
-                clickStreamLogger.logUserAction(request, UserAction.SAVE_CAROUSEL_ITEM);
-                break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
                 savedItem.setTitle(getStringParameter("title", request));
@@ -176,13 +154,6 @@ public class AjaxController {
                 savedSearch.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSavedSearch(user, savedSearch);
                 clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
-                break;
-            case SEARCH_TERM:
-                SearchTerm searchTerm = staticInfoDao.addSearchTerm(Long.valueOf(idString));
-                if (searchTerm == null) {
-                    return false;
-                }
-                clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH_TERM);
                 break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
@@ -284,10 +255,8 @@ public class AjaxController {
 
 
     private enum Modifiable {
-        CAROUSEL_ITEM(CarouselItem.class),
         SAVED_ITEM(SavedItem.class),
         SAVED_SEARCH(SavedSearch.class),
-        SEARCH_TERM(SearchTerm.class),
         SOCIAL_TAG(SocialTag.class);
 
         private String className;

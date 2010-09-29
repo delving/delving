@@ -25,9 +25,6 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.EuropeanaCollection;
-import eu.europeana.core.database.domain.IndexingQueueEntry;
-import eu.europeana.core.database.incoming.ESEImporter;
-import eu.europeana.core.database.incoming.ImportFile;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,38 +35,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class IndexJobRunner {
     private Logger log = Logger.getLogger(getClass());
-    private ConsoleDao consoleDao;
-    private ESEImporter eseImporter;
 
     @Autowired
-    private PmhImporter pmhImporter;
+    private ConsoleDao consoleDao;
+
+    @Autowired
+    private Harvindexer harvindexer;
 
     @Autowired
     private MetaRepo metaRepo;
 
-    public void setConsoleDao(ConsoleDao consoleDao) {
-        this.consoleDao = consoleDao;
-    }
-
-    public void setEseImporter(ESEImporter eseImporter) {
-        this.eseImporter = eseImporter;
-    }
-
-    public void runParallel() {
-        IndexingQueueEntry entry = consoleDao.getEntryForIndexing();
-        if (entry == null) {
-            log.debug("no collection found for indexing");
-        }
-        else {
-            log.info("found collection to index: " + entry.getCollection().getName());
-            entry = consoleDao.startIndexing(entry);
-            EuropeanaCollection collection = entry.getCollection();
-            ImportFile importFile = new ImportFile(collection.getFileName(), collection.getFileState());
-            eseImporter.commenceImport(importFile, entry.getCollection().getId());
-        }
-    }
-
-    public void runParallelPmh() {
+    public void runParallelHarvindexing() {
         try {
             MetaRepo.DataSet dataSet = metaRepo.getFirstDataSet(MetaRepo.DataSetState.QUEUED);
             if (dataSet == null) {
@@ -81,7 +57,7 @@ public class IndexJobRunner {
                 dataSet.setState(MetaRepo.DataSetState.INDEXING);
                 dataSet.setRecordsIndexed(0);
                 dataSet.save();
-                pmhImporter.commenceImport(collection.getId());
+                harvindexer.commenceImport(collection.getId());
             }
         }
         catch (BadArgumentException e) {

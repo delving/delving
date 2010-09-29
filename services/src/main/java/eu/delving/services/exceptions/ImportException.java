@@ -1,4 +1,4 @@
-package eu.europeana.core.database.incoming;
+package eu.delving.services.exceptions;
 
 /**
  * Something went wrong during importing

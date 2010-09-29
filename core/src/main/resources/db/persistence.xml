@@ -13,10 +13,6 @@
         <class>eu.europeana.core.database.domain.EuropeanaCollection</class>
         <class>eu.europeana.core.database.domain.AuthenticationToken</class>
         <class>eu.europeana.core.database.domain.Token</class>
-        <class>eu.europeana.core.database.domain.SearchTerm</class>
-        <class>eu.europeana.core.database.domain.CarouselItem</class>
-        <class>eu.europeana.core.database.domain.IndexingQueueEntry</class>
-        <class>eu.europeana.core.database.domain.ConsoleLog</class>
         <class>eu.europeana.core.database.domain.Annotation</class>
     </persistence-unit>
 
