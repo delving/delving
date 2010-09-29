@@ -111,10 +111,10 @@
     </table>
 </form>
 
-    <#if (user??) && (user.role=="ROLE_RESEARCH_USER")>
+    <#--<#if (user??) && (user.role=="ROLE_RESEARCH_USER")>-->
     <h2>Uitegebreid zoeken Museometrie</h2>
 
-    <form method="get" action="brief-doc.html" accept-charset="UTF-8">
+    <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1"/>
         <input type="hidden" name="view" value="${view}"/>
 
@@ -123,7 +123,7 @@
             <tr>
                 <td width="150">Zoek in:</td>
                 <td width="200">
-                    <select name="m-facet1" id="m-facet1">
+                    <select name="facet0" id="m-facet1">
                         <option selected="selected">Alles</option>
                         <option>Titel</option>
                         <option>Vervaardiger</option>
@@ -132,17 +132,17 @@
                         <option>Beschrijving</option>
                     </select>
                 </td>
-                <td><input type="text" name="m-query1" class="search-input" maxlength="75"/></td>
+                <td><input type="text" name="value0" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
                 <td align="right"></td>
                 <td>
-                    <select name="m-operator2" id="m-operator2">
+                    <select name="operator1" id="m-operator2">
                         <option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option>
                         <option value="or"><@spring.message 'OrBoolean_t'/> </option>
                         <option value="not"><@spring.message 'NotBoolean_t'/> </option>
                     </select>
-                    <select name="m-facet2" id="m-facet2">
+                    <select name="facet1" id="m-facet2">
                         <option selected="selected">Alles</option>
                         <option>Titel</option>
                         <option>Vervaardiger</option>
@@ -150,17 +150,17 @@
                         <option>Onderwerp</option>
                         <option>Beschrijving</option>
                     </select></td>
-                <td><input type="text" name="m-query2" class="search-input" maxlength="75"/></td>
+                <td><input type="text" name="value1" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
                 <td align="right"></td>
                 <td>
-                    <select name="m-operator3" id="m-operator3">
+                    <select name="operator2" id="m-operator3">
                         <option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option>
                         <option value="or"><@spring.message 'OrBoolean_t'/> </option>
                         <option value="not"><@spring.message 'NotBoolean_t'/> </option>
                     </select>
-                    <select name="m-facet3" id="m-facet3">
+                    <select name="facet2" id="m-facet3">
                         <option selected="selected">Alles</option>
                         <option>Titel</option>
                         <option>Vervaardiger</option>
@@ -168,36 +168,37 @@
                         <option>Onderwerp</option>
                         <option>Beschrijving</option>
                     </select></td>
-                <td><input type="text" name="m-query3" class="search-input" maxlength="75"/></td>
+                <td><input type="text" name="value2" class="search-input" maxlength="75"/></td>
             </tr>
 
             <tr>
                 <td>Vervaardigingsjaar</td>
-                <td>van <input type="text" name="jaar-van" class="in-small"/></td>
-                <td>tot <input type="text" name="jaar-tot" class="in-small"/></td>
+                <td>van <input type="text" name="creationFrom" class="in-small"/></td>
+                <td>tot <input type="text" name="creationTo" class="in-small"/></td>
             </tr>
 
             <tr>
                 <td>Geboortejaar vervaardiger</td>
-                <td>van <input type="text" name="geboorte-jaar-van" class="in-small"/></td>
-                <td>tot <input type="text" name="geboorte-jaar-tot" class="in-small"/></td>
+                <td>van <input type="text" name="birthFrom" class="in-small"/></td>
+                <td>tot <input type="text" name="birthTo" class="in-small"/></td>
             </tr>
 
             <tr>
                 <td>Jaar van verwerving</td>
-                <td>van <input type="text" name="jaar-verwerving-van" class="in-small"/></td>
-                <td>tot <input type="text" name="jaar-verwerving-tot" class="in-small"/></td>
+                <td>van <input type="text" name="acquisitionFrom" class="in-small"/></td>
+                <td>tot <input type="text" name="acquisitionTo" class="in-small"/></td>
             </tr>
 
             <tr>
                 <td>Aankoop bedrag</td>
                 <td>
-                    <select name="aankoop-bedrag">
+                    <select name="purchasePrice">
                         <option>Selecteer</option>
-                        <option> &lt; 100</option>
-                        <option>1,000 - 10,000</option>
-                        <option>10,000 - 100,000</option>
-                        <option>100,000 - 1,000,000</option>
+                        <option value="100"> &lt; 100</option>
+                        <option value="1000">100 - 1,000</option>
+                        <option value="10000">1,000 - 10,000</option>
+                        <option value="100000" >10,000 - 100,000</option>
+                        <option value="1000000">100,000 - 1,000,000</option>
                     </select>
                 </td>
                 <td></td>
@@ -206,9 +207,9 @@
             <tr>
                 <td>Provincie</td>
                 <td>
-                    <select name="provinces" id="sel-province">
-                        <option value="all">Alle provincies</option>
-                        <option value="select">Selecteer provincies</option>
+                    <select name="allProvinces" id="sel-province">
+                        <option value="true">Alle provincies</option>
+                        <option value="false">Selecteer provincies</option>
                     </select>
                 </td>
                 <td>
@@ -216,27 +217,27 @@
                         <table>
                             <tr>
                                 <td width="140">
-                                    <input type="checkbox" name="provincie" value="Noor Holland"/>Noord Holland
+                                    <input type="checkbox" name="province" value="Noor Holland"/>Noord Holland
                                 </td>
                                 <td width="195">
-                                    <input type="checkbox" name="provincie" value="Noord Brabant"/>Noord Brabant
+                                    <input type="checkbox" name="province" value="Noord Brabant"/>Noord Brabant
                                 </td>
-                                <td width="165"><input type="checkbox" name="provincie" value="Limburg"/>Limburg</td>
+                                <td width="165"><input type="checkbox" name="province" value="Limburg"/>Limburg</td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="provincie" value="Zuid Holland"/>Zuid Holland</td>
-                                <td><input type="checkbox" name="provincie" value="Gelderland"/>Gelderland</td>
-                                <td><input type="checkbox" name="provincie" value="Drente"/>Drente</td>
+                                <td><input type="checkbox" name="province" value="Zuid Holland"/>Zuid Holland</td>
+                                <td><input type="checkbox" name="province" value="Gelderland"/>Gelderland</td>
+                                <td><input type="checkbox" name="province" value="Drente"/>Drente</td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="provincie" value="Zeeland"/>Zeeland</td>
-                                <td><input type="checkbox" name="provincie" value="Overijssel"/>Overijssel</td>
-                                <td><input type="checkbox" name="provincie" value="Groningen"/>Groningen</td>
+                                <td><input type="checkbox" name="province" value="Zeeland"/>Zeeland</td>
+                                <td><input type="checkbox" name="province" value="Overijssel"/>Overijssel</td>
+                                <td><input type="checkbox" name="province" value="Groningen"/>Groningen</td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="provincie" value="Friesland"/>Friesland</td>
-                                <td><input type="checkbox" name="provincie" value="Flevoland"/>Flevoland</td>
-                                <td><input type="checkbox" name="provincie" value="Utrecht"/>Utrecht</td>
+                                <td><input type="checkbox" name="province" value="Friesland"/>Friesland</td>
+                                <td><input type="checkbox" name="province" value="Flevoland"/>Flevoland</td>
+                                <td><input type="checkbox" name="province" value="Utrecht"/>Utrecht</td>
                             </tr>
                         </table>
                     </div>
@@ -257,34 +258,34 @@
                         <table>
                             <tr>
                                 <td width="140">
-                                    <input type="checkbox" name="collectiebalans" value="Bonnefantenmuseum"/>Bonnefantenmuseum
+                                    <input type="checkbox" name="collection" value="Bonnefantenmuseum"/>Bonnefantenmuseum
                                 </td>
                                 <td width="195">
-                                    <input type="checkbox" name="collectiebalans" value="Audax Textielmuseum"/>Audax Textielmuseum
+                                    <input type="checkbox" name="collection" value="Audax Textielmuseum"/>Audax Textielmuseum
                                 </td>
                                 <td width="165">
-                                    <input type="checkbox" name="collectiebalans" value="Museum Het Valkhof"/>Museum Het Valkhof
+                                    <input type="checkbox" name="collection" value="Museum Het Valkhof"/>Museum Het Valkhof
                                 </td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="collectiebalans" value="Van Abbemuseum"/>Van Abbemuseum
+                                <td><input type="checkbox" name="collection" value="Van Abbemuseum"/>Van Abbemuseum
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="collectiebalans" value="Stedelijk Museum de Lakenhal"/>Stedelijk Museum de Lakenhal
+                                    <input type="checkbox" name="collection" value="Stedelijk Museum de Lakenhal"/>Stedelijk Museum de Lakenhal
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="collectiebalans" value="Noord Brabantsmuseum"/>Noord Brabantsmuseum
+                                    <input type="checkbox" name="collection" value="Noord Brabantsmuseum"/>Noord Brabantsmuseum
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="collectiebalans" value="Rijksmuseum Twente"/>Rijksmuseum Twente
+                                    <input type="checkbox" name="collection" value="Rijksmuseum Twente"/>Rijksmuseum Twente
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="collectiebalans" value="Groninger Museum"/>Groninger Museum
+                                    <input type="checkbox" name="collection" value="Groninger Museum"/>Groninger Museum
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="collectiebalans" value="Centraal Museum Utrecht"/>Centraal Museum Utrecht
+                                    <input type="checkbox" name="collection" value="Centraal Museum Utrecht"/>Centraal Museum Utrecht
                                 </td>
                             </tr>
                         </table>
@@ -295,7 +296,7 @@
             <tr>
                 <td align="right">Sorteren op:</td>
                 <td>
-                    <select name="select8" class="form_11">
+                    <select name="sortBy" class="form_11">
                         <option selected="selected">Titel</option>
                         <option>Jaar</option>
                         <option>Collectie</option>
@@ -315,7 +316,7 @@
     </form>
 
     </div>
-    </#if>
+    <#--</#if>-->
 
 </div>
 

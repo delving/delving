@@ -77,13 +77,13 @@ public class StaticPageController {
     * freemarker template not loadable from database
     */
 
-    @RequestMapping("/advancedsearch.html")
-    public ModelAndView advancedSearchHandler(HttpServletRequest request) {
-        StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
-        clickStreamLogger.logStaticPageView(request, pageType);
-        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
-    }
-
+//    @RequestMapping("/advancedsearch.html")
+//    public ModelAndView advancedSearchHandler(HttpServletRequest request) {
+//        StaticPageType pageType = StaticPageType.ADVANCED_SEARCH;
+//        clickStreamLogger.logStaticPageView(request, pageType);
+//        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
+//    }
+//
 
     /*
      * freemarker Template not loadable from database
