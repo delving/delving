@@ -61,9 +61,10 @@ public class DataSetControlPanel extends JPanel {
     private JButton toggleButton = new JButton(BUTTON_DEFAULT);
     private RestTemplate restTemplate;
     private String dataSetControllerUrl, accessKey;
+    private Boolean enable;
 
     public DataSetControlPanel(String dataSetControllerUrl) {
-        super(new BorderLayout(8,8));
+        super(new BorderLayout(8, 8));
         this.dataSetControllerUrl = dataSetControllerUrl;
         setBorder(BorderFactory.createTitledBorder("Control of all data sets"));
         add(new JScrollPane(table), BorderLayout.CENTER);
@@ -87,6 +88,7 @@ public class DataSetControlPanel extends JPanel {
                 int selected = table.getSelectedRow();
                 if (selected < 0) {
                     toggleButton.setText(BUTTON_DEFAULT);
+                    enable = null;
                     toggleButton.setEnabled(false);
                 }
                 else {
@@ -97,11 +99,13 @@ public class DataSetControlPanel extends JPanel {
         toggleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selected = table.getSelectedRow();
-                if (selected >= 0) {
-                    toggleButton.setEnabled(false);
-                    DataSetInfo info = dataSetTableModel.get(selected);
-                    executor.execute(new XAbler(info.spec, Math.random() > 0.5));
+                if (enable != null) {
+                    int selected = table.getSelectedRow();
+                    if (selected >= 0) {
+                        toggleButton.setEnabled(false);
+                        DataSetInfo info = dataSetTableModel.get(selected);
+                        executor.execute(new XAbler(info.spec, Math.random() > 0.5));
+                    }
                 }
             }
         });
@@ -111,15 +115,37 @@ public class DataSetControlPanel extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                switch (DataSetState.valueOf(info.state)) {
+                    case UPLOADED:
+                    case INDEXING:
+                    case ENABLED:
+                    case QUEUED:
+                        enable = Boolean.FALSE;
+                        break;
+                    case DISABLED:
+                    case ERROR:
+                        enable = Boolean.TRUE;
+                        break;
+                    default: throw new RuntimeException();
+                }
                 toggleButton.setText(String.format(
-                        "Data set \"%s\" is currently %s for indexing. Press here to %s it.",
+                        "\"%s\" is in state %s. Press here to %s it.",
                         info.name,
-                        "en-dis-abled", // todo: when that info is available
-                        "en-dis-abled" // todo: the opposite
+                        info.state,
+                        enable ? "enable" : "disable"
                 ));
                 toggleButton.setEnabled(true);
             }
         });
+    }
+
+    public enum DataSetState {
+        DISABLED,
+        UPLOADED,
+        QUEUED,
+        INDEXING,
+        ENABLED,
+        ERROR
     }
 
     private class DataSetTableModel extends AbstractTableModel {
@@ -145,7 +171,7 @@ public class DataSetControlPanel extends JPanel {
                 case 1:
                     return "name";
                 case 2:
-                    return "provider name";
+                    return "state";
                 default:
                     throw new IllegalArgumentException();
             }
@@ -174,7 +200,7 @@ public class DataSetControlPanel extends JPanel {
                     case 1:
                         return info.name;
                     case 2:
-                        return info.providerName;
+                        return info.state;
                     default:
                         throw new IllegalArgumentException();
                 }

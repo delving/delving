@@ -78,18 +78,16 @@ public class DatasetController {
                 case UPLOADED:
                 case INDEXING:
                 case ENABLED:
+                case QUEUED:
                     if (!enable) {
                         dataSet.setState(MetaRepo.DataSetState.DISABLED);
                     }
                     break;
+                case ERROR:
                 case DISABLED:
                     if (enable) {
                         dataSet.setState(MetaRepo.DataSetState.QUEUED);
                     }
-                    break;
-                case ERROR:
-                case QUEUED:
-                    log.info(String.format("Indexing of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
                     break;
             }
             if (oldState != dataSet.getState()) {
@@ -235,6 +233,7 @@ public class DatasetController {
         info.name = dataSet.getName();
         info.providerName = dataSet.getProviderName();
         info.prefix = dataSet.getMetadataFormat().getPrefix();
+        info.state = dataSet.getState().toString();
         return info;
     }
 

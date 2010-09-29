@@ -13,5 +13,6 @@ public class DataSetInfo {
     public String spec;
     public String name;
     public String providerName;
-    public String prefix;
+    public String prefix;           
+    public String state;
 }
