@@ -1,6 +1,6 @@
 <#compress>
     <#if pagePathList??>
-        <#assign thisPage = "static-page.html"/>
+        <#assign thisPage = "static-page.dml"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
         <div class="main">
@@ -14,7 +14,7 @@
     <#elseif onlyContent??>
         ${content}
     <#else>
-        <#assign thisPage = "static-page.html"/>
+        <#assign thisPage = "static-page.dml"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
         <div class="main">
