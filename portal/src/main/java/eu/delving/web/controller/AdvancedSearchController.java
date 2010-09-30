@@ -1,6 +1,7 @@
-package eu.europeana.web.controller;
+package eu.delving.web.controller;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -210,6 +211,11 @@ public class AdvancedSearchController {
 
         public void setSortBy(String sortBy) {
             this.sortBy = sortBy;
+        }
+
+        public SolrQuery ToSolrQuery() {
+
+            return null;
         }
 
         @Override
