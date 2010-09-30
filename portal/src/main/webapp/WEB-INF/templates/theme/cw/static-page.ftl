@@ -1,10 +1,21 @@
 <#compress>
-    <#if onlyContent??>
-    ${content}
+    <#if pageNameList??>
+        <#assign thisPage = "static-page.html"/>
+        <#assign pageId = "static"/>
+        <#include "inc_header.ftl"/>
+        <div class="main">
+        <ul>
+            <#list pageNameList as pageName>
+                <li><a href="_${pageName}.html">_${pageName}.html</a></li>
+            </#list>
+        </ul>
+        </div>
+        <#include "inc_footer.ftl"/>
+    <#elseif onlyContent??>
+        ${content}
     <#else>
         <#assign thisPage = "static-page.html"/>
         <#assign pageId = "static"/>
-
         <#include "inc_header.ftl"/>
         <div class="main">
 

@@ -23,6 +23,7 @@ package eu.europeana.web.controller;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import eu.europeana.core.database.domain.Role;
@@ -38,6 +39,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Serve up pages from MongoDB
@@ -66,15 +69,21 @@ public class StaticPageController {
             @RequestParam(required = false) boolean onlyContent,
             HttpServletRequest request
     ) {
-        String content = getPage(pageName);
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + pageName);
-        ModelAndView mav = new ModelAndView("static-page", "content", content == null ? "This page does not exist." : content);
-        mav.addObject("pageName", pageName);
-        if (isEditor()) {
-            mav.addObject("edit", edit);
+        ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
+        if (pageName.isEmpty()) {
+            mav.addObject("pageNameList", getPageList());
         }
-        if (onlyContent) {
-            mav.addObject("onlyContent", true);
+        else {
+            String content = getPage(pageName);
+            clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + pageName);
+            mav.addObject("content", content == null ? "This page does not exist." : content);
+            mav.addObject("pageName", pageName);
+            if (isEditor()) {
+                mav.addObject("edit", edit);
+            }
+            if (onlyContent) {
+                mav.addObject("onlyContent", true);
+            }
         }
         return mav;
     }
@@ -107,6 +116,16 @@ public class StaticPageController {
             object.put(CONTENT, content);
             db().insert(object);
         }
+    }
+
+    private List<String> getPageList() {
+        DBCursor cursor = db().find();
+        List<String> list = new ArrayList<String>();
+        while (cursor.hasNext()) {
+            DBObject pageObject = cursor.next();
+            list.add((String) pageObject.get("_id"));
+        }
+        return list;
     }
 
     private String getPage(String pageName) {
