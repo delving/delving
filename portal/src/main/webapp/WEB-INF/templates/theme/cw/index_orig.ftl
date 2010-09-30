@@ -39,7 +39,7 @@
         <div class="box open">
             <h4 class="head">Title</h4>
             <p>
-                Sed consectetur purus ac erat semper condimentum. Nunc ultricies commodo velit, non posuere ligula ullamcorper porta. Sed sed turpis magna, vel mattis tellus. Donec sed mi dolor. Nam luctus massa eget odio accumsan vel dapibus quam varius. Donec ut mi nulla. Aliquam in consectetur purus. Nunc nec dui est. Suspendisse et gravida neque. Ut egestas purus justo. 
+                Sed consectetur purus ac erat semper condimentum. Nunc ultricies commodo velit, non posuere ligula ullamcorper porta. Sed sed turpis magna, vel mattis tellus. Donec sed mi dolor. Nam luctus massa eget odio accumsan vel dapibus quam varius. Donec ut mi nulla. Aliquam in consectetur purus. Nunc nec dui est. Suspendisse et gravida neque. Ut egestas purus justo.
             </p>
         </div>
     </div>
@@ -47,7 +47,7 @@
         <div class="box open">
             <h4 class="head">Title</h4>
             <p>
-                Etiam consequat egestas vehicula. Vivamus augue nulla, aliquam ut blandit et, vestibulum eu ligula. Suspendisse euismod dapibus tellus auctor convallis. Aliquam felis nulla, adipiscing ac ornare vitae, consectetur non odio. Nam in magna sit amet urna malesuada ultricies. 
+                Etiam consequat egestas vehicula. Vivamus augue nulla, aliquam ut blandit et, vestibulum eu ligula. Suspendisse euismod dapibus tellus auctor convallis. Aliquam felis nulla, adipiscing ac ornare vitae, consectetur non odio. Nam in magna sit amet urna malesuada ultricies.
             </p>
         </div>
     </div>
@@ -58,7 +58,7 @@
             <p class="intro">
                 Netwerk voor het delen van kennis, praktijkervaring en nieuws over conservering, restauratie, beheer en behoud van cultureel erfgoed collecties.
             </p>
-            
+
             <ul>
                 <li><a href="http://www.collectiewijzer.nl">Lees het Collectiewijzer Blog</a></li>
                 <li><a href="http://wiki.collectiewijzer.nl">Maak gebruik van de wiki </a></li>
@@ -72,7 +72,7 @@
 </div>
 <script type="text/javascript">
     $.ajax({
-      url: '_news.dml?onlyContent=true',
+      url: '/${portalName}/news.dml?onlyContent=true',
       type: "GET",
         success: function(data) {
             if(data == "This page does not exist."){
