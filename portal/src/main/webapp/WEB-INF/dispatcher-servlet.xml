@@ -64,11 +64,38 @@
         <property name="defaultLocale" value="nl"/>
     </bean>
 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000"/>
+    </bean>
+
     <bean id="formatInterceptor" class="eu.europeana.core.util.web.FormatInterceptor"/>
 
     <bean id="configInterceptor" class="eu.europeana.core.util.web.ConfigInterceptor"/>
 
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <bean class="org.springframework.http.MediaType">
+                                <constructor-arg index="0" type="java.lang.String" value="image"/>
+                                <constructor-arg index="1" type="java.lang.String" value="jpeg"/>
+                            </bean>
+                            <bean class="org.springframework.http.MediaType">
+                                <constructor-arg index="0" type="java.lang.String" value="image"/>
+                                <constructor-arg index="1" type="java.lang.String" value="png"/>
+                            </bean>
+                            <bean class="org.springframework.http.MediaType">
+                                <constructor-arg index="0" type="java.lang.String" value="image"/>
+                                <constructor-arg index="1" type="java.lang.String" value="gif"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="interceptors">

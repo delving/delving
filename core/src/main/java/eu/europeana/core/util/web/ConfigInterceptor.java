@@ -55,7 +55,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
-        if (!modelAndView.getViewName().startsWith("redirect:")) {
+        if (modelAndView != null && !modelAndView.getViewName().startsWith("redirect:")) {
             modelAndView.addObject("debug", Boolean.valueOf(debug));
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));
             modelAndView.addObject("cacheUrl", cacheUrl);
