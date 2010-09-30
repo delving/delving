@@ -81,7 +81,7 @@
                     <option>Onderwerp</option>
                     <option>Collectie</option>
                   </select>
-            <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
+            <input class="txt-input" name="query" id="query" type="text" title="${portalDisplayName} Search" maxlength="75" />
             <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
             <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
@@ -203,7 +203,7 @@
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
     <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/lib/home.js"></script>-->
-    <title>Open-Europeana - Advanced Search</title>
+    <title>${portalDisplayName} - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "brd"/>
@@ -247,7 +247,7 @@
     <title>Instituut Collectie Nederland - Mijn Gegevens</title>
     <#break>
     <#case "exception.html">
-    <title>Europeana - Exception</title>
+    <title>${portalDisplayName} - Exception</title>
     <#break>
     <#case "login.html">
     <#assign pageId = "li"/>

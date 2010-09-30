@@ -3,6 +3,7 @@
     <#assign pageId = "adv"/>
 
     <#include "inc_header.ftl"/>
+    <#assign collections = collections/>
 
 <div class="main">
 
@@ -81,10 +82,9 @@
             <td>
                 <select name="select7" class="form_11">
                     <option selected="selected">Alle Collecties</option>
-                    <option>Boymans van Beuningen</option>
-                    <option>Instituut Collectie Nederland</option>
-                    <option>Stedelijk Museum</option>
-                    <option>Erfgoed Utrecht</option>
+                    <#list collections as coll>
+                        <option>${coll.name}</option>
+                    </#list>
                 </select>
             </td>
             <td>&#160;</td>
