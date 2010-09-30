@@ -130,7 +130,8 @@ public interface ClickStreamLogger {
         CONTACT_PAGE,
         FEEDBACK_SEND,
         FEEDBACK_SEND_FAILURE,
-        INDEXPAGE;
+        INDEXPAGE,
+        ADVANCED_SEARCH;
 
         private String description;
 

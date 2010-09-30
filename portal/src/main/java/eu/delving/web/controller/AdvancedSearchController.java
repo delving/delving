@@ -1,8 +1,10 @@
 package eu.delving.web.controller;
 
+import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryModelFactory;
 import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -28,11 +31,14 @@ public class AdvancedSearchController {
     private Logger log = Logger.getLogger(getClass());
 
     @Autowired
+    private ClickStreamLogger clickStreamLogger;
+
+    @Autowired
     private QueryModelFactory beanQueryModelFactory;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView get(
-    ) throws EuropeanaQueryException {
+    public ModelAndView get(HttpServletRequest request
+     )throws EuropeanaQueryException {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("advancedsearch");
         SolrQuery query = new SolrQuery("*:*");
         query.setRows(0);
@@ -47,15 +53,19 @@ public class AdvancedSearchController {
                 mav.addObject("collections", facetField.getValues());
             }
         }
+        clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH);
         return mav;
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String post(
+            HttpServletRequest request,
             AdvancedSearchForm advancedSearchForm
     ) {
+        String queryString = advancedSearchForm.toSolrQuery();
         log.info(advancedSearchForm);
-        return "advancedsearch";
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.ADVANCED_SEARCH, advancedSearchForm.toString());
+        return "redirect:/brief-doc.html?query=" + queryString;
     }
 
 }

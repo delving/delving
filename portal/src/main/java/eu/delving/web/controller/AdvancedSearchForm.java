@@ -1,7 +1,5 @@
 package eu.delving.web.controller;
 
-import org.apache.solr.client.solrj.SolrQuery;
-
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Sep 30, 2010 2:23:50 PM
@@ -16,13 +14,13 @@ public class AdvancedSearchForm {
     private String operator2 = "";
     private String facet2= "";
     private String value2= "";
-    private int creationFrom = 0;
-    private int creationTo = 0;
-    private int birthFrom = 0;
-    private int birthTo = 0;
-    private int acquisitionFrom = 0;
-    private int acquisitionTo = 0;
-    private int purchasePrice = 0;
+    private String creationFrom = "";
+    private String creationTo = "";
+    private String birthFrom = "";
+    private String birthTo = "";
+    private String acquisitionFrom = "";
+    private String acquisitionTo = "";
+    private String purchasePrice = "";
     private boolean allProvinces = true;
     private String province = "";
     private String allCollections = "";
@@ -93,59 +91,59 @@ public class AdvancedSearchForm {
         this.value2 = value2;
     }
 
-    public int getCreationFrom() {
+    public String getCreationFrom() {
         return creationFrom;
     }
 
-    public void setCreationFrom(int creationFrom) {
+    public void setCreationFrom(String creationFrom) {
         this.creationFrom = creationFrom;
     }
 
-    public int getCreationTo() {
+    public String getCreationTo() {
         return creationTo;
     }
 
-    public void setCreationTo(int creationTo) {
+    public void setCreationTo(String creationTo) {
         this.creationTo = creationTo;
     }
 
-    public int getBirthFrom() {
+    public String getBirthFrom() {
         return birthFrom;
     }
 
-    public void setBirthFrom(int birthFrom) {
+    public void setBirthFrom(String birthFrom) {
         this.birthFrom = birthFrom;
     }
 
-    public int getBirthTo() {
+    public String getBirthTo() {
         return birthTo;
     }
 
-    public void setBirthTo(int birthTo) {
+    public void setBirthTo(String birthTo) {
         this.birthTo = birthTo;
     }
 
-    public int getAcquisitionFrom() {
+    public String getAcquisitionFrom() {
         return acquisitionFrom;
     }
 
-    public void setAcquisitionFrom(int acquisitionFrom) {
+    public void setAcquisitionFrom(String acquisitionFrom) {
         this.acquisitionFrom = acquisitionFrom;
     }
 
-    public int getAcquisitionTo() {
+    public String getAcquisitionTo() {
         return acquisitionTo;
     }
 
-    public void setAcquisitionTo(int acquisitionTo) {
+    public void setAcquisitionTo(String acquisitionTo) {
         this.acquisitionTo = acquisitionTo;
     }
 
-    public int getPurchasePrice() {
+    public String getPurchasePrice() {
         return purchasePrice;
     }
 
-    public void setPurchasePrice(int purchasePrice) {
+    public void setPurchasePrice(String purchasePrice) {
         this.purchasePrice = purchasePrice;
     }
 
@@ -189,16 +187,21 @@ public class AdvancedSearchForm {
         this.sortBy = sortBy;
     }
 
-    public SolrQuery toSolrQuery() {
+    public String toSolrQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append(makeQueryString(value0, facet0, operator1));
-        builder.append(makeQueryString(value1, facet1, operator2));
-        builder.append(makeQueryString(value2, facet2, ""));
-        SolrQuery query = new SolrQuery(builder.toString());
-        return query;
+        builder.append(makeQueryString(value0, facet0, operator1, value1));
+        builder.append(makeQueryString(value1, facet1, operator2, value2));
+        builder.append(makeQueryString(value2, facet2, "", ""));
+        if (isValid(collection) && !collection.equalsIgnoreCase("all_collections")) {
+            builder.append("&qf=COLLECTION:").append(collection).append("");
+        }
+        if (isValid(getSortBy())) {
+            builder.append("&sortBy=").append(getSortBy());
+        }
+        return builder.toString().trim();
     }
 
-    private String makeQueryString(String value, String facet, String operator) {
+    private String makeQueryString(String value, String facet, String operator, String nextValue) {
         StringBuilder builder = new StringBuilder();
         if (isValid(value)) {
             if (isValid(facet)) {
@@ -207,8 +210,12 @@ public class AdvancedSearchForm {
                 builder.append("text");
             }
             builder.append(":").append(value);
-            if (isValid(operator)) {
-                builder.append(operator);
+            if (isValid(operator) && isValid(nextValue)) {
+                if (!operator.equalsIgnoreCase("and")) {
+                    builder.append(" ").append(operator).append(" ");
+                } else {
+                    builder.append(" ");
+                }
             }
         }
         return builder.toString();
@@ -224,7 +231,7 @@ public class AdvancedSearchForm {
 
     @Override
     public String toString() {
-        return "eu.delving.web.controller.AdvancedSearchForm{" +
+        return "AdvancedSearchForm={" +
                 "facet0='" + facet0 + '\'' +
                 ", value0='" + value0 + '\'' +
                 ", operator1='" + operator1 + '\'' +

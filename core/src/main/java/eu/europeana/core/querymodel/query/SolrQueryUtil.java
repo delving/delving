@@ -142,6 +142,11 @@ public class SolrQueryUtil {
         }
         solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
 
+        // set sort field
+        if (params.containsKey("sortBy") && params.get("sortBy").length > 0) {
+            solrQuery.setSortField(params.get("sortBy")[0], SolrQuery.ORDER.asc);
+        }
+
         //set constraints
         final String[] filterQueries = params.get("qf");
         if (filterQueries != null) {
