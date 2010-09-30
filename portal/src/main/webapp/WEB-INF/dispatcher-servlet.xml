@@ -33,6 +33,7 @@
     <import resource="classpath:/secure-application-context.xml"/>
 
     <context:component-scan base-package="eu.europeana.web.controller"/>
+    <context:component-scan base-package="eu.delving.web.controller"/>
 
     <bean id="viewHtmlResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".ftl"/>
