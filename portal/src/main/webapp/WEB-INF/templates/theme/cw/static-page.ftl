@@ -1,12 +1,12 @@
 <#compress>
-    <#if pageNameList??>
+    <#if pagePathList??>
         <#assign thisPage = "static-page.html"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
         <div class="main">
         <ul>
-            <#list pageNameList as pageName>
-                <li><a href="_${pageName}.html">_${pageName}.html</a></li>
+            <#list pagePathList as pagePath>
+                <li><a href="${pagePath}">${pagePath}</a></li>
             </#list>
         </ul>
         </div>
@@ -31,11 +31,11 @@
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">
-                                <form action="_${pageName}.html" method="POST">
+                                <form action="${pagePath}" method="POST">
                                     <table>
                                         <tr>
                                             <td>
-                                                <textarea name="content" cols="130" rows="30">${content}</textarea>
+                                                <textarea name="content" cols="130" rows="24">${content}</textarea>
                                             </td>
                                         </tr>
                                         <tr>
@@ -47,7 +47,7 @@
                                 </form>
                             </div>
                             <#else>
-                                <p><a href="_${pageName}.html?edit=true">Edit this page.</a></p>
+                                <p><a href="${pagePath}?edit=true">Edit this page.</a></p>
                         </#if>
                     </#if>
 

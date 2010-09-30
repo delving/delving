@@ -32,7 +32,6 @@ import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +49,7 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping("_{pageName}.html")
+@RequestMapping("/**/*.dml")
 public class StaticPageController {
     private static final String DB_NAME = "StaticPages";
     private static final String COLLECTION_NAME = "pages";
@@ -64,20 +63,20 @@ public class StaticPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView fetchStaticPage(
-            @PathVariable String pageName,
             @RequestParam(required = false) boolean edit,
             @RequestParam(required = false) boolean onlyContent,
             HttpServletRequest request
     ) {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
-        if (pageName.isEmpty()) {
-            mav.addObject("pageNameList", getPageList());
+        String uri = request.getRequestURI();
+        if (uri.endsWith("/_.dml")) {
+            mav.addObject("pagePathList", getPageList());
         }
         else {
-            String content = getPage(pageName);
-            clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + pageName);
+            String content = getPage(uri);
+            clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + uri);
             mav.addObject("content", content == null ? "This page does not exist." : content);
-            mav.addObject("pageName", pageName);
+            mav.addObject("pagePath", uri);
             if (isEditor()) {
                 mav.addObject("edit", edit);
             }
@@ -90,13 +89,16 @@ public class StaticPageController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String createStaticPage(
-            @PathVariable String pageName,
-            String content
+            String content,
+            HttpServletRequest request
     ) {
+        String uri = request.getRequestURI();
         if (isEditor()) {
-            putPage(pageName, content);
+            putPage(uri, content);
         }
-        return String.format("redirect:_%s.html", pageName);
+        int slash = uri.indexOf('/',1);
+        String redirect = uri.substring(slash);
+        return String.format("redirect:%s", redirect);
     }
 
     private boolean isEditor() {

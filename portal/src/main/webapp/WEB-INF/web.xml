@@ -47,6 +47,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>*.dml</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>*.srw</url-pattern>
     </filter-mapping>
     <filter-mapping>
@@ -107,6 +111,10 @@
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.html</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>*.dml</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
