@@ -30,13 +30,7 @@
     </div>
 
     <div id="news" class="grid_4">
-        <h3>Nieuws</h3>
-        <ul>
-            <li><a href="">Lorem ipsum dolor sit amet</a></li>
-            <li><a href="">Duis quam risus, aliquet ut interdum lobortis</a></li>
-            <li><a href="">Fusce feugiat auctor turpis</a></li>
-            <li><a href="">Cras dapibus luctus aliquam</a></li>
-        </ul>
+        <#-- content loaded via AJAX -->
     </div>
 
     <div class="clear"></div>
@@ -76,7 +70,23 @@
     <div class="clear"></div>
 
 </div>
-
+<script type="text/javascript">
+    $.ajax({
+      url: '_news.dml?onlyContent=true',
+      type: "GET",
+        success: function(data) {
+            if(data == "This page does not exist."){
+                <#if !user??>
+                $('#news').html("<h2>Nieuws<\/h2><p>Geen nieuws items</p>");
+                <#elseif (user??) && ((user.role=="ROLE_GOD") || (user.role=="ROLE_GOD"))>
+                $('#news').html("<h2>Nieuws<\/h2><p><a href=\"_news.dml\">Niews pagina aanmaken</a></p>");
+                </#if>
+            }else{
+                $('#news').html(data);
+            }
+        }
+});
+</script>
 <#include "inc_footer.ftl"/>
 </#compress>
 
