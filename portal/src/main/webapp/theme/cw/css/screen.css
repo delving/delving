@@ -210,6 +210,10 @@
         padding: 2em 1em;
     }
 
+    #search .search_home {
+        margin: 0 0 2em 0;
+    }
+
     #search .search_home input.txt-input,
     #search .search_result input.txt-input {
         width: 300px;
@@ -583,3 +587,9 @@
         color: #999999;
     }
 
+/* Static pages */
+ #content.content-preview{
+     margin: 0 0 2em 0;
+     padding: 2em 0;
+     border-bottom: 4px solid #999999;
+ }

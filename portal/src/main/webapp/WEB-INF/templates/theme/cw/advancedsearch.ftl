@@ -327,10 +327,10 @@
 <script type="text/javascript">
     $(document).ready(function(){
        $("#sel-province").change(function(){
-           if($("#sel-province :selected").val()=="select"){
+           if($("#sel-province :selected").val()=="false"){
                $("#province-list").show("slow");
            };
-           if($("#sel-province :selected").val()=="all"){
+           if($("#sel-province :selected").val()=="true"){
                $("#province-list").hide();
            };
        })
