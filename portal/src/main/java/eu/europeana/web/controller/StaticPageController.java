@@ -63,6 +63,7 @@ public class StaticPageController {
     public ModelAndView fetchStaticPage(
             @PathVariable String pageName,
             @RequestParam(required = false) boolean edit,
+            @RequestParam(required = false) boolean onlyContent,
             HttpServletRequest request
     ) {
         String content = getPage(pageName);
@@ -71,6 +72,9 @@ public class StaticPageController {
         mav.addObject("pageName", pageName);
         if (isEditor()) {
             mav.addObject("edit", edit);
+        }
+        if (onlyContent) {
+            mav.addObject("onlyContent", true);
         }
         return mav;
     }
