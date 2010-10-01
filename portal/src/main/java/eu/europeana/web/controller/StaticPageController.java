@@ -69,7 +69,7 @@ public class StaticPageController {
     private ClickStreamLogger clickStreamLogger;
 
     @RequestMapping(value = "/**/*.dml", method = RequestMethod.GET)
-    public ModelAndView fetchStaticPage(
+    public Object fetchStaticPage(
             @RequestParam(required = false) Boolean edit,
             HttpServletRequest request
     ) {
@@ -81,9 +81,14 @@ public class StaticPageController {
         else {
             String content = getString(uri);
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + uri);
-            mav.addObject("content", content == null ? "This page does not exist." : content);
             mav.addObject("pagePath", uri);
+            mav.addObject("content", content == null ? "This page does not exist." : content);
             if (isEditor()) {
+                if (content == null && edit == null) {
+                    int slash = uri.indexOf('/', 1);
+                    String redirect = uri.substring(slash);
+                    return String.format("redirect:%s?edit=false", redirect);
+                }
                 mav.addObject("edit", edit);
                 mav.addObject("imagePathList", getList(IMAGES_COLLECTION));
             }
@@ -132,7 +137,7 @@ public class StaticPageController {
             }
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(mediaType);
-            byte [] image = getImage(uri);
+            byte[] image = getImage(uri);
             if (image != null) {
                 return new ResponseEntity<byte[]>(
                         image,
@@ -142,7 +147,7 @@ public class StaticPageController {
             }
             else {
                 return new ResponseEntity<byte[]>(
-                        new byte[] {},
+                        new byte[]{},
                         headers,
                         HttpStatus.NOT_FOUND
                 );
@@ -196,7 +201,7 @@ public class StaticPageController {
     private byte[] getImage(String path) {
         DBObject object = images().findOne(new BasicDBObject("_id", path));
         if (object != null) {
-            return (byte []) object.get(CONTENT);
+            return (byte[]) object.get(CONTENT);
         }
         else {
             return null;
