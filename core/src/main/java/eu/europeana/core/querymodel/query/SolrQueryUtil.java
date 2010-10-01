@@ -115,7 +115,12 @@ public class SolrQueryUtil {
                 solrQuery.setQuery(queryAnalyzer.createAdvancedQuery(params));
             }
             else {
-                solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                if (params.containsKey("zoeken_in") && !params.get("zoeken_in")[0].equalsIgnoreCase("text")) {
+                    String zoekenIn = params.get("zoeken_in")[0];
+                    solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitize(params.get("query")[0]) + "\""); // only get the first one
+                } else {
+                    solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
+                }
             }
         }
         else {

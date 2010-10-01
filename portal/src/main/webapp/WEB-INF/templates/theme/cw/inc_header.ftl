@@ -75,11 +75,11 @@
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <select name="zoeken_in" class="form_11">
-                    <option selected="selected">Alles</option>
-                    <option>Titel</option>
-                    <option>Vervaardiger</option>
-                    <option>Onderwerp</option>
-                    <option>Collectie</option>
+                    <option selected="selected" value="text">Alles</option>
+                    <option value="title">Titel</option>
+                    <option value="creator">Vervaardiger</option>
+                    <option value="dc_subject">Onderwerp</option>
+                    <option value="COLLECTION">Collectie</option>
                   </select>
             <input class="txt-input" name="query" id="query" type="text" title="${portalDisplayName} Search" maxlength="75" />
             <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
@@ -107,7 +107,7 @@
             <#if user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD')>
                 <li><a href="${portalName}/_.dml">Paginas</a></li>
             </#if>
-        
+
             <#if user.savedItems?exists>
                 <li>
                     <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
