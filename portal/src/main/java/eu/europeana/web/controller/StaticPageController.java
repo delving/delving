@@ -138,20 +138,16 @@ public class StaticPageController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(mediaType);
             byte[] image = getImage(uri);
-            if (image != null) {
-                return new ResponseEntity<byte[]>(
-                        image,
-                        headers,
-                        HttpStatus.OK
-                );
+            if (image == null) {
+                int slash = uri.indexOf('/', 1);
+                String redirect = uri.substring(slash);
+                return String.format("redirect:%s?edit=false", redirect);
             }
-            else {
-                return new ResponseEntity<byte[]>(
-                        new byte[]{},
-                        headers,
-                        HttpStatus.NOT_FOUND
-                );
-            }
+            return new ResponseEntity<byte[]>(
+                    image,
+                    headers,
+                    HttpStatus.OK
+            );
         }
         else {
             ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
