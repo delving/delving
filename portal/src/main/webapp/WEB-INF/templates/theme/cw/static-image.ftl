@@ -1,16 +1,25 @@
 <#compress>
     <#if imagePathList??>
-        <#assign thisPage = "static-page.dml"/>
-        <#assign pageId = "static"/>
-        <#include "inc_header.ftl"/>
-        <div class="main">
-        <ul>
+        <#if javascript>
+            var tinyMCEImageList = new Array(
             <#list imagePathList as imagePath>
-                <li><a href="${imagePath}?edit=false">${imagePath}</a></li>
+                 ["${imagePath}","${imagePath}"]<#if imagePath_has_next>,</#if>
             </#list>
-        </ul>
-        </div>
-        <#include "inc_footer.ftl"/>
+            );
+
+        <#else>
+            <#assign thisPage = "static-page.dml"/>
+            <#assign pageId = "static"/>
+            <#include "inc_header.ftl"/>
+            <div class="main">
+            <ul>
+                <#list imagePathList as imagePath>
+                    <li><a href="${imagePath}?edit=false">${imagePath}</a></li>
+                </#list>
+            </ul>
+            </div>
+            <#include "inc_footer.ftl"/>
+        </#if>
     <#else>
         <#assign thisPage = "static-image.img"/>
         <#assign pageId = "static"/>

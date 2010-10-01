@@ -112,12 +112,14 @@ public class StaticPageController {
 
     @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img", "/**/_.img"}, method = RequestMethod.GET)
     public Object fetchImagePage(
+            @RequestParam(required = false) boolean javascript,
             @RequestParam(required = false) Boolean edit,
             HttpServletRequest request
     ) {
         String uri = request.getRequestURI();
         if (uri.endsWith("/_.img")) {
             ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
+            mav.addObject("javascript", javascript);
             mav.addObject("imagePathList", getList(IMAGES_COLLECTION));
             return mav;
         }
