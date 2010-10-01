@@ -63,19 +63,20 @@ function checkFormRefineSearch(oId){
 }
 
 function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
+
     if(!msgHead){msgHead="Fout";}
     if(!msgBody){msgBody="Er is een fout opgetreden";}
     $.ajax({
-      url: pageName+'.dml?onlyContent=true',
+      url: pageName,
       type: "GET",
         success: function(data) {
             if(data == "This page does not exist."){
-                $("#"+targetId).html("<h2>"+msgHead+"<\/h2><p>"+msgBody+"</p>");
+                $(targetId).html("<h2>"+msgHead+"<\/h2><p>"+msgBody+"</p>");
             }else{
-                $('#news').html(data);
+                $(targetId).html(data);
             }
         }
-});
+    });
 }
 
 $(document).ready(function() {

@@ -89,39 +89,6 @@
             <#--<a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search" rel="nofollow">Refine Search</a>-->
         <#--</#if>-->
     </div>
-
-    <#--<div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">-->
-       <#--<form method="get" action="brief-doc.html" accept-charset="UTF-8">-->
-        <#--<input type="hidden" name="start" value="1" />-->
-        <#--<input type="hidden" name="view" value="${view}" />-->
-
-        <#--<table >-->
-            <#--<tr>-->
-                <#--<td>&#160;</td>-->
-                <#--<td><select name="facet1" id="facet1"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>-->
-                <#--<td><input type="text" name="query1" class="search-input" maxlength="75"/></td>-->
-            <#--</tr>-->
-            <#--<tr>-->
-                <#--<td align="right"><select name="operator2" id="operator2"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>-->
-                <#--<td><select name="facet2" id="facet2"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>-->
-                <#--<td><input type="text" name="query2" class="search-input" maxlength="75"/></td>-->
-            <#--</tr>-->
-            <#--<tr>-->
-                <#--<td align="right"><select name="operator3" id="operator3"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>-->
-                <#--<td><select name="facet3" id="facet3"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>-->
-                <#--<td><input type="text" name="query3" class="search-input" maxlength="75"/></td>-->
-            <#--</tr>-->
-            <#--<tr>-->
-                <#--<td colspan="3">&#160;</td>-->
-            <#--</tr>-->
-            <#--<tr>-->
-                <#--<td align="left"><input type="reset" value="<@spring.message 'Reset_t' />" /></td>-->
-                <#--<td>&#160;</td>-->
-                <#--<td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />" /></td>-->
-            <#--</tr>-->
-         <#--</table>-->
-        <#--</form>-->
-    <#--</div>-->
 </#macro>
 
 <#macro userbar>
@@ -131,10 +98,16 @@
             <li><a href="login.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
         </#if>
         <#if user??>
+
             <li>
                 <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
                     href="logout.html"><@spring.message 'LogOut_t' /></a>
             </li>
+
+            <#if user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD')>
+                <li><a href="${portalName}/_.dml">Paginas</a></li>
+            </#if>
+        
             <#if user.savedItems?exists>
                 <li>
                     <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
@@ -181,6 +154,11 @@
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css" />
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/print.css" media="print"/>
+    <script type="text/javascript">
+        var msgRequired = "<@spring.message 'RequiredField_t'/>";
+        var portalName = "/${portalName}";
+        var baseThemePath = "/${portalName}/${portalTheme}";
+    </script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
@@ -188,21 +166,16 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
-    <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>-->
-    <script type="text/javascript">
-        var msgRequired = "<@spring.message 'RequiredField_t'/>";
-        var baseThemePath = "/${portalName}/${portalTheme}";
-    </script>
     <#switch thisPage>
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
     <title>Instituut Collectie Nederland</title>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/index.js"></script>
     <#break>
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
-    <#--<script type="text/javascript" src="/${portalName}/${portalTheme}/lib/home.js"></script>-->
     <title>${portalDisplayName} - Advanced Search</title>
     <#break>
     <#case "brief-doc.html">
@@ -320,7 +293,7 @@
             <div class="grid_12">
 
                 <ul class="nav_main">
-                    <li <#if pageId="in">class="current"</#if>><a href="index.html">Home</a></li>
+                    <li <#if pageId="in">class="current"</#if>><a href="/${portalName}/index.html">Home</a></li>
                     <li><a href="">Over de Digitale Collectie Nederland</a></li>
                     <li><a href="">Deelname</a></li>
                     <li><a href="">Gebruik</a></li>
