@@ -22,6 +22,7 @@
 package eu.europeana.web.controller;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -57,7 +58,8 @@ import java.util.List;
 @Controller
 public class StaticPageController {
     private static final String DB_NAME = "StaticPages";
-    private static final String COLLECTION_NAME = "pages";
+    private static final String PAGES_COLLECTION = "pages";
+    private static final String IMAGES_COLLECTION = "images";
     private static final String CONTENT = "content";
 
     @Autowired
@@ -74,7 +76,7 @@ public class StaticPageController {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
         String uri = request.getRequestURI();
         if (uri.endsWith("/_.dml")) {
-            mav.addObject("pagePathList", getList());
+            mav.addObject("pagePathList", getList(PAGES_COLLECTION));
         }
         else {
             String content = getString(uri);
@@ -83,6 +85,7 @@ public class StaticPageController {
             mav.addObject("pagePath", uri);
             if (isEditor()) {
                 mav.addObject("edit", edit);
+                mav.addObject("imagePathList", getList(IMAGES_COLLECTION));
             }
         }
         return mav;
@@ -102,13 +105,18 @@ public class StaticPageController {
         return String.format("redirect:%s?edit=false", redirect);
     }
 
-    @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img", "/**/_.img"}, method = RequestMethod.GET)
     public Object fetchImagePage(
             @RequestParam(required = false) Boolean edit,
             HttpServletRequest request
     ) {
         String uri = request.getRequestURI();
-        if (edit == null) {
+        if (uri.endsWith("/_.img")) {
+            ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
+            mav.addObject("imagePathList", getList(IMAGES_COLLECTION));
+            return mav;
+        }
+        else if (edit == null) {
             MediaType mediaType;
             if (uri.endsWith(".jpg.img")) {
                 mediaType = MediaType.IMAGE_JPEG;
@@ -134,7 +142,7 @@ public class StaticPageController {
             }
             else {
                 return new ResponseEntity<byte[]>(
-                        null,
+                        new byte[] {},
                         headers,
                         HttpStatus.NOT_FOUND
                 );
@@ -162,7 +170,7 @@ public class StaticPageController {
         }
         int slash = uri.indexOf('/', 1);
         String redirect = uri.substring(slash);
-        return String.format("redirect:%s", redirect);
+        return String.format("redirect:%s?edit=false", redirect);
     }
 
     private boolean isEditor() {
@@ -170,8 +178,8 @@ public class StaticPageController {
         return user != null && (user.getRole() == Role.ROLE_ADMINISTRATOR || user.getRole() == Role.ROLE_GOD);
     }
 
-    private List<String> getList() {
-        DBCursor cursor = db().find();
+    private List<String> getList(String collection) {
+        DBCursor cursor = db().getCollection(collection).find();
         List<String> list = new ArrayList<String>();
         while (cursor.hasNext()) {
             DBObject pageObject = cursor.next();
@@ -181,12 +189,12 @@ public class StaticPageController {
     }
 
     private String getString(String path) {
-        DBObject object = db().findOne(new BasicDBObject("_id", path));
+        DBObject object = pages().findOne(new BasicDBObject("_id", path));
         return object == null ? null : (String) object.get(CONTENT);
     }
 
     private byte[] getImage(String path) {
-        DBObject object = db().findOne(new BasicDBObject("_id", path));
+        DBObject object = images().findOne(new BasicDBObject("_id", path));
         if (object != null) {
             return (byte []) object.get(CONTENT);
         }
@@ -196,33 +204,41 @@ public class StaticPageController {
     }
 
     private void putString(String path, String content) {
-        DBObject object = db().findOne(new BasicDBObject("_id", path));
+        DBObject object = pages().findOne(new BasicDBObject("_id", path));
         if (object != null) {
             object.put(CONTENT, content);
-            db().save(object);
+            pages().save(object);
         }
         else {
             object = new BasicDBObject("_id", path);
             object.put(CONTENT, content);
-            db().insert(object);
+            pages().insert(object);
         }
     }
 
     private void putImage(String path, byte[] content) {
-        DBObject object = db().findOne(new BasicDBObject("_id", path));
+        DBObject object = images().findOne(new BasicDBObject("_id", path));
         if (object != null) {
             object.put(CONTENT, content);
-            db().save(object);
+            images().save(object);
         }
         else {
             object = new BasicDBObject("_id", path);
             object.put(CONTENT, content);
-            db().insert(object);
+            images().insert(object);
         }
     }
 
-    private DBCollection db() {
-        return mongo.getDB(DB_NAME).getCollection(COLLECTION_NAME);
+    private DBCollection pages() {
+        return db().getCollection(PAGES_COLLECTION);
+    }
+
+    private DBCollection images() {
+        return db().getCollection(IMAGES_COLLECTION);
+    }
+
+    private DB db() {
+        return mongo.getDB(DB_NAME);
     }
 
 }
