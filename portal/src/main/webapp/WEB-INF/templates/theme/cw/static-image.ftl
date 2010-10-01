@@ -8,7 +8,7 @@
 
             <div class="static_image">
                 <#if imageExists>
-                    <img src="${imagePath}?onlyContent=true" alt="${imagePath}?onlyContent=true"/>
+                    <img src="${imagePath}" alt="${imagePath}"/>
                 <#else>
                     <p>This image does not exist</p>
                 </#if>
@@ -18,20 +18,18 @@
                             <form method="POST" enctype="multipart/form-data">
                                 <table>
                                     <tr>
-                                        <td>
-                                            <input type="file" name="file"/>
-                                        </td>
+                                        <td>Upload a new image for this URL</td>
+                                        <td><input type="file" name="file" size="80"/></td>
                                     </tr>
                                     <tr>
-                                        <td>
-                                            <input type="submit" name="submit">
-                                        </td>
+                                        <td></td>
+                                        <td><input type="submit" name="submit"></td>
                                     </tr>
                                 </table>
                             </form>
                         </div>
                     <#else>
-                        <p><a href="${imagePath}?edit=true">Upload this image</a></p>
+                        <p><a href="${imagePath}?edit=true">Change this image</a></p>
                     </#if>
                 </#if>
 

@@ -68,8 +68,7 @@ public class StaticPageController {
 
     @RequestMapping(value = "/**/*.dml", method = RequestMethod.GET)
     public ModelAndView fetchStaticPage(
-            @RequestParam(required = false) boolean edit,
-            @RequestParam(required = false) boolean onlyContent,
+            @RequestParam(required = false) Boolean edit,
             HttpServletRequest request
     ) {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
@@ -84,9 +83,6 @@ public class StaticPageController {
             mav.addObject("pagePath", uri);
             if (isEditor()) {
                 mav.addObject("edit", edit);
-            }
-            if (onlyContent) {
-                mav.addObject("onlyContent", true);
             }
         }
         return mav;
@@ -103,58 +99,55 @@ public class StaticPageController {
         }
         int slash = uri.indexOf('/', 1);
         String redirect = uri.substring(slash);
-        return String.format("redirect:%s", redirect);
+        return String.format("redirect:%s?edit=false", redirect);
     }
 
     @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img"}, method = RequestMethod.GET)
-    public ModelAndView fetchImagePage(
-            @RequestParam(required = false) boolean edit,
-            HttpServletRequest request
-    ) {
-        ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
-        String uri = request.getRequestURI();
-        mav.addObject("imageExists", getImage(uri) != null);
-        mav.addObject("imagePath", uri);
-        if (isEditor()) {
-            mav.addObject("edit", edit);
-        }
-        return mav;
-    }
-
-    @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img"}, method = RequestMethod.GET, params = "onlyContent=true")
-    public ResponseEntity<byte[]> fetchImage(
+    public Object fetchImagePage(
+            @RequestParam(required = false) Boolean edit,
             HttpServletRequest request
     ) {
         String uri = request.getRequestURI();
-        MediaType mediaType;
-        if (uri.endsWith(".jpg.img")) {
-            mediaType = MediaType.IMAGE_JPEG;
-        }
-        else if (uri.endsWith(".png.img")) {
-            mediaType = MediaType.IMAGE_PNG;
-        }
-        else if (uri.endsWith(".gif.img")) {
-            mediaType = MediaType.IMAGE_GIF;
+        if (edit == null) {
+            MediaType mediaType;
+            if (uri.endsWith(".jpg.img")) {
+                mediaType = MediaType.IMAGE_JPEG;
+            }
+            else if (uri.endsWith(".png.img")) {
+                mediaType = MediaType.IMAGE_PNG;
+            }
+            else if (uri.endsWith(".gif.img")) {
+                mediaType = MediaType.IMAGE_GIF;
+            }
+            else {
+                throw new RuntimeException();
+            }
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(mediaType);
+            byte [] image = getImage(uri);
+            if (image != null) {
+                return new ResponseEntity<byte[]>(
+                        image,
+                        headers,
+                        HttpStatus.OK
+                );
+            }
+            else {
+                return new ResponseEntity<byte[]>(
+                        null,
+                        headers,
+                        HttpStatus.NOT_FOUND
+                );
+            }
         }
         else {
-            throw new RuntimeException();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(mediaType);
-        byte [] image = getImage(uri);
-        if (image != null) {
-            return new ResponseEntity<byte[]>(
-                    image,
-                    headers,
-                    HttpStatus.OK
-            );
-        }
-        else {
-            return new ResponseEntity<byte[]>(
-                    null,
-                    headers,
-                    HttpStatus.NOT_FOUND
-            );
+            ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
+            mav.addObject("imageExists", getImage(uri) != null);
+            mav.addObject("imagePath", uri);
+            if (isEditor()) {
+                mav.addObject("edit", edit);
+            }
+            return mav;
         }
     }
 
