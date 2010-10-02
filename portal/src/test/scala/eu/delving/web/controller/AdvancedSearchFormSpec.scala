@@ -3,6 +3,7 @@ package eu.delving.web.controller
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import org.apache.solr.client.solrj.SolrQuery
+import scala.collection.JavaConversions._
 
 /**
  *
@@ -50,9 +51,41 @@ class AdvancedSearchFormSpec extends Spec with ShouldMatchers {
           localForm.toSolrQuery should equal ("text:max&sortBy=title")
         }
 
+        it("should create a range query and insert defaults if 'from' or 'to' are missing") {
+          val localForm = new AdvancedSearchForm
+          localForm setFacet0 ("text"); localForm setValue0 ("max"); localForm setOperator1 ("AND")
+          localForm setCreationFrom ("1910");
+          localForm.toSolrQuery should equal ("text:max dc_date:[1910 TO *]")
+          localForm setCreationTo ("1980");
+          localForm.toSolrQuery should equal ("text:max dc_date:[1910 TO 1980]")
+          localForm setCreationFrom ("");
+          localForm.toSolrQuery should equal ("text:max dc_date:[* TO 1980]")
+        }
 
+        it("should create a range query based on the price") {
+          val localForm = new AdvancedSearchForm
+          localForm setFacet0 ("text"); localForm setValue0 ("max"); localForm setOperator1 ("AND")
+          localForm setPurchasePrice ("100")
+          localForm.toSolrQuery should equal ("text:max icn_purchasePrice:[* TO 100]")
+          localForm setPurchasePrice ("100000")
+          localForm.toSolrQuery should equal ("text:max icn_purchasePrice:[10000 TO 100000]")
+        }
+
+        it("should add all collections as queryFilters when allCollections is 'false'") {
+          val localForm = new AdvancedSearchForm
+          localForm setFacet0 ("text"); localForm setValue0 ("max"); localForm setOperator1 ("AND")
+          localForm setAllCollections (false)
+          localForm setCollectionList (Array("coll1", "coll2"))
+          localForm.toSolrQuery should equal ("text:max&qf=COLLECTION:coll1&qf=COLLECTION:coll2")
+        }
+
+        it("should add all provinces as queryFilters when allProvinces is 'false'") {
+          val localForm = new AdvancedSearchForm
+          localForm setFacet0 ("text"); localForm setValue0 ("max"); localForm setOperator1 ("AND")
+          localForm setAllProvinces  (false)
+          localForm setProvinceList (Array("Utrecht", "Noord Holland"))
+          localForm.toSolrQuery should equal ("text:max&qf=icn_province:Utrecht&qf=icn_province:Noord Holland")
+        }
       }
-
     }
-
 }

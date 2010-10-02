@@ -634,6 +634,7 @@
              <field name="icn_material" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_location" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_province" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_purchasePrice" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_collectionPart" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_acquisitionMeans" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_acquisitionYear" type="text" indexed="true" stored="true" multiValued="true" />

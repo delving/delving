@@ -194,6 +194,14 @@ public class AdvancedSearchForm {
         this.sortBy = sortBy;
     }
 
+    public boolean isAllCollections() {
+        return allCollections;
+    }
+
+    public void setAllCollections(boolean allCollections) {
+        this.allCollections = allCollections;
+    }
+
     public String toSolrQuery() {
         StringBuilder builder = new StringBuilder();
         builder.append(makeQueryString(value0, facet0, operator1, value1));
@@ -209,7 +217,7 @@ public class AdvancedSearchForm {
             builder.append(" ").append(makeRangeQueryString("icn_creatorYearOfBirth", birthFrom, birthTo));
         }
         if (isValid(purchasePrice)) {
-            builder.append(" ").append("inc_purchasePrice:");
+            builder.append(" ").append("icn_purchasePrice:");
             if (purchasePrice.equalsIgnoreCase("100")) {
                 builder.append("[* TO 100]");
             }
