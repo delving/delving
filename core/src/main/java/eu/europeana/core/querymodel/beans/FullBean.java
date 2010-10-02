@@ -310,46 +310,57 @@ public class FullBean extends BriefBean implements FullDoc {
 
     @Europeana(category = ICN, converter = "extractYear")
     @Solr(prefix = "icn", localName = "creatorYearOfBirth", multivalued = false)
+    @Field("icn_creatorYearOfBirth")
     String[] creatorYearOfBirth;
 
     @Europeana(category = ICN, enumClass = Technique.class, valueMapped = true)
     @Solr(prefix = "icn", localName = "technique")
+    @Field("icn_technique")
     String[] technique;
 
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "material")
+    @Field("icn_material")
     String[] material;
 
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "location")
+    @Field("icn_location")
     String[] location;
 
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "province")
+    @Field("icn_province")
     String[] province;
 
     @Europeana(category = ICN)
     @Solr(prefix = "icn", localName = "collectionPart")
+    @Field("icn_collectionPart")
     String[] collectionPart;
 
     @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true)
     @Solr(prefix = "icn", localName = "acquisitionMeans")
+    @Field("icn_acquisitionMeans")
     String[] acquisitionMeans;
 
     @Europeana(category = ICN_RESEARCH, converter = "extractYear")
     @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
+    @Field("icn_acquisitionYear")
     String[] acquisitionYear;
 
     @Europeana(category = ICN_RESEARCH)
     @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
+    @Field("icn_purchasePrice")
     String[] purchasePrice;
 
     @Europeana(category = ICN_RESEARCH)
     @Solr(prefix = "icn", localName = "acquiredWithHelpFrom")
+    @Field("icn_acquiredWithHelpFrom")
     String[] acquiredWithHelpFrom;
 
     @Europeana(category = ICN_RESEARCH)
     @Solr(prefix = "icn", localName = "physicalState")
+    @Field("icn_physicalState")
     String[] physicalState;
 
 
