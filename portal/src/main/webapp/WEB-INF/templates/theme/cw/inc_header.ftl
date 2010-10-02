@@ -104,10 +104,6 @@
                     href="logout.html"><@spring.message 'LogOut_t' /></a>
             </li>
 
-            <#if user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD')>
-                <li><a href="${portalName}/_.dml">Paginas</a></li>
-            </#if>
-
             <#if user.savedItems?exists>
                 <li>
                     <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
@@ -136,6 +132,17 @@
         <li><a href="">Hulp nodig?</a></li>
         <li><a href="">Contact</a></li>
     </ul>
+</#macro>
+
+<#macro admin>
+    <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
+    <div id="admin-block">
+        <h4>Pagina Administratie</h4>
+        <p>
+            <a href="${portalName}/_.dml">Paginas bewerken</a>
+        </p>
+    </div>
+    </#if>
 </#macro>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -269,7 +276,7 @@
 </head>
 
 <body>
-
+ <@admin/>
 <div class="container_12 page <#if portalColor??>${portalColor}</#if>">
 
     <div id="user-bar" class="grid_12">

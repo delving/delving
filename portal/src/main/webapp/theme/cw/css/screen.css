@@ -594,3 +594,24 @@
      border-bottom: 4px solid #999999;
      overflow: hidden;
  }
+
+#admin-block {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 10000;
+    background: #fff;
+            -moz-box-shadow: 3px 3px 4px #bbb;
+        -webkit-box-shadow: 3px 3px 4px #bbb;
+        box-shadow: 3px 3px 4px #bbb;
+}
+
+#admin-block h4 {
+    background: #555;
+    color: #fff;
+    padding: .5em;
+}
+
+#admin-block p {
+    padding: .5em;
+}
