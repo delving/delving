@@ -7,11 +7,16 @@
         <#include "inc_header.ftl"/>
         <div class="grid_16">
             <h2>Bestaande paginas</h2>
-        <ul>
-            <#list pagePathList as pagePath>
-                <li><a href="${pagePath}?edit=true">${pagePath}</a></li>
-            </#list>
-        </ul>
+      
+            <table summary="List of existing pages">
+                <#assign pages = pagePathList?sort />
+                <#list pages as pagePath>
+                    <tr>
+                        <td><a href="${pagePath}?edit=true"><span class="ui-icon ui-icon-document"></span></a></td>
+                        <td width="300"><a href="${pagePath}?edit=true">${pagePath}</a></td>
+                    </tr>
+                </#list>
+            </table>
         </div>
         <div class="clear"></div>
         <#include "inc_footer.ftl"/>
