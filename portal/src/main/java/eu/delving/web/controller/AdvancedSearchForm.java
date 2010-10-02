@@ -8,12 +8,12 @@ package eu.delving.web.controller;
 public class AdvancedSearchForm {
     private String facet0 = "";
     private String value0 = "";
-    private String operator1= "";
-    private String facet1= "";
-    private String value1= "";
+    private String operator1 = "";
+    private String facet1 = "";
+    private String value1 = "";
     private String operator2 = "";
-    private String facet2= "";
-    private String value2= "";
+    private String facet2 = "";
+    private String value2 = "";
     private String creationFrom = "";
     private String creationTo = "";
     private String birthFrom = "";
@@ -22,9 +22,11 @@ public class AdvancedSearchForm {
     private String acquisitionTo = "";
     private String purchasePrice = "";
     private boolean allProvinces = true;
-    private String province = "";
-    private String allCollections = "";
+    private String[] provinceList = null;
+    private boolean allCollections = true;
     private String collection = "";
+    private String[] collectionList = null;
+
     private String sortBy = "";
 
     public String getFacet0() {
@@ -155,21 +157,18 @@ public class AdvancedSearchForm {
         this.allProvinces = allProvinces;
     }
 
-    public String getProvince() {
-        return province;
+    public String[] getProvinceList() {
+        return provinceList;
     }
 
-    public void setProvince(String province) {
-        this.province = province;
+    public void setProvinceList(String[] provinceList) {
+        this.provinceList = provinceList;
     }
 
-    public String getAllCollections() {
+    public boolean getAllCollections() {
         return allCollections;
     }
 
-    public void setAllCollections(String allCollections) {
-        this.allCollections = allCollections;
-    }
 
     public String getCollection() {
         return collection;
@@ -177,6 +176,14 @@ public class AdvancedSearchForm {
 
     public void setCollection(String collection) {
         this.collection = collection;
+    }
+
+    public String[] getCollectionList() {
+        return collectionList;
+    }
+
+    public void setCollectionList(String[] collectionList) {
+        this.collectionList = collectionList;
     }
 
     public String getSortBy() {
@@ -192,6 +199,43 @@ public class AdvancedSearchForm {
         builder.append(makeQueryString(value0, facet0, operator1, value1));
         builder.append(makeQueryString(value1, facet1, operator2, value2));
         builder.append(makeQueryString(value2, facet2, "", ""));
+        if (isValidRangeQuery(creationFrom, creationTo)) {
+            builder.append(" ").append(makeRangeQueryString("dc_date", creationFrom, creationTo));
+        }
+        if (isValidRangeQuery(acquisitionFrom, acquisitionTo)) {
+            builder.append(" ").append(makeRangeQueryString("icn_acquisitionYear", acquisitionFrom, acquisitionTo));
+        }
+        if (isValidRangeQuery(birthFrom, birthTo)) {
+            builder.append(" ").append(makeRangeQueryString("icn_creatorYearOfBirth", birthFrom, birthTo));
+        }
+        if (isValid(purchasePrice)) {
+            builder.append(" ").append("inc_purchasePrice:");
+            if (purchasePrice.equalsIgnoreCase("100")) {
+                builder.append("[* TO 100]");
+            }
+            else if (purchasePrice.equalsIgnoreCase("1000")) {
+                builder.append("[100 TO 1000]");
+            }
+            else if (purchasePrice.equalsIgnoreCase("10000")) {
+                builder.append("[1000 TO 10000]");
+            }
+            else if (purchasePrice.equalsIgnoreCase("100000")) {
+                builder.append("[10000 TO 100000]");
+            }
+            else if (purchasePrice.equalsIgnoreCase("1000000")) {
+                builder.append("[100000 TO 1000000]");
+            }
+        }
+        if (provinceList != null && !allProvinces) {
+            for (String prov : provinceList) {
+                builder.append("&qf=icn_province:").append(prov);
+            }
+        }
+        if (collectionList != null && !allCollections) {
+            for (String coll : collectionList) {
+                builder.append("&qf=COLLECTION:").append(coll);
+            }
+        }
         if (isValid(collection) && !collection.equalsIgnoreCase("all_collections")) {
             builder.append("&qf=COLLECTION:").append(collection).append("");
         }
@@ -201,19 +245,48 @@ public class AdvancedSearchForm {
         return builder.toString().trim();
     }
 
+    private String makeRangeQueryString(String fieldName, String from, String to) {
+        StringBuilder out = new StringBuilder();
+        out.append(fieldName).append(":[");
+        if (isValid(from)) {
+            out.append(from);
+        }
+        else {
+            out.append("*");
+        }
+        out.append(" TO ");
+        if (isValid(to)) {
+            out.append(to);
+        }
+        else {
+            out.append("*");
+        }
+        out.append("]");
+        return out.toString();
+    }
+
+    private boolean isValidRangeQuery(String from, String to) {
+        if (isValid(from) || isValid(to)) {
+            return true;
+        }
+        return false;
+    }
+
     private String makeQueryString(String value, String facet, String operator, String nextValue) {
         StringBuilder builder = new StringBuilder();
         if (isValid(value)) {
             if (isValid(facet)) {
                 builder.append(facet);
-            } else {
+            }
+            else {
                 builder.append("text");
             }
             builder.append(":").append(value);
             if (isValid(operator) && isValid(nextValue)) {
                 if (!operator.equalsIgnoreCase("and")) {
                     builder.append(" ").append(operator).append(" ");
-                } else {
+                }
+                else {
                     builder.append(" ");
                 }
             }
@@ -248,7 +321,7 @@ public class AdvancedSearchForm {
                 ", acquisitionTo=" + acquisitionTo +
                 ", purchasePrice=" + purchasePrice +
                 ", allProvinces=" + allProvinces +
-                ", province='" + province + '\'' +
+                ", provinceList='" + provinceList + '\'' +
                 ", allCollections='" + allCollections + '\'' +
                 ", collection='" + collection + '\'' +
                 ", sortBy='" + sortBy + '\'' +

@@ -4,7 +4,7 @@
 
     <#include "inc_header.ftl"/>
     <#assign collections = collections/>
-
+    <#assign provinces = provinces/>
 <div class="main">
 
 <div class="grid_12 breadcrumb">
@@ -113,7 +113,7 @@
 </form>
 
 <#--<#if (user??) && (user.role=="ROLE_RESEARCH_USER")>-->
-<h2>Uitegebreid zoeken Museometrie</h2>
+<h2>Uitgebreid zoeken Museometrie</h2>
 
 <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
 <input type="hidden" name="start" value="1"/>
@@ -214,11 +214,11 @@
             </select>
         </td>
         <td>
-            <div id="province-list" style="display:none;">
+            <div id="provinceList" style="display:none;">
                 <table>
                     <tr>
                         <td width="140">
-                            <input type="checkbox" name="province" value="Noor Holland"/>Noord Holland
+                            <input type="checkbox" name="province" value="Noord Holland"/>Noord Holland
                         </td>
                         <td width="195">
                             <input type="checkbox" name="province" value="Noord Brabant"/>Noord Brabant
@@ -248,7 +248,7 @@
     <tr>
         <td>Collectie</td>
         <td>
-            <select name="collections" id="sel-collections">
+            <select name="allCollections" id="sel-collections">
                 <option value="all">Alle collecties</option>
                 <option value="all-cb">Alle deelnemers Collectiebalans</option>
                 <option value="select">Selecteer deelnemers Collectiebalans</option>
@@ -259,37 +259,37 @@
                 <table>
                     <tr>
                         <td width="140">
-                            <input type="checkbox" name="collection" value="Bonnefantenmuseum"/>Bonnefantenmuseum
+                            <input type="checkbox" name="collectionList" value="Bonnefantenmuseum"/>Bonnefantenmuseum
                         </td>
                         <td width="195">
-                            <input type="checkbox" name="collection" value="Audax Textielmuseum"/>Audax
+                            <input type="checkbox" name="collectionList" value="Audax Textielmuseum"/>Audax
                             Textielmuseum
                         </td>
                         <td width="165">
-                            <input type="checkbox" name="collection" value="Museum Het Valkhof"/>Museum Het Valkhof
+                            <input type="checkbox" name="collectionList" value="Museum Het Valkhof"/>Museum Het Valkhof
                         </td>
                     </tr>
                     <tr>
-                        <td><input type="checkbox" name="collection" value="Van Abbemuseum"/>Van Abbemuseum
+                        <td><input type="checkbox" name="collectionList" value="Van Abbemuseum"/>Van Abbemuseum
                         </td>
                         <td>
-                            <input type="checkbox" name="collection" value="Stedelijk Museum de Lakenhal"/>Stedelijk
+                            <input type="checkbox" name="collectionList" value="Stedelijk Museum de Lakenhal"/>Stedelijk
                             Museum de Lakenhal
                         </td>
                         <td>
-                            <input type="checkbox" name="collection" value="Noord Brabantsmuseum"/>Noord
+                            <input type="checkbox" name="collectionList" value="Noord Brabantsmuseum"/>Noord
                             Brabantsmuseum
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="checkbox" name="collection" value="Rijksmuseum Twente"/>Rijksmuseum Twente
+                            <input type="checkbox" name="collectionList" value="Rijksmuseum Twente"/>Rijksmuseum Twente
                         </td>
                         <td>
-                            <input type="checkbox" name="collection" value="Groninger Museum"/>Groninger Museum
+                            <input type="checkbox" name="collectionList" value="Groninger Museum"/>Groninger Museum
                         </td>
                         <td>
-                            <input type="checkbox" name="collection" value="Centraal Museum Utrecht"/>Centraal
+                            <input type="checkbox" name="collectionList" value="Centraal Museum Utrecht"/>Centraal
                             Museum Utrecht
                         </td>
                     </tr>

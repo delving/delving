@@ -49,6 +49,8 @@ class AdvancedSearchFormSpec extends Spec with ShouldMatchers {
           localForm setSortBy ("title")
           localForm.toSolrQuery should equal ("text:max&sortBy=title")
         }
+
+
       }
 
     }
