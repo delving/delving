@@ -20,7 +20,8 @@
   ~ permissions and limitations under the Licence.
   -->
 
-<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:europeana="http://www.europeana.eu" xmlns:dcterms="http://purl.org/dc/terms/">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:europeana="http://www.europeana.eu" xmlns:dcterms="http://purl.org/dc/terms/"
+          xmlns:icn="http://icn.nl">
     <record>
 		<dc:description>Biblioteka Kombetare</dc:description>
 		<dc:description>National Library of the Republic of Albania</dc:description>
@@ -45,6 +46,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>no</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -64,6 +76,18 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>no</europeana:language>
+		<icn:creatorYearOfBirth>1870</icn:creatorYearOfBirth>
+		<icn:technique>werk op papier</icn:technique>
+		<icn:material>papier</icn:material>
+		<icn:location>maurits huis</icn:location>
+		<icn:province>Zuid Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>schenking</icn:acquisitionMeans>
+		<icn:acquisitionYear>2004</icn:acquisitionYear>
+		<icn:purchasePrice>1200</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>not so good</icn:physicalState>
+
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -83,6 +107,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>no</europeana:language>
+		<icn:creatorYearOfBirth>1745</icn:creatorYearOfBirth>
+		<icn:technique>textiel</icn:technique>
+		<icn:material>wol</icn:material>
+		<icn:location>Maastrichts Museum</icn:location>
+		<icn:province>Limburg</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>ruil</icn:acquisitionMeans>
+		<icn:acquisitionYear>1998</icn:acquisitionYear>
+		<icn:purchasePrice>2200</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -103,6 +138,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1944</icn:creatorYearOfBirth>
+		<icn:technique>fotografie</icn:technique>
+		<icn:material>negatief</icn:material>
+		<icn:location>Tilburg Museum</icn:location>
+		<icn:province>Noord Brabant</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>ruil</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>9000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -120,6 +166,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>film, video, dvd</icn:technique>
+		<icn:material>dvd</icn:material>
+		<icn:location>museum zwolle</icn:location>
+		<icn:province>Gelderland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>legaat</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -138,6 +195,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Zeeland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>overdracht</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -158,6 +226,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Drente</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>successieregeling</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -176,6 +255,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Overijssel</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -195,6 +285,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Groningen</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -215,6 +316,18 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Friesland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
+
 	</record>
 	<record>
 		<dc:description>National Library of Armenia</dc:description>
@@ -233,6 +346,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Flevoland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Österreichische Nationalbibliothek</dc:description>
@@ -256,6 +380,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Utrecht</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Österreichische Nationalbibliothek</dc:description>
@@ -281,6 +416,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Österreichische Nationalbibliothek</dc:description>
@@ -303,6 +449,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Österreichische Nationalbibliothek</dc:description>
@@ -328,6 +485,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Österreichische Nationalbibliothek</dc:description>
@@ -354,6 +522,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>M.F.Axundov adına Azərbaycan Milli Kitabxanası</dc:description>
@@ -374,6 +553,18 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
+
 	</record>
 	<record>
 		<dc:description>M.F.Axundov adına Azərbaycan Milli Kitabxanası</dc:description>
@@ -393,6 +584,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>M.F.Axundov adına Azərbaycan Milli Kitabxanası</dc:description>
@@ -412,6 +614,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>M.F.Axundov adına Azərbaycan Milli Kitabxanası</dc:description>
@@ -431,6 +644,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</dc:description>
@@ -455,6 +679,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</dc:description>
@@ -478,6 +713,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</dc:description>
@@ -502,6 +748,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</dc:description>
@@ -526,6 +783,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Koninklijke Bibliotheek van België / Bibliothèque royale de Belgique</dc:description>
@@ -549,6 +817,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i univerzitetska biblioteka Bosne i Hercegovine</dc:description>
@@ -573,6 +852,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i univerzitetska biblioteka Bosne i Hercegovine</dc:description>
@@ -598,6 +888,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i univerzitetska biblioteka Bosne i Hercegovine</dc:description>
@@ -622,6 +923,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i univerzitetska biblioteka Bosne i Hercegovine</dc:description>
@@ -646,6 +958,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i univerzitetska biblioteka Bosne i Hercegovine</dc:description>
@@ -670,6 +993,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Narodna biblioteka Sv. Sv. Kiril i Metodii</dc:description>
@@ -695,6 +1029,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Narodna biblioteka Sv. Sv. Kiril i Metodii</dc:description>
@@ -719,6 +1064,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Narodna biblioteka Sv. Sv. Kiril i Metodii</dc:description>
@@ -744,6 +1100,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Narodna biblioteka Sv. Sv. Kiril i Metodii</dc:description>
@@ -768,6 +1135,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Narodna biblioteka Sv. Sv. Kiril i Metodii</dc:description>
@@ -793,6 +1171,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i sveučilišna knjižnica u Zagrebu</dc:description>
@@ -816,6 +1205,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i sveučilišna knjižnica u Zagrebu</dc:description>
@@ -841,6 +1241,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i sveučilišna knjižnica u Zagrebu</dc:description>
@@ -864,6 +1275,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i sveučilišna knjižnica u Zagrebu</dc:description>
@@ -889,6 +1311,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Nacionalna i sveučilišna knjižnica u Zagrebu</dc:description>
@@ -914,6 +1347,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kypriake Vivliotheke</dc:description>
@@ -938,6 +1382,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Národní knihovna Ceské republiky</dc:description>
@@ -962,6 +1417,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Národní knihovna Ceské republiky</dc:description>
@@ -986,6 +1452,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Národní knihovna Ceské republiky</dc:description>
@@ -1009,6 +1486,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Národní knihovna Ceské republiky</dc:description>
@@ -1034,6 +1522,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Národní knihovna Ceské republiky</dc:description>
@@ -1059,6 +1558,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Národní knihovna Ceské republiky</dc:description>
@@ -1083,6 +1593,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Det Kongelige Bibliotek: Nationalbibliotek og Københavns Universitetsbibliotek</dc:description>
@@ -1109,6 +1630,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Eesti Rahvusraamatukogu</dc:description>
@@ -1134,6 +1666,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Eesti Rahvusraamatukogu</dc:description>
@@ -1157,6 +1700,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Eesti Rahvusraamatukogu</dc:description>
@@ -1183,6 +1737,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Eesti Rahvusraamatukogu</dc:description>
@@ -1206,6 +1771,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Eesti Rahvusraamatukogu</dc:description>
@@ -1231,6 +1807,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kansalliskirjasto</dc:description>
@@ -1256,6 +1843,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kansalliskirjasto</dc:description>
@@ -1281,6 +1879,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kansalliskirjasto</dc:description>
@@ -1304,6 +1913,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kansalliskirjasto</dc:description>
@@ -1330,6 +1950,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kansalliskirjasto</dc:description>
@@ -1355,6 +1986,17 @@
 		<europeana:provider>The European Library</europeana:provider>
 		<europeana:type>IMAGE</europeana:type>
 		<europeana:language>mul</europeana:language>
+		<icn:creatorYearOfBirth>1980</icn:creatorYearOfBirth>
+		<icn:technique>schilderkunst</icn:technique>
+		<icn:material>canvas</icn:material>
+		<icn:location>rijksmuseum</icn:location>
+		<icn:province>Noord Holland</icn:province>
+		<icn:collectionPart>1</icn:collectionPart>
+		<icn:acquisitionMeans>aankoop</icn:acquisitionMeans>
+		<icn:acquisitionYear>2006</icn:acquisitionYear>
+		<icn:purchasePrice>10000</icn:purchasePrice>
+		<icn:acquiredWithHelpFrom>Delving</icn:acquiredWithHelpFrom>
+		<icn:physicalState>excellent</icn:physicalState>
 	</record>
 	<record>
 		<dc:description>Kansalliskirjasto</dc:description>
