@@ -57,6 +57,9 @@ public class Harvindexer {
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
 
+    @Value("#{launchProperties['services.harvindexing.prefix']}")
+    private String metadataPrefix;
+
     @Value("#{launchProperties['services.url']}")
     private String servicesUrl;
 
@@ -74,8 +77,7 @@ public class Harvindexer {
     }
 
     @Autowired
-    @Qualifier("solrUpdateServer")
-    public void setSolrServer(SolrServer solrServer) {
+    public void setSolrServer(@Qualifier("solrUpdateServer") SolrServer solrServer) {
         this.solrServer = solrServer;
     }
 
@@ -169,6 +171,8 @@ public class Harvindexer {
         public void run() {
             log.info("Importing " + collection);
             try {
+                solrServer.deleteByQuery("europeana_collectionName:" + collection.getName());
+                solrServer.commit();
                 importPmh(collection);
                 if (thread != null) {
                     log.info("Finished importing " + collection);
@@ -194,8 +198,11 @@ public class Harvindexer {
             }
             catch (BadArgumentException e) {
                 log.warn("Problem importing " + collection + " to database, moving to error directory", e);
-            }
-            finally {
+            } catch (IOException e) {
+                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
+            } catch (SolrServerException e) {
+                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
+            } finally {
                 processors.remove(this);
                 thread = null;
             }
@@ -203,7 +210,7 @@ public class Harvindexer {
 
         private void importPmh(EuropeanaCollection collection) throws ImportException {
             try {
-                HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=ese&set=%s", servicesUrl, collection.getName()));
+                HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s", servicesUrl, metadataPrefix, collection.getName()));
                 httpClient.executeMethod(method);
                 InputStream inputStream = method.getResponseBodyAsStream();
                 String resumptionToken = importXmlInternal(inputStream);

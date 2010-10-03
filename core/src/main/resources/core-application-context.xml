@@ -56,7 +56,6 @@
                 <value>solr.timeout</value>
                 <value>solr.retries</value>
                 <value>solr.chunkSize</value>
-                <value>services.url</value>
                 <value>smtp.host</value>
                 <value>smtp.username</value>
                 <value>smtp.password</value>
@@ -83,15 +82,15 @@
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
                 <value>portal.color</value>
+                <value>services.url</value>
                 <value>services.password</value>
-
-                <value>repositoryName</value>
-                <value>adminEmail</value>
-                <value>earliestDateStamp</value>
-                <value>repositoryIdentifier</value>
-                <value>sampleIdentifier</value>
-                <value>responseListSize</value>
-
+                <value>services.harvindexing.prefix</value>
+                <value>services.pmh.repositoryName</value>
+                <value>services.pmh.adminEmail</value>
+                <value>services.pmh.earliestDateStamp</value>
+                <value>services.pmh.repositoryIdentifier</value>
+                <value>services.pmh.sampleIdentifier</value>
+                <value>services.pmh.responseListSize</value>
             </list>
         </constructor-arg>
     </bean>
@@ -111,11 +110,11 @@
     <!--todo: these declarations are related to using annotation-based validation-->
     <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
-        <!--<property name="webBindingInitializer">-->
-            <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
-                <!--<property name="validator" ref="validator"/>-->
-            <!--</bean>-->
-        <!--</property>-->
+    <!--<property name="webBindingInitializer">-->
+    <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
+    <!--<property name="validator" ref="validator"/>-->
+    <!--</bean>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -178,17 +177,17 @@
         </property>
     </bean>
     <!--<bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">-->
-        <!--<property name="classes">-->
-            <!--<util:list>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>-->
-            <!--</util:list>-->
-        <!--</property>-->
+    <!--<property name="classes">-->
+    <!--<util:list>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>-->
+    <!--</util:list>-->
+    <!--</property>-->
     <!--</bean>-->
 
-     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
         <property name="maxTotalConnections" value="56"/>
         <property name="defaultMaxConnectionsPerHost" value="28"/>
     </bean>
@@ -208,13 +207,13 @@
     <bean id="beanQueryModelFactory" class="eu.europeana.core.BeanQueryModelFactory">
         <property name="solrServer" ref="solrSelectServer"/>
         <property name="briefBean">
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
         </property>
         <property name="fullBean">
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
         </property>
         <property name="idBean">
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
         </property>
     </bean>
 
