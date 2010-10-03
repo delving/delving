@@ -7,7 +7,7 @@
         <#include "inc_header.ftl"/>
         <div class="grid_16">
             <h2>Bestaande paginas</h2>
-      
+
             <table summary="List of existing pages">
                 <#assign pages = pagePathList?sort />
                 <#list pages as pagePath>
@@ -21,19 +21,19 @@
         <div class="clear"></div>
         <#include "inc_footer.ftl"/>
 
-    <#elseif edit??>
+    <#elseif embedded>
+        ${content}
+    <#else>
 
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
 
         <div class="grid_12">
-            <div class="static_page">
-                <#if content??>
-                    <div id="content" class="content-preview">
-                        ${content}
-                    </div>
-                </#if>
+            <div id="content" class="content-preview">
+            ${content}
+            </div>
+            <#if edit??>
                 <#if edit>
                     <div id="pageForm">
                         <form action="${pagePath}" method="POST">
@@ -50,23 +50,13 @@
                                         <a href="${pagePath}?edit=false" class="button">Abort edit.</a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td style="background-color:pink;">
-                                        <p>An image list that WS Melvin could put in the editor?:</p>
-                                        <ul>
-                                            <#list imagePathList as imagePath>
-                                                <li>${imagePath}</li>
-                                            </#list>
-                                        </ul>
-                                    </td>
-                                </tr>
                             </table>
                         </form>
                     </div>
-                    <#else>
-                        <p><a href="${pagePath}?edit=true" class="button">Edit this page.</a></p>
+                <#else>
+                    <p><a href="${pagePath}?edit=true" class="button">Edit this page.</a></p>
                 </#if>
-            </div>
+            </#if>
         </div>
 
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce.js"></script>
@@ -96,11 +86,6 @@
 
 
         <#include "inc_footer.ftl"/>
-
-    <#else>
-
-        ${content}
-
     </#if>
 </div>
 </#compress>
