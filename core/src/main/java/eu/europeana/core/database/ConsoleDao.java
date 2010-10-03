@@ -23,6 +23,7 @@ package eu.europeana.core.database;
 
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SocialTag;
 
 import java.util.List;
 
@@ -152,5 +153,6 @@ public interface ConsoleDao {
     EuropeanaCollection updateCollectionCounters(Long collectionId);
 
     List<EuropeanaCollection> fetchEnabledCollections();
-    
+
+    List<SocialTag> fetchSocialTags(String europeanaUri);
 }

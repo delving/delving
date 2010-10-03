@@ -3,6 +3,7 @@
 <#assign result = result/>
 <#assign uri = result.fullDoc.id/>
 <#assign view = "table"/>
+<#assign socialTags = socialTags/>
 <#assign thisPage = "full-doc.html"/>
 <#compress>
     <#if startPage??><#assign startPage = startPage/></#if>
@@ -177,7 +178,7 @@
                 </a>
                 <span id="msg-save-item" class="hide"></span>
                 </#if>
- 
+
             </#if>
 
         </div>
