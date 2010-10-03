@@ -38,11 +38,7 @@ import java.util.List;
 
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
-import static eu.europeana.definitions.annotations.FieldCategory.ICN;
-import static eu.europeana.definitions.annotations.FieldCategory.ICN_RESEARCH;
-import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
+import static eu.europeana.definitions.annotations.FieldCategory.*;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -103,6 +99,16 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("europeana_provider")
     String[] europeanaProvider;
 
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:dataProvider", constant = true)
+    @Solr(prefix = "europeana", localName = "dataProvider", multivalued = false)
+    @Field("europeana_provider")
+    String[] europeanaDataProvider;
+
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
+    @Solr(prefix = "europeana", localName = "rights", multivalued = false)
+    @Field("europeana_rights")
+    String[] europeanaRights;
+
     @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coll", briefDoc = true)
     @Solr(fieldType = "string")
     @Field("COLLECTION")
@@ -129,7 +135,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("dc_creator")
     String[] dcCreator;
 
-    @Europeana(category = ESE, converter="extractYear")
+    @Europeana(category = ESE, converter = "extractYear")
     @Solr(prefix = "dc", localName = "date", toCopyField = {"text", "when", "date"})
     @Field("dc_date")
     String[] dcDate;
