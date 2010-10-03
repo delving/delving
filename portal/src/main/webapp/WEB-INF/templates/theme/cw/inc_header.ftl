@@ -94,19 +94,19 @@
 <#macro userbar>
     <ul class="user_nav">
         <#if !user??>
-            <li id="mustlogin" class="msg"><a href="login.html?pId=${pageId}"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="login.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
+            <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><@spring.message 'LogIn_t'/></a></li>
+            <li><a href="/${portalName}/login.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
         </#if>
         <#if user??>
 
             <li>
                 <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-                    href="logout.html"><@spring.message 'LogOut_t' /></a>
+                    href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
             </li>
 
             <#if user.savedItems?exists>
                 <li>
-                    <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
+                    <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
                         <@spring.message 'SavedItems_t' />
                     </a>
                     (<span id="savedItemsCount">${user.savedItems?size}</span>)
@@ -114,7 +114,7 @@
             </#if>
             <#if user.savedSearches?exists>
                 <li>
-                    <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" id="href-saved-searches">
+                    <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" id="href-saved-searches">
                         <@spring.message 'SavedSearches_t' />
                     </a>
                     (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
@@ -122,7 +122,7 @@
             </#if>
             <#if user.socialTags?exists>
                 <li>
-                    <a href="myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });"  id="href-saved-tags">
+                    <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });"  id="href-saved-tags">
                         <@spring.message 'SavedTags_t' />
                     </a>
                     (<span id="savedTagsCount">${user.socialTags?size}</span>)
@@ -139,7 +139,7 @@
     <div id="admin-block">
         <h4>Pagina Administratie</h4>
         <p>
-            <a href="${portalName}/_.dml">Paginas bewerken</a>
+            <a href="/${portalName}/_.dml">Paginas bewerken</a>
         </p>
     </div>
     </#if>
