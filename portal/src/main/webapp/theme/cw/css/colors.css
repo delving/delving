@@ -72,8 +72,8 @@ a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: u
 .blue #search .search_advanced table td {background: #eaeaea;}
 
 /* results pages */
-.brown .brief-thumb-container,
-.brown .brief-thumb-container-listview {}
+.blue .brief-thumb-container,
+.blue .brief-thumb-container-listview {}
 .blue #item-detail h1 {background: #01689b; color:#ffffff;}
 
 /*
