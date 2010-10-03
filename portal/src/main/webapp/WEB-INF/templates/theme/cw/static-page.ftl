@@ -74,7 +74,7 @@
             tinyMCE.init({
                 mode : "textareas",
                 theme : "advanced",
-                plugins: "template",
+                plugins: "advimage",
                 relative_urls : false,
                 theme_advanced_toolbar_location : "top",
                 theme_advanced_toolbar_align : "left",
