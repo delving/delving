@@ -70,7 +70,8 @@ public class StaticPageController {
 
     @RequestMapping(value = "/**/*.dml", method = RequestMethod.GET)
     public Object fetchStaticPage(
-            @RequestParam(required = false) Boolean edit,
+            @RequestParam(required = false) boolean embedded,
+            @RequestParam(required = false) boolean edit,
             HttpServletRequest request
     ) {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
@@ -82,13 +83,9 @@ public class StaticPageController {
             String content = getString(uri);
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + uri);
             mav.addObject("pagePath", uri);
-            mav.addObject("content", content == null ? "This page does not exist." : content);
+            mav.addObject("content", content == null ? String.format("<a href=\"%s\">%s</a>", uri, uri) : content);
+            mav.addObject("embedded", embedded);
             if (isEditor()) {
-                if (content == null && edit == null) {
-                    int slash = uri.indexOf('/', 1);
-                    String redirect = uri.substring(slash);
-                    return String.format("redirect:%s?edit=false", redirect);
-                }
                 mav.addObject("edit", edit);
                 mav.addObject("imagePathList", getList(IMAGES_COLLECTION));
             }
@@ -103,6 +100,9 @@ public class StaticPageController {
     ) {
         String uri = request.getRequestURI();
         if (isEditor()) {
+            if (content != null && content.trim().isEmpty()) {
+                content = null;
+            }
             putString(uri, content);
         }
         int slash = uri.indexOf('/', 1);
@@ -209,8 +209,13 @@ public class StaticPageController {
     private void putString(String path, String content) {
         DBObject object = pages().findOne(new BasicDBObject("_id", path));
         if (object != null) {
-            object.put(CONTENT, content);
-            pages().save(object);
+            if (content != null) {
+                object.put(CONTENT, content);
+                pages().save(object);
+            }
+            else {
+                pages().remove(object);
+            }
         }
         else {
             object = new BasicDBObject("_id", path);
