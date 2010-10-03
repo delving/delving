@@ -320,7 +320,7 @@
         </tr>
         </#if>
 
-        <#if (user??) && (user.role=="ROLE_RESEARCH_USER")>
+        <#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_GOD" )>
 
             <#assign acquisitionMeansArr = result.fullDoc.acquisitionMeans />
             <#if isNonEmpty(acquisitionMeansArr)>
