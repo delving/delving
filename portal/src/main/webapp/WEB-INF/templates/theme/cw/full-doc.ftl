@@ -166,7 +166,7 @@
                                     <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
                                 </#if>
                                 <a
-                                    href="redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                                    href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                                     target="_blank"
                                     alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
                                     title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
@@ -196,14 +196,14 @@
     </div>
 
 </div>
-<#--<script type="text/javascript">-->
-    <#--$(document).ready(function(){-->
-        <#--$("img.full").fancybox({-->
-            <#--titleShow   : true,-->
-            <#--titlePosition: 'inside'-->
-        <#--});-->
-    <#--})-->
-<#--</script>-->
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("a.overlay").fancybox({
+            titleShow   : true,
+            titlePosition: 'inside'
+        });
+    })
+</script>
     <#include "inc_footer.ftl"/>
 
 

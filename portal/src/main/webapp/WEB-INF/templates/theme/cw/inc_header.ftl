@@ -83,7 +83,7 @@
                   </select>
             <input class="txt-input" name="query" id="query" type="text" title="${portalDisplayName} Search" maxlength="75" />
             <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
-            <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+            <a href="/${portalName}/advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
         <#--<#if query?? && query?length &gt; 0 && enableRefinedSearch??>-->
             <#--<a class="advanced-search" href="" onclick="toggleObject('search_simple');toggleObject('search_refine');return false;" title="Refine Search" rel="nofollow">Refine Search</a>-->

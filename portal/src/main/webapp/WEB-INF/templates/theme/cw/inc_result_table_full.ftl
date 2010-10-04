@@ -35,7 +35,7 @@
     <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
         <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
 </#if>
-    <a class="full" href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+    <a class="overlay" href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
        target="_blank"
        alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
             >
