@@ -11,13 +11,59 @@
             <#assign thisPage = "static-page.dml"/>
             <#assign pageId = "static"/>
             <#include "inc_header.ftl"/>
+
             <div class="main">
-            <ul>
-                <#list imagePathList as imagePath>
-                    <li><a href="${imagePath}?edit=false">${imagePath}</a></li>
-                </#list>
-            </ul>
+
+                <div class="grid_6">
+                    <h2>Bestaande Afbeelingen</h2>
+                     <table summary="List of existing images">
+                        <#list imagePathList as imagePath>
+                            <tr>
+                                <td width="5"><a href="${imagePath}?edit=true"><img src="${imagePath}" height="35" alt="Thumbnail"/></a></td>
+                                <td width="300"><a href="${imagePath}?edit=true">${imagePath}</a></td>
+                                <td width="65"><a href="${imagePath}?edit=true">Bewerken</a></td>
+                                <td width="65">
+                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}">Verwijder</a>
+
+                                </td>
+                            </tr>
+                        </#list>
+                    </table>
+                </div>
             </div>
+
+            <div class="grid_6">
+                <h2>Nieuws afbeelding aanmaken</h2>
+                <ol>
+                    <li>Kies eerst een naam en extensie voor de nieuwe afbeelding</li>
+                    <li>
+                        Druk op aanmaken om dan een afbeelding van uw filesysteem te uploaden.
+                        <strong style="color:red">Let op:</strong> De extensie die u kiest moet het zelfden zijn als het bestand wat
+                        u in de volgende stap wil uploaden
+                    </li>
+                </ol>
+                <form action="" method="get" onsubmit="createImage();return false;">
+                    <input type="hidden" value="/${portalName}/" id="pName"/>
+                    <label>Naam:</label><input type="text" name="imgName" id="imgName" value=""/>
+                    <select id="imgExt" name="imgExt">
+                        <option>.jpg</option>
+                        <option>.png</option>
+                        <option>.gif</option>
+                    </select>
+                <input type="submit" value="Ga naar upload"/>
+                </form>
+                <script type="text/javascript">
+                    function createImage(){
+                        var name = $("#imgName").attr("value");
+                        var ext = $("#imgExt :selected").text();
+                        var pName = $("#pName").attr("value");
+                        var makeURL = pName+name+ext+".img";
+                        window.location.href=makeURL+"?edit=true";
+                    }
+                </script>
+            </div>
+
+            <div class="clear"></div>
             <#include "inc_footer.ftl"/>
         </#if>
     <#else>

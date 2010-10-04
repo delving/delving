@@ -139,7 +139,8 @@
     <div id="admin-block">
         <h4>Pagina Administratie</h4>
         <p>
-            <a href="/${portalName}/_.dml">Paginas bewerken</a>
+            <a href="/${portalName}/_.dml">Paginas beheren</a><br/>
+            <a href="/${portalName}/_.img">Afbeeldingen beheren</a><br/>
         </p>
     </div>
     </#if>
