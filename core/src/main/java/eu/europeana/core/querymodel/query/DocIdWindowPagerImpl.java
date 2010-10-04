@@ -5,6 +5,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -40,7 +41,8 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
 
-    private String portalName = "portal";
+    @Value("#{launchProperties['portal.name']}")
+    private String portalName;
 
     @Override
     public void setPortalName(String portalName) {
@@ -200,7 +202,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private void setNextFullDocUrl(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
-        out.append(MessageFormat.format("/{0}{1}.html?", portalName, nextUri));
+        out.append(MessageFormat.format("/{0}/record/{1}.html?", portalName, nextUri));
         out.append("query=").append(encode(query));
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
@@ -230,7 +232,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private void setPreviousFullDocUrl(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
-        out.append(MessageFormat.format("/{0}{1}.html?", portalName, previousUri));
+        out.append(MessageFormat.format("/{0}/record/{1}.html?", portalName, previousUri));
         out.append("query=").append(encode(query));
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {

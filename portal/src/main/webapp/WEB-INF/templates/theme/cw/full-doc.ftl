@@ -6,6 +6,8 @@
 <#assign socialTags = socialTags/>
 <#assign thisPage = "full-doc.html"/>
 <#compress>
+    <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
+    <#include "inc_header.ftl">
     <#if startPage??><#assign startPage = startPage/></#if>
     <#if RequestParameters.view??> <#assign view = "${RequestParameters.view}"/></#if>
     <#if format??><#assign format = format/></#if>
@@ -14,9 +16,9 @@
         <#assign queryStringForPaging = pagination.queryStringForPaging />
     </#if>
     <#if queryStringForPaging??>
-        <#assign defaultQueryParams = "full-doc.html?"+queryStringForPaging+"&start="+pagination.docIdWindow.offset?c+"&uri="+result.fullDoc.id+"&view="+view />
+        <#assign defaultQueryParams = "${portalName}/record/${result.fullDoc.id}.html?"+queryStringForPaging+"&start="+pagination.docIdWindow.offset?c+"&view="+view />
         <#else>
-            <#assign defaultQueryParams = "full-doc.html?uri="+result.fullDoc.id />
+            <#assign defaultQueryParams = "${portalName}/record/${result.fullDoc.id}.html" />
     </#if>
     <#if result.fullDoc.dcTitle[0]?length &gt; 110>
         <#assign postTitle = result.fullDoc.dcTitle[0]?substring(0, 110)?url('utf-8') + "..."/>
@@ -26,11 +28,12 @@
     <#if result.fullDoc.dcCreator[0]?matches(" ")>
         <#assign postAuthor = "none"/>
         <#else>
-            <#assign postAuthor = result.fullDoc.dcCreator[0]/>
+            <#assign postAuthor>
+                <@stringLimiter "${result.fullDoc.dcCreator[0]}" "75"/>
+            </#assign>
     </#if>
 <#-- Removed ?url('utf-8') from query assignment -->
-    <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
-    <#include "inc_header.ftl">
+
 
 
 <div id="main">
@@ -38,7 +41,7 @@
     <div class="grid_12 breadcrumb">
         <em>U bevindt zich op: </em>
         <span>
-            <a href="index.html" title="Homepagina">Home</a>
+            <a href="${portalName}/index.html" title="Homepagina">Home</a>
             <span class="imgreplacement">&rsaquo;</span>
             <#if pagination??>
                 <a href="${pagination.returnToResults?html}" title="Zoekresultaten">Zoekresultaten</a>
@@ -82,7 +85,7 @@
 
                      <#list pagination.breadcrumbs as crumb>
                         <#if !crumb.last>
-                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="brief-doc.html?${crumb.href}">${crumb.display?html}</a></li>
+                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a></li>
                         <#else>
                             <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
                         </#if>
@@ -92,7 +95,7 @@
 
                                 <@spring.message 'ViewingRelatedItems_t' />
                                     <#assign match = result.fullDoc />
-                                    <a href="full-doc.html?&amp;uri=${match.id}">
+                                    <a href="${portalName}/record/${match.id}.html">
                                         <#if useCache="true"><img
                                                 src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
                                                 alt="${match.title}" height="25"/>
@@ -123,12 +126,12 @@
                 <#if !pagination.previous>
                     <#assign uiClassStatePrev = "ui-state-disabled">
                     <#else>
-                        <#assign urlPrevious = "full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.previousInt?c}&amp;uri=${pagination.previousUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}"/>
+                        <#assign urlPrevious = pagination.previousFullDocUrl/>
                 </#if>
                 <#if !pagination.next>
                     <#assign uiClassStateNext = "ui-state-disabled">
                     <#else>
-                        <#assign urlNext = "full-doc.html?${queryStringForPaging?html}&amp;start=${pagination.nextInt?c}&amp;uri=${pagination.nextUri}&amp;view=${view}&amp;pageId=${pagination.pageId}&amp;tab=${pagination.tab}"/>
+                        <#assign urlNext = pagination.nextFullDocUrl/>
                 </#if>
                 <a
                         href="${urlPrevious}"
