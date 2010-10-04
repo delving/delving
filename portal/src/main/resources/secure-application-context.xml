@@ -45,6 +45,7 @@
         <intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
         <intercept-url pattern="/mine.html" access="ROLE_USER"/>
         <intercept-url pattern="/administration.html" access="ROLE_ADMINISTRATOR"/>
+        <intercept-url pattern="/_.dml" access="ROLE_ADMINISTRATOR"/>
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
         <logout logout-url="/logout.html" invalidate-session="true" logout-success-url="/logout-success.html"/>
