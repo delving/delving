@@ -67,7 +67,7 @@ public class StaticController {
     ) {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
         String uri = request.getRequestURI();
-        if (uri.endsWith("/_.dml")) {
+        if (uri.endsWith("/_.dml") && isEditor()) {
             mav.addObject("pagePathList", staticRepo.getPagePaths());
         }
         else {
@@ -114,7 +114,7 @@ public class StaticController {
             HttpServletRequest request
     ) {
         String uri = request.getRequestURI();
-        if (uri.endsWith("/_.img")) {
+        if (uri.endsWith("/_.img") && isEditor()) {
             ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
             mav.addObject("javascript", javascript);
             mav.addObject("imagePathList", staticRepo.getImagePaths());
