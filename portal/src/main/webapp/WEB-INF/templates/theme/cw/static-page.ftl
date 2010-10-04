@@ -6,7 +6,7 @@
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
-        <div class="grid_16">
+        <div class="grid_6">
             <h2>Bestaande paginas</h2>
 
             <table summary="List of existing pages">
@@ -18,7 +18,26 @@
                 </#list>
             </table>
         </div>
+
+        <div class="grid_6">
+
+            <h2>Maak een nieuwe pagina</h2>
+            <label>Pagina pad & naam: </label>${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>.dml<br />
+
+            <a href="" class="button" id="makePage">Aanmaken</a>
+
+        </div>
+
         <div class="clear"></div>
+
+        <script type="text/javascript">
+              $("#makePage").click(function(){
+                 pageToMake = $("#pagePath").val()+".dml?edit=true";
+                    window.location.href = pageToMake;
+                  return false;
+              })
+        </script>
+
         <#include "inc_footer.ftl"/>
 
     <#elseif embedded>
