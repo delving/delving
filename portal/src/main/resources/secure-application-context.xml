@@ -60,4 +60,6 @@
 
     <beans:bean id="mongo" class="com.mongodb.Mongo"/>
 
+    <beans:bean id="staticPageRepo" class="eu.delving.web.controller.StaticRepo"/>
+
 </beans:beans>
