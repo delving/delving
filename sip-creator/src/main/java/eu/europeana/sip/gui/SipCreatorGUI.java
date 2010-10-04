@@ -54,16 +54,18 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(String metaRepoSubmitUrl) {
+    public SipCreatorGUI(String serverUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), metaRepoSubmitUrl);
+        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
         tabs.addTab("Refinement", new RefinementPanel(sipModel));
         tabs.addTab("Normalization", new NormPanel(sipModel));
-        tabs.addTab("Repository", new DataSetPanel(sipModel));
+        if (serverUrl != null) {
+            tabs.addTab("Repository", new DataSetPanel(sipModel));
+        }
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -127,21 +129,12 @@ public class SipCreatorGUI extends JFrame {
     }
 
     public static void main(final String[] args) {
-        if (args.length == 0) {
-            System.out.println("Requires an argument! SipCreatorGUI [Services Dataset URL]");
-        }
-        else if (args[0].startsWith("http://")) {
-            final String serverUrl = args[0];
-            System.out.println("Server '" + serverUrl + "'");
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(args[0]);
-                    sipCreatorGUI.setVisible(true);
-                }
-            });
-        }
-        else {
-            throw new RuntimeException("Argument not understood");
-        }
+        final String serverUrl = args.length > 0 ? args[0] : null;
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(serverUrl);
+                sipCreatorGUI.setVisible(true);
+            }
+        });
     }
 }
