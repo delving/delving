@@ -27,8 +27,6 @@ function showDefaultSmall(obj, iType, src) {
 
 }
 
-
-
 /* ________________FULL DOC_______________________*/
 function showDefaultLarge(obj,iType,src){
     if(!(src.indexOf('noImageFound'))){
@@ -137,8 +135,9 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
                 message.delay("5000").fadeOut('slow');
            },
            error: function(msg) {
-               message.css({"display":"block","color":"red"}).html(strTagAdditionFailed);
+               message.css({"display":"block","color":"red"}).html("Tag toevoegen mislukt");
                message.delay("5000").fadeOut('slow');
+               alert(msg.text());
 
            }
         });
