@@ -37,7 +37,7 @@
                 Het basis pad <strong>/${portalName}</strong> wordt automatisch aangemaakt. Daarop volgende paden zijn
                 niet verplicht maar kunnen wel helpen met het ordennen en overzicht van de paginas.
             </p>
-            <form method="get" action="?edit=true" id="form-makePage" onsubmit="this.action=this.pagePath.value;">              
+            <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
                 /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
                 <input type="submit" value="Aanmaken" id="makePage"/>
             </form>
@@ -50,8 +50,8 @@
         <script type="text/javascript">
 
             $("a.delete").click(function(){
-                target = $(this).attr("id");
-                targetURL = $(this).attr("href");
+                var target = $(this).attr("id");
+                var targetURL = $(this).attr("href");
                 var confirmation = confirm("Pagina: "+targetURL +" verwijderen ?")
                 if(confirmation){
                     $.ajax({
@@ -70,6 +70,11 @@
                     return false;
                 }
             });
+
+            function createPage(page){
+                var targetURL = $("#pagePath").attr("value");
+                window.location.href=targetURL+"?edit=true";
+            }
 
         </script>
 
