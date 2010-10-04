@@ -39,7 +39,7 @@
 
     <div class="grid_12 breadcrumb">
         <em>U bevindt zich op: </em>
-        <span><a href="index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
+        <span><a href="${portalName}/index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
     </div>
 
 

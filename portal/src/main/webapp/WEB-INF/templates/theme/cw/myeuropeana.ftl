@@ -73,7 +73,7 @@
                                 <#list user.savedItems as item>
                                     <tr>
                                         <td valign="top" class="item-img">
-                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}">
+                                            <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
                                              <#if useCache="true">
                                                 <img class="thumb" align="middle" src="${cacheUrl}uri=${item.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" height="50" style="float:left" onerror="showDefaultSmall(this,'${item.docType}')"/>
                                              <#else>
@@ -86,7 +86,7 @@
                                             </a>
                                         </td>
                                         <td valign="top" class="item-info">
-                                            <a href="full-doc.html?uri=${item.europeanaId.europeanaUri}">
+                                            <a href="/${portalName}/record/${item.europeanaId.europeanaUri}.html">
                                                 <strong><@stringLimiter "${item.title}" "50"/></strong>
                                             </a>
                                             <br/>
@@ -111,9 +111,9 @@
                             <#if user.savedSearches?size &gt; 0>
                                 <#list user.savedSearches as search>
                                     <tr>
-                                        <td width="5"><a href="brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
+                                        <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                                         <td valign="top" class="item-info">
-                                            <a href="brief-doc.html?${search.query}">${search.queryString}</a>
+                                            <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a>
                                             <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
                                         </td>
                                         <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
@@ -137,7 +137,7 @@
                                 <tr>
                                     <th valign="top" class="item-info" colspan="3">
                                         <#--${tagQuery}-->
-                                        <#--<a href="brief-doc.html?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>-->
+                                        <#--<a href="/${portalName}/brief-doc.html?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>-->
                                         <span class="ui-icon ui-icon-tag"></span><strong>${count.tag} (${count.list?size})</strong>
                                     </th>
                                 </tr>
@@ -145,7 +145,7 @@
                                    <tr>
                                      <td width="35" align="right">
                                          <#if tag.europeanaObject??>
-                                            <a href="full-doc.html?uri=${tag.europeanaUri}">
+                                            <a href="/${portalName}/record/${tag.europeanaUri}.html">
                                             <#if useCache = "true">
                                                 <img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="25"/>
                                             </#if>
@@ -164,7 +164,7 @@
                                          </#if>
                                      </td>
                                      <td valign="top" class="item-info">
-                                         <a href="full-doc.html?uri=${tag.europeanaUri}">${tag.title}</a><br/>
+                                         <a href="/${portalName}/record/${tag.europeanaUri}.html">${tag.title}</a><br/>
                                          <p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>
                                      </td>
                                      <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>

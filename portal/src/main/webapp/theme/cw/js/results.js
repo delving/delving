@@ -97,7 +97,7 @@ function saveQuery(className, queryToSave, queryString){
     var message = $("#msg-save-search");
     $.ajax({
        type: "POST",
-       url: portalName+"/save.ajax",
+       url: portalName + "/save.ajax",
        data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
            message.css({"display":"block","color":"green"}).html(msgSearchSaveSuccess);
@@ -123,7 +123,7 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
         var message = $("span#msg-save-tag");
         $.ajax({
            type: "POST",
-           url: portalName+"/save.ajax",
+           url: portalName + "/save.ajax",
            data: "className="+className+"&europeanaUri="+fullDocId+"&europeanaObject="+thumbnailId+"&title="+objTitle+"&tag=" + encodeURIComponent(tagText) +"&docType="+objType,
            success: function(msg){
                 message.css({"display":"block","color":"green"}).html("Tag bewaard");
@@ -150,7 +150,7 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
     var message = $("span#msg-save-item");
     $.ajax({
        type: "POST",
-       url: portalName+"/save.ajax",
+       url: portalName + "/save.ajax",
        data: "className="+className+"&title="+postTitle+"&author="+postAuthor+"&europeanaUri="+objUri+"&europeanaObject="+thumbnail+"&docType="+type,
        success: function(msg){
            message.css({"display":"block","float":"left","color":"green"}).html(msgItemSaveSuccess);
@@ -175,7 +175,7 @@ function checkSize(obj,type,w){
         if (w > 150) {
             w = 150;
             obj.width=w;
-        }        
+        }
     }
     else {
         if (w > 235) {

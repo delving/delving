@@ -20,7 +20,7 @@ function removeRequest(className, id) {
 function saveRequest(className, id) {
     $.ajax({
         type: "POST",
-        url: "/portal/save.ajax",
+        url: portalName + "/save.ajax",
         data: "className=" + className + "&id=" + id,
         success: function(msg) {
             window.location.reload();

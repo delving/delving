@@ -15,7 +15,7 @@
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');" name="form-simple-search" id="form-simple-search">
+        <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');" name="form-simple-search" id="form-simple-search">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="search-input" name="query" id="query" type="text" title="Europeana Search" <#if query?exists>value="${qt}"</#if> maxlength="75"/>
@@ -28,7 +28,7 @@
     </div>
 
     <div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">
-       <form method="get" action="brief-doc.html" accept-charset="UTF-8">
+       <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
         <table>
@@ -52,7 +52,7 @@
             </tr>
             <tr>
                 <td align="left"><input type="reset" value="<@spring.message 'Reset_t' />" /></td>
-                <td>&#160;</td> 
+                <td>&#160;</td>
                 <td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />" /></td>
             </tr>
          </table>

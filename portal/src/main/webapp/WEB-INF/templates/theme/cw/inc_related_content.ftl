@@ -16,9 +16,9 @@
                             <td width="35" valign="top">
                                 <div class="related-thumb-container">
                                     <#if queryStringForPaging??>
-                                        <a href="/${portalName}/full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
+                                        <a href="${doc.fullDocUrl}?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
                                      <#else>
-                                        <a href="/${portalName}/full-doc.html?uri=${doc.id}">
+                                        <a href="${doc.fullDocUrl}">
                                      </#if>
                                      <#if useCache="true">
                                         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}',this.src)"/>
@@ -32,9 +32,9 @@
 
                             <td class="item-titles" valign="top" width="300">
                                 <#if queryStringForPaging??>
-                                <a href="/${portalName}/full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
+                                <a href="${doc.fullDocUrl}?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
                                 <#else>
-                                <a href="/${portalName}/full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
+                                <a href="${doc.fullDocUrl}?"><@stringLimiter "${doc.title}" "50"/></a>
                                 </#if>
                             </td>
                         </tr>
@@ -112,13 +112,13 @@
         <#else>
             <div class="related-links">
                 <p>
-                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
+                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
                 </p>
                 <p>
-                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
+                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
                 </p>
                 <p>
-                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
+                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
                 </p>
             </div>
 
