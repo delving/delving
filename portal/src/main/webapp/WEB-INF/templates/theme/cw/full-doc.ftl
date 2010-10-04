@@ -61,9 +61,9 @@
         </div>
 
         <div class="clear"></div>
-
-        <div id="query_breadcrumbs">
                 <#if pagination??>
+        <div id="query_breadcrumbs">
+
                     <h3 style="float:left"><@spring.message 'MatchesFor_t' />:</h3>
                     <ul class="nav_query_breadcrumbs">
                         <#if !query?starts_with("europeana_uri:")>
@@ -103,13 +103,13 @@
                                 </li>
                         </#if>
                     </ul>
-                    <#else>
-                        <ul>
-                            <li>&#160;</li>
-                        </ul>
-                </#if>
-        </div>
+                    <#--<#else>-->
+                        <#--<ul>-->
+                            <#--<li>&#160;</li>-->
+                        <#--</ul>-->
 
+        </div>
+        </#if>
         <div class="clear"></div>
 
         <div class="pagination fg-buttonset">

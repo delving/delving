@@ -68,8 +68,8 @@ a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: u
 .blue .breadcrumb a:link, .blue .breadcrumb a:visited {color: #154273; text-decoration: underline;}
 
 /* search forms */
-.blue #search #search_simple {background: #eaeaea;}
-.blue #search .search_advanced table td {background: #eaeaea;}
+/*.blue #search #search_simple {background: #eaeaea;}*/
+/*.blue #search .search_advanced table td {background: #eaeaea;}*/
 
 /* results pages */
 .blue .brief-thumb-container,

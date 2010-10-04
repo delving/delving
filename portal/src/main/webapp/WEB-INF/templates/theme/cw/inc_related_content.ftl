@@ -16,9 +16,9 @@
                             <td width="35" valign="top">
                                 <div class="related-thumb-container">
                                     <#if queryStringForPaging??>
-                                        <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
+                                        <a href="/${portalName}/full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab=">
                                      <#else>
-                                        <a href="full-doc.html?uri=${doc.id}">
+                                        <a href="/${portalName}/full-doc.html?uri=${doc.id}">
                                      </#if>
                                      <#if useCache="true">
                                         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="35" onerror="showDefault(this,'${doc.type}',this.src)"/>
@@ -32,9 +32,9 @@
 
                             <td class="item-titles" valign="top" width="300">
                                 <#if queryStringForPaging??>
-                                <a href="full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
+                                <a href="/${portalName}/full-doc.html?${queryStringForPaging?html}&amp;start=${doc.index?c}&amp;uri=${doc.id}&amp;startPage=1&amp;pageId=brd"><@stringLimiter "${doc.title}" "50"/></a>
                                 <#else>
-                                <a href="full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
+                                <a href="/${portalName}/full-doc.html?uri=${doc.id}"><@stringLimiter "${doc.title}" "50"/></a>
                                 </#if>
                             </td>
                         </tr>
@@ -43,7 +43,7 @@
 
                 <#if result.relatedItems?size &gt; max>
                 <p>
-                    <a href='brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'>
+                    <a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'>
                     <@spring.message 'SeeAllRelatedItems_t' /></a>
                 </p>
                 </#if>
@@ -83,7 +83,7 @@
                     <#--<#assign usertags = ["Manuscript","Treasure","Religion"]/>-->
                     <p>
                         <#list socialTags as userTag>
-                            <a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
+                            <a href="/${portalName}/brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
                         </#list>
                     </p>
                     <#--<#list usertags as tag>-->
@@ -112,13 +112,13 @@
         <#else>
             <div class="related-links">
                 <p>
-                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
                 </p>
                 <p>
-                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
                 </p>
                 <p>
-                    <a  href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
                 </p>
             </div>
 

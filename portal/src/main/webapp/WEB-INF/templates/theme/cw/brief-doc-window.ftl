@@ -60,6 +60,7 @@
                 <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
                 voor:
             </h3>
+
             <ul class="nav_query_breadcrumbs">
                 <#if !result.matchDoc??>
                     <#list breadcrumbs as crumb>
@@ -70,17 +71,23 @@
                         </#if>
                     </#list>
                 <#else>
+
                     <li class="nobg">
                     <@spring.message 'ViewingRelatedItems_t' />
                     <#assign match = result.matchDoc/>
+
                     <a href="${match.fullDocUrl}">
-                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                    <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=1&amp;startPage=${pagination.start?c}&amp;uri=${match.fullDocUrl?url('utf-8')}&amp;view=${view}&amp;pageId=brd">-->
+                        <#if useCache="true">
+                            <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <#else>
+                            <img src="${match.thumbnail}" alt="${match.title}" height="25" align="middle"/>
                         </#if>
                     </a>
                 </li>
                 </#if>
             </ul>
+
 
         </div>
 
