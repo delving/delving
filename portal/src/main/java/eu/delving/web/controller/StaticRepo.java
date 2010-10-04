@@ -95,6 +95,13 @@ public class StaticRepo {
         }
     }
 
+    public void deleteImage(String path) {
+        DBObject object = images().findOne(new BasicDBObject(PATH, path));
+        if (object != null) {
+            images().remove(object);
+        }
+    }
+
     public void putPage(String path, String content) {
         Page page = getLatestPage(path);
         if (page != null) {

@@ -111,6 +111,7 @@ public class StaticController {
     public Object fetchImagePage(
             @RequestParam(required = false) boolean javascript,
             @RequestParam(required = false) Boolean edit,
+            @RequestParam(required = false) boolean delete,
             HttpServletRequest request
     ) {
         String uri = request.getRequestURI();
@@ -150,10 +151,16 @@ public class StaticController {
         }
         else {
             ModelAndView mav = ControllerUtil.createModelAndViewPage("static-image");
-            mav.addObject("imageExists", staticRepo.getImage(uri) != null);
             mav.addObject("imagePath", uri);
             if (isEditor()) {
                 mav.addObject("edit", edit);
+                if (delete) {
+                    staticRepo.deleteImage(uri);
+                    mav.addObject("imageExists", false);
+                }
+                else {
+                    mav.addObject("imageExists", staticRepo.getImage(uri) != null);
+                }
             }
             return mav;
         }
