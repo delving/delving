@@ -132,7 +132,7 @@
         </li>
         <#if user.savedItems??>
         <li>
-            <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
+            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
                 <@spring.message 'SavedItems_t' />
             </a>
             (<span id="savedItemsCount">${user.savedItems?size}</span>)
@@ -140,7 +140,7 @@
         </#if>
         <#if user.savedSearches??>
         <li>
-            <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
+            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
                 <@spring.message 'SavedSearches_t' />
             </a>
             (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
@@ -148,7 +148,7 @@
         </#if>
         <#if user.socialTags??>
         <li>
-            <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
+            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
                 <@spring.message 'SavedTags_t' />
             </a>
             (<span id="savedTagsCount">${user.socialTags?size}</span>)

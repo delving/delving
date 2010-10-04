@@ -50,7 +50,7 @@ public class UserManagementController {
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
-    @RequestMapping("/myeuropeana.html")
+    @RequestMapping("/mine.html")
     public ModelAndView myEuropeanaHandler(HttpServletRequest request) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("myeuropeana");
         User user = ControllerUtil.getUser();

@@ -106,7 +106,7 @@
 
             <#if user.savedItems??>
                 <li>
-                    <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
+                    <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
                         <@spring.message 'SavedItems_t' />
                     </a>
                     (<span id="savedItemsCount">${user.savedItems?size}</span>)
@@ -114,7 +114,7 @@
             </#if>
             <#if user.savedSearches??>
                 <li>
-                    <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" id="href-saved-searches">
+                    <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" id="href-saved-searches">
                         <@spring.message 'SavedSearches_t' />
                     </a>
                     (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
@@ -122,7 +122,7 @@
             </#if>
             <#if user.socialTags??>
                 <li>
-                    <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });"  id="href-saved-tags">
+                    <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });"  id="href-saved-tags">
                         <@spring.message 'SavedTags_t' />
                     </a>
                     (<span id="savedTagsCount">${user.socialTags?size}</span>)
@@ -213,7 +213,7 @@
     </#if>
     <title>Instituut Collectie Nederland - Search results</title>
     <#break>
-    <#case "myeuropeana.html">
+    <#case "mine.html">
     <#assign pageId = "me"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/myeuropeana.css"/>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>

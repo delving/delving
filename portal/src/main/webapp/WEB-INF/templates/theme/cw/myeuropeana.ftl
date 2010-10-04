@@ -1,4 +1,4 @@
-<#assign thisPage = "myeuropeana.html">
+<#assign thisPage = "mine.html">
 <#compress>
 <#include "inc_header.ftl">
 <#--<style>-->
