@@ -25,7 +25,6 @@ import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.SocialTag;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,14 +75,6 @@ public class ConsoleDaoImpl implements ConsoleDao {
         //important because only enabled collections are available in the search engine
         query.setParameter("collectionState", CollectionState.ENABLED);
         return (List<EuropeanaCollection>) query.getResultList();
-    }
-
-    @Override
-    public List<SocialTag> fetchSocialTags(String europeanaUri) {
-        Query query = entityManager.createQuery("select st from SocialTag st where st.europeanaUri = :europeanaUri order by st.tag");
-        //important because only enabled collections are available in the search engine
-        query.setParameter("europeanaUri", europeanaUri);
-        return (List<SocialTag>) query.getResultList();
     }
 
     @Override

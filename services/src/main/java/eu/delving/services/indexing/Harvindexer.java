@@ -5,9 +5,11 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.ImportException;
 import eu.europeana.core.database.ConsoleDao;
+import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
@@ -62,6 +64,9 @@ public class Harvindexer {
 
     @Value("#{launchProperties['services.url']}")
     private String servicesUrl;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private MetaRepo metaRepo;
@@ -320,6 +325,10 @@ public class Harvindexer {
                             }
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {
                                 solrInputDocument.addField("europeana_collectionName", collection.getName()); // todo: can't just use a string field name here
+                            }
+                            final List<SocialTag> socialTags = userDao.fetchAllSocialTags(europeanaId.getEuropeanaUri());
+                            for (SocialTag socialTag : socialTags) {
+                                solrInputDocument.addField("europeana_userTag", socialTag.getTag());
                             }
                             recordList.add(solrInputDocument);
                             consoleDao.saveEuropeanaId(europeanaId);

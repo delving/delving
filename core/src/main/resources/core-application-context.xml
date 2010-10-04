@@ -146,6 +146,8 @@
 
     <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
 
+    <bean id="sorlIndexUtil" class="eu.europeana.core.util.indexing.SorlIndexUtil"/>
+
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <constructor-arg value="#{launchProperties['solr.selectUrl']}"/>
         <property name="soTimeout" value="#{launchProperties['solr.timeout']}"/>

@@ -536,6 +536,7 @@
              <field name="publisher" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="subject" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="contributor" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="tag" type="text" indexed="true" stored="tag" multiValued="true" />
              <!-- Commented out due to the fact that Solr isn't case sensitive -->
              <!--<field name="type" type="text" indexed="true" stored="true" multiValued="true" />-->
              <field name="source" type="text" indexed="true" stored="true" multiValued="true" />
@@ -813,6 +814,7 @@
    <copyField source="europeana_type" dest="TYPE"/>
    <copyField source="dc_type" dest="DCTYPE"/>
    <copyField source="europeana_userTag" dest="USERTAGS" />
+   <copyField source="europeana_userTag" dest="tag" />
    <copyField source="europeana_language" dest="LANGUAGE" />
    <copyField source="europeana_country" dest="COUNTRY" />
    <copyField source="europeana_year" dest="YEAR" />

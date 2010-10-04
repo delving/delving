@@ -21,8 +21,6 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.ConsoleDao;
-import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
@@ -40,9 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 /**
  * Annotation-based handling of result pages
@@ -59,9 +55,6 @@ public class ResultController {
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
-
-    @Autowired
-    private ConsoleDao consoleDao;
 
     @Value("#{launchProperties['image.annotation.tool.base.url']}")
     private String imageAnnotationToolBaseUrl;
@@ -91,14 +84,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
-        List<SocialTag> socialTags = consoleDao.fetchSocialTags(uri);
-        TreeSet tagSet = new TreeSet();
-        if (socialTags != null && !socialTags.isEmpty()) {
-            for (SocialTag socialTag : socialTags) {
-                tagSet.add(socialTag.getTag());
-            }
-        }
-        page.addObject("socialTags", tagSet);
+        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
