@@ -34,7 +34,7 @@ public class DataSetPanel extends JPanel {
         gbc.gridx = gbc.gridy = 0;
         add(new DataSetDetailsPanel(sipModel), gbc);
         gbc.gridx++;
-        add(dataSetControlPanel = new DataSetControlPanel(sipModel.getDataSetControllerUrl()), gbc);
+        add(dataSetControlPanel = new DataSetControlPanel(sipModel.getServerUrl()), gbc);
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;

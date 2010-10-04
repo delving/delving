@@ -43,7 +43,7 @@
 
     <http auto-config="true" create-session="always">
         <intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
-        <intercept-url pattern="/myeuropeana.html" access="ROLE_USER"/>
+        <intercept-url pattern="/mine.html" access="ROLE_USER"/>
         <intercept-url pattern="/administration.html" access="ROLE_ADMINISTRATOR"/>
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
