@@ -248,6 +248,8 @@ public class UserDaoImpl implements UserDao {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
         User user = savedItem.getUser();
         user.getSavedItems().remove(savedItem);
+        user.getSavedSearches().size();
+        user.getSocialTags().size();
         entityManager.remove(savedItem);
         return user;
     }
@@ -258,6 +260,8 @@ public class UserDaoImpl implements UserDao {
         SavedSearch savedSearch = entityManager.find(SavedSearch.class, savedSearchId);
         User user = savedSearch.getUser();
         user.getSavedSearches().remove(savedSearch);
+        user.getSavedItems().size();
+        user.getSocialTags().size();
         entityManager.remove(savedSearch);
         return user;
     }
