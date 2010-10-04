@@ -132,7 +132,8 @@ function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
                 var currentCount = parseInt(ss.innerHTML, 10);
                 ss.innerHTML = currentCount + 1;
                 highLight("href-saved-tags");
-                message.delay("5000").fadeOut('slow');
+                message.delay("1500").fadeOut('slow');
+                window.location.reload();
            },
            error: function(msg) {
                message.css({"display":"block","color":"red"}).html("Tag toevoegen mislukt");
