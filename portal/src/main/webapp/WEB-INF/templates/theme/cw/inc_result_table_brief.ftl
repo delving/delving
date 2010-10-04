@@ -29,7 +29,7 @@
 
            <td valign="bottom" width="25%" class="${cell.type}">
                 <div class="brief-thumb-container">
-                    <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                    <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                         <#if useCache="true">
                              <img
                                      class="thumb"
@@ -60,7 +60,7 @@
                 </div>
             <div class="brief-content-container">
                 <h6>
-                    <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                    <a href="${cell.fullDocUrl}}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "80"/>
                     </a>
                 </h6>
@@ -93,7 +93,7 @@
     <tr>
         <td valign="top" width="50">
             <div class="brief-thumb-container-listview">
-                <a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                <a href="${cell.fullDocUrl}${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                     <#if useCache="true">
                         <img class="thumb"
                              id="thumb_${cell.index}"
@@ -121,7 +121,7 @@
             <div class="brief-content-container">
 
                 <h6>
-                    <a class="fg-gray" href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                    <a class="fg-gray" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>

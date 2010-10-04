@@ -71,7 +71,7 @@
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
         </#if>
-        <form method="get" action="brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
+        <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <select name="zoeken_in" class="form_11">
@@ -156,7 +156,6 @@
     <#else>
         <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.5.custom.css"/>
     </#if>
-    <#--<link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/colors.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/type.css" />
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/screen.css"/>
