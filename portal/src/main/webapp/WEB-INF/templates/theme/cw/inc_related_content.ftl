@@ -55,17 +55,17 @@
 
                 <#if user??>
 
-                <h6><@spring.message 'ShareWithAFriend_t' /></h6>
+                <#--<h6><@spring.message 'ShareWithAFriend_t' /></h6>-->
 
-                <form action="#" method="post" onsubmit='sendEmail("${result.fullDoc.id}"); return false;' id="form-sendtoafriend" accept-charset="UTF-8">
-                    <label for="friendEmail"></label>
-                    <input type="text" name="friendEmail" class="required email text" id="friendEmail" maxlength="50" value="<@spring.message 'EmailAddress_t' />"
-                           onfocus="this.value=''"/>
-                    <input type="submit" id="mailer" class="button" value="<@spring.message 'Send_t' />"/>
+                <#--<form action="#" method="post" onsubmit='sendEmail("${result.fullDoc.id}"); return false;' id="form-sendtoafriend" accept-charset="UTF-8">-->
+                    <#--<label for="friendEmail"></label>-->
+                    <#--<input type="text" name="friendEmail" class="required email text" id="friendEmail" maxlength="50" value="<@spring.message 'EmailAddress_t' />"-->
+                           <#--onfocus="this.value=''"/>-->
+                    <#--<input type="submit" id="mailer" class="button" value="<@spring.message 'Send_t' />"/>-->
 
-                </form>
+                <#--</form>-->
 
-                <span id="msg-send-email" class="hide"></span>
+                <#--<span id="msg-send-email" class="hide"></span>-->
 
                 <h6><@spring.message 'AddATag_t' /></h6>
 
