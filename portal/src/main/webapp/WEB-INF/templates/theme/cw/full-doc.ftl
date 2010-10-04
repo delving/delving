@@ -61,55 +61,38 @@
         </div>
 
         <div class="clear"></div>
-                <#if pagination??>
+<#if pagination??>
         <div id="query_breadcrumbs">
 
                     <h3 style="float:left"><@spring.message 'MatchesFor_t' />:</h3>
                     <ul class="nav_query_breadcrumbs">
                         <#if !query?starts_with("europeana_uri:")>
-                            <#--<#list pagination.breadcrumbs as crumb>-->
-                                <#--<#if crumb_index==0 && !crumb.last>-->
-                                   <#--<li class="nobg"><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>-->
-                                <#--<#elseif crumb_index==0 && crumb.last>-->
-                                   <#--<li class="nobg"><strong>${crumb.display?html}</strong></li>-->
-                                <#--<#elseif crumb_index &gt; 0 && !crumb.last>-->
-                                    <#--<li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>-->
-                                <#--<#else>-->
-                                    <#--<li><strong>${crumb.display?html}</strong></li>-->
-                                <#--</#if>-->
-                            <#---->
-                            <#--</#list>-->
+                             <#list pagination.breadcrumbs as crumb>
+                                <#if !crumb.last>
+                                    <li <#if crumb_index == 0>class="nobg"</#if>><a href="brief-doc.html?${crumb.href}">${crumb.display?html}</a></li>
+                                <#else>
+                                    <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
+                                </#if>
+                            </#list>
+                         <#else>
+                            <li class="nobg">
 
-                     <#list pagination.breadcrumbs as crumb>
-                        <#if !crumb.last>
-                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="brief-doc.html?${crumb.href}">${crumb.display?html}</a></li>
-                        <#else>
-                            <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
-                        </#if>
-                    </#list>
-                            <#else>
-                                <li class="nobg">
+                            <@spring.message 'ViewingRelatedItems_t' />
+                                <#assign match = result.fullDoc />
+                                <a href="full-doc.html?&amp;uri=${match.id}">
+                                    <#if useCache="true"><img
+                                            src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
+                                            alt="${match.title}" height="25"/>
+                                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                                    </#if>
+                                </a>
 
-                                <@spring.message 'ViewingRelatedItems_t' />
-                                    <#assign match = result.fullDoc />
-                                    <a href="full-doc.html?&amp;uri=${match.id}">
-                                        <#if useCache="true"><img
-                                                src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
-                                                alt="${match.title}" height="25"/>
-                                            <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                                        </#if>
-                                    </a>
-
-                                </li>
+                            </li>
                         </#if>
                     </ul>
-                    <#--<#else>-->
-                        <#--<ul>-->
-                            <#--<li>&#160;</li>-->
-                        <#--</ul>-->
 
         </div>
-        </#if>
+</#if>
         <div class="clear"></div>
 
         <div class="pagination fg-buttonset">
@@ -193,7 +176,17 @@
     </div>
 
 </div>
-
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("a.img-url").fancybox({
+            titleShow   : true,
+            titlePosition: 'inside'
+        });
+    })
+    function formatTitle(){
+        return title;
+    }
+</script>
     <#include "inc_footer.ftl"/>
 
 
