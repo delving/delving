@@ -22,10 +22,10 @@
                                 <td width="5"><a href="${imagePath}?edit=true"><img src="${imagePath}" height="35" alt="Thumbnail"/></a></td>
                                 <td width="300"><a href="${imagePath}?edit=true">${imagePath}</a></td>
                                 <td width="65"><a href="${imagePath}?edit=true">Bewerken</a></td>
-                                <#--<td width="65">-->
-                                     <#--<a class="delete" id="delete_${imagePath_index}" href="${imagePath}">Verwijder</a>-->
+                                <td width="65">
+                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}?edit=false&delete=true">Verwijder</a>
 
-                                <#--</td>-->
+                                </td>
                             </tr>
                         </#list>
                     </table>
@@ -58,6 +58,28 @@
                         var makeURL = pName+name+ext+".img";
                         window.location.href=makeURL+"?edit=true";
                     }
+                    
+                    $("a.delete").click(function(){
+                        var target = $(this).attr("id");
+                        var targetURL = $(this).attr("href");
+                        var confirmation = confirm("Afbeelding: "+targetURL +" verwijderen ?")
+                        if(confirmation){
+                            $.ajax({
+                                url: targetURL,
+                                type: "GET",
+                                data: "content=",
+                                success: function(data) {
+                                    window.location.reload();
+                                },
+                                error: function(data) {
+                                    alert("Image could not be deleted");
+                                }
+                            });
+                            return false;
+                        } else {
+                            return false;
+                        }
+                    });
                 </script>
             </div>
 
@@ -68,42 +90,45 @@
         <#assign thisPage = "static-image.img"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
-        <div class="main">
+        <div id="main" style="padding-top: 2em">
 
-            <div id="image" class="grid_12">
 
-                <div class="static_image">
+
+                <div class="grid_4">
                     <#if imageExists>
                         <img src="${imagePath}" alt="${imagePath}"/>
                     <#else>
                         <p>This image does not exist</p>
                     </#if>
+                </div>
+
+                <div class="grid_8">
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">
                                 <form method="POST" enctype="multipart/form-data">
                                     <table>
                                         <tr>
-                                            <td>Upload a new image for this URL</td>
-                                            <td><input type="file" name="file" size="80"/></td>
+                                            <td width="200">Nieuwe afbeelding kiesen</td>
+                                            <td><input type="file" name="file" size="30"/></td>
                                         </tr>
                                         <tr>
                                             <td></td>
-                                            <td><input type="submit" name="submit"></td>
+                                            <td><input type="submit" name="submit" value="Afbeelding uploaden"></td>
                                         </tr>
                                     </table>
                                 </form>
                             </div>
                         <#else>
-                            <p><a href="${imagePath}?edit=true">Change this image</a></p>
+                            <p><a href="${imagePath}?edit=true">Verander deze afbeelding</a></p>
                         </#if>
-                        <p><a href="_.img">List images</a></p>
+                        <p><a href="_.img">Afbeelding lijst</a></p>
                     </#if>
 
                 </div>
 
             </div>
-        </div>
+
         <#include "inc_footer.ftl"/>
     </#if>
 </#compress>
