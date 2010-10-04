@@ -68,10 +68,15 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
     if(!msgBody){msgBody="Er is een fout opgetreden";}
     $.ajax({
       url: pageName,
+      async: false,
+      cache: false,
+      processData: false,
+//      context: document.body.content,
       type: "GET",
         success: function(data) {
             if(data == "This page does not exist."){
-                $(targetId).html("<h2>"+msgHead+"<\/h2><p>"+msgBody+"</p>");
+//                $(targetId).html("<h2>"+msgHead+"<\/h2><p>"+msgBody+"</p>");
+                $(targetId).html("<h2>Fout<\/h2>");
             }else{
                 $(targetId).html(data);
             }

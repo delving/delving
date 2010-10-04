@@ -47,7 +47,7 @@ services.password = something
 #
 # services MetaRepo Settings
 #
-services.phm.repositoryName = Delving MetaRepo
+services.pmh.repositoryName = Delving MetaRepo
 services.pmh.adminEmail = somebody@delving.eu
 services.pmh.earliestDateStamp = 1990-02-01T12:00:00Z
 services.pmh.repositoryIdentifier = meta-repo.delving.eu
