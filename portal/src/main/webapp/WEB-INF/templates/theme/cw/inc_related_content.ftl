@@ -69,13 +69,12 @@
 
                 <h6><@spring.message 'AddATag_t' /></h6>
 
-                <#--<div id="ysearchautocomplete">-->
                 <form action="#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;"  id="form-addtag" name="form-addtag" accept-charset="UTF-8">
                           <input type="text" name="tag" id="tag" maxlength="50" class="text"/>
                           <input type="submit" class="button tag" value="<@spring.message 'Add_t' />"/>
                       </form>
                 <span id="msg-save-tag" class="hide"></span>
-                <#--</div>-->
+
 
                 <h6><@spring.message 'UserTags_t' /></h6>
 
