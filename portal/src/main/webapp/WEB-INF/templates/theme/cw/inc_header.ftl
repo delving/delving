@@ -104,7 +104,7 @@
                     href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
             </li>
 
-            <#if user.savedItems?exists>
+            <#if user.savedItems??>
                 <li>
                     <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" id="href-saved-items">
                         <@spring.message 'SavedItems_t' />
@@ -112,7 +112,7 @@
                     (<span id="savedItemsCount">${user.savedItems?size}</span>)
                 </li>
             </#if>
-            <#if user.savedSearches?exists>
+            <#if user.savedSearches??>
                 <li>
                     <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" id="href-saved-searches">
                         <@spring.message 'SavedSearches_t' />
@@ -120,7 +120,7 @@
                     (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
                 </li>
             </#if>
-            <#if user.socialTags?exists>
+            <#if user.socialTags??>
                 <li>
                     <a href="/${portalName}/myeuropeana.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });"  id="href-saved-tags">
                         <@spring.message 'SavedTags_t' />
@@ -200,7 +200,8 @@
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
-
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/fancybox/jquery.fancybox-1.3.1.css"/>
     <#if user??>
     <script type="text/javascript">
         var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t' />";
