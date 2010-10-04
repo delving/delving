@@ -6,36 +6,71 @@
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
+
+
         <div class="grid_6">
             <h2>Bestaande paginas</h2>
 
             <table summary="List of existing pages">
                 <#list pagePathList as pagePath>
                     <tr>
-                        <td><a href="${pagePath}?edit=true"><span class="ui-icon ui-icon-document"></span></a></td>
+                        <td width="5"><a href="${pagePath}?edit=true"><span class="ui-icon ui-icon-document"></span></a></td>
                         <td width="300"><a href="${pagePath}?edit=true">${pagePath}</a></td>
+                        <td width="65"><a href="${pagePath}?edit=true">Bewerken</a></td>
+                        <td width="65">
+                             <a class="delete" id="delete_${pagePath_index}" href="${pagePath}">Verwijder</a>
+
+                        </td>
                     </tr>
                 </#list>
             </table>
         </div>
-
+        
         <div class="grid_6">
 
             <h2>Maak een nieuwe pagina</h2>
-            <label>Pagina pad & naam: </label>${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>.dml<br />
+            <p>
+                Voor het aanmaken van een pagina vul in het pad (als gewenst) en de naam van de nieuwe pagina.
+                De naam van de pagina <strong>moet</strong> eindigen met <strong>.dml</strong>
+            </p>
+            <p>
+                Het basis pad <strong>/${portalName}</strong> wordt automatisch aangemaakt. Daarop volgende paden zijn
+                niet verplicht maar kunnen wel helpen met het ordennen en overzicht van de paginas.
+            </p>
+            <form method="get" action="?edit=true" id="form-makePage" onsubmit="this.action=this.pagePath.value;">              
+                /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
+                <input type="submit" value="Aanmaken" id="makePage"/>
+            </form>
 
-            <a href="" class="button" id="makePage">Aanmaken</a>
+       </div>
 
-        </div>
 
         <div class="clear"></div>
 
         <script type="text/javascript">
-              $("#makePage").click(function(){
-                 pageToMake = $("#pagePath").val()+".dml?edit=true";
-                    window.location.href = pageToMake;
-                  return false;
-              })
+
+            $("a.delete").click(function(){
+                target = $(this).attr("id");
+                targetURL = $(this).attr("href");
+                var confirmation = confirm("Pagina: "+targetURL +" verwijderen ?")
+                if(confirmation){
+                    $.ajax({
+                        url: targetURL,
+                        type: "POST",
+                        data: "content=",
+                        success: function(data) {
+                            window.location.reload();
+                        },
+                        error: function(data) {
+                            alert("page could not be deleted");
+                        }
+                    });
+                    return false;
+                } else {
+                    return false;
+                }
+            });
+
         </script>
 
         <#include "inc_footer.ftl"/>
@@ -55,19 +90,19 @@
             </div>
             <#if edit??>
                 <#if edit>
+
                     <div id="pageForm">
-                        <form action="${page.path}" method="POST">
+                        <form action="${page.path}" method="POST" id="form-edit">
                             <table>
                                 <tr>
                                     <td>
-                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
-                                        <input type="submit" name="submit">
+                                      <a href="javascript:toggleEditor('editor');" class="">Show/Hide HTML editor</a>  
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <a href="javascript:toggleEditor('editor');" class="button">Show/Hide HTML editor</a>
-                                        <a href="${page.path}?edit=false" class="button">Abort edit.</a>
+                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
+                                        <input type="submit" name="submit" value="Bewaar"/> <a href="${page.path}?edit=false" class="button">Cancel</a>
                                     </td>
                                 </tr>
                             </table>
@@ -95,10 +130,13 @@
                 </#if>
             </#if>
         </div>
+    
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/static-page.js"></script>
         <#include "inc_footer.ftl"/>
         
     </#if>
+
 </div>
+
 </#compress>

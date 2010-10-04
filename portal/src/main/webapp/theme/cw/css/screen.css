@@ -90,9 +90,10 @@ ul a:hover, ul a:visited:hover {
     position: relative;
 }
 
-#main {
-    overflow: hidden;
-}
+/*#main {*/
+    /*overflow: hidden;*/
+    /*margin: 0 0 4em 0;*/
+/*}*/
 
 /* Main navigation */
 
@@ -218,6 +219,7 @@ ul a:hover, ul a:visited:hover {
 
 #footer {
     text-align: center;
+    margin-top: 4em;
 }
 
 /* Search Forms **********************************************************************************/
@@ -269,8 +271,13 @@ ul a:hover, ul a:visited:hover {
 #query_breadcrumbs {
     margin: 1em 0;
     padding: 0;
-    height: 22px;
-    line-height: 22px;
+    height: 42px;
+    line-height: 42px;
+    vertical-align: baseline;
+
+
+
+
 }
 
 #query_breadcrumbs h3 {
@@ -283,6 +290,7 @@ ul a:hover, ul a:visited:hover {
 ul.nav_query_breadcrumbs {
     padding: 0;
     margin: 0;
+    height: 42px;   
 }
 
 ul.nav_query_breadcrumbs li {
