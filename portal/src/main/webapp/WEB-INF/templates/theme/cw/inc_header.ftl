@@ -325,9 +325,9 @@
 
                 <ul class="nav_main">
                     <li <#if pageId="in">class="current"</#if>><a href="/${portalName}/index.html">Home</a></li>
-                    <li><a href="">Over de Digitale Collectie Nederland</a></li>
-                    <li><a href="">Deelname</a></li>
-                    <li><a href="">Gebruik</a></li>
+                    <li><a href="/${portalName}/digitale-collectie.dml">Over de Digitale Collectie Nederland</a></li>
+                    <li><a href="/${portalName}/deelname.dml">Deelname</a></li>
+                    <li><a href="/${portalName}/gebruik.dml">Gebruik</a></li>
                 </ul>
             </div>
         </div>
