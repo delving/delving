@@ -22,6 +22,7 @@
 package eu.europeana.core;
 
 import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.querymodel.query.*;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
@@ -42,6 +43,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * todo: javadoc
@@ -56,18 +58,15 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private QueryAnalyzer queryAnalyzer;
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
-    private String portalName;
     private UserDao userDao;
     private DocIdWindowPagerFactory docIdWindowPagerFactory;
+
+    @Value("#{launchProperties['portal.name']}")
+    private String portalName;
 
     @Autowired
     public void setDocIdWindowPagerFactory(DocIdWindowPagerFactory docIdWindowPagerFactory) {
         this.docIdWindowPagerFactory = docIdWindowPagerFactory;
-    }
-
-    @Value("#{launchProperties['portal.name']}")
-    public void setPortalName(String portalName) {
-        this.portalName = portalName;
     }
 
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
@@ -340,6 +339,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private FullDoc fullDoc;
         private DocIdWindowPager docIdWindowPager;
         private List<? extends BriefDoc> relatedItems;
+        private TreeSet<String> userTags;
 
         private FullBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
             this.solrResponse = solrResponse;
@@ -347,6 +347,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             fullDoc = createFullDoc();
             relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(briefBean), solrResponse);
             docIdWindowPager = createDocIdPager(params);
+            userTags = fetchUserTags(params.get("uri")[0]);
         }
 
         private DocIdWindowPager createDocIdPager(Map<String, String[]> params) throws SolrServerException, EuropeanaQueryException {
@@ -355,6 +356,17 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), solrServer, idBean);
             }
             return idWindowPager;
+        }
+
+        private TreeSet<String> fetchUserTags(String europeanaUri) {
+            List<SocialTag> socialTags = userDao.fetchAllSocialTags(europeanaUri);
+            TreeSet<String> tagSet = new TreeSet<String>();
+            if (socialTags != null && !socialTags.isEmpty()) {
+                for (SocialTag socialTag : socialTags) {
+                    tagSet.add(socialTag.getTag());
+                }
+            }
+            return tagSet;
         }
 
         @Override
@@ -372,11 +384,16 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             return fullDoc;
         }
 
+        @Override
+        public TreeSet<String> getUserTags() {
+            return userTags;
+        }
+
         private FullDoc createFullDoc() throws EuropeanaQueryException {
             SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
             List<? extends FullDoc> fullBeanItem = solrServer.getBinder().getBeans(fullBean, matchDoc);
 
-            // if the record is not found give usefull error message
+            // if the record is not found give useful error message
             if (fullBeanItem.size() == 0) {
                 QueryProblem problem = userDao.whyIsEuropeanaIdNotFound(params.get("uri")[0]);
                 throw new EuropeanaQueryException(problem.toString());
@@ -402,12 +419,10 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         QueryResponse queryResponse;
         try {
             queryResponse = solrServer.query(solrQuery);
-        }
-        catch (SolrException e) {
+        } catch (SolrException e) {
             log.error("unable to execute SolrQuery", e);
             throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString(), e);
-        }
-        catch (SolrServerException e) {
+        } catch (SolrServerException e) {
             //todo determine which errors the SolrServer can throw
             log.error("Unable to fetch result", e);
             if (e.getMessage().equalsIgnoreCase("Error executing query")) {

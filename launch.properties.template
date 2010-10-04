@@ -41,6 +41,19 @@ solr.retries = 1
 # services connection settings
 #
 services.url = http://localhost:8983/services/
+services.harvindexing.prefix = ese
+services.password = something
+
+#
+# services MetaRepo Settings
+#
+services.phm.repositoryName = Delving MetaRepo
+services.pmh.adminEmail = somebody@delving.eu
+services.pmh.earliestDateStamp = 1990-02-01T12:00:00Z
+services.pmh.repositoryIdentifier = meta-repo.delving.eu
+services.pmh.sampleIdentifier = 00101_Ag_NO_sffDF:4c277cd8f208d29792096c1e
+services.pmh.responseListSize = 100
+services.pmh.harvestStepCleanupDelay = 15000
 
 #
 # smtp server settings
@@ -122,15 +135,3 @@ portal.color = azure
 #
 #image.annotation.tool.base.url=../image-annotation-frontend/annotate.jsp
 
-
-#
-# Configure the Metadata Repository
-#
-repositoryName = Delving MetaRepo
-adminEmail = somebody@delving.eu
-earliestDateStamp = 1990-02-01T12:00:00Z
-repositoryIdentifier = meta-repo.delving.eu
-sampleIdentifier = 00101_Ag_NO_sffDF:4c277cd8f208d29792096c1e
-responseListSize = 100
-harvestStepCleanupDelay = 15000
-services.password = something

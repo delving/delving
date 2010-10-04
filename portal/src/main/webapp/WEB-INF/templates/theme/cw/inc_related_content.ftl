@@ -1,4 +1,4 @@
-         
+
 
         <h6><@spring.message 'RelatedContent_t' />:</h6>
 
@@ -82,7 +82,7 @@
                 <div class="toggler-c ui-icon-circle-triangle-s"title="<@spring.message 'UserTags_t' />">
                     <#--<#assign usertags = ["Manuscript","Treasure","Religion"]/>-->
                     <p>
-                        <#list model.fullDoc.europeanaUserTag as userTag>
+                        <#list socialTags as userTag>
                             <a href="brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
                         </#list>
                     </p>

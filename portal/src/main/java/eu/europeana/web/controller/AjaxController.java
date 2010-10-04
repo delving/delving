@@ -27,6 +27,7 @@ import eu.europeana.core.database.domain.SavedSearch;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.core.util.indexing.SorlIndexUtil;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -72,6 +73,9 @@ public class AjaxController {
     @Qualifier("emailSenderForSendToFriend")
     private EmailSender friendEmailSender;
 
+    @Autowired
+    private SorlIndexUtil sorlIndexUtil;
+
     @RequestMapping("/remove.ajax")
     public ModelAndView handleAjaxRemoveRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
@@ -104,7 +108,9 @@ public class AjaxController {
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
                 break;
             case SOCIAL_TAG:
+                final String europeanaUri = userDao.findEuropeanaUri(id);
                 user = userDao.removeSocialTag(id);
+                sorlIndexUtil.indexUserTags(europeanaUri);
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
                 break;
             default:
@@ -132,6 +138,7 @@ public class AjaxController {
         User user = ControllerUtil.getUser();
         String className = request.getParameter("className");
         String idString = request.getParameter("id");
+        boolean success = true;
         if (className == null) {
             throw new IllegalArgumentException("Expected 'className' parameter!");
         }
@@ -159,12 +166,14 @@ public class AjaxController {
                 SocialTag socialTag = new SocialTag();
                 String tagValue = getStringParameter("tag", request);
                 socialTag.setTag(tagValue);
-                socialTag.setEuropeanaUri(getStringParameter("europeanaUri", request));
+                String europeanaUri = getStringParameter("europeanaUri", request);
+                socialTag.setEuropeanaUri(europeanaUri);
                 socialTag.setDocType(DocType.valueOf(getStringParameter("docType", request)));
                 socialTag.setEuropeanaObject(getStringParameter("europeanaObject", request));
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
+                success = sorlIndexUtil.indexUserTags(europeanaUri);
                 clickStreamLogger.logCustomUserAction(request, UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
                 break;
             default:
@@ -172,7 +181,8 @@ public class AjaxController {
         }
 
         ControllerUtil.setUser(user);
-        return true;
+
+        return success;
     }
 
     @RequestMapping("/email-to-friend.ajax")

@@ -74,7 +74,7 @@ class AdvancedSearchFormSpec extends Spec with ShouldMatchers {
         it("should add all collections as queryFilters when allCollections is 'false'") {
           val localForm = new AdvancedSearchForm
           localForm setFacet0 ("text"); localForm setValue0 ("max"); localForm setOperator1 ("AND")
-          localForm setAllCollections (false)
+          localForm setAllCollections ("all-cb")
           localForm setCollectionList (Array("coll1", "coll2"))
           localForm.toSolrQuery should equal ("text:max&qf=COLLECTION:coll1&qf=COLLECTION:coll2")
         }

@@ -237,6 +237,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public String findEuropeanaUri(Long socialTagId) {
+        SocialTag socialTag = entityManager.find(SocialTag.class, socialTagId);
+        return socialTag.getEuropeanaUri();
+    }
+
+    @Override
     @Transactional
     public User removeSavedItem(Long savedItemId) {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
@@ -325,5 +331,13 @@ public class UserDaoImpl implements UserDao {
             queryProblem = QueryProblem.RECORD_NOT_FOUND;
         }
         return queryProblem;
+    }
+
+
+    @Override
+    public List<SocialTag> fetchAllSocialTags(String europeanaUri) {
+        Query query = entityManager.createQuery("select st from SocialTag st where st.europeanaUri = :europeanaUri order by st.tag");
+        query.setParameter("europeanaUri", europeanaUri);
+        return (List<SocialTag>) query.getResultList();
     }
 }

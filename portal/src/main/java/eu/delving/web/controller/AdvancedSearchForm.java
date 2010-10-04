@@ -198,8 +198,12 @@ public class AdvancedSearchForm {
         return allCollections;
     }
 
-    public void setAllCollections(boolean allCollections) {
-        this.allCollections = allCollections;
+    public void setAllCollections(String allCollections) {
+        boolean allColl = true;
+        if (!allCollections.equalsIgnoreCase("all")) {
+            allColl = false;
+        }
+        this.allCollections = allColl;
     }
 
     public String toSolrQuery() {

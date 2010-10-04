@@ -5,9 +5,11 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.ImportException;
 import eu.europeana.core.database.ConsoleDao;
+import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.CollectionState;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
@@ -57,8 +59,14 @@ public class Harvindexer {
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
 
 
+    @Value("#{launchProperties['services.harvindexing.prefix']}")
+    private String metadataPrefix;
+
     @Value("#{launchProperties['services.url']}")
     private String servicesUrl;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private MetaRepo metaRepo;
@@ -74,8 +82,7 @@ public class Harvindexer {
     }
 
     @Autowired
-    @Qualifier("solrUpdateServer")
-    public void setSolrServer(SolrServer solrServer) {
+    public void setSolrServer(@Qualifier("solrUpdateServer") SolrServer solrServer) {
         this.solrServer = solrServer;
     }
 
@@ -169,6 +176,8 @@ public class Harvindexer {
         public void run() {
             log.info("Importing " + collection);
             try {
+                solrServer.deleteByQuery("europeana_collectionName:" + collection.getName());
+                solrServer.commit();
                 importPmh(collection);
                 if (thread != null) {
                     log.info("Finished importing " + collection);
@@ -194,8 +203,11 @@ public class Harvindexer {
             }
             catch (BadArgumentException e) {
                 log.warn("Problem importing " + collection + " to database, moving to error directory", e);
-            }
-            finally {
+            } catch (IOException e) {
+                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
+            } catch (SolrServerException e) {
+                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
+            } finally {
                 processors.remove(this);
                 thread = null;
             }
@@ -203,7 +215,7 @@ public class Harvindexer {
 
         private void importPmh(EuropeanaCollection collection) throws ImportException {
             try {
-                HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=ese&set=%s", servicesUrl, collection.getName()));
+                HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s", servicesUrl, metadataPrefix, collection.getName()));
                 httpClient.executeMethod(method);
                 InputStream inputStream = method.getResponseBodyAsStream();
                 String resumptionToken = importXmlInternal(inputStream);
@@ -313,6 +325,10 @@ public class Harvindexer {
                             }
                             if (!solrInputDocument.containsKey("europeana_collectionName")) {
                                 solrInputDocument.addField("europeana_collectionName", collection.getName()); // todo: can't just use a string field name here
+                            }
+                            final List<SocialTag> socialTags = userDao.fetchAllSocialTags(europeanaId.getEuropeanaUri());
+                            for (SocialTag socialTag : socialTags) {
+                                solrInputDocument.addField("europeana_userTag", socialTag.getTag());
                             }
                             recordList.add(solrInputDocument);
                             consoleDao.saveEuropeanaId(europeanaId);

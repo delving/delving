@@ -152,5 +152,4 @@ public interface ConsoleDao {
     EuropeanaCollection updateCollectionCounters(Long collectionId);
 
     List<EuropeanaCollection> fetchEnabledCollections();
-    
 }

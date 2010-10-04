@@ -326,7 +326,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   private def renderResumptionToken(step: HarvestStep) = {
     if (step.hasNext)
-      <resumptionToken expirationDate={step.getExpiration.toString} completeListSize={step.getListSize.toString}
+      <resumptionToken expirationDate={printDate(step.getExpiration)} completeListSize={step.getListSize.toString}
                        cursor={step.getCursor.toString}>{step.nextResumptionToken.toString}</resumptionToken>
     else
       <resumptionToken/>

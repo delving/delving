@@ -9,19 +9,19 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class MetaConfigImpl implements MetaRepo.MetaConfig {
 
-    @Value("#{launchProperties['repositoryName']}")  
+    @Value("#{launchProperties['services.pmh.repositoryName']}")
     String repositoryName;
 
-    @Value("#{launchProperties['adminEmail']}")
+    @Value("#{launchProperties['services.pmh.adminEmail']}")
     String adminEmail;
 
-    @Value("#{launchProperties['earliestDateStamp']}")
+    @Value("#{launchProperties['services.pmh.earliestDateStamp']}")
     String earliestDateStamp;
 
-    @Value("#{launchProperties['repositoryIdentifier']}")
+    @Value("#{launchProperties['services.pmh.repositoryIdentifier']}")
     private String repositoryIdentifier;
 
-    @Value("#{launchProperties['sampleIdentifier']}")
+    @Value("#{launchProperties['services.pmh.sampleIdentifier']}")
     private String sampleIdentifier;
 
     @Override

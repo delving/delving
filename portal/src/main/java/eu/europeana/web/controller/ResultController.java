@@ -84,6 +84,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
+        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;

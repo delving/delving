@@ -4,7 +4,7 @@
 
     <#include "inc_header.ftl"/>
     <#assign collections = collections/>
-    <#assign provinces = provinces/>
+    <#--<#assign provinces = provinces/>-->
 <div class="main">
 
 <div class="grid_12 breadcrumb">
@@ -19,100 +19,7 @@
 
 <h1>Zoeken in de Collectie Database</h1>
 
-<h2>Geavanceerd zoeken</h2>
-
-<form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
-    <input type="hidden" name="start" value="1"/>
-    <input type="hidden" name="view" value="${view}"/>
-
-    <table>
-
-        <tr>
-            <td width="150">Zoek in:</td>
-            <td width="200">
-                <select name="facet0" id="m-facet1">
-                    <option selected="selected" value="text">Alles</option>
-                    <option value="title">Titel</option>
-                    <option value="creator">Vervaardiger</option>
-                    <option value="YEAR">Jaar</option>
-                    <option value="subject">Onderwerp</option>
-                    <option value="description">Beschrijving</option>
-                </select>
-            </td>
-            <td><input type="text" name="value0" class="search-input" maxlength="75"/></td>
-        </tr>
-        <tr>
-            <td align="right"></td>
-            <td>
-                <select name="operator1" id="m-operator2">
-                    <option value="AND"><@spring.message 'AndBoolean_t'/> &nbsp;</option>
-                    <option value="OR"><@spring.message 'OrBoolean_t'/> </option>
-                    <option value="NOT"><@spring.message 'NotBoolean_t'/> </option>
-                </select>
-                <select name="facet1" id="m-facet2">
-                    <option selected="selected" value="text">Alles</option>
-                    <option value="title">Titel</option>
-                    <option value="creator">Vervaardiger</option>
-                    <option value="YEAR">Jaar</option>
-                    <option value="subject">Onderwerp</option>
-                    <option value="description">Beschrijving</option>
-                </select></td>
-            <td><input type="text" name="value1" class="search-input" maxlength="75"/></td>
-        </tr>
-        <tr>
-            <td align="right"></td>
-            <td>
-                <select name="operator2" id="m-operator3">
-                    <option value="AND"><@spring.message 'AndBoolean_t'/> &nbsp;</option>
-                    <option value="OR"><@spring.message 'OrBoolean_t'/> </option>
-                    <option value="NOT"><@spring.message 'NotBoolean_t'/> </option>
-                </select>
-                <select name="facet2" id="m-facet3">
-                    <option selected="selected" value="text">Alles</option>
-                    <option value="title">Titel</option>
-                    <option value="creator">Vervaardiger</option>
-                    <option value="YEAR">Jaar</option>
-                    <option value="subject">Onderwerp</option>
-                    <option value="description">Beschrijving</option>
-                </select></td>
-            <td><input type="text" name="value2" class="search-input" maxlength="75"/></td>
-        </tr>
-
-        <tr>
-            <td align="right">Collectie:</td>
-            <td>
-                <select name="collection" class="form_11">
-                    <option selected="selected" value="all_collections">Alle Collecties</option>
-                    <#list collections as coll>
-                        <option>${coll.name}</option>
-                    </#list>
-                </select>
-            </td>
-            <td>&#160;</td>
-        </tr>
-        <tr>
-            <td align="right">Sorteren op:</td>
-            <td>
-                <select name="sortBy" class="form_11">
-                    <option selected="selected" value="">-</option>
-                    <option value="YEAR">Jaar</option>
-                    <option value="COLLECTION">Collectie</option>
-                </select>
-            </td>
-            <td>&#160;</td>
-        </tr>
-
-        <tr>
-            <td align="left"><input type="reset" value="<@spring.message 'Erase_t' />"/></td>
-            <td>&#160;</td>
-            <td align="right">
-                <input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />"/>
-            </td>
-        </tr>
-    </table>
-</form>
-
-<#--<#if (user??) && (user.role=="ROLE_RESEARCH_USER")>-->
+<#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_GOD")>
 <h2>Uitgebreid zoeken Museometrie</h2>
 
 <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
@@ -194,7 +101,7 @@
         <td>Aankoop bedrag</td>
         <td>
             <select name="purchasePrice">
-                <option>Selecteer</option>
+                <option value="">Selecteer</option>
                 <option value="100"> &lt; 100</option>
                 <option value="1000">100 - 1,000</option>
                 <option value="10000">1,000 - 10,000</option>
@@ -300,6 +207,7 @@
 
     <tr>
         <td align="right">Sorteren op:</td>
+        <td>
         <select name="sortBy" class="form_11">
             <option selected="selected" value="">-</option>
             <option value="YEAR">Jaar</option>
@@ -320,7 +228,100 @@
 </form>
 
 </div>
-<#--</#if>-->
+<#else>
+<h2>Geavanceerd zoeken</h2>
+
+<form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
+    <input type="hidden" name="start" value="1"/>
+    <input type="hidden" name="view" value="${view}"/>
+
+    <table>
+
+        <tr>
+            <td width="150">Zoek in:</td>
+            <td width="200">
+                <select name="facet0" id="m-facet1">
+                    <option selected="selected" value="text">Alles</option>
+                    <option value="title">Titel</option>
+                    <option value="creator">Vervaardiger</option>
+                    <option value="YEAR">Jaar</option>
+                    <option value="subject">Onderwerp</option>
+                    <option value="description">Beschrijving</option>
+                </select>
+            </td>
+            <td><input type="text" name="value0" class="search-input" maxlength="75"/></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <select name="operator1" id="m-operator2">
+                    <option value="AND"><@spring.message 'AndBoolean_t'/> &nbsp;</option>
+                    <option value="OR"><@spring.message 'OrBoolean_t'/> </option>
+                    <option value="NOT"><@spring.message 'NotBoolean_t'/> </option>
+                </select>
+                <select name="facet1" id="m-facet2">
+                    <option selected="selected" value="text">Alles</option>
+                    <option value="title">Titel</option>
+                    <option value="creator">Vervaardiger</option>
+                    <option value="YEAR">Jaar</option>
+                    <option value="subject">Onderwerp</option>
+                    <option value="description">Beschrijving</option>
+                </select></td>
+            <td><input type="text" name="value1" class="search-input" maxlength="75"/></td>
+        </tr>
+        <tr>
+            <td align="right"></td>
+            <td>
+                <select name="operator2" id="m-operator3">
+                    <option value="AND"><@spring.message 'AndBoolean_t'/> &nbsp;</option>
+                    <option value="OR"><@spring.message 'OrBoolean_t'/> </option>
+                    <option value="NOT"><@spring.message 'NotBoolean_t'/> </option>
+                </select>
+                <select name="facet2" id="m-facet3">
+                    <option selected="selected" value="text">Alles</option>
+                    <option value="title">Titel</option>
+                    <option value="creator">Vervaardiger</option>
+                    <option value="YEAR">Jaar</option>
+                    <option value="subject">Onderwerp</option>
+                    <option value="description">Beschrijving</option>
+                </select></td>
+            <td><input type="text" name="value2" class="search-input" maxlength="75"/></td>
+        </tr>
+
+        <tr>
+            <td align="right">Collectie:</td>
+            <td>
+                <select name="collection" class="form_11">
+                    <option selected="selected" value="all_collections">Alle Collecties</option>
+                    <#list collections as coll>
+                        <option>${coll.name}</option>
+                    </#list>
+                </select>
+            </td>
+            <td>&#160;</td>
+        </tr>
+        <tr>
+            <td align="right">Sorteren op:</td>
+            <td>
+                <select name="sortBy" class="form_11">
+                    <option selected="selected" value="">-</option>
+                    <option value="YEAR">Jaar</option>
+                    <option value="COLLECTION">Collectie</option>
+                </select>
+            </td>
+            <td>&#160;</td>
+        </tr>
+
+        <tr>
+            <td align="left"><input type="reset" value="<@spring.message 'Erase_t' />"/></td>
+            <td>&#160;</td>
+            <td align="right">
+                <input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />"/>
+            </td>
+        </tr>
+    </table>
+</form>
+</#if>
 
 </div>
 

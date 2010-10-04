@@ -212,6 +212,10 @@ public interface UserDao {
 
     QueryProblem whyIsEuropeanaIdNotFound(String europenaUri);
 
+     List<SocialTag> fetchAllSocialTags(String europeanaUri);
+
+    String findEuropeanaUri(Long socialTagId);
+
 
     public class TagCount implements Comparable<TagCount> {
         private String tag;
