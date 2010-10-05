@@ -94,7 +94,7 @@
 
 
 
-                <div class="grid_4">
+                <div class="grid_12">
                     <#if imageExists>
                         <img src="${imagePath}" alt="${imagePath}"/>
                     <#else>
@@ -102,7 +102,9 @@
                     </#if>
                 </div>
 
-                <div class="grid_8">
+                <div class="clear"></div>
+
+                <div class="grid_12">
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">
