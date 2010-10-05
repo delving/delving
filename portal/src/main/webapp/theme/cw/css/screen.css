@@ -626,6 +626,8 @@ a.disabled {
     -moz-box-shadow: 3px 3px 4px #bbb;
     -webkit-box-shadow: 3px 3px 4px #bbb;
     box-shadow: 3px 3px 4px #bbb;
+    border-bottom: 4px solid #999999;
+    width: 200px;
 }
 
 #admin-block h4 {
