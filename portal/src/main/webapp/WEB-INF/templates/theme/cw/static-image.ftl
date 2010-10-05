@@ -11,7 +11,9 @@
             <#assign thisPage = "static-page.dml"/>
             <#assign pageId = "static"/>
             <#include "inc_header.ftl"/>
-
+            <style type="text/css">
+                .ui-icon{float:left;margin:0 .25em 0 0;}
+            </style>
             <div class="main">
 
                 <div class="grid_6">
@@ -19,11 +21,11 @@
                      <table summary="List of existing images">
                         <#list imagePathList as imagePath>
                             <tr>
-                                <td width="5"><a href="${imagePath}?edit=true"><img src="${imagePath}" height="35" alt="Thumbnail"/></a></td>
-                                <td width="300"><a href="${imagePath}?edit=true">${imagePath}</a></td>
-                                <td width="65"><a href="${imagePath}?edit=true">Bewerken</a></td>
-                                <td width="65">
-                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}?edit=false&delete=true">Verwijder</a>
+
+                                <td width="300"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
+                                <td width="85"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span>Bewerken</a></td>
+                                <td width="85">
+                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}?edit=false&delete=true"><span class="ui-icon ui-icon-trash"></span>Verwijder</a>
 
                                 </td>
                             </tr>
