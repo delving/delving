@@ -22,9 +22,6 @@
 package eu.europeana.sip.core;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,9 +35,7 @@ import java.net.URL;
  */
 
 public class ToolCodeModel {
-    private static final String HEADER = "// ToolCode.groovy - the place for helpful methods\n\n";
     private static final String FILE_NAME = "ToolCode.groovy";
-    private static final File CODE_FILE = new File(FILE_NAME);
     private static final URL CODE_RESOURCE = ToolCodeModel.class.getResource("/" + FILE_NAME);
     private String resourceCode;
     private String fileCode;
@@ -49,11 +44,6 @@ public class ToolCodeModel {
     public ToolCodeModel() {
         try {
             resourceCode = readResourceCode();
-            if (!CODE_FILE.exists()) {
-                FileWriter out = new FileWriter(CODE_FILE);
-                out.write(HEADER);
-                out.close();
-            }
         }
         catch (IOException e) {
             resourceCode = "println 'Could not read tool code: " + e.toString() + "'";
@@ -61,21 +51,7 @@ public class ToolCodeModel {
     }
 
     public String getCode() {
-        try {
-            long mod = CODE_FILE.lastModified();
-            if (mod > fileModified) {
-                fileCode = readFileCode();
-                fileModified = mod;
-            }
-            return resourceCode + fileCode;
-        }
-        catch (IOException e) {
-            return "println 'Could not read tool code'";
-        }
-    }
-
-    private String readFileCode() throws IOException {
-        return readCode(new FileReader(CODE_FILE));
+        return resourceCode;
     }
 
     private String readResourceCode() throws IOException {
