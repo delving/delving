@@ -129,8 +129,8 @@
                 </li>
             </#if>
         </#if>
-        <li><a href="">Hulp nodig?</a></li>
-        <li><a href="">Contact</a></li>
+        <li><a href="/${portalName}/hulp-nodig.dml">Hulp nodig?</a></li>
+        <li><a href="/${portalName}/contact.dml">Contact</a></li>
     </ul>
 </#macro>
 
