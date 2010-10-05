@@ -137,11 +137,22 @@
 <#macro admin>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
     <div id="admin-block">
-        <h4>Pagina Administratie</h4>
-        <p>
-            <a href="/${portalName}/_.dml">Paginas beheren</a><br/>
-            <a href="/${portalName}/_.img">Afbeeldingen beheren</a><br/>
-        </p>
+        <h4>Administratie</h4>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span>Afbeeldingen beheren</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span>Gebruikers beheren</a></td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
     </#if>
 </#macro>
@@ -301,9 +312,9 @@
 </head>
 
 <body>
- <@admin/>
-<div class="container_12 page <#if portalColor??>${portalColor}</#if>">
 
+<div class="container_12 page <#if portalColor??>${portalColor}</#if>">
+     <@admin/>
     <div id="user-bar" class="grid_12">
         <@userbar/>
     </div>

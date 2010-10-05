@@ -2,7 +2,7 @@
 <#assign thisPage = "administration.html"/>
 <#assign pageId = "ad"/>
 <#include "inc_header.ftl"/>
-
+<style type="text/css">.ui-icon{float:left;margin:0 .25em 0 0;}</style>
 <div id="main">
 
     <div id="administration-page" class="grid_16">
