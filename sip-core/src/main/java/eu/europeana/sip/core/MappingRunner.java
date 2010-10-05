@@ -62,10 +62,10 @@ public class MappingRunner {
             MarkupBuilder builder = new MarkupBuilder(writer);
             NamespaceBuilder xmlns = new NamespaceBuilder(builder);
             binding.setVariable("output", builder);
-            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc")); // todo: this is ese-specific and shouldn't be
+            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
             binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
             binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
-            binding.setVariable("icn", xmlns.namespace("http://icn.nl/", "icn")); // todo: this is incorrect
+            binding.setVariable("icn", xmlns.namespace("http://www.icn.nl/", "icn"));
             for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
                 binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
             }
