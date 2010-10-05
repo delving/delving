@@ -553,7 +553,7 @@ public class MetaRepoImpl implements MetaRepo {
                 }
                 catch (MappingException e) {
                     String errorMessage = "Unable to map record due to: " + e.toString();
-                    log.info(errorMessage);
+                    log.info(errorMessage, e);
                     throw new CannotDisseminateFormatException(errorMessage);
                 }
                 catch (XMLStreamException e) {
