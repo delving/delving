@@ -639,3 +639,8 @@ a.disabled {
 #admin-block p {
     padding: .5em;
 }
+
+#admin-block .ui-icon{
+    float:left;
+    margin:0 .25em 0 0;
+}
