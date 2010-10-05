@@ -1,6 +1,6 @@
 <#compress>
 <div id="main" class="static-page">
-
+<style type="text/css">.ui-icon{float:left;margin:0 .25em 0 0;}</style>
     <#if pagePathList??>
 
         <#assign thisPage = "static-page.dml"/>
@@ -14,11 +14,19 @@
             <table summary="List of existing pages">
                 <#list pagePathList as pagePath>
                     <tr>
-                        <td width="5"><a href="${pagePath}?edit=true"><span class="ui-icon ui-icon-document"></span></a></td>
-                        <td width="300"><a href="${pagePath}?edit=true">${pagePath}</a></td>
-                        <td width="65"><a href="${pagePath}?edit=true">Bewerken</a></td>
-                        <td width="65">
-                             <a class="delete" id="delete_${pagePath_index}" href="${pagePath}">Verwijder</a>
+                        <td width="300">
+                            <a href="${pagePath}?edit=true">
+                            <span class="ui-icon ui-icon-document"></span>
+                            ${pagePath}</a></td>
+                        <td width="85"><a href="${pagePath}?edit=true">
+                            <span class="ui-icon ui-icon-pencil"></span>
+                            Bewerken</a>
+                        </td>
+                        <td width="100">
+                             <a class="delete" id="delete_${pagePath_index}" href="${pagePath}">
+                                <span class="ui-icon ui-icon-trash"></span>
+                                 Verwijder
+                             </a>
 
                         </td>
                     </tr>
@@ -115,9 +123,9 @@
                     </div>
                 <#else>
                     <#if page.id??>
-                        <p><a href="${page.path}?edit=true&version=${page.id}" class="button">Edit this page.</a></p>
+                        <p><a href="${page.path}?edit=true&version=${page.id}" class="button">Pagina bewerken</a></p>
                     <#else>
-                        <p><a href="${page.path}?edit=true" class="button">Edit this page.</a></p>
+                        <p><a href="${page.path}?edit=true" class="button">Pagina bewerken</a></p>
                     </#if>
                     <br/><br/>
                     <#if versionList?? && page.id??>
