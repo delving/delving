@@ -25,7 +25,7 @@
 .azure .breadcrumb a:link, .azure .breadcrumb a:visited {color: #154273; text-decoration: underline;}
 
 /* search forms */
-.azure #search #search_simple {background: #eaeaea;}
+.azure #search #search_simple {background: #fff;}
 .azure #search .search_advanced table td {background: #eaeaea;}
 
 /* results pages */
@@ -102,7 +102,7 @@ a:hover, a:visited:hover, a:active, a:focus { color: #0162cd; text-decoration: u
 .brown .breadcrumb a:link, .brown .breadcrumb a:visited {color: #154273; text-decoration: underline;}
 
 /* search forms */
-.brown #search #search_simple {background: #f0eade;}
+.brown #search #search_simple {background: #fff;}
 .brown #search .search_advanced table td {background: #f0eade;}
 
 /* results pages */
