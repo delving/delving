@@ -75,14 +75,14 @@ public class DatasetController {
         if (enable != null) {
             MetaRepo.DataSetState oldState = dataSet.getState();
             switch (dataSet.getState()) {
-                case UPLOADED:
                 case INDEXING:
                 case ENABLED:
                 case QUEUED:
                     if (!enable) {
-                        dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                            dataSet.setState(MetaRepo.DataSetState.DISABLED);
                     }
                     break;
+                case UPLOADED:
                 case ERROR:
                 case DISABLED:
                     if (enable) {
