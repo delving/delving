@@ -39,6 +39,10 @@ public class MongoObjectParser {
         xmlif.configureForSpeed();
         Source source = new StreamSource(inputStream, "UTF-8");
         this.input = (XMLStreamReader2) xmlif.createXMLStreamReader(source);
+        this.namespaces.put("dc", "http://purl.org/dc/elements/1.1/");
+        this.namespaces.put("dcterms", "http://purl.org/dc/terms/");
+        this.namespaces.put("europeana", "http://www.europeana.eu/schemas/ese/");
+        this.namespaces.put("icn", "http://www.icn.nl/");
     }
 
     @SuppressWarnings("unchecked")
