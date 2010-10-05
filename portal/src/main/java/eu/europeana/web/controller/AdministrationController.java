@@ -49,11 +49,11 @@ public class AdministrationController {
     private UserDao userDao;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String adminGet(
+    public ModelAndView adminGet(
             @ModelAttribute("command") AdminForm adminForm
 
     ) throws Exception {
-        return "administration";
+        return ControllerUtil.createModelAndViewPage("administration");
     }
 
     @RequestMapping(method = RequestMethod.POST)
