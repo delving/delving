@@ -17,6 +17,8 @@ import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
+import eu.europeana.sip.core.RecordValidationException;
+import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeModel;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -458,7 +461,7 @@ public class MetaRepoImpl implements MetaRepo {
                     }
                     ((MappingImpl) mapping).map(list, namespaces);
                 }
-                return list.get(0);
+                return list.isEmpty() ? null : list.get(0);
             }
             return null;
         }
@@ -514,6 +517,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DataSetImpl dataSet;
         private DBObject object;
         private MetadataFormat metadataFormat;
+        private RecordValidator recordValidator = new RecordValidator(annotationProcessor, false);
 
         private MappingImpl(DataSetImpl dataSet, DBObject object) throws BadArgumentException {
             this.dataSet = dataSet;
@@ -542,10 +546,14 @@ public class MetaRepoImpl implements MetaRepo {
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + getGroovyCode(), constantFieldModel);
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
-            for (MetaRepo.Record record : records) {
+            int invalidCount = 0;
+            Iterator<? extends MetaRepo.Record> walk = records.iterator();
+            while (walk.hasNext()) {
+                Record record = walk.next();
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getMetadataFormat().getPrefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
+                    recordString = recordValidator.validate(metadataRecord, recordString);
                     List<FieldEntry> entries = FieldEntry.createList(recordString);
                     String recordLines = FieldEntry.toString(entries, false);
                     RecordImpl recordImpl = (RecordImpl) record;
@@ -556,9 +564,16 @@ public class MetaRepoImpl implements MetaRepo {
                     log.info(errorMessage, e);
                     throw new CannotDisseminateFormatException(errorMessage);
                 }
+                catch (RecordValidationException e) {
+                    invalidCount++;
+                    walk.remove();
+                }
                 catch (XMLStreamException e) {
                     log.warn("Unable to map record!", e);
                 }
+            }
+            if (invalidCount > 0) {
+                log.info(String.format("%d invalid records discarded", invalidCount));
             }
         }
     }
