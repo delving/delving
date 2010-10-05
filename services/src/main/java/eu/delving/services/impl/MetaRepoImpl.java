@@ -553,16 +553,15 @@ public class MetaRepoImpl implements MetaRepo {
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getMetadataFormat().getPrefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
-                    recordString = recordValidator.validate(metadataRecord, recordString);
-                    List<FieldEntry> entries = FieldEntry.createList(recordString);
-                    String recordLines = FieldEntry.toString(entries, false);
+                    List<FieldEntry> fieldEntries = FieldEntry.createList(recordString);
+                    recordValidator.validate(metadataRecord, fieldEntries);
+                    String recordLines = FieldEntry.toString(fieldEntries, false);
                     RecordImpl recordImpl = (RecordImpl) record;
                     recordImpl.addFormat(getMetadataFormat(), recordLines);
                 }
                 catch (MappingException e) {
-                    String errorMessage = "Unable to map record due to: " + e.toString();
-                    log.info(errorMessage, e);
-                    throw new CannotDisseminateFormatException(errorMessage);
+                    invalidCount++;
+                    walk.remove();
                 }
                 catch (RecordValidationException e) {
                     invalidCount++;

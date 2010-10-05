@@ -39,6 +39,8 @@ public class TestRecordValidator {
             "<europeana:collectionName>collectionName</europeana:collectionName>",
             "<europeana:language>en</europeana:language>",
             "<europeana:object>http://object.com/</europeana:object>",
+            "<europeana:rights>nerd's</europeana:rights>",
+            "<europeana:dataProvider>everyone</europeana:dataProvider>",
             "<europeana:type>IMAGE</europeana:type>",
     };
     private Logger log = Logger.getLogger(getClass());
@@ -60,13 +62,13 @@ public class TestRecordValidator {
             input.append(line).append('\n');
         }
         try {
-            String result = recordValidator.validate(null, input.toString());
+            List<FieldEntry> fieldEntries = FieldEntry.createList(input.toString());
+            recordValidator.validate(null, fieldEntries);
+            String result = FieldEntry.toString(fieldEntries, false);
             StringBuilder expected = new StringBuilder();
-            expected.append("<record>\n");
             for (String line : expect) {
-                expected.append("   ").append(line).append('\n');
+                expected.append(line).append('\n');
             }
-            expected.append("</record>\n");
             assertEquals(expected.toString(), result);
             assertEquals("Didn't experience expected problem: " + problemString, null, problemString);
             if (problemString != null) {

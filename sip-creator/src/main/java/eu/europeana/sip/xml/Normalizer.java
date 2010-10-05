@@ -23,6 +23,7 @@ package eu.europeana.sip.xml;
 
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -99,7 +100,9 @@ public class Normalizer implements Runnable {
             while ((record = parser.nextRecord()) != null && running) {
                 try {
                     String output = mappingRunner.runMapping(record);
-                    String validated = recordValidator.validate(record, output);
+                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
+                    recordValidator.validate(record, fieldEntries);
+                    String validated = FieldEntry.toString(fieldEntries, true);
                     fileSetOutput.getOutputWriter().write(validated);
                     fileSetOutput.recordNormalized();
                 }
