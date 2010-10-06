@@ -313,16 +313,20 @@
 
 <body>
 
+<div class="skin">
+<div class="top">&#160;</div>
 <div class="container_12 page <#if portalColor??>${portalColor}</#if>">
-     <@admin/>
-    <div id="user-bar" class="grid_12">
+
+
+    <@admin/>
+
+        <div id="user-bar" class="grid_12">
         <@userbar/>
     </div>
 
     <div class="header">
-
         <div class="branding">
-            <img src="/${portalName}/${portalTheme}/images/RO_OCW_ICN.png" id="logo-home" alt="${portalDisplayName}" widht="500"/>
+            <img src="/${portalName}/${portalTheme}/images/RO_OCW_ICN.png" id="logo-home" alt="${portalDisplayName}" width="500"/>
         </div>
         <div class="clear"></div>
         <div class="title_bar">

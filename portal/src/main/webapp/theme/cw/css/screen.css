@@ -1,6 +1,6 @@
 /* html element styles */
 body {
-    background: #F3F5F6
+    background-color: #F3F5F6
 }
 
 ul {
@@ -27,22 +27,41 @@ ul a:hover, ul a:visited:hover {
     text-decoration: underline;
 }
 
-.page {
-    background: #fff;
-    -moz-box-shadow: 0px 0px 8px 2px #bbb;
-    -webkit-box-shadow: 0px 0px 4px #bbb;
-    box-shadow: 0px 0px 8px #bbb;
-    overflow: hidden;
-    margin-top: 32px;
-    padding: 0;
+
+/* Sking wrapper for shaded borders *****************************************************************/
+
+.skin
+{
+    background: transparent url(skin/sh.png) top center repeat-y;
+	margin-left: auto;
+	margin-right: auto;
+	width: 980px;
+    margin-top: 22px;
+    padding: 0px;
 }
+
+.skin .top {
+    background: transparent url(skin/sh_top.png) top center no-repeat;
+    height: 10px;
+}
+
+.skin .bottom {
+    background: transparent url(skin/sh_bot.png) bottom center no-repeat;
+}
+
+.container_12 {
+    margin: 0 10px;
+    background: transparent url(skin/sh.png) top center repeat-y;
+}
+
+/* User-bar ****************************************************************************************/
 
 #user-bar {
     position: absolute;
     top: .5em;
+    background: transparent;
+    height: 32px;
 }
-
-/* User-bar navigation */
 
 .user_nav {
     text-align: right;
@@ -61,25 +80,25 @@ ul a:hover, ul a:visited:hover {
     text-decoration: none;
 }
 
-/**
-* Header
-*
-* @section			Header, main navigation and functional links style definitions
-*/
+/* Header ****************************************************************************************/
 
 .header {
     text-align: center;
     display: block;
+    margin: 0;
+    padding: 0;
 }
+
+
 
 .header .branding {
     font: 0/0 sans-serif;
     margin: 0;
     padding: 0;
-    min-height: 87px;
 }
 
-.header .branding img {
+.header .branding{
+    padding: 0;
     margin: 0;
 }
 
@@ -89,13 +108,6 @@ ul a:hover, ul a:visited:hover {
     text-align: left;
     position: relative;
 }
-
-/*#main {*/
-    /*overflow: hidden;*/
-    /*margin: 0 0 4em 0;*/
-/*}*/
-
-/* Main navigation */
 
 .nav_main {
     font-size: 1.2em;
@@ -116,7 +128,7 @@ ul a:hover, ul a:visited:hover {
 }
 
 .nav_main a {
-    display: block; /*padding: 0.16em 0.9091em 0.24em;*/
+    display: block;
     padding: 0.15em 1em 0.25em 1em;
     text-decoration: none;
 }
@@ -125,6 +137,17 @@ ul a:hover, ul a:visited:hover {
     color: #000;
     text-decoration: none;
 }
+
+/* Footer ****************************************************************************************/
+
+#footer {
+    text-align: center;
+    margin: 2em 0 0 0;
+    padding: 0;
+    height: 20px;
+}
+
+
 
 .nav_bottom {
     height: 1em;
@@ -215,12 +238,7 @@ ul a:hover, ul a:visited:hover {
     background: #cce0f1;
 }
 
-/* Footer ****************************************************************************************/
 
-#footer {
-    text-align: center;
-    margin-top: 4em;
-}
 
 /* Search Forms **********************************************************************************/
 
@@ -516,11 +534,6 @@ button.fg-button, input.fg-button {
     font-size: 1em;
 }
 
-/* FOOTER */
-
-#footer {
-    padding: 1em 0 0 0;
-}
 
 /* Exceptions ********************************************************************/
 
