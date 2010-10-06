@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import eu.delving.core.rest.DataSetInfo;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
+import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
@@ -12,7 +13,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.BufferedReader;
@@ -66,22 +67,22 @@ public class DatasetController {
     @Qualifier("solrUpdateServer")
     private SolrServer solrServer;
 
-    @ExceptionHandler(BadArgumentException.class)
-    public @ResponseBody String exception(BadArgumentException e, ServerHttpResponse response) {
-        response.setStatusCode(HttpStatus.FORBIDDEN);
+    @ExceptionHandler(AccessKeyException.class)
+    public @ResponseBody String accessKey(AccessKeyException e, HttpServletResponse response) {
+        response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
         return String.format("<?xml version=\"1.0\">\n<error>\n%s\n</error>\n", e.getMessage());
     }
 
     @RequestMapping
     public ModelAndView listAll(
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException {
+    ) throws BadArgumentException, AccessKeyException {
         checkAccessKey(accessKey);
         return view(metaRepo.getDataSets());
     }
 
-    @RequestMapping(value = "/ajaxindexing/{dataSetSpec}")
-    public ModelAndView indexingControlForAjax(
+    @RequestMapping(value = "/secureindexing/{dataSetSpec}")
+    public ModelAndView secureIndexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable
     ) throws BadArgumentException, IOException, SolrServerException {
@@ -93,7 +94,7 @@ public class DatasetController {
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException, IOException, SolrServerException {
+    ) throws BadArgumentException, IOException, SolrServerException, AccessKeyException {
         checkAccessKey(accessKey);
         return indexingControlInternal(dataSetSpec, enable);
     }
@@ -110,8 +111,8 @@ public class DatasetController {
                 case ENABLED:
                 case QUEUED:
                     if (!enable) {
-                            dataSet.setState(MetaRepo.DataSetState.DISABLED);
-                            solrServer.deleteByQuery(dataSet.getSpec());
+                        dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                        solrServer.deleteByQuery(dataSet.getSpec());
                     }
                     break;
                 case UPLOADED:
@@ -137,11 +138,13 @@ public class DatasetController {
     }
 
     @RequestMapping(value = "/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
-    public @ResponseBody String submit(
+    public
+    @ResponseBody
+    String submit(
             @PathVariable String dataSetSpec,
             InputStream inputStream,
             @RequestParam(required = false) String accessKey
-    ) throws IOException, XMLStreamException, BadArgumentException {
+    ) throws IOException, XMLStreamException, BadArgumentException, AccessKeyException {
         checkAccessKey(accessKey);
         log.info("submit(" + dataSetSpec + ")");
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
@@ -208,14 +211,14 @@ public class DatasetController {
         return "OK";
     }
 
-    private void checkAccessKey(String accessKey) throws BadArgumentException {
+    private void checkAccessKey(String accessKey) throws AccessKeyException {
         if (accessKey == null) {
-            log.warn("!!! Service Access Key missing!");
-            throw new BadArgumentException("Access Key missing");
+            log.warn("Service Access Key missing");
+            throw new AccessKeyException("Access Key missing");
         }
         else if (!serviceAccessToken.checkKey(accessKey)) {
-            log.warn(String.format("!!! Service Access Key %s invalid!", accessKey));
-            throw new BadArgumentException(String.format("Access Key %s not accepted", accessKey));
+            log.warn(String.format("Service Access Key %s invalid!", accessKey));
+            throw new AccessKeyException(String.format("Access Key %s not accepted", accessKey));
         }
     }
 

@@ -2,17 +2,35 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/security
+            http://www.springframework.org/schema/security/spring-security-3.0.xsd
        ">
 
-    <import resource="classpath:/secure-application-context.xml"/>
+    <import resource="classpath:/core-application-context.xml"/>
 
     <context:component-scan base-package="eu.delving.services.controller"/>
 
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/html;charset=UTF-8</value>
+                            <value>text/plain;charset=UTF-8</value>
+                            <value>application/xml;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 
@@ -26,25 +44,9 @@
        </constructor-arg>
     </bean>
 
-    <bean id="localeChangeInterceptor" class="eu.europeana.core.util.web.LocaleChangeInterceptor">
-        <property name="paramName" value="lang"/>
-        <property name="clickStreamLogger" ref="clickStreamLogger"/>
-    </bean>
-
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
-        <property name="cookieMaxAge" value="3600"/>
-        <property name="defaultLocale" value="en"/>
-    </bean>
-
-    <bean id="annotationMapper" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-        <property name="useDefaultSuffixPattern" value="false"/>
-        <property name="interceptors">
-            <list>
-                <ref bean="localeChangeInterceptor"/>
-                <!--<ref bean="configInterceptor"/>-->
-            </list>
-        </property>
-    </bean>
+    <!--<bean id="annotationMapper" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">-->
+        <!--<property name="useDefaultSuffixPattern" value="false"/>-->
+    <!--</bean>-->
 
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basename" value="#{launchProperties['message.resource']}"/>
