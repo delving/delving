@@ -664,7 +664,7 @@ a.disabled {
     padding: .5em;
 }
 
-#admin-block .ui-icon{
+table.user-options .ui-icon{
     float:left;
     margin:0 .25em 0 0;
 }

@@ -139,7 +139,7 @@
     <div id="admin-block">
         <h4>Administratie</h4>
 
-        <table>
+        <table class="user-options">
             <tbody>
                 <tr>
                     <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>

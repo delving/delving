@@ -5,13 +5,23 @@
 <style type="text/css">.ui-icon{float:left;margin:0 .25em 0 0;}</style>
 <div id="main">
 
-    <div id="administration-page" class="grid_16">
+    <div id="administration-page" class="grid_12">
 
-        <h2>Gebruikers Administratie</h2>
+
+
+            <h2>Gebruikers Administratie</h2>
+            <ol>
+                <li>Voer een naam of email in het zoek veld om een gebruiker te vinden</li>
+                <li>Pas de rol van de gebruiker aan</li>
+            </ol>
+
+
+
 
         <#if !userList??>
+
             <form method="post" action="administration.html" id="search-form">
-                <table>
+                <table >
                     <tr>
                         <td width="150":><h4>Vind een gebruiker</h4></td>
                         <td><input type="text" name="searchPattern"/></td>
@@ -63,6 +73,8 @@
                 </#list>
             </table>
         </#if>
+
+
     </div>
 
 </div>

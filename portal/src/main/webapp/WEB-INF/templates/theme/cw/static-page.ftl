@@ -1,17 +1,17 @@
 <#compress>
-<div id="main" class="static-page">
-<style type="text/css">.ui-icon{float:left;margin:0 .25em 0 0;}</style>
+
     <#if pagePathList??>
 
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = "static"/>
         <#include "inc_header.ftl"/>
 
+        <div id="main" class="static-page">
 
         <div class="grid_6">
             <h2>Bestaande paginas</h2>
 
-            <table summary="List of existing pages">
+            <table summary="List of existing pages" class="user-options">
                 <#list pagePathList as pagePath>
                     <tr>
                         <td width="300">

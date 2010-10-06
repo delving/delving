@@ -11,14 +11,12 @@
             <#assign thisPage = "static-page.dml"/>
             <#assign pageId = "static"/>
             <#include "inc_header.ftl"/>
-            <style type="text/css">
-                .ui-icon{float:left;margin:0 .25em 0 0;}
-            </style>
+
             <div class="main">
 
                 <div class="grid_6">
                     <h2>Bestaande Afbeelingen</h2>
-                     <table summary="List of existing images">
+                     <table summary="List of existing images" class="user-options">
                         <#list imagePathList as imagePath>
                             <tr>
 
