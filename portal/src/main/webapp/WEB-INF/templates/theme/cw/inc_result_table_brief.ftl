@@ -15,7 +15,7 @@
 
 
 <#macro show_result_table seq>
-<table summary="gallery view all search results" border="0" width="100%" class="grid">
+<table summary="gallery view all search results" border="0" class="grid">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
@@ -27,7 +27,7 @@
                 <#assign thumbnail = "${cell.thumbnail}"/>
             </#if>
 
-           <td valign="bottom" width="25%" class="${cell.type}">
+           <td valign="bottom" class="${cell.type}">
                 <div class="brief-thumb-container">
                     <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
                         <#if useCache="true">
