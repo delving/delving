@@ -7,7 +7,10 @@ import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,6 +59,10 @@ public class DatasetController {
     @Autowired
     private ServiceAccessToken serviceAccessToken;
 
+    @Autowired
+    @Qualifier("solrUpdateServer")
+    private SolrServer solrServer;
+
     @RequestMapping
     public ModelAndView listAll(
             @RequestParam(required = false) String accessKey
@@ -69,7 +76,7 @@ public class DatasetController {
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException {
+    ) throws BadArgumentException, IOException, SolrServerException {
         checkAccessKey(accessKey);
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
         if (enable != null) {
@@ -80,6 +87,7 @@ public class DatasetController {
                 case QUEUED:
                     if (!enable) {
                             dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                            solrServer.deleteByQuery(dataSet.getSpec());
                     }
                     break;
                 case UPLOADED:
