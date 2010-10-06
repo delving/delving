@@ -41,7 +41,7 @@
     <div class="grid_12 breadcrumb">
         <em>U bevindt zich op: </em>
         <span>
-            <a href="${portalName}/index.html" title="Homepagina">Home</a>
+            <a href="/${portalName}/index.html" title="Homepagina">Home</a>
             <span class="imgreplacement">&rsaquo;</span>
             <#if pagination??>
                 <a href="${pagination.returnToResults?html}" title="Zoekresultaten">Zoekresultaten</a>
