@@ -35,7 +35,7 @@ public class DataSetPanel extends JPanel {
     private static final int PERIODIC_LIST_FETCH_DELAY_MILLIS = 10000;
     private Executor executor = Executors.newSingleThreadExecutor();
     private RestTemplate restTemplate;
-    private JTextField keyField = new JTextField(30);
+    private JTextField keyField = new JTextField(20);
     private JButton checkKey = new JButton("Use this key");
     private JLabel errorMessage = new JLabel("");
     private SipModel sipModel;

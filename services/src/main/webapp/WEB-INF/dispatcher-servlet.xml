@@ -13,6 +13,9 @@
 
     <context:component-scan base-package="eu.delving.services.controller"/>
 
+
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+
     <bean id="serviceAccessToken" class="eu.delving.core.rest.ServiceAccessToken"/>
 
     <bean id="dataSetXmlView" class="org.springframework.web.servlet.view.xml.MarshallingView">
