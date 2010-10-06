@@ -128,6 +128,10 @@ portal.freemarker.path = WEB-INF/templates/theme/default
 portal.theme = theme/default
 portal.color = azure
 
+#
+# This is the tracking code for google analytics. If it is empty the badge is not included in the footer
+#
+ga.trackingCode =
 
 #
 # Where the image annotation tool can be found. If this property is set a
