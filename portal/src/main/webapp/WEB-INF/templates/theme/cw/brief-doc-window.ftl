@@ -115,12 +115,11 @@
 
         <div class="pagination">
             <@resultnav_styled/>
-        </div>
+        </div>       
 
     </div>
 
 </div>
-
 
 
 
