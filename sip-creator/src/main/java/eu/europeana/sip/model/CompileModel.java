@@ -22,6 +22,7 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -207,7 +208,9 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (multipleMappings) {
-                    String validated = recordValidator.validate(metadataRecord, output);
+                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
+                    recordValidator.validate(metadataRecord, fieldEntries);
+                    String validated = FieldEntry.toString(fieldEntries, true);
                     compilationComplete(validated);
                 }
                 else {

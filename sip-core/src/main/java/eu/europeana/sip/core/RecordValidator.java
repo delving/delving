@@ -61,14 +61,12 @@ public class RecordValidator {
         }
     }
 
-    public String validate(MetadataRecord metadataRecord, String recordString) throws RecordValidationException {
+    public void validate(MetadataRecord metadataRecord, List<FieldEntry> fieldEntries) throws RecordValidationException {
         List<String> problems = new ArrayList<String>();
-        List<FieldEntry> fieldEntries = FieldEntry.createList(recordString);
         validateAgainstAnnotations(fieldEntries, problems);
         if (!problems.isEmpty()) {
             throw new RecordValidationException(metadataRecord, problems);
         }
-        return FieldEntry.toString(fieldEntries, true);
     }
 
     private void validateAgainstAnnotations(List<FieldEntry> fieldEntries, List<String> problems) {
