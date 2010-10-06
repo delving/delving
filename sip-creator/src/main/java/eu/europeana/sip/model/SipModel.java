@@ -89,6 +89,7 @@ public class SipModel {
     private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
+    private Configuration configuration;
     private String serverUrl;
 
     public interface UpdateListener {
@@ -148,10 +149,35 @@ public class SipModel {
                 }
             }
         });
+        this.configuration = new Configuration();
     }
 
     public void addUpdateListener(UpdateListener updateListener) {
         updateListeners.add(updateListener);
+    }
+
+    public void setServerAccessKey(String key) {
+        configuration.setServerAccessKey(key);
+    }
+
+    public FileSet getFileSet() {
+        return fileSet;
+    }
+
+    public void tellUser(String message) {
+        userNotifier.tellUser(message);
+    }
+
+    public void tellUser(String message, Exception e) {
+        userNotifier.tellUser(message, e);
+    }
+
+    public String getServerAccessKey() {
+        return configuration.getServerAccessKey();
+    }
+
+    public FileSet.Recent getRecentFileSets() {
+        return configuration.getRecentFileSets();
     }
 
     public void setFileSet(final FileSet newFileSet) {
@@ -380,7 +406,7 @@ public class SipModel {
     public void createUploadZipFile() {
         checkSwingThread();
         String zipFileName = getDataSetDetails().getSpec();
-        executor.execute(new ZipUploader(serverUrl, fileSet, zipFileName, zipProgressModel, uploadProgressModel, userNotifier));
+        executor.execute(new ZipUploader(this, zipFileName));
     }
 
     public TreeModel getAnalysisTreeModel() {

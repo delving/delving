@@ -22,14 +22,9 @@
 package eu.europeana.sip.gui;
 
 import eu.delving.core.rest.DataSetInfo;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
-import org.springframework.oxm.xstream.XStreamMarshaller;
-import org.springframework.web.client.RestTemplate;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -42,10 +37,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Data set management from here, using the REST interface
@@ -54,29 +46,32 @@ import java.util.concurrent.Executors;
  */
 
 public class DataSetControlPanel extends JPanel {
-    private static final String BUTTON_DEFAULT = "Enable / Disable";
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private JButton toggleButton = new JButton();
     private DataSetTableModel dataSetTableModel = new DataSetTableModel();
     private JTable table = new JTable(dataSetTableModel);
-    private JButton toggleButton = new JButton(BUTTON_DEFAULT);
-    private RestTemplate restTemplate;
-    private String dataSetControllerUrl, accessKey;
-    private Boolean enable;
+    private DataSetPanel.Enable enable;
+    private DataSetInfo selectedInfo;
 
-    public DataSetControlPanel(String dataSetControllerUrl) {
+    public DataSetControlPanel(DataSetPanel.Enable enable) {
         super(new BorderLayout(8, 8));
-        this.dataSetControllerUrl = dataSetControllerUrl;
+        this.enable = enable;
         setBorder(BorderFactory.createTitledBorder("Control of all data sets"));
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(toggleButton, BorderLayout.SOUTH);
-        toggleButton.setEnabled(false);
+        selectDataSetInfo(null);
         setPreferredSize(new Dimension(600, 500));
         wireUp();
     }
 
-    public void refreshList(String accessKey) {
-        this.accessKey = accessKey;
-        executor.execute(new ListFetcher());
+    public void setInfo(DataSetInfo dataSetInfo) {
+        int index = dataSetTableModel.setDataSetInfo(dataSetInfo);
+        if (table.getSelectedRow() == index) {
+            selectDataSetInfo(dataSetInfo);
+        }
+    }
+
+    public void setList(List list) {
+        dataSetTableModel.setList(list);
     }
 
     private void wireUp() {
@@ -85,15 +80,7 @@ public class DataSetControlPanel extends JPanel {
         select.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                int selected = table.getSelectedRow();
-                if (selected < 0) {
-                    toggleButton.setText(BUTTON_DEFAULT);
-                    enable = null;
-                    toggleButton.setEnabled(false);
-                }
-                else {
-                    setButton(dataSetTableModel.get(selected));
-                }
+                selectDataSetInfo(dataSetTableModel.get(table.getSelectedRow()));
             }
         });
         toggleButton.addActionListener(new ActionListener() {
@@ -102,41 +89,56 @@ public class DataSetControlPanel extends JPanel {
                 if (enable != null) {
                     int selected = table.getSelectedRow();
                     if (selected >= 0) {
-                        toggleButton.setEnabled(false);
                         DataSetInfo info = dataSetTableModel.get(selected);
-                        executor.execute(new XAbler(info.spec, Math.random() > 0.5));
+                        enable.setEnabled(info.spec, enableAction(info));
                     }
+                    table.getSelectionModel().clearSelection();
                 }
             }
         });
     }
 
-    private void setButton(final DataSetInfo info) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                switch (DataSetState.valueOf(info.state)) {
-                    case UPLOADED:
-                    case INDEXING:
-                    case ENABLED:
-                    case QUEUED:
-                        enable = Boolean.FALSE;
-                        break;
-                    case DISABLED:
-                    case ERROR:
-                        enable = Boolean.TRUE;
-                        break;
-                    default: throw new RuntimeException();
+    private void selectDataSetInfo(DataSetInfo dataSetInfo) {
+        this.selectedInfo = dataSetInfo;
+        if (selectedInfo == null) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    toggleButton.setText("Select from the list above");
+                    toggleButton.setEnabled(false);
+                    table.requestFocus();
                 }
-                toggleButton.setText(String.format(
-                        "\"%s\" is in state %s. Press here to %s it.",
-                        info.name,
-                        info.state,
-                        enable ? "enable" : "disable"
-                ));
-                toggleButton.setEnabled(true);
-            }
-        });
+            });
+        }
+        else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    toggleButton.setText(String.format(
+                            "\"%s\" is in state %s. Press here to %s it.",
+                            selectedInfo.name,
+                            selectedInfo.state,
+                            enableAction(selectedInfo) ? "enable" : "disable"
+                    ));
+                    toggleButton.setEnabled(true);
+                }
+            });
+        }
+    }
+
+    private boolean enableAction(DataSetInfo info) {
+        switch (DataSetState.valueOf(info.state)) {
+            case UPLOADED:
+            case INDEXING:
+            case ENABLED:
+            case QUEUED:
+                return false;
+            case DISABLED:
+            case ERROR:
+                return true;
+            default:
+                throw new RuntimeException();
+        }
     }
 
     public enum DataSetState {
@@ -149,18 +151,41 @@ public class DataSetControlPanel extends JPanel {
     }
 
     private class DataSetTableModel extends AbstractTableModel {
-        private List list;
+        private List<DataSetInfo> list;
 
-        public DataSetInfo get(int index) {
-            return (DataSetInfo) list.get(index);
+        public int setDataSetInfo(DataSetInfo dataSetInfo) {
+            for (int walk = 0; walk < getRowCount(); walk++) {
+                if (dataSetInfo.spec.equals(get(walk).spec)) {
+                    list.set(walk, dataSetInfo);
+                    fireTableRowsUpdated(walk, walk);
+                    return walk;
+                }
+            }
+            return -1;
         }
 
-        public void setList(List list) {
+        public DataSetInfo get(int index) {
+            if (index < 0) {
+                return null;
+            }
+            else {
+                return list.get(index);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public void setList(List freshList) {
             int rows = getRowCount();
-            this.list = null;
-            fireTableRowsDeleted(0, rows);
-            this.list = list;
-            fireTableRowsInserted(0, getRowCount());
+            if (freshList.size() == rows) {
+                this.list = freshList;
+                fireTableRowsUpdated(0, rows);
+            }
+            else {
+                this.list = null;
+                fireTableRowsDeleted(0, rows);
+                this.list = freshList;
+                fireTableRowsInserted(0, getRowCount());
+            }
         }
 
         @Override
@@ -193,7 +218,7 @@ public class DataSetControlPanel extends JPanel {
                 return "UNKNOWN";
             }
             else {
-                DataSetInfo info = (DataSetInfo) list.get(rowIndex);
+                DataSetInfo info = list.get(rowIndex);
                 switch (columnIndex) {
                     case 0:
                         return info.spec;
@@ -206,73 +231,7 @@ public class DataSetControlPanel extends JPanel {
                 }
             }
         }
+
     }
 
-    private RestTemplate rest() {
-        if (restTemplate == null) {
-            XStreamMarshaller xStream = new XStreamMarshaller();
-            xStream.setAnnotatedClass(DataSetInfo.class);
-            List<HttpMessageConverter<?>> converterList = new ArrayList<HttpMessageConverter<?>>();
-            converterList.add(new MarshallingHttpMessageConverter(xStream, xStream));
-            restTemplate = new RestTemplate();
-            restTemplate.setMessageConverters(converterList);
-        }
-        return restTemplate;
-    }
-
-    private class ListFetcher implements Runnable {
-        @Override
-        public void run() {
-            try {
-                String url = String.format(
-                        "%s?accessKey=%s",
-                        dataSetControllerUrl,
-                        accessKey
-                );
-                final List list = rest().getForObject(url, List.class);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        dataSetTableModel.setList(list);
-                    }
-                });
-            }
-            catch (Exception e) {
-                JOptionPane.showMessageDialog(DataSetControlPanel.this, e.toString()); // todo: better way?
-            }
-        }
-    }
-
-    private class XAbler implements Runnable {
-        private String spec;
-        private boolean enable;
-
-        private XAbler(String spec, boolean enable) {
-            this.spec = spec;
-            this.enable = enable;
-        }
-
-        @Override
-        public void run() {
-            try {
-                String url = String.format(
-                        "%s/indexing/%s?enable=%s?accessKey=%s",
-                        dataSetControllerUrl,
-                        spec,
-                        String.valueOf(enable),
-                        accessKey
-                );
-                final DataSetInfo info = rest().getForObject(url, DataSetInfo.class);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setButton(info);
-                    }
-                });
-            }
-            catch (Exception e) {
-                JOptionPane.showMessageDialog(DataSetControlPanel.this, e.toString()); // todo: better way?
-            }
-        }
-    }
 }

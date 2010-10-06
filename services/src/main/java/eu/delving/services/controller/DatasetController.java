@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import eu.delving.core.rest.DataSetInfo;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
+import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
@@ -11,8 +12,10 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.BufferedReader;
@@ -63,12 +67,26 @@ public class DatasetController {
     @Qualifier("solrUpdateServer")
     private SolrServer solrServer;
 
+    @ExceptionHandler(AccessKeyException.class)
+    public @ResponseBody String accessKey(AccessKeyException e, HttpServletResponse response) {
+        response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+        return String.format("<?xml version=\"1.0\">\n<error>\n%s\n</error>\n", e.getMessage());
+    }
+
     @RequestMapping
     public ModelAndView listAll(
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException {
+    ) throws BadArgumentException, AccessKeyException {
         checkAccessKey(accessKey);
         return view(metaRepo.getDataSets());
+    }
+
+    @RequestMapping(value = "/secureindexing/{dataSetSpec}")
+    public ModelAndView secureIndexingControl(
+            @PathVariable String dataSetSpec,
+            @RequestParam(required = false) Boolean enable
+    ) throws BadArgumentException, IOException, SolrServerException {
+        return indexingControlInternal(dataSetSpec, enable);
     }
 
     @RequestMapping(value = "/indexing/{dataSetSpec}")
@@ -76,9 +94,16 @@ public class DatasetController {
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
             @RequestParam(required = false) String accessKey
-    ) throws BadArgumentException, IOException, SolrServerException {
+    ) throws BadArgumentException, IOException, SolrServerException, AccessKeyException {
         checkAccessKey(accessKey);
+        return indexingControlInternal(dataSetSpec, enable);
+    }
+
+    private ModelAndView indexingControlInternal(String dataSetSpec, Boolean enable) throws BadArgumentException, SolrServerException, IOException {
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            throw new BadArgumentException(String.format("String %s does not exist", dataSetSpec));
+        }
         if (enable != null) {
             MetaRepo.DataSetState oldState = dataSet.getState();
             switch (dataSet.getState()) {
@@ -86,8 +111,8 @@ public class DatasetController {
                 case ENABLED:
                 case QUEUED:
                     if (!enable) {
-                            dataSet.setState(MetaRepo.DataSetState.DISABLED);
-                            solrServer.deleteByQuery(dataSet.getSpec());
+                        dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                        solrServer.deleteByQuery(dataSet.getSpec());
                     }
                     break;
                 case UPLOADED:
@@ -112,29 +137,6 @@ public class DatasetController {
         return view(dataSet);
     }
 
-//    @RequestMapping(value = "/harvesting/{dataSetSpec}")
-//    public ModelAndView harvestingControl(
-//            @PathVariable String dataSetSpec,
-//            @RequestParam(required = false) Boolean enable,
-//            @RequestParam(required = false) String prefix,
-//            @RequestParam(required = false) String accessKey
-//    ) throws BadArgumentException {
-//        checkAccessKey(accessKey);
-//        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-//        if (enable != null) {
-//            if (prefix != null) {
-//                log.info(String.format("Harvesting of %s prefix %s to be %s", dataSetSpec, prefix, enable ? "enabled" : "disabled"));
-//            }
-//            else {
-//                log.info(String.format("Harvesting of %s to be %s", dataSetSpec, enable ? "enabled" : "disabled"));
-//            }
-//        }
-//        else {
-//            log.info(String.format("Just showing %s", dataSetSpec));
-//        }
-//        return view(dataSet);
-//    }
-
     @RequestMapping(value = "/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -142,7 +144,7 @@ public class DatasetController {
             @PathVariable String dataSetSpec,
             InputStream inputStream,
             @RequestParam(required = false) String accessKey
-    ) throws IOException, XMLStreamException, BadArgumentException {
+    ) throws IOException, XMLStreamException, BadArgumentException, AccessKeyException {
         checkAccessKey(accessKey);
         log.info("submit(" + dataSetSpec + ")");
         MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
@@ -209,14 +211,14 @@ public class DatasetController {
         return "OK";
     }
 
-    private void checkAccessKey(String accessKey) {
+    private void checkAccessKey(String accessKey) throws AccessKeyException {
         if (accessKey == null) {
-            log.warn("!!! Service Access Key missing!");
-            // todo: really fail
+            log.warn("Service Access Key missing");
+            throw new AccessKeyException("Access Key missing");
         }
         else if (!serviceAccessToken.checkKey(accessKey)) {
-            log.warn(String.format("!!! Service Access Key %s invalid!", accessKey));
-            // todo: really fail
+            log.warn(String.format("Service Access Key %s invalid!", accessKey));
+            throw new AccessKeyException(String.format("Access Key %s not accepted", accessKey));
         }
     }
 
