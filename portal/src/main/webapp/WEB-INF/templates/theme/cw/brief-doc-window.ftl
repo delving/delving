@@ -56,38 +56,37 @@
         </div>
 
         <div id="query_breadcrumbs">
-            <h3>
-                <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-                voor:
-            </h3>
 
-            <ul class="nav_query_breadcrumbs">
+            <dl>
+                <dt>
+                    <@spring.message 'Results_t' /> ${pagination.getStart()?c} -
+                    ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+                    voor:
+                </dt>
                 <#if !result.matchDoc??>
                     <#list breadcrumbs as crumb>
                         <#if !crumb.last>
-                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></dd>
                         <#else>
-                            <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</dd>
                         </#if>
                     </#list>
                 <#else>
+                    <dd class="nobg">
+                        <@spring.message 'ViewingRelatedItems_t' />
+                        <#assign match = result.matchDoc/>
 
-                    <li class="nobg">
-                    <@spring.message 'ViewingRelatedItems_t' />
-                    <#assign match = result.matchDoc/>
-
-                    <a href="${match.fullDocUrl}">
-                    <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=1&amp;startPage=${pagination.start?c}&amp;uri=${match.fullDocUrl?url('utf-8')}&amp;view=${view}&amp;pageId=brd">-->
-                        <#if useCache="true">
-                            <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                        <#else>
-                            <img src="${match.thumbnail}" alt="${match.title}" height="25" align="middle"/>
-                        </#if>
-                    </a>
-                </li>
+                        <a href="${match.fullDocUrl}">
+                        <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=1&amp;startPage=${pagination.start?c}&amp;uri=${match.fullDocUrl?url('utf-8')}&amp;view=${view}&amp;pageId=brd">-->
+                            <#if useCache="true">
+                                <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                            <#else>
+                                <img src="${match.thumbnail}" alt="${match.title}" height="25" align="middle"/>
+                            </#if>
+                        </a>
+                    </dd>
                 </#if>
-            </ul>
-
+            </dl>
 
         </div>
 

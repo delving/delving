@@ -274,10 +274,21 @@ ul a:hover, ul a:visited:hover {
     height: 42px;
     line-height: 42px;
     vertical-align: baseline;
+}
 
+#query_breadcrumbs dl dt,
+#query_breadcrumbs dl dd {
+    display: inline;
+}
 
+#query_breadcrumbs dl dd {
+    background: url(skin/arrows.png) 0 4px no-repeat;
+    margin: 0;
+    padding-left: 1.25em;
+}
 
-
+#query_breadcrumbs dl dd.nobg {
+    background: none;
 }
 
 #query_breadcrumbs h3 {

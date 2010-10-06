@@ -67,49 +67,32 @@
                 <#if pagination??>
         <div id="query_breadcrumbs">
 
-                    <h3 style="float:left"><@spring.message 'MatchesFor_t' />:</h3>
-                    <ul class="nav_query_breadcrumbs">
-                        <#if !query?starts_with("europeana_uri:")>
-                            <#--<#list pagination.breadcrumbs as crumb>-->
-                                <#--<#if crumb_index==0 && !crumb.last>-->
-                                   <#--<li class="nobg"><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>-->
-                                <#--<#elseif crumb_index==0 && crumb.last>-->
-                                   <#--<li class="nobg"><strong>${crumb.display?html}</strong></li>-->
-                                <#--<#elseif crumb_index &gt; 0 && !crumb.last>-->
-                                    <#--<li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></li>-->
-                                <#--<#else>-->
-                                    <#--<li><strong>${crumb.display?html}</strong></li>-->
-                                <#--</#if>-->
-                            <#---->
-                            <#--</#list>-->
-
-                     <#list pagination.breadcrumbs as crumb>
+            <dl>
+                <dt><@spring.message 'MatchesFor_t' />:</dt>
+                <#if !query?starts_with("europeana_uri:")>
+                    <#list pagination.breadcrumbs as crumb>
                         <#if !crumb.last>
-                            <li <#if crumb_index == 0>class="nobg"</#if>><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a></li>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a></dd>
                         <#else>
-                            <li <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</li>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</dd>
                         </#if>
                     </#list>
-                            <#else>
-                                <li class="nobg">
+                 <#else>
+                    <dd class="nobg">
 
-                                <@spring.message 'ViewingRelatedItems_t' />
-                                    <#assign match = result.fullDoc />
-                                    <a href="${portalName}/record/${match.id}.html">
-                                        <#if useCache="true"><img
-                                                src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
-                                                alt="${match.title}" height="25"/>
-                                            <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                                        </#if>
-                                    </a>
+                    <@spring.message 'ViewingRelatedItems_t' />
+                        <#assign match = result.fullDoc />
+                        <a href="${portalName}/record/${match.id}.html">
+                            <#if useCache="true"><img
+                                    src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
+                                    alt="${match.title}" height="25"/>
+                                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                            </#if>
+                        </a>
 
-                                </li>
-                        </#if>
-                    </ul>
-                    <#--<#else>-->
-                        <#--<ul>-->
-                            <#--<li>&#160;</li>-->
-                        <#--</ul>-->
+                    </dd>
+                </#if>
+            </dl>
 
         </div>
         </#if>
