@@ -90,7 +90,20 @@ public interface FileSet {
         int getRecordsDiscarded();
 
         void clear();
+
+    }
+
+    public interface Recent {
         
+        List<File> getCommonDirectories();
+
+        List<? extends FileSet> getList();
+
+        FileSet select(File inputFile);
+
+        void setMostRecent(FileSet fileSet);
+
+        void remove(FileSet fileSet);
     }
 
 }

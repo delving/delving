@@ -59,6 +59,7 @@
 
     <http auto-config="true" create-session="never">
         <intercept-url pattern="/annotation/**" access="ROLE_USER"/>
+        <intercept-url pattern="/ajaxindexing/**" access="ROLE_ADMINISTRATOR"/>
         <form-login/>
         <logout/>
         <remember-me services-ref="rememberMeServices" key="europeanaKey"/>

@@ -22,7 +22,7 @@
 package eu.europeana.sip.gui;
 
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.RecentFileSets;
+import eu.europeana.sip.model.SipModel;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -33,8 +33,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * The menu for handling files
@@ -44,28 +42,24 @@ import java.util.concurrent.Executors;
  */
 
 public class FileMenu extends JMenu {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Component parent;
-    private RecentFileSets recentFiles;
+    private SipModel sipModel;
     private SelectListener selectListener;
 
     public interface SelectListener {
         boolean select(FileSet fileSet);
     }
 
-    public FileMenu(Component parent, SelectListener selectListener) {
+    public FileMenu(Component parent, SipModel sipModel, SelectListener selectListener) {
         super("File");
         this.parent = parent;
+        this.sipModel = sipModel;
         this.selectListener = selectListener;
-        executor.execute(new RefreshJob(new Runnable() {
-            @Override
-            public void run() {
-                recentFiles = new RecentFileSets(new File("."));
-                if (!recentFiles.getList().isEmpty()) {
-                    SwingUtilities.invokeLater(new SpontaneousLoader(recentFiles.getList().get(0)));
-                }
-            }
-        }));
+        List<? extends FileSet> fileSets = fileSets().getList();
+        if (!fileSets.isEmpty()) {
+            SwingUtilities.invokeLater(new SpontaneousLoader(fileSets.get(0)));
+        }
+        refresh();
     }
 
     private class LoadNewFileAction extends AbstractAction {
@@ -92,19 +86,10 @@ public class FileMenu extends JMenu {
         public void actionPerformed(ActionEvent actionEvent) {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
-                final File file = chooser.getSelectedFile();
-                executor.execute(new RefreshJob(new Runnable() {
-                    @Override
-                    public void run() {
-                        final FileSet fileSet = recentFiles.select(file);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                selectListener.select(fileSet);
-                            }
-                        });
-                    }
-                }));
+                File file = chooser.getSelectedFile();
+                FileSet fileSet = fileSets().select(file);
+                selectListener.select(fileSet);
+                refresh();
             }
         }
     }
@@ -119,51 +104,36 @@ public class FileMenu extends JMenu {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            final boolean selected = selectListener.select(fileSet);
-            executor.execute(new RefreshJob(new Runnable() {
-                @Override
-                public void run() {
-                    if (selected) {
-                        recentFiles.setMostRecent(fileSet);
-                    }
-                    else {
-                        recentFiles.remove(fileSet);
-                    }
-                }
-            }));
+            boolean selected = selectListener.select(fileSet);
+            if (selected) {
+                fileSets().setMostRecent(fileSet);
+            }
+            else {
+                fileSets().remove(fileSet);
+            }
+            refresh();
         }
     }
+    
+    private FileSet.Recent fileSets() {
+        return sipModel.getRecentFileSets();
+    }
 
-    private class RefreshJob implements Runnable {
-        private Runnable runFirst;
-
-        private RefreshJob(Runnable runFirst) {
-            this.runFirst = runFirst;
+    private void refresh() {
+        removeAll();
+        List<File> commonDirectories = fileSets().getCommonDirectories();
+        if (commonDirectories.isEmpty()) {
+            add(new LoadNewFileAction(new File("/")));
         }
-
-        @Override
-        public void run() {
-            runFirst.run();
-            final List<File> commonDirectories = recentFiles.getCommonDirectories();
-            final List<? extends FileSet> fileSetList = recentFiles.getList();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    removeAll();
-                    if (commonDirectories.isEmpty()) {
-                        add(new LoadNewFileAction(new File("/")));
-                    }
-                    else {
-                        for (File directory : commonDirectories) {
-                            add(new LoadNewFileAction(directory));
-                        }
-                    }
-                    addSeparator();
-                    for (FileSet fileSet : fileSetList) {
-                        add(new LoadRecentFileSetAction(fileSet));
-                    }
-                }
-            });
+        else {
+            for (File directory : commonDirectories) {
+                add(new LoadNewFileAction(directory));
+            }
+        }
+        addSeparator();
+        List<? extends FileSet> fileSetList = fileSets().getList();
+        for (FileSet fileSet : fileSetList) {
+            add(new LoadRecentFileSetAction(fileSet));
         }
     }
 
