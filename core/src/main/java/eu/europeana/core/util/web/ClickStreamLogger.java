@@ -80,10 +80,12 @@ public interface ClickStreamLogger {
         // search related actions
         BRIEF_RESULT,
         BRIEF_RESULT_FROM_SAVED_SEARCH,
+        BRIEF_RESULT_FROM_OPEN_SEARCH,
         FULL_RESULT,
         FULL_RESULT_FROM_SAVED_ITEM,
         FULL_RESULT_FROM_SAVED_TAG,
         FULL_RESULT_FROM_YEAR_GRID,
+        FULL_RESULT_FROM_TIME_LINE_VIEW,
         MORE_LIKE_THIS,
         RETURN_TO_RESULTS,
         REDIRECT_OUTLINK,
@@ -123,6 +125,7 @@ public interface ClickStreamLogger {
         ERROR,
         AJAX_ERROR,
         ERROR_TOKEN_EXPIRED,
+        ERROR_NO_TOKEN,
         EXCEPTION_CAUGHT,
 
         // static pages
@@ -159,5 +162,3 @@ public interface ClickStreamLogger {
     }
 
 }
-
-

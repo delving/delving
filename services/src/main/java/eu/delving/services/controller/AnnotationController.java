@@ -60,7 +60,7 @@ import java.util.Locale;
  */
 
 @Controller
-@RequestMapping("/annotation")
+@RequestMapping("/user/annotation")
 public class AnnotationController {
 
     private Logger log = Logger.getLogger(getClass());

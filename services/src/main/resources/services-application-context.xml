@@ -12,7 +12,12 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd
         http://www.springframework.org/schema/security
-        http://www.springframework.org/schema/security/spring-security-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+        http://www.springframework.org/schema/security/spring-security-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+        ">
 
     <import resource="classpath:/core-application-context.xml"/>
 
@@ -77,5 +82,18 @@
             </list>
         </property>
     </bean>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider user-service-ref="daoUserDetailsService">
+            <security:password-encoder hash="sha"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <security:http auto-config="true" create-session="always">
+        <security:intercept-url pattern="/user/**" access="ROLE_USER"/>
+        <security:intercept-url pattern="/administrator/**" access="ROLE_ADMINISTRATOR"/>
+        <security:form-login/>
+        <security:logout/>
+    </security:http>
 
 </beans>

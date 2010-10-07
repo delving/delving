@@ -121,7 +121,7 @@ public class DataSetDetailsPanel extends JPanel {
         add(new JProgressBar(sipModel.getUploadProgress()));
         // finish up
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
-        setPreferredSize(new Dimension(800, 500));
+        setPreferredSize(new Dimension(600, 500));
         wireUp();
     }
 

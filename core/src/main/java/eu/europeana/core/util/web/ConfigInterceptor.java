@@ -52,6 +52,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['portal.color']}")
     private String portalColor;
 
+    @Value("#{launchProperties['ga.trackingCode']}")
+    private String trackingCode;
+
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
@@ -63,6 +66,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalDisplayName", portalDisplayName);
             modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
+            if (!trackingCode.isEmpty()) {
+                modelAndView.addObject("trackingCode", trackingCode);
+            }
         }
     }
 }

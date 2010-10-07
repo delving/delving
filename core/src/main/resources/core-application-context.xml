@@ -91,6 +91,7 @@
                 <value>services.pmh.repositoryIdentifier</value>
                 <value>services.pmh.sampleIdentifier</value>
                 <value>services.pmh.responseListSize</value>
+                <value>ga.trackingCode</value>
             </list>
         </constructor-arg>
     </bean>

@@ -3,7 +3,7 @@
   <name>Tel Treasures</name>
   <providerName>The European Library</providerName>
   <description>treasures</description>
-  <prefix>icn</prefix>
+  <prefix>icnraw</prefix>
   <namespace>http://www.icn.nl/</namespace>
   <schema>http://www.icn.nl/schemas/ICN-V3.2.xs</schema>
   <recordRoot>record</recordRoot>

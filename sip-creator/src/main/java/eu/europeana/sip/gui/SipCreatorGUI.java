@@ -30,7 +30,6 @@ import eu.europeana.definitions.beans.IdBean;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
-import org.apache.log4j.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -51,13 +50,12 @@ import java.util.List;
  */
 
 public class SipCreatorGUI extends JFrame {
-    private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
     public SipCreatorGUI(String serverUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
+        this.sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -73,7 +71,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
+        FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
             @Override
             public boolean select(FileSet fileSet) {
                 if (!fileSet.isValid()) {
