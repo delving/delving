@@ -52,7 +52,7 @@ import java.util.zip.ZipInputStream;
  */
 
 @Controller
-public class DatasetController {
+public class DataSetControllerRenameWorkaround {
 
     private Logger log = Logger.getLogger(getClass());
 

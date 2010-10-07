@@ -131,7 +131,7 @@ public class NormalizationPanel extends JPanel {
 
     private JPanel createNormalizeBottom() {
         JPanel lp = new JPanel();
-        lp.setBorder(BorderFactory.createTitledBorder("Status Message"));
+        lp.setBorder(BorderFactory.createTitledBorder("Status"));
         lp.add(normalizeMessageLabel);
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.add(lp, BorderLayout.CENTER);
