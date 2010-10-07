@@ -37,13 +37,13 @@
 
 <div id="main">
 
-    <div class="grid_12 breadcrumb">
-        <em>U bevindt zich op: </em>
-        <span><a href="/${portalName}/index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
-    </div>
-
 
     <div id="left-col" class="grid_3">
+
+        <div class="breadcrumb">
+            <em>U bevindt zich op: </em>
+            <span><a href="/${portalName}/index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
+        </div>
 
         <#include "inc_facets_lists.ftl"/>
 
@@ -51,19 +51,11 @@
 
     <div id="right-col" class="grid_9">
 
-         <div id="search">
-             <@SearchForm "search_result"/>
-        </div>
-
         <div id="query_breadcrumbs">
 
             <dl>
-                <dt>
-                    <@spring.message 'Results_t' /> ${pagination.getStart()?c} -
-                    ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-                    voor:
-                </dt>
-                <#if !result.matchDoc??>
+                <dt>Zoekresultaten voor: </dt>
+                 <#if !result.matchDoc??>
                     <#list breadcrumbs as crumb>
                         <#if !crumb.last>
                             <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></dd>
@@ -87,6 +79,15 @@
                     </dd>
                 </#if>
             </dl>
+         </div>
+
+        <div id="query_info">
+        
+            <h2>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h2>
+            <h3>
+                  <@spring.message 'Results_t' /> ${pagination.getStart()?c} -
+                    ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+                      </h3>
 
         </div>
 

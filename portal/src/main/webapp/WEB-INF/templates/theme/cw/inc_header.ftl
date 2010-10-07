@@ -194,7 +194,7 @@
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
-    <title>${portalDisplayName} - Advanced Search</title>
+    <title>Instituut Collectie Nederland Ð Uitgebreid zoeken</title>
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "brd"/>
@@ -208,7 +208,7 @@
         });
 
     </script>
-    <title>Instituut Collectie Nederland - Search results</title>
+    <title>Instituut Collectie Nederland - Zoekresultaten</title>
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
@@ -268,25 +268,7 @@
     <#case "login.html">
     <#assign pageId = "li"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $("#loginForm").validate({
-                rules: {j_username: "required",j_password: "required"},
-                messages: {j_username: "",j_password: ""}
-            });
-            $("#forgotemailForm").validate({
-                rules: {email: "required"},
-                messages: {email: ""}
-            });
-            $("#registrationForm").validate({
-                rules: {email: "required",iagree: "required"},
-                messages: {email: "",iagree: msgRequired }
-                //msgRequired is generated in inc_header.ftl and
-                // set as a javascript variable (its a spring message
-                // so cannot be generated in this js file
-            });
-        });
-    </script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/login.js"></script>
     <title>Instituut Collectie Nederland - Login</title>
     <#break>
     <#case "logout.html">
@@ -306,6 +288,9 @@
     <#case "register-success.html">
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
     <title>Instituut Collectie Nederland - Registration continued</title>
+    <#break>
+    <#default>
+    <title>Instituut Collectie Nederland - Digitale Collectie Nederland</title>
     <#break>
     </#switch>
 
@@ -332,7 +317,7 @@
         <div class="title_bar">
             <div class="grid_12">
 
-                Instituut Collectie Nederland  <em>De Collectie</em>
+                Instituut Collectie Nederland  <em>Digitale Collectie Nederland</em>
             </div>
         </div>
         <div class="clear"></div>

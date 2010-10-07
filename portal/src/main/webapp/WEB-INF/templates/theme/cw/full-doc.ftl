@@ -38,20 +38,22 @@
 
 <div id="main">
 
-    <div class="grid_12 breadcrumb">
-        <em>U bevindt zich op: </em>
-        <span>
-            <a href="/${portalName}/index.html" title="Homepagina">Home</a>
-            <span class="imgreplacement">&rsaquo;</span>
-            <#if pagination??>
-                <a href="${pagination.returnToResults?html}" title="Zoekresultaten">Zoekresultaten</a>
-                <span class="imgreplacement">&rsaquo;</span>
-            </#if>
-        </span>
-        Object
-    </div>
+
 
     <div id="left-col" class="grid_3">
+
+        <div class="breadcrumb">
+            <em>U bevindt zich op: </em>
+            <span>
+                <a href="/${portalName}/index.html" title="Homepagina">Home</a>
+                <span class="imgreplacement">&rsaquo;</span>
+                <#if pagination??>
+                    <a href="${pagination.returnToResults?html}" title="Zoekresultaten">Zoekresultaten</a>
+                    <span class="imgreplacement">&rsaquo;</span>
+                </#if>
+            </span>
+            Object
+        </div>
 
         <#include "inc_related_content.ftl"/>
 
@@ -59,12 +61,12 @@
 
     <div id="right-col" class="grid_9">
 
-        <div id="search">
-            <@SearchForm "search_result"/>
-        </div>
+        <#--<div id="search">-->
+            <#--<@SearchForm "search_result"/>-->
+        <#--</div>-->
 
-        <div class="clear"></div>
-                <#if pagination??>
+        <#--<div class="clear"></div>-->
+        <#if pagination??>
         <div id="query_breadcrumbs">
 
             <dl>
@@ -96,6 +98,7 @@
 
         </div>
         </#if>
+            
         <div class="clear"></div>
 
         <div class="pagination fg-buttonset">

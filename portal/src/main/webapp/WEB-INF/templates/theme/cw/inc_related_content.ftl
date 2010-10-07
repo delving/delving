@@ -51,9 +51,12 @@
                 <div class="clear"></div>
 
 
-                <#--<h3><@spring.message 'Actions_t' />:</h3>-->
-
-                <#if user??>
+             <h3><@spring.message 'Actions_t'/>:</h3>
+            <p>
+                <a href="/${portalName}/index.html">Opnieuw zoeken</a>
+            </p>
+        
+        <#if user??>
 
                 <#--<h6><@spring.message 'ShareWithAFriend_t' /></h6>-->
 
@@ -76,37 +79,14 @@
                 <span id="msg-save-tag" class="hide"></span>
 
 
-                <h6><@spring.message 'UserTags_t' /></h6>
-
-                <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
-                <div class="toggler-c ui-icon-circle-triangle-s"title="<@spring.message 'UserTags_t' />">
-                    <#--<#assign usertags = ["Manuscript","Treasure","Religion"]/>-->
-                    <p>
-                        <#list socialTags as userTag>
-                            <a href="/${portalName}/brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a><br/>
-                        </#list>
-                    </p>
-                    <#--<#list usertags as tag>-->
-                        <#--${tag}<br/>-->
-                    <#--</#list>-->
-                </div>
-
-                <#--<p>-->
-                    <#--<a href="#"  class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">-->
-                        <#--<span class="ui-icon ui-icon-disk"></span><@spring.message 'SaveToMyEuropeana_t' />-->
-                    <#--</a>-->
-
-                    <#--<div id="msg-save-item" class="msg-hide"></div>-->
-
-                <#--</p>-->
-
-                    <#if result.fullDoc.europeanaType == "IMAGE">
-                        <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-                            <p class="linetop">
-                                <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
-                            </p>
-                        </#if>
+                <#if result.fullDoc.europeanaType == "IMAGE">
+                    <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+                        <p class="linetop">
+                            <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
+                        </p>
                     </#if>
+                </#if>
+
                 <div class="clear"></div>
 
         <#else>

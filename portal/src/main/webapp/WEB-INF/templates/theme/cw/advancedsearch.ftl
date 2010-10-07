@@ -17,7 +17,7 @@
 
 <div class="search_advanced">
 
-<h1>Zoeken in de Collectie Database</h1>
+<h1>Zoeken in de Digitale Collectie Nederland</h1>
 
 <#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_GOD")>
 <h2>Uitgebreid zoeken Museometrie</h2>
@@ -229,7 +229,7 @@
 
 </div>
 <#else>
-<h2>Geavanceerd zoeken</h2>
+<h2>Uitgebreid zoeken</h2>
 
 <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
     <input type="hidden" name="start" value="1"/>
@@ -313,8 +313,8 @@
         </tr>
 
         <tr>
-            <td align="left"><input type="reset" value="<@spring.message 'Erase_t' />"/></td>
-            <td>&#160;</td>
+            <td align="left"></td>
+            <td><input type="reset" value="<@spring.message 'Erase_t' />"/></td>
             <td align="right">
                 <input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />"/>
             </td>

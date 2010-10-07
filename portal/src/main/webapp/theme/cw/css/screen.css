@@ -160,8 +160,8 @@ text-decoration: none;
 /* breadcrumbs bar ****************************************************************************/
 .breadcrumb
 {
-	height:32px;
-	line-height:32px;
+	height:50px;
+	line-height:50px;
 }
 
 .breadcrumb span
@@ -229,12 +229,18 @@ text-decoration: none;
 
 #search .search_advanced h1
 {
-	margin:.5em 0;
+	margin: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 #search .search_advanced table td
 {
 	text-align:right;
+}
+
+#search .search_advanced input[type="text"]{
+    width: 400px;
 }
 
 #search input.in-small
@@ -255,14 +261,18 @@ text-decoration: none;
 /* Results page **********************************************************************************/
 #query_breadcrumbs
 {
-	margin:2em 0;
+	margin: 1.75em 0 1em 0;
 	padding:0;
 	vertical-align:baseline;
 }
 
+#query_breadcrumbs dl {
+    margin: 0;
+}
+
 #query_breadcrumbs dl dt, #query_breadcrumbs dl dd
 {
-    font-size: 1.2em;    
+    font-size: 1.5em;
 }
 
 #query_breadcrumbs dl dd
@@ -278,6 +288,10 @@ text-decoration: none;
 	font-weight:400;
 	margin:0;
 	padding:0;
+}
+
+#query_info h2{
+    margin: 0;
 }
 
 ul.nav_query_breadcrumbs
