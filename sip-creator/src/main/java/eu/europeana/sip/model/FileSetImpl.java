@@ -215,8 +215,8 @@ public class FileSetImpl implements FileSet {
     }
 
     @Override
-    public Output prepareOutput() {
-        return new OutputImpl();
+    public Output prepareOutput(boolean storeNormalizedFile) {
+        return new OutputImpl(storeNormalizedFile);
     }
 
     public String toString() {
@@ -227,11 +227,13 @@ public class FileSetImpl implements FileSet {
         private Writer outputWriter, discardedWriter, reportWriter;
         private int recordsNormalized, recordsDiscarded;
 
-        private OutputImpl() {
+        private OutputImpl(boolean storeNormalizedFile) {
             checkWorkerThread();
             removeOutput();
             try {
-                this.outputWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+                if (storeNormalizedFile) {
+                    this.outputWriter = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+                }
                 this.discardedWriter = new OutputStreamWriter(new FileOutputStream(discardedFile), "UTF-8");
                 this.reportWriter = new OutputStreamWriter(new FileOutputStream(reportFile), "UTF-8");
             }
@@ -245,6 +247,9 @@ public class FileSetImpl implements FileSet {
 
         @Override
         public Writer getOutputWriter() {
+            if (outputWriter == null) {
+                throw new RuntimeException("Normalized file was not to be stored");
+            }
             return outputWriter;
         }
 
@@ -270,7 +275,9 @@ public class FileSetImpl implements FileSet {
             }
             else {
                 try {
-                    outputWriter.close();
+                    if (outputWriter != null) {
+                        outputWriter.close();
+                    }
                     discardedWriter.close();
                     Properties properties = new Properties();
                     properties.put("normalizationDate", String.valueOf(System.currentTimeMillis()));

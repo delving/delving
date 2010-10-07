@@ -49,7 +49,7 @@ public class DataSetPanel extends JPanel {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.gridx = gbc.gridy = 0;
-        add(new DataSetDetailsPanel(sipModel), gbc);
+        add(new DataSetUploadPanel(sipModel), gbc);
         gbc.gridx++;
         Enable enable = new Enable() {
             @Override

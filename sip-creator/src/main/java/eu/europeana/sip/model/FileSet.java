@@ -65,7 +65,7 @@ public interface FileSet {
 
     Report getReport();
 
-    Output prepareOutput();
+    Output prepareOutput(boolean storeNormalizedFile);
 
     public interface Output {
 
