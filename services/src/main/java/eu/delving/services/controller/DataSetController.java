@@ -116,6 +116,7 @@ public class DataSetController {
                 case QUEUED:
                     if (!enable) {
                         dataSet.setState(MetaRepo.DataSetState.DISABLED);
+                        dataSet.setRecordsIndexed(0);
                         solrServer.deleteByQuery(dataSet.getSpec());
                     }
                     break;
@@ -245,9 +246,9 @@ public class DataSetController {
         DataSetInfo info = new DataSetInfo();
         info.spec = dataSet.getSpec();
         info.name = dataSet.getName();
-        info.providerName = dataSet.getProviderName();
-        info.prefix = dataSet.getMetadataFormat().getPrefix();
         info.state = dataSet.getState().toString();
+        info.recordsIndexed = dataSet.getRecordsIndexed();
+        info.recordCount = dataSet.getRecordCount();
         return info;
     }
 
