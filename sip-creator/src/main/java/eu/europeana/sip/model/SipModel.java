@@ -547,8 +547,11 @@ public class SipModel {
 
     private void normalizeMessage(FileSet.Report report) {
         String message = String.format(
-                "Normalization completed on %s resulted in %d normalized records and %d discarded.",
-                report.getNormalizationDate().toString(),
+                "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
                 report.getRecordsNormalized(),
                 report.getRecordsDiscarded()
         );
