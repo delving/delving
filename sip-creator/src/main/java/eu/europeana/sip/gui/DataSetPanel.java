@@ -139,7 +139,7 @@ public class DataSetPanel extends JPanel {
         public void run() {
             try {
                 String url = String.format(
-                        "%s/indexing/%s?enable=%s&accessKey=%s",
+                        "%s/%s?enable=%s&accessKey=%s",
                         sipModel.getServerUrl(),
                         spec,
                         String.valueOf(enable),

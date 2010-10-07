@@ -52,7 +52,6 @@ import java.util.zip.ZipInputStream;
  */
 
 @Controller
-@RequestMapping("/dataset")
 public class DatasetController {
 
     private Logger log = Logger.getLogger(getClass());
@@ -73,7 +72,12 @@ public class DatasetController {
         return String.format("<?xml version=\"1.0\">\n<error>\n%s\n</error>\n", e.getMessage());
     }
 
-    @RequestMapping
+    @RequestMapping("/administrator/dataset")
+    public ModelAndView secureListAll() throws BadArgumentException, AccessKeyException {
+        return view(metaRepo.getDataSets());
+    }
+
+    @RequestMapping("/dataset")
     public ModelAndView listAll(
             @RequestParam(required = false) String accessKey
     ) throws BadArgumentException, AccessKeyException {
@@ -81,7 +85,7 @@ public class DatasetController {
         return view(metaRepo.getDataSets());
     }
 
-    @RequestMapping(value = "/secureindexing/{dataSetSpec}")
+    @RequestMapping(value = "/administrator/dataset/{dataSetSpec}")
     public ModelAndView secureIndexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable
@@ -89,7 +93,7 @@ public class DatasetController {
         return indexingControlInternal(dataSetSpec, enable);
     }
 
-    @RequestMapping(value = "/indexing/{dataSetSpec}")
+    @RequestMapping(value = "/dataset/{dataSetSpec}")
     public ModelAndView indexingControl(
             @PathVariable String dataSetSpec,
             @RequestParam(required = false) Boolean enable,
@@ -137,7 +141,7 @@ public class DatasetController {
         return view(dataSet);
     }
 
-    @RequestMapping(value = "/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
+    @RequestMapping(value = "/dataset/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
     public
     @ResponseBody
     String submit(

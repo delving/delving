@@ -89,9 +89,9 @@
         </security:authentication-provider>
     </security:authentication-manager>
 
-    <security:http auto-config="true" create-session="never">
-        <security:intercept-url pattern="/annotation/**" access="ROLE_USER"/>
-        <security:intercept-url pattern="/secureindexing/**" access="ROLE_ADMINISTRATOR"/>
+    <security:http auto-config="true" create-session="always">
+        <security:intercept-url pattern="/user/**" access="ROLE_USER"/>
+        <security:intercept-url pattern="/administrator/**" access="ROLE_ADMINISTRATOR"/>
         <security:form-login/>
         <security:logout/>
     </security:http>
