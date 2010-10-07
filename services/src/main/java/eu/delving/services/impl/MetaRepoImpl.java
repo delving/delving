@@ -347,7 +347,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public int getRecordsIndexed() {
-            return Integer.parseInt((String) object.get(RECORDS_INDEXED));
+            return (Integer) object.get(RECORDS_INDEXED);
         }
 
         @Override
@@ -431,8 +431,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public long getRecordCount() {
-            return records().count();
+        public int getRecordCount() {
+            return (int) records().count();
         }
 
         @Override
@@ -715,8 +715,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public long getListSize() {
-            return (Long) object.get(LIST_SIZE);
+        public int getListSize() {
+            return (Integer) object.get(LIST_SIZE);
         }
 
         @Override

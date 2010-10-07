@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class DataSetInfo {
     public String spec;
     public String name;
-    public String providerName;
-    public String prefix;           
     public String state;
+    public Integer recordsIndexed;
+    public Integer recordCount;
 }

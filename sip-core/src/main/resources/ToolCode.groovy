@@ -83,38 +83,42 @@ def createEuropeanaURI(identifier) {
   return "$collectionId/$hash";
 }
 
-def removeAccents(String string) {
+def filterNIMK(String string) {
   StringBuilder out = new StringBuilder();
-  for (int walk=0; walk < string.length(); walk++) {
-    String ch = string.substring(walk, walk+1);
+  for (int walk = 0; walk < string.length(); walk++) {
+    String ch = string.substring(walk, walk + 1);
     switch (ch) {
-        case ~/[ˆ‡‰‹]/:        out.append('a'); break;
-        case ~/[Š]/:           out.append('ae'); break;
-        case ~/[ËçåÌ]/:       out.append('A'); break;
-        case ~/[€]/:           out.append('Ae'); break;
-        case ~/[]/:           out.append('c'); break;
-        case ~/[‚]/:           out.append('C'); break;
-        case ~/[Ž]/:         out.append('e'); break;
-        case ~/[‘]/:           out.append('ee'); break;
-        case ~/[éƒæ]/:         out.append('E'); break;
-        case ~/[è]/:           out.append('Ee'); break;
-        case ~/[–]/:           out.append('n'); break;
-        case ~/[„]/:           out.append('N'); break;
-        case ~/[“’”]/:         out.append('i'); break;
-        case ~/[•]/:           out.append('ie'); break;
-        case ~/[íêë]/:         out.append('I'); break;
-        case ~/[ì]/:           out.append('Ie'); break;
-        case ~/[˜—™›¿]/:       out.append('o'); break;
-        case ~/[š]/:           out.append('oe'); break;
-        case ~/[ñîïÍ¯]/:       out.append('O'); break;
-        case ~/[…]/:           out.append('Oe'); break;
-        case ~/[§]/:           out.append('ss'); break;
-        case ~/[œž]/:         out.append('u'); break;
-        case ~/[ôòó]/:         out.append('U'); break;
-        case ~/[Ÿ]/:           out.append('ue'); break;
-        case ~/[†]/:           out.append('Ue'); break;
-      default:
-      out.append(ch);
+      case ~/[ˆ‡‰‹]/: out.append('a'); break;
+      case ~/[Š]/: out.append('ae'); break;
+      case ~/[ËçåÌ]/: out.append('A'); break;
+      case ~/[€]/: out.append('Ae'); break;
+      case ~/[]/: out.append('c'); break;
+      case ~/[‚]/: out.append('C'); break;
+      case ~/[Ž]/: out.append('e'); break;
+      case ~/[‘]/: out.append('ee'); break;
+      case ~/[éƒæ]/: out.append('E'); break;
+      case ~/[è]/: out.append('Ee'); break;
+      case ~/[–]/: out.append('n'); break;
+      case ~/[„]/: out.append('N'); break;
+      case ~/[“’”]/: out.append('i'); break;
+      case ~/[•]/: out.append('ie'); break;
+      case ~/[íêë]/: out.append('I'); break;
+      case ~/[ì]/: out.append('Ie'); break;
+      case ~/[˜—™›¿]/: out.append('o'); break;
+      case ~/[š]/: out.append('oe'); break;
+      case ~/[ñîïÍ¯]/: out.append('O'); break;
+      case ~/[…]/: out.append('Oe'); break;
+      case ~/[§]/: out.append('ss'); break;
+      case ~/[œž]/: out.append('u'); break;
+      case ~/[ôòó]/: out.append('U'); break;
+      case ~/[Ÿ]/: out.append('ue'); break;
+      case ~/[†]/: out.append('Ue'); break;
+      case ~/ /: out.append("%20"); break;
+      case ~/[^A-Za-z0-9, \-_]/:
+//      case ~/[\/\?\":#/:
+        out.append('_');
+        break;
+      default: out.append(ch);
     }
   }
   return out.toString();

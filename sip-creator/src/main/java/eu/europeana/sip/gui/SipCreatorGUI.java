@@ -60,7 +60,7 @@ public class SipCreatorGUI extends JFrame {
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
         tabs.addTab("Refinement", new RefinementPanel(sipModel));
-        tabs.addTab("Normalization", new NormPanel(sipModel));
+        tabs.addTab("Normalization", new NormalizationPanel(sipModel));
         if (serverUrl != null) {
             tabs.addTab("Repository", new DataSetPanel(sipModel));
         }

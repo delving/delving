@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -32,12 +33,12 @@ import java.util.concurrent.Executors;
  */
 
 public class DataSetPanel extends JPanel {
-    private static final int PERIODIC_LIST_FETCH_DELAY_MILLIS = 10000;
+    private static final int LIST_FETCH_DELAY_MILLIS = 5000;
     private Executor executor = Executors.newSingleThreadExecutor();
     private RestTemplate restTemplate;
     private JTextField keyField = new JTextField(20);
     private JButton checkKey = new JButton("Use this key");
-    private JLabel errorMessage = new JLabel("");
+    private JLabel errorMessage = new JLabel("", JLabel.CENTER);
     private SipModel sipModel;
     private DataSetControlPanel dataSetControlPanel;
     private Timer periodicListFetchTimer;
@@ -49,7 +50,7 @@ public class DataSetPanel extends JPanel {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.gridx = gbc.gridy = 0;
-        add(new DataSetDetailsPanel(sipModel), gbc);
+        add(new DataSetUploadPanel(sipModel), gbc);
         gbc.gridx++;
         Enable enable = new Enable() {
             @Override
@@ -63,7 +64,7 @@ public class DataSetPanel extends JPanel {
         gbc.gridwidth = 2;
         add(createSouthPanel(), gbc);
         keyField.setText(sipModel.getServerAccessKey());
-        periodicListFetchTimer = new Timer(PERIODIC_LIST_FETCH_DELAY_MILLIS, new ActionListener() {
+        periodicListFetchTimer = new Timer(LIST_FETCH_DELAY_MILLIS, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 executor.execute(new ListFetcher());
@@ -88,10 +89,11 @@ public class DataSetPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sipModel.setServerAccessKey(keyField.getText().trim());
-                periodicListFetchTimer.start();
+                executor.execute(new ListFetcher());
             }
         });
         p.add(checkKey, BorderLayout.EAST);
+        errorMessage.setForeground(Color.RED);
         p.add(errorMessage, BorderLayout.SOUTH);
         return p;
     }

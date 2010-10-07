@@ -28,6 +28,7 @@ import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -36,6 +37,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -52,14 +55,15 @@ import java.awt.event.ActionListener;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class NormPanel extends JPanel {
+public class NormalizationPanel extends JPanel {
     private SipModel sipModel;
     private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
+    private JCheckBox storeNormalizedBox = new JCheckBox("Store Normalized XML");
     private JButton normalizeButton = new JButton("Normalize");
     private JButton abortButton = new JButton("Abort");
-    private JLabel normMessage = new JLabel("?", JLabel.CENTER);
+    private JLabel normalizeMessageLabel = new JLabel("?", JLabel.CENTER);
 
-    public NormPanel(SipModel sipModel) {
+    public NormalizationPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
@@ -109,26 +113,56 @@ public class NormPanel extends JPanel {
     }
 
     private JPanel createNormalizePanel() {
-        JPanel pp = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new GridLayout(0, 1, 10, 10));
+        p.add(createNormalizeTop());
+        p.add(createNormalizeBottom());
+        return p;
+    }
+
+    private JPanel createNormalizeTop() {
         JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
         progressBar.setBorderPainted(true);
-        JPanel bp = new JPanel(new GridLayout(1, 0, 8, 8));
-        bp.add(normalizeButton);
-        bp.add(discardInvalidBox);
-        pp.add(bp, BorderLayout.WEST);
-        pp.add(progressBar, BorderLayout.CENTER);
-        pp.add(abortButton, BorderLayout.EAST);
-        JPanel p  = new JPanel(new GridLayout(0,1, 10, 10));
-        p.add(pp);
-        p.add(normMessage);
+        progressBar.setStringPainted(true);
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.setBorder(BorderFactory.createTitledBorder("Progress"));
+        p.add(progressBar, BorderLayout.CENTER);
+        return p;
+    }
+
+    private JPanel createNormalizeBottom() {
+        JPanel lp = new JPanel();
+        lp.setBorder(BorderFactory.createTitledBorder("Status"));
+        lp.add(normalizeMessageLabel);
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        p.add(lp, BorderLayout.CENTER);
+        p.add(createNormalizeBottomEast(), BorderLayout.EAST);
+        return p;
+    }
+
+    private JPanel createNormalizeBottomEast() {
+        JPanel p = new JPanel(new GridLayout(1, 0, 8, 8));
+        p.setBorder(BorderFactory.createTitledBorder("Control"));
+        p.add(discardInvalidBox);
+        p.add(storeNormalizedBox);
+        p.add(normalizeButton);
+        p.add(abortButton);
+        BoundedRangeModel m = sipModel.getNormalizeProgress();
+        abortButton.setEnabled(m.getValue() > m.getMinimum() && m.getValue() < m.getMaximum());
         return p;
     }
 
     private void wireUp() {
+        sipModel.getNormalizeProgress().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                BoundedRangeModel m = sipModel.getNormalizeProgress();
+                abortButton.setEnabled(m.getValue() > m.getMinimum() && m.getValue() < m.getMaximum());
+            }
+        });
         normalizeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sipModel.normalize(discardInvalidBox.isSelected());
+                sipModel.normalize(discardInvalidBox.isSelected(), storeNormalizedBox.isSelected());
             }
         });
         abortButton.addActionListener(new ActionListener() {
@@ -160,7 +194,7 @@ public class NormPanel extends JPanel {
 
             @Override
             public void normalizationMessage(boolean complete, String message) {
-                normMessage.setText(message);
+                normalizeMessageLabel.setText(message);
             }
         });
     }

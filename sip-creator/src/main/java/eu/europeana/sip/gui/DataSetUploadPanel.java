@@ -51,7 +51,7 @@ import java.awt.event.ActionListener;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class DataSetDetailsPanel extends JPanel {
+public class DataSetUploadPanel extends JPanel {
     private static final int FIELD_SIZE = 80;
     private SipModel sipModel;
     private JTextField specField = new JTextField(FIELD_SIZE);
@@ -65,7 +65,7 @@ public class DataSetDetailsPanel extends JPanel {
     private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
     private JButton createUploadZipButton = new JButton("Create and upload ZIP File");
 
-    public DataSetDetailsPanel(SipModel sipModel) {
+    public DataSetUploadPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));

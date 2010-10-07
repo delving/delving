@@ -192,11 +192,15 @@ public class DataSetControlPanel extends JPanel {
         public String getColumnName(int columnIndex) {
             switch (columnIndex) {
                 case 0:
-                    return "spec";
+                    return "Name";
                 case 1:
-                    return "name";
+                    return "Spec";
                 case 2:
-                    return "state";
+                    return "State";
+                case 3:
+                    return "Indexed";
+                case 4:
+                    return "Total";
                 default:
                     throw new IllegalArgumentException();
             }
@@ -209,7 +213,7 @@ public class DataSetControlPanel extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return 3;
+            return 5;
         }
 
         @Override
@@ -221,11 +225,15 @@ public class DataSetControlPanel extends JPanel {
                 DataSetInfo info = list.get(rowIndex);
                 switch (columnIndex) {
                     case 0:
-                        return info.spec;
-                    case 1:
                         return info.name;
+                    case 1:
+                        return info.spec;
                     case 2:
                         return info.state;
+                    case 3:
+                        return info.recordsIndexed;
+                    case 4:
+                        return info.recordCount;
                     default:
                         throw new IllegalArgumentException();
                 }

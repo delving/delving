@@ -73,7 +73,7 @@ public interface MetaRepo {
         void addMapping(String mappingCode);
 
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
-        long getRecordCount();
+        int getRecordCount();
         Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
         List<? extends Record> records(String prefix, int start, int count, Date from, Date until) throws CannotDisseminateFormatException, BadArgumentException;
 
@@ -111,7 +111,7 @@ public interface MetaRepo {
 
         ObjectId getResumptionToken();
         Date getExpiration();
-        long getListSize();
+        int getListSize();
         int getCursor();
         List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException;
         PmhRequest getPmhRequest();

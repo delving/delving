@@ -160,6 +160,10 @@ public class SipModel {
         configuration.setServerAccessKey(key);
     }
 
+    public AnnotationProcessor getAnnotationProcessor() {
+        return annotationProcessor;
+    }
+
     public FileSet getFileSet() {
         return fileSet;
     }
@@ -329,16 +333,14 @@ public class SipModel {
         return zipProgressModel;
     }
 
-    public void normalize(final boolean discardInvalid) {
+    public void normalize(boolean discardInvalid, boolean storeNormalizedFile) {
         checkSwingThread();
         abortNormalize();
-        normalizeMessage("Normalizing...");
+        normalizeMessage("Normalizing and validating...");
         normalizer = new Normalizer(
-                fileSet,
-                annotationProcessor,
-                new RecordValidator(annotationProcessor, true),
+                this,
                 discardInvalid,
-                userNotifier,
+                storeNormalizedFile,
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count, final boolean lastRecord) {
@@ -394,11 +396,10 @@ public class SipModel {
 
     public void abortNormalize() {
         checkSwingThread();
-        normalizeProgressModel.setValue(0);
-        normalizeMessage("Normalization not yet performed.");
         final Normalizer existingNormalizer = normalizer;
         normalizer = null;
         if (existingNormalizer != null) {
+            normalizeProgressModel.setValue(0);
             existingNormalizer.abort();
         }
     }
@@ -546,8 +547,11 @@ public class SipModel {
 
     private void normalizeMessage(FileSet.Report report) {
         String message = String.format(
-                "Normalization completed on %s resulted in %d normalized records and %d discarded.",
-                report.getNormalizationDate().toString(),
+                "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
                 report.getRecordsNormalized(),
                 report.getRecordsDiscarded()
         );

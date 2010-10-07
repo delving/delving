@@ -21,7 +21,6 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
@@ -32,7 +31,7 @@ import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeModel;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.UserNotifier;
+import eu.europeana.sip.model.SipModel;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -47,14 +46,11 @@ import java.util.List;
  */
 
 public class Normalizer implements Runnable {
-    private FileSet fileSet;
-    private FileSet.Output fileSetOutput;
-    private AnnotationProcessor annotationProcessor;
-    private RecordValidator recordValidator;
+    private SipModel sipModel;
     private boolean discardInvalid;
+    private boolean storeNormalizedFile;
     private MetadataParser.Listener parserListener;
     private Listener listener;
-    private UserNotifier userNotifier;
     private volatile boolean running = true;
 
     public interface Listener {
@@ -66,36 +62,35 @@ public class Normalizer implements Runnable {
     }
 
     public Normalizer(
-            FileSet fileSet,
-            AnnotationProcessor annotationProcessor,
-            RecordValidator recordValidator,
+            SipModel sipModel,
             boolean discardInvalid,
-            UserNotifier userNotifier,
+            boolean storeNormalizedFile,
             MetadataParser.Listener parserListener,
             Listener listener
     ) {
-        this.fileSet = fileSet;
-        this.annotationProcessor = annotationProcessor;
-        this.recordValidator = recordValidator;
+        this.sipModel = sipModel;
         this.discardInvalid = discardInvalid;
-        this.userNotifier = userNotifier;
+        this.storeNormalizedFile = storeNormalizedFile;
         this.parserListener = parserListener;
         this.listener = listener;
     }
 
     public void run() {
         try {
-            String mappingCode = fileSet.getMapping();
+            String mappingCode = sipModel.getFileSet().getMapping();
             List<String> mappingLines = Arrays.asList(mappingCode.split("\n"));
             RecordRoot recordRoot = RecordRoot.fromMapping(mappingLines);
-            ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
+            ConstantFieldModel constantFieldModel = new ConstantFieldModel(sipModel.getAnnotationProcessor(), null);
             constantFieldModel.fromMapping(mappingLines);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
-            fileSetOutput = fileSet.prepareOutput();
-            fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
-            fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
+            if (storeNormalizedFile) {
+                fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
+                fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            }
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mappingCode, constantFieldModel);
-            MetadataParser parser = new MetadataParser(fileSet.getInputStream(), recordRoot, parserListener);
+            MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordRoot, parserListener);
+            RecordValidator recordValidator = new RecordValidator(sipModel.getAnnotationProcessor(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {
@@ -103,7 +98,9 @@ public class Normalizer implements Runnable {
                     List<FieldEntry> fieldEntries = FieldEntry.createList(output);
                     recordValidator.validate(record, fieldEntries);
                     String validated = FieldEntry.toString(fieldEntries, true);
-                    fileSetOutput.getOutputWriter().write(validated);
+                    if (storeNormalizedFile) {
+                        fileSetOutput.getOutputWriter().write(validated);
+                    }
                     fileSetOutput.recordNormalized();
                 }
                 catch (MappingException e) {
@@ -115,21 +112,12 @@ public class Normalizer implements Runnable {
                             fileSetOutput.recordDiscarded();
                         }
                         catch (IOException e1) {
-                            userNotifier.tellUser("Unable to write discarded record", e1);
+                            sipModel.tellUser("Unable to write discarded record", e1);
                         }
                     }
                     else {
-                        userNotifier.tellUser("Problem normalizing " + record.toString(), e);
+                        sipModel.tellUser("Problem normalizing " + record.toString(), e);
                         listener.invalidInput(e);
-// todo: is this stuff necessary?
-//                        if (e instanceof MissingPropertyException) {
-//                            MissingPropertyException mpe = (MissingPropertyException) exception;
-//                            userNotifier.tellUser("Missing property in record " + metadataRecord.getRecordNumber() + ": " + mpe.getProperty(), exception);
-//                            listener.invalidInput(metadataRecord, mpe);
-//                        }
-//                        else {
-//                            userNotifier.tellUser("Problem normalizing record " + metadataRecord.toString(), exception);
-//                        }
                         fileSetOutput.close(true);
                         running = false;
                     }
@@ -143,22 +131,24 @@ public class Normalizer implements Runnable {
                             fileSetOutput.recordDiscarded();
                         }
                         catch (IOException e1) {
-                            userNotifier.tellUser("Unable to write discarded record", e1);
+                            sipModel.tellUser("Unable to write discarded record", e1);
                         }
                     }
                     else {
-                        userNotifier.tellUser("Invalid output record", e);
+                        sipModel.tellUser("Invalid output record", e);
                         listener.invalidOutput(e);
                         fileSetOutput.close(true);
                         running = false;
                     }
                 }
                 catch (Exception e) {
-                    userNotifier.tellUser("Problem writing output", e);
+                    sipModel.tellUser("Problem writing output", e);
                     running = false;
                 }
             }
-            fileSetOutput.getOutputWriter().write("</metadata>\n");
+            if (storeNormalizedFile) {
+                fileSetOutput.getOutputWriter().write("</metadata>\n");
+            }
             fileSetOutput.close(!running);
             if (!running) {
                 parserListener.recordsParsed(0, true);
