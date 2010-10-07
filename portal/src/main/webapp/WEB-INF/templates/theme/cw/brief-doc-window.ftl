@@ -112,7 +112,6 @@
             <#include "inc_result_table_brief.ftl"/>
         </div>
 
-
         <div class="pagination">
             <@resultnav_styled/>
         </div>       
