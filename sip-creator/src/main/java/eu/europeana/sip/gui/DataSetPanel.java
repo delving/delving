@@ -5,6 +5,7 @@ import eu.europeana.sip.model.SipModel;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.swing.BorderFactory;
@@ -47,7 +48,7 @@ public class DataSetPanel extends JPanel {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.gridx = gbc.gridy = 0;
         add(new DataSetUploadPanel(sipModel), gbc);
@@ -117,7 +118,7 @@ public class DataSetPanel extends JPanel {
                     }
                 });
             }
-            catch (Exception e) {
+            catch (RestClientException e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -155,7 +156,7 @@ public class DataSetPanel extends JPanel {
                     }
                 });
             }
-            catch (Exception e) {
+            catch (RestClientException e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
