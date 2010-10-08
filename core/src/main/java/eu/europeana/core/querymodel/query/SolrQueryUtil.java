@@ -149,7 +149,11 @@ public class SolrQueryUtil {
 
         // set sort field
         if (params.containsKey("sortBy") && params.get("sortBy").length > 0) {
-            solrQuery.setSortField(params.get("sortBy")[0], SolrQuery.ORDER.asc);
+            String sortField = params.get("sortBy")[0];
+            if (sortField.equalsIgnoreCase("title")) {
+                sortField = "title_sort";
+            }
+            solrQuery.setSortField(sortField, SolrQuery.ORDER.asc);
         }
 
         //set constraints

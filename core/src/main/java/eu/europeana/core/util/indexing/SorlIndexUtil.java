@@ -57,6 +57,8 @@ public class SorlIndexUtil {
     private SolrInputDocument convertToInputDocument(SolrDocument inputDoc) {
         SolrInputDocument outputDoc = new SolrInputDocument();
         inputDoc.removeFields(USER_TAG);
+        inputDoc.removeFields("tag");
+        inputDoc.removeFields("USERTAGS");
         final Map<String, Object> fieldValueMap = inputDoc.getFieldValueMap();
         for (String field : fieldValueMap.keySet()) {
             final Collection<Object> fieldValues = inputDoc.getFieldValues(field);

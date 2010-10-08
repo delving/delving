@@ -536,7 +536,7 @@
              <field name="publisher" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="subject" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="contributor" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="tag" type="text" indexed="true" stored="tag" multiValued="true" />
+             <field name="tag" type="text" indexed="true" stored="false" multiValued="true" />
              <!-- Commented out due to the fact that Solr isn't case sensitive -->
              <!--<field name="type" type="text" indexed="true" stored="true" multiValued="true" />-->
              <field name="source" type="text" indexed="true" stored="true" multiValued="true" />
@@ -546,6 +546,7 @@
              <field name="relation" type="text" indexed="true" stored="true" multiValued="true" />
              <!-- Special index fields -->
              <field name="title" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
+             <field name="title_sort" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
              <field name="who" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
              <field name="when" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
              <field name="what" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
@@ -556,6 +557,7 @@
              <!-- comes from europeana:uri add to text later -->
              <field name="europeana_uri" type="string" indexed="true" stored="true" required="true" />
              <field name="europeana_collectionName" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+             <field name="europeana_collectionTitle" type="string" indexed="true" stored="true" required="true" multiValued="false" />
              <field name="europeana_type" type="string" indexed="true" stored="true" multiValued="false" />
              <field name="europeana_userTag" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="europeana_unstored" type="text" indexed="true" stored="false" multiValued="true" />
@@ -789,6 +791,7 @@
    <copyField source="dc_source" dest="source" />
 
    <copyField source="dc_title" dest="title" />
+   <copyField source="dc_title" dest="title_sort" />
    <copyField source="dcterms_alternative" dest="title" />
 
    <copyField source="dcterms_extent" dest="format" />
@@ -813,13 +816,13 @@
    <!-- FACETS -->
    <copyField source="europeana_type" dest="TYPE"/>
    <copyField source="dc_type" dest="DCTYPE"/>
-   <copyField source="europeana_userTag" dest="USERTAGS" />
+   <!--<copyField source="europeana_userTag" dest="USERTAGS" />-->
    <copyField source="europeana_userTag" dest="tag" />
    <copyField source="europeana_language" dest="LANGUAGE" />
    <copyField source="europeana_country" dest="COUNTRY" />
    <copyField source="europeana_year" dest="YEAR" />
    <copyField source="europeana_provider" dest="PROVIDER" />
-   <copyField source="europeana_collectionName" dest="COLLECTION" />
+   <copyField source="europeana_collectionTitle" dest="COLLECTION" />
 
    <!--<copyField source="europeana_uri" dest="identifier" />-->
    <!--<copyField source="europeana_person" dest="text" />-->

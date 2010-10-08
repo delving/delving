@@ -57,7 +57,7 @@ public class TestContentLoading {
             server.addHandler(new WebAppContext(root + "/core/src/test/solr/solr-1.4.1.war", "/solr"));
             server.start();
             LOG.info("Uploading test collection");
-            MockContentLoader contentLoader = new MockContentLoader("");
+            MockContentLoader contentLoader = new MockContentLoader("CW-D42F6D333E5FA210D64C");
             contentLoader.run();
             LOG.info("Collection ready");
         }
