@@ -16,7 +16,14 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
-
+ <#if RequestParameters.start??>
+     <#assign start = "${RequestParameters.start}"/>
+<#else>
+     <#assign start = "1"/>
+ </#if>
+ <#if RequestParameters.query??>
+     <#assign justTheQuery = "${RequestParameters.query}"/>
+ </#if>
 
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
@@ -63,6 +70,7 @@
 
          <div id="search">
             <@SearchForm "search_result"/>
+             <#--${userSubmittedQuery}-->
         </div>
 
         <div id="query_breadcrumbs">
@@ -71,7 +79,7 @@
                 <dt>Zoekresultaten voor: </dt>
                  <#if !result.matchDoc??>
                     <#list breadcrumbs as crumb>
-                        <#assign crumbFriendlyName = crumb.display?replace("YEAR:","")?replace("COLLECTION:"," ")?replace("DCTYPE:","")?html/>
+                        <#assign crumbFriendlyName = crumb.display?replace("text:","")?replace("YEAR:","")?replace("COLLECTION:"," ")?replace("DCTYPE:","")?html/>
                         <#if !crumb.last>
                             <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumbFriendlyName}</a></dd>
                         <#else>
@@ -118,7 +126,7 @@
         </div>
 
         <div id="view-select">
-            <@viewSelect/>
+            <@sortResults/><@viewSelect/>
         </div>
 
         <div class="clearfix"></div>
@@ -343,4 +351,23 @@
 
         </#if>
         </#if>
+</#macro>
+
+<#macro sortResults>
+
+        <form action="${thisPage}" method="GET" id="form-sort">
+            <input type="hidden" name="query" value="${justTheQuery}"/>
+            <input type="hidden" name="start" value="${start}"/>
+            <input type="hidden" name="view" value="${view}"/>
+            <input type="hidden" name="sortBy" id="sortBy" value=""/>
+        </form>
+
+        <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+            <option value="">Sorteren op:</option>
+            <option value="title">Titel</option>
+            <option value="dc_creator">Vervaardiger</option>
+            <option value="YEAR">Jaar</option>
+            <option value="COLLECTION">Collectie</option> 
+        </select>
+
 </#macro>

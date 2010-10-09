@@ -222,7 +222,7 @@
         <td align="left"><input type="reset" value="<@spring.message 'Erase_t' />"/></td>
         <td>&#160;</td>
         <td align="right">
-            <input id="m-searchsubmit2" type="submit" value="<@spring.message 'Search_t' />"/>
+            <input id="m-searchsubmit2" class="btn-search" type="submit" value="<@spring.message 'Search_t' />"/>
         </td>
     </tr>
 </table>
@@ -318,7 +318,7 @@
             <td align="left"></td>
             <td><input type="reset" value="<@spring.message 'Erase_t' />"/></td>
             <td align="right">
-                <input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />"/>
+                <input id="searchsubmit2" class="btn-search" type="submit" value="<@spring.message 'Search_t' />"/>
             </td>
         </tr>
     </table>
