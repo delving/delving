@@ -57,40 +57,6 @@ function showDefaultLarge(obj,iType,src){
 function imgError(){
     log.error("image not found");
 }
-/*
-
-function refineSearch(query,qf){
-   $("input#query-get").val(query);
-    var strqf = $("input#qf-get").val(qf.replace("&qf=",""));
-    strqf = strqf.replace("&amp;","&");
-    $("#form-refine-search").submit();
-}*/
-
-function sendEmail(objId){
-    $("#form-sendtoafriend").validate({
-        rules: {friendEmail: "required"},
-        messages: {friendEmail:{required:msgRequired,email:msgEmailValid}}
-    });
-    if ($("#form-sendtoafriend").valid()){
-         var message = $("#msg-send-email");
-        var email = document.getElementById("friendEmail").value;
-        $.ajax({
-           type: "POST",
-           url: "email-to-friend.ajax",
-           data: encodeURI("uri="+objId+"&email=" + email),
-           success: function(msg){
-                message.css({"display":"block","color":"green"}).html(msgSearchSaveSuccess);
-                document.getElementById("friendEmail").value = "";
-               message.delay("5000").fadeOut('slow');
-           },
-           error: function(msg) {
-               message.css({"display":"block","color":"red"}).html(msgEmailSendFail);
-               message.delay("5000").fadeOut('slow');
-           }
-         });
-    }
-    return false;
-}
 
 
 function saveQuery(className, queryToSave, queryString){
