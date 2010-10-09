@@ -299,7 +299,7 @@
     <#-- ICN FIELDS
     todo: add other fields and switch for controlled fields
     ------------------------------------------------------------------------------>
-        <#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_GOD" )>
+        <#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD" )>
 
             <#assign techniqueArr = result.fullDoc.technique />
             <#if isNonEmpty(techniqueArr)>
@@ -312,7 +312,7 @@
             <#assign materialArr = result.fullDoc.material />
             <#if isNonEmpty(materialArr)>
             <tr>
-                <th scope="row">Mteriaal:</th>
+                <th scope="row">Materiaal:</th>
                 <td><@simple_list materialArr '<br/>'/></td>
             </tr>
             </#if>
@@ -328,7 +328,7 @@
             <#assign collectionPartArr = result.fullDoc.collectionPart />
             <#if isNonEmpty(collectionPartArr)>
             <tr>
-                <th scope="row">Collectie:</th>
+                <th scope="row">Deelcollectie:</th>
                 <td><@simple_list collectionPartArr '<br/>'/></td>
             </tr>
             </#if>
@@ -336,7 +336,7 @@
             <#assign acquisitionMeansArr = result.fullDoc.acquisitionMeans />
             <#if isNonEmpty(acquisitionMeansArr)>
             <tr>
-                <th scope="row">acquisitionMeans:</th>
+                <th scope="row">Wijze van verwerving:</th>
                 <td><@simple_list acquisitionMeansArr '<br/>'/></td>
             </tr>
             </#if>
@@ -344,7 +344,7 @@
             <#assign acquisitionYearArr = result.fullDoc.acquisitionYear />
             <#if isNonEmpty(acquisitionYearArr)>
             <tr>
-                <th scope="row">acquisitionYear:</th>
+                <th scope="row">Jaar van Verwerving:</th>
                 <td><@simple_list acquisitionYearArr '<br/>'/></td>
             </tr>
             </#if>
@@ -352,7 +352,7 @@
             <#assign purchasePriceArr = result.fullDoc.purchasePrice />
             <#if isNonEmpty(collectionPartArr)>
             <tr>
-                <th scope="row">purchasePrice:</th>
+                <th scope="row">Aankoopbedrag:</th>
                 <td><@simple_list purchasePriceArr '<br/>'/></td>
             </tr>
             </#if>
@@ -360,7 +360,7 @@
             <#assign acquiredWithHelpFromArr = result.fullDoc.acquiredWithHelpFrom />
             <#if isNonEmpty(acquiredWithHelpFromArr)>
             <tr>
-                <th scope="row">acquiredWithHelpFrom:</th>
+                <th scope="row">Verworven met steun van:</th>
                 <td><@simple_list acquiredWithHelpFromArr '<br/>'/></td>
             </tr>
             </#if>
@@ -368,7 +368,7 @@
             <#assign physicalStateArr = result.fullDoc.physicalState />
             <#if isNonEmpty(physicalStateArr)>
             <tr>
-                <th scope="row">physicalState:</th>
+                <th scope="row">Fysieke staat:</th>
                 <td><@simple_list physicalStateArr '<br/>'/></td>
             </tr>
             </#if>

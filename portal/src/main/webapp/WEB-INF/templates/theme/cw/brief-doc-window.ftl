@@ -45,11 +45,20 @@
             <span><a href="/${portalName}/index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
         </div>
 
+
+        <h2>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h2>
+
+        <br/>
+
         <#include "inc_facets_lists.ftl"/>
 
     </div>
 
     <div id="right-col" class="grid_9">
+
+         <div id="search">
+            <@SearchForm "search_result"/>
+        </div>
 
         <div id="query_breadcrumbs">
 
@@ -57,10 +66,11 @@
                 <dt>Zoekresultaten voor: </dt>
                  <#if !result.matchDoc??>
                     <#list breadcrumbs as crumb>
+                        <#assign crumbFriendlyName = crumb.display?replace("YEAR:","")?replace("COLLECTION:"," ")?replace("DCTYPE:","")?html/>
                         <#if !crumb.last>
-                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a></dd>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumbFriendlyName}</a></dd>
                         <#else>
-                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</dd>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumbFriendlyName}</dd>
                         </#if>
                     </#list>
                 <#else>
@@ -82,8 +92,7 @@
          </div>
 
         <div id="query_info">
-        
-            <h2>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h2>
+
             <h3>
                   <@spring.message 'Results_t' /> ${pagination.getStart()?c} -
                     ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}

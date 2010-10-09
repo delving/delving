@@ -38,8 +38,8 @@
             <#case "DCTYPE"> <#--note: was type before-->
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
-               <div class="toggler-c ${togglerClass}" title="Per type">
-               <noscript><h4>Per type:</h4></noscript>
+               <div class="toggler-c ${togglerClass}" title="Per soort object">
+               <noscript><h4>Per soort object:</h4></noscript>
                <#assign columsize = 1>
                </#if>
                <#break/>
@@ -97,9 +97,7 @@
     </#list>
     <#if seq?size &gt; 0>
         <h3><@spring.message 'Actions_t'/>:</h3>
-        <p>
-            <a href="/${portalName}/index.html">Opnieuw zoeken</a>
-        </p>
+
         <p>
             <#if user??>
                 <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
