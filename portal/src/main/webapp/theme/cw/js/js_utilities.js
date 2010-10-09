@@ -87,15 +87,15 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 $(document).ready(function() {
 
     // instantiate the advanced search dialog overlay
-    $("#search_advanced").dialog({
-        autoOpen: false,
-        resizable: false,  
-        modal: true,
-        bgiframe: true,
-        closeOnEscape: true,
-        draggable: true,
-        width: 355
-    });
+//    $("#search_advanced").dialog({
+//        autoOpen: false,
+//        resizable: false,
+//        modal: true,
+//        bgiframe: true,
+//        closeOnEscape: true,
+//        draggable: true,
+//        width: 355
+//    });
     // click event on advanced search href
 //    $('#href-advanced').click(function() {
 //            $('#search_advanced').dialog('open');
@@ -106,10 +106,11 @@ $(document).ready(function() {
 
     var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");
         buttons.addClass("fg-button ui-state-default ui-corner-all");
-        buttons.css({'padding':'0.2em'});
+        buttons.css({'padding':'0.2em .25em'});
 // Todo: when icons added FF does not render them in the desired position
-//        buttons.filter(".btn-search")
-//                .addClass("fg-button-icon-right")
+        buttons.filter(".btn-search")
+                .addClass("fg-button-icon-right")
+                .css({"background":"#01689b","border":"1px solid #000000","color":"#ffffff","width":"50px"})
 //                .append("<span class='ui-icon ui-icon-search'></span>");
 //        buttons.filter(".btn-add")
 //                .addClass("fg-button-icon-right")
@@ -117,7 +118,7 @@ $(document).ready(function() {
 //        buttons.filter(".btn-email")
 //                .addClass("fg-button-icon-right")
 //                .append("<span class='ui-icon ui-icon-mail-closed'></span>");
-    // ui button hover states
+//    ui button hover states
 	$(function(){
 		//all hover and click logic for buttons
 		$(".fg-button:not(.ui-state-disabled)")

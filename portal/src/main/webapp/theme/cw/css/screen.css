@@ -216,15 +216,29 @@ text-decoration: none;
 	background:#cce0f1;
 }
 
+/* SEARCH *************************************************************************************************************************/
+
+/*#search .search_home *, #search .search_result * {*/
+   /*font-size: 1.1em;*/
+/*}*/
+
 #search .search_home
 {
-	margin:0 0 4em;
+	margin:0 0 4em 0;
+    padding: 1.5em;
+    width: auto;
+}
+
+#search .search_result {
+    margin: 2em 0 0 0;
+    padding: 2em;
 }
 
 #search .search_home input.txt-input,#search .search_result input.txt-input
 {
-	margin:0 1em;
+	margin:0 .5em;
 	width:300px;
+    padding: .3em;
 }
 
 #search .search_advanced h1
@@ -248,7 +262,7 @@ text-decoration: none;
 	width:75px;
 }
 
-#search #search_simple,#results table td,.related-thumb-container
+#results table td,.related-thumb-container
 {
 	padding:0;
 }
@@ -257,6 +271,8 @@ text-decoration: none;
 {
 	text-align:left;
 }
+
+
 
 /* Results page **********************************************************************************/
 #query_breadcrumbs

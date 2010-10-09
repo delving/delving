@@ -82,7 +82,8 @@
                     <option value="COLLECTION">Collectie</option>
                   </select>
             <input class="txt-input" name="query" id="query" type="text" title="${portalDisplayName} Search" maxlength="75" />
-            <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
+            <#--<input id="submit_search"  type="submit" value="<@spring.message 'Search_t' />" />-->
+            <button type="submit" class="btn-search"><@spring.message 'Search_t' /></button>
             <a href="/${portalName}/advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
         <#--<#if query?? && query?length &gt; 0 && enableRefinedSearch??>-->
@@ -194,7 +195,7 @@
     <#case "advancedsearch.html">
     <#assign pageId = "adv"/>
     <#assign bodyId = "advancedsearch"/>
-    <title>Instituut Collectie Nederland Ð Uitgebreid zoeken</title>
+    <title>Instituut Collectie Nederland - Uitgebreid zoeken</title>
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "brd"/>
@@ -326,9 +327,9 @@
 
                 <ul class="nav_main">
                     <li <#if pageId="in">class="current"</#if>><a href="/${portalName}/index.html">Home</a></li>
-                    <li><a href="/${portalName}/digitale-collectie.dml">Over de Digitale Collectie Nederland</a></li>
-                    <li><a href="/${portalName}/deelname.dml">Deelname</a></li>
-                    <li><a href="/${portalName}/gebruik.dml">Gebruik</a></li>
+                    <li <#if pageId="/${portalName}/digitale-collectie.dml">class="current"</#if>><a href="/${portalName}/digitale-collectie.dml">Over de Digitale Collectie Nederland</a></li>
+                    <li <#if pageId="/${portalName}/deelname.dml">class="current"</#if>><a href="/${portalName}/deelname.dml">Deelname</a></li>
+                    <li <#if pageId="/${portalName}/gebruik.dml">class="current"</#if>><a href="/${portalName}/gebruik.dml">Gebruik</a></li>
                 </ul>
             </div>
         </div>
