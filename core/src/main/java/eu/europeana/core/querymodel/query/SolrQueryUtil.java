@@ -153,6 +153,9 @@ public class SolrQueryUtil {
             if (sortField.equalsIgnoreCase("title")) {
                 sortField = "title_sort";
             }
+            else if (sortField.equalsIgnoreCase("creator")) {
+                sortField = "creator_sort";
+            }
             solrQuery.setSortField(sortField, SolrQuery.ORDER.asc);
         }
 
