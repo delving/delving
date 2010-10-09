@@ -95,7 +95,7 @@
     <#else>
 
         <#assign thisPage = "static-page.dml"/>
-        <#assign pageId = "static"/>
+        <#assign pageId = page.path/>
         <#include "inc_header.ftl"/>
         <div class="grid_12">
             <div id="content" class="content-preview">
