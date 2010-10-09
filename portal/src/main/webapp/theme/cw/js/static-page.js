@@ -16,7 +16,7 @@ $(document).ready(function() {
         theme_advanced_buttons2 : "",
         theme_advanced_statusbar_location : "bottom",
         content_css : baseThemePath+"/css/reset-text-grid.css,"+baseThemePath+"/css/type.css,"+baseThemePath+"/css/screen.css,"+baseThemePath+"/css/colors.css",
-        external_image_list_url : "/${portalName}/_.img?javascript=true",
+        external_image_list_url : portalName+"/_.img?javascript=true",
         template_external_list_url : baseThemePath+"/js/tiny-templates.js"
     })
 
