@@ -102,7 +102,8 @@
             <#if user??>
                 <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
             <#else>
-                <a class="disabled" href="#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                <a class="disabled" href="#" onclick="highLight('mustlogin'); showMessage('#mustLoginMsg', 'U moet inloggen of registreren'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                <div id="mustLoginMsg" class="hide"></div>
             </#if>
         </p>
         <span id="msg-save-search" class="hide"></span>

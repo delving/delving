@@ -97,13 +97,13 @@
     <div class="related-links">
 
         <p>
-            <a href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;">Bewaar</a>
+            <a href="login.html" class="disabled" onclick="highLight('mustlogin'); showMessage('#mustLoginMsg', 'U moet inloggen of registreren'); return false;">Bewaar</a>
         </p>
 
         <p>
-            <a href="login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
+            <a href="login.html" class="disabled" onclick="highLight('mustlogin'); showMessage('#mustLoginMsg', 'U moet inloggen of registreren'); return false;"><@spring.message 'AddATag_t' /></a>
         </p>
-
+        <div id="mustLoginMsg" class="hide"></div>
 
     </div>
 </#if>

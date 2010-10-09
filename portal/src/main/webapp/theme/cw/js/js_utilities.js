@@ -19,6 +19,13 @@ function highLight(oId){
     return false;
 }
 
+function showMessage(msgTarget, msg){
+    if($(msgTarget).length > 0) {
+        $(msgTarget).html(msg).show();
+        $(msgTarget).delay("3000").fadeOut("slow");
+    }
+}
+
 function ContactMe(prefix,suffix){
     var m =  Array(109,97,105,108,116,111,58);
     var s = '';
