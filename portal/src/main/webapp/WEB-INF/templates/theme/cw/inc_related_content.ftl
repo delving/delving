@@ -53,9 +53,14 @@
     <p>
         <!-- AddThis Button BEGIN -->
 
-        <a href="http://www.addthis.com/bookmark.php" class="addthis_button" style="text-decoration:none;">
+        <a
+                href="http://www.addthis.com/bookmark.php?v=250&username=collectiewijzer"
+                class="addthis_button"
+                style="text-decoration:none;"
+                addthis:title="${postTitle}"
+         >
             <img src="http://s7.addthis.com/static/btn/sm-plus.gif"  width="16" height="16" border="0" alt="Share" />
-            Delen
+            Deel deze pagina
         </a>
         <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=collectiewijzer"></script>
         <script type="text/javascript">
@@ -68,10 +73,11 @@
     </p>
 
 <#if user??>
-
-    <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">
-        <span class="ui-icon ui-icon-disk"></span>Bewaar
-    </a>
+    <p>
+        <a href="#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">
+            Bewaar dit object
+        </a>
+    </p>    
     <span id="msg-save-item" class="hide"></span>
 
     <div class="clear"></div>

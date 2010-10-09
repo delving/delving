@@ -61,22 +61,25 @@
 
     <div id="right-col" class="grid_9">
 
-        <#--<div id="search">-->
-            <#--<@SearchForm "search_result"/>-->
-        <#--</div>-->
+        <div id="search">
+            <@SearchForm "search_result"/>
+        </div>
 
-        <#--<div class="clear"></div>-->
+        <div class="clear"></div>
+
         <#if pagination??>
+
         <div id="query_breadcrumbs">
 
             <dl>
                 <dt><@spring.message 'MatchesFor_t' />:</dt>
                 <#if !query?starts_with("europeana_uri:")>
                     <#list pagination.breadcrumbs as crumb>
+                    <#assign crumbFriendlyName = crumb.display?replace("YEAR:","")?replace("COLLECTION:"," ")?replace("DCTYPE:","")?html/>
                         <#if !crumb.last>
-                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumb.display?html}</a></dd>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="/${portalName}/brief-doc.html?${crumb.href}">${crumbFriendlyName}</a></dd>
                         <#else>
-                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumb.display?html}</dd>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumbFriendlyName}</dd>
                         </#if>
                     </#list>
                  <#else>
@@ -97,6 +100,7 @@
             </dl>
 
         </div>
+
         </#if>
             
         <div class="clear"></div>
@@ -160,13 +164,6 @@
                                 >
                                     <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
                                 </a>
-
-                <#if user??>
-                <a href="#"  class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">
-                    <span class="ui-icon ui-icon-disk"></span>Bewaar
-                </a>
-                <span id="msg-save-item" class="hide"></span>
-                </#if>
 
             </#if>
 
