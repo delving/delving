@@ -298,6 +298,16 @@ text-decoration: none;
 	padding-left:1.25em;
 }
 
+#query_breadcrumbs dl dt,#query_breadcrumbs dl dd,ul.nav_query_breadcrumbs li
+{
+	display:inline;
+}
+
+#query_breadcrumbs dl dd.nobg,ul.nav_query_breadcrumbs li.nobg
+{
+	background:none;
+}
+
 #query_breadcrumbs h3
 {
 	float:left;
@@ -659,16 +669,6 @@ table.user-options .ui-icon
 .breadcrumb em,table.item caption
 {
 	display:none;
-}
-
-#query_breadcrumbs dl dt,#query_breadcrumbs dl dd,ul.nav_query_breadcrumbs li
-{
-	display:inline;
-}
-
-#query_breadcrumbs dl dd.nobg,ul.nav_query_breadcrumbs li.nobg
-{
-	background:none;
 }
 
 #results table,.pagination
