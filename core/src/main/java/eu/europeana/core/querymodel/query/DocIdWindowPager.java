@@ -53,4 +53,6 @@ public interface DocIdWindowPager {
     void setPortalName(String portalName);
 
     void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException, EuropeanaQueryException;
+
+    String getSortBy();
 }

@@ -20,7 +20,12 @@
 
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
-<#if RequestParameters.tab?exists>
+<#assign sortBy = ""/>
+<#if RequestParameters.sortBy??>
+    <#assign sortBy = RequestParameters.sortBy/>
+</#if>
+
+<#if RequestParameters.tab??>
 <#assign tab = RequestParameters.tab/>
 <#switch RequestParameters.tab>
     <#case "text"><#assign showText = "ui-state-active"/><#break/>
@@ -82,7 +87,7 @@
          </div>
 
         <div id="query_info">
-        
+
             <h2>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h2>
             <h3>
                   <@spring.message 'Results_t' /> ${pagination.getStart()?c} -
@@ -115,7 +120,7 @@
 
         <div class="pagination">
             <@resultnav_styled/>
-        </div>       
+        </div>
 
     </div>
 
@@ -158,7 +163,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
+                                href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}&sortBy=${sortBy}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -179,7 +184,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}&sortBy=${sortBy}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message 'AltPreviousPage_t' />"
                     style="margin: 0 8px;"
@@ -187,7 +192,7 @@
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
             </a>
             <a
-                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}&sortBy=${sortBy}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message 'AltNextPage_t' />"
                     >
@@ -215,7 +220,7 @@
                 <li>
                     <#if link.linked>
                         <#assign lstart = link.start/>
-                            <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">
+                            <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}&sortBy=${sortBy}">
                                 ${link.display?c}
                             </a>
                      <#else>
@@ -234,7 +239,7 @@
             </#if>
                 <li>
                     <a
-                            href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                            href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}&sortBy=${sortBy}"
                             alt="<@spring.message 'AltPreviousPage_t' />"
                             class="${uiClassStatePrev}"
                             >
@@ -243,7 +248,7 @@
                 </li>
                 <li>
                     <a
-                            href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                            href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}&sortBy=${sortBy}"
                             alt="<@spring.message 'AltNextPage_t' />"
                             class="${uiClassStateNext}"
                             >
