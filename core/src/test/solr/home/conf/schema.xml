@@ -529,6 +529,7 @@
              <field name="location" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="date" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="creator" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="creator_sort" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
              <field name="format" type="text" indexed="true" stored="false" multiValued="true" />
              <field name="publisher" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="subject" type="text" indexed="true" stored="true" multiValued="true" />
