@@ -6,6 +6,7 @@
 // ConstantField europeana_provider The European Library
 // ConstantField europeana_dataProvider The European Library
 // ConstantField europeana_language mul
+// ConstantField europeana_collectionTitle Tel Treasures
 // ConstantField europeana_collectionName 92001_Ag_EU_TELtreasures
 // ConstantField europeana_country europe
 // ConstantField europeana_rights unknown
@@ -31,6 +32,10 @@ output.record {
 
 //<<<europeana_collectionName
 europeana.collectionName europeana_collectionName
+//>>>
+
+//<<<europeana_collectionId
+europeana.collectionTitle europeana_collectionTitle
 //>>>
 
 //<<<europeana_language

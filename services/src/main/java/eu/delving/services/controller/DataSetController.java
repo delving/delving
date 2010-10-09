@@ -117,7 +117,7 @@ public class DataSetController {
                     if (!enable) {
                         dataSet.setState(MetaRepo.DataSetState.DISABLED);
                         dataSet.setRecordsIndexed(0);
-                        solrServer.deleteByQuery(dataSet.getSpec());
+                        solrServer.deleteByQuery("europeana_collectionName:" + dataSet.getSpec());
                     }
                     break;
                 case UPLOADED:

@@ -289,7 +289,7 @@
                 <th><@spring.message 'UserTags_t' /></th>
                 <td>
                         <#list socialTags as userTag>
-                            <a href="/${portalName}/brief-doc.html?query=europeana_userTag:${userTag}&view=${view}">${userTag}</a>
+                            <a href="/${portalName}/brief-doc.html?query=tag:${userTag}&view=${view}">${userTag}</a>
                             <#if userTag_has_next>, </#if>
                         </#list>
                 </td>

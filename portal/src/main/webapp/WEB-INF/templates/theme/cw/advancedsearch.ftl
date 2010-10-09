@@ -210,6 +210,7 @@
         <td>
         <select name="sortBy" class="form_11">
             <option selected="selected" value="">-</option>
+            <option value="title">Titel</option>
             <option value="YEAR">Jaar</option>
             <option value="COLLECTION">Collectie</option>
         </select>
@@ -305,6 +306,7 @@
             <td>
                 <select name="sortBy" class="form_11">
                     <option selected="selected" value="">-</option>
+                    <option value="title">Titel</option>
                     <option value="YEAR">Jaar</option>
                     <option value="COLLECTION">Collectie</option>
                 </select>

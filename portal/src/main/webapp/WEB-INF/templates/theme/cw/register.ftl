@@ -39,10 +39,10 @@
             <fieldset id="pt2">
 
                 <legend><span>Step </span>2. <span>: Login details</span></legend>
-                <h3><@spring.message 'UserNameChoose_t' />.</h3>
+                <h3>Gebruikersnaam.</h3>
 
                 <div class="help"><@spring.message 'UserNameExplain_t' />.</div>
-                <label for="userName">Username</label>
+                <label for="userName">Gebruikersnaam</label>
             <@spring.formInput "command.userName"/>
             <@spring.bind "command.userName" />
             <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>

@@ -17,7 +17,6 @@ import collection.immutable.List
 
 @RunWith(classOf[JUnitRunner])
 class BreadCrumbSpec extends Spec with ShouldMatchers {
-
   val queryString = "single query"
   val encodedQueryString = URLEncoder.encode(queryString, "utf-8")
   val filterPrefix = "&qf="
@@ -43,6 +42,7 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
       it("should have the query flagged as last") {
         breadcrumb.isLast should be(true)
       }
+
     }
 
     describe("(when given a SolrQuery with FilterQueries)") {
@@ -74,6 +74,12 @@ class BreadCrumbSpec extends Spec with ShouldMatchers {
             filterQueries.take(index + 1).mkString(start = queryPrefix + filterPrefix, sep = filterPrefix, end = "")
           }
         }
+      }
+
+
+      it("should have all filterQueries marked as true for filterQueries and field + value should be non-empty") {
+        list.head.getField.isEmpty should be (true)
+        list.tail.forall(_.getField.isEmpty) should be (false)
       }
     }
 

@@ -20,7 +20,12 @@
 
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
-<#if RequestParameters.tab?exists>
+<#assign sortBy = ""/>
+<#if RequestParameters.sortBy??>
+    <#assign sortBy = RequestParameters.sortBy/>
+</#if>
+
+<#if RequestParameters.tab??>
 <#assign tab = RequestParameters.tab/>
 <#switch RequestParameters.tab>
     <#case "text"><#assign showText = "ui-state-active"/><#break/>
@@ -124,7 +129,7 @@
 
         <div class="pagination">
             <@resultnav_styled/>
-        </div>       
+        </div>
 
     </div>
 

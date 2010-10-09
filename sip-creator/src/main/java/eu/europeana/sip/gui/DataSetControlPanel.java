@@ -59,7 +59,7 @@ public class DataSetControlPanel extends JPanel {
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(toggleButton, BorderLayout.SOUTH);
         selectDataSetInfo(null);
-        setPreferredSize(new Dimension(600, 500));
+        setPreferredSize(new Dimension(480, 500));
         wireUp();
     }
 

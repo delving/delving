@@ -631,6 +631,11 @@ public class FullBean extends BriefBean implements FullDoc {
     }
 
     @Override
+    public String getEuropeanaCollectionTitle() {
+        return returnStringOrElse(europeanaCollectionTitle);
+    }
+
+    @Override
     public String[] getCreatorYearOfBirth() {
         return returnArrayOrElse(creatorYearOfBirth);
     }

@@ -158,4 +158,6 @@ public interface FullDoc {
     String[] getAcquiredWithHelpFrom();
 
     String[] getPhysicalState();
+
+    String getEuropeanaCollectionTitle();
 }

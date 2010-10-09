@@ -38,6 +38,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String format;
     private String siwa;
     private String tab;
+    private String sortBy;
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
 
@@ -88,6 +89,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.pageId = fetchParameter(httpParameters, "pageId", "");
         this.format = fetchParameter(httpParameters, "format", "");
         this.siwa = fetchParameter(httpParameters, "siwa", "");
+        this.sortBy = fetchParameter(httpParameters, "sortBy", "");
         if (this.pageId != null) {
             this.setReturnToResults(httpParameters);
         }
@@ -196,6 +198,9 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         if (!siwa.isEmpty()) {
             out.append("&siwa=").append(siwa);
         }
+        if (!sortBy.isEmpty()) {
+            out.append("&sortBy=").append(sortBy);
+        }
         out.append("&rtr=true");
         returnToResults = out.toString();
     }
@@ -213,6 +218,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         out.append("&start=").append(nextInt);
         out.append("&startPage=").append(startPage);
         out.append("&pageId=").append(pageId);
+        out.append("&sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
@@ -243,6 +249,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         out.append("&start=").append(previousInt);
         out.append("&startPage=").append(startPage);
         out.append("&pageId=").append(pageId);
+        out.append("&sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
@@ -372,6 +379,11 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public String getTab() {
         return tab;
+    }
+
+    @Override
+    public String getSortBy() {
+        return sortBy;
     }
 
     // todo fix this it throws an nullPointerException now

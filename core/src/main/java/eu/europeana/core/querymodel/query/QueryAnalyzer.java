@@ -24,9 +24,7 @@ package eu.europeana.core.querymodel.query;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 
 import java.text.MessageFormat;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * The query is an advanced query when the query string contains - " AND ", " OR ", " NOT " (both uppercase) - a fielded
@@ -64,6 +62,9 @@ public class QueryAnalyzer {
                 }
                 else {
                     if (annotationProcessor.getFieldNameList().contains(field)) {
+                        return QueryType.ADVANCED_QUERY;
+                    }
+                    else if ("tag".equalsIgnoreCase(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
                     else {
