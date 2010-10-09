@@ -50,20 +50,23 @@
 
 <h3><@spring.message 'Actions_t'/>:</h3>
 
-        <p>
+    <p>
+        <!-- AddThis Button BEGIN -->
 
-        <#-- TODO: add proper title url for this -->
-
-            <a addthis:title="Somber beeld" addthis:url="" class="addthis_button" onclick="javascript:_gaq.push(['_trackEvent','outbound-article','www.addthis.com']);" href="http://www.addthis.com/bookmark.php?v=250&amp;username=collectiewijzer">
-                <img width="83" height="16" alt="Bookmark and Share" style="border: 0pt none;" src="http://s7.addthis.com/static/btn/v2/sm-share-nl.gif"></a>
-
-        </p>
+        <a href="http://www.addthis.com/bookmark.php" class="addthis_button" style="text-decoration:none;">
+            <img src="http://s7.addthis.com/static/btn/sm-plus.gif"  width="16" height="16" border="0" alt="Share" />
+            Delen
+        </a>
+        <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=collectiewijzer"></script>
         <script type="text/javascript">
             var addthis_config = {
                 ui_language: "nl",
                 ui_click: true
             }
         </script>
+        <!-- AddThis Button END -->
+    </p>
+
 <#if user??>
 
     <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');">
