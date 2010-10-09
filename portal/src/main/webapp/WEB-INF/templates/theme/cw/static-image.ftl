@@ -19,7 +19,7 @@
                      <table summary="List of existing images" class="user-options">
                         <#list imagePathList as imagePath>
                             <tr>
-
+                                <td width="50"><img src="${imagePath}" alt="thumbnail" height="20"/></td>
                                 <td width="300"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
                                 <td width="85"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span>Bewerken</a></td>
                                 <td width="85">
