@@ -58,13 +58,28 @@
                         <input type="hidden" name="userEmail" value="${user.email}"/>
                         <tr>
                             <td width="150">${user.email}</td>
-                            <td width="150">${user.role}</td>
+                            <td width="150">
+                                <#switch user.role>
+                                    <#case "ROLE_GOD">
+                                        The great a
+                                    <#break>
+                                    <#case "ROLE_RESEARCH_USER">
+                                         Museometrie Gebruiker
+                                    <#break>
+                                    <#case "ROLE_ADMINISTRATOR">
+                                          Administrator
+                                    <#break>
+                                    <#case "ROLE_USER">
+                                          Gewone Gebruiker
+                                    <#break>
+                                </#switch>
+                            </td>
                             <td width="200">
                                 <select name="newRole">
                                     <option>Kies een rol</option>
                                     <option value="ROLE_RESEARCH_USER">Museometrie Gebruiker</option>
                                     <option value="ROLE_ADMINISTRATOR">Administrator</option>
-                                    <option value="ROLE_USER">Gewoon Gebruiker</option>
+                                    <option value="ROLE_USER">Gewone Gebruiker</option>
                                 </select>
                             </td>
                             <td><input type="submit" value="zet nu"/> </td>
