@@ -365,7 +365,7 @@
         <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
             <option value="">Sorteren op:</option>
             <option value="title">Titel</option>
-            <option value="dc_creator">Vervaardiger</option>
+            <option value="creator">Vervaardiger</option>
             <option value="YEAR">Jaar</option>
             <option value="COLLECTION">Collectie</option> 
         </select>

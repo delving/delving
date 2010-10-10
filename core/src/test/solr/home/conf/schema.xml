@@ -525,30 +525,30 @@
    <field name="spell" type="textSpell" indexed="true" stored="true" multiValued="true" />
 
      <!-- Europeana special fields: These are the general search fields -->
-             <field name="description" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-             <field name="location" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="date" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="description" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
+             <field name="location" type="text" indexed="true" stored="false" multiValued="true" />
+             <field name="date" type="text" indexed="true" stored="false" multiValued="true" />
              <field name="creator" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="creator_sort" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
              <field name="format" type="text" indexed="true" stored="false" multiValued="true" />
-             <field name="publisher" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="subject" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="contributor" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="publisher" type="text" indexed="true" stored="false" multiValued="true" />
+             <field name="subject" type="text" indexed="true" stored="false" multiValued="true" />
+             <field name="contributor" type="text" indexed="true" stored="false" multiValued="true" />
              <field name="tag" type="text" indexed="true" stored="false" multiValued="true" />
              <!-- Commented out due to the fact that Solr isn't case sensitive -->
              <!--<field name="type" type="text" indexed="true" stored="true" multiValued="true" />-->
-             <field name="source" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="language" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="rights" type="text" indexed="true" stored="true" multiValued="true" />
-             <field name="identifier" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="relation" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="source" type="text" indexed="true" stored="false" multiValued="true" />
+             <field name="language" type="text" indexed="true" stored="false" multiValued="true" />
+             <field name="rights" type="text" indexed="true" stored="false" multiValued="true" />
+             <field name="identifier" type="string" indexed="true" stored="false" multiValued="true" />
+             <field name="relation" type="text" indexed="true" stored="false" multiValued="true" />
              <!-- Special index fields -->
              <field name="title" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
              <field name="title_sort" type="alphaOnlySort" indexed="true" stored="false" multiValued="true" termVectors="true"/>
-             <field name="who" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-             <field name="when" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-             <field name="what" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-             <field name="where" type="text" indexed="true" stored="true" multiValued="true" termVectors="true"/>
+             <field name="who" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
+             <field name="when" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
+             <field name="what" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
+             <field name="where" type="text" indexed="true" stored="false" multiValued="true" termVectors="true"/>
 
      <!-- Special Europeana fields ESE + -->
              <!--<field name="year" type="text_ws" indexed="true" stored="true" multiValued="true" />-->
@@ -566,9 +566,9 @@
              <field name="europeana_isShownBy" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="europeana_language" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="europeana_year" type="string" indexed="true" stored="true" multiValued="true" />
-             <field name="europeana_provider" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="europeana_provider" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="europeana_dataProvider" type="text" indexed="true" stored="true" multiValued="false" />
              <field name="europeana_hasObject" type="boolean" indexed="true" stored="true" multiValued="false" />
-             <field name="europeana_dataProvider" type="string" indexed="true" stored="true" multiValued="false" />
              <field name="europeana_rights" type="string" indexed="true" stored="true" multiValued="false" />
 
              <!-- Europeana Facets -->
@@ -580,6 +580,7 @@
              <field name="DCTYPE" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="YEAR" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="PROVIDER" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="DATAPROVIDER" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="COLLECTION" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="COUNTRY" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="USERTAGS" type="string" indexed="true" stored="true" multiValued="true" />
@@ -769,6 +770,7 @@
 
    <copyField source="dc_contributor" dest="creator" />
    <copyField source="dc_creator" dest="creator" />
+   <copyField source="dc_creator" dest="creator_sort" />
 
    <copyField source="dc_date" dest="date" />
    <copyField source="dcterms_created" dest="date" />
@@ -820,6 +822,7 @@
    <copyField source="europeana_country" dest="COUNTRY" />
    <copyField source="europeana_year" dest="YEAR" />
    <copyField source="europeana_provider" dest="PROVIDER" />
+   <copyField source="europeana_dataProvider" dest="DATAPROVIDER" />
    <copyField source="europeana_collectionTitle" dest="COLLECTION" />
 
    <!--<copyField source="europeana_uri" dest="identifier" />-->
