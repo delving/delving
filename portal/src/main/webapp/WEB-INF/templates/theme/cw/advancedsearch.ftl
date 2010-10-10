@@ -211,6 +211,7 @@
         <select name="sortBy" class="form_11">
             <option selected="selected" value="">-</option>
             <option value="title">Titel</option>
+            <option value="creator">Vervaardiger</option>
             <option value="YEAR">Jaar</option>
             <option value="COLLECTION">Collectie</option>
         </select>
@@ -307,6 +308,7 @@
                 <select name="sortBy" class="form_11">
                     <option selected="selected" value="">-</option>
                     <option value="title">Titel</option>
+                    <option value="creator">Vervaardiger</option>
                     <option value="YEAR">Jaar</option>
                     <option value="COLLECTION">Collectie</option>
                 </select>
