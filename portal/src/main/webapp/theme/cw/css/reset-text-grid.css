@@ -67,49 +67,49 @@ table {
 /* `Basic HTML
 ----------------------------------------------------------------------------------------------------*/
 
-body {
-	font: 13px/1.5 Arial, Helvetica, 'Liberation Sans', FreeSans, sans-serif;
-}
+/*body {*/
+	/*font: 13px/1.5 Arial, Helvetica, 'Liberation Sans', FreeSans, sans-serif;*/
+/*}*/
 
-a:focus {
-	outline: 1px dotted invert;
-}
+/*a:focus {*/
+	/*outline: 1px dotted invert;*/
+/*}*/
 
-hr {
-	border: 0 #ccc solid;
-	border-top-width: 1px;
-	clear: both;
-	height: 0;
-}
+/*hr {*/
+	/*border: 0 #ccc solid;*/
+	/*border-top-width: 1px;*/
+	/*clear: both;*/
+	/*height: 0;*/
+/*}*/
 
-/* `Headings
-----------------------------------------------------------------------------------------------------*/
-h1, h2, h3, h4 {
-    color: #555;
-}
-h1 {
-	font-size: 22px;
-}
+/* `Headings*/
+/*----------------------------------------------------------------------------------------------------*/
+/*h1, h2, h3, h4 {*/
+    /*color: #555;*/
+/*}*/
+/*h1 {*/
+	/*font-size: 22px;*/
+/*}*/
 
-h2 {
-	font-size: 20px;
-}
+/*h2 {*/
+	/*font-size: 20px;*/
+/*}*/
 
-h3 {
-	font-size: 19px;
-}
+/*h3 {*/
+	/*font-size: 19px;*/
+/*}*/
 
-h4 {
-	font-size: 16px;
-}
+/*h4 {*/
+	/*font-size: 16px;*/
+/*}*/
 
-h5 {
-	font-size: 14px;
-}
+/*h5 {*/
+	/*font-size: 14px;*/
+/*}*/
 
-h6 {
-	font-size: 12px;
-}
+/*h6 {*/
+	/*font-size: 12px;*/
+/*}*/
 
 /* `Spacing
 ----------------------------------------------------------------------------------------------------*/

@@ -338,6 +338,13 @@ ul.nav_query_breadcrumbs
 	float:right;
 }
 
+#view-select a:link {
+  margin: .25em 0 0 1em;
+    float: right;
+}
+#view-select select {
+  float: left;
+}
 #results table caption
 {
 	clear:both;

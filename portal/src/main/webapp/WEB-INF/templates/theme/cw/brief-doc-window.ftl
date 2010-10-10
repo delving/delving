@@ -354,20 +354,18 @@
 </#macro>
 
 <#macro sortResults>
+    <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+        <option value="">Sorteren op:</option>
+        <option value="title">Titel</option>
+        <option value="dc_creator">Vervaardiger</option>
+        <option value="YEAR">Jaar</option>
+        <option value="COLLECTION">Collectie</option>
+    </select>
 
-        <form action="${thisPage}" method="GET" id="form-sort">
-            <input type="hidden" name="query" value="${justTheQuery}"/>
-            <input type="hidden" name="start" value="${start}"/>
-            <input type="hidden" name="view" value="${view}"/>
-            <input type="hidden" name="sortBy" id="sortBy" value=""/>
-        </form>
-
-        <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-            <option value="">Sorteren op:</option>
-            <option value="title">Titel</option>
-            <option value="dc_creator">Vervaardiger</option>
-            <option value="YEAR">Jaar</option>
-            <option value="COLLECTION">Collectie</option> 
-        </select>
-
+    <form action="${thisPage}" method="GET" id="form-sort" style="display:none;">
+        <input type="hidden" name="query" value="${justTheQuery}"/>
+        <input type="hidden" name="start" value="${start}"/>
+        <input type="hidden" name="view" value="${view}"/>
+        <input type="hidden" name="sortBy" id="sortBy" value=""/>
+    </form>
 </#macro>
