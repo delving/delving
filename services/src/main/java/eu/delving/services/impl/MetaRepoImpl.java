@@ -537,6 +537,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DBObject object;
         private MetadataFormat metadataFormat;
         private RecordValidator recordValidator = new RecordValidator(annotationProcessor, false);
+        private MappingRunner mappingRunner;
 
         private MappingImpl(DataSetImpl dataSet, DBObject object) throws BadArgumentException {
             this.dataSet = dataSet;
@@ -565,10 +566,7 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         private void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
-            ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
-            constantFieldModel.fromMapping(Arrays.asList(getGroovyCode().split("\n")));
-            ToolCodeModel toolCodeModel = new ToolCodeModel();
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + getGroovyCode(), constantFieldModel);
+            MappingRunner mappingRunner = getMappingRunner();
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
             int invalidCount = 0;
             Iterator<? extends MetaRepo.Record> walk = records.iterator();
@@ -598,6 +596,16 @@ public class MetaRepoImpl implements MetaRepo {
             if (invalidCount > 0) {
                 log.info(String.format("%d invalid records discarded", invalidCount));
             }
+        }
+
+        private MappingRunner getMappingRunner() {
+            if (mappingRunner == null) {
+                ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
+                constantFieldModel.fromMapping(Arrays.asList(getGroovyCode().split("\n")));
+                ToolCodeModel toolCodeModel = new ToolCodeModel();
+                mappingRunner = new MappingRunner(toolCodeModel.getCode() + getGroovyCode(), constantFieldModel);
+            }
+            return mappingRunner;
         }
     }
 

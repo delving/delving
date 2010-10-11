@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringWriter;
 
 /**
@@ -45,7 +44,6 @@ public class MappingRunner {
     private String code;
     private Script script;
     private ConstantFieldModel constantFieldModel;
-    private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
     public MappingRunner(String code, ConstantFieldModel constantFieldModel) {
         this.code = code;
@@ -86,7 +84,7 @@ public class MappingRunner {
             StringBuilder out = new StringBuilder();
             for (Object o : e.getErrorCollector().getErrors()) {
                 SyntaxErrorMessage message = (SyntaxErrorMessage) o;
-                SyntaxException se = message.getCause();
+                @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"}) SyntaxException se = message.getCause();
                 // line numbers will not match
                 out.append(String.format("Problem: %s\n", se.getOriginalMessage()));
             }
