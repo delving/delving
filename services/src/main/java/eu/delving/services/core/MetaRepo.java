@@ -74,7 +74,7 @@ public interface MetaRepo {
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
         void addMapping(String mappingCode);
 
-        Map<String,? extends Mapping> mappings() throws BadArgumentException;
+        Map<String,Mapping> mappings() throws BadArgumentException;
         int getRecordCount();
         Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
         List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
@@ -167,11 +167,9 @@ public interface MetaRepo {
     public interface Mapping {
         MetadataFormat getMetadataFormat();
         String getGroovyCode();
-        boolean isAccessKeyRequired();
 
         String CODE = "code";
         String FORMAT = "format";
-        String ACCESS_KEY_REQUIRED = "accessKeyRequired";
     }
 
 

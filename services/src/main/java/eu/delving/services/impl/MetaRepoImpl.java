@@ -417,10 +417,10 @@ public class MetaRepoImpl implements MetaRepo {
             format.put(MetadataFormat.PREFIX, prefix);
             format.put(MetadataFormat.NAMESPACE, namespace);
             format.put(MetadataFormat.SCHEMA, schema);
+            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
             DBObject mapping = new BasicDBObject();
             mapping.put(Mapping.FORMAT, format);
             mapping.put(Mapping.CODE, mappingCode);
-            mapping.put(Mapping.ACCESS_KEY_REQUIRED, accessKeyRequired);
             mappings.put(prefix, mapping);
             saveObject();
         }
@@ -436,13 +436,19 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public Map<String, ? extends Mapping> mappings() throws BadArgumentException {
-            Map<String, MappingImpl> mappingMap = new TreeMap<String, MappingImpl>();
-            DBObject mappings = (DBObject) object.get(MAPPINGS);
-            if (mappings != null) {
-                for (String prefix : mappings.keySet()) {
-                    mappingMap.put(prefix, new MappingImpl(this, (DBObject) mappings.get(prefix)));
+        public Map<String, Mapping> mappings() throws BadArgumentException {
+            Map<String, Mapping> mappingMap = new TreeMap<String, Mapping>();
+            DBObject mappingsObject = (DBObject) object.get(MAPPINGS);
+            if (mappingsObject != null) {
+                for (String prefix : mappingsObject.keySet()) {
+                    mappingMap.put(prefix, new MappingImpl(this, (DBObject) mappingsObject.get(prefix)));
                 }
+                // WORKAROUND: ICN format filtered of all <icn:*> is ESE
+                Mapping icnMapping = mappingMap.get("icn");
+                if (icnMapping != null) {
+                    mappingMap.put("ese", new FakeESEMappingImpl((MappingInternal)icnMapping));
+                }
+                // WORKAROUND: ICN format filtered of all <icn:*> is ESE
             }
             return mappingMap;
         }
@@ -466,7 +472,7 @@ public class MetaRepoImpl implements MetaRepo {
                     for (String nsPrefix : namespacesObject.keySet()) {
                         namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
                     }
-                    ((MappingImpl) mapping).map(list, namespaces);
+                    ((MappingInternal) mapping).map(list, namespaces);
                 }
                 return list.isEmpty() ? null : list.get(0);
             }
@@ -488,7 +494,7 @@ public class MetaRepoImpl implements MetaRepo {
                 for (String nsPrefix : namespacesObject.keySet()) {
                     namespaces.put(nsPrefix, (String) namespacesObject.get(nsPrefix));
                 }
-                ((MappingImpl) mapping).map(list, namespaces);
+                ((MappingInternal) mapping).map(list, namespaces);
             }
             return list;
         }
@@ -507,7 +513,7 @@ public class MetaRepoImpl implements MetaRepo {
                 if (mapping == null) {
                     throw new CannotDisseminateFormatException(String.format("No mapping found to prefix %s", prefix));
                 }
-                if (mapping.isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
+                if (mapping.getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
                     log.warn("Access key violation for mapped format "+prefix);
                     throw new CannotDisseminateFormatException(String.format("Mapping to metadata format requires access key, but %s is not valid", accessKey));
                 }
@@ -532,7 +538,92 @@ public class MetaRepoImpl implements MetaRepo {
         }
     }
 
-    private class MappingImpl implements Mapping, Comparable<Mapping> {
+    private interface MappingInternal {
+        void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException;
+    }
+
+    // for now we pretend that we have an ESE mapping
+    private class FakeESEMappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
+
+        private MappingInternal icnMapping;
+        private ESEMetadataFormat eseMetadataFormat = new ESEMetadataFormat();
+
+        private FakeESEMappingImpl(MappingInternal icnMapping) {
+            this.icnMapping = icnMapping;
+        }
+
+        @Override
+        public MetadataFormat getMetadataFormat() {
+            return eseMetadataFormat;
+        }
+
+        @Override
+        public String getGroovyCode() {
+            return null;  // there is none!
+        }
+
+        @Override
+        public int compareTo(Mapping o) {
+            return getMetadataFormat().getPrefix().compareTo(o.getMetadataFormat().getPrefix());
+        }
+
+        @Override
+        public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
+            icnMapping.map(records, namespaces);
+            for (Record record : records) {
+                List<FieldEntry> entries = FieldEntry.createList(record.getXmlString("icn"));
+                Iterator<FieldEntry> walk = entries.iterator();
+                while (walk.hasNext()) {
+                    FieldEntry entry = walk.next();
+                    if (entry.getTag().startsWith("icn")) {
+                        walk.remove();
+                    }
+                }
+                String recordString = FieldEntry.toString(entries, false);
+                ((RecordImpl)record).addFormat(getMetadataFormat(), recordString);
+            }
+        }
+
+        private class ESEMetadataFormat implements MetadataFormat {
+
+            @Override
+            public String getPrefix() {
+                return "ese";
+            }
+
+            @Override
+            public void setPrefix(String value) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public String getSchema() {
+                return "http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd";
+            }
+
+            @Override
+            public void setSchema(String value) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public String getNamespace() {
+                return "http://www.europeana.eu/schemas/ese/";
+            }
+
+            @Override
+            public void setNamespace(String value) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public boolean isAccessKeyRequired() {
+                return false;  // ESE is free-for-all
+            }
+        }
+    }
+
+    private class MappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
         private DataSetImpl dataSet;
         private DBObject object;
         private MetadataFormat metadataFormat;
@@ -556,16 +647,12 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public boolean isAccessKeyRequired() {
-            return (Boolean) object.get(ACCESS_KEY_REQUIRED);
-        }
-
-        @Override
         public int compareTo(Mapping o) {
             return getMetadataFormat().getPrefix().compareTo(o.getMetadataFormat().getPrefix());
         }
 
-        private void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
+        @Override
+        public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
             MappingRunner mappingRunner = getMappingRunner();
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
             int invalidCount = 0;
@@ -655,7 +742,8 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public boolean isAccessKeyRequired() {
-            return (Boolean) object.get(ACCESS_KEY_REQUIRED);
+            Boolean isIt = (Boolean) object.get(ACCESS_KEY_REQUIRED);
+            return isIt == null ? Boolean.FALSE : isIt;
         }
 
         @Override
