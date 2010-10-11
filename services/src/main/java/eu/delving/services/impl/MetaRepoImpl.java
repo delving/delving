@@ -368,6 +368,7 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void setState(DataSetState dataSetState) {
             object.put(DATA_SET_STATE, dataSetState.toString());
+            object.removeField(ERROR_MESSAGE);
         }
 
         @Override
