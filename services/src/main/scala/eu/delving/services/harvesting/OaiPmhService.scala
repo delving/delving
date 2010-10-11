@@ -29,7 +29,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   private val log = Logger.getLogger(getClass());
 
   private val VERB = "verb"
-  private val legalParameterKeys = List("verb", "identifier", "metadataPrefix", "set", "from", "until", "resumptionToken")
+  private val legalParameterKeys = List("verb", "identifier", "metadataPrefix", "set", "from", "until", "resumptionToken", "accessKey")
   private[harvesting] val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
   private[harvesting] val utcDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -162,7 +162,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val identifier = pmhRequestEntry.pmhRequestItem.identifier.split(":").last
 
     // otherwise only list the formats available for the identifier
-    val metadataFormats = if (identifier.isEmpty) metaRepo.getMetadataFormats else metaRepo.getMetadataFormats(identifier)
+    val metadataFormats = if (identifier.isEmpty) metaRepo.getMetadataFormats else metaRepo.getMetadataFormats(identifier, pmhRequestEntry.pmhRequestItem.accessKey)
 
     def formatRequest() : Elem = if (!identifier.isEmpty) <request verb="ListMetadataFormats" identifier={identifier}>{request.getRequestURL}</request>
                                     else <request verb="ListMetadataFormats">{request.getRequestURL}</request>
@@ -251,7 +251,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
     val identifier = pmhRequest.identifier
     val metadataFormat = pmhRequest.metadataPrefix
 
-    val record = metaRepo.getRecord(identifier, metadataFormat)
+    val record = metaRepo.getRecord(identifier, metadataFormat, pmhRequest.accessKey)
     if (record == null) return createErrorResponse("idDoesNotExist")
 
     var elem : Elem =
@@ -282,7 +282,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
   private def createFirstHarvestStep(item: PmhRequestItem) : HarvestStep = {
     val from = getDate(item.from)
     val until = getDate(item.until)
-    metaRepo.getFirstHarvestStep(item.verb, item.set, from, until, item.metadataPrefix)
+    metaRepo.getFirstHarvestStep(item.verb, item.set, from, until, item.metadataPrefix, item.accessKey)
   }
 
   private[harvesting] def getDate(dateString: String): Date = {
@@ -334,9 +334,15 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 
   def createPmhRequest(params: HashMap[String, String], verb: PmhVerb): PmhRequestEntry = {
     def getParam(key: String) = params.getOrElse(key, "")
-    val pmh = PmhRequestItem(verb,
-      getParam("set"), getParam("from"), getParam("until"),
-      getParam("metadataPrefix"), getParam("identifier"))
+    val pmh = PmhRequestItem(
+      verb,
+      getParam("set"),
+      getParam("from"),
+      getParam("until"),
+      getParam("metadataPrefix"),
+      getParam("identifier"),
+      getParam("accessKey")
+      )
     PmhRequestEntry(pmh, getParam("resumptionToken"))
   }
 
@@ -372,7 +378,7 @@ class OaiPmhService(request: HttpServletRequest, metaRepo: MetaRepo) {
 </OAI-PMH>
   }
 
-  case class PmhRequestItem(verb: PmhVerb, set: String, from: String, until: String, metadataPrefix: String, identifier: String)
+  case class PmhRequestItem(verb: PmhVerb, set: String, from: String, until: String, metadataPrefix: String, identifier: String, accessKey: String)
   case class PmhRequestEntry(pmhRequestItem: PmhRequestItem, resumptionToken: String)
 
 }

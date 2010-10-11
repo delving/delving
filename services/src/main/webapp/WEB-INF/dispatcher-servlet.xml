@@ -34,8 +34,6 @@
 
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 
-    <bean id="serviceAccessToken" class="eu.delving.core.rest.ServiceAccessToken"/>
-
     <bean id="dataSetXmlView" class="org.springframework.web.servlet.view.xml.MarshallingView">
        <constructor-arg>
           <bean class="org.springframework.oxm.xstream.XStreamMarshaller">

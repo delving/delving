@@ -171,7 +171,8 @@ public class DataSetController {
                             details.getDescription(),
                             details.getPrefix(),
                             details.getNamespace(),
-                            details.getSchema()
+                            details.getSchema(),
+                            true // accessKeyRequired true for now
                     );
                 }
                 else {

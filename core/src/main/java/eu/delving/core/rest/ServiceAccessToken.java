@@ -23,10 +23,11 @@ public class ServiceAccessToken {
     }
 
     public boolean checkKey(String key) {
-        if (servicesPassword == null) {
-            throw new RuntimeException("Services Key not set!");
-        }
-        return checkKey(key, servicesPassword);
+        return servicesPassword != null && checkKey(key, servicesPassword);
+    }
+
+    public String createKey(String prefix) {
+        return createKey(prefix, servicesPassword);
     }
 
     static boolean checkKey(String key, String servicesPassword) {

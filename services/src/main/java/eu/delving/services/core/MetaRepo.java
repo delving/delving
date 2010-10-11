@@ -27,7 +27,7 @@ import java.util.Set;
 
 public interface MetaRepo {
 
-    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema) throws BadArgumentException;
+    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema, boolean accessKeyRequired) throws BadArgumentException;
 
     Collection<? extends DataSet> getDataSets() throws BadArgumentException;
 
@@ -39,15 +39,15 @@ public interface MetaRepo {
 
     Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException;
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id) throws BadArgumentException, CannotDisseminateFormatException;
+    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) throws NoRecordsMatchException, BadArgumentException;
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws NoRecordsMatchException, BadArgumentException;
 
     HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException;
 
     void removeExpiredHarvestSteps();
 
-    Record getRecord(String identifier, String metadataFormat) throws CannotDisseminateFormatException, BadArgumentException;
+    Record getRecord(String identifier, String metadataFormat, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
 
     MetaConfig getMetaRepoConfig();
 
@@ -76,8 +76,8 @@ public interface MetaRepo {
 
         Map<String,? extends Mapping> mappings() throws BadArgumentException;
         int getRecordCount();
-        Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
-        List<? extends Record> records(String prefix, int start, int count, Date from, Date until) throws CannotDisseminateFormatException, BadArgumentException;
+        Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
+        List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
 
         String SPEC = "spec";
         String NAME = "name";
@@ -127,6 +127,7 @@ public interface MetaRepo {
         String CURSOR = "cursor";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
+        String ACCESS_KEY = "access";
     }
 
     public interface PmhRequest {
@@ -166,9 +167,11 @@ public interface MetaRepo {
     public interface Mapping {
         MetadataFormat getMetadataFormat();
         String getGroovyCode();
+        boolean isAccessKeyRequired();
 
         String CODE = "code";
         String FORMAT = "format";
+        String ACCESS_KEY_REQUIRED = "accessKeyRequired";
     }
 
 
@@ -187,10 +190,12 @@ public interface MetaRepo {
         void setSchema(String value);
         String getNamespace();
         void setNamespace(String value);
+        boolean isAccessKeyRequired();
 
         String PREFIX = "prefix";
         String SCHEMA = "schema";
         String NAMESPACE = "namespace";
+        String ACCESS_KEY_REQUIRED = "accessKeyRequired";
     }
 
     public enum PmhVerb {

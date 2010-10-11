@@ -29,14 +29,13 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
+    <bean id="serviceAccessToken" class="eu.delving.core.rest.ServiceAccessToken"/>
+
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
     <bean id="metaRepoConfig" class="eu.delving.services.impl.MetaConfigImpl"/>
 
     <bean id="metadataRepository" class="eu.delving.services.impl.MetaRepoImpl">
-        <property name="mongo" ref="mongo"/>
-        <property name="annotationProcessor" ref="annotationProcessor"/>
-        <property name="metaRepoConfig" ref="metaRepoConfig"/>
         <property name="responseListSize" value="#{launchProperties['services.pmh.responseListSize']}"/>
         <property name="harvestStepSecondsToLive" value="180"/>
     </bean>

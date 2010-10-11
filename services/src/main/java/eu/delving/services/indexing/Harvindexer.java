@@ -1,6 +1,7 @@
 package eu.delving.services.indexing;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.ImportException;
@@ -64,6 +65,9 @@ public class Harvindexer {
 
     @Value("#{launchProperties['services.url']}")
     private String servicesUrl;
+
+    @Autowired
+    private ServiceAccessToken serviceAccessToken;
 
     @Autowired
     private UserDao userDao;
@@ -192,7 +196,7 @@ public class Harvindexer {
                 enableDataSet();
             }
             catch (ImportException e) {
-                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
+                log.warn("Problem importing " + collection + " to database", e);
                 collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
                 collection = consoleDao.updateCollection(collection);
                 recordProblem(e);
@@ -231,7 +235,15 @@ public class Harvindexer {
         }
 
         private void importPmh(EuropeanaCollection collection) throws ImportException, IOException, TransformerException, XMLStreamException, SolrServerException, BadArgumentException {
-            HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s", servicesUrl, metadataPrefix, collection.getName()));
+            String accessKey = serviceAccessToken.createKey("HARVINDEXER");
+            String url = String.format(
+                    "%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s&accessKey=%s",
+                    servicesUrl,
+                    metadataPrefix,
+                    collection.getName(),
+                    accessKey
+            );
+            HttpMethod method = new GetMethod(url);
             httpClient.executeMethod(method);
             InputStream inputStream = method.getResponseBodyAsStream();
             String resumptionToken = importXmlInternal(inputStream);
