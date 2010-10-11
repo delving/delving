@@ -88,7 +88,7 @@ public class AnalysisPanel extends JPanel {
         this.sipModel = sipModel;
         this.constantFieldPanel = new ConstantFieldPanel(sipModel);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
         gbc.weighty = 0.5;
@@ -104,7 +104,7 @@ public class AnalysisPanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 0;
         add(createVariablesPanel(), gbc);
-        
+
         gbc.gridx = 1;
         gbc.gridy = 1;
         add(constantFieldPanel, gbc);
@@ -118,14 +118,14 @@ public class AnalysisPanel extends JPanel {
     }
 
     private JPanel createTreePanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Document Structure"));
         statisticsJTree = new JTree(sipModel.getAnalysisTreeModel());
         statisticsJTree.getModel().addTreeModelListener(new Expander());
         statisticsJTree.setCellRenderer(new AnalysisTreeCellRenderer());
         statisticsJTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         p.add(scroll(statisticsJTree), BorderLayout.CENTER);
-        JPanel bp = new JPanel(new GridLayout(1,0,10,10));
+        JPanel bp = new JPanel(new GridLayout(1, 0, 5, 5));
         selectRecordRootButton.setEnabled(false);
         selectRecordRootButton.setForeground(Color.RED);
         bp.add(selectRecordRootButton);
@@ -137,7 +137,7 @@ public class AnalysisPanel extends JPanel {
     }
 
     private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
         JPanel tablePanel = new JPanel(new BorderLayout());
         JTable statsTable = new JTable(sipModel.getStatisticsTableModel(), createStatsColumnModel());

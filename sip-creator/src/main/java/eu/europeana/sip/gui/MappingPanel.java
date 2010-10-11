@@ -87,7 +87,7 @@ public class MappingPanel extends JPanel {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
         gbc.weightx = gbc.weighty = 1;
@@ -135,7 +135,7 @@ public class MappingPanel extends JPanel {
     }
 
     private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -149,7 +149,7 @@ public class MappingPanel extends JPanel {
     }
 
     private JPanel createFieldMappingListPanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
         mappingList = new JList(sipModel.getFieldMappingListModel());
         mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -162,7 +162,7 @@ public class MappingPanel extends JPanel {
     private JPanel createButtonPanel() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(30, 10, 30, 10);
+        gbc.insets = new Insets(20, 5, 20, 5);
         gbc.gridy = gbc.gridx = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         createMappingButton.setEnabled(false);
@@ -173,7 +173,7 @@ public class MappingPanel extends JPanel {
         gbc.gridy++;
         removeMappingButton.setEnabled(false);
         p.add(removeMappingButton, gbc);
-        p.setPreferredSize(new Dimension(350, 300));
+//        p.setPreferredSize(new Dimension(250, 300));
         return p;
     }
 

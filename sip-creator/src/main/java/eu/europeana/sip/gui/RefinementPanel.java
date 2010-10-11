@@ -81,7 +81,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createLeftSide() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         // input panel
         gbc.gridx = gbc.gridy = 0;
@@ -98,7 +98,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createRightSide() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         // record panel
         gbc.gridheight = 1;

@@ -66,6 +66,7 @@ public class SipCreatorGUI extends JFrame {
         }
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
+//        setSize(1024, 768);
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 

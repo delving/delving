@@ -30,10 +30,9 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -49,27 +48,17 @@ public class RecordPanel extends JPanel {
     private JButton nextButton = new JButton("Next");
 
     public RecordPanel(SipModel sipModel, CompileModel compileModel) {
-        super(new GridBagLayout());
+        super(new BorderLayout(5, 5));
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Parsed Record"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
-        gbc.gridx = gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 0.99;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
         JTextArea area = new JTextArea(compileModel.getInputDocument());
         area.setEditable(false);
-        add(scroll(area), gbc);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth = 1;
-        gbc.gridy++;
-        gbc.weighty = 0.01;
-        add(nextButton, gbc);
-        gbc.gridx++;
-        add(rewindButton, gbc);
-        setPreferredSize(new Dimension(300, 500));
+        JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
+        grid.add(nextButton);
+        grid.add(rewindButton);
+        add(scroll(area), BorderLayout.CENTER);
+        add(grid, BorderLayout.SOUTH);
+        setPreferredSize(new Dimension(240, 500));
         wireUp();
     }
 
@@ -77,7 +66,7 @@ public class RecordPanel extends JPanel {
         JScrollPane scroll = new JScrollPane(content);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setPreferredSize(new Dimension(300, 300));
+        scroll.setPreferredSize(new Dimension(240, 300));
         return scroll;
     }
 

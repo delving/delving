@@ -17,9 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -45,25 +43,19 @@ public class DataSetPanel extends JPanel {
     private Timer periodicListFetchTimer;
 
     public DataSetPanel(SipModel sipModel) {
-        super(new GridBagLayout());
+        super(new BorderLayout(8, 8));
         this.sipModel = sipModel;
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.VERTICAL;
-        gbc.gridx = gbc.gridy = 0;
-        add(new DataSetUploadPanel(sipModel), gbc);
-        gbc.gridx++;
         Enable enable = new Enable() {
             @Override
             public void setEnabled(String datasetSpec, boolean enable) {
                 executor.execute(new XAbler(datasetSpec, enable));
             }
         };
-        add(dataSetControlPanel = new DataSetControlPanel(enable), gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        add(createSouthPanel(), gbc);
+        JPanel grid = new JPanel(new GridLayout(1, 0, 8, 8));
+        grid.add(new DataSetUploadPanel(sipModel));
+        grid.add(dataSetControlPanel = new DataSetControlPanel(enable));
+        add(grid, BorderLayout.CENTER);
+        add(createSouthPanel(), BorderLayout.SOUTH);
         keyField.setText(sipModel.getServerAccessKey());
         periodicListFetchTimer = new Timer(LIST_FETCH_DELAY_MILLIS, new ActionListener() {
             @Override
@@ -82,10 +74,6 @@ public class DataSetPanel extends JPanel {
     }
 
     private JPanel createSouthPanel() {
-        JPanel p = new JPanel(new BorderLayout(6, 6));
-        p.setBorder(BorderFactory.createTitledBorder("Services Access"));
-        p.add(new JLabel("Access Key:"), BorderLayout.WEST);
-        p.add(keyField, BorderLayout.CENTER);
         checkKey.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -93,10 +81,16 @@ public class DataSetPanel extends JPanel {
                 executor.execute(new ListFetcher());
             }
         });
-        p.add(checkKey, BorderLayout.EAST);
         errorMessage.setForeground(Color.RED);
-        p.add(errorMessage, BorderLayout.SOUTH);
-        return p;
+        JPanel flow = new JPanel();
+        flow.add(new JLabel("Access Key:"));
+        flow.add(keyField);
+        flow.add(checkKey);
+        JPanel grid = new JPanel(new GridLayout(0, 1, 4, 4));
+        grid.setBorder(BorderFactory.createTitledBorder("Services Access"));
+        grid.add(flow);
+        grid.add(errorMessage);
+        return grid;
     }
 
     private class ListFetcher implements Runnable {

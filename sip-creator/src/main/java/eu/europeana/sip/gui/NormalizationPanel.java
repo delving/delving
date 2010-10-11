@@ -67,7 +67,7 @@ public class NormalizationPanel extends JPanel {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridy = 0;
         gbc.weightx = 0.333;
         gbc.weighty = 0.99;
@@ -113,34 +113,25 @@ public class NormalizationPanel extends JPanel {
     }
 
     private JPanel createNormalizePanel() {
-        JPanel p = new JPanel(new GridLayout(0, 1, 10, 10));
-        p.add(createNormalizeTop());
-        p.add(createNormalizeBottom());
+        JPanel p = new JPanel(new BorderLayout(5, 5));
+        p.add(createNormalizeCenter(), BorderLayout.CENTER);
+        p.add(createNormalizeEast(), BorderLayout.EAST);
         return p;
     }
 
-    private JPanel createNormalizeTop() {
+    private JPanel createNormalizeCenter() {
         JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
         progressBar.setBorderPainted(true);
         progressBar.setStringPainted(true);
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Progress"));
-        p.add(progressBar, BorderLayout.CENTER);
+        p.add(progressBar);
+        p.add(normalizeMessageLabel);
         return p;
     }
 
-    private JPanel createNormalizeBottom() {
-        JPanel lp = new JPanel();
-        lp.setBorder(BorderFactory.createTitledBorder("Status"));
-        lp.add(normalizeMessageLabel);
-        JPanel p = new JPanel(new BorderLayout(10, 10));
-        p.add(lp, BorderLayout.CENTER);
-        p.add(createNormalizeBottomEast(), BorderLayout.EAST);
-        return p;
-    }
-
-    private JPanel createNormalizeBottomEast() {
-        JPanel p = new JPanel(new GridLayout(1, 0, 8, 8));
+    private JPanel createNormalizeEast() {
+        JPanel p = new JPanel(new GridLayout(2, 0, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Control"));
         p.add(discardInvalidBox);
         p.add(storeNormalizedBox);

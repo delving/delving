@@ -128,11 +128,11 @@ public class DataSetControlPanel extends JPanel {
 
     private boolean enableAction(DataSetInfo info) {
         switch (DataSetState.valueOf(info.state)) {
-            case UPLOADED:
             case INDEXING:
             case ENABLED:
             case QUEUED:
                 return false;
+            case UPLOADED:
             case DISABLED:
             case ERROR:
                 return true;
