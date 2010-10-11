@@ -361,8 +361,19 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
+        public String getErrorMessage() {
+            return (String) object.get(ERROR_MESSAGE);
+        }
+
+        @Override
         public void setState(DataSetState dataSetState) {
             object.put(DATA_SET_STATE, dataSetState.toString());
+        }
+
+        @Override
+        public void setErrorState(String message) {
+            setState(DataSetState.ERROR);
+            object.put(ERROR_MESSAGE, message);
         }
 
         @Override

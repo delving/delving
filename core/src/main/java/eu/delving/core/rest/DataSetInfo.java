@@ -15,4 +15,5 @@ public class DataSetInfo {
     public String state;
     public Integer recordsIndexed;
     public Integer recordCount;
+    public String errorMessage;
 }

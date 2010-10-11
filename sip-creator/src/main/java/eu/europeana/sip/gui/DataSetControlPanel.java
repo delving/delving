@@ -33,7 +33,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -96,6 +99,10 @@ public class DataSetControlPanel extends JPanel {
                 }
             }
         });
+        TableColumnModel tableColumnModel = table.getColumnModel();
+        for(int column = 0; column < tableColumnModel.getColumnCount(); column++) {
+            tableColumnModel.getColumn(column).setCellRenderer(new RowRenderer());
+        }
     }
 
     private void selectDataSetInfo(DataSetInfo dataSetInfo) {
@@ -242,4 +249,26 @@ public class DataSetControlPanel extends JPanel {
 
     }
 
+    class RowRenderer extends DefaultTableCellRenderer {
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row, int column
+        ) {
+            super.getTableCellRendererComponent(
+                    table, value, isSelected,
+                    hasFocus, row, column
+            );
+            DataSetInfo rowInfo = dataSetTableModel.get(row);
+            if (rowInfo != null && rowInfo.errorMessage != null) {
+                setToolTipText(rowInfo.errorMessage);
+            }
+            else {
+                setToolTipText(null);
+            }
+            return this;
+        }
+    }
 }

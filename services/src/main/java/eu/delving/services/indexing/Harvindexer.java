@@ -189,76 +189,75 @@ public class Harvindexer {
                     collection.setCollectionState(CollectionState.EMPTY);
                 }
                 collection = consoleDao.updateCollection(collection);
-                MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
-                if (dataSet == null) {
-                    throw new RuntimeException("Expected to find data set for " + collection.getName());
-                }
-                dataSet.setState(MetaRepo.DataSetState.ENABLED);
-                dataSet.save();
+                enableDataSet();
             }
             catch (ImportException e) {
                 log.warn("Problem importing " + collection + " to database, moving to error directory", e);
                 collection = consoleDao.setImportError(collection.getId(), exceptionToErrorString(e));
                 collection = consoleDao.updateCollection(collection);
+                recordProblem(e);
             }
-            catch (BadArgumentException e) {
-                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
-            } catch (IOException e) {
-                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
-            } catch (SolrServerException e) {
-                log.warn("Problem importing " + collection + " to database, moving to error directory", e);
-            } finally {
+            catch (Exception e) {
+                recordProblem(e);
+            }
+            finally {
                 processors.remove(this);
                 thread = null;
             }
         }
 
-        private void importPmh(EuropeanaCollection collection) throws ImportException {
+        private void enableDataSet() throws BadArgumentException {
+            MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
+            if (dataSet == null) {
+                throw new RuntimeException("Expected to find data set for " + collection.getName());
+            }
+            dataSet.setState(MetaRepo.DataSetState.ENABLED);
+            dataSet.save();
+        }
+
+        private void recordProblem(Exception ex) {
+            log.warn("Problem importing " + collection + ", to ERROR state.", ex);
             try {
-                HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s", servicesUrl, metadataPrefix, collection.getName()));
-                httpClient.executeMethod(method);
-                InputStream inputStream = method.getResponseBodyAsStream();
-                String resumptionToken = importXmlInternal(inputStream);
-                while (!resumptionToken.isEmpty()) {
-                    method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&resumptionToken=%s", servicesUrl, resumptionToken));
-                    httpClient.executeMethod(method);
-                    inputStream = method.getResponseBodyAsStream();
-                    resumptionToken = importXmlInternal(inputStream);
-                    MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
-                    if (dataSet == null) {
-                        throw new RuntimeException("Data set not found!");
-                    }
-                    if (dataSet.getState() != MetaRepo.DataSetState.INDEXING) {
-                        break;
-                    }
+                MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
+                if (dataSet == null) {
+                    throw new RuntimeException("Expected to find data set for " + collection.getName());
                 }
+                dataSet.setErrorState(ex.getMessage());
+                dataSet.save();
             }
-            catch (IOException e) {
-                throw new ImportException("Problem reading the XML file", e);
+            catch (BadArgumentException e) {
+                throw new RuntimeException(e);
             }
-            catch (TransformerException e) {
-                throw new ImportException("Problem transforming the XML file", e);
-            }
-            catch (XMLStreamException e) {
-                throw new ImportException("Problem streaming the XML file", e);
-            }
-            catch (SolrServerException e) {
-                throw new ImportException("Problem sending to Solr", e);
-            }
-            catch (Exception e) {
-                throw new ImportException("Unknown problem", e);
+        }
+
+        private void importPmh(EuropeanaCollection collection) throws ImportException, IOException, TransformerException, XMLStreamException, SolrServerException, BadArgumentException {
+            HttpMethod method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&metadataPrefix=%s&set=%s", servicesUrl, metadataPrefix, collection.getName()));
+            httpClient.executeMethod(method);
+            InputStream inputStream = method.getResponseBodyAsStream();
+            String resumptionToken = importXmlInternal(inputStream);
+            while (!resumptionToken.isEmpty()) {
+                method = new GetMethod(String.format("%s/oai-pmh?verb=ListRecords&resumptionToken=%s", servicesUrl, resumptionToken));
+                httpClient.executeMethod(method);
+                inputStream = method.getResponseBodyAsStream();
+                resumptionToken = importXmlInternal(inputStream);
+                MetaRepo.DataSet dataSet = metaRepo.getDataSet(collection.getName());
+                if (dataSet == null) {
+                    throw new RuntimeException("Data set not found!");
+                }
+                if (dataSet.getState() != MetaRepo.DataSetState.INDEXING) {
+                    break;
+                }
             }
         }
 
 
-        private String importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, ImportException, SolrServerException {
+        private String importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, SolrServerException, ImportException {
             XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
             EuropeanaId europeanaId = null;
             String resumptionToken = "";
             int recordCount = 0;
-            int objectCount = 0;
             boolean isInMetadataBlock = false;
             long startTime = System.currentTimeMillis();
             SolrInputDocument solrInputDocument = null;
@@ -269,7 +268,10 @@ public class Harvindexer {
                         break;
 
                     case XMLStreamConstants.START_ELEMENT:
-                        if (isMetadataElement(xml)) {
+                        if (isErrorElement(xml)) {
+                            throw new ImportException(xml.getElementText());
+                        }
+                        else if (isMetadataElement(xml)) {
                             isInMetadataBlock = true;
                         }
                         else if (isRecordElement(xml) && isInMetadataBlock) {
@@ -285,9 +287,6 @@ public class Harvindexer {
                             String text = xml.getElementText();
                             if (field.europeana().id()) {
                                 europeanaId.setEuropeanaUri(text);
-                            }
-                            else if (field.europeana().object()) {
-                                objectCount++;
                             }
                             else if (field.europeana().type()) {
                                 DocType.get(text); // checking if it matches one of them
@@ -398,6 +397,10 @@ public class Harvindexer {
 
         private boolean isMetadataElement(XMLStreamReader xml) {
             return "metadata".equals(xml.getName().getLocalPart());
+        }
+
+        private boolean isErrorElement(XMLStreamReader xml) {
+            return "error".equals(xml.getName().getLocalPart());
         }
 
         private boolean isResumptionToken(XMLStreamReader xml) {

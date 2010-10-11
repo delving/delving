@@ -249,6 +249,7 @@ public class DataSetController {
         info.state = dataSet.getState().toString();
         info.recordsIndexed = dataSet.getRecordsIndexed();
         info.recordCount = dataSet.getRecordCount();
+        info.errorMessage = dataSet.getErrorMessage();
         return info;
     }
 

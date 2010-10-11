@@ -65,7 +65,9 @@ public interface MetaRepo {
         int getRecordsIndexed();
         void setRecordsIndexed(int count);
         DataSetState getState();
+        String getErrorMessage();
         void setState(DataSetState dataSetState);
+        void setErrorState(String message);
         MetadataFormat getMetadataFormat();
         void save();
 
@@ -87,6 +89,7 @@ public interface MetaRepo {
         String MAPPINGS = "mappings";
         String RECORDS_INDEXED = "rec_indexed";
         String DATA_SET_STATE = "state";
+        String ERROR_MESSAGE = "error";
     }
 
     public enum DataSetState {
