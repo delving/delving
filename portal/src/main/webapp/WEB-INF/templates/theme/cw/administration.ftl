@@ -18,6 +18,8 @@
 
 
 
+
+
         <#if !userList??>
 
             <form method="post" action="administration.html" id="search-form">
@@ -53,15 +55,15 @@
                     <th>Nieuwe Rol</th>
                     <th>Zetten</th>
                 </tr>
-                <#list userList as user>
+                <#list userList as userEdit>
                     <form method="post" action="administration.html" id="set-form">
-                        <input type="hidden" name="userEmail" value="${user.email}"/>
+                        <input type="hidden" name="userEmail" value="${userEdit.email}"/>
                         <tr>
-                            <td width="150">${user.email}</td>
+                            <td width="150">${userEdit.email}</td>
                             <td width="150">
-                                <#switch user.role>
+                                <#switch userEdit.role>
                                     <#case "ROLE_GOD">
-                                        The great a
+                                        Super User
                                     <#break>
                                     <#case "ROLE_RESEARCH_USER">
                                          Museometrie Gebruiker
@@ -77,8 +79,8 @@
                             <td width="200">
                                 <select name="newRole">
                                     <option>Kies een rol</option>
+                                    <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR">Administrator</option></#if>                                    
                                     <option value="ROLE_RESEARCH_USER">Museometrie Gebruiker</option>
-                                    <option value="ROLE_ADMINISTRATOR">Administrator</option>
                                     <option value="ROLE_USER">Gewone Gebruiker</option>
                                 </select>
                             </td>
