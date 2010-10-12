@@ -70,8 +70,8 @@ public class UserManagementController {
     @RequestMapping("/login.html")
     public ModelAndView handle(
             HttpServletRequest request,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "submit_login", required = false) String buttonPressed
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String formType
     ) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("login");
         boolean failureFormat = false;
@@ -87,7 +87,7 @@ public class UserManagementController {
             int lastSlash = registerUri.lastIndexOf("/");
 
             //Register
-            if ("Register".equals(buttonPressed)) {  //TODO this value is internationalized in the template
+            if ("Register".equals(formType)) {  //TODO this value is internationalized in the template
                 if (!ControllerUtil.validEmailAddress(email)) {
                     failureFormat = true;
                 }
@@ -102,7 +102,7 @@ public class UserManagementController {
             }
 
             //Forgot Password
-            else if ("Request".equals(buttonPressed)) {
+            else if ("Request".equals(formType)) {
                 if (!ControllerUtil.validEmailAddress(email)) {
                     failureForgotFormat = true;
                 }

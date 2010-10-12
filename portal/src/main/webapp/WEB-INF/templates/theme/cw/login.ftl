@@ -13,7 +13,7 @@
         <h2><@spring.message 'LogIn_t' /></h2>
         <#if register == true>
             <form id="loginForm" name='f1' action='j_spring_security_check' method='POST' accept-charset="UTF-8">
-
+            <input type="hidden" name="formType" id="formType" value="Login"/>
             <table>
                 <tr>
                     <td><label for="j_username"><@spring.message 'EmailAddress_t' /></label></td>
@@ -26,7 +26,7 @@
                 <tr>
                     <td>
                         <a id="forgotPassword" href="#" class="frm_head"
-                        onclick="$('#request-password').show(2000);"><@spring.message 'ForgotPassword_t' /></a>
+                        onclick="showForgotPassword();"><@spring.message 'ForgotPassword_t' /></a>
 
                     </td>
                     <td align="right"><input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />" class="button"/></td>
@@ -47,17 +47,18 @@
     </div>
 
     <#if failureForgotFormat || failureForgotDoesntExist || forgotSuccess>
-<div id="request-password" class="grid_4 login-register">
+        <div id="request-password" class="grid_4 login-register">
     <#else >
-    <div style="display:none;" id="request-password" class="grid_4 login-register">
-</#if>
+        <div style="display:none;" id="request-password" class="grid_4 login-register">
+    </#if>
     <h2>Wachtwoord aanvragen</h2>
 
     <form id="forgotemailForm" name='f2' action='' method='POST' accept-charset="UTF-8">
+        <input type="hidden" name="formType" id="formType" value="Request"/>
     <table>
         <tr>
-            <td><label for="forgot_email"><@spring.message 'EmailAddress_t' /></label></td>
-            <td><input id="forgot_email" type="text" name="email" value="" maxlength="50"></td>
+            <td><label for="email"><@spring.message 'EmailAddress_t' /></label></td>
+            <td><input id="email-forgot" type="text" name="email" value="" maxlength="50"></td>
         </tr>
         <tr>
             <td></td>
@@ -90,10 +91,11 @@
 </div>
 
     <div id="register-div" class="grid_4 login-register">
+
         <h2><@spring.message 'Register_t' /></h2>
         <#if register == true>
             <form id="registrationForm" name='f3' action='' method='POST' accept-charset="UTF-8">
-                <input type="hidden" name="submit_login" value="Register"/>
+                <input type="hidden" name="formType" id="formType" value="Register"/>
                 <table>
                     <tr>
                         <td width="100"><label for="email"><@spring.message 'EmailAddress_t' /></label></td>
