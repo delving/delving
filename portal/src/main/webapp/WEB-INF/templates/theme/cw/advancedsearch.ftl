@@ -19,7 +19,7 @@
 
 <h1>Zoeken in de Digitale Collectie Nederland</h1>
 
-<#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_GOD")>
+<#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD")>
 <h2>Uitgebreid zoeken Museometrie</h2>
 
 <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
