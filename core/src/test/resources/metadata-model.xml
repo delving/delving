@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<metadata-model>
+    <node tag="gumby">
+        <node tag="pokey"/>
+    </node>
+    <node tag="pokey">
+        <node tag="gumby">
+            <field localName="woohoo" facetPrefix="boo" indexed="false" briefDoc="true"/>
+        </node>
+    </node>
+</metadata-model>
