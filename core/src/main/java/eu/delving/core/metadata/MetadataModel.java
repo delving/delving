@@ -27,12 +27,13 @@ public class MetadataModel {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append(name).append("\n");
+        out.append(name).append(" {\n");
         for (MetadataNode node : nodes) {
             for (String line : node.toString().split("\n")) {
                 out.append("   ").append(line).append('\n');
             }
         }
+        out.append("}");
         return out.toString();
     }
 }

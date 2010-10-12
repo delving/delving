@@ -199,26 +199,26 @@ public class MetadataField {
 
     private void string(String value, String name, StringBuilder out) {
         if (value != null && !value.isEmpty()) {
-            out.append("   ").append(name).append("=").append(value).append('\n');
+            out.append("   ").append(name).append(" = '").append(value).append("',\n");
         }
     }
 
     private void flagOn(Boolean value, String name, StringBuilder out) {
         if (value != null && value) {
-            out.append("   ").append(name).append("=true").append('\n');
+            out.append("   ").append(name).append(" = true,").append('\n');
         }
     }
 
     private void flagOff(Boolean value, String name, StringBuilder out) {
         if (value == null || !value) {
-            out.append("   ").append(name).append("=false").append('\n');
+            out.append("   ").append(name).append(" = false,").append('\n');
         }
     }
 
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append(facetPrefix).append(':').append(localName).append(" {\n");
+        out.append(facetPrefix).append('.').append(localName).append(" (\n");
         string(fieldType, "fieldType", out);
         flagOn(briefDoc, "briefDoc", out);
         flagOn(hidden, "hidden", out);
@@ -249,7 +249,7 @@ public class MetadataField {
                 out.append("    ").append("toCopyField=").append(f).append('\n');
             }
         }
-        out.append("}\n");
+        out.append(")\n");
         return out.toString();
     }
 }

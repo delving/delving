@@ -9,7 +9,7 @@
     </node>
     <node tag="gumby">
         <node tag="pokey">
-            <field localName="magoo" facetPrefix="boo"/>
+            <field localName="magoo" facetPrefix="boo" regularExpression=".*"/>
         </node>
     </node>
 </metadata-model>

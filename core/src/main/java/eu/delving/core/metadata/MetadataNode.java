@@ -38,7 +38,7 @@ public class MetadataNode {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append(tag).append('\n');
+        out.append(tag).append(" {\n");
         if (fields != null) {
             for (MetadataField field : fields) {
                 for (String line : field.toString().split("\n")) {
@@ -53,6 +53,7 @@ public class MetadataNode {
                 }
             }
         }
+        out.append("}\n");
         return out.toString();
     }
 }
