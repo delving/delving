@@ -2,91 +2,103 @@
 
     <#if pagePathList??>
 
-        <#assign thisPage = "static-page.dml"/>
-        <#assign pageId = "static"/>
-        <#include "inc_header.ftl"/>
+        <#if RequestParameters.javascript??>
 
-        <div id="main" class="static-page">
+            var tinyMCELinkList = new Array(
+            <#list pagePathList as pagePath>
+                 ["${pagePath}","${pagePath}"]<#if pagePath_has_next>,</#if>
+            </#list>
+            );
 
-        <div class="grid_6">
-            <h2>Bestaande paginas</h2>
+        <#else>
 
-            <table summary="List of existing pages" class="user-options">
-                <#list pagePathList as pagePath>
-                    <tr>
-                        <td width="300">
-                            <a href="${pagePath}?edit=true">
-                            <span class="ui-icon ui-icon-document"></span>
-                            ${pagePath}</a></td>
-                        <td width="85"><a href="${pagePath}?edit=true">
-                            <span class="ui-icon ui-icon-pencil"></span>
-                            Bewerken</a>
-                        </td>
-                        <td width="100">
-                             <a class="delete" id="delete_${pagePath_index}" href="${pagePath}">
-                                <span class="ui-icon ui-icon-trash"></span>
-                                 Verwijder
-                             </a>
+            <#assign thisPage = "static-page.dml"/>
+            <#assign pageId = "static"/>
+            <#include "inc_header.ftl"/>
 
-                        </td>
-                    </tr>
-                </#list>
-            </table>
-        </div>
-        
-        <div class="grid_6">
+            <div id="main" class="static-page">
 
-            <h2>Maak een nieuwe pagina</h2>
-            <p>
-                Voor het aanmaken van een pagina vul in het pad (als gewenst) en de naam van de nieuwe pagina.
-                De naam van de pagina <strong>moet</strong> eindigen met <strong>.dml</strong>
-            </p>
-            <p>
-                Het basis pad <strong>/${portalName}</strong> wordt automatisch aangemaakt. Daarop volgende paden zijn
-                niet verplicht maar kunnen wel helpen met het ordennen en overzicht van de paginas.
-            </p>
-            <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
-                /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
-                <input type="submit" value="Aanmaken" id="makePage"/>
-            </form>
+            <div class="grid_6">
+                <h2>Bestaande paginas</h2>
 
-       </div>
+                <table summary="List of existing pages" class="user-options">
+                    <#list pagePathList as pagePath>
+                        <tr>
+                            <td width="300">
+                                <a href="${pagePath}?edit=true">
+                                <span class="ui-icon ui-icon-document"></span>
+                                ${pagePath}</a></td>
+                            <td width="85"><a href="${pagePath}?edit=true">
+                                <span class="ui-icon ui-icon-pencil"></span>
+                                Bewerken</a>
+                            </td>
+                            <td width="100">
+                                 <a class="delete" id="delete_${pagePath_index}" href="${pagePath}">
+                                    <span class="ui-icon ui-icon-trash"></span>
+                                     Verwijder
+                                 </a>
+
+                            </td>
+                        </tr>
+                    </#list>
+                </table>
+            </div>
+
+            <div class="grid_6">
+
+                <h2>Maak een nieuwe pagina</h2>
+                <p>
+                    Voor het aanmaken van een pagina vul in het pad (als gewenst) en de naam van de nieuwe pagina.
+                    De naam van de pagina <strong>moet</strong> eindigen met <strong>.dml</strong>
+                </p>
+                <p>
+                    Het basis pad <strong>/${portalName}</strong> wordt automatisch aangemaakt. Daarop volgende paden zijn
+                    niet verplicht maar kunnen wel helpen met het ordennen en overzicht van de paginas.
+                </p>
+                <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
+                    /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
+                    <input type="submit" value="Aanmaken" id="makePage"/>
+                </form>
+
+           </div>
 
 
-        <div class="clear"></div>
+            <div class="clear"></div>
 
-        <script type="text/javascript">
+            <script type="text/javascript">
 
-            $("a.delete").click(function(){
-                var target = $(this).attr("id");
-                var targetURL = $(this).attr("href");
-                var confirmation = confirm("Pagina: "+targetURL +" verwijderen ?")
-                if(confirmation){
-                    $.ajax({
-                        url: targetURL,
-                        type: "POST",
-                        data: "content=",
-                        success: function(data) {
-                            window.location.reload();
-                        },
-                        error: function(data) {
-                            alert("page could not be deleted");
-                        }
-                    });
-                    return false;
-                } else {
-                    return false;
+                $("a.delete").click(function(){
+                    var target = $(this).attr("id");
+                    var targetURL = $(this).attr("href");
+                    var confirmation = confirm("Pagina: "+targetURL +" verwijderen ?")
+                    if(confirmation){
+                        $.ajax({
+                            url: targetURL,
+                            type: "POST",
+                            data: "content=",
+                            success: function(data) {
+                                window.location.reload();
+                            },
+                            error: function(data) {
+                                alert("page could not be deleted");
+                            }
+                        });
+                        return false;
+                    } else {
+                        return false;
+                    }
+                });
+
+                function createPage(page){
+                    var targetURL = $("#pagePath").attr("value");
+                    window.location.href=targetURL+"?edit=true";
                 }
-            });
 
-            function createPage(page){
-                var targetURL = $("#pagePath").attr("value");
-                window.location.href=targetURL+"?edit=true";
-            }
+            </script>
 
-        </script>
+            <#include "inc_footer.ftl"/>
 
-        <#include "inc_footer.ftl"/>
+        </#if>
 
     <#elseif embedded>
 
@@ -147,9 +159,9 @@
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/static-page.js"></script>
         <#include "inc_footer.ftl"/>
-        
+     </div>   
     </#if>
 
-</div>
+
 
 </#compress>

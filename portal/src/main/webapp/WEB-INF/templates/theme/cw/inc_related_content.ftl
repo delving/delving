@@ -66,7 +66,12 @@
         <script type="text/javascript">
             var addthis_config = {
                 ui_language: "nl",
-                ui_click: true
+                ui_click: true,
+                ui_cobrand: "Collectiewijzer",
+                ui_header_color: "#ffffff",
+                ui_header_background: "#046f96"
+
+
             }
         </script>
         <!-- AddThis Button END -->
