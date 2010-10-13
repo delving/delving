@@ -22,9 +22,13 @@
 package eu.europeana.core;
 
 import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.Role;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.beans.BriefBean;
 import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
 import eu.europeana.definitions.domain.CollectionDisplayType;
@@ -389,7 +393,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
         private FullDoc createFullDoc() throws EuropeanaQueryException {
             SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
-            List<FullBean> fullBean = getFullDocFromSolrResponse(matchDoc);
+            List<FullBean> fullBeanItem = getFullDocFromSolrResponse(matchDoc);
 
             // if the record is not found give useful error message
             if (fullBeanItem.size() == 0) {
