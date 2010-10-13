@@ -269,8 +269,17 @@
     <#case "login.html">
     <#assign pageId = "li"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/login.js"></script>
     <title>Instituut Collectie Nederland - Login</title>
+    <#break>
+    <#case "forgot-password.html">
+    <#assign pageId = "li"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
+    <title>Instituut Collectie Nederland - Forgot Password</title>
+    <#break>
+    <#case "register-request.html">
+    <#assign pageId = "li"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/login-register.css"/>
+    <title>Instituut Collectie Nederland - Register</title>
     <#break>
     <#case "logout.html">
     <#assign pageId = "lo"/>

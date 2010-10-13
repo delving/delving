@@ -26,10 +26,7 @@ import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.querymodel.query.FullDoc;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.domain.AcquisitionType;
-import eu.europeana.definitions.domain.Country;
-import eu.europeana.definitions.domain.Language;
-import eu.europeana.definitions.domain.Technique;
+import eu.europeana.definitions.domain.*;
 import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -349,7 +346,12 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("icn_acquisitionMeans")
     String[] acquisitionMeans;
 
-    @Europeana(category = ICN_RESEARCH, converter = "extractYear")
+    @Europeana(category = ICN_RESEARCH, enumClass = CollectionDisplayType.class)
+    @Solr(prefix = "icn", localName = "collectionType", multivalued = false)
+    @Field("icn_collectionType")
+    String[] collectionType;
+
+    @Europeana(category = ICN_RESEARCH)
     @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
     @Field("icn_acquisitionYear")
     String[] acquisitionYear;
@@ -688,6 +690,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String[] getPhysicalState() {
         return returnArrayOrElse(physicalState);
+    }
+
+    @Override
+    public String[] getCollectionType() {
+        return returnArrayOrElse(collectionType);
     }
 }
 

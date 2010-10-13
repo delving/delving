@@ -22,10 +22,14 @@
 package eu.europeana.core;
 
 import eu.europeana.core.database.UserDao;
+import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
+import eu.europeana.definitions.domain.CollectionDisplayType;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -417,6 +421,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setStart(solrQuery.getStart() - 1);
         }
         QueryResponse queryResponse;
+        // add view limitation to query
+        final User user = ControllerUtil.getUser();
+        if (user == null || user.getRole() == Role.ROLE_USER) {
+            solrQuery.addFilterQuery("-icn_collectionType:" + CollectionDisplayType.MUESOMETRIE);
+        }
         try {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrException e) {

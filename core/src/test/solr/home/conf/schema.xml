@@ -642,6 +642,7 @@
              <field name="icn_acquisitionYear" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_acquiredWithHelpFrom" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="icn_physicalState" type="text" indexed="true" stored="true" multiValued="true" />
+             <field name="icn_collectionType" type="string" indexed="true" stored="true" multiValued="true" />
 
    <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
         will be used if the name matches any of the patterns.

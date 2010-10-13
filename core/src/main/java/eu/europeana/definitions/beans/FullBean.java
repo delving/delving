@@ -23,10 +23,7 @@ package eu.europeana.definitions.beans;
 
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.domain.AcquisitionType;
-import eu.europeana.definitions.domain.Country;
-import eu.europeana.definitions.domain.Language;
-import eu.europeana.definitions.domain.Technique;
+import eu.europeana.definitions.domain.*;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
 import eu.europeana.definitions.presentation.FullDoc;
@@ -34,9 +31,7 @@ import eu.europeana.definitions.presentation.FullDoc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
-import static eu.europeana.definitions.annotations.FieldCategory.ICN;
-import static eu.europeana.definitions.annotations.FieldCategory.ICN_RESEARCH;
+import static eu.europeana.definitions.annotations.FieldCategory.*;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -120,9 +115,13 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "icn", localName = "collectionPart")
     String[] collectionPart;
 
-    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true)
+    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true, constant = true)
     @Solr(prefix = "icn", localName = "acquisitionMeans")
     String[] acquisitionMeans;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = CollectionDisplayType.class, constant = true)
+    @Solr(prefix = "icn", localName = "collectionType", multivalued = false)
+    String[] collectionType;
 
     @Europeana(category = ICN_RESEARCH, converter = "extractYear")
     @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
@@ -320,7 +319,7 @@ public class FullBean extends BriefBean implements FullDoc {
         return returnArrayOrElse(europeanaUserTag);
     }
 
-//    @Override
+    //    @Override
 //    public Boolean getEuropeanaHasObject() {
 //        return europeanaHasObject;
 //    }
