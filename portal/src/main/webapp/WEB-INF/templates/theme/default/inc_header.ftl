@@ -199,7 +199,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/mine.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>
