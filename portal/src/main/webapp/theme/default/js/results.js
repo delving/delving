@@ -20,7 +20,6 @@ function saveQuery(className, queryToSave, queryString){
 }
 
 function showDefaultSmall(obj, iType) {
-    alert(baseThemePath);
     if(obj && iType){
         switch (iType)
                 {
@@ -145,7 +144,6 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
 ** Resizes displayed images in the brief and full doc displays
  */
 function checkSize(obj,type,w){
-    alert('foo');
     if(type=="brief"){
         if (w > 220) {
             w = 220;

@@ -23,15 +23,20 @@
                     <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
                 </tr>
                 <tr>
-                    <td>
-                        <a id="forgotPassword" href="#" class="frm_head"
-                        onclick="showForgotPassword();"><@spring.message 'ForgotPassword_t' /></a>
 
+                    <td align="right" colspan="2">
+                        <input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />" class="button"/>
                     </td>
-                    <td align="right"><input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />" class="button"/></td>
 
                 </tr>
+                <tr>
+                    <td colspan="2"><a id="forgotPassword" href="/${portalName}/forgot-password.html"><@spring.message 'ForgotPassword_t' /></a></td>
+                </tr>
             </table>
+
+
+
+
                     <#if errorMessage??>
                         <div class="ui-widget">
                             <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
