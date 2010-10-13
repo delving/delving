@@ -284,14 +284,14 @@
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/confirmation"/>
                         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="My Europeana email confirmation"/>
+                        <property name="subject" value="Delving E-Mail Confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/forgot-password"/>
                         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="My Europeana reset password"/>
+                        <property name="subject" value="Delving Password Reset"/>
                     </bean>
                 </entry>
             </map>

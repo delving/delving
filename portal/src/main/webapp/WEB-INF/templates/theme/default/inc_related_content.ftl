@@ -52,7 +52,7 @@
             <#if user??>
 
                 <p class="linetop">
-                    <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToMyEuropeana_t' /></a>
+                    <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToPersonalPage' /></a>
                     <div id="msg-save-item" class="msg-hide"></div>
                 </p>
 
@@ -94,7 +94,7 @@
                     <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'ShareWithAFriend_t' /></a>
                 </p>
                 <p>
-                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToMyEuropeana_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('mustlogin'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
                 </p>
             </div>
 

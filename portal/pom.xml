@@ -27,11 +27,7 @@
     <packaging>war</packaging>
     <name>Europeana Portal Web Application</name>
     <version>0.1.0</version>
-    <description>The lite version of the Europeana Portal contains all the core pages
-        (index, brief-doc, full-doc, myEuropeana) and functionality of the production
-        Europeana portal. This version is made open source to stimulate development
-        and reuse.
-    </description>
+    <description></description>
     <inceptionYear>2009</inceptionYear>
 
     <parent>
