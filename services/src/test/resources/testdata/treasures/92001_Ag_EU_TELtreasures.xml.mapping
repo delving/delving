@@ -5,11 +5,13 @@
 // ConstantField collectionId 92001
 // ConstantField europeana_provider The European Library
 // ConstantField europeana_dataProvider The European Library
+// ConstantField icn_collectionType MUESOMETRIE
 // ConstantField europeana_language mul
-// ConstantField europeana_collectionTitle Tel Treasures
 // ConstantField europeana_collectionName 92001_Ag_EU_TELtreasures
 // ConstantField europeana_country europe
+// ConstantField europeana_collectionTitle Tel Treasures
 // ConstantField europeana_rights unknown
+// ConstantField icn_acquisitionMeans 
 
 /* ValueMap */ def icn_acquisitionMeansMap = [ // aankoop,bruikleen,legaat,opdracht,overdracht,ruil,schenking,successieregeling,
 'aankoop':'',
@@ -32,10 +34,6 @@ output.record {
 
 //<<<europeana_collectionName
 europeana.collectionName europeana_collectionName
-//>>>
-
-//<<<europeana_collectionId
-europeana.collectionTitle europeana_collectionTitle
 //>>>
 
 //<<<europeana_language
@@ -192,5 +190,13 @@ input.icn_purchasePrice.each { icn.purchasePrice it }
 input.icn_technique.each {
 icn.technique it
 }
+//>>>
+
+//<<<icn_collectionType
+icn.collectionType 'MUESOMETRIE'
+//>>>
+
+//<<<europeana_collectionTitle
+europeana.collectionTitle europeana_collectionTitle
 //>>>
 }

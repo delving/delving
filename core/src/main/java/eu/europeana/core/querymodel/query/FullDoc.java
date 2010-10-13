@@ -160,4 +160,6 @@ public interface FullDoc {
     String[] getPhysicalState();
 
     String getEuropeanaCollectionTitle();
+
+    String[] getCollectionType();
 }
