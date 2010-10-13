@@ -252,8 +252,8 @@
     <#break>
     <#case "mine.html">
     <#assign pageId = "me"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/myeuropeana.css"/>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/mine.css"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/mine.js"></script>
     <script type="text/javascript">
 
         $(document).ready(function() {
