@@ -96,7 +96,7 @@
     <ul class="user_nav">
         <#if !user??>
             <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="/${portalName}/login.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
+            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
         </#if>
         <#if user??>
 

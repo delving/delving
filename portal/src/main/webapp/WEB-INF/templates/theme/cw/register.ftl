@@ -14,9 +14,9 @@
 <#include "inc_header.ftl"/>
 
 
-<div id="main" class="grid_12">
+<div id="main">
 
-    <div class="login-register">
+    <div class="login-register grid_12">
         
         <h1><@spring.message 'Register_t' /></h1>
 
@@ -25,47 +25,76 @@
             <input type="hidden" name="token" value="${command.token}"/>
             <input type="hidden" name="email" value="${command.email}"/>
 
+        <div class="grid_4 alpha">
             <fieldset id="pt1">
 
                 <legend><span>Step </span>1. <span>: Email details</span></legend>
                 <h3><@spring.message 'EmailAddress_t' />.</h3>
 
                 <div class="help"><@spring.message 'EmailUse_t' />.</div>
-                <!--<strong class="error">An email address is required!</strong>-->
-                <label for="email"><@spring.message 'EmailAddress_t' /></label>
-                <input type="text" id="email" name="email" disabled="true" tabindex="5" value="${command.email}" style="background:#eaeaea;"/>
+                <table>
+                    <tr><td><label for="email"><@spring.message 'EmailAddress_t' /></label></td></tr>
+                    <tr><td>
+                        <input type="text" id="email" name="email" disabled="true" tabindex="5" value="${command.email}" style="background:#eaeaea;"/>
+                    </td></tr>
+                </table>
 
             </fieldset>
+        </div>
+        <div class="grid_4">
             <fieldset id="pt2">
 
                 <legend><span>Step </span>2. <span>: Login details</span></legend>
                 <h3>Gebruikersnaam.</h3>
 
                 <div class="help"><@spring.message 'UserNameExplain_t' />.</div>
-                <label for="userName">Gebruikersnaam</label>
-            <@spring.formInput "command.userName"/>
-            <@spring.bind "command.userName" />
-            <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>
+
+                <table>
+                    <tr><td><label for="userName">Gebruikersnaam</label></td></tr>
+                    <tr><td>
+                        <@spring.formInput "command.userName"/>
+                        <@spring.bind "command.userName" />
+                        <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>
+                    </td></tr>
+                </table>
+                
+
 
             </fieldset>
+        </div>
+        <div class="grid_4 omega">
             <fieldset id="pt3">
 
                 <legend><span>Step </span>3. <span>: Password</span></legend>
                 <h3><@spring.message 'PasswordChoose_t' />.</h3>
 
                 <div class="help"><@spring.message 'PasswordExplain_t' />.</div>
+                <table>
+                    <tr><td><label for="password"><@spring.message 'Password_t' /></label></td></tr>
+                    <tr><td>                            
+                        <@spring.formPasswordInput "command.password"/>
+                        <@spring.bind "command.password" />
+                        <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>
+                    </td>
+                    </tr>
+                    <tr><td><label for="password2"><@spring.message 'RepeatPassword_t' /></label></td></tr>
+                    <tr><td>
+                        <@spring.formPasswordInput "command.password2"/>
+                        <@spring.bind "command.password2" />
+                        <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>
+                    </td>
+                    </tr>
+                </table>
 
-                <label for="password"><@spring.message 'Password_t' /></label>
-            <@spring.formPasswordInput "command.password"/>
-            <@spring.bind "command.password" />
-            <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>
 
-                <label for="password2"><@spring.message 'RepeatPassword_t' /></label>
-            <@spring.formPasswordInput "command.password2"/>
-            <@spring.bind "command.password2" />
-            <#list spring.status.errorMessages as error><em class="error">${error}</em><br/></#list>
+
+
 
             </fieldset>
+         </div>
+         <div class="clear"></div>
+
+
             <fieldset id="pt4">
                 <legend>Step 4 : Submit form</legend>
                 <h3>&#160;</h3>
@@ -73,10 +102,24 @@
                 <div id="disclaimer-text">
                     <@spring.message 'MyCodeOfConduct_t' />
                 </div>
-                    <@formCheckbox "command.disclaimer"/>
-                    <#list spring.status.errorMessages as error><em class="error">${error}</em><br/> </#list>
-                    <br/>
-                <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message 'FinishRegistration_t' /> &raquo;" class="button"/>
+
+
+     
+                <table>
+                    <tr>
+                        <td>
+                            <@formCheckbox "command.disclaimer"/>
+                            <#list spring.status.errorMessages as error><em class="error">${error}</em><br/> </#list>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message 'FinishRegistration_t' /> &raquo;" class="button"/></td>
+                    </tr>
+                </table>
+
+
+
+
             </fieldset>
 
         </form>

@@ -69,7 +69,7 @@ p.success {
 
 #regForm fieldset div.help {
     color: #333;
-    font-size: 85%;
+    /*font-size: 85%;*/
     font-weight: normal; /*margin: 0 0 20px 0;*/
     min-height: 6em;
 }
@@ -96,7 +96,7 @@ p.success {
     color: #fff;
     background-color: #CC0000;
     padding: 0.5em;
-
+    clear: both;
     font-weight: bold;
     display: block;
 }
@@ -128,7 +128,9 @@ p.success {
 
 #regForm #pt4 #agree {
     /*width: 15em;*/
-    margin: 1em 0;
+    /*margin: 1em 0;*/
+    float: right;
+    /*text-overflow: hidden;*/
 }
 
 #regForm #pt4 #agree input {
