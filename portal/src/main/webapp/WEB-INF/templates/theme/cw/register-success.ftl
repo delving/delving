@@ -7,7 +7,7 @@
 
 <div id="main">
 
-    <div class="login-register" class="grid_4">
+    <div class="login-register grid_5">
         <h1 id="register_success"><@spring.message "registrationSucceed_t" /></h1>
 
         <!--<p>You are now a culture vulture.</p>-->
