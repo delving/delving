@@ -118,6 +118,8 @@ public interface ClickStreamLogger {
         CHANGE_PASSWORD_SUCCES,
         CHANGE_PASSWORD_FAILURE,
         LOGIN,
+        FORGOT_PASSWORD,
+        REGISTER_REQUEST,
         LOGOUT,
         LOGOUT_COOKIE_THEFT,
 
