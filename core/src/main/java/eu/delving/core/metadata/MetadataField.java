@@ -1,9 +1,9 @@
-package eu.europeana.definitions.metadata;
+package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * An XStream approach for replacing the annotated beans.
@@ -11,8 +11,20 @@ import java.util.Arrays;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-@XStreamAlias("metadata-field")
+@XStreamAlias("field")
 public class MetadataField {
+
+    private Object readResolve() {
+        multivalued = setDefaultTrue(multivalued);
+        stored = setDefaultTrue(stored);
+        indexed = setDefaultTrue(indexed);
+        termVectors = setDefaultTrue(termVectors);
+        return this;
+    }
+
+    private Boolean setDefaultTrue(Boolean value) {
+        return value == null ? true : value;
+    }
 
     /**
      * A prefix for a facet, must be unique
@@ -26,42 +38,42 @@ public class MetadataField {
      */
 
     @XStreamAsAttribute
-    boolean briefDoc = false;
+    Boolean briefDoc = false;
 
     /**
      * This field will appear in the full doc rendering
      */
 
     @XStreamAsAttribute
-    boolean fullDoc = true;
+    Boolean fullDoc = true;
 
     /**
      * This field is hidden
      */
 
     @XStreamAsAttribute
-    boolean hidden = false;
+    Boolean hidden = false;
 
     /**
      * Is this the europeana id to use
      */
 
     @XStreamAsAttribute
-    boolean id = false;
+    Boolean id = false;
 
     /**
      * Is this an object to which the record refers?
      */
 
     @XStreamAsAttribute
-    boolean object = false;
+    Boolean object = false;
 
     /**
      * Is this the europeana type?
      */
 
     @XStreamAsAttribute
-    boolean type = false;
+    Boolean type = false;
 
     /**
      * If the field is required, then this value is the name of the requirement group.  Typically this is
@@ -74,21 +86,21 @@ public class MetadataField {
     /**
      * There are some fields that are added by the Europeana System during the IngestionPhase based on meta-information
      * provided with the DataSet during submission.
-     *
+     * <p/>
      * These fields are therefore unmappable and must be kept separated during ESE validation and only used during ESE+
      * validation.
-     *
+     * <p/>
      * When EDM is adopted as the internal datamodel the same will apply. These fields need to be kept separate during
      * initial import validation and only be validated during the validation of the Archival Information Packages.
      */
 
     @XStreamAsAttribute
-    boolean constant = false; // todo: make it generate the fields on the analysis
+    Boolean constant = false; // todo: make it generate the fields on the analysis
 
     /**
-     *  The annotated fields can be valid at different levels in the application. The FieldCategory will be used to
+     * The annotated fields can be valid at different levels in the application. The FieldCategory will be used to
      * create a Data Model Validator to be used at various stages of ingestion.
-     *
+     * <p/>
      * The validator should also be used in the Sip-Creator and could be used in external applications.
      */
 
@@ -109,14 +121,14 @@ public class MetadataField {
      */
 
     @XStreamAsAttribute
-    boolean converterMultipleOutput = false;
+    Boolean converterMultipleOutput = false;
 
     /**
      * Is this a URL?
      */
 
     @XStreamAsAttribute
-    boolean url = false;
+    Boolean url = false;
 
     /**
      * The regular expression which must match the content of this field
@@ -138,7 +150,7 @@ public class MetadataField {
      */
 
     @XStreamAsAttribute
-    boolean valueMapped = false;
+    Boolean valueMapped = false;
 
     @XStreamAsAttribute
     String prefix = "";  // overrides Field value
@@ -152,73 +164,92 @@ public class MetadataField {
     String fieldType = "text";
 
     @XStreamAsAttribute
-    boolean multivalued = true; // todo: use this for validation!
+    Boolean multivalued = true; // todo: use this for validation!
 
     @XStreamAsAttribute
-    boolean stored = true;
+    Boolean stored = true;
 
     @XStreamAsAttribute
-    boolean indexed = true;
+    Boolean indexed = true;
 
     @XStreamAsAttribute
-    boolean required = false;
+    Boolean required = false;
 
     @XStreamAsAttribute
-    boolean compressed = false;
+    Boolean compressed = false;
 
     // advanced (fields should not be displayed when not specified)
 
     @XStreamAsAttribute
-    boolean termVectors = true;
+    Boolean termVectors = true;
 
     @XStreamAsAttribute
-    boolean termPositions = false;
+    Boolean termPositions = false;
 
     @XStreamAsAttribute
-    boolean termOffsets = false;
+    Boolean termOffsets = false;
 
     @XStreamAsAttribute
-    boolean omitNorms = false;
+    Boolean omitNorms = false;
 
     @XStreamAsAttribute
     String defaultValue = "";
 
-    String[] toCopyField = {};
+    List<String> toCopyField;
 
+    private void string(String value, String name, StringBuilder out) {
+        if (value != null && !value.isEmpty()) {
+            out.append("   ").append(name).append(" = '").append(value).append("',\n");
+        }
+    }
+
+    private void flagOn(Boolean value, String name, StringBuilder out) {
+        if (value != null && value) {
+            out.append("   ").append(name).append(" = true,").append('\n');
+        }
+    }
+
+    private void flagOff(Boolean value, String name, StringBuilder out) {
+        if (value == null || !value) {
+            out.append("   ").append(name).append(" = false,").append('\n');
+        }
+    }
 
     @Override
     public String toString() {
-        return "MetadataField{" +
-                "facetPrefix='" + facetPrefix + '\'' +
-                ", briefDoc=" + briefDoc +
-                ", fullDoc=" + fullDoc +
-                ", hidden=" + hidden +
-                ", id=" + id +
-                ", object=" + object +
-                ", type=" + type +
-                ", requiredGroup='" + requiredGroup + '\'' +
-                ", constant=" + constant +
-                ", category='" + category + '\'' +
-                ", converter='" + converter + '\'' +
-                ", converterMultipleOutput=" + converterMultipleOutput +
-                ", url=" + url +
-                ", regularExpression='" + regularExpression + '\'' +
-                ", enumClass='" + enumClass + '\'' +
-                ", valueMapped=" + valueMapped +
-                ", prefix='" + prefix + '\'' +
-                ", localName='" + localName + '\'' +
-                ", fieldType='" + fieldType + '\'' +
-                ", multivalued=" + multivalued +
-                ", stored=" + stored +
-                ", indexed=" + indexed +
-                ", required=" + required +
-                ", compressed=" + compressed +
-                ", termVectors=" + termVectors +
-                ", termPositions=" + termPositions +
-                ", termOffsets=" + termOffsets +
-                ", omitNorms=" + omitNorms +
-                ", defaultValue='" + defaultValue + '\'' +
-                ", toCopyField=" + (toCopyField == null ? null : Arrays.asList(toCopyField)) +
-                '}';
+        StringBuilder out = new StringBuilder();
+        out.append(facetPrefix).append('.').append(localName).append(" (\n");
+        string(fieldType, "fieldType", out);
+        flagOn(briefDoc, "briefDoc", out);
+        flagOn(hidden, "hidden", out);
+        flagOn(id, "id", out);
+        flagOn(object, "object", out);
+        flagOn(type, "type", out);
+        flagOn(constant, "constant", out);
+        string(requiredGroup, "requiredGroup", out);
+        string(category, "category", out);
+        string(converter, "converter", out);
+        flagOn(converterMultipleOutput, "converterMultipleOutput", out);
+        flagOn(url, "url", out);
+        string(regularExpression, "regularExpression", out);
+        string(enumClass, "enumClass", out);
+        flagOn(valueMapped, "valueMapped", out);
+        string(prefix, "prefix", out);
+        flagOff(multivalued, "multivalued", out);
+        flagOff(stored, "stored", out);
+        flagOff(indexed, "indexed", out);
+        flagOn(required, "required", out);
+        flagOn(compressed, "compressed", out);
+        flagOff(termVectors, "termVectors", out);
+        flagOn(termOffsets, "termOffsets", out);
+        flagOn(omitNorms, "omitNorms", out);
+        string(defaultValue, "defaultValue", out);
+        if (toCopyField != null) {
+            for (String f : toCopyField) {
+                out.append("    ").append("toCopyField=").append(f).append('\n');
+            }
+        }
+        out.append(")\n");
+        return out.toString();
     }
 }
