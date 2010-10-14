@@ -669,10 +669,12 @@ public class MetaRepoImpl implements MetaRepo {
                     recordImpl.addFormat(getMetadataFormat(), recordLines);
                 }
                 catch (MappingException e) {
+                    log.warn("mapping exception: " + e);
                     invalidCount++;
                     walk.remove();
                 }
                 catch (RecordValidationException e) {
+                    log.warn("record Validation exception: " + e);
                     invalidCount++;
                     walk.remove();
                 }
@@ -683,6 +685,7 @@ public class MetaRepoImpl implements MetaRepo {
             if (invalidCount > 0) {
                 log.info(String.format("%d invalid records discarded", invalidCount));
             }
+            // todo break here if mapping is consistently invalidating all records.
         }
 
         private MappingRunner getMappingRunner() {

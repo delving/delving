@@ -346,7 +346,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("icn_acquisitionMeans")
     String[] acquisitionMeans;
 
-    @Europeana(category = ICN_RESEARCH, enumClass = CollectionDisplayType.class)
+    @Europeana(category = ICN_RESEARCH, enumClass = CollectionDisplayType.class, constant = true)
     @Solr(prefix = "icn", localName = "collectionType", multivalued = false)
     @Field("icn_collectionType")
     String[] collectionType;
