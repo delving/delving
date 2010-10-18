@@ -3,8 +3,6 @@
     <node tag="pokey">
         <node tag="gumby">
             <field localName="woohoo" facetPrefix="boo" indexed="false" briefDoc="true"/>
-            <field localName="moo" facetPrefix="boo" briefDoc="true"/>
-            <field localName="who" facetPrefix="boo" indexed="false"/>
         </node>
     </node>
     <node tag="gumby">
