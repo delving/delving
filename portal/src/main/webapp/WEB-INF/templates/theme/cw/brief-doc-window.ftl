@@ -58,7 +58,7 @@
         </div>
 
 
-        <h2>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h2>
+        <h3>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h3>
 
         <br/>
 
