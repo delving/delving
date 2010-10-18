@@ -59,9 +59,9 @@ h6 { font-size: 1.1em; font-weight: bold; line-height: 1.4545; margin-bottom: 0.
  * @section			Basic text element styles
  */
 
-p { font-size: 1.1em; margin-bottom: 1.4545em; }
-p img.left { float: left; margin: 1.5em 1.5em 1.5em 0; padding: 0; }
-p img.right { float: right; margin: 1.5em 0 1.5em 1.5em; }
+/*p { font-size: 1.1em; margin-bottom: 1.4545em; }*/
+/*p img.left { float: left; margin: 1.5em 1.5em 1.5em 0; padding: 0; }*/
+/*p img.right { float: right; margin: 1.5em 0 1.5em 1.5em; }*/
 
 /*a:link { color: #154273; text-decoration: none; }*/
 /*a:visited { color: #696969; }*/
@@ -102,7 +102,7 @@ pre, code, tt { font: 1em 'andale mono', 'lucida console', monospace; line-heigh
  * @section			List style defenitions
  */
 
-ul, ol { font-size: 1.1em; line-height: 1.6; list-style-position: outside; margin-bottom: 2.2em; }
+/*ul, ol { font-size: 1.1em; line-height: 1.6; list-style-position: outside; margin-bottom: 2.2em; }*/
 
 ul { list-style-type: disc; }
 ol { list-style-type: decimal; }
@@ -118,14 +118,14 @@ dd { margin-left: 1.5em; }
  * @section			Form element styles
  */
 
-form.form_ll fieldset label,
-form.form_ll fieldset p { font-size: 1em; }
+/*form.form_ll fieldset label,*/
+/*form.form_ll fieldset p { font-size: 1em; }*/
 
-form input.text,
-form textarea { font-family: Arial, Verdana, sans-serif; font-size: 1.1em; line-height: 1.5; }
-form input.text { line-height: 1; }
+/*form input.text,*/
+/*form textarea { font-family: Arial, Verdana, sans-serif; font-size: 1.1em; line-height: 1.5; }*/
+/*form input.text { line-height: 1; }*/
 
-form input.submit { font-size: 1em; }
+/*form input.submit { font-size: 1em; }*/
 
 
 /**
