@@ -91,6 +91,31 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
     });
 }
 
+/**
+ * getParametersByName: retrieves URL parameters by name
+ * @param name: name of querystring paramater to be retrieved and set
+ */
+function getParameterByName(name)
+{
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( window.location.href );
+    if( results === null ){
+        return "";
+    } else {
+        return results[1];
+    }
+}
+
+function takeMeBack(){
+    var futdate = new Date()		//Get the current time and date
+    var expdate = futdate.getTime()  //Get the milliseconds since Jan 1, 1970
+    expdate += 120000  //expires in 2 minutes (milliseconds)
+    var location = document.location.href;
+    $.cookie('takeMeBack', location, { expires: expdate });
+}
+
 $(document).ready(function() {
 
     // instantiate the advanced search dialog overlay
