@@ -256,6 +256,7 @@ public class Harvindexer {
                 if (dataSet == null) {
                     throw new RuntimeException("Data set not found!");
                 }
+                log.info(String.format("Indexed %d of %d records", dataSet.getRecordsIndexed(), dataSet.getRecordCount()));
                 if (dataSet.getState() != MetaRepo.DataSetState.INDEXING) {
                     break;
                 }

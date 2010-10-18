@@ -57,7 +57,7 @@
                 href="http://www.addthis.com/bookmark.php?v=250&username=collectiewijzer"
                 class="addthis_button"
                 style="text-decoration:none;"
-                addthis:title="${postTitle}"
+                addthis:title="${result.fullDoc.dcTitle[0]}"
          >
             <img src="http://s7.addthis.com/static/btn/sm-plus.gif"  width="16" height="16" border="0" alt="Share" />
             Deel deze pagina

@@ -338,12 +338,13 @@ ul.nav_query_breadcrumbs
 	float:right;
 }
 
-#view-select a:link {
-  margin: .25em 0 0 1em;
+#view-select a:link, #view-select a:visited {
+  margin: 0 0 0 1em;
     float: right;
 }
 #view-select select {
   float: left;
+  height: 20px;
 }
 #results table caption
 {
@@ -370,6 +371,20 @@ ul.nav_query_breadcrumbs
 {
 	min-height:75px;
 	padding:.5em;
+}
+
+.brief-content-container ul li {
+    background: none;
+    padding: 0;
+}
+
+.brief-content-container h6 {
+    font-size: 1.25em;
+    font-weight: normal;
+}
+
+.brief-content-container h6 a:link, .brief-content-container h6 a:visited {
+    text-decoration: underline;
 }
 
 #no-result
@@ -641,7 +656,7 @@ a.disabled
 	left:5px;
 	position:absolute;
 	top:5px;
-	width:200px;
+	width:150px;
 	z-index:10000;
 }
 

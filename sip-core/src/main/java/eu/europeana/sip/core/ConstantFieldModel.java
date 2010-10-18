@@ -70,7 +70,12 @@ public class ConstantFieldModel {
     public void set(String field, String value) {
         String oldValue = map.get(field);
         if (oldValue == null || !oldValue.equals(value)) {
-            map.put(field, value);
+            if (value.isEmpty()) {
+                map.remove(field);
+            }
+            else {
+                map.put(field, value);
+            }
             fireUpdate();
         }
     }

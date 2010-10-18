@@ -70,9 +70,9 @@
             <#if result.badRequest?? >
                 <span style="font-style: italic;">Wrong query. ${result.errorMessage}</span>
             </#if>
-            <#if result.spellCheck??>
-               <#if !result.spellCheck.correctlySpelled>did you mean: <a href="/${portalName}/brief-doc.html?query=${result.spellCheck.collatedResult}">${result.spellCheck.collatedResult}</a></#if>
-            </#if>
+            <#--<#if result.spellCheck??>-->
+               <#--<#if !result.spellCheck.correctlySpelled>did you mean: <a href="/${portalName}/brief-doc.html?query=${result.spellCheck.collatedResult}">${result.spellCheck.collatedResult}</a></#if>-->
+            <#--</#if>-->
         </#if>
         <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" onsubmit="return checkFormSimpleSearch('query');">
             <input type="hidden" name="start" value="1" />
@@ -158,6 +158,30 @@
     </ul>
 
 </#macro>
+
+<#macro admin>
+    <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
+    <div id="admin-block">
+        <h4>Administratie</h4>
+
+        <table class="user-options">
+            <tbody>
+                <tr>
+                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span>Afbeeldingen beheren</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span>Gebruikers beheren</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    </#if>
+</#macro>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -165,17 +189,17 @@
     <#-- favicon_red.ico is also available -->
     <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.7.2.custom.css"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.5.custom.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>
 
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-1.4.1.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.7.2.custom.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.cookie.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/myEuropeana.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/mine.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
     </script>
@@ -219,8 +243,10 @@
     </#if>
     <title>Delving - Search results</title>
     <#break>
-    <#case "myeuropeana.html">
+    <#case "mine.html">
     <#assign pageId = "me"/>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/mine.css"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/mine.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $("#savedItems").tabs('select', $.cookie('ui-tabs-3'));

@@ -53,8 +53,8 @@ public class UserManagementController {
     private ClickStreamLogger clickStreamLogger;
 
     @RequestMapping("/mine.html")
-    public ModelAndView myEuropeanaHandler(HttpServletRequest request) throws Exception {
-        ModelAndView page = ControllerUtil.createModelAndViewPage("myeuropeana");
+    public ModelAndView personalPage(HttpServletRequest request) throws Exception {
+        ModelAndView page = ControllerUtil.createModelAndViewPage("mine");
         User user = ControllerUtil.getUser();
         if (user != null) {
             ControllerUtil.setUser(userDao.updateUser(user));

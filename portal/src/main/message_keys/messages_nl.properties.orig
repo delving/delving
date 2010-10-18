@@ -19,8 +19,13 @@
 # permissions and limitations under the Licence.
 #
 
+<<<<<<< HEAD
 MyCodeOfConduct_t=Ik begrijp dat registreren mij de mogelijkheid biedt tags te creëren voor ieder gewenst item. Ik ga ermee akkoord dat ik geen tags zal creëren die beschouwd zouden kunnen worden als lasterlijk, schadelijk, bedreigend, onwettig, smadend, schendend, beledigend, opruiend, treiterend, pornografisch, onzedelijk, frauduleus, de privacy- of publiciteitsrechten schendend, kwaadaardig, of racistisch of vanuit een etnisch of ander oogpunt aanstootgevend. Door het aanklikken van deze knop verklaar ik dat ik mij zal houden aan deze overeenkomst en ik begrijp dat als ik dat niet doe, mijn registratie zal worden beëindigd.
 MyCodeOfConductRequired_t=U dient in te stemmen met onze gedragscode om u te laten registreren voor My Europeana
+=======
+MyCodeOfConduct_t=Ik begrijp dat Mijn Europeana mij de mogelijkheid biedt tags te creëren voor ieder gewenst item. Ik ga ermee akkoord dat ik geen tags zal creëren die beschouwd zouden kunnen worden als lasterlijk, schadelijk, bedreigend, onwettig, smadend, schendend, beledigend, opruiend, treiterend, pornografisch, onzedelijk, frauduleus, de privacy- of publiciteitsrechten schendend, kwaadaardig, of racistisch of vanuit een etnisch of ander oogpunt aanstootgevend. Door het aanklikken van deze knop verklaar ik dat ik mij zal houden aan deze overeenkomst en ik begrijp dat als ik dat niet doe, mijn lidmaatschap van Mijn Europeana zal worden beëindigd.
+MyCodeOfConductRequired_t=U dient in te stemmen met onze gedragscode om u te laten registreren voor My Personal Page
+>>>>>>> ae843301492bab841dd42ae5618ce2a01315af9c
 IAgree_t=Ik ga akkoord
 Contributor_t=Bijdragende organisatie
 Contributors_t=Bijdragende organisaties
@@ -38,9 +43,15 @@ SavedSearches_t=Bewaarde zoekopdrachten
 SavedTags_t=Bewaarde tags
 LogIn_t=Inloggen
 LogOut_t=Uitloggen
+<<<<<<< HEAD
+MyEuropeana_t=Mijn Europeana
+FeedbackResponse_t=Hartelijk dank voor uw feedback. Als uw feedback antwoord behoeft, neemt een lid van ons team zo snel mogelijk contact met u op.
+EnewsOptin_t=Houd mij op de hoogte van nieuwe ontwikkelingen binnen ICN
+=======
 PersonalPage=Mijn Europeana
 FeedbackResponse_t=Hartelijk dank voor uw feedback. Als uw feedback antwoord behoeft, neemt een lid van het Europeana-team zo snel mogelijk contact met u op. Voor een snellere reactie dient feedback in het Engels te worden aangeboden.
 EnewsOptin_t=Houd mij op de hoogte van nieuwe ontwikkelingen binnen Europeana
+>>>>>>> ae843301492bab841dd42ae5618ce2a01315af9c
 UserConduct_t=Gebruikersgedrag
 UserConductAgree_t=Ik begrijp dat registreren mij de mogelijkheid biedt tags te creëren voor ieder gewenst item. Ik ga ermee akkoord dat ik geen tags zal creëren die beschouwd zouden kunnen worden als lasterlijk, schadelijk, bedreigend, onwettig, smadend, schendend, beledigend, opruiend, treiterend, pornografisch, onzedelijk, frauduleus, de privacy- of publiciteitsrechten schendend, kwaadaardig, of racistisch of vanuit een etnisch of ander oogpunt aanstootgevend. Door het aanklikken van deze knop verklaar ik dat ik mij zal houden aan deze overeenkomst en ik begrijp dat als ik dat niet doe, mijn lidmaatschap zal worden beëindigd. AANKLIKKEN OM AKKOORD TE GAAN
 FirstName_t=Voornaam
@@ -189,7 +200,7 @@ UserInformation_t=Gebruikersinformatie
 PasswordChoose_t=Kies een wachtwoord
 PasswordExplain_t=Wachtwoorden dienen 6-30 karakters lang te zijn
 RepeatPassword_t=Herhaal wachtwoord
-FinishRegistration_t=Registratie voltooien
+FinishRegistration_t=Beëindig registratie
 registrationSucceed_t=U bent met succes geregistreerd
 languageDropDownList_t=Taal
 english_t=Engels (eng)
@@ -295,10 +306,3 @@ liechtenstein_t=Liechtenstein
 luxembourg_t=Luxemburg
 greece_t=Griekenland
 Erase_t=Wissen
-username.tooLong=Gebruikersnaam is te lang
-username.invalidChars = Gebruikersnaam mag alleen letters, cijfers, spaties en onderstreep bevatten
-username.exists = Gebrukersnaam bestaat al
-password.mismatch = Wachtwoorden ongelijk
-password.tooShort = Wachtwoord te kort
-password.tooLong = Wachtwoord te lang
-disclaimer.unchecked = Voorwaarden moeten geaccepteerd worden

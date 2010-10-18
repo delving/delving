@@ -95,14 +95,14 @@
 <#macro userbar>
     <ul class="user_nav">
         <#if !user??>
-            <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="/${portalName}/login.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
+            <li id="mustlogin" class="msg"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
+            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
         </#if>
         <#if user??>
 
             <li>
                 <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-                    href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
+                    href="/${portalName}/logout.html" onclick="takeMeBack();"><@spring.message 'LogOut_t' /></a>
             </li>
 
             <#if user.savedItems??>
@@ -283,6 +283,7 @@
     <#break>
     <#case "logout.html">
     <#assign pageId = "lo"/>
+        <script type="text/javascript" src="/${portalName}/${portalTheme}/js/logout.js"></script>
     <title>Instituut Collectie Nederland - Logout</title>
     <#break>
     <#case "register.html">

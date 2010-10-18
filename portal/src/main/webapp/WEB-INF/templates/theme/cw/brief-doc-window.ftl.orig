@@ -8,12 +8,6 @@
 <#assign imageCount = 0 />
 <#assign videoCount = 0 />
 <#assign audioCount = 0 />
-<#assign showLanguage = 0 />
-<#assign showYear = 0 />
-<#assign showType = 0 />
-<#assign showProvider = 0 />
-<#assign showCountry = 0 />
-<#assign showUserTags = 0 />
 <#assign next = nextQueryFacets>
 <#assign breadcrumbs = breadcrumbs/>
 <#assign seq = briefDocs/>
@@ -22,10 +16,23 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
+ <#if RequestParameters.start??>
+     <#assign start = "${RequestParameters.start}"/>
+<#else>
+     <#assign start = "1"/>
+ </#if>
+ <#if RequestParameters.query??>
+     <#assign justTheQuery = "${RequestParameters.query}"/>
+ </#if>
 
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
-<#if RequestParameters.tab?exists>
+<#assign sortBy = ""/>
+<#if RequestParameters.sortBy??>
+    <#assign sortBy = RequestParameters.sortBy/>
+</#if>
+
+<#if RequestParameters.tab??>
 <#assign tab = RequestParameters.tab/>
 <#switch RequestParameters.tab>
     <#case "text"><#assign showText = "ui-state-active"/><#break/>
@@ -40,102 +47,103 @@
 
 <#include "inc_header.ftl">
 
-<div id="header">
+<div id="main">
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
 
-    <div class="grid_9">
+    <div id="left-col" class="grid_3">
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
+        <div class="breadcrumb">
+            <em>U bevindt zich op: </em>
+            <span><a href="/${portalName}/index.html" title="Homepagina">Home</a> <span class="imgreplacement">&rsaquo;</span></span> Zoekresultaten
         </div>
 
-    </div>
 
-</div>
+        <h2>${pagination.getNumFound()?c} <@spring.message 'Results_t' /> gevonden</h2>
 
-<div class="clear"></div>
+        <br/>
 
-<div id="main" class="grid_9 page">
-
-    <div id="query_breadcrumbs">
-        <div class="inner">
-        <dl>
-            <dt><@spring.message 'MatchesFor_t' />:</dt>
-            <#if !result.matchDoc??>
-                <#list breadcrumbs as crumb>
-                    <#if !crumb.last>
-                        <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>
-                    <#else>
-                        <dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>
-                    </#if>
-                </#list>
-            <#else>
-                <dd  class="nobg">
-                    <@spring.message 'ViewingRelatedItems_t' />
-                    <#assign match = result.matchDoc/>
-                    <a href="${match.fullDocUrl}">
-                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                        </#if>
-                    </a>
-                </dd>
-            </#if>
-        </dl>
-            </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div class="inner">
-
-    <div id="objTypes">
-        <div>
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-        </div>
-        <@typeTabs_plain/>
-        <@viewSelect/>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="pagination">
-        <@resultnav_styled/>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <#include "inc_result_table_brief.ftl"/>
-
-    <div class="clearfix"></div>
-
-    <div class="pagination">
-        <@resultnav_styled/>
-    </div>
-
-    </div>
-
-</div>
-
-
-
-<div id="sidebar" class="grid_3">
-     <div id="search">
-        <div class="inner">
-            <@SearchForm "search_result"/>
-        </div>
-    </div>
-    <div class="inner">
-    <div id="facet-list">
         <#include "inc_facets_lists.ftl"/>
+
     </div>
+
+    <div id="right-col" class="grid_9">
+
+         <div id="search">
+            <@SearchForm "search_result"/>
+             <#--${userSubmittedQuery}-->
+        </div>
+
+        <div id="query_breadcrumbs">
+
+            <dl>
+                <dt>Zoekresultaten voor: </dt>
+                 <#if !result.matchDoc??>
+                    <#list breadcrumbs as crumb>
+                        <#assign crumbFriendlyName = crumb.display?replace("text:","")?replace("YEAR:","")?replace("COLLECTION:"," ")?replace("DCTYPE:","")?html/>
+                        <#if !crumb.last>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumbFriendlyName}</a></dd>
+                        <#else>
+                            <dd <#if crumb_index == 0>class="nobg"</#if>>${crumbFriendlyName}</dd>
+                        </#if>
+                    </#list>
+                <#else>
+                    <dd class="nobg">
+                        <@spring.message 'ViewingRelatedItems_t' />
+                        <#assign match = result.matchDoc/>
+
+                        <a href="${match.fullDocUrl}">
+                        <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=1&amp;startPage=${pagination.start?c}&amp;uri=${match.fullDocUrl?url('utf-8')}&amp;view=${view}&amp;pageId=brd">-->
+                            <#if useCache="true">
+                                <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                            <#else>
+                                <img src="${match.thumbnail}" alt="${match.title}" height="25" align="middle"/>
+                            </#if>
+                        </a>
+                    </dd>
+                </#if>
+            </dl>
+         </div>
+
+        <div id="query_info">
+
+            <h3>
+                  <@spring.message 'Results_t' /> ${pagination.getStart()?c} -
+                    ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+                      </h3>
+
+        </div>
+
+        <#--<div id="result-count">-->
+            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
+        <#--</div>-->
+
+        <#--<div id="object-types">-->
+            <#--<@typeTabs_plain/>-->
+        <#--</div>-->
+
+        <div class="pagination">
+            <@resultnav_styled/>
+        </div>
+
+        <div id="view-select">
+            <@sortResults/><@viewSelect/>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div id="results">
+            <#include "inc_result_table_brief.ftl"/>
+        </div>
+
+        <div class="pagination">
+            <@resultnav_styled/>
+        </div>
+
     </div>
+
 </div>
+
+
 
 
 
@@ -172,7 +180,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
+                                href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -193,7 +201,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message 'AltPreviousPage_t' />"
                     style="margin: 0 8px;"
@@ -229,7 +237,7 @@
                 <li>
                     <#if link.linked>
                         <#assign lstart = link.start/>
-                            <a href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">
+                            <a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">
                                 ${link.display?c}
                             </a>
                      <#else>
@@ -248,7 +256,7 @@
             </#if>
                 <li>
                     <a
-                            href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                            href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
                             alt="<@spring.message 'AltPreviousPage_t' />"
                             class="${uiClassStatePrev}"
                             >
@@ -257,7 +265,7 @@
                 </li>
                 <li>
                     <a
-                            href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                            href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
                             alt="<@spring.message 'AltNextPage_t' />"
                             class="${uiClassStateNext}"
                             >
@@ -293,7 +301,8 @@
 
 <#-- PLAIN  -->
 <#macro typeTabs_plain>
-    <ul>
+    <#assign showAll = ""/>
+    <ul class="nav_types">
         <li class="${showAll}">
             <a href="${thisPage}?query=${query}&amp;view=${view}">
                 <@spring.message 'All_t' />
@@ -323,26 +332,33 @@
 </#macro>
 
 <#macro viewSelect>
-    <div id="viewselect" style="float:right">
         <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">
+            <img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" />
+        </a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >
+            <img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" />
+        </a>
 
         <#else>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">
+            <img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />"/>
+        </a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">
+            <img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" />
+        </a>
 
         </#if>
         </#if>
-    </div>
 </#macro>
 
 <#macro sortResults>
+<<<<<<< HEAD
     <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
         <option value="">Sorteren op:</option>
-        <option value="title" >Titel</option>
-        <option value="creator">Vervaardiger</option>
+        <option value="title">Titel</option>
+        <option value="dc_creator">Vervaardiger</option>
         <option value="YEAR">Jaar</option>
         <option value="COLLECTION">Collectie</option>
     </select>
@@ -353,4 +369,22 @@
         <input type="hidden" name="view" value="${view}"/>
         <input type="hidden" name="sortBy" id="sortBy" value=""/>
     </form>
+=======
+
+        <form action="${thisPage}" method="GET" id="form-sort">
+            <input type="hidden" name="query" value="${justTheQuery}"/>
+            <input type="hidden" name="start" value="${start}"/>
+            <input type="hidden" name="view" value="${view}"/>
+            <input type="hidden" name="sortBy" id="sortBy" value=""/>
+        </form>
+
+        <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+            <option value="">Sorteren op:</option>
+            <option value="title">Titel</option>
+            <option value="creator">Vervaardiger</option>
+            <option value="YEAR">Jaar</option>
+            <option value="COLLECTION">Collectie</option> 
+        </select>
+
+>>>>>>> 4be22e606d445c8173a5ec6b14b82bc37c1cbd98
 </#macro>

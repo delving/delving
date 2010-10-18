@@ -159,7 +159,15 @@
         </tr>
         </#if>
 
-
+    <#-- creator year of birth (ICN)    -------------------------------------------------------------------------------->
+        <#assign creatorYearOfBirthArr = result.fullDoc.creatorYearOfBirth />
+        <#if isNonEmpty(creatorYearOfBirthArr)>
+        <tr>
+            <th scope="row">Vervaardiger geboortejaar:</th>
+            <td><@simple_list creatorYearOfBirthArr '<br/>'/></td>
+        </tr>
+        </#if>
+    
     <#-- DC CONTRIBUTOR    -------------------------------------------------------------------------------->
         <#assign contributorArr = model.fullDoc.dcContributor />
         <#if isNonEmpty(contributorArr)>
@@ -261,16 +269,13 @@
 
 
     <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
+
         <#if isNonEmpty(providerArr) >
         <tr>
             <th scope="row"><@spring.message 'Provider_t' />:</th>
             <td>
-                <#if isNonEmpty(result.fullDoc.europeanaProvider) && isNonEmpty(result.fullDoc.europeanaCountry)>
-                ${result.fullDoc.europeanaProvider[0]} ;&#160; ${result.fullDoc.europeanaCountry[0]}
-                    <#elseif isNonEmpty(result.fullDoc.europeanaProvider)>
+                <#if isNonEmpty(result.fullDoc.europeanaProvider)>
                     ${result.fullDoc.europeanaProvider[0]}
-                    <#elseif isNonEmpty(result.fullDoc.europeanaCountry)>
-                    ${result.fullDoc.europeanaCountry[0]}
                 </#if>
             </td>
         </tr>
@@ -299,39 +304,42 @@
     <#-- ICN FIELDS
     todo: add other fields and switch for controlled fields
     ------------------------------------------------------------------------------>
+    
+        <#assign techniqueArr = result.fullDoc.technique />
+        <#if isNonEmpty(techniqueArr)>
+        <tr>
+            <th scope="row">Techniek:</th>
+            <td><@simple_list techniqueArr '<br/>'/></td>
+        </tr>
+        </#if>
+
+        <#assign materialArr = result.fullDoc.material />
+        <#if isNonEmpty(materialArr)>
+        <tr>
+            <th scope="row">Materiaal:</th>
+            <td><@simple_list materialArr '<br/>'/></td>
+        </tr>
+        </#if>
+
+        <#assign provinceArr = result.fullDoc.province />
+        <#if isNonEmpty(provinceArr)>
+        <tr>
+            <th scope="row">Provincie:</th>
+            <td><@simple_list provinceArr '<br/>'/></td>
+        </tr>
+        </#if>
+
+        <#assign collectionPartArr = result.fullDoc.collectionPart />
+        <#if isNonEmpty(collectionPartArr)>
+        <tr>
+            <th scope="row">Deelcollectie:</th>
+            <td><@simple_list collectionPartArr '<br/>'/></td>
+        </tr>
+        </#if>
+
+    
         <#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD" )>
 
-            <#assign techniqueArr = result.fullDoc.technique />
-            <#if isNonEmpty(techniqueArr)>
-            <tr>
-                <th scope="row">Techniek:</th>
-                <td><@simple_list techniqueArr '<br/>'/></td>
-            </tr>
-            </#if>
-
-            <#assign materialArr = result.fullDoc.material />
-            <#if isNonEmpty(materialArr)>
-            <tr>
-                <th scope="row">Materiaal:</th>
-                <td><@simple_list materialArr '<br/>'/></td>
-            </tr>
-            </#if>
-
-            <#assign provinceArr = result.fullDoc.province />
-            <#if isNonEmpty(provinceArr)>
-            <tr>
-                <th scope="row">Provincie:</th>
-                <td><@simple_list provinceArr '<br/>'/></td>
-            </tr>
-            </#if>
-
-            <#assign collectionPartArr = result.fullDoc.collectionPart />
-            <#if isNonEmpty(collectionPartArr)>
-            <tr>
-                <th scope="row">Deelcollectie:</th>
-                <td><@simple_list collectionPartArr '<br/>'/></td>
-            </tr>
-            </#if>
 
             <#assign acquisitionMeansArr = result.fullDoc.acquisitionMeans />
             <#if isNonEmpty(acquisitionMeansArr)>

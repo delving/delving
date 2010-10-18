@@ -55,8 +55,13 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     @Field("PROVIDER")
     @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true) // facetPrefix = "prov",
-    @Solr(fieldType = "string")
+    @Solr(fieldType = "string", localName = "PROVIDER")
     String[] provider;
+
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true)
+    @Solr(fieldType = "string", localName = "DATAPROVIDER")
+    @Field("DATAPROVIDER")
+    String[] dataProvider;
 
     @Europeana(briefDoc = true, object = true, url = true) // todo: object is not required!!
     @Solr(prefix = "europeana", localName = "object")
@@ -65,22 +70,23 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     @Field("COUNTRY")
     @Europeana(category = INDEX_TIME_ADDITION) // removed facetPrefix = "coun"
-    @Solr(fieldType = "string")
+    @Solr(fieldType = "string", localName = "COUNTRY")
     String[] country;
 
     @Field("TYPE")
-    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "type", type = true) // removed facetPrefix = "type",
-    @Solr(localName = "type", fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "type", type = true)
+    // removed facetPrefix = "type",
+    @Solr(localName = "TYPE", fieldType = "string")
     String[] docType;
 
     @Field("LANGUAGE")
     @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true) // facetPrefix = "lang",
-    @Solr(fieldType = "string")
+    @Solr(fieldType = "string", localName = "LANGUAGE")
     String[] language;
 
     @Field("YEAR")
     @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "yr", converter = "extractYear")
-    @Solr(fieldType = "string")
+    @Solr(fieldType = "string", localName = "YEAR")
     String[] year;
 
     @Field
@@ -161,6 +167,11 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Override
     public String getProvider() {
         return returnStringOrElse(provider);
+    }
+
+    @Override
+    public String getDataProvider() {
+        return returnStringOrElse(dataProvider);
     }
 
     @Override
