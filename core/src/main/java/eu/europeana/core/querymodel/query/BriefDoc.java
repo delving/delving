@@ -35,6 +35,7 @@ public interface BriefDoc { // if multiple-> show first
     String getCreator();
     String getYear();
     String getProvider();
+    String getDataProvider();
     String getLanguage(); // used to be Language
     DocType getType();
     // debug and scoring information
