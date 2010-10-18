@@ -20,31 +20,10 @@ import java.util.TreeMap;
 public class MetaModel {
 
     @XStreamAsAttribute
-    private String name;
+    public String name;
 
     @XStreamImplicit
-    private List<MetaNode> nodes;
-
-    public List<MetaNode> getNodes() {
-        return nodes;
-    }
-
-    public MetaField getField(String path) {
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException("Path must start with slash");
-        }
-        int slash = path.indexOf("/", 1);
-        if (slash < 0) {
-            throw new IllegalArgumentException("No second slash found");
-        }
-        String tag = path.substring(1, slash);
-        for (MetaNode node : nodes) {
-            if (tag.equals(node.getTag())) {
-                return node.getField(path.substring(slash + 1));
-            }
-        }
-        return null;
-    }
+    public List<MetaNode> nodes;
 
     public Map<String, MetaField> getConstantFields() {
         Map<String, MetaField> map = new TreeMap<String, MetaField>();
@@ -52,14 +31,6 @@ public class MetaModel {
             node.getConstantFields("", map);
         }
         return map;
-    }
-
-    public void generateCode(MetaMapping mapping, StringBuilder out) {
-        out.append(name).append(" {\n");
-        for (MetaNode node : nodes) {
-            node.generateCode(name, out, 1, mapping);
-        }
-        out.append("}");
     }
 
     public String toString() {

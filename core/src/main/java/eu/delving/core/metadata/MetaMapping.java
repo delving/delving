@@ -1,17 +1,15 @@
 package eu.delving.core.metadata;
 
+import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.log4j.Logger;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A groovy mapping based on a model.
@@ -21,203 +19,127 @@ import java.util.regex.Pattern;
 
 @XStreamAlias("metadata-mapping")
 public class MetaMapping {
-    private static final String HEADER = "// SIP-Creator Hierarchical Mapping file";
-    private static final String RECORD_ROOT_PREFIX = "// ## RecordRoot ";
-    private static final String CONSTANT_PREFIX = "// ConstantField ";
-    private static final String VALUE_MAP_PREFIX = "/* ValueMap */ def ";
-    private static final String VALUE_MAP_RANGE_PREFIX = "// ";
-    private static final Pattern VALUE_MAP_ENTRY_PATTERN = Pattern.compile("'([^']*)':'([^']*)',");
-    private static final String VALUE_MAP_SUFFIX = "]";
-    private static final String MAPPING_PREFIX = "//<<<";
-    private static final String MAPPING_SUFFIX = "//>>>";
-    private static final String RECORD_PREFIX = "output.record {";
-    private static final String RECORD_SUFFIX = "}";
 
-    private Logger log = Logger.getLogger(getClass());
-    private MetaModel metaModel;
-    private MetaPath recordRootPath;
-    private Map<String, String> constantMap = new TreeMap<String, String>();
-    private Map<String, MetaValueMap> valueMaps = new TreeMap<String, MetaValueMap>();
-    private Map<String, MetaFieldMapping> fieldMappings = new TreeMap<String, MetaFieldMapping>();
+    @XStreamAlias("record-root")
+    public String recordRoot;
 
-    public MetaMapping(MetaModel metaModel) {
-        this.metaModel = metaModel;
-    }
+    @XStreamAlias("constants")
+    public Map<String, String> constants = new HashMap<String, String>();
 
-    public boolean isEmpty() {
-        return fieldMappings.isEmpty();
-    }
+    @XStreamAlias("field-mappings")
+    public Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
 
-    public void clear() {
-        fieldMappings.clear();
-        fireChangeEvent();
-    }
+    @XStreamAlias("field-mapping")
+    public static class FieldMapping {
 
-    public void setRecordRootPath(MetaPath metaPath) {
-        this.recordRootPath = metaPath;
-        fireChangeEvent();
-    }
+        @XStreamAlias("value-map")
+        public Map<String, String> valueMap;
 
-    public MetaPath getRecordRootPath() {
-        return recordRootPath;
-    }
+        @XStreamAlias("groovy-code")
+        public List<String> code;
 
-    public void setConstant(String path, String value) {
-        if (value == null || value.isEmpty()) {
-            constantMap.remove(path);
+
+        public void setValue(String key, String value) {
+            if (valueMap == null) {
+                valueMap = new HashMap<String, String>();
+            }
+            valueMap.put(key, value);
         }
-        else {
-            constantMap.put(path, value);
+
+        public void setCode(String code) {
+            if (this.code == null) {
+                this.code = new ArrayList<String>();
+            }
+            this.code.clear();
+            this.code.addAll(Arrays.asList(code.split("\n")));
         }
-        fireChangeEvent();
     }
 
-    public String getConstant(String path) {
-        String value = constantMap.get(path);
-        return value == null ? "" : value;
-    }
-
-    public void setCode(String code) {
-        fieldMappings.clear();
-        constantMap.clear();
-        valueMaps.clear();
-        recordRootPath = null;
-        MetaValueMap valueMap = null;
-        MetaFieldMapping fieldMapping = null;
-        for (String line : code.split("\n")) {
-            if (line.startsWith(RECORD_ROOT_PREFIX)) {
-                setRecordRootFrom(line);
-            }
-            else if (line.startsWith(CONSTANT_PREFIX)) {
-                setConstantFrom(line);
-            }
-            else if (line.startsWith(VALUE_MAP_PREFIX)) {
-                valueMap = startValueMapFrom(line);
-            }
-            else if (line.startsWith(MAPPING_PREFIX)) {
-                fieldMapping = startFieldMappingFrom(line);
-            }
-            else if (line.startsWith(MAPPING_SUFFIX)) {
-                if (fieldMapping != null) {
-                    fieldMappings.put(fieldMapping.getMetadataField().getTag(), fieldMapping);
-                    fieldMapping = null;
-                }
-            }
-            else if (VALUE_MAP_SUFFIX.equals(line)) {
-                if (valueMap != null) {
-                    this.valueMaps.put(valueMap.getName(), valueMap);
-                    valueMap = null;
-                }
-            }
-            else {
-                if (fieldMapping != null) {
-                    fieldMapping.addCodeLine(line.trim());
-                }
-                if (valueMap != null) {
-                    Matcher matcher = VALUE_MAP_ENTRY_PATTERN.matcher(line);
-                    if (!matcher.matches()) {
-                        throw new RuntimeException(String.format("Line [%s] does not match entry pattern", line));
-                    }
-                    String key = matcher.group(1);
-                    String value = matcher.group(2);
-                    valueMap.put(key, value);
-                }
-            }
-        }
-        fireChangeEvent();
-    }
-
-    public void add(MetaFieldMapping fieldMapping) {
-        fieldMappings.put(fieldMapping.getMetadataField().getTag(), fieldMapping);
-        fireChangeEvent();
-    }
-
-    public void remove(MetaFieldMapping fieldMapping) {
-        fieldMappings.remove(fieldMapping);
-        fireChangeEvent();
-    }
-
-    public String generateCode() {
+    public String generateCode(MetaModel model) {
         StringBuilder out = new StringBuilder();
-        if (recordRootPath != null) {
-            out.append(RECORD_ROOT_PREFIX).append(recordRootPath.toString());
+        out.append("// Groovy Mapping Code - Generated by SIP-Creator\n\n");
+        out.append("// Constants\n\n");
+        for (Map.Entry<String, String> constantEntry : constants.entrySet()) {
+            out.append(String.format("def %s = '%s'\n", constantEntry.getKey(), constantEntry.getValue()));
         }
-        for (Map.Entry<String, String> entry : constantMap.entrySet()) {
-            out.append(CONSTANT_PREFIX).append(entry.getKey()).append(' ').append(entry.getValue()).append('\n');
-        }
-        for (MetaValueMap valueMap : valueMaps.values()) {
-            out.append(VALUE_MAP_PREFIX).append(valueMap.getName()).append("Map = [ // ");
-            for (String rangeValue : valueMap.getRangeValues()) {
-                out.append(rangeValue).append(',');
+        out.append("\n");
+        out.append("// Value Maps\n\n");
+        for (Map.Entry<String, FieldMapping> fieldMappingEntry : fieldMappings.entrySet()) {
+            if (fieldMappingEntry.getValue().valueMap != null) {
+                String path = mungePath(fieldMappingEntry.getKey());
+                out.append(String.format("def %sMap = [\n", path));
+                for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().valueMap.entrySet()) {
+                    out.append("   '").append(entry.getKey()).append("':'").append(entry.getValue()).append("',\n");
+                }
+                out.append("]\n");
+                out.append(String.format("def %s = { def v = %sMap[it.toString()]; return v ? v : it }\n\n", path, path));
             }
-            out.append('\n');
-            for (Map.Entry<String, String> entry : valueMap.entrySet()) {
-                out.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',\n");
-            }
-            out.append("]\n");
-            out.append(String.format("def %s = { def v = %sMap[it.toString()]; return v ? v : it }\n", valueMap.getName(), valueMap.getName()));
         }
-        out.append(RECORD_PREFIX).append('\n');
-        metaModel.generateCode(this, out);
-        out.append(RECORD_SUFFIX).append('\n');
+        out.append("// Builder to create the record\n\n");
+        out.append("output.record {\n");
+        for (MetaNode node : model.nodes) {
+            generateCode("", node, out, 1);
+        }
+        out.append("}\n\n");
         return out.toString();
     }
 
-    public String toString() {
-        return "MetaMapping";
-    }
+    // === private
 
-    // private
-
-    private MetaFieldMapping startFieldMappingFrom(String line) {
-        MetaFieldMapping fieldMapping;
-        String path = line.substring(MAPPING_PREFIX.length()).trim();
-        MetaField metaField = metaModel.getField(path); // todo: a PATH!
-        if (metaField != null) {
-            MetaValueMap existingMap = valueMaps.get(metaField.getFieldNameString());
-            if (existingMap != null) {
-                fieldMapping = new MetaFieldMapping(metaField, existingMap);
-            }
-            else {
-                fieldMapping = new MetaFieldMapping(metaField);
+    private void generateCode(String path, MetaNode node, StringBuilder out, int indent) {
+        indented(indent, out).append(node.tag).append(" {\n");
+        if (node.nodes != null) {
+            for (MetaNode subNode : node.nodes) {
+                generateCode(path + "/" + node.tag, subNode, out, indent + 1);
             }
         }
-        else {
-            log.warn("Discarding unrecognized field " + path);
-            fieldMapping = null;
+        if (node.fields != null) {
+            for (MetaField field : node.fields) {
+                generateCode(path + "/" + node.tag, field, out, indent + 1);
+            }
         }
-        return fieldMapping;
+        indented(indent, out).append("}\n");
     }
 
-    private MetaValueMap startValueMapFrom(String line) {
-        MetaValueMap valueMap;
-        String def = line.substring(VALUE_MAP_PREFIX.length());
-        int eq = def.indexOf("Map =");
-        if (eq < 0) throw new RuntimeException("No 'Map =' found");
-        String name = def.substring(0, eq).trim();
-        int range = def.indexOf(VALUE_MAP_RANGE_PREFIX);
-        if (range < 0) throw new RuntimeException("No range values");
-        String rangeString = def.substring(range + VALUE_MAP_RANGE_PREFIX.length());
-        Set<String> rangeValues = new TreeSet<String>();
-        rangeValues.addAll(Arrays.asList(rangeString.split(",")));
-        valueMap = new MetaValueMap(name, rangeValues);
-        return valueMap;
-    }
-
-    private void setConstantFrom(String line) {
-        line = line.substring(CONSTANT_PREFIX.length());
-        int space = line.indexOf(" ");
-        if (space > 0) {
-            String fieldName = line.substring(0, space);
-            String value = line.substring(space).trim();
-            constantMap.put(fieldName, value);
+    private void generateCode(String path, MetaField field, StringBuilder out, int indent) {
+        String fieldPath = path + "/" + field.getTag();
+        FieldMapping fieldMapping = fieldMappings.get(fieldPath);
+        if (fieldMapping != null) {
+            for (String line : fieldMapping.code) {
+                if (codeIndent(line) < 0) {
+                    indent--;
+                }
+                indented(indent, out).append(line).append("\n");
+                if (codeIndent(line) > 0) {
+                    indent++;
+                }
+            }
         }
     }
 
-    private void setRecordRootFrom(String line) {
-        String recordRootString = line.substring(RECORD_ROOT_PREFIX.length());
-        recordRootPath = new MetaPath(recordRootString);
+    private static int codeIndent(String line) {
+        int indent = 0;
+        for (char c : line.toCharArray()) {
+            switch (c) {
+                case '}': indent--; break;
+                case '{': indent++; break;
+            }
+        }
+        return indent;
     }
+
+    private static StringBuilder indented(int count, StringBuilder out) {
+        while (count-- > 0) {
+            out.append("   ");
+        }
+        return out;
+    }
+
+    private String mungePath(String path) {
+        return path.replaceAll("/", "__");
+    }
+
+    // ==== reading and writing
 
     // observable
 
@@ -235,5 +157,23 @@ public class MetaMapping {
         for (Listener listener : listeners) {
             listener.mappingChanged(this);
         }
+    }
+
+    public static MetaMapping read(InputStream inputStream) {
+        return (MetaMapping) stream().fromXML(inputStream);
+    }
+
+    public static MetaMapping read(String string) {
+        return (MetaMapping) stream().fromXML(string);
+    }
+
+    public static String toString(MetaMapping spec) {
+        return stream().toXML(spec);
+    }
+
+    private static XStream stream() {
+        XStream stream = new XStream();
+        stream.processAnnotations(MetaMapping.class);
+        return stream;
     }
 }

@@ -19,7 +19,7 @@ public class TestMetaModel {
         InputStream modelInputStream = getClass().getResource("/metadata-model.xml").openStream();
         InputStream mappingInputStream = getClass().getResource("/metadata-mapping.xml").openStream();
         MetaModel model = MetaModel.read(modelInputStream);
-        MetaMapSpec mapping = MetaMapSpec.read(mappingInputStream);
+        MetaMapping mapping = MetaMapping.read(mappingInputStream);
         log.info("Code:\n" + mapping.generateCode(model));
     }
 }
