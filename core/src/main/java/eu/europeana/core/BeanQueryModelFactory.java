@@ -424,7 +424,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         // add view limitation to query
         final User user = ControllerUtil.getUser();
         if (user == null || user.getRole() == Role.ROLE_USER) {
-            solrQuery.addFilterQuery("-icn_collectionType:" + CollectionDisplayType.MUESOMETRIE);
+            solrQuery.addFilterQuery("-icn_collectionType:" + CollectionDisplayType.MUSEOMETRIE);
         }
         try {
             queryResponse = solrServer.query(solrQuery);
