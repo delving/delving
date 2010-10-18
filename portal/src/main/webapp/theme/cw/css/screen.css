@@ -373,6 +373,12 @@ ul.nav_query_breadcrumbs
 	padding:.5em;
 }
 
+.brief-content-container ul li {
+    background: none;
+    padding: 0;
+    font-weight: bold;
+}
+
 #no-result
 {
 	color:#903;

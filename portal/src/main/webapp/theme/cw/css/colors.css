@@ -33,6 +33,10 @@ a:hover,a:visited:hover
     border: 1px solid #999999;
 }
 
+.brief-content-container ul li {
+    color: #555;
+}
+
 /*
  * @classname       azure
  * @colordef		#046f96; azure 1 (full)
