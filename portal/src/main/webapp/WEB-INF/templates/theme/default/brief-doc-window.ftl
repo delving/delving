@@ -22,7 +22,14 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
-
+ <#if RequestParameters.start??>
+     <#assign start = "${RequestParameters.start}"/>
+<#else>
+     <#assign start = "1"/>
+ </#if>
+ <#if RequestParameters.query??>
+     <#assign justTheQuery = "${RequestParameters.query}"/>
+ </#if>
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
 <#if RequestParameters.tab?exists>
@@ -99,7 +106,7 @@
         <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
         </div>
         <@typeTabs_plain/>
-        <@viewSelect/>
+        <@sortResults/><@viewSelect/>
     </div>
 
     <div class="clearfix"></div>
@@ -341,10 +348,10 @@
 <#macro sortResults>
     <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
         <option value="">Sorteren op:</option>
-        <option value="title" >Titel</option>
-        <option value="creator">Vervaardiger</option>
-        <option value="YEAR">Jaar</option>
-        <option value="COLLECTION">Collectie</option>
+        <option value="title" ><@spring.message 'dc_title_t' /></option>
+        <option value="creator"><@spring.message 'dc_creator_t' /></option>
+        <option value="YEAR"><@spring.message 'dc_date_t' /></option>
+        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
     </select>
 
     <form action="${thisPage}" method="GET" id="form-sort" style="display:none;">
