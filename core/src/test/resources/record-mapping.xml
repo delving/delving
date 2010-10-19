@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<metadata-mapping>
+<record-mapping>
     <record-root>/some/path</record-root>
     <constants>
         <entry>
@@ -9,7 +9,7 @@
     </constants>
     <field-mappings>
         <entry>
-            <string>/pokey/gumby/woohoo</string>
+            <string>/record/pokey/gumby/woohoo</string>
             <field-mapping>
                 <value-map>
                     <entry>
@@ -25,4 +25,4 @@
             </field-mapping>
         </entry>
     </field-mappings>
-</metadata-mapping>
+</record-mapping>

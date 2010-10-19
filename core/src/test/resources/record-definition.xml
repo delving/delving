@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<record-definition name="EDM">
+    <root tag="record">
+        <element tag="pokey">
+            <element tag="gumby">
+                <field localName="woohoo" facetPrefix="boo" indexed="false" briefDoc="true"/>
+            </element>
+        </element>
+        <element tag="gumby">
+            <element tag="pokey">
+                <field localName="magoo" facetPrefix="boo" regularExpression=".*"/>
+            </element>
+        </element>
+    </root>
+</record-definition>
