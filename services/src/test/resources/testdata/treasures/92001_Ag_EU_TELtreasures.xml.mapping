@@ -5,7 +5,7 @@
 // ConstantField collectionId 92001
 // ConstantField europeana_provider The European Library
 // ConstantField europeana_dataProvider The European Library
-// ConstantField icn_collectionType MUESOMETRIE
+// ConstantField icn_collectionType MUSEOMETRIE
 // ConstantField europeana_language mul
 // ConstantField europeana_collectionName 92001_Ag_EU_TELtreasures
 // ConstantField europeana_country europe
@@ -193,7 +193,7 @@ icn.technique it
 //>>>
 
 //<<<icn_collectionType
-icn.collectionType 'MUESOMETRIE'
+icn.collectionType 'MUSEOMETRIE'
 //>>>
 
 //<<<europeana_collectionTitle

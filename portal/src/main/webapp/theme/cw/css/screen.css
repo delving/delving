@@ -373,6 +373,20 @@ ul.nav_query_breadcrumbs
 	padding:.5em;
 }
 
+.brief-content-container ul li {
+    background: none;
+    padding: 0;
+}
+
+.brief-content-container h6 {
+    font-size: 1.25em;
+    font-weight: normal;
+}
+
+.brief-content-container h6 a:link, .brief-content-container h6 a:visited {
+    text-decoration: underline;
+}
+
 #no-result
 {
 	color:#903;
@@ -642,7 +656,7 @@ a.disabled
 	left:5px;
 	position:absolute;
 	top:5px;
-	width:200px;
+	width:150px;
 	z-index:10000;
 }
 

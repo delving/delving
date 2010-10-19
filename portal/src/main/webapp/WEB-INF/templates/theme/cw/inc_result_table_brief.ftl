@@ -65,18 +65,23 @@
                     </a>
                 </h6>
                 <ul>
-                    <#if cell.creator??><#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
-                    <li><@stringLimiter "${cell.creator}" "120"/></li>
-                    </#if></#if>
-                    <#if cell.year != ""><#if cell.year != "0000">
-                    <li>${cell.year}</li>
-                    </#if></#if>
+                    <#if cell.creator??>
+                        <#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown," || cell.creator = "unknown,")>
+                            <li><@stringLimiter "${cell.creator}" "120"/></li>
+                        </#if>
+                    </#if>
+                    <#if cell.year != "">
+                        <#if cell.year != "0000">
+                            <li>${cell.year}</li>
+                        </#if>
+                    </#if>
+
                     <#if cell.provider != "">
                     <#assign pr = cell.provider />
                     <#if pr?length &gt; 80>
                     <#assign pr = cell.provider?substring(0, 80) + "..."/>
                     </#if>
-                    <li title="${cell.provider}"><span class="provider">${pr}</span></li>
+                    <li title="${cell.provider}"><strong>${pr}</strong></li>
                     </#if>
                 </ul>
             </div>

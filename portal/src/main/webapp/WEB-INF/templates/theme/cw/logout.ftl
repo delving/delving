@@ -2,7 +2,7 @@
 <#assign thisPage = "logout.html"/>
 <#include "inc_header.ftl">
 
-<body>
+
 
 <div id="sidebar" class="grid_3">
 
@@ -28,6 +28,3 @@
 
 
 <#include "inc_footer.ftl"/>
-
-</body>
-</html>
