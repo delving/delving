@@ -147,13 +147,13 @@ function checkSize(obj,type,w){
     if(type=="brief"){
         if (w > 220) {
             w = 220;
-            document.getElementById(obj).width=w;
+            obj.width=w;
         }
     }
     else {
-        if (w > 365) {
-            w = 365;
-            document.getElementById(obj).width=w;
+        if (w > 285) {
+            w = 285;
+            obj.width=w;
         }
     }
 }

@@ -244,13 +244,14 @@ input[type=text], input[type=password]{
 }
 
 
-#viewselect {
+#viewselect{
     float: right;
 }
 
 #viewselect a {
     text-decoration: none;
 }
+
 
 /* pagination */
 /*.pagination {*/
@@ -739,9 +740,9 @@ button.fg-button-icon-right .ui-icon {
 	background:#fff;
 	border-bottom:4px solid #999;
 	box-shadow:3px 3px 4px #bbb;
-	left:5px;
-	position:absolute;
-	top:5px;
+	right:10px;
+	position:fixed;
+	bottom:10px;
 	width:200px;
 	z-index:10000;
 }
