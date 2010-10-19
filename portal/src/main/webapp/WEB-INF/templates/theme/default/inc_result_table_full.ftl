@@ -35,9 +35,10 @@
                     <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
                         <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
                     </#if>
-                   <a href="redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+                   <a href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
                       target="_blank"
-                      alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
+                      class="overlay"
+                      title="${result.fullDoc.dcTitle[0]}"
                     >
                     <#-- empty image checker -->
                     <#if result.fullDoc.thumbnails[0] = " ">
@@ -48,19 +49,19 @@
                         <#if useCache="true">
                             <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
                                  class="full" 
-                                 alt="Image title: ${result.fullDoc.dcTitle[0]}"
+                                 alt="${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
                                  onload="checkSize(this,'full',this.width);"
                                  onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
                              />
                         <#else>
                             <img
-                                 alt="Image title: ${result.fullDoc.dcTitle[0]}"
+                                 alt="${result.fullDoc.dcTitle[0]}"
                                  id="imgview"
+                                 class="full"
                                  src="${thumbnail}"
                                  onload="checkSize(this,'full',this.width);"
                                  onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-                                 alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
                              />
                         </#if>
                     </a>

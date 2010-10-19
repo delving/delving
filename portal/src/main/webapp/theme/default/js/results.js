@@ -151,10 +151,31 @@ function checkSize(obj,type,w){
         }
     }
     else {
-        if (w > 285) {
-            w = 285;
+        if (w > 255) {
+            w = 255;
             obj.width=w;
         }
     }
 }
+
+$(document).ready(function() {
+
+    $(".dialog").dialog({
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        width: 500
+    });
+
+    $('#opener').click(function() {
+        $(".dialog").dialog('open');
+    });
+
+    $(document).ready(function(){
+        $("a.overlay").fancybox({
+            titleShow   : true,
+            titlePosition: 'inside'
+        });
+    })    
+});
 

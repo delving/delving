@@ -233,7 +233,31 @@
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/fancybox/jquery.fancybox-1.3.1.css"/>
+    <!--[if IE]>
+    <style type="text/css">
+        /* IE */
+        #fancybox-loading.fancybox-ie div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_loading.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-close		{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_close.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-title-over	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }
+        .fancybox-ie #fancybox-title-left	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_left.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-title-main	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_main.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-title-right	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_right.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-left-ico		{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_nav_left.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-right-ico	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_nav_right.png', sizingMethod='scale'); }
+        .fancybox-ie .fancy-bg { background: transparent !important; }
+        .fancybox-ie #fancy-bg-n	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_n.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-ne	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-e	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_e.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-se	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_se.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-s	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_s.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-sw	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-w	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_w.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-nw	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
 
+    </style>
+    <![endif]-->
     <#if user??>
     <script type="text/javascript">
         var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t' />";
