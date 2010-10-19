@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
  *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
@@ -35,23 +35,23 @@ import java.util.regex.Pattern;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MetaFieldMapping implements Iterable<String> {
+public class FieldMapping implements Iterable<String> {
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("input(\\.\\w+)+");
     private static final String [] TO_REMOVE = {
             ".each",
             ".split"
     };
-    private MetaField metaField;
-    private MetaValueMap valueMap;
+    private FieldDefinition fieldDefinition;
+    private FieldValueMap valueMap;
     private List<String> codeLines = new ArrayList<String>();
     private List<String> variables;
 
-    public MetaFieldMapping(MetaField metaField) {
-        this.metaField = metaField;
+    public FieldMapping(FieldDefinition fieldDefinition) {
+        this.fieldDefinition = fieldDefinition;
     }
 
-    public MetaFieldMapping(MetaField metaField, MetaValueMap valueMap) {
-        this.metaField = metaField;
+    public FieldMapping(FieldDefinition fieldDefinition, FieldValueMap valueMap) {
+        this.fieldDefinition = fieldDefinition;
         this.valueMap = valueMap;
     }
 
@@ -85,8 +85,8 @@ public class MetaFieldMapping implements Iterable<String> {
         }
     }
 
-    public MetaField getMetadataField() {
-        return metaField;
+    public FieldDefinition getField() {
+        return fieldDefinition;
     }
 
     public List<String> getVariables() {
@@ -111,11 +111,11 @@ public class MetaFieldMapping implements Iterable<String> {
 
 
     public void createValueMap(Set<String> domainValues, Set<String> rangeValues) {
-        this.valueMap = new MetaValueMap(metaField.getFieldNameString(), rangeValues);
+        this.valueMap = new FieldValueMap(fieldDefinition.getFieldNameString(), rangeValues);
         this.valueMap.setDomain(domainValues);
     }
 
-    public MetaValueMap getValueMap() {
+    public FieldValueMap getValueMap() {
         return valueMap;
     }
 
@@ -134,7 +134,7 @@ public class MetaFieldMapping implements Iterable<String> {
     }
 
     public String getDescription() {
-        String fieldName = metaField == null ? "?" : metaField.getFieldNameString();
+        String fieldName = fieldDefinition == null ? "?" : fieldDefinition.getFieldNameString();
         if (getVariables().isEmpty()) {
             return fieldName;
         }
@@ -144,6 +144,6 @@ public class MetaFieldMapping implements Iterable<String> {
     }
 
     public String toString() {
-        return metaField == null ? "?" : metaField.getFieldNameString();
+        return fieldDefinition == null ? "?" : fieldDefinition.getFieldNameString();
     }
 }

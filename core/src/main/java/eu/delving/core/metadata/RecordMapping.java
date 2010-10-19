@@ -1,7 +1,29 @@
+/*
+ * Copyright 2010 DELVING BV
+ *
+ *  Licensed under the EUPL, Version 1.0 or? as soon they
+ *  will be approved by the European Commission - subsequent
+ *  versions of the EUPL (the "Licence");
+ *  you may not use this work except in compliance with the
+ *  Licence.
+ *  You may obtain a copy of the Licence at:
+ *
+ *  http://ec.europa.eu/idabc/eupl
+ *
+ *  Unless required by applicable law or agreed to in
+ *  writing, software distributed under the Licence is
+ *  distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied.
+ *  See the Licence for the specific language governing
+ *  permissions and limitations under the Licence.
+ */
+
 package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,8 +39,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-@XStreamAlias("metadata-mapping")
-public class MetaMapping {
+@XStreamAlias("record-mapping")
+public class RecordMapping {
+
+    @XStreamOmitField
+    public boolean dirty;
 
     @XStreamAlias("record-root")
     public String recordRoot;
@@ -30,7 +55,7 @@ public class MetaMapping {
     public Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
 
     @XStreamAlias("field-mapping")
-    public static class FieldMapping {
+    public class FieldMapping {
 
         @XStreamAlias("value-map")
         public Map<String, String> valueMap;
@@ -55,7 +80,7 @@ public class MetaMapping {
         }
     }
 
-    public String generateCode(MetaModel model) {
+    public String generateCode(RecordDefinition recordDefinition) {
         final StringBuilder stringBuilder = new StringBuilder();
         Out out = new Out() {
             int indentLevel;
@@ -94,36 +119,37 @@ public class MetaMapping {
             }
         }
         out.line("// Builder to create the record\n");
-        out.line("output.record {");
+        out.line("output.");
         out.indent(1);
-        for (MetaNode node : model.nodes) {
-            generateCode("", node, out);
-        }
+        generateCode("", recordDefinition.root, out);               
         out.indent(-1);
-        out.line("}\n");
         return stringBuilder.toString();
+    }
+
+    public String toString() {
+        return stream().toXML(this);
     }
 
     // === private
 
-    private void generateCode(String path, MetaNode node, Out out) {
-        out.line(String.format("%s {", node.tag));
+    private void generateCode(String path, ElementDefinition element, Out out) {
+        out.line(String.format("%s {", element.tag));
         out.indent(1);
-        if (node.nodes != null) {
-            for (MetaNode subNode : node.nodes) {
-                generateCode(path + "/" + node.tag, subNode, out);
+        if (element.elements != null) {
+            for (ElementDefinition subNode : element.elements) {
+                generateCode(path + "/" + element.tag, subNode, out);
             }
         }
-        if (node.fields != null) {
-            for (MetaField field : node.fields) {
-                generateCode(path + "/" + node.tag, field, out);
+        if (element.fields != null) {
+            for (FieldDefinition fieldDefinition : element.fields) {
+                generateCode(path + "/" + element.tag, fieldDefinition, out);
             }
         }
         out.indent(-1);
         out.line("}");
     }
 
-    private void generateCode(String path, MetaField field, Out out) {
+    private void generateCode(String path, FieldDefinition field, Out out) {
         String fieldPath = path + "/" + field.getTag();
         FieldMapping fieldMapping = fieldMappings.get(fieldPath);
         if (fieldMapping != null) {
@@ -159,12 +185,10 @@ public class MetaMapping {
         void indent(int change);
     }
 
-    // ==== reading and writing
-
     // observable
 
     public interface Listener {
-        void mappingChanged(MetaMapping metaMapping);
+        void mappingChanged(RecordMapping recordMapping);
     }
 
     public void addListener(Listener listener) {
@@ -179,21 +203,23 @@ public class MetaMapping {
         }
     }
 
-    public static MetaMapping read(InputStream inputStream) {
-        return (MetaMapping) stream().fromXML(inputStream);
+    // ==== reading and writing
+
+    public static RecordMapping read(InputStream inputStream) {
+        return (RecordMapping) stream().fromXML(inputStream);
     }
 
-    public static MetaMapping read(String string) {
-        return (MetaMapping) stream().fromXML(string);
+    public static RecordMapping read(String string) {
+        return (RecordMapping) stream().fromXML(string);
     }
 
-    public static String toString(MetaMapping spec) {
+    public static String toString(RecordMapping spec) {
         return stream().toXML(spec);
     }
 
     private static XStream stream() {
         XStream stream = new XStream();
-        stream.processAnnotations(MetaMapping.class);
+        stream.processAnnotations(RecordMapping.class);
         return stream;
     }
 }

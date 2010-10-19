@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 EDL FOUNDATION
+ * Copyright 2010 DELVING BV
  *
  *  Licensed under the EUPL, Version 1.0 or? as soon they
  *  will be approved by the European Commission - subsequent
@@ -26,28 +26,25 @@ import java.util.Iterator;
 import java.util.Stack;
 
 /**
- * A path consisting of a stack of qnames
+ * A path consisting of a stack of instances of QName, representing the paths
+ * of elements that came from the analysis process.
  *
- * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
+ * @author Gerald de Jong, Delving BV, <geralddejong@gmail.com>
  */
 
-public class MetaPath implements Comparable<MetaPath> {
+public class AnalysisPath implements Comparable<AnalysisPath> {
     private Stack<QName> stack = new Stack<QName>();
 
-    public MetaPath() {
+    public AnalysisPath() {
     }
 
-    public MetaPath(String pathString) {
-        // todo
-    }
-
-    public MetaPath(MetaPath path) {
+    public AnalysisPath(AnalysisPath path) {
         for (QName name : path.stack) {
             stack.push(name);
         }
     }
 
-    public MetaPath(MetaPath path, int count) {
+    public AnalysisPath(AnalysisPath path, int count) {
         for (QName name : path.stack) {
             if (count-- > 0) {
                 stack.push(name);
@@ -63,12 +60,12 @@ public class MetaPath implements Comparable<MetaPath> {
         stack.pop();
     }
 
-    public boolean equals(MetaPath path) {
+    public boolean equals(AnalysisPath path) {
         return compareTo(path) == 0;
     }
 
     @Override
-    public int compareTo(MetaPath path) {
+    public int compareTo(AnalysisPath path) {
         Iterator<QName> walkUs = stack.iterator();
         Iterator<QName> walkThem = path.stack.iterator();
         while (true) {
