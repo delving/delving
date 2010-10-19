@@ -7,7 +7,7 @@ package eu.europeana.definitions.domain;
 public enum CollectionDisplayType {
     ALL("all"),
     PORTAL("portal"),
-    MUESOMETRIE("mm");
+    MUSEOMETRIE("mm");
 
     private String solrSearchName;
 
