@@ -1,4 +1,4 @@
-<#import "spring_form_macros.ftl" as spring >
+<#import "spring.ftl" as spring >
 <#assign portalName = portalName/>
 <#if user??>
     <#assign user = user/>
@@ -162,41 +162,18 @@
 <#macro admin>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
     <div id="admin-block">
-        <h4>Administratie</h4>
+        <h4><@spring.message 'dms.administration.title' /></h4>
 
         <table class="user-options">
             <tbody>
                 <tr>
-                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>
+                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message 'dms.administration.pages' /></a></td>
                 </tr>
                 <tr>
-                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span>Afbeeldingen beheren</a></td>
+                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message 'dms.administration.images' /></a></td>
                 </tr>
                 <tr>
-                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span>Gebruikers beheren</a></td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
-    </#if>
-</#macro>
-
-<#macro admin>
-    <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
-    <div id="admin-block">
-        <h4>Administratie</h4>
-
-        <table class="user-options">
-            <tbody>
-                <tr>
-                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>
-                </tr>
-                <tr>
-                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span>Afbeeldingen beheren</a></td>
-                </tr>
-                <tr>
-                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span>Gebruikers beheren</a></td>
+                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message 'dms.administration.users' /></a></td>
                 </tr>
             </tbody>
         </table>
@@ -222,9 +199,10 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/mine.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
+        var portalName = "/${portalName}";
+        var baseThemePath = "/${portalName}/${portalTheme}";
     </script>
     <#switch thisPage>
     <#case "index.html">

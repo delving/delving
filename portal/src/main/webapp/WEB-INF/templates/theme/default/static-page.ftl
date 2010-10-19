@@ -39,7 +39,6 @@
 
             <div class="grid_6">
                 <h2>Bestaande paginas</h2>
-
                 <table summary="List of existing pages" class="user-options">
                     <#list pagePathList as pagePath>
                         <tr>
@@ -49,12 +48,12 @@
                                 ${pagePath}</a></td>
                             <td width="85"><a href="${pagePath}?edit=true">
                                 <span class="ui-icon ui-icon-pencil"></span>
-                                Bewerken</a>
+                                <@spring.message 'dms.edit' /></a>
                             </td>
                             <td width="100">
                                  <a class="delete" id="delete_${pagePath_index}" href="${pagePath}">
                                     <span class="ui-icon ui-icon-trash"></span>
-                                     Verwijder
+                                      <@spring.message 'dms.delete' />
                                  </a>
 
                             </td>
@@ -65,18 +64,16 @@
 
             <div class="grid_6">
 
-                <h2>Maak een nieuwe pagina</h2>
-                <p>
-                    Voor het aanmaken van een pagina vul in het pad (als gewenst) en de naam van de nieuwe pagina.
-                    De naam van de pagina <strong>moet</strong> eindigen met <strong>.dml</strong>
-                </p>
-                <p>
-                    Het basis pad <strong>/${portalName}</strong> wordt automatisch aangemaakt. Daarop volgende paden zijn
-                    niet verplicht maar kunnen wel helpen met het ordennen en overzicht van de paginas.
-                </p>
+                <h2><@spring.message 'dms.page.create' /></h2>
+                <ol>
+                    <li><@spring.message 'dms.page.create.step.1' /></li>
+                    <li><@spring.message 'dms.page.create.step.2' /></li>
+                </ol>
+
+
                 <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
                     /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
-                    <input type="submit" value="Aanmaken" id="makePage"/>
+                    <input type="submit" value="<@spring.message 'dms.create' />" id="makePage"/>
                 </form>
 
            </div>
@@ -128,6 +125,24 @@
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
         <#include "inc_header.ftl"/>
+             <div id="header">
+
+                <div id="identity" class="grid_3">
+                    <h1>Delving</h1>
+                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+                </div>
+
+                <div class="grid_9">
+
+                    <div id="top-bar">
+                        <div class="inner">
+                            <@userbar/>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         <div class="grid_12">
             <div id="content" class="content-preview">
             ${page.content}
@@ -140,13 +155,13 @@
                             <table>
                                 <tr>
                                     <td>
-                                      <a href="javascript:toggleEditor('editor');" class="">Show/Hide HTML editor</a>  
+                                      <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>  
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
-                                        <input type="submit" name="submit" value="Bewaar"/> <a href="${page.path}?edit=false" class="button">Cancel</a>
+                                        <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}?edit=false" class="button"><@spring.message 'dms.cancel' /></a>
                                     </td>
                                 </tr>
                             </table>
@@ -154,17 +169,20 @@
                     </div>
                 <#else>
                     <#if page.id??>
-                        <p><a href="${page.path}?edit=true&version=${page.id}" class="button">Pagina bewerken</a></p>
+                        <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message 'dms.page.edit' /></a></p>
                     <#else>
-                        <p><a href="${page.path}?edit=true" class="button">Pagina bewerken</a></p>
+                        <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
                     </#if>
                     <br/><br/>
                     <#if versionList?? && page.id??>
-                        <h3>Versions</h3>
+                        <h3><@spring.message 'dms.versions' /></h3>
+                        <p>
+                            <@spring.message 'dms.version.approve.explain' />
+                        </p>
                         <ul>
                             <#list versionList as version>
                                 <#if version.id == page.id>
-                                    <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true">Approve this version</li>
+                                    <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message 'dms.version.approve' /></li>
                                 <#else>
                                     <li><a href="${version.path}?version=${version.id}&edit=false">${version.date?string("yyyy-MM-dd HH:mm:ss")}</a></li>
                                 </#if>
