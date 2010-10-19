@@ -121,10 +121,10 @@
 <#include "language_select.ftl">
     <ul>
         <#if !user??>
-        <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
-                href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a>
-        </li>
+            <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
+            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
         </#if>
+
         <#if user??>
         <li>
             <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
@@ -182,6 +182,29 @@
     </#if>
 </#macro>
 
+<#macro admin>
+    <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
+    <div id="admin-block">
+        <h4>Administratie</h4>
+
+        <table class="user-options">
+            <tbody>
+                <tr>
+                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span>Afbeeldingen beheren</a></td>
+                </tr>
+                <tr>
+                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span>Gebruikers beheren</a></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    </#if>
+</#macro>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -207,6 +230,7 @@
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/index.js"></script>
     <title>Delving - Homepage</title>
     <#break>
     <#case "advancedsearch.html">
@@ -260,25 +284,6 @@
     <#break>
     <#case "login.html">
     <#assign pageId = "li"/>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $("#loginForm").validate({
-                rules: {j_username: "required",j_password: "required"},
-                messages: {j_username: "",j_password: ""}
-            });
-            $("#forgotemailForm").validate({
-                rules: {email: "required"},
-                messages: {email: ""}
-            });
-            $("#registrationForm").validate({
-                rules: {email: "required",iagree: "required"},
-                messages: {email: "",iagree: msgRequired }
-                //msgRequired is generated in inc_header.ftl and
-                // set as a javascript variable (its a spring message
-                // so cannot be generated in this js file
-            });
-        });
-    </script>
     <title>Delving - Login</title>
     <#break>
     <#case "logout.html">
@@ -289,7 +294,15 @@
     <#assign pageId = "rg"/>
     <title>Delving - Registration</title>
     <#break>
-    <#case "forgotPassword.html">
+    <#case "register-request.html">
+    <#assign pageId = "rq"/>
+    <title>Delving - Registration</title>
+    <#break>
+    <#case "forgot-password.html">
+    <#assign pageId = "fp"/>
+    <title>Delving - Forgot Password</title>
+    <#break>
+    <#case "change-password.html">
     <#assign pageId = "fp"/>
     <title>Delving - Forgot Password</title>
     <#break>
@@ -301,5 +314,5 @@
 </head>
 
 <body>
-
+<@admin/>
 <div id="container" class="container_12">
