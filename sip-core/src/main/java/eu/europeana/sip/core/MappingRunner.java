@@ -31,7 +31,6 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringWriter;
 
 /**
@@ -45,7 +44,6 @@ public class MappingRunner {
     private String code;
     private Script script;
     private ConstantFieldModel constantFieldModel;
-    private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
     public MappingRunner(String code, ConstantFieldModel constantFieldModel) {
         this.code = code;
@@ -62,9 +60,10 @@ public class MappingRunner {
             MarkupBuilder builder = new MarkupBuilder(writer);
             NamespaceBuilder xmlns = new NamespaceBuilder(builder);
             binding.setVariable("output", builder);
-            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc")); // todo: this is ese-specific and shouldn't be
+            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
             binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
             binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
+            binding.setVariable("icn", xmlns.namespace("http://www.icn.nl/", "icn"));
             for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
                 binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
             }
@@ -85,7 +84,7 @@ public class MappingRunner {
             StringBuilder out = new StringBuilder();
             for (Object o : e.getErrorCollector().getErrors()) {
                 SyntaxErrorMessage message = (SyntaxErrorMessage) o;
-                SyntaxException se = message.getCause();
+                @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"}) SyntaxException se = message.getCause();
                 // line numbers will not match
                 out.append(String.format("Problem: %s\n", se.getOriginalMessage()));
             }

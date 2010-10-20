@@ -1,0 +1,709 @@
+/* html element styles */
+body
+{
+	background-color:#F3F5F6;
+}
+
+ul
+{
+	list-style-type:none;
+}
+
+ul li
+{
+	background:url(skin/arrows.png) left 6px no-repeat;
+	margin:0;
+	padding-left:11px;
+}
+
+/* Sking wrapper for shaded borders *****************************************************************/
+.skin
+{
+	background:transparent url(skin/sh.png) top center repeat-y;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:22px;
+	padding:0;
+	width:980px;
+}
+
+.skin .top
+{
+	background:transparent url(skin/sh_top.png) top center no-repeat;
+	height:10px;
+}
+
+.skin .bottom
+{
+	background:transparent url(skin/sh_bot.png) bottom center no-repeat;
+}
+
+.container_12
+{
+	background:transparent url(skin/sh.png) top center repeat-y;
+	margin:0 10px;
+}
+
+/* User-bar ****************************************************************************************/
+#user-bar
+{
+	background:transparent;
+	height:32px;
+	position:absolute;
+	top:.5em;
+}
+
+.user_nav
+{
+	list-style-type:none;
+	text-align:right;
+}
+
+.user_nav li
+{
+	background:none;
+	display:inline;
+	list-style:none;
+	margin:0;
+	padding:0 0 0 2em;
+}
+
+/*.user_nav li a {
+text-decoration: none;
+}
+ Header ****************************************************************************************/
+.header
+{
+	display:block;
+	margin:0;
+	padding:0;
+	text-align:center;
+}
+
+.header .branding
+{
+	font:0/0 sans-serif;
+	margin:0;
+	padding:0;
+}
+
+.nav_bar
+{
+	margin:0;
+	padding:4.8em 0 0;
+	position:relative;
+	text-align:left;
+}
+
+.nav_main
+{
+	bottom:0;
+	font-size:1.2em;
+	font-weight:700;
+	list-style:none;
+	margin:0;
+	padding:0;
+	position:absolute;
+}
+
+.nav_main li
+{
+	background:none;
+	display:inline;
+	float:left;
+	margin:0;
+	padding:0;
+}
+
+.nav_main a
+{
+	display:block;
+	padding:0.15em 1em 0.25em;
+	text-decoration:none;
+}
+
+#main
+{
+	overlfow:hidden;
+	padding-bottom:2em;
+}
+
+/* Footer ****************************************************************************************/
+#footer
+{
+	height:20px;
+	margin:2em 0 0 !important;
+	padding:0;
+	text-align:center;
+}
+
+.nav_bottom
+{
+	height:1em;
+}
+
+/* Title bar */
+.title_bar
+{
+	height:32px;
+	margin:0;
+	padding:0;
+	text-align:left;
+}
+
+.title_bar em
+{
+	font-style:italic;
+	font-weight:400;
+}
+
+/* breadcrumbs bar ****************************************************************************/
+.breadcrumb
+{
+	height:50px;
+	line-height:50px;
+}
+
+.breadcrumb span
+{
+	whitespace:nowrap;
+}
+
+.breadcrumb .imgreplacement
+{
+	background-image:url(../css/skin/arrows.png);
+	height:7px;
+	margin:0 3px;
+	width:7px;
+}
+
+/* box styles *************************************************************************************/
+.box
+{
+	border:1px solid #deeff6;
+	margin:0 0 1em;
+}
+
+.box h2.head,.box h3.head,.box h4.head,.box h5.head,.box h6.head
+{
+	margin:0;
+	padding:0.2em 12px 0.3em;
+}
+
+.box p
+{
+	margin:0;
+	padding:1em;
+}
+
+.box ul
+{
+	margin:0 0 1em 1em;
+}
+
+.box.open
+{
+	background:transparent;
+}
+
+.box.closed
+{
+	background:#deeff6;
+}
+
+.box h4
+{
+	background:#cce0f1;
+}
+
+/* SEARCH *************************************************************************************************************************/
+
+/*#search .search_home *, #search .search_result * {*/
+   /*font-size: 1.1em;*/
+/*}*/
+
+#search .search_home
+{
+	margin:0 0 4em 0;
+    padding: 1.5em;
+    width: auto;
+}
+
+#search .search_result {
+    margin: 2em 0 0 0;
+    padding: 2em;
+}
+
+#search .search_home input.txt-input,#search .search_result input.txt-input
+{
+	margin:0 .5em;
+	width:300px;
+    padding: .3em;
+}
+
+#search .search_advanced h1
+{
+	margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+#search .search_advanced table td
+{
+	text-align:right;
+}
+
+#search .search_advanced input[type="text"]{
+    width: 400px;
+}
+
+#search input.in-small
+{
+	width:75px;
+}
+
+#results table td,.related-thumb-container
+{
+	padding:0;
+}
+
+#search .search_advanced table td:nth-child(3),#search #province-list table td,#search #collectiebalans-list table td
+{
+	text-align:left;
+}
+
+
+
+/* Results page **********************************************************************************/
+#query_breadcrumbs
+{
+	margin: 1.75em 0 1em 0;
+	padding:0;
+	vertical-align:baseline;
+}
+
+#query_breadcrumbs dl {
+    margin: 0;
+}
+
+#query_breadcrumbs dl dt, #query_breadcrumbs dl dd
+{
+    font-size: 1.5em;
+}
+
+#query_breadcrumbs dl dd
+{
+	background:url(skin/arrows.png) 0 7px no-repeat;
+	margin:0;
+	padding:0 0 0 1em;
+}
+
+#query_breadcrumbs dl dt,#query_breadcrumbs dl dd,ul.nav_query_breadcrumbs li
+{
+	display:inline;
+}
+
+#query_breadcrumbs dl dd.nobg,ul.nav_query_breadcrumbs li.nobg
+{
+	background:none;
+}
+
+#query_breadcrumbs h3
+{
+	float:left;
+	font-weight:400;
+	margin:0;
+	padding:0;
+}
+
+#query_info h2{
+    margin: 0;
+}
+
+ul.nav_query_breadcrumbs
+{
+	height:42px;
+	margin:0;
+	padding:0;
+}
+
+#result-count
+{
+	float:left;
+	margin-right:1em;
+}
+
+#view-select
+{
+	float:right;
+}
+
+#view-select a:link, #view-select a:visited {
+  margin: 0 0 0 1em;
+    float: right;
+}
+#view-select select {
+  float: left;
+  height: 20px;
+}
+#results table caption
+{
+	clear:both;
+	display:none;
+}
+
+.brief-thumb-container,.brief-thumb-container-listview
+{
+	overflow:hidden;
+	padding:0.5em;
+	text-align:center;
+}
+
+.brief-thumb-container img,.brief-thumb-container-listview img
+{
+	-moz-box-shadow:3px 3px 4px #bbb;
+	-webkit-box-shadow:3px 3px 4px #bbb;
+	border:4px solid #fff;
+	box-shadow:3px 3px 4px #bbb;
+}
+
+.brief-content-container
+{
+	min-height:75px;
+	padding:.5em;
+}
+
+.brief-content-container ul li {
+    background: none;
+    padding: 0;
+}
+
+.brief-content-container h6 {
+    font-size: 1.25em;
+    font-weight: normal;
+}
+
+.brief-content-container h6 a:link, .brief-content-container h6 a:visited {
+    text-decoration: underline;
+}
+
+#no-result
+{
+	color:#903;
+	font-size:large;
+	margin:1em .5em 2em;
+}
+
+/* Facets - Refine Search */
+.nav_facets li,.nav_types li
+{
+	background:none;
+	display:inline;
+	margin:0;
+	padding:0 1em 0 0;
+}
+
+#item-detail
+{
+	clear:both;
+	margin:1em 0 0;
+	overflow:hidden;
+}
+
+#item-detail h1
+{
+	font-size:1.5em;
+	line-height:1.5em;
+	padding:.5em;
+}
+
+table.item
+{
+	margin:0;
+	padding:0;
+}
+
+table.item th
+{
+	background:#fff;
+	font-weight:700;
+	text-align:right;
+}
+
+table.item td
+{
+	background:#fff;
+}
+
+#left-col h3
+{
+	margin:0 0 1em;
+	padding:0;
+}
+
+#left-col h6
+{
+	margin:2em 0 0;
+}
+
+/* USER section styles ***************************************************************************/
+#user-info
+{
+	margin-top:1em;
+}
+
+/* UI Button styles ******************************************************************************/
+.fg-button
+{
+	color:#154273;
+	cursor:pointer;
+	margin:0 4px 0 0;
+	outline:0;
+	padding:.3em 0.5em;
+	position:relative;
+	text-align:center;
+	text-decoration:none !important;
+	zoom:1px;
+}
+
+.fg-button .ui-icon
+{
+	left:50%;
+	margin-left:-8px;
+	margin-top:-8px;
+	position:absolute;
+	top:50%;
+}
+
+/* remove extra button width in IE */
+button.fg-button,input.fg-button
+{
+	overflow:visible;
+	width:auto;
+}
+
+.fg-button-icon-left
+{
+	padding-left:2.1em;
+}
+
+.fg-button-icon-right
+{
+	padding-right:2.1em;
+}
+
+.fg-button-icon-left .ui-icon
+{
+	left:.2em;
+	margin-left:0;
+	right:auto;
+}
+
+.fg-button-icon-right .ui-icon
+{
+	left:auto;
+	margin-left:0;
+	right:.2em;
+}
+
+.fg-button-icon-solo
+{
+	display:block;
+	text-indent:-9999px;
+	width:8px;
+}
+
+.fg-buttonset-single .fg-button,.fg-buttonset-multi .fg-button
+{
+	margin-right:-1px;
+}
+
+.fg-toolbar
+{
+	margin:0;
+	padding:.15em .25em;
+}
+
+.fg-toolbar .fg-buttonset
+{
+	margin-right:1.5em;
+	padding-left:1px;
+}
+
+.fg-toolbar .fg-button
+{
+	font-size:1em;
+}
+
+/* Exceptions ********************************************************************/
+.exceptions
+{
+	margin:2em 0;
+}
+
+/**
+* ----------------------------------------------------------------------------
+* toggleElements.css - Stylesheet for jQuery-Plugin toggleElements
+* ----------------------------------------------------------------------------
+
+ Toggler - default style */
+.toggler
+{
+	border-bottom:solid 1px #ccc;
+	cursor:pointer;
+	display:block;
+	font-size:1em;
+	font-weight:700;
+	line-height:30px;
+	margin:1.5em 0;
+	text-decoration:none;
+}
+
+.toggler-closed
+{
+	background:#fff url(../images/togglerc.gif) center right no-repeat;
+	color:#333;
+	padding-left:8px;
+}
+
+.toggler-closed:hover
+{
+	background:#fff url(../images/togglerch.gif) center right no-repeat;
+	color:#0162CD;
+	height:30px;
+	padding-left:8px;
+}
+
+.toggler-opened
+{
+	background:#fff url(../images/togglero.gif) center right no-repeat;
+	color:#333;
+	height:30px;
+	padding-left:8px;
+}
+
+.toggler-opened:hover
+{
+	background:#fff url(../images/toggleroh.gif) center right no-repeat;
+	color:#0162CD;
+	height:30px;
+	padding-left:8px;
+}
+
+/* Facet title toggles  ********************************************************************/
+.toggler-c-closed
+{
+	background:transparent;
+	margin:-10px 0 10px;
+	padding:4px;
+}
+
+.toggler-c-opened
+{
+	background:#fff;
+	margin:-10px 0 10px;
+	padding:4px;
+}
+
+/* Facet list ********************************************************************/
+#facet-list.scroll
+{
+	margin-bottom:10px;
+	max-height:200px;
+	overflow-x:hidden;
+	overflow-y:auto;
+}
+
+#facet-list .add
+{
+	background:transparent url(../images/toggle_plus.gif) no-repeat top left;
+	height:32px;
+	padding:0 0 0 16px;
+}
+
+#facet-list .remove
+{
+	background:transparent url(../images/toggle_minus.gif) no-repeat top left;
+	color:#555;
+	font-weight:700;
+	padding:0 0 0 16px;
+	text-decoration:none;
+}
+
+/* General rules ********************************************************************/
+a.disabled
+{
+	color:#999;
+}
+
+/* Static pages */
+#content.content-preview
+{
+	border-bottom:4px solid #999;
+	margin:0 0 2em;
+	overflow:hidden;
+	padding:2em 0;
+}
+
+
+#admin-block
+{
+	-moz-box-shadow:3px 3px 4px #bbb;
+	-webkit-box-shadow:3px 3px 4px #bbb;
+	background:#fff;
+	border-bottom:4px solid #999;
+	box-shadow:3px 3px 4px #bbb;
+	left:5px;
+	position:absolute;
+	top:5px;
+	width:150px;
+	z-index:10000;
+}
+
+#admin-block h4
+{
+	background:#555;
+	color:#fff;
+	padding:.5em;
+}
+
+#admin-block p
+{
+	padding:.5em;
+}
+
+table.user-options {
+    margin: 0;
+}
+
+table.user-options .ui-icon
+{
+	float:left;
+	margin:0 .25em 0 0;
+}
+
+.nav_main a:hover,.title_bar a
+{
+	color:#000;
+	text-decoration:none;
+}
+
+.title_bar a:hover,#view-select a
+{
+	text-decoration:none;
+}
+
+.breadcrumb em,table.item caption
+{
+	display:none;
+}
+
+#results table,.pagination
+{
+	margin:1em 0;
+}
+
+a.fg-button,.fg-buttonset,.fg-buttonset .fg-button
+{
+	float:left;
+}

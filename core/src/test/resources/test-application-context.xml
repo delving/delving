@@ -35,7 +35,5 @@
 
     <bean class="eu.europeana.fixture.DatabaseFixture"/>
 
-    <bean class="eu.europeana.fixture.IngestionFixture"/>
-
 
 </beans>

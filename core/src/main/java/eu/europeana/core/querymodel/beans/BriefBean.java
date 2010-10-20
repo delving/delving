@@ -33,7 +33,7 @@ import static eu.europeana.definitions.annotations.FieldCategory.INDEX_TIME_ADDI
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Jan 7, 2010 9:16:46 AM       
+ * @since Jan 7, 2010 9:16:46 AM
  */
 
 public class BriefBean extends IdBean implements BriefDoc {
@@ -48,10 +48,20 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Field("europeana_collectionName")
     String[] europeanaCollectionName;
 
+    @Europeana(category = ESE_PLUS, constant = true)
+    @Solr(prefix = "europeana", localName = "collectionTitle", multivalued = false, required = true)
+    @Field("europeana_collectionTitle")
+    String[] europeanaCollectionTitle;
+
     @Field("PROVIDER")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "prov", briefDoc = true)
-    @Solr(fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true) // facetPrefix = "prov",
+    @Solr(fieldType = "string", localName = "PROVIDER")
     String[] provider;
+
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true)
+    @Solr(fieldType = "string", localName = "DATAPROVIDER")
+    @Field("DATAPROVIDER")
+    String[] dataProvider;
 
     @Europeana(briefDoc = true, object = true, url = true) // todo: object is not required!!
     @Solr(prefix = "europeana", localName = "object")
@@ -59,23 +69,24 @@ public class BriefBean extends IdBean implements BriefDoc {
     String[] europeanaObject;
 
     @Field("COUNTRY")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coun")
-    @Solr(fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION) // removed facetPrefix = "coun"
+    @Solr(fieldType = "string", localName = "COUNTRY")
     String[] country;
 
     @Field("TYPE")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "type", briefDoc = true, type = true)
-    @Solr(localName = "type", fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "type", type = true)
+    // removed facetPrefix = "type",
+    @Solr(localName = "TYPE", fieldType = "string")
     String[] docType;
 
     @Field("LANGUAGE")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "lang", briefDoc = true)
-    @Solr(fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true) // facetPrefix = "lang",
+    @Solr(fieldType = "string", localName = "LANGUAGE")
     String[] language;
 
     @Field("YEAR")
-    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "yr", briefDoc = true, converter="extractYear")
-    @Solr(fieldType = "string")
+    @Europeana(category = INDEX_TIME_ADDITION, briefDoc = true, facetPrefix = "yr", converter = "extractYear")
+    @Solr(fieldType = "string", localName = "YEAR")
     String[] year;
 
     @Field
@@ -105,7 +116,7 @@ public class BriefBean extends IdBean implements BriefDoc {
 
     @Override
     public String getDebugQuery() {
-        return debugQuery;  
+        return debugQuery;
     }
 
     @Override
@@ -156,6 +167,11 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Override
     public String getProvider() {
         return returnStringOrElse(provider);
+    }
+
+    @Override
+    public String getDataProvider() {
+        return returnStringOrElse(dataProvider);
     }
 
     @Override

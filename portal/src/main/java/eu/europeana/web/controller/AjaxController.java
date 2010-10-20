@@ -21,15 +21,13 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.database.StaticInfoDao;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.CarouselItem;
 import eu.europeana.core.database.domain.SavedItem;
 import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.SearchTerm;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
+import eu.europeana.core.util.indexing.SorlIndexUtil;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.EmailSender;
@@ -69,14 +67,14 @@ public class AjaxController {
     private UserDao userDao;
 
     @Autowired
-    private StaticInfoDao staticInfoDao;
-
-    @Autowired
     private ClickStreamLogger clickStreamLogger;
 
     @Autowired
     @Qualifier("emailSenderForSendToFriend")
     private EmailSender friendEmailSender;
+
+    @Autowired
+    private SorlIndexUtil sorlIndexUtil;
 
     @RequestMapping("/remove.ajax")
     public ModelAndView handleAjaxRemoveRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -101,10 +99,6 @@ public class AjaxController {
 
         User user;
         switch (findModifiable(className)) {
-            case CAROUSEL_ITEM:
-                user = staticInfoDao.removeCarouselItemFromSavedItem(id);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_CAROUSEL_ITEM);
-                break;
             case SAVED_ITEM:
                 user = userDao.removeSavedItem(id);
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_ITEM);
@@ -113,12 +107,10 @@ public class AjaxController {
                 user = userDao.removeSavedSearch(id);
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SAVED_SEARCH);
                 break;
-            case SEARCH_TERM:
-                user = staticInfoDao.removeSearchTerm(id);
-                clickStreamLogger.logUserAction(request, UserAction.REMOVE_SEARCH_TERM);
-                break;
             case SOCIAL_TAG:
+                final String europeanaUri = userDao.findEuropeanaUri(id);
                 user = userDao.removeSocialTag(id);
+                sorlIndexUtil.indexUserTags(europeanaUri);
                 clickStreamLogger.logUserAction(request, UserAction.REMOVE_SOCIAL_TAG);
                 break;
             default:
@@ -146,19 +138,12 @@ public class AjaxController {
         User user = ControllerUtil.getUser();
         String className = request.getParameter("className");
         String idString = request.getParameter("id");
+        boolean success = true;
         if (className == null) {
             throw new IllegalArgumentException("Expected 'className' parameter!");
         }
 
         switch (findModifiable(className)) {
-            case CAROUSEL_ITEM:
-                SavedItem savedItemForCarousel = userDao.fetchSavedItemById(Long.valueOf(idString));
-                CarouselItem carouselItem = staticInfoDao.createCarouselItem(savedItemForCarousel.getId());
-                if (carouselItem == null) {
-                    return false;
-                }
-                clickStreamLogger.logUserAction(request, UserAction.SAVE_CAROUSEL_ITEM);
-                break;
             case SAVED_ITEM:
                 SavedItem savedItem = new SavedItem();
                 savedItem.setTitle(getStringParameter("title", request));
@@ -177,23 +162,18 @@ public class AjaxController {
                 user = userDao.addSavedSearch(user, savedSearch);
                 clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH);
                 break;
-            case SEARCH_TERM:
-                SearchTerm searchTerm = staticInfoDao.addSearchTerm(Long.valueOf(idString));
-                if (searchTerm == null) {
-                    return false;
-                }
-                clickStreamLogger.logUserAction(request, UserAction.SAVE_SEARCH_TERM);
-                break;
             case SOCIAL_TAG:
                 SocialTag socialTag = new SocialTag();
                 String tagValue = getStringParameter("tag", request);
                 socialTag.setTag(tagValue);
-                socialTag.setEuropeanaUri(getStringParameter("europeanaUri", request));
+                String europeanaUri = getStringParameter("europeanaUri", request);
+                socialTag.setEuropeanaUri(europeanaUri);
                 socialTag.setDocType(DocType.valueOf(getStringParameter("docType", request)));
                 socialTag.setEuropeanaObject(getStringParameter("europeanaObject", request));
                 socialTag.setTitle(getStringParameter("title", request));
                 socialTag.setLanguage(ControllerUtil.getLocale(request));
                 user = userDao.addSocialTag(user, socialTag);
+                success = sorlIndexUtil.indexUserTags(europeanaUri);
                 clickStreamLogger.logCustomUserAction(request, UserAction.SAVE_SOCIAL_TAG, "tag="+tagValue);
                 break;
             default:
@@ -201,7 +181,8 @@ public class AjaxController {
         }
 
         ControllerUtil.setUser(user);
-        return true;
+
+        return success;
     }
 
     @RequestMapping("/email-to-friend.ajax")
@@ -284,10 +265,8 @@ public class AjaxController {
 
 
     private enum Modifiable {
-        CAROUSEL_ITEM(CarouselItem.class),
         SAVED_ITEM(SavedItem.class),
         SAVED_SEARCH(SavedSearch.class),
-        SEARCH_TERM(SearchTerm.class),
         SOCIAL_TAG(SocialTag.class);
 
         private String className;

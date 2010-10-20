@@ -1,0 +1,15 @@
+$(document).ready(function() {
+    // check if coming from login or logout, if so redirect to last visited page before login or logout
+    if($.cookie('takeMeBack')){
+        var gotoPage = $.cookie('takeMeBack');
+        // kill the cookie
+        $.cookie('takeMeBack', null);
+        // goto last visited page
+        document.location.href = gotoPage;
+    }
+    // load DMS content
+    delvingPageCall("#news", portalName+"/home/news.dml?embedded=true"," "," "," ");
+    delvingPageCall("#block-1", portalName+"/home/block1.dml?embedded=true"," "," "," ");
+    delvingPageCall("#block-2", portalName+"/home/block2.dml?embedded=true"," "," "," ");
+    delvingPageCall("#block-3", portalName+"/home/block3.dml?embedded=true"," "," "," ");
+});

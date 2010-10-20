@@ -23,8 +23,11 @@ package eu.europeana.definitions.beans;
 
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
+import eu.europeana.definitions.domain.AcquisitionType;
+import eu.europeana.definitions.domain.CollectionDisplayType;
 import eu.europeana.definitions.domain.Country;
 import eu.europeana.definitions.domain.Language;
+import eu.europeana.definitions.domain.Technique;
 import eu.europeana.definitions.presentation.BriefDoc;
 import eu.europeana.definitions.presentation.DocType;
 import eu.europeana.definitions.presentation.FullDoc;
@@ -33,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
+import static eu.europeana.definitions.annotations.FieldCategory.ICN;
+import static eu.europeana.definitions.annotations.FieldCategory.ICN_RESEARCH;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -77,13 +82,70 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-//    @Europeana(category = ESE_PLUS)
-//    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
-//    boolean europeanaHasObject;
-//
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:provider", constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
+
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:dataProvider", constant = true)
+    @Solr(prefix = "europeana", localName = "dataProvider", multivalued = false)
+    String[] europeanaDataProvider;
+
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
+    @Solr(prefix = "europeana", localName = "rights", multivalued = false)
+    String[] europeanaRights;
+
+
+    // todo: review these (also: what about querymodel.beans.*)
+
+    @Europeana(category = ICN, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "creatorYearOfBirth", multivalued = false)
+    String[] creatorYearOfBirth;
+
+    @Europeana(category = ICN, enumClass = Technique.class, valueMapped = true)
+    @Solr(prefix = "icn", localName = "technique")
+    String[] technique;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "material")
+    String[] material;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "location")
+    String[] location;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "province")
+    String[] province;
+
+    @Europeana(category = ICN)
+    @Solr(prefix = "icn", localName = "collectionPart")
+    String[] collectionPart;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true)
+    @Solr(prefix = "icn", localName = "acquisitionMeans")
+    String[] acquisitionMeans;
+
+    @Europeana(category = ICN_RESEARCH, enumClass = CollectionDisplayType.class, constant = true)
+    @Solr(prefix = "icn", localName = "collectionType", multivalued = false)
+    String[] collectionType;
+
+    @Europeana(category = ICN_RESEARCH, converter = "extractYear")
+    @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
+    String[] acquisitionYear;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
+    String[] purchasePrice;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "acquiredWithHelpFrom")
+    String[] acquiredWithHelpFrom;
+
+    @Europeana(category = ICN_RESEARCH)
+    @Solr(prefix = "icn", localName = "physicalState")
+    String[] physicalState;
+
+    // todo: review the above
 
 
     // Dublin Core / ESE fields
@@ -263,7 +325,7 @@ public class FullBean extends BriefBean implements FullDoc {
         return returnArrayOrElse(europeanaUserTag);
     }
 
-//    @Override
+    //    @Override
 //    public Boolean getEuropeanaHasObject() {
 //        return europeanaHasObject;
 //    }
@@ -301,6 +363,14 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String[] getEuropeanaYear() {
         return returnArrayOrElse(europeanaYear);
+    }
+
+    public String[] getEuropeanaDataProvider() {
+        return returnArrayOrElse(europeanaDataProvider);
+    }
+
+    public String[] getEuropeanaRights() {
+        return returnArrayOrElse(europeanaRights);
     }
 
     // DCTERMS fields

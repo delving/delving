@@ -8,10 +8,10 @@
  p {font-size: 85%; padding: 5px; font-weight: bold;}
  p.failure {background-color: firebrick; color: #fff;}
  p.success {background-color: green; color: #fff;}
-#regForm {
-    width: 700px;
-    height: 400px;
-    }
+/*#regForm {*/
+    /*width: 700px;*/
+    /*height: 400px;*/
+    /*}*/
 #regForm fieldset {
     /*height: 20em;*/
     width: 200px;
@@ -66,37 +66,37 @@
     }
 
 /* Part 4 Styling */
-#regForm #pt4 {
-    clear: both;
-    width: 700px;
+/*#regForm #pt4 {*/
+    /*clear: both;*/
+    /*width: 700px;*/
     /*height: 2em;*/
-    border: 1px dotted #CCC;
-    border-width: 1px 0;
-    padding: 1em 0;
-    }
-#regForm #pt4 legend {
-    display: none;
-    }
-#regForm #pt4 h3 {
-    display: none;
-    }
-#regForm #pt4 #disclaimer {
-    width: 50em;
-    float: left;
-    font-size: 0.7em;
-    float: left;
-    margin-right: 10px;
-    }
-#regForm #pt4 #agree {
-    width: 15em;
-    float: left;
-    color: #000;
-    float: left;
-    }
-#regForm #pt4 #agree input {
-    float:left;
-    margin-right: 10px;
-}
+    /*border: 1px dotted #CCC;*/
+    /*border-width: 1px 0;*/
+    /*padding: 1em 0;*/
+    /*}*/
+/*#regForm #pt4 legend {*/
+    /*display: none;*/
+    /*}*/
+/*#regForm #pt4 h3 {*/
+    /*display: none;*/
+    /*}*/
+/*#regForm #pt4 #disclaimer {*/
+    /*width: 50em;*/
+    /*float: left;*/
+    /*font-size: 0.7em;*/
+    /*float: left;*/
+    /*margin-right: 10px;*/
+    /*}*/
+/*#regForm #pt4 #agree {*/
+    /*width: 15em;*/
+    /*float: left;*/
+    /*color: #000;*/
+    /*float: left;*/
+    /*}*/
+/*#regForm #pt4 #agree input {*/
+    /*float:left;*/
+    /*margin-right: 10px;*/
+/*}*/
 .button {
     float: left;
     margin-right: 10px;

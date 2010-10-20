@@ -5,6 +5,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -37,10 +38,12 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     private String format;
     private String siwa;
     private String tab;
+    private String sortBy;
     private List<Breadcrumb> breadcrumbs;
     private int fullDocUriInt;
 
-    private String portalName = "portal";
+    @Value("#{launchProperties['portal.name']}")
+    private String portalName;
 
     @Override
     public void setPortalName(String portalName) {
@@ -86,6 +89,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         this.pageId = fetchParameter(httpParameters, "pageId", "");
         this.format = fetchParameter(httpParameters, "format", "");
         this.siwa = fetchParameter(httpParameters, "siwa", "");
+        this.sortBy = fetchParameter(httpParameters, "sortBy", "");
         if (this.pageId != null) {
             this.setReturnToResults(httpParameters);
         }
@@ -194,13 +198,16 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         if (!siwa.isEmpty()) {
             out.append("&siwa=").append(siwa);
         }
+        if (!sortBy.isEmpty()) {
+            out.append("&sortBy=").append(sortBy);
+        }
         out.append("&rtr=true");
         returnToResults = out.toString();
     }
 
     private void setNextFullDocUrl(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
-        out.append(MessageFormat.format("/{0}{1}.html?", portalName, nextUri.replaceAll("http://www.europeana.eu/resolve", "")));
+        out.append(MessageFormat.format("/{0}/record/{1}.html?", portalName, nextUri));
         out.append("query=").append(encode(query));
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
@@ -211,6 +218,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         out.append("&start=").append(nextInt);
         out.append("&startPage=").append(startPage);
         out.append("&pageId=").append(pageId);
+        out.append("&sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
@@ -230,7 +238,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     private void setPreviousFullDocUrl(Map<String, String[]> httpParameters) {
         StringBuilder out = new StringBuilder();
-        out.append(MessageFormat.format("/{0}{1}.html?", portalName, previousUri.replaceAll("http://www.europeana.eu/resolve", "")));
+        out.append(MessageFormat.format("/{0}/record/{1}.html?", portalName, previousUri));
         out.append("query=").append(encode(query));
         final String[] filterQueries = httpParameters.get("qf");
         if (filterQueries != null) {
@@ -241,6 +249,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         out.append("&start=").append(previousInt);
         out.append("&startPage=").append(startPage);
         out.append("&pageId=").append(pageId);
+        out.append("&sortBy=").append(sortBy);
         String view = fetchParameter(httpParameters, "view", "");
         if (view.isEmpty()) {
             view = "table";
@@ -370,6 +379,11 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
     @Override
     public String getTab() {
         return tab;
+    }
+
+    @Override
+    public String getSortBy() {
+        return sortBy;
     }
 
     // todo fix this it throws an nullPointerException now

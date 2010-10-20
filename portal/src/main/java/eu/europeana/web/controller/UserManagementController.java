@@ -26,6 +26,7 @@ import eu.europeana.core.database.domain.User;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.core.util.web.TokenReplyEmailSender;
+import freemarker.template.TemplateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -50,9 +52,9 @@ public class UserManagementController {
     @Autowired
     private ClickStreamLogger clickStreamLogger;
 
-    @RequestMapping("/myeuropeana.html")
-    public ModelAndView myEuropeanaHandler(HttpServletRequest request) throws Exception {
-        ModelAndView page = ControllerUtil.createModelAndViewPage("myeuropeana");
+    @RequestMapping("/mine.html")
+    public ModelAndView personalPage(HttpServletRequest request) throws Exception {
+        ModelAndView page = ControllerUtil.createModelAndViewPage("mine");
         User user = ControllerUtil.getUser();
         if (user != null) {
             ControllerUtil.setUser(userDao.updateUser(user));
@@ -68,83 +70,80 @@ public class UserManagementController {
     }
 
     @RequestMapping("/login.html")
-    public ModelAndView handle(
+    public ModelAndView login(
             HttpServletRequest request,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "submit_login", required = false) String buttonPressed
+            @RequestParam(required = false) String error
     ) throws Exception {
         ModelAndView page = ControllerUtil.createModelAndViewPage("login");
-        boolean failureFormat = false;
-        boolean failureExists = false;
-        boolean success = false;
-
-        boolean failureForgotFormat = false;
-        boolean failureForgotDoesntExist = false;
-        boolean forgotSuccess = false;
-
-        if (email != null) {
-            String registerUri = request.getRequestURL().toString();
-            int lastSlash = registerUri.lastIndexOf("/");
-
-            //Register
-            if ("Register".equals(buttonPressed)) {  //TODO this value is internationalized in the template
-                if (!ControllerUtil.validEmailAddress(email)) {
-                    failureFormat = true;
-                }
-                else if (userDao.fetchUserByEmail(email) != null) {
-                    failureExists = true;
-                }
-                else {
-                    registerUri = registerUri.substring(0, lastSlash + 1) + "register.html";
-                    tokenReplyEmailSender.sendEmail(email, registerUri, "register");
-                    success = true;
-                }
-            }
-
-            //Forgot Password
-            else if ("Request".equals(buttonPressed)) {
-                if (!ControllerUtil.validEmailAddress(email)) {
-                    failureForgotFormat = true;
-                }
-                else if (userDao.fetchUserByEmail(email) == null) {
-                    failureForgotDoesntExist = true;
-                }
-                else {
-                    registerUri = registerUri.substring(0, lastSlash + 1) + "change-password.html";
-                    tokenReplyEmailSender.sendEmail(email, registerUri, "forgotPassword");
-                    forgotSuccess = true;
-                }
-            }
-
-            //Unknown button
-            else {
-                throw new IllegalArgumentException("Expected a button press to give submit_login=[Register|Request]");
-            }
-        }
-
-        page.addObject("errorMessage", "1".equals(request.getParameter("error")) ? "Invalid Credentials" : null); //TODO i18n
-        boolean register = true;
-        page.addObject("register", register);
-        page.addObject("email", email);
-        page.addObject("success", success);
-        page.addObject("forgotSuccess", forgotSuccess);
-        page.addObject("failure", failureFormat || failureExists || failureForgotFormat || failureForgotDoesntExist);
-        page.addObject("failureFormat", failureFormat);
-        page.addObject("failureExists", failureExists);
-        page.addObject("failureForgotFormat", failureForgotFormat);
-        page.addObject("failureForgotDoesntExist", failureForgotDoesntExist);
+        page.addObject("errorMessage", "1".equals(error));
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGIN, page);
         return page;
     }
 
+    @RequestMapping("/forgot-password.html")
+    public ModelAndView forgotPassword(
+            HttpServletRequest request,
+            @RequestParam(required = false) String email
+    ) throws IOException, TemplateException {
+        ModelAndView page = ControllerUtil.createModelAndViewPage("forgot-password");
+        String state = "";
+        if (email != null) {
+            String registerUri = request.getRequestURL().toString();
+            int lastSlash = registerUri.lastIndexOf("/");
+            if (!ControllerUtil.validEmailAddress(email)) {
+                state = "formatFailure";
+            }
+            else if (userDao.fetchUserByEmail(email) == null) {
+                state = "nonexistentFailure";
+            }
+            else {
+                registerUri = registerUri.substring(0, lastSlash + 1) + "change-password.html";
+                tokenReplyEmailSender.sendEmail(email, registerUri, "forgotPassword");
+                state = "success";
+            }
+        }
+        page.addObject("email", email);
+        page.addObject("state", state);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.FORGOT_PASSWORD, page);
+        return page;
+    }
+
+    @RequestMapping("/register-request.html")
+    public ModelAndView registerRequest(
+            HttpServletRequest request,
+            @RequestParam(required = false) String email
+    ) throws IOException, TemplateException {
+        ModelAndView page = ControllerUtil.createModelAndViewPage("register-request");
+        String state = "";
+        if (email != null) {
+            String registerUri = request.getRequestURL().toString();
+            int lastSlash = registerUri.lastIndexOf("/");
+            if (!ControllerUtil.validEmailAddress(email)) {
+                state = "formatFailure";
+            }
+            else if (userDao.fetchUserByEmail(email) != null) {
+                state = "existenceFailure";
+            }
+            else {
+                registerUri = registerUri.substring(0, lastSlash + 1) + "register.html";
+                tokenReplyEmailSender.sendEmail(email, registerUri, "register");
+                state = "success";
+            }
+        }
+        page.addObject("email", email);
+        page.addObject("state", state);
+        clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.REGISTER_REQUEST, page);
+        return page;
+    }
+
     @RequestMapping("/logout.html")
-    public ModelAndView logoutHandler(HttpServletRequest request) throws Exception {
+    public ModelAndView logout(HttpServletRequest request) throws Exception {
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGOUT);
         return ControllerUtil.createModelAndViewPage("logout");
     }
 
     @RequestMapping("/logout-success.html")
-    public ModelAndView logoutSuccessHandler(HttpServletRequest request) throws Exception {
+    public ModelAndView logoutSuccess(HttpServletRequest request) throws Exception {
         clickStreamLogger.logUserAction(request, ClickStreamLogger.UserAction.LOGOUT);
         return ControllerUtil.createModelAndViewPage("redirect:/index.html");
     }
@@ -164,7 +163,7 @@ public class UserManagementController {
             throw new IllegalArgumentException("Expected to find '" + SECURE + "' in the request URL");
         }
         String redirect = url.substring(0, securePos) + url.substring(securePos + SECURE.length());
-        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.REDIRECT_TO_SECURE, "redirect="+redirect);
+        clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.REDIRECT_TO_SECURE, "redirect=" + redirect);
         return ControllerUtil.createModelAndViewPage("redirect:" + redirect);
     }
 }

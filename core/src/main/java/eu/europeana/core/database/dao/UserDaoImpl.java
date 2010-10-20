@@ -22,7 +22,12 @@
 package eu.europeana.core.database.dao;
 
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.*;
+import eu.europeana.core.database.domain.CollectionState;
+import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.SavedItem;
+import eu.europeana.core.database.domain.SavedSearch;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
@@ -232,11 +237,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public String findEuropeanaUri(Long socialTagId) {
+        SocialTag socialTag = entityManager.find(SocialTag.class, socialTagId);
+        return socialTag.getEuropeanaUri();
+    }
+
+    @Override
     @Transactional
     public User removeSavedItem(Long savedItemId) {
         SavedItem savedItem = entityManager.find(SavedItem.class, savedItemId);
         User user = savedItem.getUser();
         user.getSavedItems().remove(savedItem);
+        user.getSavedSearches().size();
+        user.getSocialTags().size();
         entityManager.remove(savedItem);
         return user;
     }
@@ -247,6 +260,8 @@ public class UserDaoImpl implements UserDao {
         SavedSearch savedSearch = entityManager.find(SavedSearch.class, savedSearchId);
         User user = savedSearch.getUser();
         user.getSavedSearches().remove(savedSearch);
+        user.getSavedItems().size();
+        user.getSocialTags().size();
         entityManager.remove(savedSearch);
         return user;
     }
@@ -265,6 +280,7 @@ public class UserDaoImpl implements UserDao {
                 cleanPattern.append(pattern.charAt(walk));
             }
         }
+        cleanPattern.insert(0, "%");
         cleanPattern.append("%");
         query.setParameter("searchField", cleanPattern.toString().toLowerCase());
         return (List<User>) query.getResultList();
@@ -319,5 +335,13 @@ public class UserDaoImpl implements UserDao {
             queryProblem = QueryProblem.RECORD_NOT_FOUND;
         }
         return queryProblem;
+    }
+
+
+    @Override
+    public List<SocialTag> fetchAllSocialTags(String europeanaUri) {
+        Query query = entityManager.createQuery("select st from SocialTag st where st.europeanaUri = :europeanaUri order by st.tag");
+        query.setParameter("europeanaUri", europeanaUri);
+        return (List<SocialTag>) query.getResultList();
     }
 }

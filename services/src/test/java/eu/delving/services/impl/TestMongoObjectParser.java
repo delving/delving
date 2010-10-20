@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * Make sure the MongoObjectParser is working correctly
@@ -27,6 +26,7 @@ public class TestMongoObjectParser {
     private static final String DETAILS = "/sffDf.xml.details";
     private static final String XML = "/sffDf.xml";
     private static final String METADATA_PREFIX = "abm";
+    private static final String METADATA_NAMESPACE = "http://to_be_decided/abm/";
 
     @Test
     public void simple() throws XMLStreamException, IOException {
@@ -36,13 +36,12 @@ public class TestMongoObjectParser {
         QName recordRoot = QName.valueOf(details.getRecordRoot());
         QName uniqueElement = QName.valueOf(details.getUniqueElement());
         InputStream input = getClass().getResourceAsStream(XML);
-        MongoObjectParser parser = new MongoObjectParser(input, recordRoot, uniqueElement, METADATA_PREFIX);
+        MongoObjectParser parser = new MongoObjectParser(input, recordRoot, uniqueElement, METADATA_PREFIX, METADATA_NAMESPACE);
         DBObject object;
         int count = 30;
         while ((object = parser.nextRecord()) != null) {
             assertNotNull("Object", object);
             assertNotNull("Metadata", object.get(METADATA_PREFIX));
-            assertNull("Modified", object.get(MetaRepo.Record.MODIFIED));
             LOG.info(object.get(MetaRepo.Record.UNIQUE));
             if (count-- == 0) {
                 break;

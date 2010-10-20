@@ -1,12 +1,10 @@
 package eu.europeana.fixture;
 
-import eu.europeana.core.database.domain.CarouselItem;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedItem;
 import eu.europeana.core.database.domain.SavedSearch;
-import eu.europeana.core.database.domain.SearchTerm;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.definitions.domain.Language;
@@ -65,7 +63,6 @@ public class DatabaseFixture {
             id.setEuropeanaUri("http://europeana.uri.pretend/item" + walk);
             id.setBoostFactor(Float.valueOf("0.5"));
             id.setTimesViewed(0);
-            id.setCarouselItems(null);
             id.setLastModified(new Date());
             id.setLastViewed(new Date());
             id.setOrphan(false);
@@ -113,27 +110,6 @@ public class DatabaseFixture {
     }
 
     @Transactional
-    public List<CarouselItem> createCarouselItems(String name, int count, List<EuropeanaId> europeanaIds) {
-        List<CarouselItem> carouselItems = new ArrayList<CarouselItem>();
-
-        for (int walk = 0; walk < count; walk++) {
-            CarouselItem carouselItem = new CarouselItem();
-            carouselItem.setCreator("Creator " + name + walk);
-            carouselItem.setEuropeanaUri("http://europeana.uri.pretend/item" + walk);
-            carouselItem.setEuropeanaId(europeanaIds.get(walk));
-            carouselItem.setLanguage(Language.EN);
-            carouselItem.setProvider("Provider " + name + walk);
-            carouselItem.setTitle("Title " + name + walk);
-            carouselItem.setThumbnail("thumbnail " + name + walk);
-            carouselItem.setYear("2009");
-            carouselItem.setType(DocType.IMAGE);
-            entityManager.persist(carouselItem);
-            carouselItems.add(carouselItem);
-        }
-        return carouselItems;
-    }
-
-    @Transactional
     public List<SavedSearch> createSavedSearch(String name, int count, List<User> users) {
 
         List<SavedSearch> savedSearchs = new ArrayList<SavedSearch>();
@@ -155,26 +131,6 @@ public class DatabaseFixture {
         }
 
         return savedSearchs;
-    }
-
-    @Transactional
-    public CarouselItem getCarouselItem(Long id) {
-        return entityManager.find(CarouselItem.class, id);
-    }
-
-
-    @Transactional
-    public SearchTerm getSearchTerm(Long id) {
-        return entityManager.find(SearchTerm.class, id);
-    }
-
-
-    @Transactional
-    public List<String> getSearchTerm(Language language, String term) {
-        Query query = entityManager.createQuery("select s from SearchTerm s where s.language = :language and s.proposedSearchTerm = :term");
-        query.setParameter("term", term);
-        query.setParameter("language", language);
-        return (List<String>) query.getResultList();
     }
 
     @Transactional

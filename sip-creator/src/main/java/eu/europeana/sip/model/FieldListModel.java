@@ -119,6 +119,10 @@ public class FieldListModel extends AbstractListModel {
             refresh();
         }
 
+        @Override
+        public void valueMapChanged() {
+        }
+
         private void refresh() {
             int sizeBefore = getSize();
             unmappedFields.clear();

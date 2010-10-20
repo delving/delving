@@ -17,11 +17,20 @@ public class Breadcrumb {
     private static final String FACET_PROMPT = "&qf=";
     private String href;
     private String display;
+    private String field;
+    private String value;
     private boolean last;
 
     public Breadcrumb(String href, String display) {
         this.href = href;
         this.display = display;
+    }
+
+    public Breadcrumb(String href, String display, String field, String value) {
+        this.href = href;
+        this.display = display;
+        this.field = field;
+        this.value = value;
     }
 
     private void flagAsLast() {
@@ -40,6 +49,14 @@ public class Breadcrumb {
         return last;
     }
 
+    public String getField() {
+        return field;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
     public String toString() {
         return "<a href=\"" + href + "\">" + display + "</a>";
     }
@@ -50,7 +67,7 @@ public class Breadcrumb {
         }
         List<Breadcrumb> breadcrumbs = new ArrayList<Breadcrumb>();
         String prefix = "query=" + encode(solrQuery.getQuery());
-        breadcrumbs.add(new Breadcrumb(prefix, solrQuery.getQuery()));
+        breadcrumbs.add(new Breadcrumb(prefix, solrQuery.getQuery(), "", solrQuery.getQuery()));
         if (solrQuery.getFilterQueries() != null) {
             int facetQueryCount = solrQuery.getFilterQueries().length;
             for (int walk = 0; walk < facetQueryCount; walk++) {
@@ -63,7 +80,7 @@ public class Breadcrumb {
                         String facetValue = facetTerm.substring(colon + 1);
                         appendToURI(out, facetName, facetValue);
                         if (count-- == 0) {
-                            breadcrumbs.add(new Breadcrumb(out.toString(), facetName + ":" + facetValue));
+                            breadcrumbs.add(new Breadcrumb(out.toString(), facetName + ":" + facetValue, facetName, facetValue));
                             break;
                         }
                     }

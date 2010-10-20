@@ -82,13 +82,15 @@ public class SipModel {
     private FieldMappingListModel fieldMappingListModel;
     private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
+    private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
-    private String metaRepoSubmitUrl;
+    private Configuration configuration;
+    private String serverUrl;
 
     public interface UpdateListener {
 
@@ -115,20 +117,20 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String metaRepoSubmitUrl) {
+    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String serverUrl) {
         this.annotationProcessor = annotationProcessor;
         this.userNotifier = userNotifier;
-        this.metaRepoSubmitUrl = metaRepoSubmitUrl;
+        this.serverUrl = serverUrl;
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
+        ToolCodeModel toolCodeModel = new ToolCodeModel();
         ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, new ConstantFieldModel.Listener() {
             @Override
             public void updatedConstant() {
                 recordCompileModel.compileSoon();
             }
         });
-        ToolCodeModel toolCodeModel = new ToolCodeModel();
         recordCompileModel = new CompileModel(toolCodeModel, constantFieldModel, new RecordValidator(annotationProcessor, false));
         fieldCompileModel = new CompileModel(toolCodeModel, constantFieldModel);
         parseListeners.add(recordCompileModel);
@@ -147,10 +149,39 @@ public class SipModel {
                 }
             }
         });
+        this.configuration = new Configuration();
     }
 
     public void addUpdateListener(UpdateListener updateListener) {
         updateListeners.add(updateListener);
+    }
+
+    public void setServerAccessKey(String key) {
+        configuration.setServerAccessKey(key);
+    }
+
+    public AnnotationProcessor getAnnotationProcessor() {
+        return annotationProcessor;
+    }
+
+    public FileSet getFileSet() {
+        return fileSet;
+    }
+
+    public void tellUser(String message) {
+        userNotifier.tellUser(message);
+    }
+
+    public void tellUser(String message, Exception e) {
+        userNotifier.tellUser(message, e);
+    }
+
+    public String getServerAccessKey() {
+        return configuration.getServerAccessKey();
+    }
+
+    public FileSet.Recent getRecentFileSets() {
+        return configuration.getRecentFileSets();
     }
 
     public void setFileSet(final FileSet newFileSet) {
@@ -167,6 +198,7 @@ public class SipModel {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
+                        variableListModel.clear();
                         RecordMapping recordMapping = recordCompileModel.getRecordMapping();
                         recordMapping.setCode(mapping, europeanaFieldMap);
                         RecordRoot recordRoot = recordMapping.getRecordRoot();
@@ -277,6 +309,10 @@ public class SipModel {
         return dataSetDetails;
     }
 
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
     public void setDataSetDetails(DataSetDetails dataSetDetails) {
         this.dataSetDetails = dataSetDetails;
         executor.execute(new DetailsSetter(dataSetDetails));
@@ -293,16 +329,18 @@ public class SipModel {
         return uploadProgressModel;
     }
 
-    public void normalize(final boolean discardInvalid) {
+    public DefaultBoundedRangeModel getZipProgress() {
+        return zipProgressModel;
+    }
+
+    public void normalize(boolean discardInvalid, boolean storeNormalizedFile) {
         checkSwingThread();
         abortNormalize();
-        normalizeMessage("Normalizing...");
+        normalizeMessage("Normalizing and validating...");
         normalizer = new Normalizer(
-                fileSet,
-                annotationProcessor,
-                new RecordValidator(annotationProcessor, true),
+                this,
                 discardInvalid,
-                userNotifier,
+                storeNormalizedFile,
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count, final boolean lastRecord) {
@@ -358,24 +396,18 @@ public class SipModel {
 
     public void abortNormalize() {
         checkSwingThread();
-        normalizeProgressModel.setValue(0);
-        normalizeMessage("Normalization not yet performed.");
         final Normalizer existingNormalizer = normalizer;
         normalizer = null;
         if (existingNormalizer != null) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    existingNormalizer.abort(); // todo: make sure this deletes the files!
-                }
-            });
+            normalizeProgressModel.setValue(0);
+            existingNormalizer.abort();
         }
     }
 
     public void createUploadZipFile() {
         checkSwingThread();
         String zipFileName = getDataSetDetails().getSpec();
-        executor.execute(new ZipUploader(metaRepoSubmitUrl, fileSet, zipFileName, uploadProgressModel));
+        executor.execute(new ZipUploader(this, zipFileName));
     }
 
     public TreeModel getAnalysisTreeModel() {
@@ -444,8 +476,25 @@ public class SipModel {
         return fieldListModel.getUnmapped(recordCompileModel.getRecordMapping());
     }
 
+    public List<EuropeanaField> getUnmappedFields() {
+        List<EuropeanaField> fields = new ArrayList<EuropeanaField>();
+        ListModel listModel = getUnmappedFieldListModel();
+        for (int walkField = 0; walkField < listModel.getSize(); walkField++) {
+            fields.add((EuropeanaField) listModel.getElementAt(walkField));
+        }
+        return fields;
+    }
+
     public ListModel getVariablesListModel() {
         return variableListModel;
+    }
+
+    public List<VariableHolder> getVariables() {
+        List<VariableHolder> list = new ArrayList<VariableHolder>();
+        for (int walkVar = 0; walkVar < variableListModel.getSize(); walkVar++) {
+            list.add((VariableHolder) variableListModel.getElementAt(walkVar));
+        }
+        return list;
     }
 
     public ListModel getVariablesListWithCountsModel() {
@@ -498,8 +547,11 @@ public class SipModel {
 
     private void normalizeMessage(FileSet.Report report) {
         String message = String.format(
-                "Normalization completed on %s resulted in %d normalized records and %d discarded.",
-                report.getNormalizationDate().toString(),
+                "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
+                report.getNormalizationDate(),
                 report.getRecordsNormalized(),
                 report.getRecordsDiscarded()
         );

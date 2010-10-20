@@ -22,7 +22,14 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
-
+ <#if RequestParameters.start??>
+     <#assign start = "${RequestParameters.start}"/>
+<#else>
+     <#assign start = "1"/>
+ </#if>
+ <#if RequestParameters.query??>
+     <#assign justTheQuery = "${RequestParameters.query}"/>
+ </#if>
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
 <#if RequestParameters.tab?exists>
@@ -63,30 +70,30 @@
 
 <div id="main" class="grid_9 page">
 
-    <div id="breadcrumbs">
+    <div id="query_breadcrumbs">
         <div class="inner">
-        <ul>
+        <dl>
+            <dt><@spring.message 'MatchesFor_t' />:</dt>
             <#if !result.matchDoc??>
-                <li class="first"><@spring.message 'MatchesFor_t' />:</li>
                 <#list breadcrumbs as crumb>
                     <#if !crumb.last>
-                        <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                        <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>
                     <#else>
-                        <li><strong>${crumb.display?html}</strong></li>
+                        <dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>
                     </#if>
                 </#list>
             <#else>
-                <li class="first">
-                <@spring.message 'ViewingRelatedItems_t' />
-                <#assign match = result.matchDoc/>
-                <a href="${match.fullDocUrl}">
-                    <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                    <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                    </#if>
-                </a>
-            </li>
+                <dd  class="nobg">
+                    <@spring.message 'ViewingRelatedItems_t' />
+                    <#assign match = result.matchDoc/>
+                    <a href="${match.fullDocUrl}">
+                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                        </#if>
+                    </a>
+                </dd>
             </#if>
-        </ul>
+        </dl>
             </div>
     </div>
 
@@ -99,7 +106,7 @@
         <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
         </div>
         <@typeTabs_plain/>
-        <@viewSelect/>
+        <@sortResults/><@viewSelect/>
     </div>
 
     <div class="clearfix"></div>
@@ -172,7 +179,7 @@
                 <#if link.linked>
                     <#assign lstart = link.start/>
                         <a
-                                href="../../?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
+                                href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
                                 class="fg-button ui-state-default ${uiClassBorder}"
                         >
                             ${link.display?c}
@@ -193,7 +200,7 @@
                 <#assign uiClassStateNext = "ui-state-disabled">
             </#if>
             <a
-                    href="../../?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                    href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
                     alt="<@spring.message 'AltPreviousPage_t' />"
                     style="margin: 0 8px;"
@@ -201,7 +208,7 @@
                <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
             </a>
             <a
-                    href="../../?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
                     class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
                     alt="<@spring.message 'AltNextPage_t' />"
                     >
@@ -229,7 +236,7 @@
                 <li>
                     <#if link.linked>
                         <#assign lstart = link.start/>
-                            <a href="../../?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">
+                            <a href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">
                                 ${link.display?c}
                             </a>
                      <#else>
@@ -248,7 +255,7 @@
             </#if>
                 <li>
                     <a
-                            href="../../?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                            href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
                             alt="<@spring.message 'AltPreviousPage_t' />"
                             class="${uiClassStatePrev}"
                             >
@@ -257,7 +264,7 @@
                 </li>
                 <li>
                     <a
-                            href="../../?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                            href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
                             alt="<@spring.message 'AltNextPage_t' />"
                             class="${uiClassStateNext}"
                             >
@@ -336,4 +343,21 @@
         </#if>
         </#if>
     </div>
+</#macro>
+
+<#macro sortResults>
+    <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+        <option value="">Sorteren op:</option>
+        <option value="title" ><@spring.message 'dc_title_t' /></option>
+        <option value="creator"><@spring.message 'dc_creator_t' /></option>
+        <option value="YEAR"><@spring.message 'dc_date_t' /></option>
+        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+    </select>
+
+    <form action="${thisPage}" method="GET" id="form-sort" style="display:none;">
+        <input type="hidden" name="query" value="${justTheQuery}"/>
+        <input type="hidden" name="start" value="${start}"/>
+        <input type="hidden" name="view" value="${view}"/>
+        <input type="hidden" name="sortBy" id="sortBy" value=""/>
+    </form>
 </#macro>

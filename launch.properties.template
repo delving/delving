@@ -38,6 +38,24 @@ solr.timeout = 60000
 solr.retries = 1
 
 #
+# services connection settings
+#
+services.url = http://localhost:8983/services/
+services.harvindexing.prefix = ese
+services.password = something
+
+#
+# services MetaRepo Settings
+#
+services.pmh.repositoryName = Delving MetaRepo
+services.pmh.adminEmail = somebody@delving.eu
+services.pmh.earliestDateStamp = 1990-02-01T12:00:00Z
+services.pmh.repositoryIdentifier = meta-repo.delving.eu
+services.pmh.sampleIdentifier = 00101_Ag_NO_sffDF:4c277cd8f208d29792096c1e
+services.pmh.responseListSize = 100
+services.pmh.harvestStepCleanupDelay = 15000
+
+#
 # smtp server settings
 #
 smtp.host = localhost
@@ -105,9 +123,15 @@ log4j.xml=/tmp/log4j.xml
 # This is the name of the webapp used to prefix any urls in the freeMarker templates to images, css, and javascript files.
 #
 portal.name = portal
+portal.displayName = Delving
 portal.freemarker.path = WEB-INF/templates/theme/default
 portal.theme = theme/default
+portal.color = azure
 
+#
+# This is the tracking code for google analytics. If it is empty the badge is not included in the footer
+#
+ga.trackingCode =
 
 #
 # Where the image annotation tool can be found. If this property is set a
@@ -115,14 +139,3 @@ portal.theme = theme/default
 #
 #image.annotation.tool.base.url=../image-annotation-frontend/annotate.jsp
 
-
-#
-# Configure the Metadata Repository
-#
-repositoryName = Delving MetaRepo
-adminEmail = somebody@delving.eu
-earliestDateStamp = 1990-02-01T12:00:00Z
-repositoryIdentifier = meta-repo.delving.eu
-sampleIdentifier = 00101_Ag_NO_sffDF:4c277cd8f208d29792096c1e
-responseListSize = 100
-harvestStepCleanupDelay = 15000

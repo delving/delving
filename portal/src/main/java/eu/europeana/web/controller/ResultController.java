@@ -21,11 +21,8 @@
 
 package eu.europeana.web.controller;
 
-import eu.europeana.core.querymodel.query.BriefBeanView;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.FullBeanView;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
-import eu.europeana.core.querymodel.query.QueryType;
+import eu.europeana.core.database.domain.StaticPageType;
+import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -87,6 +84,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
+        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
@@ -102,7 +100,7 @@ public class ResultController {
         String format = (String) params.get("format");
         boolean srwFormat = format != null && format.equals("srw");
 
-        String uri = "http://www.europeana.eu/resolve/record/" + collId + "/" + recordHash;
+        String uri = collId + "/" + recordHash;
         Map fullParams = new HashMap<String, String[]>();
         fullParams.putAll(params);
         fullParams.put("uri", new String[]{uri});
@@ -120,6 +118,7 @@ public class ResultController {
             page.addObject("format", format);
         }
         page.addObject("uri", uri);
+        page.addObject("socialTags", fullResultView.getUserTags());
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
@@ -176,11 +175,9 @@ public class ResultController {
         String redirectLink;
         if (isShownAt != null) {
             redirectLink = isShownAt;
-        }
-        else if (isShownBy != null) {
+        } else if (isShownBy != null) {
             redirectLink = isShownBy;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(MessageFormat.format("Expected to find '{0}' or '{1}' in the request URL", SHOWN_AT, SHOWN_BY));
         }
         String logString = MessageFormat.format("outlink={0}, provider={2}, europeana_id={1}", redirectLink, europeanaId, provider);
@@ -248,5 +245,16 @@ public class ResultController {
         comparator.addObject("custom2View", custom2BriefBeanView);
 
         return comparator;
+    }
+
+    /*
+    * freemarker Template not loadable from database
+    */
+
+    @RequestMapping("/error.html")
+    public ModelAndView errorPageHandler(HttpServletRequest request) {
+        StaticPageType pageType = StaticPageType.ERROR;
+        clickStreamLogger.logStaticPageView(request, pageType);
+        return ControllerUtil.createModelAndViewPage(pageType.getViewName());
     }
 }

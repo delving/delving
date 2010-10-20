@@ -14,6 +14,7 @@ public class DataSetDetails {
     private String name;
     private String providerName;
     private String description;
+    private String prefix;
     private String namespace;
     private String schema;
     private String recordRoot;
@@ -49,6 +50,14 @@ public class DataSetDetails {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public String getNamespace() {

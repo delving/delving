@@ -1,14 +1,15 @@
 <#compress>
 <h4><@spring.message 'RefineYourSearch_t' />:</h4>
-    <#-- columsize is  used for the number of colums in the facet table. -->
 <noscript>
     <div class="attention">
     <@spring.message 'NoScript_t' />
     </div>
 </noscript>
+<#--columsize is  used for the number of colums in the facet table. -->
 
-     <#list next as facet>
-        <#assign togglerClass="toggler-c-closed"/>
+<#assign columsize = 2>
+    <#list next as facet>
+         <#assign togglerClass="toggler-c-closed"/>
         <#switch facet.type>
             <#case "LANGUAGE">
                 <#if facet.links?size &gt; 0>
@@ -26,14 +27,30 @@
                    <#assign columsize = 2>
                </#if>
                <#break/>
+            <#case "DCTYPE">
+                <#if facet.links?size &gt; 0>
+                <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
+               <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
+               <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
+               <#assign columsize = 1>
+               </#if>
+               <#break/>
             <#case "TYPE">
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
                <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
-               <#assign columsize = 2>
+               <#assign columsize = 1>
                </#if>
                <#break/>
+            <#case "COLLECTION">
+                <#if facet.links?size &gt; 0>
+                   <#if facet.selected><#assign togglerClass="toggler-c-opened"/></#if>
+                   <div class="toggler-c ${togglerClass} ui-icon-circle-triangle-s" title="<@spring.message 'ByCollection_t' />">
+                   <noscript><h4><@spring.message 'ByCollection_t' />:</h4></noscript>
+                   <#assign columsize = 1>
+                </#if>
+                   <#break/>
             <#case "PROVIDER">
                 <#if facet.links?size &gt; 0>
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
@@ -84,6 +101,7 @@
         </div>
         </#if>
     </#list>
+    <#if seq?size &gt; 0>
         <h4><@spring.message 'Actions_t'/>:</h4>
         <div class="related-links">
             <p class="linetop">
@@ -95,4 +113,5 @@
             </p>
             <div id="msg-save-search" class="msg-hide fg-pink"></div>
         </div>
+    </#if>
 </#compress>

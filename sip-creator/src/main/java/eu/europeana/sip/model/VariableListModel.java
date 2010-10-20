@@ -112,12 +112,16 @@ public class VariableListModel extends AbstractListModel {
             refresh();
         }
 
+        @Override
+        public void valueMapChanged() {
+        }
+
         private void refresh() {
             int sizeBefore = getSize();
             variableHolderList.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             for (VariableHolder uncountedHolder : variableList) {
-                VariableHolder variableHolder = new VariableHolder(uncountedHolder.node);
+                VariableHolder variableHolder = new VariableHolder(uncountedHolder.getNode());
                 for (FieldMapping fieldMapping : recordMapping) {
                     for (String variable : fieldMapping.getVariables()) {
                         variableHolder.checkIfMapped(variable);
@@ -138,62 +142,5 @@ public class VariableListModel extends AbstractListModel {
             fireIntervalAdded(this, 0, getSize());
         }
 
-    }
-
-
-    public static class VariableHolder implements Comparable<VariableHolder> {
-        private AnalysisTree.Node node;
-        private String variableName;
-        private int mappingCount;
-
-        private VariableHolder(AnalysisTree.Node node) {
-            this.node = node;
-            this.variableName = node.getVariableName();
-        }
-
-        public void checkIfMapped(String variableName) {
-            if (this.variableName.equals(variableName)) {
-                mappingCount++;
-            }
-        }
-
-        public AnalysisTree.Node getNode() {
-            return node;
-        }
-
-        public String getVariableName() {
-            return variableName;
-        }
-
-        public String toString() {
-            StringBuilder out = new StringBuilder(variableName);
-            switch (mappingCount) {
-                case 0:
-                    break;
-                case 1:
-                    out.append(" (mapped once)");
-                    break;
-                case 2:
-                    out.append(" (mapped twice)");
-                    break;
-                default:
-                    out.append(" (mapped ").append(mappingCount).append(" times)");
-                    break;
-            }
-            return out.toString();
-        }
-
-        @Override
-        public int compareTo(VariableHolder o) {
-            if (mappingCount > o.mappingCount) {
-                return 11;
-            }
-            else if (mappingCount < o.mappingCount) {
-                return -1;
-            }
-            else {
-                return node.compareTo(o.node);
-            }
-        }
     }
 }

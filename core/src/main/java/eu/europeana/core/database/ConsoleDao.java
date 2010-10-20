@@ -21,10 +21,8 @@
 
 package eu.europeana.core.database;
 
-import eu.europeana.core.database.domain.ConsoleLog;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.IndexingQueueEntry;
 
 import java.util.List;
 
@@ -77,29 +75,13 @@ public interface ConsoleDao {
     EuropeanaCollection fetchCollection(Long id);
 
     /**
-     * Update the contets of the collection
+     * Update the contents of the collection
      *
      * @param collection with new field values
      * @return the updated version fresh from the database
      */
 
     EuropeanaCollection updateCollection(EuropeanaCollection collection);
-
-    /**
-     * This is a very radical move!  All collections are disabled and their new disabled versions are
-     * returned so that something outside of the database can be done with these collections.  ie. remove from index.
-     *
-     * @return the collections after they are disabled
-     */
-
-    List<EuropeanaCollection> disableAllCollections();
-
-    /**
-     * Another radical method!  All collections are first disabled, and then they are all enabled which causes
-     * work to be placed in the index queue.
-     */
-
-    void enableAllCollections();
 
     /**
      * Prepare a collection for importing by removing any saved import error and setting the date last modified.
@@ -161,72 +143,6 @@ public interface ConsoleDao {
     List<EuropeanaId> fetchCollectionObjects(EuropeanaCollection collection);
 
     /**
-     * Fetch all the entries out of the current queue, since each one of them contains information
-     * about how far the process has come so far.  The indexing updates these entries, so this method
-     * just fetches the latest news.
-     *
-     * @return all entries in the queues for indexing and cacheing
-     */
-
-    List<IndexingQueueEntry> fetchQueueEntries();
-
-    /**
-     * Indicate that the given collection is to be indexed
-     *
-     * @param collection the collection to be indexed
-     * @return true if it was done, false if the collection was unknown
-     */
-
-    boolean addToIndexQueue(EuropeanaCollection collection);
-
-    /**
-     * Start indexing associated with the job stored on the queue
-     *
-     * @param indexingQueueEntry which job is it?
-     * @return the updated entry
-     */
-
-    IndexingQueueEntry startIndexing(IndexingQueueEntry indexingQueueEntry);
-
-    /**
-     * Fetch a list of europeana ids which are in need of indexing.
-     *
-     * @param maxResults         how big can the list be
-     * @param indexingQueueEntry which entry are we talking about?
-     * @return the list of to-index ids.
-     */
-
-    List<EuropeanaId> getEuropeanaIdsForIndexing(int maxResults, IndexingQueueEntry indexingQueueEntry);
-
-    /**
-     * When getEuropeanaIdsForIndexing returns an empty list, indicate with this method that the entry can be
-     * removed from the queue.
-     *
-     * @param collection the collection should no longer be indexed
-     */
-
-    void removeFromIndexQueue(EuropeanaCollection collection);
-
-    /**
-     * Check if there is indexing work to do
-     *
-     * @return the top queue entry, or null if there's no work
-     */
-
-    IndexingQueueEntry getEntryForIndexing();
-
-    /**
-     * Update the status of the collection to show that another bunch of records have been indexed.  The queue is
-     * polled elsewhere to show running status.
-     *
-     * @param count              how many records processed this time around
-     * @param indexingQueueEntry which job being worked on
-     * @param lastEuropeanaId    what was the last europeana id indexed
-     */
-
-    void saveRecordsIndexed(int count, IndexingQueueEntry indexingQueueEntry, EuropeanaId lastEuropeanaId);
-
-    /**
      * Completely refresh the collection counters by doing some nasty queries to the database.
      *
      * @param collectionId which collection
@@ -235,35 +151,5 @@ public interface ConsoleDao {
 
     EuropeanaCollection updateCollectionCounters(Long collectionId);
 
-    /**
-     * Record in the audit log what the console has just done, saving who did it and what they did
-     *
-     * @param who  the username
-     * @param what what did they do?
-     */
-
-    void log(String who, String what);
-
-    /**
-     * Fetch another bunch of log entries for display from the given id onwards
-     *
-     * @param bottomId where to start
-     * @param pageSize maximum list size
-     * @return the list of log entries
-     */
-
-    List<ConsoleLog> fetchLogEntriesFrom(Long bottomId, int pageSize);
-
-    /**
-     * Fetch the log entries up to the given id
-     *
-     * @param topId    where to end
-     * @param pageSize maximum list size
-     * @return the list of log entries
-     */
-
-    List<ConsoleLog> fetchLogEntriesTo(Long topId, int pageSize);
-
     List<EuropeanaCollection> fetchEnabledCollections();
-    
 }

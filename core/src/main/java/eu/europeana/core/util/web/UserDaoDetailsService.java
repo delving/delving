@@ -82,37 +82,19 @@ public class UserDaoDetailsService implements UserDetailsService {
             switch (user.getRole()) {
                 case ROLE_GOD:
                     addRole(Role.ROLE_USER);
-                    addRole(Role.ROLE_TRANSLATOR);
-                    addRole(Role.ROLE_EDITOR);
-                    addRole(Role.ROLE_PACTA);
                     addRole(Role.ROLE_ADMINISTRATOR);
+                    addRole(Role.ROLE_RESEARCH_USER);
                     addRole(Role.ROLE_GOD);
-                    break;
-                case ROLE_TRANSLATOR:
-                    addRole(Role.ROLE_USER);
-                    addRole(Role.ROLE_TRANSLATOR);
                     break;
                 case ROLE_ADMINISTRATOR:
                     addRole(Role.ROLE_USER);
+                    addRole(Role.ROLE_RESEARCH_USER);
                     addRole(Role.ROLE_ADMINISTRATOR);
                     break;
-                case ROLE_EDITOR:
+                case ROLE_RESEARCH_USER:
                     addRole(Role.ROLE_USER);
-                    addRole(Role.ROLE_EDITOR);
-                    addRole(Role.ROLE_PACTA);
-                    addRole(Role.ROLE_CARROUSEL);
+                    addRole(Role.ROLE_RESEARCH_USER);
                     break;
-                case ROLE_PACTA:
-                    addRole(Role.ROLE_USER);
-                    addRole(Role.ROLE_PACTA);
-                    break;
-                case ROLE_CARROUSEL:
-                    addRole(Role.ROLE_USER);
-                    addRole(Role.ROLE_CARROUSEL);
-                    break;
-                case ROLE_CONTENT_TESTER:
-                    addRole(Role.ROLE_USER);
-                    addRole(Role.ROLE_CONTENT_TESTER);
                 case ROLE_USER:
                     addRole(Role.ROLE_USER);
                     break;

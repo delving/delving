@@ -167,15 +167,39 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
-                <version>2.13.1</version>
+
                 <executions>
                     <execution>
+                        <id>compile</id>
                         <goals>
                             <goal>compile</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+
+                    <execution>
+                        <id>test-compile</id>
+                        <goals>
                             <goal>testCompile</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                    </execution>
+
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -351,6 +375,11 @@
                 <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>org.springframework.oxm</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -486,12 +515,12 @@
             <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-solrj</artifactId>
-                <version>1.4.0</version>
+                <version>1.4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-core</artifactId>
-                <version>1.4.0</version>
+                <version>1.4.1</version>
             </dependency>
 
 

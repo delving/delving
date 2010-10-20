@@ -44,6 +44,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -63,6 +64,7 @@ public class RefinementPanel extends JPanel {
     private SipModel sipModel;
     private JTextArea groovyCodeArea;
     private JButton removeMappingButton = new JButton("Remove Selected Mapping");
+    private JButton valueMappingButton = new JButton("Edit Value Mapping");
     private JList mappingList;
 
     public RefinementPanel(SipModel sipModel) {
@@ -79,7 +81,7 @@ public class RefinementPanel extends JPanel {
     private JPanel createLeftSide() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         // input panel
         gbc.gridx = gbc.gridy = 0;
@@ -96,18 +98,24 @@ public class RefinementPanel extends JPanel {
     private JPanel createRightSide() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
-        // output panel
+        // record panel
         gbc.gridheight = 1;
         gbc.weightx = 1;
         gbc.weighty = 0.3;
         gbc.gridy = gbc.gridx = 0;
         p.add(new RecordPanel(sipModel, sipModel.getFieldMappingModel()), gbc);
-        // converter choice
+        // value map button
         gbc.gridy++;
+        gbc.weighty = 0.05;
+        valueMappingButton.setEnabled(false);
+        p.add(valueMappingButton, gbc);
+        // code panel
+        gbc.gridy++;
+        gbc.weighty = 0.3;
         p.add(createGroovyPanel(), gbc);
-        // create mapping button
+        // output panel
         gbc.gridy++;
         p.add(createOutputPanel(), gbc);
         p.setPreferredSize(new Dimension(600, 800));
@@ -124,16 +132,28 @@ public class RefinementPanel extends JPanel {
                 }
             }
         });
+        valueMappingButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ValueMapDialog dialog = new ValueMapDialog(
+                        (Frame)SwingUtilities.getWindowAncestor(RefinementPanel.this),
+                        sipModel.getFieldMappingModel().getRecordMapping()
+                );
+                dialog.setVisible(true);
+            }
+        });
         mappingList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 FieldMapping fieldMapping = (FieldMapping) mappingList.getSelectedValue();
                 if (fieldMapping != null) {
                     sipModel.getFieldMappingModel().getRecordMapping().setFieldMapping(fieldMapping);
+                    valueMappingButton.setEnabled(fieldMapping.getValueMap() != null);
                     removeMappingButton.setEnabled(true);
                 }
                 else {
                     sipModel.getFieldMappingModel().getRecordMapping().clear();
+                    valueMappingButton.setEnabled(false);
                     removeMappingButton.setEnabled(false);
                 }
             }
