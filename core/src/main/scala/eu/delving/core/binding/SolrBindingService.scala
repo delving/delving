@@ -6,8 +6,9 @@ import scala.reflect.BeanProperty
 import collection.mutable.ListBuffer
 import org.apache.solr.common.SolrDocumentList
 import java.util. {Date, ArrayList, List => JList}
+import java.lang.{Boolean => JBoolean}
 import scala.collection.mutable.Map
-import eu.europeana.core.querymodel.query. {BriefDoc, DocType, DocId, EuropeanaQueryException}
+import eu.europeana.core.querymodel.query._
 
 /**
  *
@@ -45,7 +46,10 @@ object SolrBindingService {
 
   def getDocIds(queryResponse: QueryResponse): JList[SolrDocId] = {
     val docIds = new ListBuffer[SolrDocId]
-    getSolrDocumentList(queryResponse).foreach(doc => docIds add (SolrDocId(doc)))
+    getSolrDocumentList(queryResponse).foreach{
+      doc =>
+        docIds add (SolrDocId(doc))
+    }
     asList(docIds)
   }
 
@@ -53,7 +57,10 @@ object SolrBindingService {
 
   def getBriefDocs(resultList: SolrDocumentList): JList[BriefDocItem] = {
     val briefDocs = new ListBuffer[BriefDocItem]
-    getSolrDocumentList(resultList).foreach(doc => briefDocs add (BriefDocItem(doc)))
+    getSolrDocumentList(resultList).foreach{
+      doc =>
+        briefDocs add (BriefDocItem(doc))
+    }
     asList(briefDocs)
   }
 
@@ -63,8 +70,29 @@ object SolrBindingService {
     results.head
   }
 
-  def getFullDocs(matchDoc: SolrDocumentList): JList[FullDocItem] = asList(new ListBuffer[FullDocItem])
+  def getFullDocs(queryResponse: QueryResponse): JList[FullDocItem] = getFullDocs(queryResponse.getResults)
+
+  def getFullDocs(matchDoc: SolrDocumentList): JList[FullDocItem] = {
+    val fullDocs = new ListBuffer[FullDocItem]
+    getSolrDocumentList(matchDoc).foreach{
+      doc =>
+        fullDocs add (FullDocItem(doc))
+    }
+    asList(fullDocs)
+  }
 }
+
+case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
+
+  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any]())
+
+  def getFirst(field: String) : String = fieldMap.getOrElse(field, List[Any]()).headOption.getOrElse("").asInstanceOf[String] // todo made generic later
+
+  private[binding] def add(field: String, value : List[Any]) = fieldMap.put(field, value)
+
+  private[binding] def getFieldNames = fieldMap.keySet.toString
+}
+
 
 case class SolrDocId(solrDocument : SolrDocument) extends DocId {
   def getEuropeanaUri : String = solrDocument.get("europeana_uri").head.asInstanceOf[String]
@@ -92,15 +120,140 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
     @BeanProperty var debugQuery : String = _
 }
 
-case class FullDocItem(solrDocument : SolrDocument) //extends FullDoc
+case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
+    private def assign(key: String) = solrDocument.get(key).asInstanceOf[List[String]].toArray
+    private def assignFirst(key: String) = solrDocument.getFirst(key)
 
-case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
+    // Europeana elements
+    override def getId : String = assignFirst("europeana_uri")
 
-  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any]())
+    override def getThumbnails : Array[String] = assign("europeana_object") // this is europeanaObject
 
-  def getFirst(field: String) : String = fieldMap.getOrElse(field, List[Any]()).headOption.getOrElse("").asInstanceOf[String] // todo made generic later
+    override def getEuropeanaIsShownAt : Array[String] = assign("europeana_isShownAt")
 
-  private[binding] def add(field: String, value : List[Any]) = fieldMap.put(field, value)
+    override def getEuropeanaIsShownBy: Array[String] = assign("europeana_isShownBy")
 
-  private[binding] def getFieldNames = fieldMap.keySet.toString
+    override def getEuropeanaUserTag: Array[String] = assign("europeana_userTag")
+
+    override def getEuropeanaHasObject : JBoolean = if (assign("europeana_object").isEmpty) false else true
+
+    override def getEuropeanaCountry: Array[String] = assign("europeana_county")
+
+    override def getEuropeanaProvider: Array[String] = assign("europeana_provider")
+
+    override def getEuropeanaSource: Array[String] = assign("europeana_source")
+
+    override def getEuropeanaType: DocType = DocType.get(assignFirst("europeana_type"))
+
+    override def getEuropeanaLanguage: Array[String] = assign("europeana_language") // used to be Language
+
+    override def getEuropeanaYear: Array[String] = assign("europeana_year")
+
+    override def getEuropeanaCollectionName: String = assignFirst("europeana_collectionName")
+
+    override def getEuropeanaCollectionTitle: String = assignFirst("europeana_collectionTitle")
+
+    // here the dcterms namespaces starts
+    override def getDcTermsAlternative: Array[String] = assign("dcterms_alternative")
+
+    override def getDcTermsConformsTo: Array[String] = assign("dcterms_conformsTo")
+
+    override def getDcTermsCreated: Array[String] = assign("dcterms_created")
+
+    override def getDcTermsExtent: Array[String] = assign("dcterms_extent")
+
+    override def getDcTermsHasFormat: Array[String] = assign("dcterms_hasFormat")
+
+    override def getDcTermsHasPart: Array[String] = assign("dcterms_hasPart")
+
+    override def getDcTermsHasVersion: Array[String] = assign("dcterms_hasVersion")
+
+    override def getDcTermsIsFormatOf: Array[String] = assign("dcterms_isFormatOf")
+
+    override def getDcTermsIsPartOf: Array[String] = assign("dcterms_isPartOf")
+
+    override def getDcTermsIsReferencedBy: Array[String] = assign("dcterms_isReferencedBy")
+
+    override def getDcTermsIsReplacedBy: Array[String] = assign("dcterms_isReplacedBy")
+
+    override def getDcTermsIsRequiredBy: Array[String] = assign("dcterms_isRequiredBy")
+
+    override def getDcTermsIssued: Array[String] = assign("dcterms_issued")
+
+    override def getDcTermsIsVersionOf: Array[String] = assign("dcterms_isVersionOf")
+
+    override def getDcTermsMedium: Array[String] = assign("dcterms_medium")
+
+    override def getDcTermsProvenance: Array[String] = assign("dcterms_provenance")
+
+    override def getDcTermsReferences: Array[String] = assign("dcterms_references")
+
+    override def getDcTermsReplaces: Array[String] = assign("dcterms_replaces")
+
+    override def getDcTermsRequires: Array[String] = assign("dcterms_requires")
+
+    override def getDcTermsSpatial: Array[String] = assign("dcterms_spatial")
+
+    override def getDcTermsTableOfContents: Array[String] = assign("dcterms_tableOfContents")
+
+    override def getDcTermsTemporal: Array[String] = assign("dcterms_temporal")
+
+    // here the dc namespace starts
+    override def getDcContributor: Array[String] = assign("dc_contributor")
+
+    override def getDcCoverage: Array[String] = assign("dc_coverage")
+
+    override def getDcCreator: Array[String] = assign("dc_creator")
+
+    override def getDcDate: Array[String] = assign("dc_date")
+
+    override def getDcDescription: Array[String] = assign("dc_description")
+
+    override def getDcFormat: Array[String] = assign("dc_format")
+
+    override def getDcIdentifier: Array[String] = assign("dc_identifier")
+
+    override def getDcLanguage: Array[String] = assign("dc_language")
+
+    override def getDcPublisher: Array[String] = assign("dc_publisher")
+
+    override def getDcRelation: Array[String] = assign("dc_relation")
+
+    override def getDcRights: Array[String] = assign("dc_rights")
+
+    override def getDcSource: Array[String] = assign("dc_source")
+
+    override def getDcSubject: Array[String] = assign("dc_subject")
+
+    override def getDcTitle: Array[String] = assign("dc_title")
+
+    override def getDcType: Array[String] = assign("dc_type")
+
+    override def getBriefDoc : BriefDoc = BriefDocItem(solrDocument)
+
+    /* ICN specific fields */
+
+    override def getCreatorYearOfBirth: Array[String] = assign("icn_yearOfBirth")
+
+    override def getTechnique: Array[String] = assign("icn_technique")
+
+    override def getMaterial: Array[String] = assign("icn_material")
+
+    override def getLocation: Array[String] = assign("icn_location")
+
+    override def getProvince: Array[String] = assign("icn_province")
+
+    override def getCollectionPart: Array[String] = assign("icn_collectionPart")
+
+    override def getAcquisitionMeans: Array[String] = assign("icn_acquisitionMeans")
+
+    override def getAcquisitionYear: Array[String] = assign("icn_aqcuisitionYear")
+
+    override def getPurchasePrice: Array[String] = assign("icn_purchasePrice")
+
+    override def getAcquiredWithHelpFrom: Array[String] = assign("icn_acquiredWithHelpFrom")
+
+    override def getPhysicalState: Array[String] = assign("icn_physicalState")
+
+    override def getCollectionType: Array[String] = assign("icn_collectionType")
 }

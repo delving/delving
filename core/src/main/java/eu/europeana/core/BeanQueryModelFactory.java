@@ -26,7 +26,6 @@ import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
-import eu.europeana.core.querymodel.beans.FullBean;
 import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
@@ -407,7 +406,6 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     }
 
-    //todo refactor out the getBeans methods from solrj
     @Override
     public List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
         return getDocIds(queryResponse);
@@ -415,16 +413,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     @Override
     public List<? extends FullDoc> getFullDocFromSolrResponse(SolrDocumentList matchDoc) {
-        return solrServer.getBinder().getBeans(FullBean.class, matchDoc);
+        return SolrBindingService.getFullDocs(matchDoc);
     }
 
     @Override
     public FullDoc getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException {
-        List<FullBean> fullBeanList = response.getBeans(FullBean.class);
-        if (fullBeanList.size() != 1) {
-            throw new EuropeanaQueryException("Full Doc not found");
-        }
-        return fullBeanList.get(0);
+        return SolrBindingService.getFullDoc(response);
     }
 
     @Override
@@ -434,11 +428,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     @Override
     public List<? extends BriefDoc> getMatchDocFromDocumentList(SolrDocumentList matchDoc) {
-//        return solrServer.getBinder().getBeans(BriefBean.class, matchDoc);
         return SolrBindingService.getBriefDocs(matchDoc);
     }
-
-    //todo end part to refactor
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException {
