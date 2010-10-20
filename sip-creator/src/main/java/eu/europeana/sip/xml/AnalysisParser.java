@@ -133,6 +133,7 @@ public class AnalysisParser implements Runnable {
             listener.success(statisticsList);
         }
         catch (Exception e) {
+            LOG.error("Analysis Failed!", e);
             listener.failure(e);
         }
     }
