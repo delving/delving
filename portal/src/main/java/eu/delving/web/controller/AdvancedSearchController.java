@@ -44,7 +44,7 @@ public class AdvancedSearchController {
         query.setRows(0);
         query.setFacet(true);
         query.setQueryType(QueryType.ADVANCED_QUERY.toString());
-        String collectionsName = "europeana_collectionName";
+        String collectionsName = "europeana_collectionTitle";
         query.addFacetField(collectionsName);
 //        String icnProvince = "icn_icn:province";
 //        query.addFacetField(icnProvince);
