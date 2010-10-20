@@ -23,7 +23,6 @@ package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -38,9 +37,6 @@ import java.util.TreeMap;
 @XStreamAlias("record-definition")
 public class RecordDefinition {
 
-    @XStreamAsAttribute
-    public String name;
-
     public ElementDefinition root;
 
     public Map<String, FieldDefinition> getConstantFields() {
@@ -50,28 +46,26 @@ public class RecordDefinition {
     }
 
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append(name).append(" {\n");
-        indent(root.toString(), out);
-        out.append("}");
-        return out.toString();
+        return toString(this);
     }
 
     // handy static methods
 
-    public static void indent(String s, StringBuilder out) {
-        for (String line : s.split("\n")) {
-            out.append("   ").append(line).append('\n');
-        }
+    public static RecordDefinition read(InputStream in) {
+        return (RecordDefinition) stream().fromXML(in);
     }
 
-    public static RecordDefinition read(InputStream in) {
+    public static String toString(RecordDefinition recordDefinition) {
+        return stream().toXML(recordDefinition);
+    }
+
+    private static XStream stream() {
         XStream stream = new XStream();
         stream.processAnnotations(new Class[]{
                 RecordDefinition.class,
                 ElementDefinition.class,
                 FieldDefinition.class
         });
-        return (RecordDefinition) stream.fromXML(in);
+        return stream;
     }
 }

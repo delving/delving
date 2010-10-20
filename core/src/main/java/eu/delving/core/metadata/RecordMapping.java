@@ -24,6 +24,7 @@ package eu.delving.core.metadata;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -41,7 +44,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @XStreamAlias("record-mapping")
 public class RecordMapping {
-
     @XStreamOmitField
     public boolean dirty;
 
@@ -121,8 +123,14 @@ public class RecordMapping {
         out.line("// Builder to create the record\n");
         out.line("output.");
         out.indent(1);
-        generateCode("", recordDefinition.root, out);               
+        Set<String> usedPaths = new TreeSet<String>();
+        generateCode("", recordDefinition.root, out, usedPaths);
         out.indent(-1);
+        if (usedPaths.size() != fieldMappings.size()) {
+            Set<String> unusedPaths = new TreeSet<String>(fieldMappings.keySet());
+            unusedPaths.removeAll(usedPaths);
+            Logger.getLogger(getClass()).warn("unused paths: "+unusedPaths);
+        }
         return stringBuilder.toString();
     }
 
@@ -132,27 +140,28 @@ public class RecordMapping {
 
     // === private
 
-    private void generateCode(String path, ElementDefinition element, Out out) {
+    private void generateCode(String path, ElementDefinition element, Out out, Set<String> usedPaths) {
         out.line(String.format("%s {", element.tag));
         out.indent(1);
         if (element.elements != null) {
             for (ElementDefinition subNode : element.elements) {
-                generateCode(path + "/" + element.tag, subNode, out);
+                generateCode(path + "/" + element.tag, subNode, out, usedPaths);
             }
         }
         if (element.fields != null) {
             for (FieldDefinition fieldDefinition : element.fields) {
-                generateCode(path + "/" + element.tag, fieldDefinition, out);
+                generateCode(path + "/" + element.tag, fieldDefinition, out, usedPaths);
             }
         }
         out.indent(-1);
         out.line("}");
     }
 
-    private void generateCode(String path, FieldDefinition field, Out out) {
+    private void generateCode(String path, FieldDefinition field, Out out, Set<String> usedPaths) {
         String fieldPath = path + "/" + field.getTag();
         FieldMapping fieldMapping = fieldMappings.get(fieldPath);
         if (fieldMapping != null) {
+            usedPaths.add(fieldPath);
             for (String line : fieldMapping.code) {
                 if (codeIndent(line) < 0) {
                     out.indent(-1);

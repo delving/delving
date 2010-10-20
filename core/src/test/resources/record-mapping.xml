@@ -9,7 +9,7 @@
     </constants>
     <field-mappings>
         <entry>
-            <string>/record/pokey/gumby/woohoo</string>
+            <string>/record/dc:creator</string>
             <field-mapping>
                 <value-map>
                     <entry>
@@ -18,8 +18,8 @@
                     </entry>
                 </value-map>
                 <groovy-code>
-                    <string>something.whatever {</string>
-                    <string>booboo</string>
+                    <string>input.path.to.something.each {</string>
+                    <string>dc.creator it</string>
                     <string>}</string>
                 </groovy-code>
             </field-mapping>
