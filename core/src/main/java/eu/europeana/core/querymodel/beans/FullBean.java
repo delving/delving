@@ -98,7 +98,7 @@ public class FullBean extends BriefBean implements FullDoc {
 
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:dataProvider", constant = true)
     @Solr(prefix = "europeana", localName = "dataProvider", multivalued = false)
-    @Field("europeana_provider")
+    @Field("europeana_dataProvider")
     String[] europeanaDataProvider;
 
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
