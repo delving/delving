@@ -238,7 +238,7 @@
 
     </style>
     <![endif]-->
-
+    
     <#if user??>
     <script type="text/javascript">
         var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t' />";

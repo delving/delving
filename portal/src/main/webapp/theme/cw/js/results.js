@@ -151,26 +151,3 @@ function checkSize(obj,type,w){
         }
     }
 }
-
-$(document).ready(function() {
-
-    $(".dialog").dialog({
-        autoOpen: false,
-        modal: true,
-        resizable: false,
-        width: 500
-    });
-
-    $('#opener').click(function() {
-        $(".dialog").dialog('open');
-    });
-
-//   var imgs = document.getElementsByTagName('img'), i = 0, img;
-//   while(i < imgs.length) {
-//      imgs[i].onerror = function() {
-//         log.error('imgerrorlog=true&src='+this.src);
-//         // you can add more params, such as time=1234567 etc.
-//      }
-//      i++;
-//   }
-});
