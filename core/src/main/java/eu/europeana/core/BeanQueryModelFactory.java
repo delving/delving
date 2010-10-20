@@ -430,7 +430,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException {
-        return getSolrResponse(solrQuery, true);
+        return getSolrResponseFromServer(solrQuery, true);
     }
 
     private QueryResponse getSolrResponseFromServer(SolrQuery solrQuery, boolean decrementStart) throws EuropeanaQueryException {

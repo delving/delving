@@ -20,18 +20,6 @@ trait DelvingTestUtil {
   private val beanProcessor  = context.getBean("annotationProcessor").asInstanceOf[AnnotationProcessorImpl]
   private val analyzerBean = context.getBean("queryAnalyser").asInstanceOf[QueryAnalyzer]
 
-  // hard wired
-  private val processor: AnnotationProcessorImpl = new AnnotationProcessorImpl()
-  val beanClasses = new ListBuffer[Class[_]] += (classOf[IdBean], classOf[BriefBean], classOf[FullBean], classOf[AllFieldBean])
-  processor.setClasses(beanClasses.toList)
-
-  private val analyser: QueryAnalyzer = new QueryAnalyzer
-  analyser.setAnnotationProcessor(processor)
-
-  def getAnnotationProcessor: AnnotationProcessorImpl = processor
-
-  def getQueryAnalyser = analyser
-
   def getAnnotationProcessorFromBean : AnnotationProcessorImpl = beanProcessor
 
   def getQueryAnalyserFromBean = analyzerBean
