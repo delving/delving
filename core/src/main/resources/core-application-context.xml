@@ -169,26 +169,9 @@
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
-    <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
-        <property name="classes">
-            <util:list>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
-            </util:list>
-        </property>
+    <bean id="metadataModel" class="eu.delving.core.metadata.MetadataModelImpl">
+        <property name="recordDefinitionResource" value="/record-definition.xml"/>
     </bean>
-    <!--<bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">-->
-    <!--<property name="classes">-->
-    <!--<util:list>-->
-    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>-->
-    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>-->
-    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>-->
-    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>-->
-    <!--</util:list>-->
-    <!--</property>-->
-    <!--</bean>-->
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
         <property name="maxTotalConnections" value="56"/>
@@ -203,9 +186,7 @@
         </constructor-arg>
     </bean>
 
-    <bean id="queryAnalyser" class="eu.europeana.core.querymodel.query.QueryAnalyzer">
-        <property name="annotationProcessor" ref="annotationProcessor"/>
-    </bean>
+    <bean id="queryAnalyser" class="eu.europeana.core.querymodel.query.QueryAnalyzer"/>
 
     <bean id="beanQueryModelFactory" class="eu.europeana.core.BeanQueryModelFactory">
         <property name="solrServer" ref="solrSelectServer"/>

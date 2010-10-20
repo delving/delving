@@ -22,6 +22,7 @@
 package eu.europeana.core;
 
 import eu.delving.core.binding.SolrBindingService;
+import eu.delving.core.metadata.MetadataModel;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SocialTag;
@@ -44,7 +45,6 @@ import eu.europeana.core.querymodel.query.ResultPaginationImpl;
 import eu.europeana.core.querymodel.query.SiteMapBeanView;
 import eu.europeana.core.querymodel.query.SolrQueryUtil;
 import eu.europeana.core.util.web.ControllerUtil;
-import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.domain.CollectionDisplayType;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -77,38 +77,26 @@ import static eu.delving.core.binding.SolrBindingService.getDocIds;
 @SuppressWarnings({"ValueOfIncrementOrDecrementUsed"})
 public class BeanQueryModelFactory implements QueryModelFactory {
     private Logger log = Logger.getLogger(getClass());
-    private QueryAnalyzer queryAnalyzer;
     private CommonsHttpSolrServer solrServer;
-    private AnnotationProcessor annotationProcessor;
-    private UserDao userDao;
-    private DocIdWindowPagerFactory docIdWindowPagerFactory;
 
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
     @Autowired
-    public void setDocIdWindowPagerFactory(DocIdWindowPagerFactory docIdWindowPagerFactory) {
-        this.docIdWindowPagerFactory = docIdWindowPagerFactory;
-    }
+    private UserDao userDao;
+
+    @Autowired
+    private DocIdWindowPagerFactory docIdWindowPagerFactory;
+
+    @Autowired
+    private MetadataModel metadataModel;
 
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
     }
 
     @Autowired
-    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
-        this.annotationProcessor = annotationProcessor;
-    }
-
-    @Autowired
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    @Autowired
-    public void setQueryAnalyzer(QueryAnalyzer queryAnalyzer) {
-        this.queryAnalyzer = queryAnalyzer;
-    }
+    private QueryAnalyzer queryAnalyzer;
 
     /**
      * create solr query from http query parameters
@@ -487,12 +475,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setFacetMinCount(1);
             solrQuery.setFacetLimit(100);
             solrQuery.setRows(12); // todo replace with annotation later
-            solrQuery.addFacetField(annotationProcessor.getFacetFieldStrings());
-//            EuropeanaBean bean = annotationProcessor.getEuropeanaBean(beanClass);
-//            solrQuery.setFields(bean.getFieldStrings());
-//            if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
-//                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
-//            }
+            solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
+            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
+            if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
+                solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
+            }
         }
         SolrQuery dCopy = copySolrQuery(solrQuery);
         return getSolrResponseFromServer(dCopy, false);
@@ -500,7 +487,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     private SolrQuery copySolrQuery(SolrQuery solrQuery) {
         SolrQuery dCopy = solrQuery.getCopy();
-        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, annotationProcessor.getFacetMap()));
+        dCopy.setFilterQueries(SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, metadataModel.getRecordDefinition().getFacetMap()));
         return dCopy;
     }
 

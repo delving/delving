@@ -21,6 +21,17 @@
 
     <import resource="classpath:/core-application-context.xml"/>
 
+    <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
+        <property name="classes">
+            <util:list>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
+            </util:list>
+        </property>
+    </bean>
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" ref="launchProperties"/>
     </bean>
@@ -54,9 +65,6 @@
 
     <bean id="harvindexer" class="eu.delving.services.indexing.Harvindexer">
         <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
-        <property name="beanClass">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
-        </property>
     </bean>
 
     <bean id="indexJobRunner" class="eu.delving.services.indexing.IndexJobRunner"/>
