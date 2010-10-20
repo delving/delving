@@ -25,6 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,10 +42,10 @@ public class ElementDefinition {
     public String tag;
 
     @XStreamImplicit
-    public List<FieldDefinition> fields;
+    public List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
 
     @XStreamImplicit
-    public List<ElementDefinition> elements;
+    public List<ElementDefinition> elements = new ArrayList<ElementDefinition>();
 
     public FieldDefinition getField(String path) {
         int slash = path.indexOf("/");
@@ -86,19 +87,6 @@ public class ElementDefinition {
     }
 
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append(tag).append(" {\n");
-        if (fields != null) {
-            for (FieldDefinition fieldDefinition : fields) {
-                RecordDefinition.indent(fieldDefinition.toString(), out);
-            }
-        }
-        if (elements != null) {
-            for (ElementDefinition node : elements) {
-                RecordDefinition.indent(node.toString(), out);
-            }
-        }
-        out.append("}\n");
-        return out.toString();
+        return String.format("Element(%s)", tag);
     }
 }

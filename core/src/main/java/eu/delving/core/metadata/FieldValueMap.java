@@ -21,6 +21,7 @@
 
 package eu.delving.core.metadata;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -33,10 +34,10 @@ import java.util.TreeMap;
 
 public class FieldValueMap {
     private String name;
-    private Set<String> rangeValues;
+    private List<String> rangeValues;
     private Map<String, String> map = new TreeMap<String, String>();
 
-    public FieldValueMap(String name, Set<String> rangeValues) {
+    public FieldValueMap(String name, List<String> rangeValues) {
         this.name = name;
         this.rangeValues = rangeValues;
     }
@@ -45,7 +46,7 @@ public class FieldValueMap {
         return name;
     }
 
-    public Set<String> getRangeValues() {
+    public List<String> getRangeValues() {
         return rangeValues;
     }
 

@@ -107,7 +107,7 @@ public class CodeGenerator {
                     fieldMapping.addCodeLine(String.format("%s.%s it", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
                 }
                 else {
-                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.getEnumValues());
+                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.options);
                     fieldMapping.addCodeLine(String.format("%s.%s %s(it)", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.getFieldNameString()));
                 }
             }
@@ -129,7 +129,7 @@ public class CodeGenerator {
                     fieldMapping.addCodeLine(String.format("%s.%s %s[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName()));
                 }
                 else {
-                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.getEnumValues());
+                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.options);
                     fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName(), fieldDefinition.getFieldNameString()));
                 }
             }

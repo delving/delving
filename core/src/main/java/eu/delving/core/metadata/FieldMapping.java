@@ -110,7 +110,7 @@ public class FieldMapping implements Iterable<String> {
     }
 
 
-    public void createValueMap(Set<String> domainValues, Set<String> rangeValues) {
+    public void createValueMap(Set<String> domainValues, List<String> rangeValues) {
         this.valueMap = new FieldValueMap(fieldDefinition.getFieldNameString(), rangeValues);
         this.valueMap.setDomain(domainValues);
     }
