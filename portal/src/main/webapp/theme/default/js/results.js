@@ -147,14 +147,35 @@ function checkSize(obj,type,w){
     if(type=="brief"){
         if (w > 220) {
             w = 220;
-            document.getElementById(obj).width=w;
+            obj.width=w;
         }
     }
     else {
-        if (w > 365) {
-            w = 365;
-            document.getElementById(obj).width=w;
+        if (w > 255) {
+            w = 255;
+            obj.width=w;
         }
     }
 }
+
+$(document).ready(function() {
+
+    $(".dialog").dialog({
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        width: 500
+    });
+
+    $('#opener').click(function() {
+        $(".dialog").dialog('open');
+    });
+
+    $(document).ready(function(){
+        $("a.overlay").fancybox({
+            titleShow   : true,
+            titlePosition: 'inside'
+        });
+    })    
+});
 

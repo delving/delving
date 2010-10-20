@@ -123,13 +123,21 @@ public class FileMenu extends JMenu {
         removeAll();
         List<File> commonDirectories = fileSets().getCommonDirectories();
         if (commonDirectories.isEmpty()) {
-            add(new LoadNewFileAction(new File("/")));
+            if (!fileSets().getList().isEmpty()) {
+                File directory = fileSets().getList().get(0).getDirectory();
+                int count = 3;
+                while (directory != null && count-- > 0) {
+                    add(new LoadNewFileAction(directory));
+                    directory = directory.getParentFile();
+                }
+            }
         }
         else {
             for (File directory : commonDirectories) {
                 add(new LoadNewFileAction(directory));
             }
         }
+        add(new LoadNewFileAction(new File("/")));
         addSeparator();
         List<? extends FileSet> fileSetList = fileSets().getList();
         for (FileSet fileSet : fileSetList) {

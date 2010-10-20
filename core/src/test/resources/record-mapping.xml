@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<record-mapping>
+    <record-root>/some/path</record-root>
+    <constants>
+        <entry>
+            <string>constanto</string>
+            <string>no/ple &lt; hople &gt; go[o]gt</string>
+        </entry>
+    </constants>
+    <field-mappings>
+        <entry>
+            <string>/record/dc:creator</string>
+            <field-mapping>
+                <value-map>
+                    <entry>
+                        <string>from</string>
+                        <string>to</string>
+                    </entry>
+                </value-map>
+                <groovy-code>
+                    <string>input.path.to.something.each {</string>
+                    <string>dc.creator it</string>
+                    <string>}</string>
+                </groovy-code>
+            </field-mapping>
+        </entry>
+    </field-mappings>
+</record-mapping>
