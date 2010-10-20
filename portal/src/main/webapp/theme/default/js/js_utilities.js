@@ -79,23 +79,6 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 
 $(document).ready(function() {
 
-    // instantiate the advanced search dialog overlay
-    $("#search_advanced").dialog({
-        autoOpen: false,
-        resizable: false,  
-        modal: true,
-        bgiframe: true,
-        closeOnEscape: true,
-        draggable: true,
-        width: 355
-    });
-    // click event on advanced search href
-    $('#href-advanced').click(function() {
-            $('#search_advanced').dialog('open');
-            return false;
-     });
-
-
     // style all the submit and button elements.
 
     var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");

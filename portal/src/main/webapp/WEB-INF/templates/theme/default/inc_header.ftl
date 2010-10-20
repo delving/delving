@@ -80,12 +80,12 @@
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
             <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button>
             <br/>
-            <a href="advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+            <a href="/${portalName}/advancedsearch.html" id="href-advanced" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </form>
     </div>
 
     <div id="search_advanced" class="${className}" style="display:${showAdv};" title="<@spring.message 'AdvancedSearch_t' />">
-       <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8">
+       <form method="POST" action="/${portalName}/advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
         <table>
@@ -198,7 +198,7 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.toggleElements.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
+
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
         var portalName = "/${portalName}";
@@ -219,6 +219,7 @@
     <#break>
     <#case "brief-doc.html">
     <#assign pageId = "brd"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
     <script type="text/javascript">
         var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
         var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
@@ -233,8 +234,10 @@
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/fancybox/jquery.fancybox-1.3.1.css"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+
     <!--[if IE]>
     <style type="text/css">
         /* IE */
@@ -258,6 +261,14 @@
 
     </style>
     <![endif]-->
+   <script type="text/javascript">
+        $(document).ready(function(){
+            $("a.overlay").fancybox({
+                titleShow   : true,
+                titlePosition: 'inside'
+            });
+        })
+    </script>
     <#if user??>
     <script type="text/javascript">
         var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t' />";

@@ -158,24 +158,4 @@ function checkSize(obj,type,w){
     }
 }
 
-$(document).ready(function() {
-
-    $(".dialog").dialog({
-        autoOpen: false,
-        modal: true,
-        resizable: false,
-        width: 500
-    });
-
-    $('#opener').click(function() {
-        $(".dialog").dialog('open');
-    });
-
-    $(document).ready(function(){
-        $("a.overlay").fancybox({
-            titleShow   : true,
-            titlePosition: 'inside'
-        });
-    })    
-});
 
