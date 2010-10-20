@@ -55,7 +55,6 @@ public interface QueryModelFactory {
 
     SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException;
 
-    //todo refactor out the getBeans methods from solrj
     List<? extends FullDoc> getFullDocFromSolrResponse(SolrDocumentList matchDoc);
 
     FullDoc getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException;
