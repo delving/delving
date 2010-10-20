@@ -25,7 +25,7 @@
         <#else>
             <#assign postTitle = result.fullDoc.dcTitle[0]?url('utf-8')/>
     </#if>
-    <#if result.fullDoc.dcCreator[0]?matches(" ")>
+    <#if result.fullDoc.dcCreator[0]?length &gt; 1>
         <#assign postAuthor = "none"/>
         <#else>
             <#assign postAuthor>
@@ -89,9 +89,9 @@
                         <#assign match = result.fullDoc />
                         <a href="${portalName}/record/${match.id}.html">
                             <#if useCache="true"><img
-                                    src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
+                                    src="${cacheUrl}uri=${match.thumbnails[0]?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}"
                                     alt="${match.title}" height="25"/>
-                                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                                <#else><img src="${match.thumbnails[0]}" alt="${match.dcTitle[0]}" height="25"/>
                             </#if>
                         </a>
 

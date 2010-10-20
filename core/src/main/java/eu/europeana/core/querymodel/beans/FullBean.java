@@ -304,6 +304,16 @@ public class FullBean extends BriefBean implements FullDoc {
     String[] dctermsTemporal;
 
     @Override
+    public String getAsString(String key) {
+        return null;  //TODO: implement this
+    }
+
+    @Override
+    public String[] getAsArray(String key) {
+        return new String[0];  //TODO: implement this
+    }
+
+    @Override
     public String getId() {
         return europeanaUri;
     }

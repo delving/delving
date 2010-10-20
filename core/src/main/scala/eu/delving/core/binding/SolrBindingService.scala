@@ -121,8 +121,13 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
 }
 
 case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
+
     private def assign(key: String) = solrDocument.get(key).asInstanceOf[List[String]].toArray
     private def assignFirst(key: String) = solrDocument.getFirst(key)
+
+    override def getAsArray(key: String) : Array[String] = assign(key)
+
+    override def getAsString(key: String) : String = assignFirst(key)
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")
