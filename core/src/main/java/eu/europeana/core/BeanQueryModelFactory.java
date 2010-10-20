@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import static eu.delving.core.binding.SolrBindingService.getDocIds;
+
 /**
  * todo: javadoc
  *
@@ -407,6 +409,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
 
     //todo refactor out the getBeans methods from solrj
     @Override
+    public List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
+//        return queryResponse.getBeans(idBean); // old binding
+        return getDocIds(queryResponse);
+    }
+
+    @Override
     public List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc) {
         return solrServer.getBinder().getBeans(FullBean.class, matchDoc);
     }
@@ -418,11 +426,6 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             throw new EuropeanaQueryException("Full Doc not found");
         }
         return fullBeanList.get(0);
-    }
-
-    @Override
-    public List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
-        return queryResponse.getBeans(idBean);
     }
 
     @Override

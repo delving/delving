@@ -1,5 +1,6 @@
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.binding.SolrBindingService;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -64,7 +65,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
         else if (queryResponse.getResults().size() == 0) {
             throw new EuropeanaQueryException("no results for this query"); // if no results are found return null to signify that docIdPage can be created.
         }
-        List<? extends DocId> list = queryResponse.getBeans(idBean);
+        List<? extends DocId> list = SolrBindingService.getDocIds(queryResponse);
         final SolrDocumentList response = queryResponse.getResults();
         int offset = (int) response.getStart();
         int numFound = (int) response.getNumFound();
