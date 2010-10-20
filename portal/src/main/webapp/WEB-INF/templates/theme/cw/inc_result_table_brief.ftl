@@ -29,14 +29,14 @@
 
            <td valign="bottom" class="${cell.type}">
                 <div class="brief-thumb-container">
-                    <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
+                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
                         <#if useCache="true">
                              <img
                                      class="thumb"
-                                     id="thumb_${cell.index?c}"
+                                     id="thumb_${cell.index()?c}"
                                      align="middle"
                                      height="110"
-                                     src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />"
+                                     src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type()}" alt="<@spring.message 'AltMoreInfo_t' />"
                                      onload="checkSize(this,'brief',this.width);"
                                      onerror="showDefaultSmall(this,'${cell.type}',this.src)"
                               />
@@ -46,7 +46,7 @@
 
                             <img
                                     class="thumb"
-                                    id="thumb_${cell.index?c}"
+                                    id="thumb_${cell.index()?c}"
                                     align="middle"
                                     alt="Click for more information"
                                     height="110"
@@ -60,7 +60,7 @@
                 </div>
             <div class="brief-content-container">
                 <h6>
-                    <a href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
+                    <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "80"/>
                     </a>
                 </h6>
@@ -98,10 +98,10 @@
     <tr>
         <td valign="top" width="50">
             <div class="brief-thumb-container-listview">
-                <a href="${cell.fullDocUrl}${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
+                <a href="${cell.fullDocUrl()}${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
                     <#if useCache="true">
                         <img class="thumb"
-                             id="thumb_${cell.index}"
+                             id="thumb_${cell.index()}"
                              align="middle"
                              src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}"
                              alt="<@spring.message 'AltMoreInfo_t' />"
@@ -111,7 +111,7 @@
                           />
                     <#else>
                         <img class="thumb"
-                             id="thumb_${cell.index?c}"
+                             id="thumb_${cell.index()?c}"
                              align="middle"
                              src="${cell.thumbnail}"
                              alt="Click for more information"
@@ -126,7 +126,7 @@
             <div class="brief-content-container">
 
                 <h6>
-                    <a class="fg-gray" href="${cell.fullDocUrl}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
+                    <a class="fg-gray" href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;sortBy=${sortBy}&amp;pageId=brd">
                         <@stringLimiter "${cell.title}" "100"/></a>
                 </h6>
                 <p>

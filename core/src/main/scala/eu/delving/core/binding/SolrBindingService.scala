@@ -2,12 +2,12 @@ package eu.delving.core.binding
 
 import scala.collection.JavaConversions._
 import org.apache.solr.client.solrj.response.QueryResponse
-import reflect.BeanProperty
+import scala.reflect.BeanProperty
 import collection.mutable.ListBuffer
 import org.apache.solr.common.SolrDocumentList
-import eu.europeana.core.querymodel.query. {DocId, EuropeanaQueryException}
 import java.util. {Date, ArrayList, List => JList}
 import scala.collection.mutable.Map
+import eu.europeana.core.querymodel.query. {BriefDoc, DocType, DocId, EuropeanaQueryException}
 
 /**
  *
@@ -17,33 +17,11 @@ import scala.collection.mutable.Map
 
 object SolrBindingService {
 
-  private val docIdFields = List("europeana_uri", "timestamp")
-  private val briefDocFields = List("europeana_uri", "timestamp", "europeana_collectionName", "europeana_collectionTitle",
-    "PROVIDER", "DATAPROVIDER", "europeana_object", "COUNTRY", "TYPE", "LANGUAGE", "YEAR", "creator", "index", "fullDocUrl")
-  private val fullDocFields = List("europeana_type", "europeana_userTag", "europeana_language", "europeana_country",
-    "europeana_source", "europeana_isShownAt", "europeana_isShownBy", "europeana_year", "europeana_hasObject",
-    "europeana_provider", "europeana_dataProvider", "europeana_rights", "COLLECTION")
-
-  private val dcFields = List("dc_coverage", "dc_contributor", "dc_description", "dc_creator", "dc_date", "dc_format",
-    "dc_identifier", "dc_language", "dc_publisher", "dc_relation", "dc_rights", "dc_source", "dc_subject", "dc_title",
-    "dc_type")
-  private val dcTermsFields = List("dcterms_alternative", "dcterms_created", "dcterms_conformsTo", "dcterms_extent",
-    "dcterms_hasFormat", "dcterms_hasPart", "dcterms_hasVersion", "dcterms_isFormatOf", "dcterms_isPartOf",
-    "dcterms_isReferencedBy", "dcterms_isReplacedBy", "dcterms_isRequiredBy", "dcterms_issued", "dcterms_isVersionOf",
-    "dcterms_medium", "dcterms_provenance", "dcterms_references", "dcterms_replaces", "dcterms_requires", "dcterms_spatial",
-    "dcterms_tableOfContents", "dcterms_temporal")
-
-  private val icnFields = List("icn_creatorYearOfBirth", "icn_technique", "icn_material", "icn_location", "icn_province",
-    "icn_collectionPart", "icn_acquisitionMeans", "icn_collectionType", "icn_acquisitionYear", "icn_purchasePrice",
-    "icn_acquiredWithHelpFrom", "icn_physicalState")
-
-  private val IndexAdditionFields = List("DCTYPE")
-
   def getSolrDocumentList(solrDocumentList : SolrDocumentList) : List[SolrDocument] = {
+    val docs = new ListBuffer[SolrDocument]
     val ArrayListObject = classOf[ArrayList[Any]]
     val StringObject = classOf[String]
     val DateObject = classOf[Date]
-    val docs = new ListBuffer[SolrDocument]
     // check for required fields else check exception
     solrDocumentList.foreach{
         doc =>
@@ -75,6 +53,7 @@ object SolrBindingService {
 
   def getBriefDocs(resultList: SolrDocumentList): JList[BriefDocItem] = {
     val briefDocs = new ListBuffer[BriefDocItem]
+    getSolrDocumentList(resultList).foreach(doc => briefDocs add (BriefDocItem(doc)))
     asList(briefDocs)
   }
 
@@ -87,18 +66,41 @@ object SolrBindingService {
   def getFullDocs(matchDoc: SolrDocumentList): JList[FullDocItem] = asList(new ListBuffer[FullDocItem])
 }
 
-
 case class SolrDocId(solrDocument : SolrDocument) extends DocId {
   def getEuropeanaUri : String = solrDocument.get("europeana_uri").head.asInstanceOf[String]
   def getTimestamp : Date = solrDocument.get("timestamp").head.asInstanceOf[Date]
 }
 
-case class BriefDocItem(@BeanProperty europeanaUri: String, @BeanProperty timestamp: String = "") //extends BriefDoc
+case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
+    private def assign(key: String) = solrDocument.getFirst(key)
 
-case class FullDocItem(@BeanProperty europeanaUri: String = "") //extends FullDoc
+    def getId : String = assign("europeana_uri")
+    def getTitle : String = assign("title")
+    def getThumbnail : String = assign("europeana_object")
+    def getCreator : String = assign("creator")
+    def getYear : String = assign("YEAR")
+    def getProvider : String = assign("PROVIDER")
+    def getDataProvider : String = assign("DATAPROVIDER")
+    def getLanguage : String = assign("LANGUAGE")
+    def getType : DocType = DocType.get(assign("TYPE"))
+
+    @BeanProperty var index : Int = _
+    @BeanProperty var fullDocUrl: String = _
+
+    // debug and scoring information
+    @BeanProperty var score : Int = _
+    @BeanProperty var debugQuery : String = _
+}
+
+case class FullDocItem(solrDocument : SolrDocument) //extends FullDoc
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
+
   def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any]())
+
+  def getFirst(field: String) : String = fieldMap.getOrElse(field, List[Any]()).headOption.getOrElse("").asInstanceOf[String] // todo made generic later
+
   private[binding] def add(field: String, value : List[Any]) = fieldMap.put(field, value)
+
   private[binding] def getFieldNames = fieldMap.keySet.toString
 }

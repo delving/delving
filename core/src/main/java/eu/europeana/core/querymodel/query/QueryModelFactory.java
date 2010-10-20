@@ -21,8 +21,6 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.europeana.core.querymodel.beans.BriefBean;
-import eu.europeana.core.querymodel.beans.FullBean;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -58,13 +56,13 @@ public interface QueryModelFactory {
     SiteMapBeanView getSiteMapBeanView(String europeanaCollectionName, int rowsReturned, int pageNumber) throws EuropeanaQueryException, SolrServerException;
 
     //todo refactor out the getBeans methods from solrj
-    List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc);
+    List<? extends FullDoc> getFullDocFromSolrResponse(SolrDocumentList matchDoc);
 
-    FullBean getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException;
+    FullDoc getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException;
 
     List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse);
 
     List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse);
 
-    List<BriefBean> getMatchDocFromDocumentList(SolrDocumentList matchDoc);
+    List<? extends BriefDoc> getMatchDocFromDocumentList(SolrDocumentList matchDoc);
 }

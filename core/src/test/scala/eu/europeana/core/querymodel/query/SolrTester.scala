@@ -37,7 +37,8 @@ trait SolrTester {
   private def createSolrRecord(identifier: String, collId: String) : SolrInputDocument = {
     val doc = new SolrInputDocument
     doc.addField("europeana_uri", createEuropeanaUri(identifier, collId))
-    List("europeana_collectionName", "europeana_collectionTitle", "europeana_provider").foreach(field =>
+    doc.addField("europeana_type", "TEXT")
+    List("europeana_collectionName", "europeana_collectionTitle", "europeana_provider", "europeana_dataProvider").foreach(field =>
       doc.addField(field, format("%s=%s", field, identifier))
     )
     List("dc_title", "dc_creator", "dc_date").foreach{field =>

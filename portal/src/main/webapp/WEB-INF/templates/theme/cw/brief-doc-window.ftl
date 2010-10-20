@@ -91,7 +91,7 @@
                         <@spring.message 'ViewingRelatedItems_t' />
                         <#assign match = result.matchDoc/>
 
-                        <a href="${match.fullDocUrl}">
+                        <a href="${match.fullDocUrl()}">
                         <#--<a href="full-doc.html?${queryStringForPresentation}&amp;tab=${tab}&amp;start=1&amp;startPage=${pagination.start?c}&amp;uri=${match.fullDocUrl?url('utf-8')}&amp;view=${view}&amp;pageId=brd">-->
                             <#if useCache="true">
                                 <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
