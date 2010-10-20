@@ -20,7 +20,7 @@
  */
 package eu.europeana.sip.core;
 
-import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

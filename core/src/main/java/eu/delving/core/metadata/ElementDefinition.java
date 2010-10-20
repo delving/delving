@@ -63,8 +63,27 @@ public class ElementDefinition {
                 String tag = path.substring(0, slash);
                 for (ElementDefinition node : elements) {
                     if (tag.equals(node.tag)) {
-                        return node.getField(path.substring(slash+1));
+                        return node.getField(path.substring(slash + 1));
                     }
+                }
+            }
+        }
+        return null;
+    }
+
+    public FieldDefinition getFieldDefinition(String prefix, String localName) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (prefix.equals(fieldDefinition.prefix) && localName.equals(fieldDefinition.localName)) {
+                    return fieldDefinition;
+                }
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                FieldDefinition def = elementDefinition.getFieldDefinition(prefix, localName);
+                if (def != null) {
+                    return def;
                 }
             }
         }
@@ -80,8 +99,85 @@ public class ElementDefinition {
             }
         }
         if (elements != null) {
-            for (ElementDefinition node : elements) {
-                node.getConstantFields(String.format("%s/%s", path, node.tag), map);
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.getConstantFields(String.format("%s/%s", path, elementDefinition.tag), map);
+            }
+        }
+    }
+
+
+    public void getCategoryFields(String category, List<FieldDefinition> fieldDefinitions) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (category.equals(fieldDefinition.category)) {
+                    fieldDefinitions.add(fieldDefinition);
+                }
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.getCategoryFields(category, fieldDefinitions);
+            }
+        }
+    }
+
+    public void getFieldNames(List<String> fieldNames) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                fieldNames.add(fieldDefinition.getFieldNameString());
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.getFieldNames(fieldNames);
+            }
+        }
+    }
+
+    public void getFacetMap(Map<String, String> facetMap) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (fieldDefinition.facetPrefix != null) {
+                    facetMap.put(fieldDefinition.getFacetName(), fieldDefinition.facetPrefix);
+                }
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.getFacetMap(facetMap);
+            }
+        }
+    }
+
+    public void getFacetFieldStrings(List<String> facetFieldStrings) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (fieldDefinition.facetPrefix != null) {
+                    facetFieldStrings.add(String.format("{!ex=%s}%s", fieldDefinition.facetPrefix, fieldDefinition.getFacetName()));
+                }
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.getFacetFieldStrings(facetFieldStrings);
+            }
+        }
+    }
+
+    public void getFieldStrings(List<String> fieldStrings) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (fieldDefinition.facetPrefix != null) {
+                    fieldStrings.add(fieldDefinition.getFacetName());
+                }
+                else {
+                    fieldStrings.add(fieldDefinition.getFieldNameString());
+                }
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.getFieldStrings(fieldStrings);
             }
         }
     }

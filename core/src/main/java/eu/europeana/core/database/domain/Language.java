@@ -1,4 +1,4 @@
-package eu.europeana.definitions.domain;
+package eu.europeana.core.database.domain;
 
 import java.util.EnumSet;
 import java.util.Set;

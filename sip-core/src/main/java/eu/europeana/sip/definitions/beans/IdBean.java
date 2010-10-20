@@ -19,31 +19,30 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.core.querymodel.beans;
+package eu.europeana.sip.definitions.beans;
 
-import eu.europeana.core.querymodel.query.DocId;
-import eu.europeana.definitions.annotations.Europeana;
-import eu.europeana.definitions.annotations.FieldCategory;
-import eu.europeana.definitions.annotations.Solr;
-import org.apache.solr.client.solrj.beans.Field;
+import eu.europeana.sip.definitions.annotations.Europeana;
+import eu.europeana.sip.definitions.annotations.FieldCategory;
+import eu.europeana.sip.definitions.annotations.Solr;
+import eu.europeana.sip.definitions.presentation.DocId;
 
 import java.util.Date;
 
 /**
+ * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
+ *
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  * @since Jan 7, 2010 9:15:43 AM
  */
 
 public class IdBean implements DocId {
 
-    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, requiredGroup = "europeana:uri", url = false)
+    @Europeana(briefDoc = true, id = true, category = FieldCategory.ESE_PLUS, requiredGroup = "europeana:uri", converter = "createEuropeanaURI", url = false)
     @Solr(prefix = "europeana", localName = "uri", multivalued = false, required = true)
-    @Field("europeana_uri")
     String europeanaUri;
 
     @Europeana(category = FieldCategory.INDEX_TIME_ADDITION)
     @Solr(localName = "timestamp", multivalued = false, defaultValue = "NOW")
-    @Field("timestamp")
     Date timestamp;
 
     @Override

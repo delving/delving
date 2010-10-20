@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.definitions.presentation;
+package eu.europeana.sip.definitions.presentation;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.query.*

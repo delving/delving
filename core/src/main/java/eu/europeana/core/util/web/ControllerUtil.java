@@ -21,8 +21,8 @@
 
 package eu.europeana.core.util.web;
 
+import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.User;
-import eu.europeana.definitions.domain.Language;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.LocaleResolver;

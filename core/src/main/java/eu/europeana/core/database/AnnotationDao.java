@@ -23,13 +23,13 @@ package eu.europeana.core.database;
 
 import eu.europeana.core.database.domain.Annotation;
 import eu.europeana.core.database.domain.AnnotationType;
+import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
 import eu.europeana.core.database.exception.AnnotationNotFoundException;
 import eu.europeana.core.database.exception.AnnotationNotOwnedException;
 import eu.europeana.core.database.exception.EuropeanaUriNotFoundException;
 import eu.europeana.core.database.exception.UserNotFoundException;
-import eu.europeana.definitions.domain.Language;
 
 import java.util.List;
 

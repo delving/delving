@@ -1,4 +1,4 @@
-package eu.europeana.definitions.domain;
+package eu.europeana.sip.definitions.domain;
 
 /**
  * purchase price categories

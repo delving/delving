@@ -21,8 +21,6 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.core.FieldMapping;
@@ -33,6 +31,8 @@ import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeModel;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;

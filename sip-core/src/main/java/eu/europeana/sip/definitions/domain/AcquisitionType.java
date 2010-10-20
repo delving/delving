@@ -1,4 +1,4 @@
-package eu.europeana.definitions.domain;
+package eu.europeana.sip.definitions.domain;
 
 /**
  * This enumerates the different types of acquisition

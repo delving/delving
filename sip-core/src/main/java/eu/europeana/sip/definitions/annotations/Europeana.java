@@ -19,14 +19,12 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.definitions.annotations;
+package eu.europeana.sip.definitions.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import static eu.europeana.definitions.annotations.FieldCategory.ESE;
 
 /**
  * This is the annotation which describes the europeana aspects of a
@@ -132,7 +130,7 @@ public @interface Europeana {
      * @return the validation level of a certain field
      */
 
-    FieldCategory category() default ESE;
+    FieldCategory category() default FieldCategory.ESE;
 
     /**
      * The converter is the name of the groovy method in ToolCode.groovy which is to be applied to the

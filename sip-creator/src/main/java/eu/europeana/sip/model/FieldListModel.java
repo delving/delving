@@ -21,10 +21,10 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.RecordMapping;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;

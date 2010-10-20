@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.definitions.annotations;
+package eu.europeana.sip.definitions.annotations;
 
 import java.util.HashSet;
 import java.util.Set;

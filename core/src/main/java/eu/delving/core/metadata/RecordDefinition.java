@@ -25,6 +25,8 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -43,6 +45,39 @@ public class RecordDefinition {
         Map<String, FieldDefinition> map = new TreeMap<String, FieldDefinition>();
         root.getConstantFields("", map);
         return map;
+    }
+
+    public List<FieldDefinition> getCategoryFields(String category) {
+        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
+        root.getCategoryFields(category, fieldDefinitions);
+        return fieldDefinitions;
+    }
+    public FieldDefinition getFieldDefinition(String prefix, String localName) {
+        return root.getFieldDefinition(prefix, localName);
+    }
+
+    public List<String> getFieldNameList() {
+        List<String> fieldNames = new ArrayList<String>();
+        root.getFieldNames(fieldNames);
+        return fieldNames;
+    }
+
+    public Map<String, String> getFacetMap() {
+        Map<String, String> facetMap = new TreeMap<String, String>();
+        root.getFacetMap(facetMap);
+        return facetMap;
+    }
+
+    public String[] getFacetFieldStrings() {
+        List<String> facetFieldStrings = new ArrayList<String>();
+        root.getFacetFieldStrings(facetFieldStrings);
+        return facetFieldStrings.toArray(new String[facetFieldStrings.size()]);
+    }
+
+    public String[] getFieldStrings() {
+        List<String> fieldStrings = new ArrayList<String>();
+        root.getFieldStrings(fieldStrings);
+        return fieldStrings.toArray(new String[fieldStrings.size()]);
     }
 
     public String toString() {
@@ -68,4 +103,5 @@ public class RecordDefinition {
         });
         return stream;
     }
+
 }

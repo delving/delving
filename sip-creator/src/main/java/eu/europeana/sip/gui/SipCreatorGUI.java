@@ -21,12 +21,12 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.definitions.beans.AllFieldBean;
-import eu.europeana.definitions.beans.BriefBean;
-import eu.europeana.definitions.beans.FullBean;
-import eu.europeana.definitions.beans.IdBean;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.definitions.beans.AllFieldBean;
+import eu.europeana.sip.definitions.beans.BriefBean;
+import eu.europeana.sip.definitions.beans.FullBean;
+import eu.europeana.sip.definitions.beans.IdBean;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;

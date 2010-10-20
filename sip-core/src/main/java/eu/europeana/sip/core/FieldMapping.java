@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.core;
 
-import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
 
 import java.util.ArrayList;
 import java.util.Iterator;

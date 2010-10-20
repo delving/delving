@@ -1,11 +1,7 @@
 package eu.europeana.core.querymodel.query
 
-import eu.europeana.core.querymodel.beans.{AllFieldBean, FullBean, BriefBean, IdBean}
-import eu.europeana.definitions.annotations.AnnotationProcessorImpl
-import collection.mutable.ListBuffer
-import scala.collection.JavaConversions._
-import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.context.support.ClassPathXmlApplicationContext
 
 /**
  *
@@ -17,10 +13,7 @@ trait DelvingTestUtil {
 
   // spring-based wiring
   private val context = new ClassPathXmlApplicationContext("/core-application-context.xml")
-  private val beanProcessor  = context.getBean("annotationProcessor").asInstanceOf[AnnotationProcessorImpl]
   private val analyzerBean = context.getBean("queryAnalyser").asInstanceOf[QueryAnalyzer]
-
-  def getAnnotationProcessorFromBean : AnnotationProcessorImpl = beanProcessor
 
   def getQueryAnalyserFromBean = analyzerBean
 
