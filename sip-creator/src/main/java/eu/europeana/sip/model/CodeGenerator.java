@@ -1,7 +1,7 @@
 package eu.europeana.sip.model;
 
-import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.core.FieldMapping;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
 
 import java.util.ArrayList;
 import java.util.List;

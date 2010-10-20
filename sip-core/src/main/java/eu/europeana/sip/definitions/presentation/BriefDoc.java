@@ -1,7 +1,7 @@
 /*
  * Copyright 2007 EDL FOUNDATION
  *
- * Licensed under the EUPL, Version 1.1 or - as soon they
+ * Licensed under the EUPL, Version 1.0 or - as soon they
  * will be approved by the European Commission - subsequent
  * versions of the EUPL (the "Licence");
  * you may not use this work except in compliance with the
@@ -19,17 +19,25 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.definitions.annotations;
+package eu.europeana.sip.definitions.presentation;
 
 /**
+ * todo: note that this is a copy of eu.europeana.core.querymodel.query.*
+ * 
+ * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
- * @since Mar 24, 2010 1:53:50 PM
  */
 
-public enum FieldCategory {
-    ESE,
-    ESE_PLUS,
-    ICN,
-    ICN_RESEARCH,
-    INDEX_TIME_ADDITION,
+public interface BriefDoc { // if multiple-> show first
+    int getIndex();
+    String getId();
+    String getTitle();
+    String getThumbnail();
+    String getCreator();
+    String getYear();
+    String getProvider();
+    String getLanguage(); // used to be Language
+    DocType getType();
+
+    void setIndex(int index);
 }

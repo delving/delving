@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.definitions.presentation;
+package eu.europeana.sip.definitions.presentation;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.query.*
@@ -28,16 +28,29 @@ package eu.europeana.definitions.presentation;
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
 
-public interface BriefDoc { // if multiple-> show first
-    int getIndex();
-    String getId();
-    String getTitle();
-    String getThumbnail();
-    String getCreator();
-    String getYear();
-    String getProvider();
-    String getLanguage(); // used to be Language
-    DocType getType();
+public enum DocType {
+    TEXT,
+    IMAGE,
+    SOUND,
+    VIDEO,
+    UNKNOWN;
 
-    void setIndex(int index);
+    public static DocType get(String[] strings) {
+        String string = strings[0]; // todo: this is a workaround remove later
+        for (DocType t : values()) {
+            if (t.toString().equalsIgnoreCase(string)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("Did not recognize DocType: ["+string+"]");
+    }
+
+    public static DocType get(String string) {
+        for (DocType t : values()) {
+            if (t.toString().equalsIgnoreCase(string)) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("Did not recognize DocType: ["+string+"]");
+    }
 }

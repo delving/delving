@@ -6,7 +6,6 @@ import _root_.org.scalatest.{BeforeAndAfterAll, Spec}
 import _root_.org.scalatest.junit.JUnitRunner
 import eu.europeana.core.BeanQueryModelFactory
 import org.apache.solr.client.solrj.SolrQuery
-import eu.europeana.core.querymodel.beans.FullBean
 
 
 /**

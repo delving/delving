@@ -45,7 +45,6 @@ import eu.europeana.core.querymodel.query.ResultPaginationImpl;
 import eu.europeana.core.querymodel.query.SiteMapBeanView;
 import eu.europeana.core.querymodel.query.SolrQueryUtil;
 import eu.europeana.core.util.web.ControllerUtil;
-import eu.europeana.definitions.domain.CollectionDisplayType;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -434,7 +433,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         // add view limitation to query
         final User user = ControllerUtil.getUser();
         if (user == null || user.getRole() == Role.ROLE_USER) {
-            solrQuery.addFilterQuery("-icn_collectionType:" + CollectionDisplayType.MUSEOMETRIE);
+            solrQuery.addFilterQuery("-icn_collectionType:" + "MUSEOMETRIE");
         }
         try {
             queryResponse = solrServer.query(solrQuery);

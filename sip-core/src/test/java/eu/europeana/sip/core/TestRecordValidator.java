@@ -1,7 +1,7 @@
 package eu.europeana.sip.core;
 
-import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.definitions.beans.AllFieldBean;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.definitions.beans.AllFieldBean;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;

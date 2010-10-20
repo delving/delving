@@ -1,9 +1,12 @@
-package eu.delving.core.metadata;
+package eu.europeana.sip;
 
-import eu.europeana.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.definitions.annotations.Europeana;
-import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.definitions.beans.AllFieldBean;
+import eu.delving.core.metadata.ElementDefinition;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.RecordDefinition;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.definitions.annotations.Europeana;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.definitions.beans.AllFieldBean;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

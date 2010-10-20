@@ -1,4 +1,4 @@
-package eu.europeana.definitions.presentation;
+package eu.europeana.sip.definitions.presentation;
 
 import java.util.Date;
 

@@ -21,12 +21,12 @@
 
 package eu.europeana.core.util.web;
 
+import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
 import eu.europeana.core.querymodel.query.FullBeanView;
-import eu.europeana.definitions.domain.Language;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
