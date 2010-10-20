@@ -53,7 +53,7 @@ public class DocIdWindowPagerImpl implements DocIdWindowPager {
 
     @Override
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject"})
-    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer, Class<? extends DocId> idBean) throws SolrServerException, EuropeanaQueryException {
+    public void initialize(Map<String, String[]> httpParameters, SolrQuery originalBriefSolrQuery, SolrServer solrServer) throws SolrServerException, EuropeanaQueryException {
         this.query = originalBriefSolrQuery.getQuery();
         int fullDocUriInt = getFullDocInt(httpParameters, originalBriefSolrQuery);
         this.fullDocUriInt = fullDocUriInt;

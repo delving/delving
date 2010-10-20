@@ -1,8 +1,9 @@
 package eu.delving.services.controller;
 
+import eu.delving.core.binding.SolrBindingService;
 import eu.delving.services.search.OpenSearchService;
 import eu.europeana.core.BeanQueryModelFactory;
-import eu.europeana.core.querymodel.beans.BriefBean;
+import eu.europeana.core.querymodel.query.BriefDoc;
 import eu.europeana.core.querymodel.query.QueryType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
@@ -55,7 +56,7 @@ public class OpenSearchController {
         // get response from solr
         QueryResponse response = beanQueryModelFactory.getSolrResponse(solrQuery);
         // bind response to briefDoc and add model
-        List<BriefBean> briefDocList = response.getBeans(BriefBean.class);
+        List<? extends BriefDoc> briefDocList = SolrBindingService.getBriefDocs(response);
         mav.addObject("briefDocList", briefDocList);
         return mav;
     }

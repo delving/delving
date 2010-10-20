@@ -209,15 +209,6 @@
 
     <bean id="beanQueryModelFactory" class="eu.europeana.core.BeanQueryModelFactory">
         <property name="solrServer" ref="solrSelectServer"/>
-        <property name="briefBean">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
-        </property>
-        <property name="fullBean">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
-        </property>
-        <property name="idBean">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
-        </property>
     </bean>
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">

@@ -17,11 +17,11 @@ public class DocIdWindowPagerFactory {
     private String portalName = "portal"; // must be injected later
 
 
-    public DocIdWindowPager getPager(Map<String, String[]> params, SolrQuery solrQuery, SolrServer solrServer, Class<? extends DocId> idBean) {
+    public DocIdWindowPager getPager(Map<String, String[]> params, SolrQuery solrQuery, SolrServer solrServer) {
         DocIdWindowPager pager = new DocIdWindowPagerImpl();
         pager.setPortalName(portalName);
         try {
-            pager.initialize(params, solrQuery, solrServer, idBean);
+            pager.initialize(params, solrQuery, solrServer);
         } catch (SolrServerException e) {
             return null; // when there are no results from solr return null
         } catch (EuropeanaQueryException e) {

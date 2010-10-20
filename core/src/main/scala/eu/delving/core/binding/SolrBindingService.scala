@@ -84,7 +84,7 @@ object SolrBindingService {
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
 
-  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any]())
+  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any](" "))
 
   def getFirst(field: String) : String = fieldMap.getOrElse(field, List[Any]()).headOption.getOrElse("").asInstanceOf[String] // todo made generic later
 
