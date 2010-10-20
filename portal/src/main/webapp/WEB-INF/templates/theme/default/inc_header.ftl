@@ -1,4 +1,4 @@
-<#import "spring_form_macros.ftl" as spring >
+<#import "spring.ftl" as spring >
 <#assign portalName = portalName/>
 <#if user??>
     <#assign user = user/>
@@ -121,10 +121,10 @@
 <#include "language_select.ftl">
     <ul>
         <#if !user??>
-        <li id="mustlogin" class="msg"><a href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'LogIn_t'/></u></a> | <a
-                href="/${portalName}/login.html?pId=${pageId}"><u><@spring.message 'Register_t'/></u></a>
-        </li>
+            <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
+            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
         </#if>
+
         <#if user??>
         <li>
             <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
@@ -162,18 +162,18 @@
 <#macro admin>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
     <div id="admin-block">
-        <h4>Administratie</h4>
+        <h4><@spring.message 'dms.administration.title' /></h4>
 
         <table class="user-options">
             <tbody>
                 <tr>
-                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span>Paginas beheren</a></td>
+                    <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message 'dms.administration.pages' /></a></td>
                 </tr>
                 <tr>
-                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span>Afbeeldingen beheren</a></td>
+                    <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message 'dms.administration.images' /></a></td>
                 </tr>
                 <tr>
-                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span>Gebruikers beheren</a></td>
+                    <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message 'dms.administration.users' /></a></td>
                 </tr>
             </tbody>
         </table>
@@ -199,14 +199,16 @@
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/jquery.validate.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/js_utilities.js"></script>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
-    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/mine.js"></script>
     <script type="text/javascript">
         var msgRequired = "<@spring.message 'RequiredField_t'/>";
+        var portalName = "/${portalName}";
+        var baseThemePath = "/${portalName}/${portalTheme}";
     </script>
     <#switch thisPage>
     <#case "index.html">
     <#assign pageId = "in"/>
     <#assign bodyId = "home"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/index.js"></script>
     <title>Delving - Homepage</title>
     <#break>
     <#case "advancedsearch.html">
@@ -231,7 +233,31 @@
     <#break>
     <#case "full-doc.html">
     <#assign pageId = "fd"/>
+    <script type="text/javascript" src="/${portalName}/${portalTheme}/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/fancybox/jquery.fancybox-1.3.1.css"/>
+    <!--[if IE]>
+    <style type="text/css">
+        /* IE */
+        #fancybox-loading.fancybox-ie div	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_loading.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-close		{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_close.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-title-over	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_over.png', sizingMethod='scale'); zoom: 1; }
+        .fancybox-ie #fancybox-title-left	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_left.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-title-main	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_main.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-title-right	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_title_right.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-left-ico		{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_nav_left.png', sizingMethod='scale'); }
+        .fancybox-ie #fancybox-right-ico	{ background: transparent; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_nav_right.png', sizingMethod='scale'); }
+        .fancybox-ie .fancy-bg { background: transparent !important; }
+        .fancybox-ie #fancy-bg-n	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_n.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-ne	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_ne.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-e	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_e.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-se	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_se.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-s	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_s.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-sw	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_sw.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-w	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_w.png', sizingMethod='scale'); }
+        .fancybox-ie #fancy-bg-nw	{ filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/${portalName}/${portalTheme}/css/fancybox/fancy_shadow_nw.png', sizingMethod='scale'); }
 
+    </style>
+    <![endif]-->
     <#if user??>
     <script type="text/javascript">
         var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t' />";
@@ -260,25 +286,6 @@
     <#break>
     <#case "login.html">
     <#assign pageId = "li"/>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $("#loginForm").validate({
-                rules: {j_username: "required",j_password: "required"},
-                messages: {j_username: "",j_password: ""}
-            });
-            $("#forgotemailForm").validate({
-                rules: {email: "required"},
-                messages: {email: ""}
-            });
-            $("#registrationForm").validate({
-                rules: {email: "required",iagree: "required"},
-                messages: {email: "",iagree: msgRequired }
-                //msgRequired is generated in inc_header.ftl and
-                // set as a javascript variable (its a spring message
-                // so cannot be generated in this js file
-            });
-        });
-    </script>
     <title>Delving - Login</title>
     <#break>
     <#case "logout.html">
@@ -289,7 +296,15 @@
     <#assign pageId = "rg"/>
     <title>Delving - Registration</title>
     <#break>
-    <#case "forgotPassword.html">
+    <#case "register-request.html">
+    <#assign pageId = "rq"/>
+    <title>Delving - Registration</title>
+    <#break>
+    <#case "forgot-password.html">
+    <#assign pageId = "fp"/>
+    <title>Delving - Forgot Password</title>
+    <#break>
+    <#case "change-password.html">
     <#assign pageId = "fp"/>
     <title>Delving - Forgot Password</title>
     <#break>
@@ -301,5 +316,5 @@
 </head>
 
 <body>
-
+<@admin/>
 <div id="container" class="container_12">

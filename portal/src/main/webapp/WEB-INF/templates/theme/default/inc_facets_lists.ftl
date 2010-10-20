@@ -6,6 +6,7 @@
     </div>
 </noscript>
 <#--columsize is  used for the number of colums in the facet table. -->
+
 <#assign columsize = 2>
     <#list next as facet>
          <#assign togglerClass="toggler-c-closed"/>
@@ -31,7 +32,15 @@
                 <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
                <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
                <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
-               <#assign columsize = 2>
+               <#assign columsize = 1>
+               </#if>
+               <#break/>
+            <#case "TYPE">
+                <#if facet.links?size &gt; 0>
+                <#if facet.selected ><#assign togglerClass="toggler-c-opened"/></#if>
+               <div class="toggler-c ${togglerClass}" title="<@spring.message 'Bytype_t' />">
+               <noscript><h4><@spring.message 'Bytype_t' />:</h4></noscript>
+               <#assign columsize = 1>
                </#if>
                <#break/>
             <#case "COLLECTION">

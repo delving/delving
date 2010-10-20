@@ -1,4 +1,4 @@
-<#import "spring_form_macros.ftl" as spring />
+<#import "spring.ftl" as spring />
 <#assign thisPage = "register.html">
 <#assign  pId = "reg">
 <#assign view = "table"/>
@@ -16,7 +16,7 @@
 
     <div id="identity" class="grid_3">
         <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
     <div class="grid_9">
@@ -31,7 +31,7 @@
 
 </div>
 
-<div id="main" class="grid_11 prefix_1">
+<div id="main" class="grid_12">
 
     <div class="login-register">
                 <h1><@spring.message 'Register_t' /></h1>
@@ -41,7 +41,7 @@
                     <input type="hidden" name="token" value="${command.token}" />
                     <input type="hidden" name="email" value="${command.email}" />
 
-
+                   <div class="grid_3 alpha">
                     <fieldset id="pt1">
 
                         <legend><span>Step </span>1. <span>: Email details</span> </legend>
@@ -52,6 +52,9 @@
                         <input type="text" id="email" name="email" disabled="true" tabindex="5"  value="${command.email}" style="background:#eaeaea;"/>
 
                     </fieldset>
+                   </div>
+
+                    <div class="grid_3">
                     <fieldset id="pt2">
 
 
@@ -64,6 +67,9 @@
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
                     </fieldset>
+                    </div>
+
+                    <div class="grid_3">
                     <fieldset id="pt3">
 
                         <legend><span>Step </span>3. <span>: Password</span></legend>
@@ -81,18 +87,25 @@
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
                     </fieldset>
+                    </div>
+
+                    <div class="grid_3 omega">
                     <fieldset id="pt4">
-                        <legend>Step 4  : Submit form</legend>
-                        <h3>&#160;</h3>
+                        <legend><span>Step </span>4. <span>: Submit form</span></legend>
+                        <#--<h3>Agree</h3>-->
                         <#-- todo: rewrite this with proper spring bindings -->
                         <#--<label for="disclaimer"><@spring.message 'MyCodeOfConduct_t' /></label>-->
-                        <div id="disclaimer-text"><@spring.message 'MyCodeOfConduct_t' /></div>
-                          <@formCheckbox "command.disclaimer"/>
+                        <div id="disclaimer-texts" class="help"><@spring.message 'MyCodeOfConduct_t' /></div>
+                        <p>
+                        <@formCheckbox "command.disclaimer"/>
+                        <br />
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
-                        <br/>
-                        <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message 'FinishRegistration_t' /> &raquo;" class="button"/>
-                    </fieldset>
 
+                        <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message 'FinishRegistration_t' /> &raquo;" class="button"/>
+                        </p>
+                    </fieldset>
+                   </div>
+                    
                 </form>
         </div>
 	    <#include "inc_footer.ftl"/>

@@ -33,7 +33,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -91,6 +90,7 @@ public class AnalysisPanel extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;
+        
         gbc.weighty = 0.5;
 
         gbc.gridx = 0;
@@ -101,15 +101,15 @@ public class AnalysisPanel extends JPanel {
         gbc.gridy = 1;
         add(createStatisticsPanel(), gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        add(createVariablesPanel(), gbc);
+        gbc.weighty = 1;
 
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 2;
         add(constantFieldPanel, gbc);
 
         gbc.weighty = 0.01;
+        gbc.gridheight = 1;
         gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -160,14 +160,6 @@ public class AnalysisPanel extends JPanel {
         columnModel.addColumn(new TableColumn(2));
         columnModel.getColumn(2).setHeaderValue("Value");
         return columnModel;
-    }
-
-    private JPanel createVariablesPanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Source Fields"));
-        JList list = new JList(sipModel.getVariablesListModel());
-        p.add(scroll(list), BorderLayout.CENTER);
-        return p;
     }
 
     private JScrollPane scroll(JComponent content) {

@@ -244,13 +244,14 @@ input[type=text], input[type=password]{
 }
 
 
-#viewselect {
+#viewselect{
     float: right;
 }
 
 #viewselect a {
     text-decoration: none;
 }
+
 
 /* pagination */
 /*.pagination {*/
@@ -625,7 +626,7 @@ button.fg-button-icon-right .ui-icon {
 
 #regForm fieldset {
 /*height: 20em;*/
-    width: 200px;
+    /*width: 200px;*/
     border: 0;
     margin: 0;
     padding: 1em;
@@ -683,29 +684,29 @@ button.fg-button-icon-right .ui-icon {
 }
 
 /* Part 4 Styling */
-#regForm #pt4 {
-    clear: both;
-    width: 700px; /*height: 2em;*/
-    border: 1px dotted #CCC;
-    border-width: 1px 0;
-    padding: 1em 0;
-}
+/*#regForm #pt4 {*/
+    /*clear: both;*/
+    /*width: 700px; *//*height: 2em;*/
+    /*border: 1px dotted #CCC;*/
+    /*border-width: 1px 0;*/
+    /*padding: 1em 0;*/
+/*}*/
 
-#regForm #pt4 legend {
-    display: none;
-}
+/*#regForm #pt4 legend {*/
+    /*display: none;*/
+/*}*/
 
-#regForm #pt4 h3 {
-    display: none;
-}
+/*#regForm #pt4 h3 {*/
+    /*display: none;*/
+/*}*/
 
-#regForm #pt4 #disclaimer-text {
-    width: 50em;
-    float: left;
-    font-size: 0.7em;
-    float: left;
-    margin-right: 10px;
-}
+/*#regForm #pt4 #disclaimer-text {*/
+    /*width: 50em;*/
+    /*float: left;*/
+    /*font-size: 0.7em;*/
+    /*float: left;*/
+    /*margin-right: 10px;*/
+/*}*/
 
 /*
 #regForm #pt4 #agree {
@@ -728,5 +729,43 @@ button.fg-button-icon-right .ui-icon {
 
     background: #fff;
     height: 200px;
+}
+
+/* adm block */
+
+#admin-block
+{
+	-moz-box-shadow:3px 3px 4px #bbb;
+	-webkit-box-shadow:3px 3px 4px #bbb;
+	background:#fff;
+	border-bottom:4px solid #999;
+	box-shadow:3px 3px 4px #bbb;
+	right:10px;
+	position:fixed;
+	bottom:10px;
+	width:200px;
+	z-index:10000;
+}
+
+#admin-block h4
+{
+	background:#555;
+	color:#fff;
+	padding:.5em;
+}
+
+#admin-block p
+{
+	padding:.5em;
+}
+
+table.user-options {
+    margin: 0;
+}
+
+table.user-options .ui-icon
+{
+	float:left;
+	margin:0 .25em 0 0;
 }
 
