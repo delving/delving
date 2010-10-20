@@ -293,9 +293,9 @@ text-decoration: none;
 
 #query_breadcrumbs dl dd
 {
-	background:url(skin/arrows.png) 0 4px no-repeat;
+	background:url(skin/arrows.png) 0 7px no-repeat;
 	margin:0;
-	padding-left:1.25em;
+	padding:0 0 0 1em;
 }
 
 #query_breadcrumbs dl dt,#query_breadcrumbs dl dd,ul.nav_query_breadcrumbs li
