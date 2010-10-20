@@ -35,9 +35,7 @@ import eu.europeana.sip.definitions.presentation.FullDoc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.europeana.sip.definitions.annotations.FieldCategory.ESE_PLUS;
-import static eu.europeana.sip.definitions.annotations.FieldCategory.ICN;
-import static eu.europeana.sip.definitions.annotations.FieldCategory.ICN_RESEARCH;
+import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
@@ -93,60 +91,6 @@ public class FullBean extends BriefBean implements FullDoc {
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
     @Solr(prefix = "europeana", localName = "rights", multivalued = false)
     String[] europeanaRights;
-
-
-    // todo: review these (also: what about querymodel.beans.*)
-
-    @Europeana(category = ICN, converter = "extractYear")
-    @Solr(prefix = "icn", localName = "creatorYearOfBirth", multivalued = false)
-    String[] creatorYearOfBirth;
-
-    @Europeana(category = ICN, enumClass = Technique.class, valueMapped = true)
-    @Solr(prefix = "icn", localName = "technique")
-    String[] technique;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "material")
-    String[] material;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "location")
-    String[] location;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "province")
-    String[] province;
-
-    @Europeana(category = ICN)
-    @Solr(prefix = "icn", localName = "collectionPart")
-    String[] collectionPart;
-
-    @Europeana(category = ICN_RESEARCH, enumClass = AcquisitionType.class, valueMapped = true)
-    @Solr(prefix = "icn", localName = "acquisitionMeans")
-    String[] acquisitionMeans;
-
-    @Europeana(category = ICN_RESEARCH, enumClass = CollectionDisplayType.class, constant = true)
-    @Solr(prefix = "icn", localName = "collectionType", multivalued = false)
-    String[] collectionType;
-
-    @Europeana(category = ICN_RESEARCH, converter = "extractYear")
-    @Solr(prefix = "icn", localName = "acquisitionYear", multivalued = false)
-    String[] acquisitionYear;
-
-    @Europeana(category = ICN_RESEARCH)
-    @Solr(prefix = "icn", localName = "purchasePrice", multivalued = false)
-    String[] purchasePrice;
-
-    @Europeana(category = ICN_RESEARCH)
-    @Solr(prefix = "icn", localName = "acquiredWithHelpFrom")
-    String[] acquiredWithHelpFrom;
-
-    @Europeana(category = ICN_RESEARCH)
-    @Solr(prefix = "icn", localName = "physicalState")
-    String[] physicalState;
-
-    // todo: review the above
-
 
     // Dublin Core / ESE fields
     @Europeana

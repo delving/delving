@@ -24,26 +24,9 @@ package eu.europeana.core;
 import eu.delving.core.binding.SolrBindingService;
 import eu.delving.core.metadata.MetadataModel;
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
-import eu.europeana.core.querymodel.query.BriefBeanView;
-import eu.europeana.core.querymodel.query.BriefDoc;
-import eu.europeana.core.querymodel.query.DocId;
-import eu.europeana.core.querymodel.query.DocIdWindowPager;
-import eu.europeana.core.querymodel.query.DocIdWindowPagerFactory;
-import eu.europeana.core.querymodel.query.EuropeanaQueryException;
-import eu.europeana.core.querymodel.query.FacetQueryLinks;
-import eu.europeana.core.querymodel.query.FullBeanView;
-import eu.europeana.core.querymodel.query.FullDoc;
-import eu.europeana.core.querymodel.query.QueryAnalyzer;
-import eu.europeana.core.querymodel.query.QueryModelFactory;
-import eu.europeana.core.querymodel.query.QueryProblem;
-import eu.europeana.core.querymodel.query.QueryType;
-import eu.europeana.core.querymodel.query.ResultPagination;
-import eu.europeana.core.querymodel.query.ResultPaginationImpl;
-import eu.europeana.core.querymodel.query.SiteMapBeanView;
-import eu.europeana.core.querymodel.query.SolrQueryUtil;
+import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -432,9 +415,10 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         QueryResponse queryResponse;
         // add view limitation to query
         final User user = ControllerUtil.getUser();
-        if (user == null || user.getRole() == Role.ROLE_USER) {
-            solrQuery.addFilterQuery("-icn_collectionType:" + "MUSEOMETRIE");
-        }
+        // todo determine how to use this in the regular portal
+//        if (user == null || user.getRole() == Role.ROLE_USER) {
+//            solrQuery.addFilterQuery("-icn_collectionType:" + CollectionDisplayType.MUSEOMETRIE);
+//        }
         try {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrException e) {

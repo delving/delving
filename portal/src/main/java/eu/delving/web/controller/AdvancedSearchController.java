@@ -44,19 +44,14 @@ public class AdvancedSearchController {
         query.setRows(0);
         query.setFacet(true);
         query.setQueryType(QueryType.ADVANCED_QUERY.toString());
-        String collectionsName = "europeana_collectionName";
+        String collectionsName = "europeana_collectionTitle";
         query.addFacetField(collectionsName);
-//        String icnProvince = "icn_icn:province";
-//        query.addFacetField(icnProvince);
         QueryResponse response = beanQueryModelFactory.getSolrResponse(query);
         List<FacetField> facetFields = response.getFacetFields();
         for (FacetField facetField : facetFields) {
             if (facetField.getName().equalsIgnoreCase(collectionsName)) {
                 mav.addObject("collections", facetField.getValues());
             }
-//            else if (facetField.getName().equalsIgnoreCase(icnProvince)) {
-//                mav.addObject("provinces", facetField.getValues());
-//            }
         }
         clickStreamLogger.logStaticPageView(request, StaticPageType.ADVANCED_SEARCH);
         return mav;

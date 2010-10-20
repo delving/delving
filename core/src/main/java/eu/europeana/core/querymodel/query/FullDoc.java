@@ -54,6 +54,8 @@ public interface FullDoc {
 
     String[] getEuropeanaProvider();
 
+    String[] getEuropeanaDataProvider();
+
     String[] getEuropeanaSource();
 
     DocType getEuropeanaType();
@@ -142,31 +144,5 @@ public interface FullDoc {
 
     String getEuropeanaCollectionName();
 
-    /* ICN specific fields */
-
-    String[] getCreatorYearOfBirth();
-
-    String[] getTechnique();
-
-    String[] getMaterial();
-
-    String[] getLocation();
-
-    String[] getProvince();
-
-    String[] getCollectionPart();
-
-    String[] getAcquisitionMeans();
-
-    String[] getAcquisitionYear();
-
-    String[] getPurchasePrice();
-
-    String[] getAcquiredWithHelpFrom();
-
-    String[] getPhysicalState();
-
     String getEuropeanaCollectionTitle();
-
-    String[] getCollectionType();
 }

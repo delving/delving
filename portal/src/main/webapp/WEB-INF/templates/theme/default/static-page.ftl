@@ -175,7 +175,7 @@
                     </#if>
                     <br/><br/>
                     <#if versionList?? && page.id??>
-                        <h3><@spring.message 'dms.versions' /></h3>
+                        <h3><@spring.message 'dms.version.management' /></h3>
                         <p>
                             <@spring.message 'dms.version.approve.explain' />
                         </p>
