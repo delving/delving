@@ -35,7 +35,8 @@
     <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
         <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
 </#if>
-    <a class="overlay" href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+    <a class="overlay"
+       href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
        target="_blank"
        alt="<@spring.message 'ViewInOriginalContext_t' />  <@spring.message 'OpensInNewWindow_t'/>"
             >
@@ -167,7 +168,7 @@
             <td><@simple_list creatorYearOfBirthArr '<br/>'/></td>
         </tr>
         </#if>
-    
+
     <#-- DC CONTRIBUTOR    -------------------------------------------------------------------------------->
         <#assign contributorArr = model.fullDoc.dcContributor />
         <#if isNonEmpty(contributorArr)>
@@ -270,12 +271,12 @@
 
     <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
 
-        <#if isNonEmpty(providerArr) >
+        <#if isNonEmpty(result.fullDoc.europeanaDataProvider) >
         <tr>
             <th scope="row"><@spring.message 'Provider_t' />:</th>
             <td>
-                <#if isNonEmpty(result.fullDoc.europeanaProvider)>
-                    ${result.fullDoc.europeanaProvider[0]}
+                <#if isNonEmpty(result.fullDoc.europeanaDataProvider)>
+                    ${result.fullDoc.europeanaDataProvider[0]}
                 </#if>
             </td>
         </tr>
@@ -290,21 +291,21 @@
         </#if>
 
         <#if user?? && isNonEmpty(socialTags)>
-            <tr>
-                <th><@spring.message 'UserTags_t' /></th>
-                <td>
-                        <#list socialTags as userTag>
-                            <a href="/${portalName}/brief-doc.html?query=tag:${userTag}&view=${view}">${userTag}</a>
-                            <#if userTag_has_next>, </#if>
-                        </#list>
-                </td>
-            </tr>
+        <tr>
+            <th><@spring.message 'UserTags_t' /></th>
+            <td>
+                <#list socialTags as userTag>
+                    <a href="/${portalName}/brief-doc.html?query=tag:${userTag}&view=${view}">${userTag}</a>
+                    <#if userTag_has_next>, </#if>
+                </#list>
+            </td>
+        </tr>
         </#if>
 
     <#-- ICN FIELDS
     todo: add other fields and switch for controlled fields
     ------------------------------------------------------------------------------>
-    
+
         <#assign techniqueArr = result.fullDoc.technique />
         <#if isNonEmpty(techniqueArr)>
         <tr>
@@ -337,7 +338,7 @@
         </tr>
         </#if>
 
-    
+
         <#if (user??) && (user.role=="ROLE_RESEARCH_USER" || user.role=="ROLE_ADMINISTRATOR" || user.role=="ROLE_GOD" )>
 
 
@@ -383,7 +384,6 @@
 
 
         </#if>
-
 
 
     </tbody>

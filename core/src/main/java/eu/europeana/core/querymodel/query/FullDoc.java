@@ -47,6 +47,8 @@ public interface FullDoc {
 
     String[] getEuropeanaProvider();
 
+    String[] getEuropeanaDataProvider();
+
     String[] getEuropeanaSource();
 
     DocType getEuropeanaType();

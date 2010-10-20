@@ -416,6 +416,11 @@ public class FullBean extends BriefBean implements FullDoc {
     }
 
     @Override
+    public String[] getEuropeanaDataProvider() {
+        return returnArrayOrElse(europeanaDataProvider);
+    }
+
+    @Override
     public String[] getEuropeanaSource() {
         return returnArrayOrElse(europeanaSource);
     }
