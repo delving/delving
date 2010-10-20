@@ -79,7 +79,7 @@
                     <option value="title">Titel</option>
                     <option value="creator">Vervaardiger</option>
                     <option value="dc_subject">Onderwerp</option>
-                    <option value="COLLECTION">Collectie</option>
+                    <#--<option value="COLLECTION">Collectie</option>-->
                   </select>
             <input class="txt-input" name="query" id="query" type="text" title="${portalDisplayName} Search" maxlength="75" />
             <#--<input id="submit_search"  type="submit" value="<@spring.message 'Search_t' />" />-->
