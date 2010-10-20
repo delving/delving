@@ -66,7 +66,7 @@
                 </h6>
                 <ul>
                     <#if cell.creator??>
-                        <#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown," || cell.creator = "unknown,")>
+                        <#if !(cell.creator = " " || cell.creator = ",")>
                             <li><@stringLimiter "${cell.creator}" "120"/></li>
                         </#if>
                     </#if>
