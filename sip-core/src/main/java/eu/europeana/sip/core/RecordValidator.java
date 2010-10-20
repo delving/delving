@@ -28,7 +28,6 @@ import eu.europeana.definitions.annotations.FieldCategory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Validate a record
@@ -48,7 +45,6 @@ import java.util.regex.Pattern;
  */
 
 public class RecordValidator {
-    private static Pattern PATTERN = Pattern.compile("<([^>]*)>([^<]*)<[^>]*>");
     private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
     private Map<String, String> constantMap;
     private Set<String> unique;
@@ -65,34 +61,30 @@ public class RecordValidator {
         }
     }
 
-    public String validate(MetadataRecord metadataRecord, String recordString) throws RecordValidationException {
+    public void validate(MetadataRecord metadataRecord, List<FieldEntry> fieldEntries) throws RecordValidationException {
         List<String> problems = new ArrayList<String>();
-        List<Entry> entries = createNonemptyEntryList(recordString, problems);
-        Collections.sort(entries);
-        eliminateDuplicates(entries);
-        validateAgainstAnnotations(entries, problems);
+        validateAgainstAnnotations(fieldEntries, problems);
         if (!problems.isEmpty()) {
             throw new RecordValidationException(metadataRecord, problems);
         }
-        return toString(entries);
     }
 
-    private void validateAgainstAnnotations(List<Entry> entries, List<String> problems) {
+    private void validateAgainstAnnotations(List<FieldEntry> fieldEntries, List<String> problems) {
         Map<String, Counter> counterMap = new HashMap<String, Counter>();
-        for (Entry entry : entries) {
-            EuropeanaField field = fieldMap.get(entry.tag);
+        for (FieldEntry fieldEntry : fieldEntries) {
+            EuropeanaField field = fieldMap.get(fieldEntry.getTag());
             if (field == null) {
-                problems.add(String.format("Unknown XML element [%s]", entry.tag));
+                problems.add(String.format("Unknown XML element [%s]", fieldEntry.getTag()));
             }
             else {
-                Counter counter = counterMap.get(entry.tag);
+                Counter counter = counterMap.get(fieldEntry.getTag());
                 if (counter == null) {
                     counter = new Counter();
-                    counterMap.put(entry.tag, counter);
+                    counterMap.put(fieldEntry.getTag(), counter);
                 }
                 counter.count++;
                 Set<String> enumValues = field.getEnumValues();
-                if (enumValues != null && !enumValues.contains(entry.value)) {
+                if (enumValues != null && !field.europeana().valueMapped() && !enumValues.contains(fieldEntry.getValue())) {
                     StringBuilder enumString = new StringBuilder();
                     Iterator<String> walk = enumValues.iterator();
                     while (walk.hasNext()) {
@@ -101,36 +93,36 @@ public class RecordValidator {
                             enumString.append(',');
                         }
                     }
-                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", entry.tag, entry.value, enumString.toString()));
+                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldEntry.getTag(), fieldEntry.getValue(), enumString.toString()));
                 }
                 if (field.europeana().constant() && constantMap != null) {
-                    String value = constantMap.get(entry.tag);
+                    String value = constantMap.get(fieldEntry.getTag());
                     if (value == null) {
-                        constantMap.put(entry.tag, entry.value);
+                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
                     }
-                    else if (!value.equals(entry.value)) {
-                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", entry.tag, entry.value, value));
+                    else if (!value.equals(fieldEntry.getValue())) {
+                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
                     }
                 }
                 String regex = field.europeana().regularExpression();
                 if (!regex.isEmpty()) {
-                    if (!entry.value.matches(regex)) {
-                        problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", entry.tag, entry.value, regex));
+                    if (!fieldEntry.getValue().matches(regex)) {
+                        problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", fieldEntry.getTag(), fieldEntry.getValue(), regex));
                     }
                 }
                 if (field.europeana().url()) {
                     try {
-                        new URL(entry.value);
+                        new URL(fieldEntry.getValue());
                     }
                     catch (MalformedURLException e) {
-                        problems.add(String.format("URL value for [%s] was [%s] which is malformed", entry.tag, entry.value));
+                        problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
                 }
                 if (field.europeana().id() && unique != null) {
-                    if (unique.contains(entry.value)) {
-                        problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", entry.tag, entry.value));
+                    if (unique.contains(fieldEntry.getValue())) {
+                        problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
-                    unique.add(entry.value);
+                    unique.add(fieldEntry.getValue());
                 }
             }
         }
@@ -140,8 +132,8 @@ public class RecordValidator {
                 present.put(field.europeana().requiredGroup(), false);
             }
         }
-        for (Entry entry : entries) {
-            EuropeanaField field = fieldMap.get(entry.tag);
+        for (FieldEntry fieldEntry : fieldEntries) {
+            EuropeanaField field = fieldMap.get(fieldEntry.getTag());
             if (field != null && !field.europeana().requiredGroup().isEmpty()) {
                 present.put(field.europeana().requiredGroup(), true);
             }
@@ -159,88 +151,7 @@ public class RecordValidator {
         }
     }
 
-    private String toString(List<Entry> entries) {
-        StringBuilder out = new StringBuilder();
-        out.append("<record>\n");
-        for (Entry entry : entries) {
-            out.append("   ").append(entry).append('\n');
-        }
-        out.append("</record>\n");
-        return out.toString();
-    }
-
-    private void eliminateDuplicates(List<Entry> entries) {
-        Iterator<Entry> entryWalk = entries.iterator();
-        Entry previousEntry = null;
-        while (entryWalk.hasNext()) {
-            if (previousEntry == null) {
-                previousEntry = entryWalk.next();
-            }
-            else {
-                Entry next = entryWalk.next();
-                if (previousEntry.equals(next)) {
-                    entryWalk.remove();
-                }
-                else {
-                    previousEntry = next;
-                }
-            }
-        }
-    }
-
-    private List<Entry> createNonemptyEntryList(String recordString, List<String> problems) {
-        List<Entry> entries = new ArrayList<Entry>();
-        for (String line : recordString.split("\n")) {
-            line = line.trim();
-            if ("<record>".equals(line) || "</record>".equals(line)) {
-                continue;
-            }
-            if (line.endsWith("/>")) { // empty tag
-                continue;
-            }
-            Matcher matcher = PATTERN.matcher(line);
-            if (matcher.matches()) {
-                String tag = matcher.group(1);
-                String value = matcher.group(2).trim();
-                if (!value.isEmpty()) {
-                    entries.add(new Entry(tag, value));
-                }
-            }
-            else {
-                problems.add(String.format("Line [%s] does not look like a record field", line));
-            }
-        }
-        return entries;
-    }
-
     private static class Counter {
         int count;
-    }
-
-    private static class Entry implements Comparable<Entry> {
-        private String tag;
-        private String value;
-
-        private Entry(String tag, String value) {
-            this.tag = tag;
-            this.value = value;
-        }
-
-        @Override
-        public int compareTo(Entry entry) {
-            return tag.compareTo(entry.tag);
-        }
-
-        public String toString() {
-            return "<" + tag + ">" + value + "</" + tag + ">";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Entry entry = (Entry) o;
-            return !(tag != null ? !tag.equals(entry.tag) : entry.tag != null) && !(value != null ? !value.equals(entry.value) : entry.value != null);
-        }
     }
 }

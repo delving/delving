@@ -584,7 +584,7 @@
             <str name="qf">
                 text^0.5
                 title^1.5 description PROVIDER YEAR^1.5 date^1.4 creator^1.5 dc_publisher subject TYPE source
-                language
+                language europeana_collectionTitle
             </str>
             <str name="pf">
                 text^0.8 title^1.5 date^1.4 creator^1.5
@@ -659,7 +659,7 @@
 
     <requestHandler name="moreLikeThis" class="solr.MoreLikeThisHandler">
         <lst name="defaults">
-            <str name="mlt.fl">title,description,creator,what,when,who</str>
+            <str name="mlt.fl">title,creator,dc_subject</str>
             <int name="mlt.mindf">1</int>
             <str name="mlt.mintf">1</str>
             <bool name="mlt.match.include">true</bool>

@@ -26,12 +26,12 @@ import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.RecordRoot;
-import eu.europeana.sip.model.AnalysisTree;
+import eu.europeana.sip.model.CodeGenerator;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
-import eu.europeana.sip.model.VariableListModel;
+import eu.europeana.sip.model.VariableHolder;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -75,6 +75,7 @@ public class MappingPanel extends JPanel {
     private static final String CREATE_FOR = "<html><center>Create mapping for<br><b>%s</b>";
     private static final Dimension PREFERRED_SIZE = new Dimension(300, 700);
     private SipModel sipModel;
+    private CodeGenerator codeGenerator = new CodeGenerator();
     private JTextField constantField = new JTextField("?");
     private JButton createMappingButton = new JButton(String.format(CREATE_FOR, "?"));
     private ObviousMappingDialog obviousMappingDialog;
@@ -86,7 +87,7 @@ public class MappingPanel extends JPanel {
         super(new GridBagLayout());
         this.sipModel = sipModel;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
         gbc.weightx = gbc.weighty = 1;
@@ -134,7 +135,7 @@ public class MappingPanel extends JPanel {
     }
 
     private JPanel createStatisticsPanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setPreferredSize(PREFERRED_SIZE);
         p.setBorder(BorderFactory.createTitledBorder("Statistics"));
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -148,7 +149,7 @@ public class MappingPanel extends JPanel {
     }
 
     private JPanel createFieldMappingListPanel() {
-        JPanel p = new JPanel(new BorderLayout(10, 10));
+        JPanel p = new JPanel(new BorderLayout(5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Field Mappings"));
         mappingList = new JList(sipModel.getFieldMappingListModel());
         mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -161,7 +162,7 @@ public class MappingPanel extends JPanel {
     private JPanel createButtonPanel() {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(30, 10, 30, 10);
+        gbc.insets = new Insets(20, 5, 20, 5);
         gbc.gridy = gbc.gridx = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         createMappingButton.setEnabled(false);
@@ -172,7 +173,7 @@ public class MappingPanel extends JPanel {
         gbc.gridy++;
         removeMappingButton.setEnabled(false);
         p.add(removeMappingButton, gbc);
-        p.setPreferredSize(new Dimension(350, 300));
+//        p.setPreferredSize(new Dimension(250, 300));
         return p;
     }
 
@@ -230,7 +231,10 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addFieldMapping();
+                EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
+                if (field != null) {
+                    sipModel.addFieldMapping(codeGenerator.createFieldMapping(field, createSelectedVariableList(), constantField.getText()));
+                }
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.setSelectedIndex(mappingList.getModel().getSize() - 1);
@@ -278,7 +282,7 @@ public class MappingPanel extends JPanel {
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                VariableListModel.VariableHolder holder = (VariableListModel.VariableHolder) variablesList.getSelectedValue();
+                VariableHolder holder = (VariableHolder) variablesList.getSelectedValue();
                 if (holder != null) {
                     sipModel.selectNode(holder.getNode());
                     constantField.setText("?");
@@ -309,6 +313,14 @@ public class MappingPanel extends JPanel {
         });
     }
 
+    private List<VariableHolder> createSelectedVariableList() {
+        List<VariableHolder> list = new ArrayList<VariableHolder>();
+        for (Object variableHolderObject : variablesList.getSelectedValues()) {
+            list.add((VariableHolder) variableHolderObject);
+        }
+        return list;
+    }
+
     private void prepareCreateMappingButtons() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -322,7 +334,7 @@ public class MappingPanel extends JPanel {
                     createMappingButton.setText(CREATE);
                     createMappingButton.setEnabled(false);
                 }
-                List<FieldMapping> obvious = createObviousFieldMappings();
+                List<FieldMapping> obvious = codeGenerator.createObviousFieldMappings(sipModel.getUnmappedFields(), sipModel.getVariables());
                 if (obvious.isEmpty()) {
                     obviousMappingDialog = null;
                     createObviousMappingButton.setEnabled(false);
@@ -338,106 +350,6 @@ public class MappingPanel extends JPanel {
                 }
             }
         });
-    }
-
-    private void addFieldMapping() {
-        EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
-        if (field != null) {
-            FieldMapping fresh = new FieldMapping(field);
-            Object[] selected = variablesList.getSelectedValues();
-            if (selected.length == 0) {
-                fresh.addCodeLine(String.format(
-                        "%s.%s '%s'",
-                        field.getPrefix(),
-                        field.getLocalName(),
-                        constantField.getText()
-                ));
-            }
-            else {
-                for (Object variableHolderObject : variablesList.getSelectedValues()) {
-                    VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) variableHolderObject;
-                    generateCopyCode(fresh.getEuropeanaField(), variableHolder.getNode(), fresh);
-                }
-            }
-            sipModel.addFieldMapping(fresh);
-        }
-    }
-
-    private void createObviousMapping(EuropeanaField field, List<FieldMapping> obviousMappings) {
-        FieldMapping obvious = new FieldMapping(field);
-        if (field.europeana().constant()) {
-            obvious.addCodeLine(String.format(
-                    "%s.%s %s",
-                    field.getPrefix(),
-                    field.getLocalName(),
-                    field.getFieldNameString()
-            ));
-        }
-        else {
-            for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
-                VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
-                String variableName = variableHolder.getVariableName();
-                String fieldName = field.getFieldNameString();
-                if (variableName.endsWith(fieldName)) {
-                    generateCopyCode(field, variableHolder.getNode(), obvious);
-                }
-            }
-        }
-        if (!obvious.isEmpty()) {
-            obviousMappings.add(obvious);
-        }
-    }
-
-    private List<FieldMapping> createObviousFieldMappings() {
-        List<FieldMapping> obvious = new ArrayList<FieldMapping>();
-        for (int walkField = 0; walkField < sipModel.getUnmappedFieldListModel().getSize(); walkField++) {
-            EuropeanaField field = (EuropeanaField) sipModel.getUnmappedFieldListModel().getElementAt(walkField);
-            if (field.europeana().constant()) {
-                createObviousMapping(field, obvious);
-            }
-            else {
-                for (int walkVar = 0; walkVar < sipModel.getVariablesListModel().getSize(); walkVar++) {
-                    VariableListModel.VariableHolder variableHolder = (VariableListModel.VariableHolder) sipModel.getVariablesListModel().getElementAt(walkVar);
-                    String variableName = variableHolder.getVariableName();
-                    String fieldName = field.getFieldNameString();
-                    if (variableName.endsWith(fieldName)) {
-                        createObviousMapping(field, obvious);
-                    }
-                }
-            }
-        }
-        return obvious;
-    }
-
-    private void generateCopyCode(EuropeanaField field, AnalysisTree.Node node, FieldMapping fieldMapping) {
-        if (field.solr().multivalued()) {
-            fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
-            if (field.europeana().converter().isEmpty()) {
-                fieldMapping.addCodeLine(String.format("%s.%s it", field.getPrefix(), field.getLocalName()));
-            }
-            else if (field.europeana().converterMultipleOutput()) {
-                fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", field.europeana().converter()));
-                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
-                fieldMapping.addCodeLine("}");
-            }
-            else {
-                fieldMapping.addCodeLine(String.format("%s.%s %s(it)", field.getPrefix(), field.getLocalName(), field.europeana().converter()));
-            }
-            fieldMapping.addCodeLine("}");
-        }
-        else {
-            if (field.europeana().converter().isEmpty()) {
-                fieldMapping.addCodeLine(String.format("%s.%s %s[0]", field.getPrefix(), field.getLocalName(), node.getVariableName()));
-            }
-            else if (field.europeana().converterMultipleOutput()) {
-                fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", field.europeana().converter(), node.getVariableName()));
-                fieldMapping.addCodeLine(String.format("%s.%s part", field.getPrefix(), field.getLocalName()));
-                fieldMapping.addCodeLine("}");
-            }
-            else {
-                fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", field.getPrefix(), field.getLocalName(), field.europeana().converter(), node.getVariableName()));
-            }
-        }
     }
 
     public static Frame getOwningFrame(Component comp) {

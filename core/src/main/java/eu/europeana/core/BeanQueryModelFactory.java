@@ -22,9 +22,10 @@
 package eu.europeana.core;
 
 import eu.europeana.core.database.UserDao;
-import eu.europeana.core.querymodel.beans.BriefBean;
-import eu.europeana.core.querymodel.beans.FullBean;
+import eu.europeana.core.database.domain.SocialTag;
+import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.util.web.ControllerUtil;
 import eu.europeana.definitions.annotations.AnnotationProcessor;
 import eu.europeana.definitions.annotations.EuropeanaBean;
 import org.apache.log4j.Logger;
@@ -44,6 +45,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * todo: javadoc
@@ -58,22 +60,16 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     private QueryAnalyzer queryAnalyzer;
     private CommonsHttpSolrServer solrServer;
     private AnnotationProcessor annotationProcessor;
-    private String portalName;
     private UserDao userDao;
     private DocIdWindowPagerFactory docIdWindowPagerFactory;
+
+    @Value("#{launchProperties['portal.name']}")
+    private String portalName;
 
     @Autowired
     public void setDocIdWindowPagerFactory(DocIdWindowPagerFactory docIdWindowPagerFactory) {
         this.docIdWindowPagerFactory = docIdWindowPagerFactory;
     }
-
-    @Value("#{launchProperties['portal.name']}")
-    public void setPortalName(String portalName) {
-        this.portalName = portalName;
-    }
-
-    //    @Autowired
-//    @Qualifier("solrSelectServer")
 
     public void setSolrServer(CommonsHttpSolrServer solrServer) {
         this.solrServer = solrServer;
@@ -154,7 +150,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     @Override
     public FullDoc getFullDoc(SolrQuery solrQuery) throws EuropeanaQueryException {
         QueryResponse response = getSolrResponse(solrQuery);
-        return getFullDocFromSolrResponse(response);
+        List<? extends FullDoc> fullBeanList = response.getBeans(fullBean);
+        if (fullBeanList.size() != 1) {
+            throw new EuropeanaQueryException("Full Doc not found");
+        }
+        return fullBeanList.get(0);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         // Fetch results from server
         QueryResponse queryResponse = solrServer.query(solrQuery);
         // fetch beans
-        return getIdBeanFromQueryResponse(queryResponse);
+        return queryResponse.getBeans(idBean);
     }
 
     /**
@@ -201,7 +201,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         public SiteMapBeanViewImpl(String europeanaCollectionName, QueryResponse response, int rowsToBeReturned) {
             this.europeanaCollectionName = europeanaCollectionName;
             this.numFound = (int) response.getResults().getNumFound();
-            this.docIds = getIdBeanFromQueryResponse(response);
+            this.docIds = response.getBeans(idBean);
             this.maxPageForCollection = numFound / rowsToBeReturned + 1;
         }
 
@@ -240,7 +240,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             pagination = createPagination(solrResponse, solrQuery, requestQueryString);
             // todo: convert this list into briefdoc instances
 //            SolrDocumentList list = solrResponse.getResults();
-            briefDocs = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
+            briefDocs = addIndexToBriefDocList(solrQuery, (List<? extends BriefDoc>) solrResponse.getBeans(briefBean), solrResponse);
             queryLinks = FacetQueryLinks.createDecoratedFacets(solrQuery, solrResponse.getFacetFields());
             facetLogs = createFacetLogs(solrResponse);
             matchDoc = createMatchDoc(solrResponse);
@@ -251,7 +251,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             BriefDoc briefDoc = null;
             SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
             if (matchDoc != null) {
-                List<BriefBean> briefBeanList = getMatchDocFromDocumentList(matchDoc);
+                List<? extends BriefDoc> briefBeanList = solrServer.getBinder().getBeans(briefBean, matchDoc);
                 if (briefBeanList.size() > 0) {
                     briefDoc = briefBeanList.get(0);
                     String europeanaId = createFullDocUrl(briefDoc.getId());
@@ -332,7 +332,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
     }
 
     private String createFullDocUrl(String europeanaId) {
-        return MessageFormat.format("/{0}{1}.html", portalName, europeanaId.replaceAll("http://www.europeana.eu/resolve", ""));
+        return MessageFormat.format("/{0}/record/{1}.html", portalName, europeanaId);
     }
 
     private class FullBeanViewImpl implements FullBeanView {
@@ -341,13 +341,15 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         private FullDoc fullDoc;
         private DocIdWindowPager docIdWindowPager;
         private List<? extends BriefDoc> relatedItems;
+        private TreeSet<String> userTags;
 
         private FullBeanViewImpl(SolrQuery solrQuery, QueryResponse solrResponse, Map<String, String[]> params) throws EuropeanaQueryException, SolrServerException {
             this.solrResponse = solrResponse;
             this.params = params;
             fullDoc = createFullDoc();
-            relatedItems = addIndexToBriefDocList(solrQuery, getBriefDocListFromQueryResponse(solrResponse), solrResponse);
+            relatedItems = addIndexToBriefDocList(solrQuery, solrResponse.getBeans(briefBean), solrResponse);
             docIdWindowPager = createDocIdPager(params);
+            userTags = fetchUserTags(params.get("uri")[0]);
         }
 
         private DocIdWindowPager createDocIdPager(Map<String, String[]> params) throws SolrServerException, EuropeanaQueryException {
@@ -356,6 +358,17 @@ public class BeanQueryModelFactory implements QueryModelFactory {
                 idWindowPager = docIdWindowPagerFactory.getPager(params, createFromQueryParams(params), solrServer, idBean);
             }
             return idWindowPager;
+        }
+
+        private TreeSet<String> fetchUserTags(String europeanaUri) {
+            List<SocialTag> socialTags = userDao.fetchAllSocialTags(europeanaUri);
+            TreeSet<String> tagSet = new TreeSet<String>();
+            if (socialTags != null && !socialTags.isEmpty()) {
+                for (SocialTag socialTag : socialTags) {
+                    tagSet.add(socialTag.getTag());
+                }
+            }
+            return tagSet;
         }
 
         @Override
@@ -373,51 +386,23 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             return fullDoc;
         }
 
+        @Override
+        public TreeSet<String> getUserTags() {
+            return userTags;
+        }
+
         private FullDoc createFullDoc() throws EuropeanaQueryException {
             SolrDocumentList matchDoc = (SolrDocumentList) solrResponse.getResponse().get("match");
-            List<FullBean> fullBean = getFullDocFromSolrResponse(matchDoc);
+            List<? extends FullDoc> fullBeanItem = solrServer.getBinder().getBeans(fullBean, matchDoc);
 
-            // if the record is not found give usefull error message
-            if (fullBean.size() == 0) {
+            // if the record is not found give useful error message
+            if (fullBeanItem.size() == 0) {
                 QueryProblem problem = userDao.whyIsEuropeanaIdNotFound(params.get("uri")[0]);
                 throw new EuropeanaQueryException(problem.toString());
             }
-            return fullBean.get(0);
+            return fullBeanItem.get(0);
         }
-
     }
-
-    //todo refactor out the getBeans methods from solrj
-    @Override
-    public List<FullBean> getFullDocFromSolrResponse(SolrDocumentList matchDoc) {
-        return solrServer.getBinder().getBeans(FullBean.class, matchDoc);
-    }
-
-    @Override
-    public FullBean getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException {
-        List<FullBean> fullBeanList = response.getBeans(FullBean.class);
-        if (fullBeanList.size() != 1) {
-            throw new EuropeanaQueryException("Full Doc not found");
-        }
-        return fullBeanList.get(0);
-    }
-
-    @Override
-    public List<? extends DocId> getIdBeanFromQueryResponse(QueryResponse queryResponse) {
-        return queryResponse.getBeans(idBean);
-    }
-
-    @Override
-    public List<? extends BriefDoc> getBriefDocListFromQueryResponse(QueryResponse solrResponse) {
-        return (List<? extends BriefDoc>) solrResponse.getBeans(briefBean);
-    }
-
-    @Override
-    public List<BriefBean> getMatchDocFromDocumentList(SolrDocumentList matchDoc) {
-        return solrServer.getBinder().getBeans(BriefBean.class, matchDoc);
-    }
-
-    //todo end part to refactor
 
     @Override
     public QueryResponse getSolrResponse(SolrQuery solrQuery) throws EuropeanaQueryException {
@@ -434,6 +419,12 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setStart(solrQuery.getStart() - 1);
         }
         QueryResponse queryResponse;
+        // add view limitation to query
+        final User user = ControllerUtil.getUser();
+        // todo determine how to use this in the regular portal
+//        if (user == null || user.getRole() == Role.ROLE_USER) {
+//            solrQuery.addFilterQuery("-icn_collectionType:" + CollectionDisplayType.MUSEOMETRIE);
+//        }
         try {
             queryResponse = solrServer.query(solrQuery);
         } catch (SolrException e) {
@@ -444,7 +435,8 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             log.error("Unable to fetch result", e);
             if (e.getMessage().equalsIgnoreCase("Error executing query")) {
                 throw new EuropeanaQueryException(QueryProblem.MALFORMED_QUERY.toString(), e);
-            } else {
+            }
+            else {
                 throw new EuropeanaQueryException(QueryProblem.SOLR_UNREACHABLE.toString(), e);
             }
         }

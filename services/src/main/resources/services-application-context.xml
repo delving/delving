@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:security="http://www.springframework.org/schema/security"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+        ">
+
+    <import resource="classpath:/core-application-context.xml"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="launchProperties"/>
+    </bean>
+
+    <context:annotation-config/>
+
+    <tx:annotation-driven proxy-target-class="true"/>
+
+    <bean id="serviceAccessToken" class="eu.delving.core.rest.ServiceAccessToken"/>
+
+    <bean id="mongo" class="com.mongodb.Mongo"/>
+
+    <bean id="metaRepoConfig" class="eu.delving.services.impl.MetaConfigImpl"/>
+
+    <bean id="metadataRepository" class="eu.delving.services.impl.MetaRepoImpl">
+        <property name="responseListSize" value="#{launchProperties['services.pmh.responseListSize']}"/>
+        <property name="harvestStepSecondsToLive" value="180"/>
+    </bean>
+
+    <bean id="cleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="metadataRepository"/>
+                <property name="targetMethod" value="removeExpiredHarvestSteps"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="#{launchProperties['services.pmh.harvestStepCleanupDelay']}"/>
+        <property name="repeatInterval" value="#{launchProperties['services.pmh.harvestStepCleanupDelay']}"/>
+    </bean>
+
+    <bean id="harvindexer" class="eu.delving.services.indexing.Harvindexer">
+        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
+        <property name="beanClass">
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
+        </property>
+    </bean>
+
+    <bean id="indexJobRunner" class="eu.delving.services.indexing.IndexJobRunner"/>
+
+    <bean id="indexTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="indexJobRunner"/>
+                <property name="targetMethod" value="runParallelHarvindexing"/>
+                <property name="concurrent" value="false"/>
+            </bean>
+        </property>
+        <property name="startDelay" value="#{launchProperties['trigger.startDelay']}"/>
+        <property name="repeatInterval" value="#{launchProperties['trigger.repeatInterval']}"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="indexTrigger"/>
+                <ref bean="cleanupTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider user-service-ref="daoUserDetailsService">
+            <security:password-encoder hash="sha"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <security:http auto-config="true" create-session="always">
+        <security:intercept-url pattern="/user/**" access="ROLE_USER"/>
+        <security:intercept-url pattern="/administrator/**" access="ROLE_ADMINISTRATOR"/>
+        <security:form-login/>
+        <security:logout/>
+    </security:http>
+
+</beans>

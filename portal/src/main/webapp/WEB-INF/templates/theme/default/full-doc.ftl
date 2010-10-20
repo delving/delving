@@ -29,7 +29,7 @@
 
     <div id="identity" class="grid_3">
         <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
     </div>
 
     <div class="grid_9">
@@ -47,21 +47,21 @@
 
 <div id="main" class="grid_9 page">
 
-   <div id="breadcrumbs">
+   <div id="query_breadcrumbs">
        <div class="inner">
             <#if pagination??>
-                <ul>
+                <dl>
+                    <dt><@spring.message 'MatchesFor_t' />:</dt>
                     <#if !query?starts_with("europeana_uri:")>
-                        <li class="first"><@spring.message 'MatchesFor_t' />:</li>
                         <#list pagination.breadcrumbs as crumb>
                             <#if !crumb.last>
-                                <li><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</li>
+                                <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>
                             <#else>
-                                <li><strong>${crumb.display?html}</strong></li>
+                                <dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>
                             </#if>
                         </#list>
                     <#else>
-                        <li class="first">
+                        <dd class="nobg">
                             <@spring.message 'ViewingRelatedItems_t' />
                             <#assign match = result.fullDoc />
                             <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
@@ -72,9 +72,9 @@
                                 <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
                             </#if>
                             </a>
-                        </li>
+                        </dd>
                     </#if>
-                </ul>
+                </dl>
             <#else>
                 <ul>
                     <li>&#160;</li>

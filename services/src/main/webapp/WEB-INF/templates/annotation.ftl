@@ -26,32 +26,32 @@
     </tr>
     <tr>
         <td>GET</td>
-        <td>/annotation/{type}/{europeanaUri}</td>
+        <td>/user/annotation/{type}/{europeanaUri}</td>
         <td>Feth all the annotations related to the given URI</td>
     </tr>
     <tr>
         <td>GET</td>
-        <td>/annotation/{id}</td>
+        <td>/user/annotation/{id}</td>
         <td>Fetch an existing annotation</td>
     </tr>
     <tr>
         <td>POST</td>
-        <td>/annotation/{type}/{europeanaUri}</td>
+        <td>/user/annotation/{type}/{europeanaUri}</td>
         <td>Create a new annotation with no predecessors. Returns ID.</td>
     </tr>
     <tr>
         <td>POST</td>
-        <td>/annotation/?predecessor=ID</td>
+        <td>/user/annotation/?predecessor=ID</td>
         <td>Create a new annotation with the given predecessor ID. Returns ID.</td>
     </tr>
     <tr>
         <td>PUT</td>
-        <td>/annotation/{id}</td>
+        <td>/user/annotation/{id}</td>
         <td>Update an existing annotation with new content as request body</td>
     </tr>
     <tr>
         <td>DELETE</td>
-        <td>/annotation/{id}</td>
+        <td>/user/annotation/{id}</td>
         <td>Delete an existing annotation</td>
     </tr>
 </table>

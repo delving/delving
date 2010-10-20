@@ -27,11 +27,13 @@ import eu.europeana.core.querymodel.query.BriefBeanView;
 import eu.europeana.core.querymodel.query.DocIdWindowPager;
 import eu.europeana.core.querymodel.query.FullBeanView;
 import eu.europeana.definitions.domain.Language;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.joda.time.DateTime;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
@@ -97,25 +99,18 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         String query = briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery(); //
         String queryConstraints = "";
         if (solrQuery.getFilterQueries() != null) {
-            String[] filterQueries = solrQuery.getFilterQueries(); // a comma separated list of qf's from url. // todo change to CU variant later
-            StringBuilder out = new StringBuilder();
-            for (String filterQuery : filterQueries) {
-                out.append(filterQuery).append(",");
+              queryConstraints = StringUtils.join(solrQuery.getFilterQueries(), ",");
             }
-            queryConstraints = out.toString().substring(0, out.toString().length() -1);
-        }
 //        String pageId;
         // private String state;
         UserAction userAction = UserAction.BRIEF_RESULT;
         Map params = request.getParameterMap();
         if (params.containsKey("bt")) {
-            if (request.getParameter("bt").equalsIgnoreCase("pacta")) {
-                userAction = UserAction.BRIEF_RESULT_FROM_PACTA;
-            }
-            else if (request.getParameter("bt").equalsIgnoreCase("savedSearch")) {
+            if (request.getParameter("bt").equalsIgnoreCase("savedSearch")) {
                 userAction = UserAction.BRIEF_RESULT_FROM_SAVED_SEARCH;
             }
-        } else if (params.containsKey("rtr") && request.getParameter("rtr").equalsIgnoreCase("true")) {
+        }
+        else if (params.containsKey("rtr") && request.getParameter("rtr").equalsIgnoreCase("true")) {
             userAction = UserAction.RETURN_TO_RESULTS;
         }
         int pageNr = briefBeanView.getPagination().getPageNumber();
@@ -141,19 +136,18 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             originalQuery = idWindowPager.getQuery();
             startPage = String.valueOf(idWindowPager.getFullDocUriInt());
             numFound = idWindowPager.getDocIdWindow().getHitCount().toString();
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             // todo decide what to do with this error
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // todo decide what to do with this error
         }
 
         UserAction userAction = UserAction.FULL_RESULT;
         Map params = request.getParameterMap();
         if (params.containsKey("bt")) {
-            if (request.getParameter("bt").equalsIgnoreCase("carousel")) {
-                userAction = UserAction.FULL_RESULT_FROM_CAROUSEL;
-            }
-            else if (request.getParameter("bt").equalsIgnoreCase("savedItem")) {
+            if (request.getParameter("bt").equalsIgnoreCase("savedItem")) {
                 userAction = UserAction.FULL_RESULT_FROM_SAVED_ITEM;
             }
             else if (request.getParameter("bt").equalsIgnoreCase("savedTag")) {
@@ -162,6 +156,9 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             else if (request.getParameter("bt").equalsIgnoreCase("bob")) {
                 userAction = UserAction.FULL_RESULT_FROM_YEAR_GRID;
             }
+            else if (request.getParameter("bt").equalsIgnoreCase("tlv")) {
+                userAction = UserAction.FULL_RESULT_FROM_TIME_LINE_VIEW;
+        }
         }
         log.info(
                 MessageFormat.format(
@@ -185,9 +182,27 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
         String language = ControllerUtil.getLocale(request).toString();
         String userAgent = request.getHeader("User-Agent");
         String referer = request.getHeader("referer");
+        Cookie[] cookies = request.getCookies();
+        String utma = "";
+        String utmb = "";
+        String utmc = "";
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equalsIgnoreCase("__utma")) {
+                    utma = cookie.getValue();
+                }
+                else if (cookie.getName().equalsIgnoreCase("__utmb")) {
+                    utmb = cookie.getValue();
+                }
+                else if (cookie.getName().equalsIgnoreCase("__utmc")) {
+                    utmc = cookie.getValue();
+                }
+            }
+        }
         return MessageFormat.format(
-                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, v={7}",
-                userId, language, date, ip, reqUrl, userAgent, referer, VERSION);
+                "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
+                        "utmb={9}, utmc={10}, v={7}",
+                userId, language, date, ip, reqUrl, userAgent, referer, VERSION, utma, utmb, utmc);
     }
 
     private static String getRequestUrl(HttpServletRequest request) {

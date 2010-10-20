@@ -100,6 +100,6 @@
               <#--<@spring.message 'swedish_t' />-->
           </option>
       </select>
-<form method="post" id="frm-lang" name="frm-lang" style="display: none;" action="../../">
+<form method="post" id="frm-lang" name="frm-lang" style="display: none;" action="/${portalName}/">
     <input  type="hidden" name="lang"/>
 </form>

@@ -77,14 +77,17 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "europeana", localName = "year", fieldType = "string", toCopyField = {"text", "YEAR"})
     String[] europeanaYear;
 
-//    @Europeana(category = ESE_PLUS)
-//    @Solr(prefix = "europeana", localName = "hasObject", fieldType = "boolean")
-//    boolean europeanaHasObject;
-//
     @Europeana(category = ESE_PLUS, requiredGroup = "europeana:provider", constant = true)
     @Solr(prefix = "europeana", localName = "provider", toCopyField = {"PROVIDER"}, multivalued = false)
     String[] europeanaProvider;
 
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:dataProvider", constant = true)
+    @Solr(prefix = "europeana", localName = "dataProvider", multivalued = false)
+    String[] europeanaDataProvider;
+
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
+    @Solr(prefix = "europeana", localName = "rights", multivalued = false)
+    String[] europeanaRights;
 
     // Dublin Core / ESE fields
     @Europeana
@@ -263,7 +266,7 @@ public class FullBean extends BriefBean implements FullDoc {
         return returnArrayOrElse(europeanaUserTag);
     }
 
-//    @Override
+    //    @Override
 //    public Boolean getEuropeanaHasObject() {
 //        return europeanaHasObject;
 //    }
@@ -301,6 +304,14 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String[] getEuropeanaYear() {
         return returnArrayOrElse(europeanaYear);
+    }
+
+    public String[] getEuropeanaDataProvider() {
+        return returnArrayOrElse(europeanaDataProvider);
+    }
+
+    public String[] getEuropeanaRights() {
+        return returnArrayOrElse(europeanaRights);
     }
 
     // DCTERMS fields

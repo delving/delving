@@ -34,7 +34,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
@@ -79,25 +78,9 @@ public class SavedItem implements Serializable {
     @Enumerated(EnumType.STRING)
     private Language language;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "carouselitemid")
-    private CarouselItem carouselItem;
-
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "userid", insertable = false, updatable = false)
     private User user;
-
-    public CarouselItem getCarouselItem() {
-        return carouselItem;
-    }
-
-    public boolean hasCarouselItem() {
-        return carouselItem != null;
-    }
-
-    public void setCarouselItem(CarouselItem carouselItem) {
-        this.carouselItem = carouselItem;
-    }
 
     public Long getId() {
         return id;

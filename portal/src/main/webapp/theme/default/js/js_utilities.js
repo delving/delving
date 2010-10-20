@@ -45,24 +45,39 @@ function checkFormSimpleSearch(oId){
     return true;
 }
 
+function takeMeBack(){
+    var futdate = new Date()		//Get the current time and date
+    var expdate = futdate.getTime()  //Get the milliseconds since Jan 1, 1970
+    expdate += 120000  //expires in 2 minutes (milliseconds)
+    var location = document.location.href;
+    $.cookie('takeMeBack', location, { expires: expdate });
+}
+
+function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
+
+    if(!msgHead){msgHead="Fout";}
+    if(!msgBody){msgBody="Er is een fout opgetreden";}
+    $.ajax({
+      url: pageName,
+      async: false,
+      cache: false,
+      processData: false,
+//      context: document.body.content,
+      type: "GET",
+        success: function(data) {
+            if(data == "This page does not exist."){
+//                $(targetId).html("<h2>"+msgHead+"<\/h2><p>"+msgBody+"</p>");
+                $(targetId).html("<h2>Fout<\/h2>");
+            }else{
+                $(targetId).html(data);
+            }
+        }
+    });
+}
+
+
 
 $(document).ready(function() {
-
-    // instantiate the advanced search dialog overlay
-    $("#search_advanced").dialog({
-        autoOpen: false,
-        resizable: false,  
-        modal: true,
-        bgiframe: true,
-        closeOnEscape: true,
-        draggable: true,
-        width: 355
-    });
-    // click event on advanced search href
-    $('#href-advanced').click(function() {
-            $('#search_advanced').dialog('open');
-            return false;
-     });
 
     // style all the submit and button elements.
 
@@ -101,4 +116,6 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+
 });

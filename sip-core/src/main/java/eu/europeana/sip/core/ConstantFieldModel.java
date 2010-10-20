@@ -46,14 +46,6 @@ public class ConstantFieldModel {
         void updatedConstant();
     }
 
-    public static ConstantFieldModel fromMapping(String mapping, AnnotationProcessor annotationProcessor) {
-        ConstantFieldModel model = new ConstantFieldModel(annotationProcessor, null);
-        for (String line : mapping.split("\n")) {
-            model.fromLine(line);
-        }
-        return model;
-    }
-
     public ConstantFieldModel(AnnotationProcessor annotationProcessor, Listener listener) {
         fields.add(new FieldSpec("collectionId"));
         for (EuropeanaField field : annotationProcessor.getAllFields()) {
@@ -64,22 +56,6 @@ public class ConstantFieldModel {
             }
         }
         this.listener = listener;
-    }
-
-    public boolean fromLine(String line) {
-        if (line.startsWith(PREFIX)) {
-            line = line.substring(PREFIX.length());
-            int space = line.indexOf(" ");
-            if (space > 0) {
-                String fieldName = line.substring(0, space);
-                String value = line.substring(space).trim();
-                set(fieldName, value);
-            }
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
     public List<FieldSpec> getFields() {
@@ -94,8 +70,28 @@ public class ConstantFieldModel {
     public void set(String field, String value) {
         String oldValue = map.get(field);
         if (oldValue == null || !oldValue.equals(value)) {
-            map.put(field, value);
+            if (value.isEmpty()) {
+                map.remove(field);
+            }
+            else {
+                map.put(field, value);
+            }
             fireUpdate();
+        }
+    }
+
+    public void fromMapping(List<String> mapping) {
+        clear();
+        for (String line : mapping) {
+            if (line.startsWith(PREFIX)) {
+                line = line.substring(PREFIX.length());
+                int space = line.indexOf(" ");
+                if (space > 0) {
+                    String fieldName = line.substring(0, space);
+                    String value = line.substring(space).trim();
+                    set(fieldName, value);
+                }
+            }
         }
     }
 

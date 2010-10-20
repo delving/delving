@@ -77,6 +77,10 @@
             <version>0.1.0</version>
         </dependency>
         <dependency>
+           <groupId>org.springframework</groupId>
+           <artifactId>org.springframework.oxm</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.jnlp</groupId>
             <artifactId>jnlp-api</artifactId>
             <version>1.5.0</version>

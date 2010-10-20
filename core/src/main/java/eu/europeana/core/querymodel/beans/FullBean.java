@@ -26,8 +26,7 @@ import eu.europeana.core.querymodel.query.DocType;
 import eu.europeana.core.querymodel.query.FullDoc;
 import eu.europeana.definitions.annotations.Europeana;
 import eu.europeana.definitions.annotations.Solr;
-import eu.europeana.definitions.domain.Country;
-import eu.europeana.definitions.domain.Language;
+import eu.europeana.definitions.domain.*;
 import org.apache.commons.lang.WordUtils;
 import org.apache.solr.client.solrj.beans.Field;
 
@@ -36,8 +35,7 @@ import java.util.List;
 
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnArrayOrElse;
 import static eu.europeana.core.querymodel.beans.BeanUtil.returnStringOrElse;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE;
-import static eu.europeana.definitions.annotations.FieldCategory.ESE_PLUS;
+import static eu.europeana.definitions.annotations.FieldCategory.*;
 
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
@@ -98,6 +96,20 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("europeana_provider")
     String[] europeanaProvider;
 
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:dataProvider", constant = true)
+    @Solr(prefix = "europeana", localName = "dataProvider", multivalued = false)
+    @Field("europeana_provider")
+    String[] europeanaDataProvider;
+
+    @Europeana(category = ESE_PLUS, requiredGroup = "europeana:rights", constant = true)
+    @Solr(prefix = "europeana", localName = "rights", multivalued = false)
+    @Field("europeana_rights")
+    String[] europeanaRights;
+
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "coll", briefDoc = true)
+    @Solr(fieldType = "string")
+    @Field("COLLECTION")
+    String[] collection;
 
     // Dublin Core / ESE fields
     @Europeana
@@ -120,7 +132,7 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("dc_creator")
     String[] dcCreator;
 
-    @Europeana(category = ESE, converter="extractYear")
+    @Europeana(category = ESE, converter = "extractYear")
     @Solr(prefix = "dc", localName = "date", toCopyField = {"text", "when", "date"})
     @Field("dc_date")
     String[] dcDate;
@@ -175,6 +187,10 @@ public class FullBean extends BriefBean implements FullDoc {
     @Field("dc_type")
     String[] dcType;
 
+    @Field("DCTYPE")
+    @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "dctype") // removed facetPrefix = "type",
+    @Solr(localName = "dctype", fieldType = "string")
+    String[] DCTYPE;
 
     // Dublin Core Terms extended / ESE fields
     @Europeana
@@ -292,8 +308,6 @@ public class FullBean extends BriefBean implements FullDoc {
         return europeanaUri;
     }
 
-    
-
     @Override
     public String[] getThumbnails() {
         return returnArrayOrElse(europeanaObject);
@@ -332,6 +346,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String[] getEuropeanaProvider() {
         return returnArrayOrElse(europeanaProvider, provider);
+    }
+
+    @Override
+    public String[] getEuropeanaDataProvider() {
+        return returnArrayOrElse(europeanaDataProvider);
     }
 
     @Override
@@ -549,6 +568,11 @@ public class FullBean extends BriefBean implements FullDoc {
     @Override
     public String getEuropeanaCollectionName() {
         return returnStringOrElse(europeanaCollectionName);
+    }
+
+    @Override
+    public String getEuropeanaCollectionTitle() {
+        return returnStringOrElse(europeanaCollectionTitle);
     }
 }
 

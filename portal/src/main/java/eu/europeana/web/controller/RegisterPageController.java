@@ -199,7 +199,7 @@ public class RegisterPageController {
                 errors.rejectValue("userName", "username.invalidChars", "Username may only contain letters, digits, spaces and underscores");
             }
             if (form.getUserName().length() > User.USER_NAME_LENGTH) {
-                errors.rejectValue("userName", "username.tooLong", "Username is too long"); //TODO standard error code?
+                errors.rejectValue("userName", "username.tooLong", "Username is too long");
             }
 
             if (userDao.userNameExists(form.getUserName())) {
@@ -212,11 +212,11 @@ public class RegisterPageController {
 
             // password less then 6 characters
             if (form.getPassword().length() < 6) {
-                errors.rejectValue("password", "password.length", "Password is too short");
+                errors.rejectValue("password", "password.tooShort", "Password is too short");
             }
 
             if (form.getPassword().length() > 30) {
-                errors.rejectValue("password", "password.length", "Password is too long");
+                errors.rejectValue("password", "password.tooLong", "Password is too long");
             }
             if (!form.getDisclaimer()) {
                 errors.rejectValue("disclaimer", "disclaimer.unchecked", "Disclaimer must be accepted");

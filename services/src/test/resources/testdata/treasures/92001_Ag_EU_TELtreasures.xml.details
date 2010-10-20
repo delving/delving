@@ -1,0 +1,11 @@
+<dataset-details>
+  <spec>92001_Ag_EU_TELtreasures</spec>
+  <name>Tel Treasures</name>
+  <providerName>The European Library</providerName>
+  <description>treasures</description>
+  <prefix>icnraw</prefix>
+  <namespace>http://www.icn.nl/</namespace>
+  <schema>http://www.icn.nl/schemas/ICN-V3.2.xs</schema>
+  <recordRoot>record</recordRoot>
+  <uniqueElement>{http://www.europeana.eu}uri</uniqueElement>
+</dataset-details>

@@ -1,0 +1,11 @@
+<dataset-details>
+  <spec>00101_Ag_NO_sffDF</spec>
+  <name>ABM-utvikling Data</name>
+  <providerName>ABM-utvikling</providerName>
+  <prefix>ABM</prefix>
+  <description>This is the first data imported to the metarepo.</description>
+  <namespace>http://to_be_decided/abm/</namespace>
+  <schema>http://to_be_decided/abm/schema.xsd</schema>
+  <recordRoot>{http://to_be_decided/abm/}record</recordRoot>
+  <uniqueElement>{http://purl.org/dc/elements/1.1/}identifier</uniqueElement>
+</dataset-details>

@@ -26,6 +26,7 @@ import eu.europeana.definitions.annotations.EuropeanaField;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,11 +44,17 @@ public class FieldMapping implements Iterable<String> {
             ".split"
     };
     private EuropeanaField europeanaField;
+    private ValueMap valueMap;
     private List<String> codeLines = new ArrayList<String>();
     private List<String> variables;
 
     public FieldMapping(EuropeanaField europeanaField) {
         this.europeanaField = europeanaField;
+    }
+
+    public FieldMapping(EuropeanaField europeanaField, ValueMap valueMap) {
+        this.europeanaField = europeanaField;
+        this.valueMap = valueMap;
     }
 
     public boolean codeLooksLike(String code) {
@@ -102,6 +109,16 @@ public class FieldMapping implements Iterable<String> {
             }
         }
         return variables;
+    }
+
+
+    public void createValueMap(Set<String> domainValues, Set<String> rangeValues) {
+        this.valueMap = new ValueMap(europeanaField.getFieldNameString(), rangeValues);
+        this.valueMap.setDomain(domainValues);
+    }
+
+    public ValueMap getValueMap() {
+        return valueMap;
     }
 
     public void addCodeLine(String line) {

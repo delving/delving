@@ -77,6 +77,10 @@ public class FieldMappingListModel extends AbstractListModel implements RecordMa
         refreshList(recordMapping);
     }
 
+    @Override
+    public void valueMapChanged() {
+    }
+
     private void refreshList(RecordMapping recordMapping) {
         clear();
         for (FieldMapping fieldMapping : recordMapping) {

@@ -22,6 +22,7 @@
 package eu.europeana.sip.model;
 
 import eu.europeana.sip.core.ConstantFieldModel;
+import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
@@ -132,6 +133,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         this.metadataRecord = metadataRecord;
         if (metadataRecord == null) {
             SwingUtilities.invokeLater(new DocumentSetter(inputDocument, "No input"));
+            SwingUtilities.invokeLater(new DocumentSetter(outputDocument, ""));
         }
         else {
             updateInputDocument(metadataRecord);
@@ -152,6 +154,12 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     @Override
     public void mappingsRefreshed(RecordMapping recordMapping) {
         mappingChanged();
+    }
+
+    @Override
+    public void valueMapChanged() {
+        editedCode = recordMapping.getCodeForDisplay();
+        compileSoon();
     }
 
     public Document getInputDocument() {
@@ -195,12 +203,14 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             if (metadataRecord == null) {
                 return;
             }
-            String code = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + code, recordMapping.getConstantFieldModel());
+            String mappingCode = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
+            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + recordMapping.getValueMapCode() + mappingCode, recordMapping.getConstantFieldModel());
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (multipleMappings) {
-                    String validated = recordValidator.validate(metadataRecord, output);
+                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
+                    recordValidator.validate(metadataRecord, fieldEntries);
+                    String validated = FieldEntry.toString(fieldEntries, true);
                     compilationComplete(validated);
                 }
                 else {
@@ -227,7 +237,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                 notifyStateChange(State.ERROR);
             }
             catch (RecordValidationException e) {
-                compilationComplete(e.getMessage());
+                compilationComplete(e.toString());
                 notifyStateChange(State.ERROR);
             }
         }

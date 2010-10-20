@@ -79,13 +79,13 @@ public interface ClickStreamLogger {
 
         // search related actions
         BRIEF_RESULT,
-        BRIEF_RESULT_FROM_PACTA,
         BRIEF_RESULT_FROM_SAVED_SEARCH,
+        BRIEF_RESULT_FROM_OPEN_SEARCH,
         FULL_RESULT,
-        FULL_RESULT_FROM_CAROUSEL,
         FULL_RESULT_FROM_SAVED_ITEM,
         FULL_RESULT_FROM_SAVED_TAG,
         FULL_RESULT_FROM_YEAR_GRID,
+        FULL_RESULT_FROM_TIME_LINE_VIEW,
         MORE_LIKE_THIS,
         RETURN_TO_RESULTS,
         REDIRECT_OUTLINK,
@@ -100,13 +100,9 @@ public interface ClickStreamLogger {
         SAVE_ITEM,
         SAVE_SEARCH,
         SAVE_SOCIAL_TAG,
-        SAVE_CAROUSEL_ITEM,
-        SAVE_SEARCH_TERM,
         REMOVE_SAVED_ITEM,
         REMOVE_SAVED_SEARCH,
         REMOVE_SOCIAL_TAG,
-        REMOVE_CAROUSEL_ITEM,
-        REMOVE_SEARCH_TERM,
         SEND_EMAIL_TO_FRIEND,
         TAG_AUTOCOMPLETE,
 
@@ -122,6 +118,8 @@ public interface ClickStreamLogger {
         CHANGE_PASSWORD_SUCCES,
         CHANGE_PASSWORD_FAILURE,
         LOGIN,
+        FORGOT_PASSWORD,
+        REGISTER_REQUEST,
         LOGOUT,
         LOGOUT_COOKIE_THEFT,
 
@@ -129,6 +127,7 @@ public interface ClickStreamLogger {
         ERROR,
         AJAX_ERROR,
         ERROR_TOKEN_EXPIRED,
+        ERROR_NO_TOKEN,
         EXCEPTION_CAUGHT,
 
         // static pages
@@ -136,7 +135,8 @@ public interface ClickStreamLogger {
         CONTACT_PAGE,
         FEEDBACK_SEND,
         FEEDBACK_SEND_FAILURE,
-        INDEXPAGE;
+        INDEXPAGE,
+        ADVANCED_SEARCH;
 
         private String description;
 
@@ -164,5 +164,3 @@ public interface ClickStreamLogger {
     }
 
 }
-
-

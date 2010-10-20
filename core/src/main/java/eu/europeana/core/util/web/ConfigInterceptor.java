@@ -42,18 +42,33 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
+    @Value("#{launchProperties['portal.displayName']}")
+    private String portalDisplayName;
+
+
     @Value("#{launchProperties['portal.theme']}")
     private String portalTheme;
+
+    @Value("#{launchProperties['portal.color']}")
+    private String portalColor;
+
+    @Value("#{launchProperties['ga.trackingCode']}")
+    private String trackingCode;
 
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
-        if (!modelAndView.getViewName().startsWith("redirect:")) {
+        if (modelAndView != null && !modelAndView.getViewName().startsWith("redirect:")) {
             modelAndView.addObject("debug", Boolean.valueOf(debug));
             modelAndView.addObject("interfaceLanguage", ControllerUtil.getLocale(httpServletRequest));
             modelAndView.addObject("cacheUrl", cacheUrl);
             modelAndView.addObject("portalName", portalName);
+            modelAndView.addObject("portalDisplayName", portalDisplayName);
             modelAndView.addObject("portalTheme", portalTheme);
+            modelAndView.addObject("portalColor", portalColor);
+            if (!trackingCode.isEmpty()) {
+                modelAndView.addObject("trackingCode", trackingCode);
+            }
         }
     }
 }

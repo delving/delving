@@ -30,7 +30,6 @@ import eu.europeana.definitions.beans.IdBean;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
-import org.apache.log4j.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -51,27 +50,29 @@ import java.util.List;
  */
 
 public class SipCreatorGUI extends JFrame {
-    private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(String metaRepoSubmitUrl) {
+    public SipCreatorGUI(String serverUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), metaRepoSubmitUrl);
+        this.sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
         tabs.addTab("Refinement", new RefinementPanel(sipModel));
-        tabs.addTab("Normalization", new NormPanel(sipModel));
-        tabs.addTab("Repository", new MetaRepoPanel(sipModel));
+        tabs.addTab("Normalization", new NormalizationPanel(sipModel));
+        if (serverUrl != null) {
+            tabs.addTab("Repository", new DataSetPanel(sipModel));
+        }
         getContentPane().add(tabs, BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
+//        setSize(1024, 768);
         setSize(Toolkit.getDefaultToolkit().getScreenSize());
     }
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        FileMenu fileMenu = new FileMenu(this, new FileMenu.SelectListener() {
+        FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
             @Override
             public boolean select(FileSet fileSet) {
                 if (!fileSet.isValid()) {
@@ -127,21 +128,12 @@ public class SipCreatorGUI extends JFrame {
     }
 
     public static void main(final String[] args) {
-        if (args.length == 0) {
-            System.out.println("Requires an argument! SipCreatorGUI [MetaRepo subumit URL]");
-        }
-        else if (args[0].startsWith("http://")) {
-            final String serverUrl = args[0];
-            System.out.println("Server '" + serverUrl + "'");
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(args[0]);
-                    sipCreatorGUI.setVisible(true);
-                }
-            });
-        }
-        else {
-            throw new RuntimeException("Argument not understood");
-        }
+        final String serverUrl = args.length > 0 ? args[0] : null;
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(serverUrl);
+                sipCreatorGUI.setVisible(true);
+            }
+        });
     }
 }

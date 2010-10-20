@@ -44,6 +44,10 @@ public class BriefBean extends IdBean implements BriefDoc {
     @Solr(prefix = "europeana", localName = "collectionName", multivalued = false, required = true)
     String[] europeanaCollectionName;
 
+    @Europeana(category = ESE_PLUS, constant = true)
+    @Solr(prefix = "europeana", localName = "collectionTitle", multivalued = false, required = true)
+    String[] europeanaCollectionTitle;
+
     @Europeana(category = INDEX_TIME_ADDITION, facetPrefix = "prov", briefDoc = true)
     @Solr(fieldType = "string")
     String[] provider;

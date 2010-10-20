@@ -78,16 +78,20 @@
                 <value>message.cache.seconds</value>
                 <value>log4j.xml</value>
                 <value>portal.name</value>
+                <value>portal.displayName</value>
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
-
-                <value>repositoryName</value>
-                <value>adminEmail</value>
-                <value>earliestDateStamp</value>
-                <value>repositoryIdentifier</value>
-                <value>sampleIdentifier</value>
-                <value>responseListSize</value>
-
+                <value>portal.color</value>
+                <value>services.url</value>
+                <value>services.password</value>
+                <value>services.harvindexing.prefix</value>
+                <value>services.pmh.repositoryName</value>
+                <value>services.pmh.adminEmail</value>
+                <value>services.pmh.earliestDateStamp</value>
+                <value>services.pmh.repositoryIdentifier</value>
+                <value>services.pmh.sampleIdentifier</value>
+                <value>services.pmh.responseListSize</value>
+                <value>ga.trackingCode</value>
             </list>
         </constructor-arg>
     </bean>
@@ -107,11 +111,11 @@
     <!--todo: these declarations are related to using annotation-based validation-->
     <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">-->
-        <!--<property name="webBindingInitializer">-->
-            <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
-                <!--<property name="validator" ref="validator"/>-->
-            <!--</bean>-->
-        <!--</property>-->
+    <!--<property name="webBindingInitializer">-->
+    <!--<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">-->
+    <!--<property name="validator" ref="validator"/>-->
+    <!--</bean>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -131,13 +135,9 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean name="staticPageCache" class="eu.europeana.core.util.web.StaticPageCache"/>
-
     <bean name="userDao" class="eu.europeana.core.database.dao.UserDaoImpl"/>
 
     <bean name="annotationDao" class="eu.europeana.core.database.dao.AnnotationDaoImpl"/>
-
-    <bean name="staticInfoDao" class="eu.europeana.core.database.dao.StaticInfoDaoImpl"/>
 
     <bean name="consoleDao" class="eu.europeana.core.database.dao.ConsoleDaoImpl"/>
 
@@ -146,6 +146,8 @@
     <bean name="tokenDao" class="eu.europeana.core.database.dao.TokenDaoImpl"/>
 
     <bean name="tokenService" class="eu.europeana.core.util.web.TokenService"/>
+
+    <bean id="sorlIndexUtil" class="eu.europeana.core.util.indexing.SorlIndexUtil"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
         <constructor-arg value="#{launchProperties['solr.selectUrl']}"/>
@@ -178,27 +180,27 @@
         </property>
     </bean>
     <!--<bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">-->
-        <!--<property name="classes">-->
-            <!--<util:list>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>-->
-                <!--<value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>-->
-            <!--</util:list>-->
-        <!--</property>-->
+    <!--<property name="classes">-->
+    <!--<util:list>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.IdBean</value>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.BriefBean</value>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.FullBean</value>-->
+    <!--<value type="java.lang.Class">eu.europeana.definitions.beans.AllFieldBean</value>-->
+    <!--</util:list>-->
+    <!--</property>-->
     <!--</bean>-->
 
-    <bean id="normalizedImportRepository" class="eu.europeana.core.database.incoming.ImportRepositoryImpl">
-        <property name="dataDirectory" value="#{launchProperties['dashboard.normalized.import.repository']}"/>
+    <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+        <property name="maxTotalConnections" value="56"/>
+        <property name="defaultMaxConnectionsPerHost" value="28"/>
     </bean>
 
-    <bean id="normalizedEseImporter" class="eu.europeana.core.database.incoming.ESEImporterImpl">
-        <property name="importRepository" ref="normalizedImportRepository"/>
-        <property name="normalized" value="true"/>
-        <property name="chunkSize" value="#{launchProperties['solr.chunkSize']}"/>
-        <property name="beanClass">
-            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
-        </property>
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+        <constructor-arg>
+            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+                <property name="params" ref="connectionManagerParams"/>
+            </bean>
+        </constructor-arg>
     </bean>
 
     <bean id="queryAnalyser" class="eu.europeana.core.querymodel.query.QueryAnalyzer">
@@ -208,19 +210,14 @@
     <bean id="beanQueryModelFactory" class="eu.europeana.core.BeanQueryModelFactory">
         <property name="solrServer" ref="solrSelectServer"/>
         <property name="briefBean">
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
         </property>
         <property name="fullBean">
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
         </property>
         <property name="idBean">
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
+            <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
         </property>
-    </bean>
-
-    <bean id="objectCache" class="eu.europeana.core.database.incoming.cache.ObjectCacheImpl">
-        <property name="root" value="#{launchProperties['cache.cacheRoot']}"/>
-        <property name="fetchOriginal" value="false"/>
     </bean>
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
@@ -239,14 +236,6 @@
 
     <bean id="daoUserDetailsService" class="eu.europeana.core.util.web.UserDaoDetailsService">
         <property name="userDao" ref="userDao"/>
-    </bean>
-
-    <bean id="proposedSearchTermSampler" class="eu.europeana.core.util.web.ProposedSearchTermSampler">
-        <property name="displayCount" value="3"/>
-    </bean>
-
-    <bean id="carouselItemSampler" class="eu.europeana.core.util.web.CarouselItemSampler">
-        <property name="displayCount" value="40"/>
     </bean>
 
     <bean id="emailSenderForExceptions" class="eu.europeana.core.util.web.EmailSender">
@@ -288,42 +277,6 @@
         <property name="subject" value="User Feedback"/>
     </bean>
 
-    <bean id="proposedSearchTermRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="proposedSearchTermSampler"/>
-                <property name="targetMethod" value="refresh"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="0"/>
-        <property name="repeatInterval" value="10000"/>
-    </bean>
-
-    <bean id="carouselItemRefreshTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="carouselItemSampler"/>
-                <property name="targetMethod" value="refresh"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="0"/>
-        <property name="repeatInterval" value="11000"/>
-    </bean>
-
-    <bean id="staticPageCacheTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail">
-            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="staticPageCache"/>
-                <property name="targetMethod" value="invalidate"/>
-                <property name="concurrent" value="false"/>
-            </bean>
-        </property>
-        <property name="startDelay" value="600000"/>
-        <property name="repeatInterval" value="600000"/>
-    </bean>
-
     <bean id="registrationEmailSender" class="eu.europeana.core.util.web.TokenReplyEmailSender">
         <property name="emailSenders">
             <map>
@@ -331,14 +284,14 @@
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/confirmation"/>
                         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="My Europeana email confirmation"/>
+                        <property name="subject" value="Delving E-Mail Confirmation"/>
                     </bean>
                 </entry>
                 <entry key="forgotPassword">
                     <bean class="eu.europeana.core.util.web.EmailSender">
                         <property name="template" value="/email/forgot-password"/>
                         <property name="fromEmail" value="#{launchProperties['system.from']}"/>
-                        <property name="subject" value="My Europeana reset password"/>
+                        <property name="subject" value="Delving Password Reset"/>
                     </bean>
                 </entry>
             </map>

@@ -24,19 +24,19 @@ function showDefaultSmall(obj, iType) {
         switch (iType)
                 {
             case "TEXT":
-                obj.src = "/portal/images/item-page.gif";
+                obj.src = baseThemePath+"/images/item-page.gif";
                 break;
             case "IMAGE":
-                obj.src = "/portal/images/item-image.gif";
+                obj.src = baseThemePath+"/images/item-image.gif";
                 break;
             case "VIDEO":
-                obj.src = "/portal/images/item-video.gif";
+                obj.src = baseThemePath+"/images/item-video.gif";
                 break;
             case "SOUND":
-                obj.src = "/portal/images/item-sound.gif";
+                obj.src = baseThemePath+"/images/item-sound.gif";
                 break;
             default:
-                obj.src = "/portal/images/item-page.gif";
+                obj.src = baseThemePath+"/images/item-page.gif";
         }
     }
 }
@@ -55,19 +55,19 @@ function showDefaultLarge(obj,iType){
         switch(iType)
         {
         case "TEXT":
-          obj.src="/portal/images/item-page-large.gif";
+          obj.src=baseThemePath+"/images/item-page-large.gif";
           break;
         case "IMAGE":
-          obj.src="/portal/images/item-image-large.gif";
+          obj.src=baseThemePath+"/images/item-image-large.gif";
           break;
         case "VIDEO":
-          obj.src="/portal/images/item-video-large.gif";
+          obj.src=baseThemePath+"/images/item-video-large.gif";
           break;
         case "SOUND":
-          obj.src="/portal/images/item-sound-large.gif";
+          obj.src=baseThemePath+"/images/item-sound-large.gif";
           break;
         default:
-          obj.src="/portal/images/item-page-large.gif";
+          obj.src=baseThemePath+"/images/item-page-large.gif";
         }
     }
 }
@@ -147,14 +147,15 @@ function checkSize(obj,type,w){
     if(type=="brief"){
         if (w > 220) {
             w = 220;
-            document.getElementById(obj).width=w;
+            obj.width=w;
         }
     }
     else {
-        if (w > 365) {
-            w = 365;
-            document.getElementById(obj).width=w;
+        if (w > 255) {
+            w = 255;
+            obj.width=w;
         }
     }
 }
+
 

@@ -11,13 +11,14 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * This interface and its sub-interfaces describe how the rest of the code interacts
+ * This interface and its sub-interfaces describe how the rest of the getGroovyCode interacts
  * with the metadata repository.  The interfaces also conveniently define the constants
  * used as MongoDB field names
  *
@@ -26,40 +27,57 @@ import java.util.Set;
 
 public interface MetaRepo {
 
-    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema) throws BadArgumentException;
+    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema, boolean accessKeyRequired) throws BadArgumentException;
 
-    Map<String, ? extends DataSet> getDataSets() throws BadArgumentException;
+    Collection<? extends DataSet> getDataSets() throws BadArgumentException;
+
+    DataSet getDataSet(String spec) throws BadArgumentException;
+
+    DataSet getFirstDataSet(DataSetState dataSetState) throws BadArgumentException;
+
+    void incrementRecordCount(String spec, int increment);
 
     Set<? extends MetadataFormat> getMetadataFormats() throws BadArgumentException;
 
-    Set<? extends MetadataFormat> getMetadataFormats(String id) throws BadArgumentException, CannotDisseminateFormatException;
+    Set<? extends MetadataFormat> getMetadataFormats(String id, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
 
-    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix) throws NoRecordsMatchException, BadArgumentException;
+    HarvestStep getFirstHarvestStep(MetaRepo.PmhVerb verb, String set, Date from, Date until, String metadataPrefix, String accessKey) throws NoRecordsMatchException, BadArgumentException;
 
     HarvestStep getHarvestStep(String resumptionToken) throws NoRecordsMatchException, BadArgumentException, BadResumptionTokenException;
 
     void removeExpiredHarvestSteps();
 
-    Record getRecord(String identifier, String metadataFormat) throws CannotDisseminateFormatException, BadArgumentException;
+    Record getRecord(String identifier, String metadataFormat, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
 
     MetaConfig getMetaRepoConfig();
 
     public interface DataSet {
-        String setSpec();
-        String setName();
-        String providerName();
-        String description();
-        DBObject namespaces();
-        QName recordRoot();
+        String getSpec();
+        String getName();
+        void setName(String value);
+        String getProviderName();
+        void setProviderName(String value);
+        String getDescription();
+        void setDescription(String value);
+        DBObject getNamespaces();
+        QName getRecordRoot();
+        void setRecordRoot(QName root);
+        int getRecordsIndexed();
+        void setRecordsIndexed(int count);
+        DataSetState getState();
+        String getErrorMessage();
+        void setState(DataSetState dataSetState);
+        void setErrorState(String message);
+        MetadataFormat getMetadataFormat();
+        void save();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
-        void setMapping(String mappingCode, String prefix, String namespace, String schema);
+        void addMapping(String mappingCode);
 
-        MetadataFormat metadataFormat();
-        Map<String,? extends Mapping> mappings() throws BadArgumentException;
-        long recordCount();
-        Record fetch(ObjectId id, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException;
-        List<? extends Record> records(String prefix, int start, int count, Date from, Date until) throws CannotDisseminateFormatException, BadArgumentException;
+        Map<String,Mapping> mappings() throws BadArgumentException;
+        int getRecordCount();
+        Record fetch(ObjectId id, String metadataPrefix, String accessKey) throws BadArgumentException, CannotDisseminateFormatException;
+        List<? extends Record> records(String prefix, int start, int count, Date from, Date until, String accessKey) throws CannotDisseminateFormatException, BadArgumentException;
 
         String SPEC = "spec";
         String NAME = "name";
@@ -69,18 +87,39 @@ public interface MetaRepo {
         String RECORD_ROOT = "record_root";
         String METADATA_FORMAT = "metadata_format";
         String MAPPINGS = "mappings";
+        String RECORDS_INDEXED = "rec_indexed";
+        String DATA_SET_STATE = "state";
+        String ERROR_MESSAGE = "error";
+    }
+
+    public enum DataSetState {
+        DISABLED,
+        UPLOADED,
+        QUEUED,
+        INDEXING,
+        ENABLED,
+        ERROR;
+
+        public static DataSetState get(String string) {
+            for (DataSetState t : values()) {
+                if (t.toString().equalsIgnoreCase(string)) {
+                    return t;
+                }
+            }
+            throw new IllegalArgumentException("Did not recognize DataSetState: [" + string + "]");
+        }
     }
 
     public interface HarvestStep {
 
-        ObjectId resumptionToken();
-        Date expiration();
-        long listSize();
-        int cursor();
-        List<? extends Record> records() throws CannotDisseminateFormatException, BadArgumentException;
-        PmhRequest pmhRequest();
+        ObjectId getResumptionToken();
+        Date getExpiration();
+        int getListSize();
+        int getCursor();
+        List<? extends Record> getRecords() throws CannotDisseminateFormatException, BadArgumentException;
+        PmhRequest getPmhRequest();
+        DBObject getNamespaces();
         boolean hasNext();
-        DBObject namespaces();
         String nextResumptionToken();
 
         String EXPIRATION = "exp";
@@ -88,6 +127,7 @@ public interface MetaRepo {
         String CURSOR = "cursor";
         String PMH_REQUEST = "pmhRequest";
         String NAMESPACES = "namespaces";
+        String ACCESS_KEY = "access";
     }
 
     public interface PmhRequest {
@@ -107,14 +147,13 @@ public interface MetaRepo {
     }
 
     public interface Record {
-        ObjectId identifier();
-
-        PmhSet set();
-        Date modified();
-        boolean deleted();
-        DBObject namespaces();
-        String xml() throws CannotDisseminateFormatException;
-        String xml(String metadataPrefix) throws CannotDisseminateFormatException;
+        ObjectId getIdentifier();
+        PmhSet getPmhSet();
+        Date getModifiedDate();
+        boolean isDeleted();
+        DBObject getNamespaces();
+        String getXmlString() throws CannotDisseminateFormatException;
+        String getXmlString(String metadataPrefix) throws CannotDisseminateFormatException;
 
         String MODIFIED = "mod";
         String UNIQUE = "uniq";
@@ -126,8 +165,8 @@ public interface MetaRepo {
     }
 
     public interface Mapping {
-        MetadataFormat metadataFormat();
-        String code();
+        MetadataFormat getMetadataFormat();
+        String getGroovyCode();
 
         String CODE = "code";
         String FORMAT = "format";
@@ -143,13 +182,18 @@ public interface MetaRepo {
     }
 
     public interface MetadataFormat {
-        String prefix();
-        String schema();
-        String namespace();
+        String getPrefix();
+        void setPrefix(String value);
+        String getSchema();
+        void setSchema(String value);
+        String getNamespace();
+        void setNamespace(String value);
+        boolean isAccessKeyRequired();
 
         String PREFIX = "prefix";
         String SCHEMA = "schema";
         String NAMESPACE = "namespace";
+        String ACCESS_KEY_REQUIRED = "accessKeyRequired";
     }
 
     public enum PmhVerb {
@@ -172,7 +216,7 @@ public interface MetaRepo {
     }
 
     String DATABASE_NAME = "MetaRepo";
-    String RECORD_COLLECTION_PREFIX = "Records_";
+    String RECORD_COLLECTION_PREFIX = "Records.";
     String DATASETS_COLLECTION = "Datasets";
     String HARVEST_STEPS_COLLECTION = "HarvestSteps";
     String MONGO_ID = "_id";

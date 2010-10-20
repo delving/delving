@@ -68,10 +68,6 @@ public class EuropeanaCollection implements Serializable {
 
     @Column(length = FieldSize.COLLECTION_STATE_ENUM)
     @Enumerated(EnumType.STRING)
-    private ImportFileState fileState = ImportFileState.NONEXISTENT;
-
-    @Column(length = FieldSize.COLLECTION_STATE_ENUM)
-    @Enumerated(EnumType.STRING)
     private CollectionState collectionState = CollectionState.EMPTY;
 
     @Column
@@ -132,14 +128,6 @@ public class EuropeanaCollection implements Serializable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public ImportFileState getFileState() {
-        return fileState;
-    }
-
-    public void setFileState(ImportFileState fileState) {
-        this.fileState = fileState;
     }
 
     public CollectionState getCollectionState() {
