@@ -5,32 +5,12 @@
 // ConstantField collectionId 92001
 // ConstantField europeana_provider The European Library
 // ConstantField europeana_dataProvider The European Library
-// ConstantField icn_collectionType MUSEOMETRIE
 // ConstantField europeana_language mul
 // ConstantField europeana_collectionName 92001_Ag_EU_TELtreasures
 // ConstantField europeana_country europe
 // ConstantField europeana_collectionTitle Tel Treasures
 // ConstantField europeana_rights unknown
-// ConstantField icn_acquisitionMeans 
 
-/* ValueMap */ def icn_acquisitionMeansMap = [ // aankoop,bruikleen,legaat,opdracht,overdracht,ruil,schenking,successieregeling,
-'aankoop':'',
-'legaat':'',
-'overdracht':'',
-'ruil':'',
-'schenking':'',
-'successieregeling':'',
-]
-def icn_acquisitionMeans = { def v = icn_acquisitionMeansMap[it.toString()]; return v ? v : it }
-/* ValueMap */ def icn_techniqueMap = [ //  dvd, video,anders,film,fotografie,schilderkunst,textiel,werk op papier,
-'film, video, dvd':'',
-'fotografie':'',
-'schilderkunst':'',
-'textiel':'',
-'werk op papier':'',
-]
-def icn_technique = { def v = icn_techniqueMap[it.toString()]; return v ? v : it }
-output.record {
 
 //<<<europeana_collectionName
 europeana.collectionName europeana_collectionName
@@ -132,71 +112,6 @@ europeana.rights 'unknown'
 europeana.dataProvider 'The Europeana Library'
 //>>>
 
-//<<<icn_acquiredWithHelpFrom
-input.icn_acquiredWithHelpFrom.each {
-icn.acquiredWithHelpFrom it
-}
-//>>>
-
-//<<<icn_acquisitionMeans
-input.icn_acquisitionMeans.each {
-icn.acquisitionMeans it
-}
-//>>>
-
-//<<<icn_acquisitionYear
-input.icn.acquisitionYear.each { extractYear(it)}
-//>>>
-
-//<<<icn_collectionPart
-input.icn_collectionPart.each {
-icn.collectionPart it
-}
-//>>>
-
-//<<<icn_creatorYearOfBirth
-input.icn_creatorYearOfBirth.each {extractYear(it)}
-//>>>
-
-//<<<icn_location
-input.icn_location.each {
-icn.location it
-}
-//>>>
-
-//<<<icn_material
-input.icn_material.each {
-icn.material it
-}
-//>>>
-
-//<<<icn_physicalState
-input.icn_physicalState.each {
-icn.physicalState it
-}
-//>>>
-
-//<<<icn_province
-input.icn_province.each {
-icn.province it
-}
-//>>>
-
-//<<<icn_purchasePrice
-input.icn_purchasePrice.each { icn.purchasePrice it }
-//>>>
-
-//<<<icn_technique
-input.icn_technique.each {
-icn.technique it
-}
-//>>>
-
-//<<<icn_collectionType
-icn.collectionType 'MUSEOMETRIE'
-//>>>
-
 //<<<europeana_collectionTitle
 europeana.collectionTitle europeana_collectionTitle
 //>>>
-}

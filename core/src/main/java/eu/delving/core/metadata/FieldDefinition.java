@@ -77,31 +77,31 @@ public class FieldDefinition {
     public String localName;
 
     public String facetPrefix;
-    public Boolean briefDoc;
-    public Boolean fullDoc;
-    public Boolean hidden;
-    public Boolean id;
-    public Boolean object;
-    public Boolean type;
+    public Boolean briefDoc = false;
+    public Boolean fullDoc = true;
+    public Boolean hidden = true;
+    public Boolean id = false;
+    public Boolean object = false;
+    public Boolean type = false;
     public String requiredGroup;
-    public Boolean constant;
+    public Boolean constant = false;
     public String category;
     public String converter;
-    public Boolean converterMultipleOutput;
-    public Boolean url;
+    public Boolean converterMultipleOutput = false;
+    public Boolean url = false;
     public String regularExpression;
-    public Boolean valueMapped;
+    public Boolean valueMapped = false;
     public String fieldType;
-    public Boolean multivalued;
-    public Boolean stored;
-    public Boolean indexed;
-    public Boolean required;
-    public Boolean compressed;
-    public Boolean termVectors;
-    public Boolean termPositions;
-    public Boolean termOffsets;
-    public Boolean omitNorms;
-    public String defaultValue;
+    public Boolean multivalued = true;
+    public Boolean stored = true;
+    public Boolean indexed = true;
+    public Boolean required = false;
+    public Boolean compressed = false;
+    public Boolean termVectors = true;
+    public Boolean termPositions = true;
+    public Boolean termOffsets = true;
+    public Boolean omitNorms = true;
+    public String defaultValue = "";
     public List<String> options;
     public List<String> toCopyField;
 
@@ -115,6 +115,14 @@ public class FieldDefinition {
 
     private Boolean setDefaultTrue(Boolean value) {
         return value == null ? true : value;
+    }
+
+    public Boolean isId() {
+        return id == null ? false : id;
+    }
+
+    public Boolean isType() {
+        return type == null ? false : type;
     }
 
     @Override
