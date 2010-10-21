@@ -28,6 +28,7 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         ids.length should equal(10)
         ids.head.getFieldNames.isEmpty should be(false)
         ids.head.get("europeana_uri").head should equal("92001/1")
+        ids.head.get("unknown_field").size should equal(0)
         ids.head.get("unknown_field").isEmpty should be(true)
       }
     }
@@ -50,20 +51,41 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
       val briefDocList = SolrBindingService.getBriefDocs(response)
 
       it("should have bound all the object") {
-        briefDocList.length should equal (10)
+        briefDocList.length should equal(10)
         briefDocList.head.getId should equal("92001/1")
       }
 
       it("should give access to the getters") {
-        briefDocList.head.getDataProvider should equal ("europeana_dataProvider=1")
-        briefDocList.head.getType should equal (DocType.TEXT)
+        briefDocList.head.getDataProvider should equal("europeana_dataProvider=1")
+        briefDocList.head.getType should equal(DocType.TEXT)
       }
 
       it("should give access to the setters") {
         val item = briefDocList.head
-        item.getIndex should be (0)
+        item.getIndex should be(0)
         item.setIndex(1)
-        item.getIndex should be (1)
+        item.getIndex should be(1)
+      }
+
+    }
+
+    describe("(when giving back a FullDoc List)") {
+
+      val response = getQueryResponse("*:*")
+      val fullDocList = SolrBindingService.getFullDocs(response)
+
+      it("should bind the fields to the results") {
+        fullDocList.head.getId should equal("92001/1")
+      }
+
+      it("should give access to the FieldValue for a key") {
+        val fullDoc = fullDocList.head
+        val getField = "dc_creator"
+        val fv = fullDoc.getFieldValue(getField)
+        fv.isNotEmpty should  be (true)
+        fv.getKey should equal (getField)
+        fv.getFirst should  equal ("dc_creator=1")
+        fv.getValueAsArray.length should equal (2)
       }
 
     }

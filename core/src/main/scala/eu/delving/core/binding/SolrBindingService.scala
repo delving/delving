@@ -84,15 +84,28 @@ object SolrBindingService {
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
 
-  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any](" "))
+  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any]())
 
   def getFirst(field: String) : String = fieldMap.getOrElse(field, List[Any]()).headOption.getOrElse("").asInstanceOf[String] // todo made generic later
 
   private[binding] def add(field: String, value : List[Any]) = fieldMap.put(field, value)
 
-  private[binding] def getFieldNames = fieldMap.keySet.toString
+  private[binding] def getFieldNames = fieldMap.keys
 }
 
+case class FieldValue (key: String, solrDocument: SolrDocument) {
+
+  private val fieldValues = solrDocument.get(key)
+
+  def getKey = key
+
+  def getFirst : String = solrDocument.getFirst(key)
+
+  def getValueAsArray : Array[String] = fieldValues.asInstanceOf[List[String]].toArray
+
+  def isNotEmpty = fieldValues.length != 0
+
+}
 
 case class SolrDocId(solrDocument : SolrDocument) extends DocId {
   def getEuropeanaUri : String = solrDocument.get("europeana_uri").head.asInstanceOf[String]
@@ -128,6 +141,8 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
     override def getAsArray(key: String) : Array[String] = assign(key)
 
     override def getAsString(key: String) : String = assignFirst(key)
+
+    def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")
