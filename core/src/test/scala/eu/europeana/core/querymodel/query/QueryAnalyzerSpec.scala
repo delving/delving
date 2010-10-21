@@ -4,8 +4,6 @@ import _root_.org.junit.runner.RunWith
 import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.Spec
 import _root_.org.scalatest.junit.JUnitRunner
-import eu.europeana.core.querymodel.beans.{FullBean, AllFieldBean, IdBean, BriefBean}
-import eu.europeana.definitions.annotations.AnnotationProcessorImpl
 import scala.collection.JavaConversions._
 import collection.immutable.List
 import collection.mutable.{HashMap, ListBuffer}
@@ -134,11 +132,7 @@ class QueryAnalyzerSpec extends Spec with ShouldMatchers {
   }
 
   def createQueryAnalyzer: QueryAnalyzer = {
-    val processor = new AnnotationProcessorImpl
-    val beanClasses = new ListBuffer[Class[_]] += ((new IdBean).getClass, (new BriefBean).getClass, (new FullBean).getClass, (new AllFieldBean).getClass)
-    processor.setClasses(beanClasses)
     val queryAnalyzer = new QueryAnalyzer
-    queryAnalyzer.setAnnotationProcessor(processor)
     queryAnalyzer
   }
 

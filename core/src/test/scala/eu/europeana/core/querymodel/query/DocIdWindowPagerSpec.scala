@@ -5,7 +5,6 @@ import _root_.org.junit.runner.RunWith
 import _root_.org.scalatest.matchers.ShouldMatchers
 import _root_.org.scalatest.junit.JUnitRunner
 import _root_.org.springframework.mock.web.MockHttpServletRequest
-import eu.europeana.core.querymodel.beans.IdBean
 import org.scalatest.{BeforeAndAfterAll, PrivateMethodTester, Spec}
 
 /**
@@ -21,7 +20,6 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
   val windowPagerFactory: DocIdWindowPagerFactory = new DocIdWindowPagerFactory
   val qa = new QueryAnalyzer
   val testCollId = "00101"
-  val idBean = classOf[IdBean]
   val solrSever = getSolrSever
   loadDefaultData(solrSever, 14, testCollId)
 
@@ -179,7 +177,7 @@ class DocIdWindowPagerSpec extends Spec with BeforeAndAfterAll with ShouldMatche
     val uri = createEuropeanaUri(start, testCollId)
     val query = SolrQueryUtil.createFromQueryParams(request.getParameterMap, qa)
     request.addParameter("uri", uri)
-    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, solrSever, idBean)
+    val pager: DocIdWindowPager = windowPagerFactory.getPager(request.getParameterMap, query, solrSever)
     (pager, uri)
   }
 

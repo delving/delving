@@ -28,6 +28,13 @@ package eu.europeana.core.querymodel.query;
 
 public interface FullDoc {
 
+    // map getters
+
+    String getAsString(String key);
+
+    String[] getAsArray(String key);
+
+
     // Europeana elements
     String getId(); // this is europeanaId
 

@@ -2,12 +2,12 @@ package eu.europeana.core.database.dao;
 
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.EuropeanaId;
+import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedSearch;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.querymodel.query.DocType;
-import eu.europeana.definitions.domain.Language;
 import eu.europeana.fixture.DatabaseFixture;
 import org.apache.log4j.Logger;
 import org.junit.Before;

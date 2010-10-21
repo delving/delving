@@ -21,7 +21,8 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
+import eu.delving.core.metadata.MetadataModel;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -36,11 +37,9 @@ import java.util.*;
  */
 
 public class QueryAnalyzer {
-    private AnnotationProcessor annotationProcessor;
 
-    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
-        this.annotationProcessor = annotationProcessor;
-    }
+    @Autowired
+    private MetadataModel metadataModel;
 
     public QueryType findSolrQueryType(String query) throws EuropeanaQueryException {
         String[] terms = query.split("\\s+");
@@ -61,7 +60,10 @@ public class QueryAnalyzer {
                     return QueryType.MORE_LIKE_THIS_QUERY;
                 }
                 else {
-                    if (annotationProcessor.getFieldNameList().contains(field)) {
+                    if (metadataModel.getRecordDefinition().getFieldNameList().contains(field)) {
+                        return QueryType.ADVANCED_QUERY;
+                    }
+                    else if ("tag".equalsIgnoreCase(field)) {
                         return QueryType.ADVANCED_QUERY;
                     }
                     else if ("tag".equalsIgnoreCase(field)) {

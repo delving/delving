@@ -1,6 +1,8 @@
 package eu.delving.services.indexing;
 
 import com.ctc.wstx.stax.WstxInputFactory;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -12,9 +14,7 @@ import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.querymodel.query.DocType;
-import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.definitions.annotations.EuropeanaBean;
-import eu.europeana.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.definitions.annotations.EuropeanaBean;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -53,8 +53,6 @@ public class Harvindexer {
     private EuropeanaBean europeanaBean;
 
     private Logger log = Logger.getLogger(getClass());
-    private AnnotationProcessor annotationProcessor;
-    private Class<?> beanClass;
     private int chunkSize = 1000;
     private HttpClient httpClient;
     private List<Processor> processors = new CopyOnWriteArrayList<Processor>();
@@ -76,6 +74,9 @@ public class Harvindexer {
     private MetaRepo metaRepo;
 
     @Autowired
+    private MetadataModel metadataModel;
+
+    @Autowired
     public void setConsoleDao(ConsoleDao consoleDao) {
         this.consoleDao = consoleDao;
     }
@@ -89,16 +90,6 @@ public class Harvindexer {
     public void setSolrServer(@Qualifier("solrUpdateServer") SolrServer solrServer) {
         this.solrServer = solrServer;
     }
-
-    @Autowired
-    public void setAnnotationProcessor(AnnotationProcessor annotationProcessor) {
-        this.annotationProcessor = annotationProcessor;
-    }
-
-    public void setBeanClass(Class<?> beanClass) {
-        this.beanClass = beanClass;
-    }
-
 
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
@@ -295,13 +286,13 @@ public class Harvindexer {
                             resumptionToken = xml.getElementText();
                         }
                         else if (europeanaId != null) {
-                            EuropeanaField field = getEuropeanaField(xml.getPrefix(), xml.getLocalName(), recordCount);
+                            FieldDefinition fieldDefinition = getFieldDefinition(xml.getPrefix(), xml.getLocalName(), recordCount);
 //                            String language = fetchLanguage(xml);
                             String text = xml.getElementText();
-                            if (field.europeana().id()) {
+                            if (fieldDefinition.id) {
                                 europeanaId.setEuropeanaUri(text);
                             }
-                            else if (field.europeana().type()) {
+                            else if (fieldDefinition.type) {
                                 DocType.get(text); // checking if it matches one of them
                                 SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                 if (objectField != null) {
@@ -312,7 +303,7 @@ public class Harvindexer {
                                 text = text.substring(0, 9999);
                             }
                             // language being ignored if (language != null) {...}
-                            solrInputDocument.addField(field.getFieldNameString(), text);
+                            solrInputDocument.addField(fieldDefinition.getFieldNameString(), text);
                         }
                         break;
 
@@ -389,20 +380,27 @@ public class Harvindexer {
             recordList.clear();
         }
 
-        private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
-            EuropeanaField field = null;
-            for (EuropeanaField recordField : getEuropeanaBean().getFields()) {
-                if (recordField.getPrefix().equals(prefix) && recordField.getLocalName().equals(localName)) {
-                    field = recordField;
-                    break;
-                }
-            }
-            if (field == null) {
+//        private EuropeanaField getEuropeanaField(String prefix, String localName, int recordCount) throws ImportException {
+//            EuropeanaField field = null;
+//            for (EuropeanaField recordField : getEuropeanaBean().getFields()) {
+//                if (recordField.getPrefix().equals(prefix) && recordField.getLocalName().equals(localName)) {
+//                    field = recordField;
+//                    break;
+//                }
+//            }
+//            if (field == null) {
+//                throw new ImportException("Field not recognized: " + prefix + ":" + localName, recordCount);
+//            }
+//            return field;
+//        }
+
+        private FieldDefinition getFieldDefinition(String prefix, String localName, int recordCount) throws ImportException {
+            FieldDefinition fieldDefinition = metadataModel.getRecordDefinition().getFieldDefinition(prefix, localName);
+            if (fieldDefinition == null) {
                 throw new ImportException("Field not recognized: " + prefix + ":" + localName, recordCount);
             }
-            return field;
+            return fieldDefinition;
         }
-
 
         private boolean isRecordElement(XMLStreamReader xml) {
             return "record".equals(xml.getName().getLocalPart());
@@ -423,18 +421,6 @@ public class Harvindexer {
         public EuropeanaCollection getCollection() {
             return collection;
         }
-
-        private EuropeanaBean getEuropeanaBean() {
-            if (europeanaBean == null) {
-                europeanaBean = annotationProcessor.getEuropeanaBean(beanClass);
-                if (europeanaBean == null) {
-                    throw new RuntimeException("Expected to find bean for class " + beanClass);
-                }
-            }
-            return europeanaBean;
-        }
-
-
     }
 
     private static String exceptionToErrorString(ImportException exception) {

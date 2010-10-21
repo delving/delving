@@ -6,7 +6,6 @@ import _root_.org.scalatest.{BeforeAndAfterAll, Spec}
 import _root_.org.scalatest.junit.JUnitRunner
 import eu.europeana.core.BeanQueryModelFactory
 import org.apache.solr.client.solrj.SolrQuery
-import eu.europeana.core.querymodel.beans.FullBean
 
 
 /**
@@ -28,15 +27,15 @@ class BeanQueryModelFactorySpec extends Spec with BeforeAndAfterAll with ShouldM
   describe("A SolrResponse that comes from the server") {
 
       describe("(when retrieving a FullDoc)") {
-        val europeana_uri = "http://www.europeana.eu/resolve/record/00101/"
+        val europeana_uri = "00101/1"
         val query = new SolrQuery("europeana_uri:\"" + europeana_uri + "\"")
         val response = solrServer.query(query)
         println (query)
 
 
         it("should return a valid FullDoc") {
-          val fullBean : FullBean = queryModelFactory.getFullDocFromSolrResponse(response)
-          fullBean.getEuropeanaUri should be (europeana_uri)
+          val fullDoc : FullDoc = queryModelFactory.getFullDocFromSolrResponse(response)
+          fullDoc.getId should be (europeana_uri)
           response.getResults.getNumFound should be (1)
         }
 

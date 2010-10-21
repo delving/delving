@@ -682,6 +682,9 @@
         unknown fields indexed and/or stored by default -->
    <!--dynamicField name="*" type="ignored" multiValued="true" /-->
 
+     <!-- Note This field any fieldname string to be indexed!! -->
+   <dynamicField name="*" type="text" multiValued="true"/>
+
  </fields>
 
  <!-- Field to use to determine and enforce document uniqueness.

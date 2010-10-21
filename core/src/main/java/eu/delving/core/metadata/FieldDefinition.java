@@ -62,6 +62,10 @@ public class FieldDefinition {
         }
     }
 
+    public String getFacetName() {
+        return localName.toUpperCase();
+    }
+
     public String getLocalName() {
         return localName;
     }
@@ -117,5 +121,4 @@ public class FieldDefinition {
     public String toString() {
         return String.format("FieldDefinition(%s:%s)", prefix, localName);
     }
-
 }

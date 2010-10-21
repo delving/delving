@@ -21,11 +21,11 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.RecordRoot;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
 import eu.europeana.sip.model.CodeGenerator;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;

@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.core;
 
-import eu.europeana.definitions.annotations.AnnotationProcessor;
-import eu.europeana.definitions.annotations.EuropeanaField;
-import eu.europeana.definitions.annotations.FieldCategory;
+import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.definitions.annotations.FieldCategory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
