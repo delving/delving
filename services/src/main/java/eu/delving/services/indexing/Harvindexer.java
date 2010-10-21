@@ -289,10 +289,10 @@ public class Harvindexer {
                             FieldDefinition fieldDefinition = getFieldDefinition(xml.getPrefix(), xml.getLocalName(), recordCount);
 //                            String language = fetchLanguage(xml);
                             String text = xml.getElementText();
-                            if (fieldDefinition.id) {
+                            if (fieldDefinition.isId()) {
                                 europeanaId.setEuropeanaUri(text);
                             }
-                            else if (fieldDefinition.type) {
+                            else if (fieldDefinition.isType()) {
                                 DocType.get(text); // checking if it matches one of them
                                 SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                 if (objectField != null) {
