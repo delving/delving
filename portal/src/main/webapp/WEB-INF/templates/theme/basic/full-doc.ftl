@@ -24,25 +24,11 @@
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
 <#include "inc_header.ftl">
 
+<@userBar/>
 
-<div id="header">
+<h1>${portalDisplayName}</h1>
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
-
-    <div class="grid_9">
-
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
+<@simpleSearch/>
 
 
 <div id="main" class="grid_9 page">
@@ -150,11 +136,6 @@
 </div>
 
 <div id="sidebar">
-    <div id="search">
-        <div class="inner">
-            <@SearchForm "search_result"/>
-        </div>
-    </div>
 
     <div id="facet-list">
         <div class="inner">

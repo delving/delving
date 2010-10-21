@@ -47,106 +47,43 @@
 
 <#include "inc_header.ftl">
 
-<div id="header">
+<@userBar/>
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<h1>${portalDisplayName}</h1>
 
-    <div class="grid_9">
+<@simpleSearch/>
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
+<@resultQueryBreadcrumbs/>
 
-    </div>
 
+<div id="objTypes">
+<div>
+<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
 </div>
 
-<div class="clear"></div>
+<@sortResults/><@viewSelect/>
+</div>
 
-<div id="main" class="grid_9 page">
 
-    <div id="query_breadcrumbs">
-        <div class="inner">
-        <dl>
-            <dt><@spring.message 'MatchesFor_t' />:</dt>
-            <#if !result.matchDoc??>
-                <#list breadcrumbs as crumb>
-                    <#if !crumb.last>
-                        <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>
-                    <#else>
-                        <dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>
-                    </#if>
-                </#list>
-            <#else>
-                <dd  class="nobg">
-                    <@spring.message 'ViewingRelatedItems_t' />
-                    <#assign match = result.matchDoc/>
-                    <a href="${match.fullDocUrl}">
-                        <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                        <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                        </#if>
-                    </a>
-                </dd>
-            </#if>
-        </dl>
-            </div>
-    </div>
-
-    <div class="clear"></div>
-
-    <div class="inner">
-
-    <div id="objTypes">
-        <div>
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-        </div>
-        <@typeTabs_plain/>
-        <@sortResults/><@viewSelect/>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="pagination">
-        <@resultnav_styled/>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <#include "inc_result_table_brief.ftl"/>
-
-    <div class="clearfix"></div>
-
-    <div class="pagination">
-        <@resultnav_styled/>
-    </div>
-
-    </div>
-
+<div class="pagination">
+<@resultPagination/>
 </div>
 
 
 
-<div id="sidebar" class="grid_3">
-     <div id="search">
-        <div class="inner">
-            <@SearchForm "search_result"/>
-        </div>
-    </div>
-    <div class="inner">
-    <div id="facet-list">
-        <#include "inc_facets_lists.ftl"/>
-    </div>
-    </div>
+<#include "inc_result_table_brief.ftl"/>
+
+
+
+<div class="pagination">
+<@resultnav_styled/>
 </div>
 
 
 
-
+<div id="facet-list">
+    <#include "inc_facets_lists.ftl"/>
+</div>
 
 <#include "inc_footer.ftl"/>
 
