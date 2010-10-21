@@ -27,6 +27,74 @@
     </#if>
 </#macro>
 
+<#macro resultGrid seq>
+<table summary="gallery view all search results" border="0">
+    <caption>Results</caption>
+    <#list seq?chunk(4) as row>
+    <tr>
+        <#list row as cell>
+        <td valign="bottom" class="${cell.type}">
+            <div class="brief-thumb-container">
+                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">
+                    <#if useCache="true">
+                         <img
+                                 class="thumb"
+                                 id="thumb_${cell.index()?c}"
+                                 align="middle"
+                                 src="${cacheUrl}uri=${cell.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${cell.type}" alt="<@spring.message 'AltMoreInfo_t' />"
+                                 onload="checkSize(this.id,'brief',this.width);"
+                                 onerror="showDefaultSmall(this,'${cell.type}')"
+                                 height="110"
+                          />
+                    <#else>
+                        <img
+                                class="thumb"
+                                id="thumb_${cell.index()?c}"
+                                align="middle"
+                                src="${cell.thumbnail}"
+                                alt="Click for more information"
+                                height="110"
+                                onload="checkSize(this.id,'brief',this.width);"
+                                onerror="showDefaultSmall(this,'${cell.type}')"
+                         />
+                    </#if>
+                </a>
+            </div>
+            <div class="brief-content-container">
+            <h6>
+                <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;uri=${cell.id}&amp;view=${view}&amp;pageId=brd">
+                    <@stringLimiter "${cell.title}" "40"/>
+                </a>
+            </h6>
+            <ul>
+                <#if cell.creator??>
+                    <#if !(cell.creator = " " || cell.creator = "," || cell.creator = "Unknown,")>
+                        <li><@stringLimiter "${cell.creator}" "120"/></li>
+                    </#if>
+
+                </#if>
+                <#if cell.year != "">
+                    <#if cell.year != "0000">
+                        <li>${cell.year}</li>
+                    </#if>
+
+                </#if>
+                <#if cell.provider != "">
+                    <#assign pr = cell.provider />
+                    <#if pr?length &gt; 80>
+                        <#assign pr = cell.provider?substring(0, 80) + "..."/>
+                    </#if>
+                    <li title="${cell.provider}"><span class="provider">${pr}</span></li>
+                </#if>
+            </ul>
+            </div>
+        </td>
+        </#list>
+    </tr>
+    </#list>
+</table>
+</#macro>
+
 <#--
  * resultPagination
  *
@@ -239,5 +307,39 @@
         </#if>
     </ul>
 
+</#macro>
+
+
+<#macro viewSelect>
+    <div id="viewselect">
+        <#if queryStringForPresentation?exists>
+        <#if view="table">
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
+
+        <#else>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
+
+        </#if>
+        </#if>
+    </div>
+</#macro>
+
+<#macro sortResults>
+    <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+        <option value="">Sorteren op:</option>
+        <option value="title" ><@spring.message 'dc_title_t' /></option>
+        <option value="creator"><@spring.message 'dc_creator_t' /></option>
+        <option value="YEAR"><@spring.message 'dc_date_t' /></option>
+        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+    </select>
+
+    <form action="${thisPage}" method="GET" id="form-sort" style="display:none;">
+        <input type="hidden" name="query" value="${justTheQuery}"/>
+        <input type="hidden" name="start" value="${start}"/>
+        <input type="hidden" name="view" value="${view}"/>
+        <input type="hidden" name="sortBy" id="sortBy" value=""/>
+    </form>
 </#macro>
 

@@ -3,72 +3,41 @@
 <#assign thisPage = "forgot-password.html"/>
 
 <#include "inc_header.ftl">
-<div id="header">
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<@userBar/>
 
-    <div class="grid_9">
+<h1>${portalDisplayName}</h1>
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
+<@simpleSearch/>
 
-    </div>
+<h2>Wachtwoord aanvragen</h2>
 
-</div>
+<form action="forgot-password.html" method="POST" accept-charset="UTF-8">
+    <table>
+        <tr>
+            <td><label for="email"><@spring.message 'EmailAddress_t' /></label></td>
+            <td><input id="email" type="text" name="email" value="" maxlength="50"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input id="submit_forgot" name="submit_login" type="submit" value="Aanvragen"/></td>
+        </tr>
+    </table>
+</form>
 
-<div id="main">
+<#if state == "success">
+<p id="forgotSuccess" class="success">
+<@spring.message 'AnEmailHasBeenSentTo_t' />: <span class="fg-gold">${email}</span>.
+<@spring.message 'PleaseFollowTheLinkProvided_t' />.  <!-- TODO change message -->
+</p>
+</#if>
+<#if state == "formatFailure">
+<@spring.message 'Error_t' />!<br/><@spring.message 'EmailFormatError_t' />.
+</#if>
+<#if state == "nonexistentFailure">
+<@spring.message 'Error_t' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
+</#if>
 
-    <div id="request-password" class="grid_4 login-register">
-
-        <h2>Wachtwoord aanvragen</h2>
-
-        <form id="forgotPasswordForm" name="forgotPasswordForm" action="forgot-password.html" method="POST" accept-charset="UTF-8">
-            <table>
-                <tr>
-                    <td><label for="email"><@spring.message 'EmailAddress_t' /></label></td>
-                    <td><input id="email" type="text" name="email" value="" maxlength="50"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><input id="submit_forgot" name="submit_login" type="submit" value="Aanvragen" class="button"/></td>
-                </tr>
-            </table>
-        </form>
-
-        <#if state == "success">
-            <p id="forgotSuccess" class="success">
-                <@spring.message 'AnEmailHasBeenSentTo_t' />: <span class="fg-gold">${email}</span>.
-                <@spring.message 'PleaseFollowTheLinkProvided_t' />.  <!-- TODO change message -->
-            </p>
-        </#if>
-        <#if state == "formatFailure">
-            <div class="ui-widget">
-                <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
-                    <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                    <@spring.message 'Error_t' />!<br/><@spring.message 'EmailFormatError_t' />.
-                </div>
-            </div>
-        </#if>
-        <#if state == "nonexistentFailure">
-            <div class="ui-widget">
-                <div class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em;">
-                    <span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-                    <@spring.message 'Error_t' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
-                </div>
-            </div>
-        </#if>
-
-    </div>
-
-</div>
-
-<div class="clear"></div>
 
 <#include "inc_footer.ftl"/>
 

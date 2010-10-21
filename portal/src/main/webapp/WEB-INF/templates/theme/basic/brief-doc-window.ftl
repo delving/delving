@@ -22,27 +22,27 @@
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
 </#if>
- <#if RequestParameters.start??>
-     <#assign start = "${RequestParameters.start}"/>
-<#else>
-     <#assign start = "1"/>
- </#if>
- <#if RequestParameters.query??>
-     <#assign justTheQuery = "${RequestParameters.query}"/>
- </#if>
+<#if RequestParameters.start??>
+    <#assign start = "${RequestParameters.start}"/>
+    <#else>
+        <#assign start = "1"/>
+</#if>
+<#if RequestParameters.query??>
+    <#assign justTheQuery = "${RequestParameters.query}"/>
+</#if>
 <#-- image tab class assignation -->
 <#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
 <#if RequestParameters.tab?exists>
-<#assign tab = RequestParameters.tab/>
-<#switch RequestParameters.tab>
-    <#case "text"><#assign showText = "ui-state-active"/><#break/>
-    <#case "image"><#assign showImage = "ui-state-active"/><#break/>
-    <#case "video"><#assign showVideo = "ui-state-active"/><#break/>
-    <#case "sound"><#assign showSound = "ui-state-active"/><#break/>
-    <#default><#assign showAll = "ui-state-active"/><#break/>
-</#switch>
-<#else>
-    <#assign showAll = "ui-state-active"/>
+    <#assign tab = RequestParameters.tab/>
+    <#switch RequestParameters.tab>
+        <#case "text"><#assign showText = "ui-state-active"/><#break/>
+        <#case "image"><#assign showImage = "ui-state-active"/><#break/>
+        <#case "video"><#assign showVideo = "ui-state-active"/><#break/>
+        <#case "sound"><#assign showSound = "ui-state-active"/><#break/>
+        <#default><#assign showAll = "ui-state-active"/><#break/>
+    </#switch>
+    <#else>
+        <#assign showAll = "ui-state-active"/>
 </#if>
 
 <#include "inc_header.ftl">
@@ -53,33 +53,42 @@
 
 <@simpleSearch/>
 
-<@resultQueryBreadcrumbs/>
-
-
-<div id="objTypes">
-<div>
-<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+<div class="resultQueryBreadcrumbs">
+    <@resultQueryBreadcrumbs/>
 </div>
 
-<@sortResults/><@viewSelect/>
+<div class="resultCount">
+    <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
 </div>
 
+<div class="resultSorting">
+    <@sortResults/>
+</div>
+
+<div class="resultViewSelect">
+    <@viewSelect/>
+</div>
 
 <div class="pagination">
-<@resultPagination/>
+    <@resultPagination/>
 </div>
 
+<#if seq?size &gt; 0>
+    <#if view = "table">
+        <@resultGrid seq = seq/>
+    <#elseif view = "flow">
+        <@resultFlow seq = seq/>
+    <#else>
+        <@resultList seq = seq/>
+    </#if>
 
-
-<#include "inc_result_table_brief.ftl"/>
-
-
+<#else>
+    <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
+</#if>
 
 <div class="pagination">
-<@resultnav_styled/>
+    <@resultPagination/>
 </div>
-
-
 
 <div id="facet-list">
     <#include "inc_facets_lists.ftl"/>
@@ -87,214 +96,3 @@
 
 <#include "inc_footer.ftl"/>
 
-
-<#--------------------------------------------------------------------------------------------------------------------->
-<#--  RESULT NAVIGATION/PAGINATION MACROS --->
-<#--------------------------------------------------------------------------------------------------------------------->
-<#macro print_tab_count showAll tabName countName>
-    <#if showAll?matches("selected") || tabName?matches("selected")>
-        (${countName})
-    </#if>
-</#macro>
-
-
-<#-- UI STYLED  -->
-<#macro resultnav_styled>
-        <div class="fg-buttonset fg-buttonset-multi">
-
-            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
-
-            <#--<@spring.message 'Page_t' />:-->
-            <#list pagination.pageLinks as link>
-            <#assign uiClassBorder = ""/>
-            <#if link_index == 0>
-                <#assign uiClassBorder = "ui-corner-left"/>
-            </#if>
-            <#if !link_has_next>
-                <#assign uiClassBorder = "ui-corner-right"/>
-            </#if>
-                <#if link.linked>
-                    <#assign lstart = link.start/>
-                        <a
-                                href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}"
-                                class="fg-button ui-state-default ${uiClassBorder}"
-                        >
-                            ${link.display?c}
-                        </a>
-                 <#else>
-                    <a class="fg-button ui-state-default ui-state-active ${uiClassBorder}">
-                        <strong>${link.display?c}</strong>
-                    </a>
-                </#if>
-            </#list>
-
-            <#assign uiClassStatePrev = ""/>
-            <#assign uiClassStateNext = ""/>
-            <#if !pagination.previous>
-                <#assign uiClassStatePrev = "ui-state-disabled">
-            </#if>
-            <#if !pagination.next>
-                <#assign uiClassStateNext = "ui-state-disabled">
-            </#if>
-            <a
-                    href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
-                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
-                    alt="<@spring.message 'AltPreviousPage_t' />"
-                    style="margin: 0 8px;"
-                    >
-               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
-            </a>
-            <a
-                    href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
-                    class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
-                    alt="<@spring.message 'AltNextPage_t' />"
-                    >
-                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
-            </a>
-        </div>
-</#macro>
-<#-- PLAIN  -->
-<#macro resultnav_plain>
-
-
-
-
-            <ul>
-                <#--<li><@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}</li>
-                <li><@spring.message 'Page_t' />:</li>-->
-            <#list pagination.pageLinks as link>
-                <#assign uiClassBorder = ""/>
-                <#if link_index == 0>
-                    <#assign uiClassBorder = "ui-corner-left"/>
-                </#if>
-                <#if !link_has_next>
-                    <#assign uiClassBorder = "ui-corner-right"/>
-                </#if>
-                <li>
-                    <#if link.linked>
-                        <#assign lstart = link.start/>
-                            <a href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${link.start?c}&amp;view=${view}">
-                                ${link.display?c}
-                            </a>
-                     <#else>
-                        <strong>${link.display?c}</strong>
-                    </#if>
-                </li>
-            </#list>
-
-            <#assign uiClassStatePrev = ""/>
-            <#assign uiClassStateNext = ""/>
-            <#if !pagination.previous>
-                <#assign uiClassStatePrev = "disabled">
-            </#if>
-            <#if !pagination.next>
-                <#assign uiClassStateNext = "disabled">
-            </#if>
-                <li>
-                    <a
-                            href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
-                            alt="<@spring.message 'AltPreviousPage_t' />"
-                            class="${uiClassStatePrev}"
-                            >
-                            <@spring.message 'Previous_t' />
-                    </a>
-                </li>
-                <li>
-                    <a
-                            href="${thisPage}?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
-                            alt="<@spring.message 'AltNextPage_t' />"
-                            class="${uiClassStateNext}"
-                            >
-                            <@spring.message 'Next_t' />
-                    </a>
-                </li>
-            </ul>
-</#macro>
-
-<#--------------------------------------------------------------------------------------------------------------------->
-<#--  TYPE TABS MACROS --->
-<#--------------------------------------------------------------------------------------------------------------------->
-<#-- UI STYLED  -->
-<#macro typeTabs_styled>
-
-    <a href="${thisPage}?query=${query}&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showAll}">
-        <@spring.message 'All_t' />
-    </a>
-    <a href="${thisPage}?query=${query}${textUrl!"&amp;qf=TYPE:TEXT"}&amp;tab=text&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showText}">
-        <@spring.message 'Texts_t' /><@print_tab_count showAll showText textCount />
-    </a>
-    <a href="${thisPage}?query=${query}${imageUrl!"&amp;qf=TYPE:IMAGE"}&amp;tab=image&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showImage}">
-        <@spring.message 'Images_t' /><@print_tab_count showAll showImage imageCount />
-    </a>
-    <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showVideo}">
-        <@spring.message 'Videos_t' /><@print_tab_count showAll showVideo videoCount />
-    </a>
-    <a href="${thisPage}?query=${query}${audioUrl!"&amp;qf=TYPE:SOUND"}&amp;tab=sound&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showSound}">
-        <@spring.message 'Sounds_t' /><@print_tab_count showAll showSound audioCount />
-    </a>
-
-</#macro>
-
-<#-- PLAIN  -->
-<#macro typeTabs_plain>
-    <ul>
-        <li class="${showAll}">
-            <a href="${thisPage}?query=${query}&amp;view=${view}">
-                <@spring.message 'All_t' />
-            </a>
-        </li>
-        <li class="${showText}">
-            <a href="${thisPage}?query=${query}${textUrl!"&amp;qf=TYPE:TEXT"}&amp;tab=text&amp;view=${view}">
-                <@spring.message 'Texts_t' /><@print_tab_count showAll showText textCount />
-            </a>
-        </li>
-        <li class="${showImage}">
-            <a href="${thisPage}?query=${query}${imageUrl!"&amp;qf=TYPE:IMAGE"}&amp;tab=image&amp;view=${view}">
-                <@spring.message 'Images_t' /><@print_tab_count showAll showImage imageCount />
-            </a>
-        </li>
-        <li class="${showVideo}">
-            <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}">
-                <@spring.message 'Videos_t' /><@print_tab_count showAll showVideo videoCount />
-            </a>
-        </li>
-        <li class="${showSound}">
-            <a href="${thisPage}?query=${query}${audioUrl!"&amp;qf=TYPE:SOUND"}&amp;tab=sound&amp;view=${view}">
-                <@spring.message 'Sounds_t' /><@print_tab_count showAll showSound audioCount />
-            </a>
-        </li>
-    </ul>
-</#macro>
-
-<#macro viewSelect>
-    <div id="viewselect" style="float:right">
-        <#if queryStringForPresentation?exists>
-        <#if view="table">
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
-
-        <#else>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="${thisPage}?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
-
-        </#if>
-        </#if>
-    </div>
-</#macro>
-
-<#macro sortResults>
-    <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-        <option value="">Sorteren op:</option>
-        <option value="title" ><@spring.message 'dc_title_t' /></option>
-        <option value="creator"><@spring.message 'dc_creator_t' /></option>
-        <option value="YEAR"><@spring.message 'dc_date_t' /></option>
-        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
-    </select>
-
-    <form action="${thisPage}" method="GET" id="form-sort" style="display:none;">
-        <input type="hidden" name="query" value="${justTheQuery}"/>
-        <input type="hidden" name="start" value="${start}"/>
-        <input type="hidden" name="view" value="${view}"/>
-        <input type="hidden" name="sortBy" id="sortBy" value=""/>
-    </form>
-</#macro>
