@@ -1,0 +1,13 @@
+
+/* Print -------------------------------------------------------------------- */
+@media print {
+
+    .toggler-c {
+        margin-bottom: 25px;
+    }
+
+    .toggler {
+        display: none;
+    }
+
+}
