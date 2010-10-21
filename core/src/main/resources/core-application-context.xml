@@ -193,6 +193,11 @@
     </bean>
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+       <property name="freemarkerSettings">
+           <props>
+               <prop key="template_exception_handler">rethrow</prop>
+           </props>
+       </property>
         <property name="templateLoaderPath" value="#{launchProperties['portal.freemarker.path']}"/>
     </bean>
 
