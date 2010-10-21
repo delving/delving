@@ -21,13 +21,13 @@
 
     <import resource="classpath:/core-application-context.xml"/>
 
-    <bean id="annotationProcessor" class="eu.europeana.definitions.annotations.AnnotationProcessorImpl">
+    <bean id="annotationProcessor" class="eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl">
         <property name="classes">
             <util:list>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.IdBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.BriefBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.FullBean</value>
-                <value type="java.lang.Class">eu.europeana.core.querymodel.beans.AllFieldBean</value>
+                <value type="java.lang.Class">eu.europeana.sip.definitions.beans.IdBean</value>
+                <value type="java.lang.Class">eu.europeana.sip.definitions.beans.BriefBean</value>
+                <value type="java.lang.Class">eu.europeana.sip.definitions.beans.FullBean</value>
+                <value type="java.lang.Class">eu.europeana.sip.definitions.beans.AllFieldBean</value>
             </util:list>
         </property>
     </bean>
