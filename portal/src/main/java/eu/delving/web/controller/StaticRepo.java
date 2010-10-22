@@ -8,6 +8,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +32,9 @@ public class StaticRepo {
     @Autowired
     private Mongo mongo;
 
+    @Value("#{launchProperties['portal.name']}")
+    private String portalName;
+
     private String databaseName = DB_NAME;
 
     public void setDatabaseName(String databaseName) {
@@ -52,7 +56,7 @@ public class StaticRepo {
         }
         else {
             BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, String.format("<a href=\"%s\">%s</a>", path, path));
+            object.put(CONTENT, String.format("<a href=\"/%s/%s\">%s</a>", portalName, path, path));
             return new Page(object);
         }
     }
@@ -119,6 +123,18 @@ public class StaticRepo {
         }
     }
 
+    public boolean setPagePath(String oldPath, String newPath) {
+        DBObject object = pages().findOne(new BasicDBObject(PATH, oldPath));
+        if (object != null) {
+            object.put(PATH, newPath);
+            pages().save(object);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public void putImage(String path, byte[] content) {
         DBObject object = images().findOne(new BasicDBObject(PATH, path));
         if (object != null) {
@@ -129,6 +145,18 @@ public class StaticRepo {
             object = new BasicDBObject(PATH, path);
             object.put(CONTENT, content);
             images().insert(object);
+        }
+    }
+
+    public boolean setImagePath(String oldPath, String newPath) {
+        DBObject object = images().findOne(new BasicDBObject(PATH, oldPath));
+        if (object != null) {
+            object.put(PATH, newPath);
+            images().save(object);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -144,11 +172,15 @@ public class StaticRepo {
         }
 
         public String getPath() {
-            return (String) object.get(PATH);
+            return "/" + portalName + "/" + object.get(PATH);
         }
 
         public String getContent() {
-            return (String) object.get(CONTENT);
+            String content = (String) object.get(CONTENT);
+            if (content == null) {
+                content = "";
+            }
+            return content;
         }
 
         public Date getDate() {
@@ -209,7 +241,7 @@ public class StaticRepo {
         Set<String> set = new TreeSet<String>();
         while (cursor.hasNext()) {
             DBObject pageObject = cursor.next();
-            set.add((String) pageObject.get(PATH));
+            set.add("/" + portalName + "/" + pageObject.get(PATH));
         }
         return set;
     }
