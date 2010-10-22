@@ -38,12 +38,11 @@
                      <table summary="List of existing images" class="user-options">
                         <#list imagePathList as imagePath>
                             <tr>
-                                <td width="50"><img src="${imagePath}" alt="thumbnail" height="20"/></td>
-                                <td width="300"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
-                                <td width="85"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span><@spring.message 'dms.edit' /></a></td>
+                                <td width="50"><img src="/${portalName}/${imagePath}" alt="thumbnail" height="20"/></td>
+                                <td width="300"><a href="/${portalName}/${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
+                                <td width="85"><a href="/${portalName}/${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span><@spring.message 'dms.edit' /><</a></td>
                                 <td width="85">
-                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}?edit=false&delete=true"><span class="ui-icon ui-icon-trash"></span><@spring.message 'dms.delete' /></a>
-
+                                     <a class="delete" id="delete_${imagePath_index}" href="/${portalName}/${imagePath}?edit=false&delete=true"><span class="ui-icon ui-icon-trash"></span><@spring.message 'dms.delete' /></a>
                                 </td>
                             </tr>
                         </#list>
@@ -69,6 +68,21 @@
                     </select>
                 <input type="submit" value="<@spring.message 'dms.goto.upload' />"/>
                 </form>
+                <#--<h2>Nieuwe afbeelding aanmaken</h2>-->
+                <#--<div id="uploadForm">-->
+                    <#--<form method="POST" action="/${portalName}/images/_.img" enctype="multipart/form-data">-->
+                        <#--<table>-->
+                            <#--<tr>-->
+                                <#--<td width="200">Nieuwe afbeelding kiezen</td>-->
+                                <#--<td><input type="file" name="file" size="30"/></td>-->
+                            <#--</tr>-->
+                            <#--<tr>-->
+                                <#--<td></td>-->
+                                <#--<td><input type="submit" name="submit" value="Afbeelding uploaden"></td>-->
+                            <#--</tr>-->
+                        <#--</table>-->
+                    <#--</form>-->
+                <#--</div>-->
                 <script type="text/javascript">
                     function createImage(){
                         var name = $("#imgName").attr("value");
@@ -133,7 +147,7 @@
 
                 <div class="grid_12">
                     <#if imageExists>
-                        <img src="${imagePath}" alt="${imagePath}"/>
+                        <img src="/${portalName}/${imagePath}" alt="${imagePath}" width="100%"/>
                     <#else>
                         <p><@spring.message 'dms.image.not.exist' /></p>
                     </#if>
@@ -158,8 +172,26 @@
                                     </table>
                                 </form>
                             </div>
+                            <div id="pageForm2">
+                                <form method="POST">
+                                    <table>
+                                        <tr>
+                                            <td width="200">Nieuwe afbeelding URL</td>
+                                            <td><input type="newPath" name="newPath" value="${imagePath}" size="30"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td><input type="submit" name="submit" value="Afbeelding hernoemen"></td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
                         <#else>
+<<<<<<< HEAD:portal/src/main/webapp/WEB-INF/templates/theme/basic/static-image.ftl
                             <p><a href="${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
+=======
+                            <p><a href="/${portalName}/${imagePath}?edit=true">Verander deze afbeelding</a></p>
+>>>>>>> 5208bea... Image upload workflow changed: default location is /images/<fileName>, and it can be changed anytime:portal/src/main/webapp/WEB-INF/templates/theme/cw/static-image.ftl
                         </#if>
                         <p><a href="_.img"><@spring.message 'dms.image.list' /></a></p>
                     </#if>
