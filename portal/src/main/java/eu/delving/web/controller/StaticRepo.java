@@ -172,7 +172,7 @@ public class StaticRepo {
         }
 
         public String getPath() {
-            return (String) object.get(PATH);
+            return "/" + portalName + "/" + object.get(PATH);
         }
 
         public String getContent() {
@@ -241,7 +241,7 @@ public class StaticRepo {
         Set<String> set = new TreeSet<String>();
         while (cursor.hasNext()) {
             DBObject pageObject = cursor.next();
-            set.add((String) pageObject.get(PATH));
+            set.add("/" + portalName + "/" + pageObject.get(PATH));
         }
         return set;
     }
