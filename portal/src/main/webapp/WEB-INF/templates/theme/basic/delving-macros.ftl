@@ -1,3 +1,6 @@
+<#-- GLOBAL ASSIGNS -->
+<#assign javascriptFiles = ""/>
+<#assign cssFiles = ""/>
 <#--
  * adminBlock
  *
@@ -27,6 +30,31 @@
     </#if>
 </#macro>
 
+<#macro addJavascript fileList>
+    <#if fileList??>
+        <#if fileList?size &gt; 0>
+             <#list fileList as file>
+                 <#assign javascriptFiles>${javascriptFiles}${"\r"}<script type="text/javascript" src="/${portalName}/${portalTheme}/js/${file}"></script></#assign>
+             </#list>
+        </#if>
+    </#if>
+</#macro>
+
+<#--
+ * addCss
+ *
+ * generates the html for linked css pages
+ * @param meida : "screen" or "print" or "all"
+ -->
+<#macro addCss fileList media="all">
+    <#if fileList??>
+        <#if fileList?size &gt; 0>
+             <#list fileList as file>
+                 <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/${file}" media="${media}"/>
+             </#list>
+        </#if>
+    </#if>
+</#macro>
 <#--
  * resultGrid
  *

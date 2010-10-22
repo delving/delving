@@ -46,5 +46,13 @@
         var portalName = "/${portalName}";
         var baseThemePath = "/${portalName}/${portalTheme}";
     </script>
+    <@addCss ["reset-text-grid.css"], "screen"/>
+    ${cssFiles}
+    <@addJavascript ["jquery-1.4.2.min.js", "jquery.cookie.js", "js_utilities.js"]/>
+    <#--
+     * @addJavascript is called in the header to load the essential javascript files first.
+     * Subsequent calls in underlying pages to @addJavascript append more files to the list
+     * ${javascriptFiles} is placed in the footer -- best practice: load javascript last
+     -->
 </head>
 <body>
