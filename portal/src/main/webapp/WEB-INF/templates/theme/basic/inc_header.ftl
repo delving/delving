@@ -56,3 +56,4 @@
      -->
 </head>
 <body>
+<@adminBlock/>

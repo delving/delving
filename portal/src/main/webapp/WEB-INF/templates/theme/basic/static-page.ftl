@@ -27,7 +27,7 @@
 
                     <div id="top-bar">
                         <div class="inner">
-                            <@userbar/>
+                            <@userBar/>
                         </div>
                     </div>
 

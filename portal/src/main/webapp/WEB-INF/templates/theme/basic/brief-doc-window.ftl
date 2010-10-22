@@ -15,6 +15,8 @@
 
 <#include "inc_header.ftl">
 
+<@addJavascript ["results.js"]/>
+
 <@userBar/>
 
 <h1>${portalDisplayName}</h1>
