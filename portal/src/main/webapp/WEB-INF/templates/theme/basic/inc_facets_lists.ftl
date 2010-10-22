@@ -1,4 +1,5 @@
 <#compress>
+<#assign next = nextQueryFacets>
 <h4><@spring.message 'RefineYourSearch_t' />:</h4>
 <noscript>
     <div class="attention">
@@ -71,8 +72,7 @@
         <#assign facet_max = 20/>
 
         <#if facet.links?size &gt; 0>
-            <div  style="width: 100%; overflow-x: hidden; overflow-y: auto; max-height: 200px;">
-                <table width="100%">
+
                     <#list facet.links?chunk(columsize) as row>
                         <tr>
                            <#list row as link>

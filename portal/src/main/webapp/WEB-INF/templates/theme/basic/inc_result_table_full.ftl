@@ -330,7 +330,7 @@
                             <th>&#160;</th>
                             <td> <br/>
                                 <#assign UrlRef = "#"/>
-                                <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
+                                <#if (result.fullDoc.europeanaIsShownAt[0]??) && (!result.fullDoc.europeanaIsShownAt[0]?matches(" "))>
                                     <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
                                 <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
                                     <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>

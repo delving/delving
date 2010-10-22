@@ -15,35 +15,23 @@
 
 </script>
 
-<div id="header">
+<@userBar/>
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<h1>${portalDisplayName}</h1>
 
-    <div class="grid_9">
-
-        <div id="top-bar">
-            <div class="inner">
-            <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
+<@simpleSearch/>
 
 <div id="main" class="grid_9">
     <div id="savedItems">
                     <ul>
-                        <li><a href="#fragment-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
-                        <li><a href="#fragment-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
-                        <li><a href="#fragment-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
-                        <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
+                        <li><a href="#tab-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
+                        <li><a href="#tab-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
+                        <li><a href="#tab-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
+                        <li><a href="#tab-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
                     </ul>
-                   <div id="fragment-0">
-                      <table width="100%" class="tbl-list" summary="table with user information" id="tbl-user" >
+                   <div id="tab-0">
+                      <table class="tbl-list" summary="table with user information" id="tbl-user" >
+                          <caption><@spring.message 'UserInformation_t' /></caption>
                         <tr>
                             <td width="150">
                                 <h4><@spring.message 'Username_t' />:</h4>
@@ -80,8 +68,9 @@
                         </#if>
                     </table>
                    </div>
-                    <div id="fragment-1">
-                        <table width="95%" class="tbl-list" summary="list with saved items">
+                    <div id="tab-1">
+                        <table class="tbl-list" summary="list with saved items">
+                            <caption><@spring.message 'SavedItems_t'/></caption>
                             <#if user.savedItems?size &gt; 0>
                                 <#list user.savedItems as item>
                                     <tr>
@@ -119,8 +108,9 @@
                             </#if>
                         </table>
                     </div>
-                   <div id="fragment-2">
-                        <table width="100%" class="tbl-list" summary="list with saved searches">
+                   <div id="tab-2">
+                        <table class="tbl-list" summary="list with saved searches">
+                            <caption><@spring.message 'SavedSearches_t'/></caption>
                             <#if user.savedSearches?size &gt; 0>
                                 <#list user.savedSearches as search>
                                     <tr>
@@ -137,8 +127,9 @@
                             </#if>
                         </table>
                     </div>
-                   <div id="fragment-3">
-                    <table width="100%" class="tbl-list" summary="list with saved tags" id="tbl-tags">
+                   <div id="tab-3">
+                    <table class="tbl-list" summary="list with saved tags" id="tbl-tags">
+                        <caption><@spring.message 'SavedTags_t'/></caption>
                         <#if user.socialTags?size &gt; 0>
                             <#list user.socialTagLists as count>
                                 <#assign tagQuery = "europeana_uri:("/>
@@ -195,13 +186,7 @@
             </div>
 </div>
 
-<div id="sidebar">
-    <div id="search">
-        <div class="inner">
-        <@SearchForm "search_result"/>
-        </div>
-    </div>
-</div>
+
     <#include "inc_footer.ftl"/>
 
 </#compress>

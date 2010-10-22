@@ -1,23 +1,5 @@
-<#assign thisPage = "brief-doc.html"/>
-<#assign pId="brief">
-<#assign queryStringForPresentation = queryStringForPresentation/>
-<#assign queryToSave = queryToSave />
-<#if result??><#assign result = result/></#if>
-<#assign allCount = 0 />
-<#assign textCount = 0 />
-<#assign imageCount = 0 />
-<#assign videoCount = 0 />
-<#assign audioCount = 0 />
-<#assign showLanguage = 0 />
-<#assign showYear = 0 />
-<#assign showType = 0 />
-<#assign showProvider = 0 />
-<#assign showCountry = 0 />
-<#assign showUserTags = 0 />
-<#assign next = nextQueryFacets>
-<#assign breadcrumbs = breadcrumbs/>
-<#assign seq = briefDocs/>
-<#assign pagination = pagination/>
+<#--<#assign queryStringForPresentation = queryStringForPresentation/>-->
+<#--<#assign queryToSave = queryToSave />-->
 <#assign view = "table"/>
 <#if RequestParameters.view??>
     <#assign view = "${RequestParameters.view}"/>
@@ -30,20 +12,6 @@
 <#if RequestParameters.query??>
     <#assign justTheQuery = "${RequestParameters.query}"/>
 </#if>
-<#-- image tab class assignation -->
-<#assign tab = ""/><#assign showAll = ""/><#assign showText = ""/><#assign showImage = ""/><#assign showVideo = ""/><#assign showSound = ""/><#assign showText = ""/>
-<#if RequestParameters.tab?exists>
-    <#assign tab = RequestParameters.tab/>
-    <#switch RequestParameters.tab>
-        <#case "text"><#assign showText = "ui-state-active"/><#break/>
-        <#case "image"><#assign showImage = "ui-state-active"/><#break/>
-        <#case "video"><#assign showVideo = "ui-state-active"/><#break/>
-        <#case "sound"><#assign showSound = "ui-state-active"/><#break/>
-        <#default><#assign showAll = "ui-state-active"/><#break/>
-    </#switch>
-    <#else>
-        <#assign showAll = "ui-state-active"/>
-</#if>
 
 <#include "inc_header.ftl">
 
@@ -54,7 +22,7 @@
 <@simpleSearch/>
 
 <div class="resultQueryBreadcrumbs">
-    <@resultQueryBreadcrumbs/>
+    <@resultBriefQueryBreadcrumbs/>
 </div>
 
 <div class="resultCount">
@@ -70,28 +38,29 @@
 </div>
 
 <div class="pagination">
-    <@resultPagination/>
+    <@resultBriefPagination/>
 </div>
 
-<#if seq?size &gt; 0>
+<#if briefDocs?size &gt; 0>
     <#if view = "table">
-        <@resultGrid seq = seq/>
-    <#elseif view = "flow">
-        <@resultFlow seq = seq/>
+        <@resultBriefGrid/>
     <#else>
-        <@resultList seq = seq/>
+        <@resultBriefList/>
     </#if>
-
 <#else>
     <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
 </#if>
 
 <div class="pagination">
-    <@resultPagination/>
+    <@resultBriefPagination/>
 </div>
 
-<div id="facet-list">
-    <#include "inc_facets_lists.ftl"/>
+<div id="facetList">
+    <@resultFacets/>
+</div>
+
+<div id="userActions">
+    <@resultsBriefUserActions/>
 </div>
 
 <#include "inc_footer.ftl"/>

@@ -3,7 +3,7 @@
 <#assign result = result/>
 <#assign uri = result.fullDoc.id/>
 <#assign view = "table"/>
-<#assign thisPage = "full-doc.html"/>
+<#--<#assign thisPage = "full-doc.html"/>-->
 <#compress>
 <#if format??><#assign format = format/></#if>
 <#if pagination??>
@@ -72,56 +72,7 @@
     <div class="clear"></div>
 
 
-
-    <div class="pagination fg-buttonset">
-
-   <div class="inner">
-
-    <#assign uiClassStatePrev = ""/>
-    <#assign uiClassStateNext = ""/>
-    <#assign urlNext = ""/>
-    <#assign urlPrevious=""/>
-
-    <#if pagination??>
-        <#if !pagination.previous>
-            <#assign uiClassStatePrev = "ui-state-disabled">
-        <#else>
-            <#assign urlPrevious = pagination.previousFullDocUrl/>
-        </#if>
-        <#if !pagination.next>
-            <#assign uiClassStateNext = "ui-state-disabled">
-        <#else>
-            <#assign urlNext = pagination.nextFullDocUrl/>
-        </#if>
-        <a
-        href="${urlPrevious}"
-        class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
-        alt="<@spring.message 'AltPreviousPage_t' />"
-        >
-       <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
-        </a>
-        <a
-            href="${urlNext}"
-            class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
-            alt="<@spring.message 'AltNextPage_t' />"
-            >
-            <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
-        </a>
-
-        <#if pagination.returnToResults??>
-            <a
-                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                    href="${pagination.returnToResults?html}"
-                     alt="<@spring.message 'ReturnToResults_t' />"/>
-               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
-            </a>
-        <#else>
-        &#160;
-        </#if>
-
-    </#if>
-   </div>
-    </div>
+    <@resultFullPagination/>
 
     <div class="clear"></div>
 

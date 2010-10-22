@@ -1,6 +1,6 @@
 <#compress>
-<#assign thisPage = "index.html">
-<#assign pageId = "in">
+<#--<#assign thisPage = "index.html">-->
+<#--<#assign pageId = "in">-->
 <#include "inc_header.ftl">
 
 <@userBar/>
