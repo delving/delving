@@ -73,8 +73,13 @@ public class StaticController {
     ) throws IOException {
         ModelAndView mav = ControllerUtil.createModelAndViewPage("static-page");
         String path = getPath(request);
-        if (path.endsWith("_.dml") && isEditor()) {
-            mav.addObject("pagePathList", staticRepo.getPagePaths());
+        if (path.endsWith("_.dml")) {
+            if (isEditor()) {
+                mav.addObject("pagePathList", staticRepo.getPagePaths());
+            }
+            else {
+                return getRedirect("");
+            }
         }
         else {
             if (isEditor()) {
