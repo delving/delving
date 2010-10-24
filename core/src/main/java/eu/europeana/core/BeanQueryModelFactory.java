@@ -458,7 +458,7 @@ public class BeanQueryModelFactory implements QueryModelFactory {
             solrQuery.setFacetLimit(100);
             solrQuery.setRows(12); // todo replace with annotation later
             solrQuery.addFacetField(metadataModel.getRecordDefinition().getFacetFieldStrings());
-            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
+//            solrQuery.setFields(metadataModel.getRecordDefinition().getFieldStrings());
             if (solrQuery.getQueryType().equalsIgnoreCase(QueryType.SIMPLE_QUERY.toString())) {
                 solrQuery.setQueryType(queryAnalyzer.findSolrQueryType(solrQuery.getQuery()).toString());
             }

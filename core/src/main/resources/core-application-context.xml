@@ -82,6 +82,7 @@
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
                 <value>portal.color</value>
+                <value>portal.baseUrl</value>
                 <value>services.url</value>
                 <value>services.password</value>
                 <value>services.harvindexing.prefix</value>

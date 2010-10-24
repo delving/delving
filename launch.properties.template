@@ -127,6 +127,7 @@ portal.displayName = Delving
 portal.freemarker.path = WEB-INF/templates/theme/default
 portal.theme = theme/default
 portal.color = azure
+portal.baseUrl = http://localhost:8080
 
 #
 # This is the tracking code for google analytics. If it is empty the badge is not included in the footer
