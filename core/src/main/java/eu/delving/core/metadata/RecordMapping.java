@@ -165,7 +165,7 @@ public class RecordMapping {
     }
 
     private void toCode(String path, FieldDefinition field, Out out, Set<String> usedPaths, String selectedPath) {
-        String fieldPath = path + "/" + field.tag;
+        String fieldPath = path + "/" + field.getTag();
         if (selectedPath != null && !selectedPath.equals(fieldPath)) {
             return;
         }

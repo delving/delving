@@ -44,13 +44,13 @@ public class ValueMapDialog extends JDialog {
     public ValueMapDialog(Frame owner, FieldMapping fieldMapping) {
         super(owner, true);
         this.fieldMapping = fieldMapping;
-        setTitle("Value Map for " + fieldMapping.getFieldDefinition().tag);
+        setTitle("Value Map for " + fieldMapping.getFieldDefinition().getTag());
         editorBox = new JComboBox(new EditorModel());
         JPanel p = new JPanel(new BorderLayout(6, 6));
         p.setBorder(
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createEmptyBorder(6, 6, 6, 6),
-                        BorderFactory.createTitledBorder(fieldMapping.getFieldDefinition().tag.toString())
+                        BorderFactory.createTitledBorder(fieldMapping.getFieldDefinition().getTag().toString())
                 )
         );
         p.add(createSelectionSetter(), BorderLayout.NORTH);

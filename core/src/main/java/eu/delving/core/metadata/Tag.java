@@ -54,6 +54,9 @@ public class Tag implements Comparable<Tag>, Serializable {
     }
 
     private Tag(String prefix, String localName) {
+        if (prefix != null && prefix.isEmpty()) {
+            prefix = null;
+        }
         this.prefix = prefix;
         this.localName = localName;
     }
@@ -68,12 +71,17 @@ public class Tag implements Comparable<Tag>, Serializable {
 
     @Override
     public int compareTo(Tag tag) {
-        if (prefix == null || tag.prefix == null) {
-            return prefix == null ? 1 : -1;
+        if (prefix == null && tag.prefix != null) {
+            return 1;
         }
-        int comp = prefix.compareTo(tag.prefix);
-        if (comp != 0) {
-            return comp;
+        if (prefix != null && tag.prefix == null) {
+            return -1;
+        }
+        if (prefix != null && tag.prefix != null) {
+            int comp = prefix.compareTo(tag.prefix);
+            if (comp != 0) {
+                return comp;
+            }
         }
         return localName.compareTo(tag.localName);
     }

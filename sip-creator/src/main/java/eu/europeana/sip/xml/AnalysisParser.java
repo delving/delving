@@ -144,7 +144,7 @@ public class AnalysisParser implements Runnable {
         Statistics statistics = statisticsMap.get(path);
         if (statistics == null) {
             Path key = new Path(path);
-            statisticsMap.put(key, statistics = new Statistics(path));
+            statisticsMap.put(key, statistics = new Statistics(key));
         }
         if (!value.isEmpty()) {
             statistics.recordValue(value);

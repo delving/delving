@@ -98,7 +98,7 @@ public class ConstantFieldPanel extends JPanel {
                     }
                 }
             });
-            JLabel label = new JLabel(fieldDefinition.tag.toString(), JLabel.RIGHT);
+            JLabel label = new JLabel(fieldDefinition.getTag().toString(), JLabel.RIGHT);
             label.setLabelFor(comboBox);
             ConstantFieldPanel.this.add(label);
             ConstantFieldPanel.this.add(comboBox);
@@ -122,7 +122,7 @@ public class ConstantFieldPanel extends JPanel {
                     setValue();
                 }
             });
-            JLabel label = new JLabel(fieldDefinition.tag.toString(), JLabel.RIGHT);
+            JLabel label = new JLabel(fieldDefinition.getTag().toString(), JLabel.RIGHT);
             label.setLabelFor(textField);
             ConstantFieldPanel.this.add(label);
             ConstantFieldPanel.this.add(textField);

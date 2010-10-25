@@ -3,7 +3,6 @@ package eu.europeana.sip;
 import eu.delving.core.metadata.ElementDefinition;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.Tag;
 import eu.europeana.sip.annotations.AnnotationProcessorImpl;
 import eu.europeana.sip.annotations.Europeana;
 import eu.europeana.sip.annotations.EuropeanaField;
@@ -70,7 +69,8 @@ public class BeansToXML {
         rd.root = new ElementDefinition();
         for (EuropeanaField ef : ap.getAllFields()) {
             FieldDefinition fd = new FieldDefinition();
-            fd.tag = Tag.create(string(ef.solr().prefix()), string(ef.getLocalName()));
+            fd.prefix = string(ef.solr().prefix());
+            fd.localName = string(ef.getLocalName());
             fd.briefDoc = bool(ef.europeana().briefDoc());
             fd.category = string(ef.europeana().category().toString());
             fd.compressed = bool(ef.solr().compressed());

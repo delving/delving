@@ -49,8 +49,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,7 +77,6 @@ public class SipModel {
     private MetadataRecord metadataRecord;
     private FieldMappingListModel fieldMappingListModel;
     private MappingModel mappingModel = new MappingModel();
-    private Map<String, FieldDefinition> fieldMap = new TreeMap<String, FieldDefinition>();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
@@ -131,7 +128,6 @@ public class SipModel {
         mappingModel.addListener(fieldMappingListModel);
         mappingModel.addListener(recordCompileModel);
         mappingModel.addListener(fieldCompileModel);
-        fieldMap = metadataModel.getRecordDefinition().getMappableFields();
         fieldCompileModel.addListener(new CompileModel.Listener() {
 
             @Override

@@ -70,7 +70,7 @@ public class ElementDefinition {
         if (path.size() == level) {
             if (fields != null) {
                 for (FieldDefinition fieldDefinition : fields) {
-                    if (tag.equals(fieldDefinition.tag)) {
+                    if (tag.equals(fieldDefinition.getTag())) {
                         return fieldDefinition;
                     }
                 }
@@ -92,7 +92,7 @@ public class ElementDefinition {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 if (fieldDefinition.constant) {
-                    map.put(String.format("%s/%s", path, fieldDefinition.tag), fieldDefinition);
+                    map.put(String.format("%s/%s", path, fieldDefinition.getTag()), fieldDefinition);
                 }
             }
         }
@@ -107,7 +107,7 @@ public class ElementDefinition {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 if (!"INDEX_TIME_ADDITION".equals((fieldDefinition.category))) { // todo: enum
-                    fieldDefinitionMap.put(fieldDefinition.tag.toString(), fieldDefinition);
+                    fieldDefinitionMap.put(fieldDefinition.getTag().toString(), fieldDefinition);
                 }
             }
         }

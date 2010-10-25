@@ -143,7 +143,7 @@ public class RecordValidator {
         for (FieldDefinition field : fieldMap.values()) {
             Counter counter = counterMap.get(field.path);
             if (counter != null && !field.multivalued && counter.count > 1) {
-                problems.add(String.format("Single-valued field [%s] had %d values", field.tag, counter.count));
+                problems.add(String.format("Single-valued field [%s] had %d values", field.getTag(), counter.count));
             }
         }
     }
