@@ -397,23 +397,6 @@
                 <version>${spring.version}</version>
             </dependency>
 
-            <!-- GWT -->
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-servlet</artifactId>
-                <version>${gwtVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-dev</artifactId>
-                <version>${gwtVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-user</artifactId>
-                <version>${gwtVersion}</version>
-            </dependency>
-
 
             <!-- presentation -->
             <dependency>
@@ -421,13 +404,6 @@
                 <artifactId>freemarker</artifactId>
                 <version>2.3.16</version>
             </dependency>
-            <!--
-            <dependency>
-                <groupId>net.jawr</groupId>
-                <artifactId>jawr</artifactId>
-                <version>3.2</version>
-            </dependency>
-            -->
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
@@ -553,7 +529,6 @@
         <spring.version>3.0.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <gwtVersion>2.0.0</gwtVersion>
         <scala.version>2.8.0</scala.version>
         <scalaTest.version>1.2</scalaTest.version>
     </properties>

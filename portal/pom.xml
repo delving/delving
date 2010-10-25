@@ -26,7 +26,7 @@
     <artifactId>portal</artifactId>
     <packaging>war</packaging>
     <name>Europeana Portal Web Application</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <description></description>
     <inceptionYear>2009</inceptionYear>
 
@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>eu.europeana</groupId>
 			<artifactId>core</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.1</version>
 		</dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

@@ -25,7 +25,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Core</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <description>Core classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
