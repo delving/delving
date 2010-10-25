@@ -236,7 +236,7 @@ public class AnalysisPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
                 AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
-                Path recordRoot = null; // todo: get it from the node???
+                Path recordRoot = node.getPath();
                 sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
             }
         });

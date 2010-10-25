@@ -45,8 +45,10 @@ public class Path implements Comparable<Path>, Serializable {
     }
 
     public Path(Path path) {
-        for (Tag name : path.stack) {
-            stack.push(name);
+        if (path.stack != null) {
+            for (Tag name : path.stack) {
+                stack.push(name);
+            }
         }
     }
 

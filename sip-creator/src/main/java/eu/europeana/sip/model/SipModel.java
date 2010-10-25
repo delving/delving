@@ -198,12 +198,12 @@ public class SipModel {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
+                        setDataSetDetails(dataSetDetails);
                         variableListModel.clear();
                         mappingModel.setRecordMapping(recordMapping);
                         if (getRecordRoot() != null) {
                             setRecordRootInternal(recordMapping.getRecordRoot(), recordMapping.getRecordCount());
                         }
-                        setDataSetDetails(dataSetDetails);
                         createMetadataParser(1);
                         if (recordMapping != null && recordMapping.getRecordRoot() != null) {
                             normalizeProgressModel.setMaximum(recordMapping.getRecordCount());
@@ -568,7 +568,7 @@ public class SipModel {
         checkSwingThread();
         this.statisticsList = statisticsList;
         if (statisticsList != null) {
-            analysisTree = AnalysisTree.create(statisticsList, fileSet.getName());
+            analysisTree = AnalysisTree.create(statisticsList);
         }
         else {
             analysisTree = AnalysisTree.create("Analysis not yet performed");

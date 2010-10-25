@@ -49,9 +49,9 @@ public class AnalysisTree implements Serializable {
 
         Path getPath();
 
-        boolean setRecordRoot(Path recordRoot, int level);
+        boolean setRecordRoot(Path recordRoot);
 
-        boolean setUniqueElement(Path uniqueElement, int level);
+        boolean setUniqueElement(Path uniqueElement);
 
         boolean isRecordRoot();
 
@@ -67,7 +67,7 @@ public class AnalysisTree implements Serializable {
     public static void setRecordRoot(DefaultTreeModel model, Path recordRoot) {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
         List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
-        setRecordRoot(node, recordRoot, 0, changedNodes);
+        setRecordRoot(node, recordRoot, changedNodes);
         for (AnalysisTree.Node changedNode : changedNodes) {
             model.nodeChanged(changedNode);
         }
@@ -76,7 +76,7 @@ public class AnalysisTree implements Serializable {
     public static void setUniqueElement(DefaultTreeModel model, Path uniqueElement) {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
         List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
-        setUniqueElement(node, uniqueElement, 0, changedNodes);
+        setUniqueElement(node, uniqueElement, changedNodes);
         for (AnalysisTree.Node changedNode : changedNodes) {
             model.nodeChanged(changedNode);
         }
@@ -86,12 +86,9 @@ public class AnalysisTree implements Serializable {
         return new AnalysisTree(new AnalysisTreeNode(Tag.create(rootTag)));
     }
 
-    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag) {
+    public static AnalysisTree create(List<Statistics> statisticsList) {
         AnalysisTreeNode root = createSubtree(statisticsList, new Path(), null);
-        if (root != null) {
-            root.setTag(Tag.create(rootTag));
-        }
-        else {
+        if (root == null) {
             root = new AnalysisTreeNode(Tag.create("No statistics"));
         }
         return new AnalysisTree(root);
@@ -111,24 +108,24 @@ public class AnalysisTree implements Serializable {
         this.root = root;
     }
 
-    private static void setRecordRoot(AnalysisTree.Node node, Path recordRoot, int level, List<Node> changedNodes) {
-        if (node.setRecordRoot(recordRoot, level)) {
+    private static void setRecordRoot(AnalysisTree.Node node, Path recordRoot, List<Node> changedNodes) {
+        if (node.setRecordRoot(recordRoot)) {
             changedNodes.add(node);
         }
         if (recordRoot == null || !node.isRecordRoot()) {
             for (AnalysisTree.Node child : node.getChildNodes()) {
-                setRecordRoot(child, recordRoot, level + 1, changedNodes);
+                setRecordRoot(child, recordRoot, changedNodes);
             }
         }
     }
 
-    private static void setUniqueElement(AnalysisTree.Node node, Path uniqueElement, int level, List<Node> changedNodes) {
-        if (node.setUniqueElement(uniqueElement, level)) {
+    private static void setUniqueElement(AnalysisTree.Node node, Path uniqueElement, List<Node> changedNodes) {
+        if (node.setUniqueElement(uniqueElement)) {
             changedNodes.add(node);
         }
         if (uniqueElement == null || !node.isUniqueElement()) {
             for (AnalysisTree.Node child : node.getChildNodes()) {
-                setUniqueElement(child, uniqueElement, level + 1, changedNodes);
+                setUniqueElement(child, uniqueElement, changedNodes);
             }
         }
     }
@@ -165,7 +162,7 @@ public class AnalysisTree implements Serializable {
             return null;
         }
         Tag tag = path.peek();
-        AnalysisTreeNode node = new AnalysisTreeNode(parent, tag);
+        AnalysisTreeNode node = tag == null ? null : new AnalysisTreeNode(parent, tag);
         for (Map.Entry<Tag, List<Statistics>> entry : statisticsMap.entrySet()) {
             Path childPath = new Path(path);
             childPath.push(entry.getKey());
@@ -177,11 +174,21 @@ public class AnalysisTree implements Serializable {
             }
             AnalysisTreeNode child = createSubtree(statisticsList, childPath, node);
             if (child != null) {
-                node.add(child);
+                if (node == null) {
+                    node = child;
+                }
+                else {
+                    node.add(child);
+                }
                 child.setStatistics(statisticsForChild);
             }
             else if (statisticsForChild != null) {
-                node.add(new AnalysisTreeNode(node, statisticsForChild));
+                if (node == null) {
+                    node = new AnalysisTreeNode(node, statisticsForChild);
+                }
+                else {
+                    node.add(new AnalysisTreeNode(node, statisticsForChild));
+                }
             }
         }
         return node;

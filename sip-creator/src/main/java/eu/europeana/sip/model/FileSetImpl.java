@@ -125,7 +125,7 @@ public class FileSetImpl implements FileSet {
                 FileInputStream is = new FileInputStream(mappingFile);
                 return RecordMapping.read(is);
             }
-            catch (IOException e) {
+            catch (Exception e) {
                 userNotifier.tellUser("Unable to read mapping file", e);
             }
         }
@@ -160,7 +160,7 @@ public class FileSetImpl implements FileSet {
                 details = (DataSetDetails) stream.fromXML(fis);
                 fis.close();
             }
-            catch (IOException e) {
+            catch (Exception e) {
                 userNotifier.tellUser("Unable to load dataset details file", e);
             }
         }

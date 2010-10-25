@@ -101,16 +101,16 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     }
 
     @Override
-    public boolean setRecordRoot(Path recordRoot, int level) {
+    public boolean setRecordRoot(Path recordRoot) {
         boolean oldValue = this.recordRoot;
-        this.recordRoot = recordRoot != null && tag.equals(recordRoot.getTag(level));
+        this.recordRoot = recordRoot != null && getPath().equals(recordRoot);
         return this.recordRoot != oldValue;
     }
 
     @Override
-    public boolean setUniqueElement(Path uniqueElement, int level) {
+    public boolean setUniqueElement(Path uniqueElement) {
         boolean oldValue = this.uniqueElement;
-        this.uniqueElement = uniqueElement != null && tag.equals(uniqueElement.getTag(level));
+        this.uniqueElement = uniqueElement != null && getPath().equals(uniqueElement);
         return this.uniqueElement != oldValue;
     }
 
@@ -209,6 +209,9 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     }
 
     public String toString() {
+        if (tag == null) {
+            return "?";
+        }
         return tag.toString();
     }
 }
