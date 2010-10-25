@@ -54,6 +54,7 @@ services.pmh.repositoryIdentifier = meta-repo.delving.eu
 services.pmh.sampleIdentifier = 00101_Ag_NO_sffDF:4c277cd8f208d29792096c1e
 services.pmh.responseListSize = 100
 services.pmh.harvestStepCleanupDelay = 15000
+services.mongo.dbName = MetaRepo
 
 #
 # smtp server settings
@@ -128,6 +129,7 @@ portal.freemarker.path = WEB-INF/templates/theme/default
 portal.theme = theme/default
 portal.color = azure
 portal.baseUrl = http://localhost:8080
+portal.mongo.dbName = static
 
 #
 # This is the tracking code for google analytics. If it is empty the badge is not included in the footer

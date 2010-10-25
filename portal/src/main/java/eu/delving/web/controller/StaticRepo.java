@@ -23,7 +23,6 @@ import java.util.TreeSet;
  */
 
 public class StaticRepo {
-    private static final String DB_NAME = "static";
     static final String PAGES_COLLECTION = "pages";
     static final String IMAGES_COLLECTION = "images";
     static final String PATH = "path";
@@ -35,7 +34,8 @@ public class StaticRepo {
     @Value("#{launchProperties['portal.name']}")
     private String portalName;
 
-    private String databaseName = DB_NAME;
+    @Value("#{launchProperties['portal.mongo.dbName']}")
+    private String databaseName;
 
     public void setDatabaseName(String databaseName) {
         this.databaseName = databaseName;

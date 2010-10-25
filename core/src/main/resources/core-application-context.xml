@@ -83,6 +83,7 @@
                 <value>portal.theme</value>
                 <value>portal.color</value>
                 <value>portal.baseUrl</value>
+                <value>portal.mongo.dbName</value>
                 <value>services.url</value>
                 <value>services.password</value>
                 <value>services.harvindexing.prefix</value>
@@ -92,6 +93,7 @@
                 <value>services.pmh.repositoryIdentifier</value>
                 <value>services.pmh.sampleIdentifier</value>
                 <value>services.pmh.responseListSize</value>
+                <value>services.mongo.dbName</value>
                 <value>ga.trackingCode</value>
             </list>
         </constructor-arg>

@@ -24,6 +24,7 @@ import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -64,6 +65,9 @@ public class MetaRepoImpl implements MetaRepo {
     @Autowired
     private AnnotationProcessor annotationProcessor;
 
+    @Value("#{launchProperties['services.mongo.dbName']}")
+    private String mongoDatabaseName;
+
     public void setResponseListSize(int responseListSize) {
         this.responseListSize = responseListSize;
     }
@@ -74,7 +78,7 @@ public class MetaRepoImpl implements MetaRepo {
 
     private synchronized DB db() {
         if (mongoDatabase == null) {
-            mongoDatabase = mongo.getDB(DATABASE_NAME);
+            mongoDatabase = mongo.getDB(mongoDatabaseName);
         }
         return mongoDatabase;
     }
