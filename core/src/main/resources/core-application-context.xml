@@ -66,14 +66,7 @@
                 <value>feedback.to</value>
                 <value>exception.to</value>
                 <value>feedback.from</value>
-                <value>cacheUrl</value>
-                <value>resolverUrlPrefix</value>
-                <value>displayPageUrl</value>
-                <value>dashboard.normalized.import.repository</value>
-                <value>dashboard.sandbox.import.repository</value>
-                <value>cache.cacheRoot</value>
                 <value>debug</value>
-                <value>static.page.path</value>
                 <value>message.resource</value>
                 <value>message.cache.seconds</value>
                 <value>log4j.xml</value>

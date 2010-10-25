@@ -30,7 +30,6 @@ db.password    = culture
 
 #
 # solr connection settings
-#solr.baseUrl = http://localhost:8983/solr
 solr.selectUrl = http://localhost:8983/solr
 solr.updateUrl = http://localhost:8983/solr
 solr.chunkSize = 1000
@@ -80,34 +79,9 @@ exception.to   = username@email.com
 feedback.from  = noreply@europeana.eu
 
 #
-# other
-#
-cacheUrl = http://localhost:8983/services/image/?
-
-#
-# Resolver Servlet
-#
-resolverUrlPrefix  = http://localhost:8983/services/resolve
-displayPageUrl     = http://localhost:8983/portal/full-doc.html
-
-#
-# dashboard
-dashboard.normalized.import.repository=/tmp/dash-import
-dashboard.sandbox.import.repository=/tmp/sandbox-import
-
-#Cache
-cache.imageMagickPath=/opt/local/bin
-cache.cacheRoot=/tmp/europeana-cache
-
-#
 # helpers
 #
 debug = false
-
-#
-# Where the static pages can be found
-#
-static.page.path = portal/src/test/staticpages/
 
 #
 # Where to get messages from and how frequently the cache is flushed
