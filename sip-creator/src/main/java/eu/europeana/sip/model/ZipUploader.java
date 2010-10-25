@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -186,7 +187,13 @@ public class ZipUploader implements Runnable {
             if (outputStream == null) {
                 throw new IllegalArgumentException("Output stream may not be null");
             }
-            InputStream inputStream = new FileInputStream(this.file);
+            InputStream inputStream;
+            if (this.file.getName().endsWith(".gz")) {
+                inputStream = new GZIPInputStream(new FileInputStream(this.file));
+            }
+            else {
+                inputStream = new FileInputStream(this.file);
+            }
             try {
                 byte[] buffer = new byte[BLOCK_SIZE];
                 int bytes;
