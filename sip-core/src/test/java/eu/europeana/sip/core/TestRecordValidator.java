@@ -1,11 +1,11 @@
 package eu.europeana.sip.core;
 
-import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.definitions.beans.AllFieldBean;
+import eu.delving.core.metadata.MetadataModelImpl;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,12 +48,10 @@ public class TestRecordValidator {
     private List<String> validFields = new ArrayList<String>(Arrays.asList(VALID_FIELDZ));
 
     @Before
-    public void prepare() {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(AllFieldBean.class);
-        AnnotationProcessorImpl ap = new AnnotationProcessorImpl();
-        ap.setClasses(classes);
-        recordValidator = new RecordValidator(ap, true);
+    public void prepare() throws IOException {
+        MetadataModelImpl metadataModel = new MetadataModelImpl();
+        metadataModel.setRecordDefinitionResource("/record-definition.xml");
+        recordValidator = new RecordValidator(metadataModel, true);
     }
 
     private void compareList(List<String> given, List<String> expect, String problemString) {

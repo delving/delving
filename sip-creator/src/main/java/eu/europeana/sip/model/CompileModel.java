@@ -21,16 +21,17 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.ConstantFieldModel;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.RecordMapping;
 import eu.europeana.sip.core.FieldEntry;
-import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordMapping;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
+import eu.europeana.sip.core.ToolCode;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -50,19 +51,19 @@ import java.util.concurrent.Executors;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class CompileModel implements SipModel.ParseListener, RecordMapping.Listener {
+public class CompileModel implements SipModel.ParseListener, MappingModel.Listener {
     public final static int COMPILE_DELAY = 500;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
-    private boolean multipleMappings;
     private RecordMapping recordMapping;
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
-    private ToolCodeModel toolCodeModel;
+    private MetadataModel metadataModel;
+    private ToolCode toolCode;
     private RecordValidator recordValidator;
+    private String selectedPath;
     private String editedCode;
 
     public enum State {
@@ -73,32 +74,36 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         COMMITTED
     }
 
-    public interface Listener {
-        void stateChanged(State state);
+    public CompileModel(MetadataModel metadataModel, ToolCode toolCode) {
+        this.metadataModel = metadataModel;
+        this.toolCode = toolCode;
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel, ConstantFieldModel constantFieldModel, RecordValidator recordValidator) {
-        this.multipleMappings = true;
-        this.recordMapping = new RecordMapping(false, constantFieldModel);
-        this.recordMapping.addListener(this);
-        this.toolCodeModel = toolCodeModel;
+    @Override
+    public void mappingChanged(RecordMapping recordMapping) {
+        this.recordMapping = recordMapping;
+        this.selectedPath = null;
+        compileSoon();
+    }
+
+    public void setSelectedPath(String selectedPath) {
+        this.selectedPath = selectedPath;
+        compileSoon();
+    }
+
+    public FieldMapping getSelectedFieldMapping() {
+        if (selectedPath == null) {
+            return null;
+        }
+        return recordMapping.getFieldMapping(selectedPath);
+    }
+
+    public void setRecordValidator(RecordValidator recordValidator) {
         this.recordValidator = recordValidator;
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel, ConstantFieldModel constantFieldModel) {
-        this.multipleMappings = false;
-        this.recordMapping = new RecordMapping(true, constantFieldModel);
-        this.recordMapping.addListener(this);
-        this.toolCodeModel = toolCodeModel;
-    }
-
-    public void addListener(Listener listener) {
-        listeners.add(listener);
-    }
-
     public void refreshCode() {
-        String code = recordMapping.getCodeForDisplay();
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
         compileSoon();
     }
 
@@ -107,10 +112,10 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     }
 
     public void setCode(String code) {
-        if (multipleMappings) {
+        if (selectedPath == null) {
             throw new RuntimeException();
         }
-        FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+        FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
         if (fieldMapping != null) {
             if (!fieldMapping.codeLooksLike(code)) {
                 editedCode = code;
@@ -124,9 +129,9 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         compileSoon();
     }
 
-    public RecordMapping getRecordMapping() {
-        return recordMapping;
-    }
+//    public RecordMapping getRecordMapping() {
+//        return recordMapping;
+//    }
 
     @Override
     public void updatedRecord(MetadataRecord metadataRecord) {
@@ -139,27 +144,6 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             updateInputDocument(metadataRecord);
             compileSoon();
         }
-    }
-
-    @Override
-    public void mappingAdded(FieldMapping fieldMapping) {
-        mappingChanged();
-    }
-
-    @Override
-    public void mappingRemoved(FieldMapping fieldMapping) {
-        mappingChanged();
-    }
-
-    @Override
-    public void mappingsRefreshed(RecordMapping recordMapping) {
-        mappingChanged();
-    }
-
-    @Override
-    public void valueMapChanged() {
-        editedCode = recordMapping.getCodeForDisplay();
-        compileSoon();
     }
 
     public Document getInputDocument() {
@@ -177,14 +161,17 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     // === privates
 
     private void mappingChanged() {
-        String code = recordMapping.getCodeForDisplay();
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
         notifyStateChange(State.PRISTINE);
-        if (!multipleMappings) {
+        if (selectedPath != null) { // todo: why?
             updateInputDocument(metadataRecord);
         }
         editedCode = null;
         compileSoon();
+    }
+
+    private String getCode() {
+        return recordMapping.toCode(metadataModel.getRecordDefinition(), selectedPath);
     }
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
@@ -203,11 +190,11 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             if (metadataRecord == null) {
                 return;
             }
-            String mappingCode = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + recordMapping.getValueMapCode() + mappingCode, recordMapping.getConstantFieldModel());
+            String mappingCode = editedCode == null ? getCode() : RecordMapping.getCodeForCompile(editedCode);
+            MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
-                if (multipleMappings) {
+                if (recordValidator != null) {
                     List<FieldEntry> fieldEntries = FieldEntry.createList(output);
                     recordValidator.validate(metadataRecord, fieldEntries);
                     String validated = FieldEntry.toString(fieldEntries, true);
@@ -219,7 +206,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                         notifyStateChange(State.PRISTINE);
                     }
                     else {
-                        FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                        FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
                         if (fieldMapping != null) {
                             fieldMapping.setCode(editedCode);
                             notifyStateChange(State.COMMITTED);
@@ -295,4 +282,14 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             throw new RuntimeException("Expected Swing thread");
         }
     }
+
+    public interface Listener {
+        void stateChanged(State state);
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 }

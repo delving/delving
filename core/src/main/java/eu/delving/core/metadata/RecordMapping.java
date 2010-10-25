@@ -23,18 +23,15 @@ package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A groovy mapping based on a model.
@@ -44,45 +41,52 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @XStreamAlias("record-mapping")
 public class RecordMapping {
-    @XStreamOmitField
-    public boolean dirty;
+    private static final String RECORD_PREFIX = "output.record {"; // todo: this shouldn't be necessary
+    private static final String RECORD_SUFFIX = "}";
 
     @XStreamAlias("record-root")
-    public String recordRoot;
+    String recordRoot;
+
+    @XStreamAlias("record-count")
+    int recordCount;
 
     @XStreamAlias("constants")
-    public Map<String, String> constants = new HashMap<String, String>();
+    Map<String, String> constants = new HashMap<String, String>();
 
     @XStreamAlias("field-mappings")
-    public Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
+    Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
 
-    @XStreamAlias("field-mapping")
-    public class FieldMapping {
-
-        @XStreamAlias("value-map")
-        public Map<String, String> valueMap;
-
-        @XStreamAlias("groovy-code")
-        public List<String> code;
-
-
-        public void setValue(String key, String value) {
-            if (valueMap == null) {
-                valueMap = new HashMap<String, String>();
-            }
-            valueMap.put(key, value);
+    public Path getRecordRoot() {
+        if (recordRoot == null) {
+            return null;
         }
+        return new Path(recordRoot);
+    }
 
-        public void setCode(String code) {
-            if (this.code == null) {
-                this.code = new ArrayList<String>();
-            }
-            this.code.clear();
-            this.code.addAll(Arrays.asList(code.split("\n")));
+    public int getRecordCount() {
+        return recordCount;
+    }
+
+    public String getConstant(String path) {
+        return constants.get(path);
+    }
+
+    public Collection<FieldMapping> getFieldMappings() {
+        return fieldMappings.values();
+    }
+
+    public void apply(RecordDefinition recordDefinition) {
+        for (Map.Entry<String, FieldMapping> entry : fieldMappings.entrySet()) {
+            Path path = new Path(entry.getKey());
+            entry.getValue().fieldDefinition = recordDefinition.getFieldDefinition(path);
         }
     }
 
-    public String generateCode(RecordDefinition recordDefinition) {
+    public FieldMapping getFieldMapping(String path) {
+        return fieldMappings.get(path);
+    }
+
+    public String toCode(RecordDefinition recordDefinition, String selectedPath) {
         final StringBuilder stringBuilder = new StringBuilder();
         Out out = new Out() {
             int indentLevel;
@@ -124,12 +128,12 @@ public class RecordMapping {
         out.line("output.");
         out.indent(1);
         Set<String> usedPaths = new TreeSet<String>();
-        generateCode("", recordDefinition.root, out, usedPaths);
+        toCode("", recordDefinition.root, out, usedPaths, selectedPath);
         out.indent(-1);
         if (usedPaths.size() != fieldMappings.size()) {
             Set<String> unusedPaths = new TreeSet<String>(fieldMappings.keySet());
             unusedPaths.removeAll(usedPaths);
-            Logger.getLogger(getClass()).warn("unused paths: "+unusedPaths);
+            Logger.getLogger(getClass()).warn("unused paths: " + unusedPaths);
         }
         return stringBuilder.toString();
     }
@@ -140,25 +144,31 @@ public class RecordMapping {
 
     // === private
 
-    private void generateCode(String path, ElementDefinition element, Out out, Set<String> usedPaths) {
+    private void toCode(String path, ElementDefinition element, Out out, Set<String> usedPaths, String selectedPath) {
+        if (selectedPath != null && !selectedPath.startsWith(path)) {
+            return;
+        }
         out.line(String.format("%s {", element.tag));
         out.indent(1);
         if (element.elements != null) {
             for (ElementDefinition subNode : element.elements) {
-                generateCode(path + "/" + element.tag, subNode, out, usedPaths);
+                toCode(path + "/" + element.tag, subNode, out, usedPaths, selectedPath);
             }
         }
         if (element.fields != null) {
             for (FieldDefinition fieldDefinition : element.fields) {
-                generateCode(path + "/" + element.tag, fieldDefinition, out, usedPaths);
+                toCode(path + "/" + element.tag, fieldDefinition, out, usedPaths, selectedPath);
             }
         }
         out.indent(-1);
         out.line("}");
     }
 
-    private void generateCode(String path, FieldDefinition field, Out out, Set<String> usedPaths) {
-        String fieldPath = path + "/" + field.getTag();
+    private void toCode(String path, FieldDefinition field, Out out, Set<String> usedPaths, String selectedPath) {
+        String fieldPath = path + "/" + field.tag;
+        if (selectedPath != null && !selectedPath.equals(fieldPath)) {
+            return;
+        }
         FieldMapping fieldMapping = fieldMappings.get(fieldPath);
         if (fieldMapping != null) {
             usedPaths.add(fieldPath);
@@ -178,8 +188,12 @@ public class RecordMapping {
         int indent = 0;
         for (char c : line.toCharArray()) {
             switch (c) {
-                case '}': indent--; break;
-                case '{': indent++; break;
+                case '}':
+                    indent--;
+                    break;
+                case '{':
+                    indent++;
+                    break;
             }
         }
         return indent;
@@ -189,46 +203,32 @@ public class RecordMapping {
         return path.replaceAll("/", "__");
     }
 
+    public static String getCodeForCompile(String code) {
+        StringBuilder out = new StringBuilder();
+        out.append(RECORD_PREFIX).append('\n');
+        out.append(code);
+        out.append(RECORD_SUFFIX).append('\n');
+        return out.toString();
+    }
+
     interface Out {
         void line(String line);
+
         void indent(int change);
     }
 
-    // observable
-
-    public interface Listener {
-        void mappingChanged(RecordMapping recordMapping);
+    public static void write(RecordMapping mapping, OutputStream out) {
+        stream().toXML(mapping, out);
     }
 
-    public void addListener(Listener listener) {
-        listeners.add(listener);
+    public static RecordMapping read(InputStream is) {
+        return (RecordMapping) stream().fromXML(is);
     }
 
-    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
-
-    private void fireChangeEvent() {
-        for (Listener listener : listeners) {
-            listener.mappingChanged(this);
-        }
-    }
-
-    // ==== reading and writing
-
-    public static RecordMapping read(InputStream inputStream) {
-        return (RecordMapping) stream().fromXML(inputStream);
-    }
-
-    public static RecordMapping read(String string) {
-        return (RecordMapping) stream().fromXML(string);
-    }
-
-    public static String toString(RecordMapping spec) {
-        return stream().toXML(spec);
-    }
-
-    private static XStream stream() {
+    static XStream stream() {
         XStream stream = new XStream();
         stream.processAnnotations(RecordMapping.class);
         return stream;
     }
+
 }

@@ -22,7 +22,7 @@
 package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.List;
 
@@ -33,49 +33,9 @@ import java.util.List;
  */
 
 @XStreamAlias("field")
-public class FieldDefinition {
-    
-    public String getTag() {
-        if (getPrefix() == null) {
-            return localName;
-        }
-        else {
-            return getPrefix() + ':' + localName;
-        }
-    }
+public class FieldDefinition implements Comparable<FieldDefinition> {
 
-    public String getFieldNameString() {
-        if (getPrefix() == null) {
-            return localName;
-        }
-        else {
-            return getPrefix() + '_' + localName;
-        }
-    }
-
-    public String getPrefix() {
-        if (facetPrefix != null) {
-            return facetPrefix;
-        }
-        else {
-            return prefix;
-        }
-    }
-
-    public String getFacetName() {
-        return localName.toUpperCase();
-    }
-
-    public String getLocalName() {
-        return localName;
-    }
-
-    @XStreamAsAttribute
-    public String prefix;
-    
-    @XStreamAsAttribute
-    public String localName;
-
+    public Tag tag;
     public String facetPrefix;
     public Boolean briefDoc = false;
     public Boolean fullDoc = true;
@@ -105,6 +65,15 @@ public class FieldDefinition {
     public List<String> options;
     public List<String> toCopyField;
 
+    @XStreamOmitField
+    public Path path;
+
+    public void setPath(Path path) {
+        path.push(tag);
+        this.path = new Path(path);
+        path.pop();
+    }
+
     private Object readResolve() {
         multivalued = setDefaultTrue(multivalued);
         stored = setDefaultTrue(stored);
@@ -117,6 +86,32 @@ public class FieldDefinition {
         return value == null ? true : value;
     }
 
+    public String getFieldNameString() {
+        if (getPrefix() == null) {
+            return tag.getLocalName();
+        }
+        else {
+            return getPrefix() + '_' + tag.getLocalName();
+        }
+    }
+
+    public String getPrefix() {
+        if (facetPrefix != null) {
+            return facetPrefix;
+        }
+        else {
+            return tag.getPrefix();
+        }
+    }
+
+    public String getLocalName() {
+        return tag.getLocalName();
+    }
+
+    public String getFacetName() {
+        return tag.getLocalName().toUpperCase();
+    }
+
     public Boolean isId() {
         return id == null ? false : id;
     }
@@ -127,6 +122,11 @@ public class FieldDefinition {
 
     @Override
     public String toString() {
-        return String.format("FieldDefinition(%s:%s)", prefix, localName);
+        return String.format("FieldDefinition(%s)", tag);
+    }
+
+    @Override
+    public int compareTo(FieldDefinition fieldDefinition) {
+        return tag.compareTo(fieldDefinition.tag);
     }
 }

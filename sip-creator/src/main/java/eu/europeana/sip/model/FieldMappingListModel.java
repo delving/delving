@@ -21,12 +21,12 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.FieldMapping;
-import eu.europeana.sip.core.RecordMapping;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -38,13 +38,8 @@ import java.util.List;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class FieldMappingListModel extends AbstractListModel implements RecordMapping.Listener {
+public class FieldMappingListModel extends AbstractListModel implements MappingModel.Listener {
     private List<FieldMapping> list = new ArrayList<FieldMapping>();
-
-    public FieldMappingListModel(RecordMapping recordMapping) {
-        recordMapping.addListener(this);
-        refreshList(recordMapping);
-    }
 
     @Override
     public int getSize() {
@@ -57,33 +52,9 @@ public class FieldMappingListModel extends AbstractListModel implements RecordMa
     }
 
     @Override
-    public void mappingAdded(FieldMapping fieldMapping) {
-        int index = list.size();
-        list.add(fieldMapping);
-        fireIntervalAdded(this, index, index);
-    }
-
-    @Override
-    public void mappingRemoved(FieldMapping fieldMapping) {
-        int index = list.indexOf(fieldMapping);
-        if (index >= 0) {
-            list.remove(index);
-            fireIntervalRemoved(this, index, index);
-        }
-    }
-
-    @Override
-    public void mappingsRefreshed(RecordMapping recordMapping) {
-        refreshList(recordMapping);
-    }
-
-    @Override
-    public void valueMapChanged() {
-    }
-
-    private void refreshList(RecordMapping recordMapping) {
+    public void mappingChanged(RecordMapping recordMapping) {
         clear();
-        for (FieldMapping fieldMapping : recordMapping) {
+        for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
             list.add(fieldMapping);
         }
         fireIntervalAdded(this, 0, getSize());
@@ -101,7 +72,7 @@ public class FieldMappingListModel extends AbstractListModel implements RecordMa
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             FieldMapping fieldMapping = (FieldMapping) value;
-            return (JLabel) super.getListCellRendererComponent(list, fieldMapping.getDescription(), index, isSelected, cellHasFocus);
+            return super.getListCellRendererComponent(list, fieldMapping.getDescription(), index, isSelected, cellHasFocus);
         }
     }
 

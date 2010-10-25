@@ -24,7 +24,6 @@ package eu.delving.core.metadata;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,15 +41,17 @@ public class AnalysisTree implements Serializable {
     private AnalysisTreeNode root;
 
     public interface Node extends TreeNode, Comparable<Node> {
-        AnalysisTreeStatistics getStatistics();
+        Statistics getStatistics();
 
         TreePath getTreePath();
 
-        QName getQName();
+        Tag getTag();
 
-        boolean setRecordRoot(QName recordRoot);
+        Path getPath();
 
-        boolean setUniqueElement(QName uniqueElemen);
+        boolean setRecordRoot(Path recordRoot, int level);
+
+        boolean setUniqueElement(Path uniqueElement, int level);
 
         boolean isRecordRoot();
 
@@ -63,35 +64,35 @@ public class AnalysisTree implements Serializable {
         String getVariableName();
     }
 
-    public static void setRecordRoot(DefaultTreeModel model, QName recordRoot) {
+    public static void setRecordRoot(DefaultTreeModel model, Path recordRoot) {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
         List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
-        setRecordRoot(node, recordRoot, changedNodes);
+        setRecordRoot(node, recordRoot, 0, changedNodes);
         for (AnalysisTree.Node changedNode : changedNodes) {
             model.nodeChanged(changedNode);
         }
     }
 
-    public static void setUniqueElement(DefaultTreeModel model, QName uniqueElement) {
+    public static void setUniqueElement(DefaultTreeModel model, Path uniqueElement) {
         AnalysisTree.Node node = (AnalysisTree.Node) model.getRoot();
         List<AnalysisTree.Node> changedNodes = new ArrayList<AnalysisTree.Node>();
-        setUniqueElement(node, uniqueElement, changedNodes);
+        setUniqueElement(node, uniqueElement, 0, changedNodes);
         for (AnalysisTree.Node changedNode : changedNodes) {
             model.nodeChanged(changedNode);
         }
     }
 
     public static AnalysisTree create(String rootTag) {
-        return new AnalysisTree(new AnalysisTreeNode(rootTag));
+        return new AnalysisTree(new AnalysisTreeNode(Tag.create(rootTag)));
     }
 
-    public static AnalysisTree create(List<AnalysisTreeStatistics> statisticsList, String rootTag) {
-        AnalysisTreeNode root = createSubtree(statisticsList, new AnalysisPath(), null);
+    public static AnalysisTree create(List<Statistics> statisticsList, String rootTag) {
+        AnalysisTreeNode root = createSubtree(statisticsList, new Path(), null);
         if (root != null) {
-            root.setTag(rootTag);
+            root.setTag(Tag.create(rootTag));
         }
         else {
-            root = new AnalysisTreeNode("No statistics");
+            root = new AnalysisTreeNode(Tag.create("No statistics"));
         }
         return new AnalysisTree(root);
     }
@@ -110,24 +111,24 @@ public class AnalysisTree implements Serializable {
         this.root = root;
     }
 
-    private static void setRecordRoot(AnalysisTree.Node node, QName recordRoot, List<Node> changedNodes) {
-        if (node.setRecordRoot(recordRoot)) {
+    private static void setRecordRoot(AnalysisTree.Node node, Path recordRoot, int level, List<Node> changedNodes) {
+        if (node.setRecordRoot(recordRoot, level)) {
             changedNodes.add(node);
         }
         if (recordRoot == null || !node.isRecordRoot()) {
             for (AnalysisTree.Node child : node.getChildNodes()) {
-                setRecordRoot(child, recordRoot, changedNodes);
+                setRecordRoot(child, recordRoot, level + 1, changedNodes);
             }
         }
     }
 
-    private static void setUniqueElement(AnalysisTree.Node node, QName uniqueElement, List<Node> changedNodes) {
-        if (node.setUniqueElement(uniqueElement)) {
+    private static void setUniqueElement(AnalysisTree.Node node, Path uniqueElement, int level, List<Node> changedNodes) {
+        if (node.setUniqueElement(uniqueElement, level)) {
             changedNodes.add(node);
         }
         if (uniqueElement == null || !node.isUniqueElement()) {
             for (AnalysisTree.Node child : node.getChildNodes()) {
-                setUniqueElement(child, uniqueElement, changedNodes);
+                setUniqueElement(child, uniqueElement, level + 1, changedNodes);
             }
         }
     }
@@ -145,16 +146,16 @@ public class AnalysisTree implements Serializable {
         }
     }
 
-    private static AnalysisTreeNode createSubtree(List<AnalysisTreeStatistics> statisticsList, AnalysisPath path, AnalysisTreeNode parent) {
-        Map<QName, List<AnalysisTreeStatistics>> statisticsMap = new HashMap<QName, List<AnalysisTreeStatistics>>();
-        for (AnalysisTreeStatistics statistics : statisticsList) {
-            AnalysisPath subPath = new AnalysisPath(statistics.getPath(), path.size());
+    private static AnalysisTreeNode createSubtree(List<Statistics> statisticsList, Path path, AnalysisTreeNode parent) {
+        Map<Tag, List<Statistics>> statisticsMap = new HashMap<Tag, List<Statistics>>();
+        for (Statistics statistics : statisticsList) {
+            Path subPath = new Path(statistics.getPath(), path.size());
             if (subPath.equals(path) && statistics.getPath().size() == path.size() + 1) {
-                QName name = statistics.getPath().getQName(path.size());
-                if (name != null) {
-                    List<AnalysisTreeStatistics> list = statisticsMap.get(name);
+                Tag tag = statistics.getPath().getTag(path.size());
+                if (tag != null) {
+                    List<Statistics> list = statisticsMap.get(tag);
                     if (list == null) {
-                        statisticsMap.put(name, list = new ArrayList<AnalysisTreeStatistics>());
+                        statisticsMap.put(tag, list = new ArrayList<Statistics>());
                     }
                     list.add(statistics);
                 }
@@ -163,13 +164,13 @@ public class AnalysisTree implements Serializable {
         if (statisticsMap.isEmpty()) {
             return null;
         }
-        QName name = path.peek();
-        AnalysisTreeNode node = new AnalysisTreeNode(parent, name);
-        for (Map.Entry<QName, List<AnalysisTreeStatistics>> entry : statisticsMap.entrySet()) {
-            AnalysisPath childPath = new AnalysisPath(path);
+        Tag tag = path.peek();
+        AnalysisTreeNode node = new AnalysisTreeNode(parent, tag);
+        for (Map.Entry<Tag, List<Statistics>> entry : statisticsMap.entrySet()) {
+            Path childPath = new Path(path);
             childPath.push(entry.getKey());
-            AnalysisTreeStatistics statisticsForChild = null;
-            for (AnalysisTreeStatistics statistics : entry.getValue()) {
+            Statistics statisticsForChild = null;
+            for (Statistics statistics : entry.getValue()) {
                 if (statistics.getPath().equals(childPath)) {
                     statisticsForChild = statistics;
                 }

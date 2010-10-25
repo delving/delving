@@ -77,10 +77,10 @@ public class MappingTemplateMenu extends JMenu {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             String name = JOptionPane.showInputDialog(parent, "Template Name?");
-            if (name != null && !name.isEmpty()) {
-                String templateCode = sipModel.getMappingTemplate();
-                saveTemplate(name, templateCode);
-            }
+//            if (name != null && !name.isEmpty()) { todo
+//                String templateCode = sipModel.getMappingTemplate();
+//                saveTemplate(name, templateCode);
+//            }
         }
     }
 
@@ -94,7 +94,7 @@ public class MappingTemplateMenu extends JMenu {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            sipModel.loadMappingTemplate(file);
+//            sipModel.loadMappingTemplate(file); todo
         }
     }
 

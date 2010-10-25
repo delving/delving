@@ -21,22 +21,20 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.core.ConstantFieldModel;
+import eu.delving.core.metadata.RecordMapping;
 import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
+import eu.europeana.sip.core.ToolCode;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -77,20 +75,16 @@ public class Normalizer implements Runnable {
 
     public void run() {
         try {
-            String mappingCode = sipModel.getFileSet().getMapping();
-            List<String> mappingLines = Arrays.asList(mappingCode.split("\n"));
-            RecordRoot recordRoot = RecordRoot.fromMapping(mappingLines);
-            ConstantFieldModel constantFieldModel = new ConstantFieldModel(sipModel.getAnnotationProcessor(), null);
-            constantFieldModel.fromMapping(mappingLines);
-            ToolCodeModel toolCodeModel = new ToolCodeModel();
+            RecordMapping recordMapping = sipModel.getFileSet().getMapping();
+            ToolCode toolCode = new ToolCode();
             FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
             if (storeNormalizedFile) {
                 fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
                 fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mappingCode, constantFieldModel);
-            MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordRoot, parserListener);
-            RecordValidator recordValidator = new RecordValidator(sipModel.getAnnotationProcessor(), true);
+            MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + recordMapping.toCode(sipModel.getMetadataModel().getRecordDefinition(), null));
+            MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordMapping.getRecordRoot(), parserListener);
+            RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {

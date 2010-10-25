@@ -34,11 +34,6 @@ public class MetadataModelImpl implements MetadataModel {
 
     private RecordDefinition recordDefinition;
 
-//    public void setRecordDefinitionFile(String path) throws FileNotFoundException {
-//        InputStream is = new FileInputStream(path);
-//        this.recordDefinition = RecordDefinition.read(is);
-//    }
-
     public void setRecordDefinitionResource(String path) throws IOException {
         URL url = getClass().getResource(path);
         this.recordDefinition = RecordDefinition.read(url.openStream());

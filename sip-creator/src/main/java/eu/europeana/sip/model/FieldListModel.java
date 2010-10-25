@@ -21,10 +21,11 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.FieldMapping;
-import eu.europeana.sip.core.RecordMapping;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -37,62 +38,56 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Given an annotation processor, provide food for the JList to show fields
+ * todo
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class FieldListModel extends AbstractListModel {
-    private List<EuropeanaField> europeanaFieldList;
+    private List<FieldDefinition> fieldDefinitions;
     private Unmapped unmapped;
 
-    public FieldListModel(AnnotationProcessor annotationProcessor) {
-        this.europeanaFieldList = new ArrayList<EuropeanaField>(annotationProcessor.getMappableFields());
-        Collections.sort(europeanaFieldList, new Comparator<EuropeanaField>() {
+    public FieldListModel(MetadataModel metadataModel) {
+        this.fieldDefinitions = new ArrayList<FieldDefinition>(metadataModel.getRecordDefinition().getMappableFields().values());
+        Collections.sort(fieldDefinitions, new Comparator<FieldDefinition>() {
             @Override
-            public int compare(EuropeanaField field0, EuropeanaField field1) {
+            public int compare(FieldDefinition field0, FieldDefinition field1) {
                 return field0.getFieldNameString().compareTo(field1.getFieldNameString());
             }
         });
     }
 
-    public ListModel getUnmapped(RecordMapping recordMapping) {
+    public ListModel getUnmapped(MappingModel mappingModel) {
         if (unmapped == null) {
-            unmapped = new Unmapped(recordMapping);
-            recordMapping.addListener(unmapped);
+            mappingModel.addListener(unmapped = new Unmapped());
         }
         return unmapped;
     }
 
     @Override
     public int getSize() {
-        return europeanaFieldList.size();
+        return fieldDefinitions.size();
     }
 
     @Override
     public Object getElementAt(int index) {
-        return europeanaFieldList.get(index);
+        return fieldDefinitions.get(index);
     }
 
     public static class CellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            EuropeanaField europeanaField = (EuropeanaField) value;
+            FieldDefinition europeanaField = (FieldDefinition) value;
             String string = europeanaField.getFieldNameString();
-            if (!europeanaField.europeana().requiredGroup().isEmpty()) {
-                string += " (required: "+ europeanaField.europeana().requiredGroup()+")";
+            if (europeanaField.requiredGroup != null) {
+                string += " (required: "+ europeanaField.requiredGroup+")";
             }
             return super.getListCellRendererComponent(list, string, index, isSelected, cellHasFocus);
         }
     }
 
-    public class Unmapped extends AbstractListModel implements RecordMapping.Listener {
-        private RecordMapping recordMapping;
-        private List<EuropeanaField> unmappedFields = new ArrayList<EuropeanaField>();
-
-        public Unmapped(RecordMapping recordMapping) {
-            this.recordMapping = recordMapping;
-        }
+    public class Unmapped extends AbstractListModel implements MappingModel.Listener {
+        private List<FieldDefinition> unmappedFields = new ArrayList<FieldDefinition>();
 
         @Override
         public int getSize() {
@@ -105,39 +100,20 @@ public class FieldListModel extends AbstractListModel {
         }
 
         @Override
-        public void mappingAdded(FieldMapping fieldMapping) {
-            refresh();
-        }
-
-        @Override
-        public void mappingRemoved(FieldMapping fieldMapping) {
-            refresh();
-        }
-
-        @Override
-        public void mappingsRefreshed(RecordMapping recordMapping) {
-            refresh();
-        }
-
-        @Override
-        public void valueMapChanged() {
-        }
-
-        private void refresh() {
+        public void mappingChanged(RecordMapping recordMapping) {
             int sizeBefore = getSize();
             unmappedFields.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             nextVariable:
-            for (EuropeanaField field : europeanaFieldList) {
-                for (FieldMapping fieldMapping : recordMapping) {
-                    if (fieldMapping.getEuropeanaField() == field) {
+            for (FieldDefinition fieldDefinition : fieldDefinitions) {
+                for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
+                    if (fieldMapping.fieldDefinition == fieldDefinition) {
                         continue nextVariable;
                     }
                 }
-                unmappedFields.add(field);
+                unmappedFields.add(fieldDefinition);
             }
             fireIntervalAdded(this, 0, getSize());
         }
-
     }
 }

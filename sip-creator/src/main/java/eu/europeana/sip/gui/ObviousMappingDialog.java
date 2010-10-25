@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.FieldMapping;
+import eu.delving.core.metadata.FieldMapping;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -81,7 +81,7 @@ public class ObviousMappingDialog extends JDialog {
         private FieldMapping mapping;
 
         private MappingCheckBox(FieldMapping mapping) {
-            super(mapping.getEuropeanaField().getFieldNameString(), true);
+            super(mapping.getFieldDefinition().getFieldNameString(), true);
             this.mapping = mapping;
         }
     }

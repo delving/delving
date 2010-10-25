@@ -41,19 +41,24 @@ public class RecordDefinition {
 
     public ElementDefinition root;
 
+    void setPaths() {
+        root.setPaths(new Path());
+    }
+
     public Map<String, FieldDefinition> getConstantFields() {
         Map<String, FieldDefinition> map = new TreeMap<String, FieldDefinition>();
         root.getConstantFields("", map);
         return map;
     }
 
-    public List<FieldDefinition> getCategoryFields(String category) {
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
-        root.getCategoryFields(category, fieldDefinitions);
-        return fieldDefinitions;
+    public Map<String, FieldDefinition> getMappableFields() {
+        Map<String, FieldDefinition> fieldDefinitionMap = new TreeMap<String, FieldDefinition>();
+        root.getMappableFields(fieldDefinitionMap);
+        return fieldDefinitionMap;
     }
-    public FieldDefinition getFieldDefinition(String prefix, String localName) {
-        return root.getFieldDefinition(prefix, localName);
+
+    public FieldDefinition getFieldDefinition(Path path) {
+        return root.getFieldDefinition(path, 0);
     }
 
     public List<String> getFieldNameList() {
@@ -87,7 +92,9 @@ public class RecordDefinition {
     // handy static methods
 
     public static RecordDefinition read(InputStream in) {
-        return (RecordDefinition) stream().fromXML(in);
+        RecordDefinition recordDefinition = (RecordDefinition) stream().fromXML(in);
+        recordDefinition.setPaths();
+        return recordDefinition;
     }
 
     public static String toString(RecordDefinition recordDefinition) {

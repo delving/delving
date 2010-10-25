@@ -21,9 +21,10 @@
 
 package eu.europeana.sip.xml;
 
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.Statistics;
+import eu.delving.core.metadata.Tag;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.QNamePath;
-import eu.europeana.sip.model.Statistics;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -47,8 +48,8 @@ import java.util.TreeMap;
 public class AnalysisParser implements Runnable {
     private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
-    private QNamePath path = new QNamePath();
-    private Map<QNamePath, Statistics> statisticsMap = new TreeMap<QNamePath, Statistics>();
+    private Path path = new Path();
+    private Map<Path, Statistics> statisticsMap = new TreeMap<Path, Statistics>();
     private Listener listener;
     private FileSet fileSet;
     private boolean abort;
@@ -93,11 +94,11 @@ public class AnalysisParser implements Runnable {
                                 listener.progress(count);
                             }
                         }
-                        path.push(input.getName());
+                        path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
-                                path.push(attributeName);
+                                path.push(Tag.create(attributeName.getPrefix(), attributeName.getLocalPart()));
                                 recordValue(input.getAttributeValue(walk));
                                 path.pop();
                             }
@@ -142,8 +143,8 @@ public class AnalysisParser implements Runnable {
         value = value.trim();
         Statistics statistics = statisticsMap.get(path);
         if (statistics == null) {
-            QNamePath key = new QNamePath(path);
-            statisticsMap.put(key, statistics = new Statistics(key));
+            Path key = new Path(path);
+            statisticsMap.put(key, statistics = new Statistics(path));
         }
         if (!value.isEmpty()) {
             statistics.recordValue(value);

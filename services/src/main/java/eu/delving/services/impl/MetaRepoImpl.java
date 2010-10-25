@@ -6,21 +6,20 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
-import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
+import eu.europeana.sip.core.ToolCode;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +61,7 @@ public class MetaRepoImpl implements MetaRepo {
     private Mongo mongo;
 
     @Autowired
-    private AnnotationProcessor annotationProcessor;
+    private MetadataModel metadataModel;
 
     public void setResponseListSize(int responseListSize) {
         this.responseListSize = responseListSize;
@@ -627,7 +626,7 @@ public class MetaRepoImpl implements MetaRepo {
         private DataSetImpl dataSet;
         private DBObject object;
         private MetadataFormat metadataFormat;
-        private RecordValidator recordValidator = new RecordValidator(annotationProcessor, false);
+        private RecordValidator recordValidator = new RecordValidator(metadataModel, false);
         private MappingRunner mappingRunner;
 
         private MappingImpl(DataSetImpl dataSet, DBObject object) throws BadArgumentException {
@@ -690,10 +689,10 @@ public class MetaRepoImpl implements MetaRepo {
 
         private MappingRunner getMappingRunner() {
             if (mappingRunner == null) {
-                ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
+                ConstantFieldModel constantFieldModel = new ConstantFieldModel(metadataModel, null);
                 constantFieldModel.fromMapping(Arrays.asList(getGroovyCode().split("\n")));
-                ToolCodeModel toolCodeModel = new ToolCodeModel();
-                mappingRunner = new MappingRunner(toolCodeModel.getCode() + getGroovyCode(), constantFieldModel);
+                ToolCode toolCode = new ToolCode();
+                mappingRunner = new MappingRunner(toolCode.getCode() + getGroovyCode());
             }
             return mappingRunner;
         }

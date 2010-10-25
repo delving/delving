@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.definitions.annotations;
+package eu.europeana.sip.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

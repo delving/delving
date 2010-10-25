@@ -46,13 +46,13 @@ public class CodeGenerator {
         }
         else {
             for (SourceVariable holder : variables) {
-                generateCopyCode(fieldMapping.getField(), holder.getNode(), fieldMapping);
+                generateCopyCode(fieldMapping.fieldDefinition, holder.getNode(), fieldMapping);
             }
         }
         return fieldMapping;
     }
 
-    public List<FieldMapping> createObviousMetaFieldMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
+    public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
             if (fieldDefinition.constant) {
@@ -96,7 +96,7 @@ public class CodeGenerator {
                 }
             }
         }
-        return fieldMapping.isEmpty() ? null : fieldMapping;
+        return fieldMapping.code == null ? null : fieldMapping;
     }
 
     private void generateCopyCode(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping) {
@@ -107,7 +107,7 @@ public class CodeGenerator {
                     fieldMapping.addCodeLine(String.format("%s.%s it", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
                 }
                 else {
-                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.options);
+                    fieldMapping.createValueMap(getActualValues(node));
                     fieldMapping.addCodeLine(String.format("%s.%s %s(it)", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.getFieldNameString()));
                 }
             }
@@ -129,7 +129,7 @@ public class CodeGenerator {
                     fieldMapping.addCodeLine(String.format("%s.%s %s[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName()));
                 }
                 else {
-                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.options);
+                    fieldMapping.createValueMap(getActualValues(node));
                     fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName(), fieldDefinition.getFieldNameString()));
                 }
             }
@@ -148,7 +148,7 @@ public class CodeGenerator {
 
     private Set<String> getActualValues(AnalysisTree.Node node) {
         Set<String> values = new TreeSet<String>();
-        for (AnalysisTreeStatistics.Counter counter : node.getStatistics().getCounters()) {
+        for (Statistics.Counter counter : node.getStatistics().getCounters()) {
             values.add(counter.getValue());
         }
         return values;

@@ -19,11 +19,11 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.definitions.beans;
+package eu.europeana.sip.beans;
 
-import eu.europeana.sip.definitions.annotations.Europeana;
-import eu.europeana.sip.definitions.annotations.FieldCategory;
-import eu.europeana.sip.definitions.annotations.Solr;
+import eu.europeana.sip.annotations.Europeana;
+import eu.europeana.sip.annotations.FieldCategory;
+import eu.europeana.sip.annotations.Solr;
 import eu.europeana.sip.definitions.presentation.DocId;
 
 import java.util.Date;

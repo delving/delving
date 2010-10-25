@@ -1,5 +1,7 @@
 package eu.europeana.sip.core;
 
+import eu.delving.core.metadata.Path;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -15,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class FieldEntry implements Comparable<FieldEntry> {
     private static Pattern PATTERN = Pattern.compile("<([^>]*)>([^<]*)<[^>]*>");
-    private String tag;
+    private Path path;
     private String value;
 
     /**
@@ -38,13 +40,14 @@ public class FieldEntry implements Comparable<FieldEntry> {
             }
             Matcher matcher = PATTERN.matcher(line);
             if (matcher.matches()) {
-                String tag = matcher.group(1);
+                String tagString = matcher.group(1);
                 String value = matcher.group(2).trim();
                 if (!value.isEmpty()) {
-                    fieldEntries.add(new FieldEntry(tag, value));
+                    fieldEntries.add(new FieldEntry(new Path(tagString), value));
                 }
             }
             else {
+                // todo: note that this will fail if the record is hierarchical
                 throw new RuntimeException(String.format("Line [%s] does not look like a record field", line));
             }
         }
@@ -85,35 +88,32 @@ public class FieldEntry implements Comparable<FieldEntry> {
         return out.toString();
     }
 
-    public FieldEntry(String tag, String value) {
-        this.tag = tag;
+    public FieldEntry(Path path, String value) {
+        this.path = path;
         this.value = value;
     }
 
-    public String getTag() {
-        return tag;
+    public Path getPath() {
+        return path;
     }
 
     public String getValue() {
         return value;
     }
 
+    public String getTag() {
+        if (path.size() != 1) {
+            throw new RuntimeException("Hierarchical model not yet supported");
+        }
+        return path.getTag(0).toString();
+    }
+
     @Override
     public int compareTo(FieldEntry fieldEntry) {
-        return tag.compareTo(fieldEntry.tag);
+        return path.compareTo(fieldEntry.path);
     }
 
     public String toString() {
-        return "<" + tag + ">" + value + "</" + tag + ">";
+        return "<" + getTag() + ">" + value + "</" + getTag() + ">";
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FieldEntry fieldEntry = (FieldEntry) o;
-        return !(tag != null ? !tag.equals(fieldEntry.tag) : fieldEntry.tag != null) && !(value != null ? !value.equals(fieldEntry.value) : fieldEntry.value != null);
-    }
-
-
 }

@@ -1,19 +1,18 @@
 package eu.europeana.sip.model;
 
 import com.thoughtworks.xstream.XStream;
+import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.Statistics;
 import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -119,32 +118,29 @@ public class FileSetImpl implements FileSet {
     }
 
     @Override
-    public String getMapping() {
+    public RecordMapping getMapping() {
         checkWorkerThread();
         if (mappingFile.exists()) {
             try {
-                BufferedReader in = new BufferedReader(new FileReader(mappingFile));
-                StringBuilder mapping = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    mapping.append(line).append('\n');
-                }
-                in.close();
-                return mapping.toString();
+                FileInputStream is = new FileInputStream(mappingFile);
+                return RecordMapping.read(is);
             }
             catch (IOException e) {
                 userNotifier.tellUser("Unable to read mapping file", e);
             }
         }
-        return "";
+        return null;
     }
 
     @Override
-    public void setMapping(String mapping) {
+    public void setMapping(RecordMapping mapping) {
         checkWorkerThread();
+        if (mapping == null) {
+            mappingFile.delete();
+        }
         try {
-            FileWriter out = new FileWriter(mappingFile);
-            out.write(mapping);
+            FileOutputStream out = new FileOutputStream(mappingFile);
+            RecordMapping.write(mapping, out);
             out.close();
         }
         catch (IOException e) {

@@ -21,12 +21,11 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
+import eu.delving.core.metadata.AnalysisTree;
+import eu.delving.core.metadata.AnalysisTreeNode;
+import eu.delving.core.metadata.Path;
 import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.RecordRoot;
-import eu.europeana.sip.model.AnalysisTree;
 import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.QNameNode;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -214,13 +213,8 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-                recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
-            }
-
-            @Override
-            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
-                constantFieldPanel.refresh();
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
+                recordCountLabel.setText(String.format(RECORDS, recordCount));
             }
 
             @Override
@@ -241,17 +235,17 @@ public class AnalysisPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
-                QNameNode node = (QNameNode) path.getLastPathComponent();
-                RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
-                sipModel.setRecordRoot(recordRoot);
+                AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
+                Path recordRoot = null; // todo: get it from the node???
+                sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
             }
         });
         selectUniqueElementButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
-                QNameNode node = (QNameNode) path.getLastPathComponent();
-                sipModel.setUniqueElement(node.getQName());
+                AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
+                sipModel.setUniqueElement(node.getPath());
             }
         });
         analyzeButton.addActionListener(new ActionListener() {

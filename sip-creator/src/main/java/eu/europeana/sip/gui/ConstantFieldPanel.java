@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
+import eu.delving.core.metadata.FieldDefinition;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -37,6 +37,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Map;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -52,37 +53,33 @@ public class ConstantFieldPanel extends JPanel {
     public ConstantFieldPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
-        fieldComponent = new FieldComponent[sipModel.getGlobalFieldModel().getFields().size()];
+        Map<String, FieldDefinition> constantFields = sipModel.getMetadataModel().getRecordDefinition().getConstantFields();
+        fieldComponent = new FieldComponent[constantFields.size()];
         setBorder(BorderFactory.createTitledBorder("Constant Fields"));
         int index = 0;
-        for (ConstantFieldModel.FieldSpec fieldSpec : sipModel.getGlobalFieldModel().getFields()) {
-            if (fieldSpec.getEnumValues() == null) {
-                fieldComponent[index++] = new FieldComponent(fieldSpec);
-            }
-            else {
-                fieldComponent[index++] = new FieldComponent(fieldSpec);
-            }
+        for (FieldDefinition fieldDefinition : constantFields.values()) {
+            fieldComponent[index++] = new FieldComponent(fieldDefinition);
         }
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(400, 400));
     }
 
     public void refresh() {
-        ConstantFieldModel model = sipModel.getGlobalFieldModel();
+        Map<String, FieldDefinition> constantFields = sipModel.getMetadataModel().getRecordDefinition().getConstantFields();
         int index = 0;
-        for (ConstantFieldModel.FieldSpec fieldSpec : model.getFields()) {
-            fieldComponent[index++].setText(model.get(fieldSpec.getName()));
+        for (FieldDefinition fieldDefinition : constantFields.values()) {
+            fieldComponent[index++].setText(sipModel._getRecordMapping().getConstant(fieldDefinition.path.toString()));
         }
     }
 
     private class FieldComponent {
-        private ConstantFieldModel.FieldSpec fieldSpec;
+        private FieldDefinition fieldDefinition;
         private JTextField textField;
         private JComboBox comboBox;
 
-        private FieldComponent(ConstantFieldModel.FieldSpec fieldSpec) {
-            this.fieldSpec = fieldSpec;
-            if (fieldSpec.getEnumValues() == null) {
+        private FieldComponent(FieldDefinition fieldDefinition) {
+            this.fieldDefinition = fieldDefinition;
+            if (fieldDefinition.options == null) {
                 createTextField();
             }
             else {
@@ -91,7 +88,7 @@ public class ConstantFieldPanel extends JPanel {
         }
 
         private void createComboBox() {
-            comboBox = new JComboBox(fieldSpec.getEnumValues().toArray());
+            comboBox = new JComboBox(fieldDefinition.options.toArray());
             comboBox.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
@@ -101,7 +98,7 @@ public class ConstantFieldPanel extends JPanel {
                     }
                 }
             });
-            JLabel label = new JLabel(fieldSpec.getName(), JLabel.RIGHT);
+            JLabel label = new JLabel(fieldDefinition.tag.toString(), JLabel.RIGHT);
             label.setLabelFor(comboBox);
             ConstantFieldPanel.this.add(label);
             ConstantFieldPanel.this.add(comboBox);
@@ -125,7 +122,7 @@ public class ConstantFieldPanel extends JPanel {
                     setValue();
                 }
             });
-            JLabel label = new JLabel(fieldSpec.getName(), JLabel.RIGHT);
+            JLabel label = new JLabel(fieldDefinition.tag.toString(), JLabel.RIGHT);
             label.setLabelFor(textField);
             ConstantFieldPanel.this.add(label);
             ConstantFieldPanel.this.add(textField);
@@ -133,10 +130,10 @@ public class ConstantFieldPanel extends JPanel {
 
         private void setValue() {
             if (textField != null) {
-                sipModel.setGlobalField(fieldSpec.getName(), textField.getText());
+                sipModel.getMappingModel().setConstant(fieldDefinition.path.toString(), textField.getText());
             }
             else {
-                sipModel.setGlobalField(fieldSpec.getName(), comboBox.getSelectedItem().toString());
+                sipModel.getMappingModel().setConstant(fieldDefinition.path.toString(), comboBox.getSelectedItem().toString());
             }
         }
 

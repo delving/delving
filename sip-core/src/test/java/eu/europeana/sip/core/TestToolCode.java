@@ -17,11 +17,11 @@ public class TestToolCode {
 
     private GroovyShell groovyShell = new GroovyShell();
     private Script script;
-    private ToolCodeModel toolCodeModel = new ToolCodeModel();
+    private ToolCode toolCode = new ToolCode();
 
     @Before
     public void compile() {
-        script = groovyShell.parse(toolCodeModel.getCode());
+        script = groovyShell.parse(toolCode.getCode());
     }
 
     @Test

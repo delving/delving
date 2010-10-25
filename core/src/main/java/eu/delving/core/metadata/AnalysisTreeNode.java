@@ -23,7 +23,6 @@ package eu.delving.core.metadata;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,31 +41,30 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     private static final long serialVersionUID = -8362212829296408316L;
     private AnalysisTreeNode parent;
     private List<AnalysisTreeNode> children = new ArrayList<AnalysisTreeNode>();
-    private String tag;
-    private QName qName;
+    private Tag tag;
     private boolean recordRoot, uniqueElement;
-    private AnalysisTreeStatistics statistics;
+    private Statistics statistics;
 
-    AnalysisTreeNode(String tag) {
+    AnalysisTreeNode(Tag tag) {
         this.tag = tag;
     }
 
-    AnalysisTreeNode(AnalysisTreeNode parent, QName qName) {
+    AnalysisTreeNode(AnalysisTreeNode parent, Tag tag) {
         this.parent = parent;
-        this.qName = qName;
+        this.tag = tag;
     }
 
-    AnalysisTreeNode(AnalysisTreeNode parent, AnalysisTreeStatistics statistics) {
+    AnalysisTreeNode(AnalysisTreeNode parent, Statistics statistics) {
         this.parent = parent;
         this.statistics = statistics;
-        this.qName = statistics.getPath().peek();
+        this.tag = statistics.getPath().peek();
     }
 
-    public void setTag(String tag) {
+    public void setTag(Tag tag) {
         this.tag = tag;
     }
 
-    public void setStatistics(AnalysisTreeStatistics statistics) {
+    public void setStatistics(Statistics statistics) {
         this.statistics = statistics;
     }
 
@@ -75,7 +73,7 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     }
 
     @Override
-    public AnalysisTreeStatistics getStatistics() {
+    public Statistics getStatistics() {
         return statistics;
     }
 
@@ -87,21 +85,32 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
     }
 
     @Override
-    public QName getQName() {
-        return qName;
+    public Tag getTag() {
+        return tag;
     }
 
     @Override
-    public boolean setRecordRoot(QName recordRoot) {
+    public Path getPath() {
+        List<AnalysisTreeNode> list = new ArrayList<AnalysisTreeNode>();
+        compilePathList(list);
+        Path path = new Path();
+        for (AnalysisTreeNode node : list) {
+            path.push(node.getTag());
+        }
+        return path;
+    }
+
+    @Override
+    public boolean setRecordRoot(Path recordRoot, int level) {
         boolean oldValue = this.recordRoot;
-        this.recordRoot = recordRoot != null && qName != null && qName.equals(recordRoot);
+        this.recordRoot = recordRoot != null && tag.equals(recordRoot.getTag(level));
         return this.recordRoot != oldValue;
     }
 
     @Override
-    public boolean setUniqueElement(QName uniqueElement) {
+    public boolean setUniqueElement(Path uniqueElement, int level) {
         boolean oldValue = this.uniqueElement;
-        this.uniqueElement = uniqueElement != null && qName != null && qName.equals(uniqueElement);
+        this.uniqueElement = uniqueElement != null && tag.equals(uniqueElement.getTag(level));
         return this.uniqueElement != oldValue;
     }
 
@@ -194,20 +203,12 @@ public class AnalysisTreeNode implements AnalysisTree.Node, Serializable {
         return new Vector<AnalysisTreeNode>(children).elements();
     }
 
-    public String toString() {
-        if (qName == null) {
-            return tag;
-        }
-        else if (!qName.getPrefix().isEmpty()) {
-            return qName.getPrefix() + '_' + qName.getLocalPart();
-        }
-        else {
-            return qName.getLocalPart();
-        }
-    }
-
     @Override
     public int compareTo(AnalysisTree.Node other) {
         return getVariableName().compareTo(other.getVariableName());
+    }
+
+    public String toString() {
+        return tag.toString();
     }
 }

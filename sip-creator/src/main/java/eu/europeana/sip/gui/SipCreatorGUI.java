@@ -21,12 +21,8 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.definitions.beans.AllFieldBean;
-import eu.europeana.sip.definitions.beans.BriefBean;
-import eu.europeana.sip.definitions.beans.FullBean;
-import eu.europeana.sip.definitions.beans.IdBean;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.MetadataModelImpl;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
@@ -39,8 +35,7 @@ import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * The main GUI class for the sip creator
@@ -55,7 +50,7 @@ public class SipCreatorGUI extends JFrame {
     public SipCreatorGUI(String serverUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
+        this.sipModel = new SipModel(loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -92,15 +87,17 @@ public class SipCreatorGUI extends JFrame {
         return bar;
     }
 
-    private AnnotationProcessor createAnnotationProcessor() {
-        List<Class<?>> list = new ArrayList<Class<?>>();
-        list.add(IdBean.class);
-        list.add(BriefBean.class);
-        list.add(FullBean.class);
-        list.add(AllFieldBean.class);
-        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-        annotationProcessor.setClasses(list);
-        return annotationProcessor;
+    private MetadataModel loadMetadataModel() {
+        try {
+            MetadataModelImpl metadataModel = new MetadataModelImpl();
+            metadataModel.setRecordDefinitionResource("/record-definition.xml");
+            return metadataModel;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+            return null;
+        }
     }
 
     private class PopupExceptionHandler implements UserNotifier {

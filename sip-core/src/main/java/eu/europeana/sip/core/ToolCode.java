@@ -34,14 +34,11 @@ import java.net.URL;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ToolCodeModel {
-    private static final String FILE_NAME = "ToolCode.groovy";
-    private static final URL CODE_RESOURCE = ToolCodeModel.class.getResource("/" + FILE_NAME);
+public class ToolCode {
+    private static final URL CODE_RESOURCE = ToolCode.class.getResource("/ToolCode.groovy");
     private String resourceCode;
-    private String fileCode;
-    private long fileModified;
 
-    public ToolCodeModel() {
+    public ToolCode() {
         try {
             resourceCode = readResourceCode();
         }

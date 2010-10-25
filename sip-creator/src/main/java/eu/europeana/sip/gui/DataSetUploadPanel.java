@@ -21,9 +21,8 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
+import eu.delving.core.metadata.Path;
 import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
@@ -190,11 +189,7 @@ public class DataSetUploadPanel extends JPanel {
             }
 
             @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-            }
-
-            @Override
-            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
             }
 
             @Override

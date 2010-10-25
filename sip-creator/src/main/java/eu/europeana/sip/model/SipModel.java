@@ -21,18 +21,21 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.ConstantFieldModel;
+import eu.delving.core.metadata.AnalysisTree;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.SourceVariable;
+import eu.delving.core.metadata.Statistics;
 import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.FieldMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordMapping;
-import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.core.ToolCode;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
@@ -44,11 +47,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import javax.xml.namespace.QName;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +64,7 @@ import java.util.concurrent.Executors;
 public class SipModel {
 //    private Logger log = Logger.getLogger(getClass());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private AnnotationProcessor annotationProcessor;
+    private MetadataModel metadataModel;
     private FileSet fileSet;
     private UserNotifier userNotifier;
     private List<Statistics> statisticsList;
@@ -80,7 +78,8 @@ public class SipModel {
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
     private FieldMappingListModel fieldMappingListModel;
-    private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
+    private MappingModel mappingModel = new MappingModel();
+    private Map<String, FieldDefinition> fieldMap = new TreeMap<String, FieldDefinition>();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
@@ -100,9 +99,7 @@ public class SipModel {
 
         void updatedDetails(DataSetDetails dataSetDetails);
 
-        void updatedRecordRoot(RecordRoot recordRoot);
-
-        void updatedConstantFieldModel(ConstantFieldModel constantFieldModel);
+        void updatedRecordRoot(Path recordRoot, int recordCount);
 
         void normalizationMessage(boolean complete, String message);
     }
@@ -117,35 +114,30 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String serverUrl) {
-        this.annotationProcessor = annotationProcessor;
+    public SipModel(MetadataModel metadataModel, UserNotifier userNotifier, String serverUrl) {
+        this.metadataModel = metadataModel;
         this.userNotifier = userNotifier;
         this.serverUrl = serverUrl;
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
-        fieldListModel = new FieldListModel(annotationProcessor);
-        ToolCodeModel toolCodeModel = new ToolCodeModel();
-        ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, new ConstantFieldModel.Listener() {
-            @Override
-            public void updatedConstant() {
-                recordCompileModel.compileSoon();
-            }
-        });
-        recordCompileModel = new CompileModel(toolCodeModel, constantFieldModel, new RecordValidator(annotationProcessor, false));
-        fieldCompileModel = new CompileModel(toolCodeModel, constantFieldModel);
+        fieldListModel = new FieldListModel(metadataModel);
+        ToolCode toolCode = new ToolCode();
+        recordCompileModel = new CompileModel(metadataModel, toolCode);
+        recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
+        fieldCompileModel = new CompileModel(metadataModel, toolCode);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
-        fieldMappingListModel = new FieldMappingListModel(recordCompileModel.getRecordMapping());
-        for (EuropeanaField field : annotationProcessor.getMappableFields()) {
-            europeanaFieldMap.put(field.getFieldNameString(), field);
-        }
+        fieldMappingListModel = new FieldMappingListModel();
+        mappingModel.addListener(fieldMappingListModel);
+        mappingModel.addListener(recordCompileModel);
+        mappingModel.addListener(fieldCompileModel);
+        fieldMap = metadataModel.getRecordDefinition().getMappableFields();
         fieldCompileModel.addListener(new CompileModel.Listener() {
 
             @Override
             public void stateChanged(CompileModel.State state) {
                 if (state == CompileModel.State.COMMITTED) {
-                    String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-                    executor.execute(new MappingSetter(code));
+                    executor.execute(new MappingSetter());
                 }
             }
         });
@@ -160,12 +152,24 @@ public class SipModel {
         configuration.setServerAccessKey(key);
     }
 
-    public AnnotationProcessor getAnnotationProcessor() {
-        return annotationProcessor;
+    public MetadataModel getMetadataModel() {
+        return metadataModel;
     }
 
     public FileSet getFileSet() {
         return fileSet;
+    }
+
+    public MappingModel getMappingModel() {
+        return mappingModel;
+    }
+
+    public RecordMapping _getRecordMapping() {
+        return getMappingModel().getRecordMapping();
+    }
+
+    public Path getRecordRoot() {
+        return _getRecordMapping().getRecordRoot();
     }
 
     public void tellUser(String message) {
@@ -191,7 +195,7 @@ public class SipModel {
             @Override
             public void run() {
                 final List<Statistics> statistics = newFileSet.getStatistics();
-                final String mapping = newFileSet.getMapping();
+                final RecordMapping recordMapping = newFileSet.getMapping();
                 final FileSet.Report report = newFileSet.getReport();
                 final DataSetDetails dataSetDetails = newFileSet.getDataSetDetails();
                 SwingUtilities.invokeLater(new Runnable() {
@@ -199,16 +203,14 @@ public class SipModel {
                     public void run() {
                         setStatisticsList(statistics);
                         variableListModel.clear();
-                        RecordMapping recordMapping = recordCompileModel.getRecordMapping();
-                        recordMapping.setCode(mapping, europeanaFieldMap);
-                        RecordRoot recordRoot = recordMapping.getRecordRoot();
-                        setRecordRootInternal(recordRoot);
+                        mappingModel.setRecordMapping(recordMapping);
+                        if (getRecordRoot() != null) {
+                            setRecordRootInternal(recordMapping.getRecordRoot(), recordMapping.getRecordCount());
+                        }
                         setDataSetDetails(dataSetDetails);
-                        setGlobalFieldModelInternal(recordMapping.getConstantFieldModel());
-                        fieldCompileModel.getRecordMapping().setConstantFieldModel(recordMapping.getConstantFieldModel());
                         createMetadataParser(1);
-                        if (recordRoot != null) {
-                            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
+                        if (recordMapping != null && recordMapping.getRecordRoot() != null) {
+                            normalizeProgressModel.setMaximum(recordMapping.getRecordCount());
                             if (report != null) {
                                 normalizeProgressModel.setValue(report.getRecordsNormalized() + report.getRecordsDiscarded());
                                 normalizeMessage(report);
@@ -234,38 +236,38 @@ public class SipModel {
         });
     }
 
-    public String getMappingTemplate() {
-        return recordCompileModel.getRecordMapping().getCodeForTemplate();
-    }
-
-    public void loadMappingTemplate(File file) {
-        if (!recordCompileModel.getRecordMapping().isEmpty()) {
-            userNotifier.tellUser("Record must be empty to use a template.");
-        }
-        else {
-            try {
-                BufferedReader in = new BufferedReader(new FileReader(file));
-                StringBuilder out = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    out.append(line).append('\n');
-                }
-                in.close();
-                String templateCode = out.toString();
-                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
-                recordMapping.setCode(templateCode, europeanaFieldMap);
-                setRecordRootInternal(recordMapping.getRecordRoot());
-                recordMapping.getConstantFieldModel().clear();
-                createMetadataParser(1);
-                for (UpdateListener updateListener : updateListeners) {
-                    updateListener.templateApplied();
-                }
-            }
-            catch (IOException e) {
-                userNotifier.tellUser("Unable to load template", e);
-            }
-        }
-    }
+//    public String getMappingTemplate() {
+//        return recordCompileModel.getRecordMapping().getCodeForTemplate();
+//    }
+//
+//    public void loadMappingTemplate(File file) {
+//        if (recordCompileModel.getRecordMapping().fieldMappings == null) {
+//            userNotifier.tellUser("Record must be empty to use a template.");
+//        }
+//        else {
+//            try {
+//                BufferedReader in = new BufferedReader(new FileReader(file));
+//                StringBuilder out = new StringBuilder();
+//                String line;
+//                while ((line = in.readLine()) != null) {
+//                    out.append(line).append('\n');
+//                }
+//                in.close();
+//                String templateCode = out.toString();
+//                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
+//                recordMapping.setCode(templateCode, fieldMap);
+//                setRecordRootInternal(recordMapping.recordRoot);
+//                recordMapping.getConstantFieldModel().clear();
+//                createMetadataParser(1);
+//                for (UpdateListener updateListener : updateListeners) {
+//                    updateListener.templateApplied();
+//                }
+//            }
+//            catch (IOException e) {
+//                userNotifier.tellUser("Unable to load template", e);
+//            }
+//        }
+//    }
 
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();
@@ -422,7 +424,7 @@ public class SipModel {
         }
     }
 
-    public void setUniqueElement(QName uniqueElement) {
+    public void setUniqueElement(Path uniqueElement) {
         dataSetDetails.setUniqueElement(uniqueElement.toString());
         executor.execute(new DetailsSetter(dataSetDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
@@ -431,28 +433,17 @@ public class SipModel {
         }
     }
 
-    public void setRecordRoot(RecordRoot recordRoot) {
+    public void setRecordRoot(Path recordRoot, int recordCount) {
         checkSwingThread();
-        setRecordRootInternal(recordRoot);
+        setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
-        dataSetDetails.setRecordRoot(recordRoot.getRootQName().toString());
+        dataSetDetails.setRecordRoot(recordRoot.toString());
         executor.execute(new DetailsSetter(dataSetDetails));
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedDetails(dataSetDetails);
         }
-        recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
-    }
-
-    public void setGlobalField(String fieldName, String value) {
-        recordCompileModel.getRecordMapping().getConstantFieldModel().set(fieldName, value);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
-    }
-
-    public ConstantFieldModel getGlobalFieldModel() {
-        return recordCompileModel.getRecordMapping().getConstantFieldModel();
+        getMappingModel().setRecordRoot(recordRoot, recordCount);
+        executor.execute(new MappingSetter());
     }
 
     public TableModel getStatisticsTableModel() {
@@ -473,14 +464,14 @@ public class SipModel {
     }
 
     public ListModel getUnmappedFieldListModel() {
-        return fieldListModel.getUnmapped(recordCompileModel.getRecordMapping());
+        return fieldListModel.getUnmapped(getMappingModel());
     }
 
-    public List<EuropeanaField> getUnmappedFields() {
-        List<EuropeanaField> fields = new ArrayList<EuropeanaField>();
+    public List<FieldDefinition> getUnmappedFields() {
+        List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
         ListModel listModel = getUnmappedFieldListModel();
         for (int walkField = 0; walkField < listModel.getSize(); walkField++) {
-            fields.add((EuropeanaField) listModel.getElementAt(walkField));
+            fields.add((FieldDefinition) listModel.getElementAt(walkField));
         }
         return fields;
     }
@@ -489,30 +480,28 @@ public class SipModel {
         return variableListModel;
     }
 
-    public List<VariableHolder> getVariables() {
-        List<VariableHolder> list = new ArrayList<VariableHolder>();
+    public List<SourceVariable> getVariables() {
+        List<SourceVariable> list = new ArrayList<SourceVariable>();
         for (int walkVar = 0; walkVar < variableListModel.getSize(); walkVar++) {
-            list.add((VariableHolder) variableListModel.getElementAt(walkVar));
+            list.add((SourceVariable) variableListModel.getElementAt(walkVar));
         }
         return list;
     }
 
     public ListModel getVariablesListWithCountsModel() {
-        return variableListModel.getWithCounts(recordCompileModel.getRecordMapping());
+        return variableListModel.getWithCounts(getMappingModel());
     }
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordCompileModel.getRecordMapping().add(fieldMapping);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
+        getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), fieldMapping);
+        executor.execute(new MappingSetter());
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordCompileModel.getRecordMapping().remove(fieldMapping);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
+        getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), null);
+        executor.execute(new MappingSetter());
     }
 
     public ListModel getFieldMappingListModel() {
@@ -529,11 +518,11 @@ public class SipModel {
         executor.execute(new RecordFetcher(1));
     }
 
-    public CompileModel getRecordMappingModel() {
+    public CompileModel getRecordCompileModel() {
         return recordCompileModel;
     }
 
-    public CompileModel getFieldMappingModel() {
+    public CompileModel getFieldCompileModel() {
         return fieldCompileModel;
     }
 
@@ -560,29 +549,22 @@ public class SipModel {
         }
     }
 
-    private void setGlobalFieldModelInternal(ConstantFieldModel constantFieldModel) {
-        checkSwingThread();
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedConstantFieldModel(constantFieldModel);
-        }
-    }
-
-    private void setRecordRootInternal(RecordRoot recordRoot) {
+    private void setRecordRootInternal(Path recordRoot, int recordCount) {
         checkSwingThread();
         List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
         normalizeProgressModel.setValue(0);
         if (recordRoot != null) {
-            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
+            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot);
             analysisTree.getVariables(variables);
             variableListModel.setVariableList(variables);
-            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
+            normalizeProgressModel.setMaximum(recordCount);
         }
         else {
             variableListModel.clear();
             normalizeProgressModel.setMaximum(100);
         }
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedRecordRoot(recordRoot);
+            updateListener.updatedRecordRoot(recordRoot, recordCount);
         }
     }
 
@@ -596,9 +578,8 @@ public class SipModel {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
-        RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
-        if (recordRoot != null) {
-            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
+        if (getRecordRoot() != null) {
+            AnalysisTree.setRecordRoot(analysisTreeModel, getRecordRoot());
         }
         statisticsTableModel.setCounterList(null);
     }
@@ -612,7 +593,7 @@ public class SipModel {
                 parseListener.updatedRecord(null);
             }
         }
-        RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
+        Path recordRoot = getRecordRoot();
         if (recordRoot != null) {
             executor.execute(new RecordFetcher(recordNumber));
         }
@@ -627,7 +608,7 @@ public class SipModel {
 
         @Override
         public void run() {
-            RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
+            Path recordRoot = getRecordRoot();
             if (recordRoot == null) {
                 return;
             }
@@ -654,15 +635,9 @@ public class SipModel {
     }
 
     private class MappingSetter implements Runnable {
-        private String mapping;
-
-        private MappingSetter(String mapping) {
-            this.mapping = mapping;
-        }
-
         @Override
         public void run() {
-            fileSet.setMapping(mapping);
+            fileSet.setMapping(_getRecordMapping());
         }
     }
 

@@ -3,16 +3,16 @@ package eu.europeana.sip;
 import eu.delving.core.metadata.ElementDefinition;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.RecordDefinition;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.definitions.annotations.Europeana;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.definitions.beans.AllFieldBean;
+import eu.delving.core.metadata.Tag;
+import eu.europeana.sip.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.annotations.Europeana;
+import eu.europeana.sip.annotations.EuropeanaField;
+import eu.europeana.sip.beans.AllFieldBean;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -70,8 +70,7 @@ public class BeansToXML {
         rd.root = new ElementDefinition();
         for (EuropeanaField ef : ap.getAllFields()) {
             FieldDefinition fd = new FieldDefinition();
-            fd.prefix = string(ef.solr().prefix());
-            fd.localName = string(ef.getLocalName());
+            fd.tag = Tag.create(string(ef.solr().prefix()), string(ef.getLocalName()));
             fd.briefDoc = bool(ef.europeana().briefDoc());
             fd.category = string(ef.europeana().category().toString());
             fd.compressed = bool(ef.solr().compressed());
@@ -102,24 +101,7 @@ public class BeansToXML {
             fd.valueMapped = bool(ef.europeana().valueMapped());
             rd.root.fields.add(fd);
         }
-        Collections.sort(rd.root.fields, new Comparator<FieldDefinition>() {
-            @Override
-            public int compare(FieldDefinition a, FieldDefinition b) {
-                String aa = a.prefix;
-                String bb = b.prefix;
-                if (aa == null) {
-                    return 1;
-                }
-                if (bb == null) {
-                    return -1;
-                }
-                int pc = aa.compareTo(bb);
-                if (pc != 0) {
-                    return pc;
-                }
-                return a.getLocalName().compareTo(b.getLocalName());
-            }
-        });
+        Collections.sort(rd.root.fields);
         System.out.println(rd.toString());
     }
 }

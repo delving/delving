@@ -35,16 +35,16 @@ import java.util.TreeMap;
  * @author Gerald de Jong, Beautiful Code BV, <geralddejong@gmail.com>
  */
 
-public class AnalysisTreeStatistics implements Comparable<AnalysisTreeStatistics>, Serializable {
+public class Statistics implements Comparable<Statistics>, Serializable {
     private static final long serialVersionUID = 21772426262368490L;
     private static final int MAX_STATISTICS_LIST_SIZE = 1000;
     private static final DecimalFormat PERCENT = new DecimalFormat("#0.00%");
     private static final int MAXIMUM_LENGTH = 1000;
-    private AnalysisPath path;
+    private Path path;
     private int total;
     private Map<String, CounterImpl> counterMap = new TreeMap<String, CounterImpl>();
 
-    public AnalysisTreeStatistics(AnalysisPath path) {
+    public Statistics(Path path) {
         this.path = path;
     }
 
@@ -63,7 +63,7 @@ public class AnalysisTreeStatistics implements Comparable<AnalysisTreeStatistics
         total++;
     }
 
-    public AnalysisPath getPath() {
+    public Path getPath() {
         return path;
     }
 
@@ -101,7 +101,7 @@ public class AnalysisTreeStatistics implements Comparable<AnalysisTreeStatistics
     }
 
     @Override
-    public int compareTo(AnalysisTreeStatistics statistics) {
+    public int compareTo(Statistics statistics) {
         return path.compareTo(statistics.path);
     }
 

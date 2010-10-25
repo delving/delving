@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.definitions.annotations;
+package eu.europeana.sip.annotations;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>

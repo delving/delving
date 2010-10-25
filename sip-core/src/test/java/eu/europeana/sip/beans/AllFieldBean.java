@@ -19,13 +19,13 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.definitions.beans;
+package eu.europeana.sip.beans;
 
-import eu.europeana.sip.definitions.annotations.Europeana;
-import eu.europeana.sip.definitions.annotations.Solr;
+import eu.europeana.sip.annotations.Europeana;
+import eu.europeana.sip.annotations.Solr;
 
-import static eu.europeana.sip.definitions.annotations.FieldCategory.ESE;
-import static eu.europeana.sip.definitions.annotations.FieldCategory.INDEX_TIME_ADDITION;
+import static eu.europeana.sip.annotations.FieldCategory.ESE;
+import static eu.europeana.sip.annotations.FieldCategory.INDEX_TIME_ADDITION;
 
 /**
  * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed

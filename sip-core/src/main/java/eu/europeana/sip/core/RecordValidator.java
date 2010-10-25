@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.core;
 
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.definitions.annotations.FieldCategory;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.Path;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,26 +39,24 @@ import java.util.TreeMap;
 /**
  * Validate a record
  * <p/>
- * todo: move this class to the definitions module
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class RecordValidator {
-    private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
+    private Map<String, FieldDefinition> fieldMap;
     private Map<String, String> constantMap;
     private Set<String> unique;
 
-    public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
+    public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
+        if (metadataModel.getRecordDefinition().root.elements != null) {
+            throw new RuntimeException("Hierarchical model not yet supported");
+        }
         if (checkUniqueness) {
             unique = new HashSet<String>();
             constantMap = new HashMap<String, String>();
         }
-        for (EuropeanaField field : annotationProcessor.getAllFields()) {
-            if (field.europeana().category() != FieldCategory.INDEX_TIME_ADDITION) {
-                fieldMap.put(field.getXmlName(), field);
-            }
-        }
+        fieldMap = metadataModel.getRecordDefinition().getMappableFields();
     }
 
     public void validate(MetadataRecord metadataRecord, List<FieldEntry> fieldEntries) throws RecordValidationException {
@@ -70,23 +68,22 @@ public class RecordValidator {
     }
 
     private void validateAgainstAnnotations(List<FieldEntry> fieldEntries, List<String> problems) {
-        Map<String, Counter> counterMap = new HashMap<String, Counter>();
+        Map<Path, Counter> counterMap = new HashMap<Path, Counter>();
         for (FieldEntry fieldEntry : fieldEntries) {
-            EuropeanaField field = fieldMap.get(fieldEntry.getTag());
+            FieldDefinition field = fieldMap.get(fieldEntry.getTag());
             if (field == null) {
                 problems.add(String.format("Unknown XML element [%s]", fieldEntry.getTag()));
             }
             else {
-                Counter counter = counterMap.get(fieldEntry.getTag());
+                Counter counter = counterMap.get(fieldEntry.getPath());
                 if (counter == null) {
                     counter = new Counter();
-                    counterMap.put(fieldEntry.getTag(), counter);
+                    counterMap.put(fieldEntry.getPath(), counter);
                 }
                 counter.count++;
-                Set<String> enumValues = field.getEnumValues();
-                if (enumValues != null && !field.europeana().valueMapped() && !enumValues.contains(fieldEntry.getValue())) {
+                if (field.options != null && !field.valueMapped && !field.options.contains(fieldEntry.getValue())) {
                     StringBuilder enumString = new StringBuilder();
-                    Iterator<String> walk = enumValues.iterator();
+                    Iterator<String> walk = field.options.iterator();
                     while (walk.hasNext()) {
                         enumString.append(walk.next());
                         if (walk.hasNext()) {
@@ -95,7 +92,7 @@ public class RecordValidator {
                     }
                     problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldEntry.getTag(), fieldEntry.getValue(), enumString.toString()));
                 }
-                if (field.europeana().constant() && constantMap != null) {
+                if (field.constant && constantMap != null) {
                     String value = constantMap.get(fieldEntry.getTag());
                     if (value == null) {
                         constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
@@ -104,13 +101,13 @@ public class RecordValidator {
                         problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
                     }
                 }
-                String regex = field.europeana().regularExpression();
-                if (!regex.isEmpty()) {
+                String regex = field.regularExpression;
+                if (regex != null) {
                     if (!fieldEntry.getValue().matches(regex)) {
                         problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", fieldEntry.getTag(), fieldEntry.getValue(), regex));
                     }
                 }
-                if (field.europeana().url()) {
+                if (field.url) {
                     try {
                         new URL(fieldEntry.getValue());
                     }
@@ -118,7 +115,7 @@ public class RecordValidator {
                         problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
                 }
-                if (field.europeana().id() && unique != null) {
+                if (field.id && unique != null) {
                     if (unique.contains(fieldEntry.getValue())) {
                         problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
@@ -127,26 +124,26 @@ public class RecordValidator {
             }
         }
         Map<String, Boolean> present = new TreeMap<String, Boolean>();
-        for (EuropeanaField field : fieldMap.values()) {
-            if (!field.europeana().requiredGroup().isEmpty()) {
-                present.put(field.europeana().requiredGroup(), false);
+        for (FieldDefinition field : fieldMap.values()) {
+            if (field.requiredGroup != null) {
+                present.put(field.requiredGroup, false);
             }
         }
         for (FieldEntry fieldEntry : fieldEntries) {
-            EuropeanaField field = fieldMap.get(fieldEntry.getTag());
-            if (field != null && !field.europeana().requiredGroup().isEmpty()) {
-                present.put(field.europeana().requiredGroup(), true);
+            FieldDefinition field = fieldMap.get(fieldEntry.getTag());
+            if (field != null && field.requiredGroup != null) {
+                present.put(field.requiredGroup, true);
             }
         }
-        for (Map.Entry<String,Boolean> entry : present.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : present.entrySet()) {
             if (!entry.getValue()) {
                 problems.add(String.format("Required field violation for [%s]", entry.getKey()));
             }
         }
-        for (EuropeanaField field : fieldMap.values()) {
-            Counter counter = counterMap.get(field.getXmlName());
-            if (counter != null && !field.solr().multivalued() && counter.count > 1) {
-                problems.add(String.format("Single-valued field [%s] had %d values", field.getXmlName(), counter.count));
+        for (FieldDefinition field : fieldMap.values()) {
+            Counter counter = counterMap.get(field.path);
+            if (counter != null && !field.multivalued && counter.count > 1) {
+                problems.add(String.format("Single-valued field [%s] had %d values", field.tag, counter.count));
             }
         }
     }

@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import eu.delving.core.metadata.FieldMapping;
 import org.junit.Test;
 
 import java.util.List;

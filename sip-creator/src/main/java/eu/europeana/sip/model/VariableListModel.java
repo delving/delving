@@ -21,8 +21,11 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.FieldMapping;
-import eu.europeana.sip.core.RecordMapping;
+import eu.delving.core.metadata.AnalysisTree;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.SourceVariable;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
@@ -37,19 +40,16 @@ import java.util.List;
  */
 
 public class VariableListModel extends AbstractListModel {
-    private List<VariableHolder> variableList = new ArrayList<VariableHolder>();
+    private List<SourceVariable> variableList = new ArrayList<SourceVariable>();
     private WithCounts withCounts;
 
     public void setVariableList(List<AnalysisTree.Node> variableList) {
         clear();
         for (AnalysisTree.Node node : variableList) {
-            this.variableList.add(new VariableHolder(node));
+            this.variableList.add(new SourceVariable(node));
         }
         Collections.sort(this.variableList);
         fireIntervalAdded(this, 0, getSize());
-        if (withCounts != null) {
-            withCounts.refresh();
-        }
     }
 
     public void clear() {
@@ -70,77 +70,43 @@ public class VariableListModel extends AbstractListModel {
         return variableList.get(index);
     }
 
-    public ListModel getWithCounts(RecordMapping recordMapping) {
+    public ListModel getWithCounts(MappingModel mappingModel) {
         if (withCounts == null) {
-            withCounts = new WithCounts(recordMapping);
-            recordMapping.addListener(withCounts);
+            withCounts = new WithCounts();
+            mappingModel.addListener(withCounts);
         }
         return withCounts;
     }
 
-    public class WithCounts extends AbstractListModel implements RecordMapping.Listener {
-        private RecordMapping recordMapping;
-        private List<VariableHolder> variableHolderList = new ArrayList<VariableHolder>();
-
-        public WithCounts(RecordMapping recordMapping) {
-            this.recordMapping = recordMapping;
-            refresh();
-        }
+    public class WithCounts extends AbstractListModel implements MappingModel.Listener {
+        private List<SourceVariable> sourceVariables = new ArrayList<SourceVariable>();
 
         @Override
         public int getSize() {
-            return variableHolderList.size();
+            return sourceVariables.size();
         }
 
         @Override
         public Object getElementAt(int index) {
-            return variableHolderList.get(index);
+            return sourceVariables.get(index);
         }
 
         @Override
-        public void mappingAdded(FieldMapping fieldMapping) {
-            refresh();
-        }
-
-        @Override
-        public void mappingRemoved(FieldMapping fieldMapping) {
-            refresh();
-        }
-
-        @Override
-        public void mappingsRefreshed(RecordMapping recordMapping) {
-            refresh();
-        }
-
-        @Override
-        public void valueMapChanged() {
-        }
-
-        private void refresh() {
+        public void mappingChanged(RecordMapping recordMapping) {
             int sizeBefore = getSize();
-            variableHolderList.clear();
+            sourceVariables.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
-            for (VariableHolder uncountedHolder : variableList) {
-                VariableHolder variableHolder = new VariableHolder(uncountedHolder.getNode());
-                for (FieldMapping fieldMapping : recordMapping) {
+            for (SourceVariable uncountedHolder : variableList) {
+                SourceVariable sourceVariable = new SourceVariable(uncountedHolder.getNode());
+                for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
                     for (String variable : fieldMapping.getVariables()) {
-                        variableHolder.checkIfMapped(variable);
+                        sourceVariable.checkIfMapped(variable);
                     }
                 }
-                variableHolderList.add(variableHolder);
+                sourceVariables.add(sourceVariable);
             }
-            // todo: this is a rude trick to correct the stupid decision to make variables lower-case
-            for (VariableHolder holder : variableHolderList) {
-                String to = holder.getVariableName();
-                String from = to.toLowerCase();
-                for (FieldMapping fieldMapping : recordMapping) {
-                    fieldMapping.fixVariableName(from, to);
-                }
-            }
-            // todo: remove the above block sometime
-            Collections.sort(variableHolderList);
+            Collections.sort(sourceVariables);
             fireIntervalAdded(this, 0, getSize());
         }
-
     }
 }

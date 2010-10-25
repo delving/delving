@@ -21,7 +21,7 @@
 
 package eu.delving.core.metadata;
 
-import javax.xml.namespace.QName;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -32,42 +32,48 @@ import java.util.Stack;
  * @author Gerald de Jong, Delving BV, <geralddejong@gmail.com>
  */
 
-public class AnalysisPath implements Comparable<AnalysisPath> {
-    private Stack<QName> stack = new Stack<QName>();
+public class Path implements Comparable<Path>, Serializable {
+    private Stack<Tag> stack = new Stack<Tag>();
 
-    public AnalysisPath() {
+    public Path() {
     }
 
-    public AnalysisPath(AnalysisPath path) {
-        for (QName name : path.stack) {
+    public Path(String pathString) {
+        for (String part : pathString.split("/")) {
+            stack.push(Tag.create(part));
+        }
+    }
+
+    public Path(Path path) {
+        for (Tag name : path.stack) {
             stack.push(name);
         }
     }
 
-    public AnalysisPath(AnalysisPath path, int count) {
-        for (QName name : path.stack) {
+    public Path(Path path, int count) {
+        for (Tag name : path.stack) {
             if (count-- > 0) {
                 stack.push(name);
             }
         }
     }
 
-    public void push(QName name) {
-        stack.push(name);
+    public void push(Tag tag) {
+        stack.push(tag);
     }
 
     public void pop() {
         stack.pop();
     }
 
-    public boolean equals(AnalysisPath path) {
+    public boolean equals(Path path) {
         return compareTo(path) == 0;
     }
 
     @Override
-    public int compareTo(AnalysisPath path) {
-        Iterator<QName> walkUs = stack.iterator();
-        Iterator<QName> walkThem = path.stack.iterator();
+    public int compareTo(Path path) {
+        Iterator<Tag> walkUs = stack.iterator();
+        Iterator<Tag> walkThem = path.stack.iterator();
         while (true) {
             if (!walkUs.hasNext()) {
                 if (!walkThem.hasNext()) {
@@ -80,14 +86,14 @@ public class AnalysisPath implements Comparable<AnalysisPath> {
             else if (!walkThem.hasNext()) {
                 return 1;
             }
-            int cmp = compare(walkUs.next(), walkThem.next());
+            int cmp = walkUs.next().compareTo(walkThem.next());
             if (cmp != 0) {
                 return cmp;
             }
         }
     }
 
-    public QName getQName(int level) {
+    public Tag getTag(int level) {
         if (level < stack.size()) {
             return stack.get(level);
         }
@@ -96,7 +102,7 @@ public class AnalysisPath implements Comparable<AnalysisPath> {
         }
     }
 
-    public QName peek() {
+    public Tag peek() {
         if (stack.isEmpty()) {
             return null;
         }
@@ -109,58 +115,10 @@ public class AnalysisPath implements Comparable<AnalysisPath> {
 
     public String toString() {
         StringBuilder builder = new StringBuilder(300);
-        for (QName name : stack) {
+        for (Tag tag : stack) {
             builder.append('/');
-            if (!name.getPrefix().isEmpty()) {
-                builder.append(name.getPrefix());
-                builder.append(':');
-                builder.append(name.getLocalPart());
-            }
-            else {
-                builder.append(name.getLocalPart());
-            }
+            builder.append(tag);
         }
         return builder.toString();
     }
-
-    public String getLastNodeString() {
-        if (stack.isEmpty()) {
-            return "Empty";
-        }
-        else {
-            QName name = stack.peek();
-            if (!name.getPrefix().isEmpty()) {
-                return name.getPrefix()+":"+name.getLocalPart();
-            }
-            else {
-                return name.getLocalPart();
-            }
-        }
-    }
-
-    private static int compare(QName a, QName b) {
-        int cmp = compare(a.getPrefix(), b.getPrefix());
-        if (cmp != 0) {
-            return cmp;
-        }
-        return compare(a.getLocalPart(), b.getLocalPart());
-    }
-
-    private static int compare(String a, String b) {
-        if (a != null) {
-            if (b != null) {
-                return a.compareTo(b);
-            }
-            else {
-                return -1;  // a, not b
-            }
-        }
-        else if (b != null) {
-            return 1; // b, not a
-        }
-        else {
-            return 0;
-        }
-    }
-
 }
