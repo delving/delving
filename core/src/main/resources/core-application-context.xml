@@ -82,6 +82,7 @@
                 <value>portal.freemarker.path</value>
                 <value>portal.theme</value>
                 <value>portal.color</value>
+                <value>portal.baseUrl</value>
                 <value>services.url</value>
                 <value>services.password</value>
                 <value>services.harvindexing.prefix</value>
@@ -170,7 +171,7 @@
     </bean>
 
     <bean id="metadataModel" class="eu.delving.core.metadata.MetadataModelImpl">
-        <property name="recordDefinitionResource" value="/record-definition.xml"/>
+        <property name="recordDefinitionResource" value="/ese-record-definition.xml"/>
     </bean>
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">

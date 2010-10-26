@@ -1,0 +1,230 @@
+<fieldSet name="indexAddition" schema="" namespace="">
+          <field localName="SUBJECT">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="location">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="timestamp">
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+            <defaultValue>NOW</defaultValue>
+        </field>
+        <field localName="rights">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="who">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="where">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="language">
+            <facetPrefix>lang</facetPrefix>
+            <briefDoc>true</briefDoc>
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="description">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="contributor">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="when">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="country">
+            <facetPrefix>coun</facetPrefix>
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="text">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="format">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="userTags">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="relation">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="year">
+            <facetPrefix>yr</facetPrefix>
+            <briefDoc>true</briefDoc>
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="type">
+            <facetPrefix>type</facetPrefix>
+            <briefDoc>true</briefDoc>
+            <fullDoc>true</fullDoc>
+            <type>true</type>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="identifier">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="subject">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="publisher">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="date">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="provider">
+            <facetPrefix>prov</facetPrefix>
+            <briefDoc>true</briefDoc>
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>string</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="title">
+            <briefDoc>true</briefDoc>
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="source">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="what">
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+        <field localName="creator">
+            <briefDoc>true</briefDoc>
+            <fullDoc>true</fullDoc>
+            <category>INDEX_TIME_ADDITION</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+        </field>
+</fieldSet>
