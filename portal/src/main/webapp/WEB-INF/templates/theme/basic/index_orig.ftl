@@ -2,16 +2,16 @@
 
 <#include "inc_header.ftl">
 
-<@userBar/>
-
-<h1>${portalDisplayName}</h1>
+<header id="header_index">
+    <h1>${portalDisplayName}</h1>
+    <@simpleSearch/>
+</header>
 
 <noscript>
-    <@spring.message 'NoScript_t' />
+<@spring.message 'NoScript_t' />
 </noscript>
 
-<@simpleSearch/>
-
 <#include "inc_footer.ftl"/>
+
 </#compress>
 

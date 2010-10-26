@@ -467,10 +467,14 @@
     <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
-        <input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />
-        <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
-        <br/>
-        <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+        <fieldset>
+            <legend>Search</legend>
+            <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
+            <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
+            <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
+            <br/>
+            <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+        </fieldset>
     </form>
 </#macro>
 
