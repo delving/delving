@@ -262,6 +262,13 @@ public class FullBean extends BriefBean implements FullDoc {
     @Solr(prefix = "abm", localName = "contentProvider", toCopyField = {"text"})
     String[] abmContentProvider;
 
+    @Europeana
+    @Solr(prefix = "abm", localName = "address", toCopyField = {"text"})
+    String[] abmAddress;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "digitised", toCopyField = {"text"})
+    String[] abmDigitised;
 
     @Override
     public String getId() {

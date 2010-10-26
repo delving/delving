@@ -584,9 +584,23 @@
              <field name="COLLECTION" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="COUNTRY" type="string" indexed="true" stored="true" multiValued="true" />
              <field name="USERTAGS" type="string" indexed="true" stored="true" multiValued="true" />
+             <!--ABM-sen Facets-->
+             <field name="COUNTY" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="MUNICIPALITY" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="ABOUTPERSON" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="NAMEDPLACE" type="string" indexed="true" stored="true" multiValued="true" />
+             <field name="LANDEDPROPERTY" type="string" indexed="true" stored="true" multiValued="true" />
+             <!--abm content provider is DataPRovider facet-->
+             <field name="ABOUTORGANISATION" type="string" indexed="true" stored="true" multiValued="true"/>
+
+             <!-- ABM fields -->
+             <field name="abm_digitised" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="abm_address" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="abm_landedProperty" type="string" indexed="true" stored="true" multiValued="true"/>
+             <field name="abm_contentprovider" type="string" indexed="true" stored="true" multiValued="true"/>
 
 
-         <!-- Dublin Core / ESE fields -->
+     <!-- Dublin Core / ESE fields -->
 
              <field name="dc_coverage" type="text" indexed="true" stored="true" multiValued="true" />
              <field name="dc_contributor" type="text" indexed="true" stored="true" multiValued="true" />
@@ -828,6 +842,12 @@
    <copyField source="europeana_provider" dest="PROVIDER" />
    <copyField source="europeana_dataProvider" dest="DATAPROVIDER" />
    <copyField source="europeana_collectionTitle" dest="COLLECTION" />
+   <!-- ABM Facets -->
+   <copyField source="abm_landedProperty" dest="LANDEDPROPERTY" />
+   <copyField source="abm_municipality" dest="MUNICIPALITY" />
+   <copyField source="abm_aboutPerson" dest="ABOUTPERSON" />
+   <copyField source="abm_county" dest="COUNTY" />
+   <copyField source="abm_namedPlace" dest="NAMEDPLACE" />
 
    <!--<copyField source="europeana_uri" dest="identifier" />-->
    <!--<copyField source="europeana_person" dest="text" />-->
