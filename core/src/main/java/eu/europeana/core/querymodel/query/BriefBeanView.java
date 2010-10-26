@@ -21,6 +21,7 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.binding.FacetMap;
 import org.apache.solr.client.solrj.response.SpellCheckResponse;
 
 import java.io.UnsupportedEncodingException;
@@ -41,4 +42,5 @@ public interface BriefBeanView {
     Map<String,String> getFacetLogs();
     BriefDoc getMatchDoc();
     SpellCheckResponse getSpellCheck();
+    FacetMap getFacetMap();
 }

@@ -80,6 +80,26 @@ object SolrBindingService {
     }
     asList(fullDocs)
   }
+
+  def createFacetMap(links : JList[FacetQueryLinks]) = FacetMap(links.toList)
+}
+
+case class FacetMap(links : List[FacetQueryLinks]) {
+
+  private def createFacetLinkMap : Map[String, FacetQueryLinks] = {
+    val linkMap = Map[String, FacetQueryLinks]()
+    links.foreach{
+      link =>
+      linkMap put (link.getType, link)
+    }
+    linkMap
+  }
+
+  private val linkMap = createFacetLinkMap
+
+  def getFacetList = links
+
+  def getFacet(key: String) = linkMap.getOrElse(key, "unknown")
 }
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {

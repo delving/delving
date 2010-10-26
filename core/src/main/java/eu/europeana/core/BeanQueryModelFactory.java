@@ -21,6 +21,7 @@
 
 package eu.europeana.core;
 
+import eu.delving.core.binding.FacetMap;
 import eu.delving.core.binding.SolrBindingService;
 import eu.delving.core.metadata.MetadataModel;
 import eu.europeana.core.database.UserDao;
@@ -281,6 +282,11 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         @Override
         public SpellCheckResponse getSpellCheck() {
             return spellcheck;
+        }
+
+        @Override
+        public FacetMap getFacetMap() {
+            return SolrBindingService.createFacetMap(queryLinks);
         }
     }
 
