@@ -166,7 +166,7 @@
     </bean>
 
     <bean id="metadataModel" class="eu.delving.core.metadata.MetadataModelImpl">
-        <property name="recordDefinitionResource" value="/ese-record-definition.xml"/>
+        <property name="recordDefinitionResource" value="/abm-record-definition.xml"/>
     </bean>
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">

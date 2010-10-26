@@ -35,8 +35,6 @@ import java.util.List;
 import static eu.europeana.sip.definitions.annotations.FieldCategory.ESE_PLUS;
 
 /**
- * todo: note that this is a copy of eu.europeana.core.querymodel.beans.* with SOLR @Field annotation removed
- *
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
  */
@@ -239,6 +237,31 @@ public class FullBean extends BriefBean implements FullDoc {
     @Europeana
     @Solr(prefix = "dcterms", localName = "temporal", toCopyField = {"text", "what", "subject"})
     String[] dctermsTemporal;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "municipality", toCopyField = {"text"})
+    String[] abmMunicipality;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "aboutPerson", toCopyField = {"text"})
+    String[] abmAboutPerson;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "county", toCopyField = {"text"})
+    String[] abmCounty;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "namedPlace", toCopyField = {"text"})
+    String[] abmNamedPlace;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "landedProperty", toCopyField = {"text"})
+    String[] abmLandedProperty;
+
+    @Europeana
+    @Solr(prefix = "abm", localName = "contentProvider", toCopyField = {"text"})
+    String[] abmContentProvider;
+
 
     @Override
     public String getId() {

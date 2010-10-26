@@ -64,6 +64,7 @@ public class MappingRunner {
             binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
             binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
             binding.setVariable("icn", xmlns.namespace("http://www.icn.nl/", "icn"));
+            binding.setVariable("abm", xmlns.namespace("http://abmu.org/abm", "abm"));
             for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
                 binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
             }
