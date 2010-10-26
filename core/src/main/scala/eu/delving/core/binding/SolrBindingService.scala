@@ -1,7 +1,6 @@
 package eu.delving.core.binding
 
 import scala.collection.JavaConversions._
-import org.apache.solr.client.solrj.response.QueryResponse
 import scala.reflect.BeanProperty
 import collection.mutable.ListBuffer
 import org.apache.solr.common.SolrDocumentList
@@ -9,6 +8,7 @@ import java.util. {Date, ArrayList, List => JList}
 import java.lang.{Boolean => JBoolean}
 import scala.collection.mutable.Map
 import eu.europeana.core.querymodel.query._
+import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
 
 /**
  *
@@ -82,24 +82,36 @@ object SolrBindingService {
   }
 
   def createFacetMap(links : JList[FacetQueryLinks]) = FacetMap(links.toList)
+
+  def createFacetStatistics(facets: JList[FacetField]) = FacetStatisticsMap(facets.toList)
 }
 
-case class FacetMap(links : List[FacetQueryLinks]) {
+trait FacetHelper {
 
-  private def createFacetLinkMap : Map[String, FacetQueryLinks] = {
-    val linkMap = Map[String, FacetQueryLinks]()
-    links.foreach{
-      link =>
-      linkMap put (link.getType, link)
+  private var facetMap = Map[String, Any]()
+
+  private[binding] def createFacetMap[T](facets: List[Any])(getKeyValue: T => (Any, Any)) {
+    facets.foreach{
+      facet =>
+        val (key, value) = getKeyValue(facet.asInstanceOf[T])
+        facetMap put (key.toString, value)
     }
-    linkMap
   }
 
-  private val linkMap = createFacetLinkMap
+  def getFacet(key: String) = facetMap.getOrElse(key, "unknown")
+}
+
+case class FacetStatisticsMap(private val facets: List[FacetField]) extends FacetHelper {
+
+  createFacetMap[FacetField](facets){facet => (facet.getName, facet.getValues.toList) }
+
+}
+
+case class FacetMap(private val links : List[FacetQueryLinks]) extends FacetHelper {
+
+  createFacetMap[FacetQueryLinks](links){link => (link.getType, link)}
 
   def getFacetList = links
-
-  def getFacet(key: String) = linkMap.getOrElse(key, "unknown")
 }
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
