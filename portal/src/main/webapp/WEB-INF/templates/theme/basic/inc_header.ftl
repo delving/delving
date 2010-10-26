@@ -46,7 +46,7 @@
         var portalName = "/${portalName}";
         var baseThemePath = "/${portalName}/${portalTheme}";
     </script>
-    <@addCss ["reset-text-grid.css"], "screen"/>
+    <@addCss ["reset-text-grid.css","screen.css"], "screen"/>
     ${cssFiles}
     <@addJavascript ["jquery-1.4.2.min.js", "jquery.cookie.js", "js_utilities.js"]/>
     <#--
@@ -56,4 +56,5 @@
      -->
 </head>
 <body>
+<@userBar/>
 <@adminBlock/>

@@ -17,15 +17,14 @@
 
 <@addJavascript ["results.js"]/>
 
-<@userBar/>
+<header id="header_results" role="search">
+    <h1>${portalDisplayName}</h1>
+    <@simpleSearch/>
+</header>
 
-<h1>${portalDisplayName}</h1>
-
-<@simpleSearch/>
-
-<div class="resultQueryBreadcrumbs">
+<nav id="nav_query_breadcrumbs"
     <@resultBriefQueryBreadcrumbs/>
-</div>
+</nav>
 
 <div class="resultCount">
     <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
@@ -57,13 +56,15 @@
     <@resultBriefPagination/>
 </div>
 
-<div id="facetList">
-    <@resultFacets/>
-</div>
+<sidebar>
+    <div id="facetList">
+        <@resultFacets/>
+    </div>
 
-<div id="userActions">
-    <@resultsBriefUserActions/>
-</div>
+    <div id="userActions">
+        <@resultsBriefUserActions/>
+    </div>
+</sidebar>
 
 <#include "inc_footer.ftl"/>
 
