@@ -166,16 +166,16 @@ public class RecordMapping {
         if (selectedPath != null && !selectedPath.startsWith(path)) {
             return;
         }
-        out.line(String.format("%s {", element.tag));
+        out.line(String.format("%s {", element.getTag()));
         out.indent(1);
         if (element.elements != null) {
             for (ElementDefinition subNode : element.elements) {
-                toCode(path + "/" + element.tag, subNode, out, usedPaths, selectedPath);
+                toCode(path + "/" + element.getTag(), subNode, out, usedPaths, selectedPath);
             }
         }
         if (element.fields != null) {
             for (FieldDefinition fieldDefinition : element.fields) {
-                toCode(path + "/" + element.tag, fieldDefinition, out, usedPaths, selectedPath);
+                toCode(path + "/" + element.getTag(), fieldDefinition, out, usedPaths, selectedPath);
             }
         }
         out.indent(-1);

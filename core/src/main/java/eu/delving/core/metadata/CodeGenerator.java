@@ -45,8 +45,8 @@ public class CodeGenerator {
             ));
         }
         else {
-            for (SourceVariable holder : variables) {
-                generateCopyCode(fieldMapping.fieldDefinition, holder.getNode(), fieldMapping);
+            for (SourceVariable variable : variables) {
+                generateCopyCode(fieldMapping.fieldDefinition, variable.getNode(), fieldMapping);
             }
         }
         return fieldMapping;

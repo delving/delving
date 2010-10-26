@@ -83,7 +83,7 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     }
 
     public void setPath(Path path) {
-        path.push(tag);
+        path.push(getTag());
         this.path = new Path(path);
         path.pop();
     }

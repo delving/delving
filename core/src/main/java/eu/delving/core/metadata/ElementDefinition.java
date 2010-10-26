@@ -22,6 +22,7 @@
 package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -38,7 +39,11 @@ import java.util.Map;
 @XStreamAlias("element")
 public class ElementDefinition {
 
-    public Tag tag;
+    @XStreamAsAttribute
+    public String prefix;
+
+    @XStreamAsAttribute
+    public String localName;
 
     @XStreamImplicit
     public List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
@@ -49,9 +54,19 @@ public class ElementDefinition {
     @XStreamOmitField
     public Path path;
 
+    @XStreamOmitField
+    private Tag tag;
+
+    public Tag getTag() {
+        if (tag == null) {
+            tag = Tag.create(prefix, localName);
+        }
+        return tag;
+    }
+
     public void setPaths(Path path) {
         this.path = new Path(path);
-        path.push(tag);
+        path.push(getTag());
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 fieldDefinition.setPath(path);
