@@ -89,7 +89,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         }
         this.recordMapping = recordMapping;
         this.editedCode = null;
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
         notifyStateChange(State.PRISTINE);
         compileSoon();
     }
@@ -97,7 +97,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     public void setSelectedPath(String selectedPath) {
         this.selectedPath = selectedPath;
         log.info("Selected path "+selectedPath);
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
         notifyStateChange(State.PRISTINE);
         compileSoon();
     }
@@ -114,7 +114,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     }
 
     public void refreshCode() {
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
         compileSoon();
     }
 
@@ -174,12 +174,30 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
     // === privates
 
-    private String getCode() {
+    private String getDisplayCode() {
         if (selectedPath == null) {
-            return "?";
+            return "// no code";
         }
         else {
-            return recordMapping.toCode(metadataModel.getRecordDefinition(), selectedPath);
+            return recordMapping.toDisplayCode(metadataModel.getRecordDefinition(), selectedPath);
+        }
+    }
+
+    private String getCompileCode() {
+        if (selectedPath == null) {
+            return "print 'nothing selected'";
+        }
+        else {
+            return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
+        }
+    }
+
+    private String getCompileCode(String editedCode) {
+        if (selectedPath == null) {
+            return "print 'nothing selected'";
+        }
+        else {
+            return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath, editedCode);
         }
     }
 
@@ -201,11 +219,11 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
             }
             String mappingCode;
             if (editedCode == null) {
-                mappingCode = getCode();
+                mappingCode = getCompileCode();
                 log.info("Edited code null, so get existing code");
             }
             else {
-                mappingCode = editedCode;
+                mappingCode = getCompileCode(editedCode);
                 log.info("Edited code used");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + mappingCode);

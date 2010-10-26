@@ -85,7 +85,7 @@ public class Normalizer implements Runnable {
                 fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
                 fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + recordMapping.toCode(sipModel.getMetadataModel().getRecordDefinition()));
+            MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
             MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordMapping.getRecordRoot(), parserListener);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;

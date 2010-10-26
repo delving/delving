@@ -611,7 +611,7 @@ public class MetaRepoImpl implements MetaRepo {
             if (mappingRunner == null) {
                 ToolCode toolCode = new ToolCode();
                 RecordMapping recordMapping = getRecordMapping();
-                recordMapping.toCode(metadataModel.getRecordDefinition());
+                recordMapping.toCompileCode(metadataModel.getRecordDefinition());
                 mappingRunner = new MappingRunner(toolCode.getCode() + getRecordMapping());
             }
             return mappingRunner;

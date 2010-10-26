@@ -152,7 +152,7 @@ public class RefinementPanel extends JPanel {
                     removeMappingButton.setEnabled(true);
                 }
                 else {
-                    sipModel.getMappingModel().clearFieldMappings();
+                    sipModel.getFieldCompileModel().setSelectedPath(null);
                     valueMappingButton.setEnabled(false);
                     removeMappingButton.setEnabled(false);
                 }
