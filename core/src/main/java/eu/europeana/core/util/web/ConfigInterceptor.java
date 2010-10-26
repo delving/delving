@@ -27,6 +27,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.MessageFormat;
+import java.util.Map;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -55,6 +57,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['ga.trackingCode']}")
     private String trackingCode;
 
+    @SuppressWarnings({"unchecked"})
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
@@ -66,9 +69,26 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalDisplayName", portalDisplayName);
             modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
+            modelAndView.addObject("defaultParams", getDefaultParameters(httpServletRequest.getParameterMap()));
             if (!trackingCode.isEmpty()) {
                 modelAndView.addObject("trackingCode", trackingCode);
             }
         }
+    }
+
+    private String getDefaultParameters(Map<String, String[]> params) {
+        StringBuilder out = new StringBuilder();
+        out.append(getKey("view", params));
+        out.append(getKey("tab", params));
+        out.append(getKey("sortBy", params));
+        out.append(getKey("sortOrder", params));
+        return out.toString();
+    }
+
+    private String getKey(String key, Map<String, String[]> params) {
+        if (params.containsKey(key) && !params.get(key)[0].isEmpty()) {
+            return MessageFormat.format("&%s=%s", key, params.get(key)[0]);
+        }
+        return "";
     }
 }
