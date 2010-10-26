@@ -32,6 +32,7 @@ import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCode;
+import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -52,6 +53,7 @@ import java.util.concurrent.Executors;
  */
 
 public class CompileModel implements SipModel.ParseListener, MappingModel.Listener {
+    private Logger log = Logger.getLogger(getClass());
     public final static int COMPILE_DELAY = 500;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private RecordMapping recordMapping;
@@ -81,13 +83,22 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
     @Override
     public void mappingChanged(RecordMapping recordMapping) {
+        if (this.recordMapping != recordMapping) {
+            log.info("New record mapping, selected path eliminated");
+            this.selectedPath = null;
+        }
         this.recordMapping = recordMapping;
-        this.selectedPath = null;
+        this.editedCode = null;
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
+        notifyStateChange(State.PRISTINE);
         compileSoon();
     }
 
     public void setSelectedPath(String selectedPath) {
         this.selectedPath = selectedPath;
+        log.info("Selected path "+selectedPath);
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
+        notifyStateChange(State.PRISTINE);
         compileSoon();
     }
 
@@ -112,26 +123,29 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     }
 
     public void setCode(String code) {
-        if (selectedPath == null) {
-            throw new RuntimeException();
-        }
-        FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
-        if (fieldMapping != null) {
-            if (!fieldMapping.codeLooksLike(code)) {
-                editedCode = code;
-                notifyStateChange(State.EDITED);
+        if (selectedPath != null) {
+            FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
+            if (fieldMapping != null) {
+                if (!fieldMapping.codeLooksLike(code)) {
+                    editedCode = code;
+                    log.info("Code looks different");
+                    notifyStateChange(State.EDITED);
+                }
+                else {
+                    editedCode = null;
+                    log.info("Code looks the same");
+                    notifyStateChange(State.PRISTINE);
+                }
             }
             else {
-                editedCode = null;
-                notifyStateChange(State.PRISTINE);
+                log.warn("Field mapping not found for "+selectedPath);
             }
+            compileSoon();
         }
-        compileSoon();
+        else {
+            log.info("setCode with no selected path");
+        }
     }
-
-//    public RecordMapping getRecordMapping() {
-//        return recordMapping;
-//    }
 
     @Override
     public void updatedRecord(MetadataRecord metadataRecord) {
@@ -160,18 +174,13 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
     // === privates
 
-    private void mappingChanged() {
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getCode()));
-        notifyStateChange(State.PRISTINE);
-        if (selectedPath != null) { // todo: why?
-            updateInputDocument(metadataRecord);
-        }
-        editedCode = null;
-        compileSoon();
-    }
-
     private String getCode() {
-        return recordMapping.toCode(metadataModel.getRecordDefinition(), selectedPath);
+        if (selectedPath == null) {
+            return "?";
+        }
+        else {
+            return recordMapping.toCode(metadataModel.getRecordDefinition(), selectedPath);
+        }
     }
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
@@ -190,7 +199,15 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
             if (metadataRecord == null) {
                 return;
             }
-            String mappingCode = editedCode == null ? getCode() : RecordMapping.getCodeForCompile(editedCode);
+            String mappingCode;
+            if (editedCode == null) {
+                mappingCode = getCode();
+                log.info("Edited code null, so get existing code");
+            }
+            else {
+                mappingCode = editedCode;
+                log.info("Edited code used");
+            }
             MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);

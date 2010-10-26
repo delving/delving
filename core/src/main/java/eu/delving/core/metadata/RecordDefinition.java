@@ -58,7 +58,7 @@ public class RecordDefinition {
     }
 
     public FieldDefinition getFieldDefinition(Path path) {
-        return root.getFieldDefinition(path, 0);
+        return root.getFieldDefinition(path);
     }
 
     public List<String> getFieldNameList() {

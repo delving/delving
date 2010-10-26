@@ -127,6 +127,7 @@ public class FileSetImpl implements FileSet {
                 return RecordMapping.read(is, recordDefinition);
             }
             catch (Exception e) {
+                e.printStackTrace(); // todo: log it
                 userNotifier.tellUser("Unable to read mapping file", e);
             }
         }

@@ -65,8 +65,8 @@ public class ElementDefinition {
     }
 
     public void setPaths(Path path) {
-        this.path = new Path(path);
         path.push(getTag());
+        this.path = new Path(path);
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 fieldDefinition.setPath(path);
@@ -80,23 +80,18 @@ public class ElementDefinition {
         path.pop();
     }
 
-    public FieldDefinition getFieldDefinition(Path path, int level) {
-        Tag tag = path.getTag(level);
-        if (path.size() == level) {
-            if (fields != null) {
-                for (FieldDefinition fieldDefinition : fields) {
-                    if (tag.equals(fieldDefinition.getTag())) {
-                        return fieldDefinition;
-                    }
+    public FieldDefinition getFieldDefinition(Path path) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (path.equals(fieldDefinition.path)) {
+                    return fieldDefinition;
                 }
             }
         }
-        else {
-            if (elements != null) {
-                for (ElementDefinition elementDefinition : elements) {
-                    if (tag.equals(elementDefinition.tag)) {
-                        return elementDefinition.getFieldDefinition(path, level + 1);
-                    }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                if (path.equals(elementDefinition.path)) {
+                    return elementDefinition.getFieldDefinition(path);
                 }
             }
         }
