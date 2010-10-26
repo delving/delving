@@ -1,6 +1,7 @@
 package eu.delving.services.core;
 
 import com.mongodb.DBObject;
+import eu.delving.core.metadata.RecordMapping;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This interface and its sub-interfaces describe how the rest of the getGroovyCode interacts
+ * This interface and its sub-interfaces describe how the rest of the code interacts
  * with the metadata repository.  The interfaces also conveniently define the constants
  * used as MongoDB field names
  *
@@ -166,9 +167,9 @@ public interface MetaRepo {
 
     public interface Mapping {
         MetadataFormat getMetadataFormat();
-        String getGroovyCode();
+        RecordMapping getRecordMapping();
 
-        String CODE = "code";
+        String RECORD_MAPPING = "recordMapping";
         String FORMAT = "format";
     }
 

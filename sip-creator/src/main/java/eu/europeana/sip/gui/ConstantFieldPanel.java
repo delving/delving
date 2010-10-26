@@ -68,7 +68,7 @@ public class ConstantFieldPanel extends JPanel {
         Map<String, FieldDefinition> constantFields = sipModel.getMetadataModel().getRecordDefinition().getConstantFields();
         int index = 0;
         for (FieldDefinition fieldDefinition : constantFields.values()) {
-            fieldComponent[index++].setText(sipModel._getRecordMapping().getConstant(fieldDefinition.path.toString()));
+            fieldComponent[index++].setText(sipModel.getRecordMapping().getConstant(fieldDefinition.path.toString()));
         }
     }
 

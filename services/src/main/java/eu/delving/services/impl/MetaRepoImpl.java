@@ -7,6 +7,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -29,7 +30,6 @@ import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -399,13 +399,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void addMapping(String mappingCode) {
-            // todo: get these from the content of the mapping getGroovyCode.  maybe from annotations or their replacement?
+        public void addMapping(String recordMapping) {
+            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
             String prefix = "icn";
             String namespace = "http://www.icn.nl/";
             String schema = "http://www.icn.nl/schemas/ICN-V3.2.xsd";
             boolean accessKeyRequired = true;
-            // todo: get these from the content of the mapping getGroovyCode.  maybe from annotations or their replacement?
+            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
 
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
@@ -419,7 +419,7 @@ public class MetaRepoImpl implements MetaRepo {
             format.put(MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
             DBObject mapping = new BasicDBObject();
             mapping.put(Mapping.FORMAT, format);
-            mapping.put(Mapping.CODE, mappingCode);
+            mapping.put(Mapping.RECORD_MAPPING, recordMapping);
             mappings.put(prefix, mapping);
             saveObject();
         }
@@ -442,12 +442,6 @@ public class MetaRepoImpl implements MetaRepo {
                 for (String prefix : mappingsObject.keySet()) {
                     mappingMap.put(prefix, new MappingImpl(this, (DBObject) mappingsObject.get(prefix)));
                 }
-                // WORKAROUND: ICN format filtered of all <icn:*> is ESE
-                Mapping icnMapping = mappingMap.get("icn");
-                if (icnMapping != null) {
-                    mappingMap.put("ese", new FakeESEMappingImpl((MappingInternal)icnMapping));
-                }
-                // WORKAROUND: ICN format filtered of all <icn:*> is ESE
             }
             return mappingMap;
         }
@@ -541,87 +535,6 @@ public class MetaRepoImpl implements MetaRepo {
         void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException;
     }
 
-    // for now we pretend that we have an ESE mapping
-    private class FakeESEMappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
-
-        private MappingInternal icnMapping;
-        private ESEMetadataFormat eseMetadataFormat = new ESEMetadataFormat();
-
-        private FakeESEMappingImpl(MappingInternal icnMapping) {
-            this.icnMapping = icnMapping;
-        }
-
-        @Override
-        public MetadataFormat getMetadataFormat() {
-            return eseMetadataFormat;
-        }
-
-        @Override
-        public String getGroovyCode() {
-            return null;  // there is none!
-        }
-
-        @Override
-        public int compareTo(Mapping o) {
-            return getMetadataFormat().getPrefix().compareTo(o.getMetadataFormat().getPrefix());
-        }
-
-        @Override
-        public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
-            icnMapping.map(records, namespaces);
-            for (Record record : records) {
-                List<FieldEntry> entries = FieldEntry.createList(record.getXmlString("icn"));
-                Iterator<FieldEntry> walk = entries.iterator();
-                while (walk.hasNext()) {
-                    FieldEntry entry = walk.next();
-                    if (entry.getTag().startsWith("icn")) {
-                        walk.remove();
-                    }
-                }
-                String recordString = FieldEntry.toString(entries, false);
-                ((RecordImpl)record).addFormat(getMetadataFormat(), recordString);
-            }
-        }
-
-        private class ESEMetadataFormat implements MetadataFormat {
-
-            @Override
-            public String getPrefix() {
-                return "ese";
-            }
-
-            @Override
-            public void setPrefix(String value) {
-                throw new RuntimeException();
-            }
-
-            @Override
-            public String getSchema() {
-                return "http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd";
-            }
-
-            @Override
-            public void setSchema(String value) {
-                throw new RuntimeException();
-            }
-
-            @Override
-            public String getNamespace() {
-                return "http://www.europeana.eu/schemas/ese/";
-            }
-
-            @Override
-            public void setNamespace(String value) {
-                throw new RuntimeException();
-            }
-
-            @Override
-            public boolean isAccessKeyRequired() {
-                return false;  // ESE is free-for-all
-            }
-        }
-    }
-
     private class MappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
         private DataSetImpl dataSet;
         private DBObject object;
@@ -641,8 +554,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public String getGroovyCode() {
-            return (String) object.get(CODE);
+        public RecordMapping getRecordMapping() {
+            return RecordMapping.read((String) object.get(RECORD_MAPPING));
         }
 
         @Override
@@ -689,10 +602,10 @@ public class MetaRepoImpl implements MetaRepo {
 
         private MappingRunner getMappingRunner() {
             if (mappingRunner == null) {
-                ConstantFieldModel constantFieldModel = new ConstantFieldModel(metadataModel, null);
-                constantFieldModel.fromMapping(Arrays.asList(getGroovyCode().split("\n")));
                 ToolCode toolCode = new ToolCode();
-                mappingRunner = new MappingRunner(toolCode.getCode() + getGroovyCode());
+                RecordMapping recordMapping = getRecordMapping();
+                recordMapping.toCode(metadataModel.getRecordDefinition());
+                mappingRunner = new MappingRunner(toolCode.getCode() + getRecordMapping());
             }
             return mappingRunner;
         }

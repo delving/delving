@@ -86,6 +86,10 @@ public class RecordMapping {
         return fieldMappings.get(path);
     }
 
+    public String toCode(RecordDefinition recordDefinition) {
+        return toCode(recordDefinition, null);
+    }
+
     public String toCode(RecordDefinition recordDefinition, String selectedPath) {
         final StringBuilder stringBuilder = new StringBuilder();
         Out out = new Out() {
@@ -223,6 +227,10 @@ public class RecordMapping {
 
     public static RecordMapping read(InputStream is) {
         return (RecordMapping) stream().fromXML(is);
+    }
+
+    public static RecordMapping read(String string) {
+        return (RecordMapping) stream().fromXML(string);
     }
 
     static XStream stream() {

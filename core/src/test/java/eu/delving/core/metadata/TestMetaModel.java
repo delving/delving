@@ -20,6 +20,6 @@ public class TestMetaModel {
         InputStream mappingInputStream = getClass().getResource("/record-mapping.xml").openStream();
         RecordDefinition recordDefinition = RecordDefinition.read(modelInputStream);
         RecordMapping mapping = RecordMapping.read(mappingInputStream);
-        log.info("Code:\n" + mapping.toCode(recordDefinition, null));
+        log.info("Code:\n" + mapping.toCode(recordDefinition));
     }
 }

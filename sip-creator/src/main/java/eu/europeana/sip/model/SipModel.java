@@ -160,12 +160,12 @@ public class SipModel {
         return mappingModel;
     }
 
-    public RecordMapping _getRecordMapping() {
+    public RecordMapping getRecordMapping() {
         return getMappingModel().getRecordMapping();
     }
 
     public Path getRecordRoot() {
-        return _getRecordMapping().getRecordRoot();
+        return getRecordMapping().getRecordRoot();
     }
 
     public void tellUser(String message) {
@@ -633,7 +633,7 @@ public class SipModel {
     private class MappingSetter implements Runnable {
         @Override
         public void run() {
-            fileSet.setMapping(_getRecordMapping());
+            fileSet.setMapping(getRecordMapping());
         }
     }
 

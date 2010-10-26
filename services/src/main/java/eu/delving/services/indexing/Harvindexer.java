@@ -289,10 +289,10 @@ public class Harvindexer {
                             path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
                             FieldDefinition fieldDefinition = getFieldDefinition(path, recordCount);
                             String text = xml.getElementText();
-                            if (fieldDefinition.isId()) {
+                            if (fieldDefinition.id) {
                                 europeanaId.setEuropeanaUri(text);
                             }
-                            else if (fieldDefinition.isType()) {
+                            else if (fieldDefinition.type) {
                                 DocType.get(text); // checking if it matches one of them
                                 SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                 if (objectField != null) {
