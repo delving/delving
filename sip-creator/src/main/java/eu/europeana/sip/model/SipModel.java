@@ -125,10 +125,12 @@ public class SipModel {
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(annotationProcessor);
         ToolCodeModel toolCodeModel = new ToolCodeModel();
-        ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, new ConstantFieldModel.Listener() {
+        ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor);
+        constantFieldModel.addListener(new ConstantFieldModel.Listener() {
             @Override
-            public void updatedConstant() {
+            public void updated(String fieldName, String value) {
                 recordCompileModel.compileSoon();
+                fieldCompileModel.compileSoon();
             }
         });
         recordCompileModel = new CompileModel(toolCodeModel, constantFieldModel, new RecordValidator(annotationProcessor, false));
@@ -451,7 +453,7 @@ public class SipModel {
         executor.execute(new MappingSetter(code));
     }
 
-    public ConstantFieldModel getGlobalFieldModel() {
+    public ConstantFieldModel getConstantFieldModel() {
         return recordCompileModel.getRecordMapping().getConstantFieldModel();
     }
 

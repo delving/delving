@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Hold a collection of global fields that can be used here and there.
@@ -40,13 +42,8 @@ public class ConstantFieldModel {
     private static final String PREFIX = "// ConstantField ";
     private List<FieldSpec> fields = new ArrayList<FieldSpec>();
     private Map<String, String> map = new TreeMap<String, String>();
-    private Listener listener;
 
-    public interface Listener {
-        void updatedConstant();
-    }
-
-    public ConstantFieldModel(AnnotationProcessor annotationProcessor, Listener listener) {
+    public ConstantFieldModel(AnnotationProcessor annotationProcessor) {
         fields.add(new FieldSpec("collectionId"));
         for (EuropeanaField field : annotationProcessor.getAllFields()) {
             if (field.europeana().constant()) {
@@ -55,7 +52,6 @@ public class ConstantFieldModel {
                 fields.add(fieldSpec);
             }
         }
-        this.listener = listener;
     }
 
     public List<FieldSpec> getFields() {
@@ -63,8 +59,11 @@ public class ConstantFieldModel {
     }
 
     public void clear() {
+        Set<String> keySet = new TreeSet<String>(map.keySet());
         map.clear();
-        fireUpdate();
+        for (String key : keySet) {
+            fireUpdate(key, "");
+        }
     }
 
     public void set(String field, String value) {
@@ -76,7 +75,7 @@ public class ConstantFieldModel {
             else {
                 map.put(field, value);
             }
-            fireUpdate();
+            fireUpdate(field, value);
         }
     }
 
@@ -92,12 +91,6 @@ public class ConstantFieldModel {
                     set(fieldName, value);
                 }
             }
-        }
-    }
-
-    private void fireUpdate() {
-        if (listener != null) {
-            listener.updatedConstant();
         }
     }
 
@@ -147,4 +140,24 @@ public class ConstantFieldModel {
             return name;
         }
     }
+
+    // observable
+
+    public interface Listener {
+        void updated(String fieldName, String value);
+    }
+
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    private void fireUpdate(String fieldName, String value) {
+        for (Listener listener : listeners) {
+            listener.updated(fieldName, value);
+        }
+    }
+
+
 }

@@ -43,6 +43,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -64,12 +66,22 @@ public class DataSetUploadPanel extends JPanel {
     private JTextField recordRootField = new JTextField(FIELD_SIZE);
     private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
     private JButton createUploadZipButton = new JButton("Create and upload ZIP File");
+    private Map<String, JTextField> linkedFields = new TreeMap<String, JTextField>();
 
     public DataSetUploadPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));
         addField("Data Set Spec", specField);
+        sipModel.getConstantFieldModel().addListener(new ConstantFieldModel.Listener() {
+            @Override
+            public void updated(String fieldName, String value) {
+                JTextField field = linkedFields.get(fieldName);
+                if (field != null) {
+                    field.setText(value);
+                }
+            }
+        });
         specField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -123,6 +135,18 @@ public class DataSetUploadPanel extends JPanel {
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(480, 500));
         wireUp();
+        linkFields();
+    }
+
+    private void linkFields() {
+        linkField("europeana_collectionName", specField );
+        linkField("europeana_collectionTitle", nameField );
+        linkField("europeana_provider", providerNameField );
+    }
+
+    private void linkField(String fieldName, JTextField field) {
+        linkedFields.put(fieldName, field);
+        field.setEditable(false);
     }
 
     private void addField(String prompt, JTextComponent textComponent) {
