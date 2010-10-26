@@ -147,6 +147,8 @@ case class SolrDocId(solrDocument : SolrDocument) extends DocId {
 case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
     private def assign(key: String) = solrDocument.getFirst(key)
 
+    override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
+
     def getId : String = assign("europeana_uri")
     def getTitle : String = assign("title")
     def getThumbnail : String = assign("europeana_object")
