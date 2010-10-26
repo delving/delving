@@ -80,7 +80,7 @@ public class Normalizer implements Runnable {
             String mappingCode = sipModel.getFileSet().getMapping();
             List<String> mappingLines = Arrays.asList(mappingCode.split("\n"));
             RecordRoot recordRoot = RecordRoot.fromMapping(mappingLines);
-            ConstantFieldModel constantFieldModel = new ConstantFieldModel(sipModel.getAnnotationProcessor(), null);
+            ConstantFieldModel constantFieldModel = new ConstantFieldModel(sipModel.getAnnotationProcessor());
             constantFieldModel.fromMapping(mappingLines);
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);

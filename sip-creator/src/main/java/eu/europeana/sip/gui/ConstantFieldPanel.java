@@ -52,10 +52,10 @@ public class ConstantFieldPanel extends JPanel {
     public ConstantFieldPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
-        fieldComponent = new FieldComponent[sipModel.getGlobalFieldModel().getFields().size()];
+        fieldComponent = new FieldComponent[sipModel.getConstantFieldModel().getFields().size()];
         setBorder(BorderFactory.createTitledBorder("Constant Fields"));
         int index = 0;
-        for (ConstantFieldModel.FieldSpec fieldSpec : sipModel.getGlobalFieldModel().getFields()) {
+        for (ConstantFieldModel.FieldSpec fieldSpec : sipModel.getConstantFieldModel().getFields()) {
             if (fieldSpec.getEnumValues() == null) {
                 fieldComponent[index++] = new FieldComponent(fieldSpec);
             }
@@ -68,7 +68,7 @@ public class ConstantFieldPanel extends JPanel {
     }
 
     public void refresh() {
-        ConstantFieldModel model = sipModel.getGlobalFieldModel();
+        ConstantFieldModel model = sipModel.getConstantFieldModel();
         int index = 0;
         for (ConstantFieldModel.FieldSpec fieldSpec : model.getFields()) {
             fieldComponent[index++].setText(model.get(fieldSpec.getName()));
