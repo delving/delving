@@ -44,6 +44,11 @@ services.harvindexing.prefix = ese
 services.password = something
 
 #
+# cache URL
+#
+cacheUrl = http://localhost:8983/services/image?
+
+#
 # services MetaRepo Settings
 #
 services.pmh.repositoryName = Delving MetaRepo
