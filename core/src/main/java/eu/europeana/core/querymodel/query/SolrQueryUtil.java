@@ -3,12 +3,7 @@ package eu.europeana.core.querymodel.query;
 import org.apache.solr.client.solrj.SolrQuery;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -118,7 +113,8 @@ public class SolrQueryUtil {
                 if (params.containsKey("zoeken_in") && !params.get("zoeken_in")[0].equalsIgnoreCase("text")) {
                     String zoekenIn = params.get("zoeken_in")[0];
                     solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitize(params.get("query")[0]) + "\""); // only get the first one
-                } else {
+                }
+                else {
                     solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
                 }
             }
@@ -156,7 +152,15 @@ public class SolrQueryUtil {
             else if (sortField.equalsIgnoreCase("creator")) {
                 sortField = "creator_sort";
             }
-            solrQuery.setSortField(sortField, SolrQuery.ORDER.asc);
+            if (params.containsKey("sortOrder") && !params.get("sortOrder")[0].isEmpty()) {
+                String sortOrder = params.get("sortOrder")[0];
+                if (sortOrder.equalsIgnoreCase("desc")) {
+                    solrQuery.setSortField(sortField, SolrQuery.ORDER.desc);
+                }
+            }
+            else {
+                solrQuery.setSortField(sortField, SolrQuery.ORDER.asc);
+            }
         }
 
         //set constraints
