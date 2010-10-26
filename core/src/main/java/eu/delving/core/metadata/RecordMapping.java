@@ -50,6 +50,9 @@ public class RecordMapping {
     @XStreamAlias("record-count")
     int recordCount;
 
+    @XStreamAlias("unique-element")
+    String uniqueElement;
+
     @XStreamAlias("constants")
     Map<String, String> constants = new HashMap<String, String>();
 
@@ -67,6 +70,13 @@ public class RecordMapping {
         return recordCount;
     }
 
+    public Path getUniqueElement() {
+        if (uniqueElement == null) {
+            return null;
+        }
+        return new Path(uniqueElement);
+    }
+
     public String getConstant(String path) {
         return constants.get(path);
     }
@@ -75,10 +85,14 @@ public class RecordMapping {
         return fieldMappings.values();
     }
 
-    public void apply(RecordDefinition recordDefinition) {
+    public void apply(RecordDefinition recordDefinition) throws MetadataException {
         for (Map.Entry<String, FieldMapping> entry : fieldMappings.entrySet()) {
             Path path = new Path(entry.getKey());
-            entry.getValue().fieldDefinition = recordDefinition.getFieldDefinition(path);
+            FieldDefinition fieldDefinition = recordDefinition.getFieldDefinition(path);
+            if (fieldDefinition == null) {
+                throw new MetadataException("Field definition not found for "+path);
+            }
+            entry.getValue().fieldDefinition = fieldDefinition;
         }
     }
 
@@ -225,12 +239,16 @@ public class RecordMapping {
         stream().toXML(mapping, out);
     }
 
-    public static RecordMapping read(InputStream is) {
-        return (RecordMapping) stream().fromXML(is);
+    public static RecordMapping read(InputStream is, RecordDefinition recordDefinition) throws MetadataException {
+        RecordMapping recordMapping = (RecordMapping) stream().fromXML(is);
+        recordMapping.apply(recordDefinition);
+        return recordMapping;
     }
 
-    public static RecordMapping read(String string) {
-        return (RecordMapping) stream().fromXML(string);
+    public static RecordMapping read(String string, RecordDefinition recordDefinition) throws MetadataException {
+        RecordMapping recordMapping = (RecordMapping) stream().fromXML(string);
+        recordMapping.apply(recordDefinition);
+        return recordMapping;
     }
 
     static XStream stream() {

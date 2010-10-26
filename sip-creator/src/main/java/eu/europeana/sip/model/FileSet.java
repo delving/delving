@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.model;
 
+import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.metadata.Statistics;
 import eu.europeana.sip.core.DataSetDetails;
@@ -55,7 +56,7 @@ public interface FileSet {
 
     void setStatistics(List<Statistics> statisticsList);
 
-    RecordMapping getMapping();
+    RecordMapping getMapping(RecordDefinition recordDefinition);
 
     void setMapping(RecordMapping recordMapping);
 

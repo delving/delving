@@ -53,6 +53,11 @@ public class MappingModel {
         fireChangeEvent();
     }
 
+    public void setUniqueElement(Path uniqueElement) {
+        getRecordMapping().uniqueElement = uniqueElement.toString();
+        fireChangeEvent();
+    }
+
     public void setConstant(String path, String value) {
         if (value == null) {
             getRecordMapping().constants.remove(path);
@@ -92,7 +97,7 @@ public class MappingModel {
 
     private void fireChangeEvent() {
         for (Listener listener : listeners) {
-            listener.mappingChanged(recordMapping);
+            listener.mappingChanged(getRecordMapping());
         }
     }
 

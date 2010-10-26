@@ -39,14 +39,18 @@ import eu.europeana.sip.core.ToolCode;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
+import org.apache.log4j.Logger;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -60,7 +64,7 @@ import java.util.concurrent.Executors;
  */
 
 public class SipModel {
-//    private Logger log = Logger.getLogger(getClass());
+    private Logger log = Logger.getLogger(getClass());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private MetadataModel metadataModel;
     private FileSet fileSet;
@@ -128,15 +132,15 @@ public class SipModel {
         mappingModel.addListener(fieldMappingListModel);
         mappingModel.addListener(recordCompileModel);
         mappingModel.addListener(fieldCompileModel);
-        fieldCompileModel.addListener(new CompileModel.Listener() {
-
-            @Override
-            public void stateChanged(CompileModel.State state) {
-                if (state == CompileModel.State.COMMITTED) {
-                    executor.execute(new MappingSetter());
-                }
-            }
-        });
+        mappingModel.addListener(new MappingSaveTimer());
+//        fieldCompileModel.addListener(new CompileModel.Listener() {
+//            @Override
+//            public void stateChanged(CompileModel.State state) {
+//                if (state == CompileModel.State.COMMITTED) {
+//                    executor.execute(new MappingSetter());
+//                }
+//            }
+//        });
         this.configuration = new Configuration();
     }
 
@@ -168,6 +172,10 @@ public class SipModel {
         return getRecordMapping().getRecordRoot();
     }
 
+    public Path getUniqueElement() {
+        return getRecordMapping().getUniqueElement();
+    }
+
     public void tellUser(String message) {
         userNotifier.tellUser(message);
     }
@@ -191,7 +199,7 @@ public class SipModel {
             @Override
             public void run() {
                 final List<Statistics> statistics = newFileSet.getStatistics();
-                final RecordMapping recordMapping = newFileSet.getMapping();
+                final RecordMapping recordMapping = newFileSet.getMapping(metadataModel.getRecordDefinition());
                 final FileSet.Report report = newFileSet.getReport();
                 final DataSetDetails dataSetDetails = newFileSet.getDataSetDetails();
                 SwingUtilities.invokeLater(new Runnable() {
@@ -204,9 +212,9 @@ public class SipModel {
                         if (getRecordRoot() != null) {
                             setRecordRootInternal(recordMapping.getRecordRoot(), recordMapping.getRecordCount());
                         }
+                        AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
                         createMetadataParser(1);
-                        if (recordMapping != null && recordMapping.getRecordRoot() != null) {
-                            normalizeProgressModel.setMaximum(recordMapping.getRecordCount());
+                        if (recordMapping != null) {
                             if (report != null) {
                                 normalizeProgressModel.setValue(report.getRecordsNormalized() + report.getRecordsDiscarded());
                                 normalizeMessage(report);
@@ -421,6 +429,7 @@ public class SipModel {
     }
 
     public void setUniqueElement(Path uniqueElement) {
+        mappingModel.setUniqueElement(uniqueElement);
         dataSetDetails.setUniqueElement(uniqueElement.toString());
         executor.execute(new DetailsSetter(dataSetDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
@@ -439,7 +448,6 @@ public class SipModel {
             updateListener.updatedDetails(dataSetDetails);
         }
         getMappingModel().setRecordRoot(recordRoot, recordCount);
-        executor.execute(new MappingSetter());
     }
 
     public TableModel getStatisticsTableModel() {
@@ -491,13 +499,11 @@ public class SipModel {
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), fieldMapping);
-        executor.execute(new MappingSetter());
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
         getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), null);
-        executor.execute(new MappingSetter());
     }
 
     public ListModel getFieldMappingListModel() {
@@ -630,10 +636,28 @@ public class SipModel {
         }
     }
 
-    private class MappingSetter implements Runnable {
+    private class MappingSaveTimer implements MappingModel.Listener, ActionListener, Runnable {
+        private Timer timer = new Timer(200, this);
+
+        private MappingSaveTimer() {
+            timer.setRepeats(false);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            executor.execute(this);
+        }
+
         @Override
         public void run() {
             fileSet.setMapping(getRecordMapping());
+            log.info("Mapping saved!");
+        }
+
+        @Override
+        public void mappingChanged(RecordMapping recordMapping) {
+            log.info("Mapping changed");
+            timer.restart();
         }
     }
 

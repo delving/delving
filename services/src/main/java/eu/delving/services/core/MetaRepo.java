@@ -1,6 +1,7 @@
 package eu.delving.services.core;
 
 import com.mongodb.DBObject;
+import eu.delving.core.metadata.MetadataException;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
@@ -167,7 +168,7 @@ public interface MetaRepo {
 
     public interface Mapping {
         MetadataFormat getMetadataFormat();
-        RecordMapping getRecordMapping();
+        RecordMapping getRecordMapping() throws MetadataException;
 
         String RECORD_MAPPING = "recordMapping";
         String FORMAT = "format";

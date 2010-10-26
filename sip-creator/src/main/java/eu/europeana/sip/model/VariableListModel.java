@@ -24,11 +24,12 @@ package eu.europeana.sip.model;
 import eu.delving.core.metadata.AnalysisTree;
 import eu.delving.core.metadata.FieldMapping;
 import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.metadata.SourceVariable;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,14 +73,19 @@ public class VariableListModel extends AbstractListModel {
 
     public ListModel getWithCounts(MappingModel mappingModel) {
         if (withCounts == null) {
-            withCounts = new WithCounts();
-            mappingModel.addListener(withCounts);
+            withCounts = new WithCounts(mappingModel);
+            this.addListDataListener(withCounts);
         }
         return withCounts;
     }
 
-    public class WithCounts extends AbstractListModel implements MappingModel.Listener {
+    public class WithCounts extends AbstractListModel implements ListDataListener {
+        private MappingModel mappingModel;
         private List<SourceVariable> sourceVariables = new ArrayList<SourceVariable>();
+
+        public WithCounts(MappingModel mappingModel) {
+            this.mappingModel = mappingModel;
+        }
 
         @Override
         public int getSize() {
@@ -91,14 +97,13 @@ public class VariableListModel extends AbstractListModel {
             return sourceVariables.get(index);
         }
 
-        @Override
-        public void mappingChanged(RecordMapping recordMapping) {
+        public void refresh() {
             int sizeBefore = getSize();
             sourceVariables.clear();
             fireIntervalRemoved(this, 0, sizeBefore);
             for (SourceVariable uncountedHolder : variableList) {
                 SourceVariable sourceVariable = new SourceVariable(uncountedHolder.getNode());
-                for (FieldMapping fieldMapping : recordMapping.getFieldMappings()) {
+                for (FieldMapping fieldMapping : mappingModel.getRecordMapping().getFieldMappings()) {
                     for (String variable : fieldMapping.getVariables()) {
                         sourceVariable.checkIfMapped(variable);
                     }
@@ -107,6 +112,21 @@ public class VariableListModel extends AbstractListModel {
             }
             Collections.sort(sourceVariables);
             fireIntervalAdded(this, 0, getSize());
+        }
+
+        @Override
+        public void intervalAdded(ListDataEvent listDataEvent) {
+            refresh();
+        }
+
+        @Override
+        public void intervalRemoved(ListDataEvent listDataEvent) {
+            refresh();
+        }
+
+        @Override
+        public void contentsChanged(ListDataEvent listDataEvent) {
+            refresh();
         }
     }
 }

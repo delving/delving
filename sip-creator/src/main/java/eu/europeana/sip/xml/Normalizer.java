@@ -75,7 +75,10 @@ public class Normalizer implements Runnable {
 
     public void run() {
         try {
-            RecordMapping recordMapping = sipModel.getFileSet().getMapping();
+            RecordMapping recordMapping = sipModel.getRecordMapping();
+            if (recordMapping == null) {
+                return;
+            }
             ToolCode toolCode = new ToolCode();
             FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
             if (storeNormalizedFile) {

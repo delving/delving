@@ -1,6 +1,7 @@
 package eu.europeana.sip.model;
 
 import com.thoughtworks.xstream.XStream;
+import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.metadata.Statistics;
 import eu.europeana.sip.core.DataSetDetails;
@@ -118,12 +119,12 @@ public class FileSetImpl implements FileSet {
     }
 
     @Override
-    public RecordMapping getMapping() {
+    public RecordMapping getMapping(RecordDefinition recordDefinition) {
         checkWorkerThread();
         if (mappingFile.exists()) {
             try {
                 FileInputStream is = new FileInputStream(mappingFile);
-                return RecordMapping.read(is);
+                return RecordMapping.read(is, recordDefinition);
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to read mapping file", e);

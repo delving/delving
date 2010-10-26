@@ -6,6 +6,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import eu.delving.core.metadata.MetadataException;
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.rest.ServiceAccessToken;
@@ -554,8 +555,8 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public RecordMapping getRecordMapping() {
-            return RecordMapping.read((String) object.get(RECORD_MAPPING));
+        public RecordMapping getRecordMapping() throws MetadataException {
+            return RecordMapping.read((String) object.get(RECORD_MAPPING), metadataModel.getRecordDefinition());
         }
 
         @Override
@@ -565,6 +566,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
+            try {
             MappingRunner mappingRunner = getMappingRunner();
             MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
             int invalidCount = 0;
@@ -597,10 +599,15 @@ public class MetaRepoImpl implements MetaRepo {
             if (invalidCount > 0) {
                 log.info(String.format("%d invalid records discarded", invalidCount));
             }
+            }
+            catch (MetadataException e) {
+                log.error("Metadata exception!", e);
+                throw new CannotDisseminateFormatException("Internal Problem");
+            }
             // todo break here if mapping is consistently invalidating all records.
         }
 
-        private MappingRunner getMappingRunner() {
+        private MappingRunner getMappingRunner() throws MetadataException {
             if (mappingRunner == null) {
                 ToolCode toolCode = new ToolCode();
                 RecordMapping recordMapping = getRecordMapping();
