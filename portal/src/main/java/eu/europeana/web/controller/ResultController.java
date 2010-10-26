@@ -98,11 +98,11 @@ public class ResultController {
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocRest(
             @PathVariable String collId, @PathVariable String recordHash,
+            @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
     ) throws Exception {
         Map params = request.getParameterMap();
-        String format = (String) params.get("format");
-        boolean srwFormat = format != null && format.equals("srw");
+        boolean srwFormat = format != null && format.equalsIgnoreCase("srw");
 
         String uri = collId + "/" + recordHash;
         Map fullParams = new HashMap<String, String[]>();

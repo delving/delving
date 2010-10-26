@@ -38,7 +38,6 @@
                     <@show_value "europeana:type" doc.europeanaType />
                     <@show_array_values "europeana:userTag" doc.europeanaUserTag />
                     <@show_array_values "europeana:year" doc.europeanaYear />
-
                     <!-- here the dcterms namespaces starts -->
                     <@show_array_values "dcterms:alternative" doc.dcTermsAlternative />
                     <@show_array_values "dcterms:conformsTo" doc.dcTermsConformsTo />
@@ -62,7 +61,6 @@
                     <@show_array_values "dcterms:spatial" doc.dcTermsSpatial />
                     <@show_array_values "dcterms:tableOfContents" doc.dcTermsTableOfContents />
                     <@show_array_values "dcterms:temporal" doc.dcTermsTemporal />
-
                     <!-- here the dc namespaces starts -->
                     <@show_array_values "dc:contributor" doc.dcContributor />
                     <@show_array_values "dc:coverage" doc.dcCoverage />
@@ -79,8 +77,6 @@
                     <@show_array_values "dc:subject" doc.dcSubject />
                     <@show_array_values "dc:title" doc.dcTitle />
                     <@show_array_values "dc:type" doc.dcType />
-
-
                     <#--<dc:creator>${doc.dcCreator}</dc:creator>-->
                     <#--<dc:date>${doc.europeanaYear?string}</dc:date >-->
                     <#--<dc:language>${doc.europeanaLanguage.code}</dc:language>-->
@@ -107,15 +103,15 @@
 </srw:searchRetrieveResponse>
 
 <#macro show_array_values fieldName values>
-<#list values as value>
-<#if value?matches(" ")>
-<${fieldName}/>
-<#else>
-<${fieldName}>${value?html}</${fieldName}>
-</#if>
-</#list>
+    <#list values as value>
+        <#if value?matches(" ")>
+                    <${fieldName}/>
+        <#else>
+                    <${fieldName}>${value?html}</${fieldName}>
+        </#if>
+    </#list>
 </#macro>
 
 <#macro show_value fieldName value>
-<${fieldName}>${value}</${fieldName}>
+                    <${fieldName}>${value}</${fieldName}>
 </#macro>
