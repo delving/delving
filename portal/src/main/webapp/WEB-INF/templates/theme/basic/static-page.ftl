@@ -14,30 +14,26 @@
 
             <#assign thisPage = "static-page.dml"/>
             <#assign pageId = "static"/>
-            <#include "inc_header.ftl"/>
+            <#include "delving-macros.ftl">
 
-            <div id="header">
+            <@addHeader "Norvegiana", "",[],[]/>
 
-                <div id="identity" class="grid_3">
-                    <h1>Delving</h1>
-                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+            <section id="sidebar" class="grid_3" role="complementary">
+                <header id="branding" role="banner">
+                    <h1 class="large">${portalDisplayName}</h1>
+                </header>
+
+                <div id="search" role="search">
+                    <@simpleSearch/>
                 </div>
 
-                <div class="grid_9">
 
-                    <div id="top-bar">
-                        <div class="inner">
-                            <@userBar/>
-                        </div>
-                    </div>
+            </section>
 
-                </div>
 
-            </div>
+            <section id="main" class="grid_9" role="main">
 
-            <div id="main" class="static-page">
-
-            <div class="grid_6">
+            <div class="grid_5 alpha">
                 <h2>Bestaande paginas</h2>
                 <table summary="List of existing pages" class="user-options">
                     <#list pagePathList as pagePath>
@@ -62,7 +58,7 @@
                 </table>
             </div>
 
-            <div class="grid_6">
+            <div class="grid_4 omega">
 
                 <h2><@spring.message 'dms.page.create' /></h2>
                 <ol>
@@ -76,8 +72,8 @@
 
            </div>
 
+        </section>
 
-            <div class="clear"></div>
 
             <script type="text/javascript">
 

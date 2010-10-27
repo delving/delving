@@ -100,8 +100,24 @@
     <@adminBlock/>
     <div class="grid_12" id="userBar">
         <@userBar/>
-        <#include "language_select.ftl"/>
+        <@languageSelect/>
     </div>
+</#macro>
+
+<#macro languageSelect>
+<select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
+    <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
+    <option value="en">
+    English (eng)
+    </option>
+    <option value="no">
+    Norsk (nor)
+    </option>
+</select>
+  <form method="post" id="frm-lang" name="frm-lang" style="display: none;" action="/${portalName}/">
+  <input  type="hidden" name="lang"/>
+  </form>
+
 </#macro>
 <#--
  * resultGrid
@@ -251,6 +267,7 @@
     <#assign columsize = 1 />
     <#assign facetsList = nextQueryFacets>
     <#list facetsList as facet>
+        
         <#switch facet.type>
             <#case "LANGUAGE">
                 <#if facet.links?size &gt; 0>
@@ -499,7 +516,7 @@
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message 'ReturnToResults_t' />"/>
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message 'ReturnToResults_t' />">
                <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
             </a>
         </#if>
@@ -575,19 +592,19 @@
  * Macro to generate a simple search form.
  -->
 <#macro simpleSearch>
-    <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
-        <input type="hidden" name="start" value="1" />
-        <input type="hidden" name="view" value="${view}" />
-        <fieldset>
-            <legend>Search</legend>
-            <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
-            <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
-            <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
-            <nav>
-            <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
-            </nav>
-        </fieldset>
-    </form>
+<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
+    <input type="hidden" name="start" value="1" />
+    <input type="hidden" name="view" value="${view}" />
+    <fieldset>
+        <legend>Search</legend>
+        <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
+        <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
+        <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
+        <nav>
+        <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+        </nav>
+    </fieldset>
+</form>
 </#macro>
 
 <#--
@@ -612,78 +629,81 @@
  * Macro to generate a list of links to login / Register and user-saved items.
  -->
 <#macro userBar>
-    <ul>
-        <#if !user??>
-            <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
-        </#if>
-
-        <#if user??>
-        <li>
-            <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-                href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
-        </li>
-        <#if user.savedItems??>
-        <li>
-            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
-                <@spring.message 'SavedItems_t' />
-            </a>
-            (<span id="savedItemsCount">${user.savedItems?size}</span>)
-        </li>
-        </#if>
-        <#if user.savedSearches??>
-        <li>
-            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
-                <@spring.message 'SavedSearches_t' />
-            </a>
-            (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
-        </li>
-        </#if>
-        <#if user.socialTags??>
-        <li>
-            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
-                <@spring.message 'SavedTags_t' />
-            </a>
-            (<span id="savedTagsCount">${user.socialTags?size}</span>)
-        </li>
-        </#if>
-        </#if>
-    </ul>
-
+<ul>
+    <#if !user??>
+        <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
+        <li><a href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
+    </#if>
+    <#if user??>
+    <li>
+        <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
+            href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
+    </li>
+    <#if user.savedItems??>
+    <li>
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
+            <@spring.message 'SavedItems_t' />
+        </a>
+        (<span id="savedItemsCount">${user.savedItems?size}</span>)
+    </li>
+    </#if>
+    <#if user.savedSearches??>
+    <li>
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
+            <@spring.message 'SavedSearches_t' />
+        </a>
+        (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
+    </li>
+    </#if>
+    <#if user.socialTags??>
+    <li>
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
+            <@spring.message 'SavedTags_t' />
+        </a>
+        (<span id="savedTagsCount">${user.socialTags?size}</span>)
+    </li>
+    </#if>
+    </#if>
+</ul>
 </#macro>
 
-
+<#--
+ * viewSelect
+ *
+ * Macro to generate options to select the grid or list view
+ -->
 <#macro viewSelect>
-    <div id="viewselect">
-        <#if queryStringForPresentation?exists>
+<div id="viewselect">
+    <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
-
+            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
         <#else>
-        <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
-
+            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
         </#if>
-        </#if>
-    </div>
+    </#if>
+</div>
 </#macro>
 
+<#--
+ * sortResults
+ *
+ * Macro to generate a dropdow with sorting options
+ -->
 <#macro sortResults>
-    <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-        <option value="">Sorteren op:</option>
-        <option value="title" ><@spring.message 'dc_title_t' /></option>
-        <option value="creator"><@spring.message 'dc_creator_t' /></option>
-        <option value="YEAR"><@spring.message 'dc_date_t' /></option>
-        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
-    </select>
-
-    <#--<form action="" method="GET" id="form-sort" style="display:none;">-->
-    <form action="" method="GET" id="form-sort" style="display:none;">
-        <input type="hidden" name="query" value="${justTheQuery}"/>
-        <input type="hidden" name="start" value="${start}"/>
-        <input type="hidden" name="view" value="${view}"/>
-        <input type="hidden" name="sortBy" id="sortBy" value=""/>
-    </form>
+<select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+    <option value=""><@spring.message 'search.order.by' /></option>
+    <option value="title" ><@spring.message 'dc_title_t' /></option>
+    <option value="creator"><@spring.message 'dc_creator_t' /></option>
+    <option value="YEAR"><@spring.message 'dc_date_t' /></option>
+    <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+</select>
+<form action="" method="GET" id="form-sort" style="display:none;">
+    <input type="hidden" name="query" value="${justTheQuery}"/>
+    <input type="hidden" name="start" value="${start}"/>
+    <input type="hidden" name="view" value="${view}"/>
+    <input type="hidden" name="sortBy" id="sortBy" value=""/>
+</form>
 </#macro>
 

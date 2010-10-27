@@ -3,14 +3,23 @@
 <#assign thisPage = "login.html"/>
 <#--<#assign register = register>-->
 
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
+
+<@addHeader "Norvegiana", "",[],[]/>
+
+<section class="grid_3">
+    <header id="branding">
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+
+    <div id="search" role="search">
+        <@simpleSearch/>
+    </div>
+
+</section>
 
 
-<h1>${portalDisplayName}</h1>
-
-<@simpleSearch/>
-
-
+<section role="main" class="grid_9">
 <h2><@spring.message 'LogIn_t' /></h2>
 
 <form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
@@ -35,7 +44,7 @@
 <strong><@spring.message 'Error_t' />: </strong> Inlog gegevens zijn niet juist
 
 </#if>
-
+</section>
 
 
 <#include "inc_footer.ftl"/>

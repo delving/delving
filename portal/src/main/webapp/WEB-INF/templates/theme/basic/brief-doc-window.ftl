@@ -22,9 +22,9 @@
         <h1 class="large">${portalDisplayName}</h1>
     </header>
 
-    <section id="search" role="search">
+    <div id="search" role="search">
         <@simpleSearch/>
-    </section>
+    </div>
 
     <h3><@spring.message 'RefineYourSearch_t' /></h3>
     <nav id="facetList">

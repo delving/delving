@@ -1,43 +1,43 @@
-        <h5><@spring.message 'RelatedContent_t' />:</h5>
+        <#--<h5><@spring.message 'RelatedContent_t' />:</h5>-->
 
-                <table summary="related items" id="tbl-related-items" width="100%">
-                    <#assign max=3/><!-- max shown in list -->
-                    <#list result.relatedItems as doc>
-                    <#if doc_index &gt; 2><#break/></#if>
-                    <tr>
-                        <td width="45" valign="top">
-                            <div class="related-thumb-container">
-                                <#if queryStringForPaging??>
-                                    <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab='>
-                                 <#else>
-                                    <a href="${doc.fullDocUrl()}">
-                                 </#if>
-                                 <#if useCache="true">
-                                    <img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>
-                                <#else>
-                                    <img src="${doc.thumbnail}" alt="Click here to view related item" width="40" onerror="showDefault(this,'${doc.type}')"/>
-                                </#if>
+                <#--<table summary="related items" id="tbl-related-items" width="100%">-->
+                    <#--<#assign max=3/><!-- max shown in list &ndash;&gt;-->
+                    <#--<#list result.relatedItems as doc>-->
+                    <#--<#if doc_index &gt; 2><#break/></#if>-->
+                    <#--<tr>-->
+                        <#--<td width="45" valign="top">-->
+                            <#--<div class="related-thumb-container">-->
+                                <#--<#if queryStringForPaging??>-->
+                                    <#--<a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;view=${view}&amp;startPage=1&amp;pageId=brd&amp;tab='>-->
+                                 <#--<#else>-->
+                                    <#--<a href="${doc.fullDocUrl()}">-->
+                                 <#--</#if>-->
+                                 <#--<#if useCache="true">-->
+                                    <#--<img src="${cacheUrl}uri=${doc.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${doc.type}&amp;view=${view}" alt="Click here to view related item" width="40"/>-->
+                                <#--<#else>-->
+                                    <#--<img src="${doc.thumbnail}" alt="Click here to view related item" width="40" onerror="showDefault(this,'${doc.type}')"/>-->
+                                <#--</#if>-->
 
-                                    </a>
-                            </div>
-                        </td>
+                                    <#--</a>-->
+                            <#--</div>-->
+                        <#--</td>-->
 
-                        <td class="item-titles" valign="top" width="130">
-                            <#if queryStringForPaging??>
-                            <a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "50"/></a>
-                            <#else>
-                            <a href="${doc.fullDocUrl()}"><@stringLimiter "${doc.title}" "50"/></a>
-                            </#if>
-                        </td>
-                    </tr>
+                        <#--<td class="item-titles" valign="top" width="130">-->
+                            <#--<#if queryStringForPaging??>-->
+                            <#--<a href='${doc.fullDocUrl()}?query=europeana_uri:"${doc.id?url('utf-8')}"&amp;start=${doc.index()?c}&amp;startPage=1&amp;pageId=brd'><@stringLimiter "${doc.title}" "50"/></a>-->
+                            <#--<#else>-->
+                            <#--<a href="${doc.fullDocUrl()}"><@stringLimiter "${doc.title}" "50"/></a>-->
+                            <#--</#if>-->
+                        <#--</td>-->
+                    <#--</tr>-->
 
-                    </#list>
-                    <#if result.relatedItems?size &gt; max>
-                    <tr>
-                        <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
-                    </tr>
-                    </#if>
-                </table>
+                    <#--</#list>-->
+                    <#--<#if result.relatedItems?size &gt; max>-->
+                    <#--<tr>-->
+                        <#--<td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>-->
+                    <#--</tr>-->
+                    <#--</#if>-->
+                <#--</table>-->
 
             <#-- todo: ReImplement this after good solution wrt managing content of UserTags is found -->
             <#--<div class="toggler-c"title="<@spring.message 'UserTags_t' />">-->
