@@ -88,7 +88,7 @@ object SolrBindingService {
 
 trait FacetHelper {
 
-  private val facetMap = Map[String, Any]()
+  val facetMap = Map[String, Any]()
 
   private[binding] def createFacetMap[T](facets: List[Any])(getKeyValue: T => (Any, Any)) {
     facets.foreach{
@@ -98,12 +98,13 @@ trait FacetHelper {
     }
   }
 
-  def getFacet(key: String) = facetMap.getOrElse(key, "unknown")
 }
 
 case class FacetStatisticsMap(private val facets: List[FacetField]) extends FacetHelper {
 
   createFacetMap[FacetField](facets){facet => (facet.getName, facet.getValues.toList) }
+
+  def getFacet(key: String) = facetMap.getOrElse(key, "unknown")
 
 }
 
@@ -112,6 +113,8 @@ case class FacetMap(private val links : List[FacetQueryLinks]) extends FacetHelp
   createFacetMap[FacetQueryLinks](links){link => (link.getType, link)}
 
   def getFacetList = links
+
+  def getFacet(key: String) : FacetQueryLinks = facetMap.get(key).asInstanceOf[FacetQueryLinks]
 }
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {

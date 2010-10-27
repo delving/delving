@@ -28,7 +28,7 @@
 
     <h3><@spring.message 'RefineYourSearch_t' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets/>
+        <@resultBriefFacets "MUNICIPALITY",  "dc_date", 2/>
     </nav>
 
     <nav id="userActions">
