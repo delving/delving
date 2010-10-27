@@ -1,4 +1,4 @@
-package eu.delving.web.util;
+package eu.delving.core.util;
 
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
