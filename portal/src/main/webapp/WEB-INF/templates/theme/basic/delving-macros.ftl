@@ -525,6 +525,88 @@
 
 </#macro>
 
+<#--
+ * resultFacets
+ *
+ * Macro to generate lists of result facets and their links
+ -->
+<#macro resultFacets2 key facetLanguageTag columnSize>
+    <#assign facetMap = result.getFacetMap()>
+    <#assign facetList = facetMap.getFacet(key)>
+
+    <#if !facetList?starts_with("unknown")>
+    <h4><@spring.message '${facetLanguageTag}_t' /></h4>
+    <#list facetList as facet>
+        <#if facet.links?size &gt; 0>
+        <div id="facetsContainer">
+            <table summary="A list of facets to help refine your search">
+                <#list facet.links?chunk(columsize) as row>
+                    <tr>
+                        <#list row as link>
+                            <td align="left" style="padding: 2px;">
+                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
+                                <#if !link.remove = true>
+                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                <#else>
+                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                </#if>
+                            </td>
+                        </#list>
+                    </tr>
+                </#list>
+            </table>
+        </div>
+        </#if>
+    </#list>
+    </#if>
+</#macro>
+
+<#--
+ * resultFacets
+ *
+ * Macro to generate lists of result facets and their links
+ -->
+<#macro resultFacets>
+    <#assign columsize = 1 />
+    <#assign facetsList = nextQueryFacets>
+    <#list facetsList as facet>
+        <#switch facet.type>
+            <#case "LANGUAGE">
+                <#if facet.links?size &gt; 0>
+                   <#assign columsize = 2 />
+                   <h4><@spring.message 'ByLanguage_t' /></h4>
+                </#if>
+                   <#break/>
+            <#case "YEAR">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 2 />
+                    <h4><@spring.message 'Bydate_t' /></h4>
+               </#if>
+               <#break/>
+            <#case "TYPE">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'Bytype_t' /></h4>
+                </#if>
+               <#break/>
+            <#case "PROVIDER">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'ByProvider_t' /></h4>
+               </#if>
+               <#break/>
+            <#case "COUNTRY">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'ByCountry_t' /></h4>
+                </#if>
+               <#break/>
+        </#switch>
 
 <#macro resultFullImage>
     <#if result.fullDoc.thumbnails[0] = " ">

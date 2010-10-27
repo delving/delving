@@ -159,6 +159,7 @@ public class ResultController {
             @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
     ) throws EuropeanaQueryException, UnsupportedEncodingException {
+        boolean srwFormat = format != null && format.equalsIgnoreCase("srw");
 
         // check if we are dealing with a request from the advanced search page
         @SuppressWarnings("unchecked")
@@ -166,7 +167,7 @@ public class ResultController {
         BriefBeanView briefBeanView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
 
         // Create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage("brief-doc-window");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "brief-doc-window-srw" : "brief-doc-window");
         page.addObject("display", format);
         page.addObject("result", briefBeanView);
         page.addObject("query", briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery());
