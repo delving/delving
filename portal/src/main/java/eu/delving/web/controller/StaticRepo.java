@@ -192,7 +192,7 @@ public class StaticRepo {
         }
 
         public void setContent(String content) {
-            BasicDBObject fresh = new BasicDBObject(PATH, getPath());
+            BasicDBObject fresh = new BasicDBObject(PATH, object.get(PATH));
             fresh.put(CONTENT, content);
             pages().insert(fresh);
             this.object = fresh;
