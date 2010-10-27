@@ -67,11 +67,11 @@
                     </a>
                 </div>
 
-                <#list result.fullDoc.getFieldValueList() as field>
-                    <p>${field.getKeyAsXml()} : ${field.getFirst()}</p>
-                </#list>
+                <#--<#list result.fullDoc.getFieldValueList() as field>-->
+                    <#--<p>${field.getKeyAsXml()} : ${field.getFirst()}</p>-->
+                <#--</#list>-->
 
-                ${result.fullDoc.getFieldValue("europeana_uri").isNotEmpty()?string}
+                <#--${result.fullDoc.getFieldValue("europeana_uri").isNotEmpty()?string}-->
 
                 <div id="item-detail" class="grid_8 omega">
                   <#if format?? && format?contains("labels")>
@@ -340,26 +340,26 @@
 
 
 
-                        <tr>
-                            <th>&#160;</th>
-                            <td> <br/>
-                                <#assign UrlRef = "#"/>
-                                <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
-                                    <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
-                                <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
-                                    <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
-                                </#if>
-                                <a
-                                    href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
-                                    target="_blank"
-                                    alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                                >
-                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
-                                </a>
-                            </td>
-                        </tr>
+                        <#--<tr>-->
+                            <#--<th>&#160;</th>-->
+                            <#--<td> <br/>-->
+                                <#--<#assign UrlRef = "#"/>-->
+                                <#--<#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>-->
+                                    <#--<#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>-->
+                                <#--<#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>-->
+                                    <#--<#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>-->
+                                <#--</#if>-->
+                                <#--<a-->
+                                    <#--href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
+                                    <#--target="_blank"-->
+                                    <#--alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
+                                <#-->-->
+                                    <#--<span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />-->
+                                <#--</a>-->
+                            <#--</td>-->
+                        <#--</tr>-->
 
                     </tbody>
                     </table>
