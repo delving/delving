@@ -694,7 +694,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         private MappingRunner getMappingRunner() {
             if (mappingRunner == null) {
-                ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, null);
+                ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor);
                 constantFieldModel.fromMapping(Arrays.asList(getGroovyCode().split("\n")));
                 ToolCodeModel toolCodeModel = new ToolCodeModel();
                 mappingRunner = new MappingRunner(toolCodeModel.getCode() + getGroovyCode(), constantFieldModel);
