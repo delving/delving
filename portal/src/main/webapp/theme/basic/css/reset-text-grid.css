@@ -1,59 +1,26 @@
-/* http://meyerweb.com/eric/tools/css/reset/ */
-/* v1.0 | 20080212 */
+/*
+	Resets
+	------
+*/
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, font, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td {
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em,
+img, ins, q, small, strong, sub, sup, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	outline: 0;
-	font-size: 100%;
-	vertical-align: baseline;
-	background: transparent;
-}
-table, caption, tbody, tfoot, thead, tr, th, td {
-    vertical-align: top;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
 }
 
-/* remember to define focus styles! */
-:focus {
-	outline: 0;
+article, aside, figure, figure img, figcaption, hgroup,
+footer, header, nav, section, video, object {
+	display: block;
 }
 
-/* remember to highlight inserts somehow! */
-ins {
-	text-decoration: none;
-}
-del {
-	text-decoration: line-through;
-}
+a img {border: 0;}
 
-/* tables still need 'cellspacing="0"' in the markup */
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
+figure {position: relative;}
+figure img {width: 100%;}
 
 /*___________________TEXT___________________________*/
 
@@ -88,7 +55,7 @@ h1, h2, h3, h4 {
     color: #555;
 }
 h1 {
-	font-size: 22px;
+	font-size: 26px;
 }
 
 h2 {
@@ -110,6 +77,30 @@ h5 {
 h6 {
 	font-size: 12px;
 }
+
+.gigantic {
+	font-size: 105px;
+	line-height: 120px;
+	letter-spacing: -2px;
+}
+
+.huge {
+	font-size: 68px;
+	line-height: 72px;
+	letter-spacing: -2px;
+}
+
+.large {
+	font-size: 42px;
+	line-height: 48px;
+	letter-spacing: -1px;
+}
+
+.big {
+	font-size: 26px;
+	line-height: 36px;
+}
+
 
 /* `Spacing
 ----------------------------------------------------------------------------------------------------*/

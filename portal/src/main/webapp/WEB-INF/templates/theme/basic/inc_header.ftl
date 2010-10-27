@@ -56,5 +56,9 @@
      -->
 </head>
 <body>
-<@userBar/>
+<div class="container_12">
 <@adminBlock/>
+<div class="grid_12" id="userBar">
+    <@userBar/>
+    <#include "language_select.ftl"/>
+</div>    

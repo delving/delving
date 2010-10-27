@@ -1,3 +1,5 @@
+</div><#-- // container_12 -->
+
 <#if trackingCode??>
     <script type="text/javascript">
 
