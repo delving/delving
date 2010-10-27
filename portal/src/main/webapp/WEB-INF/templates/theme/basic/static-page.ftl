@@ -145,7 +145,7 @@
                 <#if edit>
 
                     <div id="pageForm">
-                        <form action="/${portalName}/${page.path}" method="POST" id="form-edit">
+                        <form action="${page.path}" method="POST" id="form-edit">
                             <table>
                                 <tr>
                                     <td>
@@ -155,7 +155,7 @@
                                 <tr>
                                     <td>
                                         <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
-                                        <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="/${portalName}/${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
+                                        <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
                                     </td>
                                 </tr>
                             </table>
@@ -163,9 +163,9 @@
                     </div>
                 <#else>
                     <#if page.id??>
-                        <p><a href="/${portalName}/${page.path}?edit=true&version=${page.id}" class="button"><@spring.message 'dms.page.edit' /></a></p>
+                        <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message 'dms.page.edit' /></a></p>
                     <#else>
-                        <p><a href="/${portalName}/${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
+                        <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
                     </#if>
                     <br/><br/>
                     <#if versionList?? && page.id??>
@@ -176,9 +176,9 @@
                         <ul>
                             <#list versionList as version>
                                 <#if version.id == page.id>
-                                    <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="/${portalName}/${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message 'dms.version.approve' /></li>
+                                    <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message 'dms.version.approve' /></li>
                                 <#else>
-                                    <li><a href="/${portalName}/${version.path}?version=${version.id}&edit=false">${version.date?string("yyyy-MM-dd HH:mm:ss")}</a></li>
+                                    <li><a href="${version.path}?version=${version.id}&edit=false">${version.date?string("yyyy-MM-dd HH:mm:ss")}</a></li>
                                 </#if>
                             </#list>
                         </ul>

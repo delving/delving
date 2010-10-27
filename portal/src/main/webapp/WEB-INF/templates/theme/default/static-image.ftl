@@ -53,21 +53,15 @@
 
             <div class="grid_6">
                 <h2><@spring.message 'dms.image.create' /></h2>
-                <ol>
-                    <li><@spring.message 'dms.image.create.step.1' /></li>
-                    <li>
-                        <@spring.message 'dms.image.create.step.2' />
-                    </li>
-                </ol>
-                <form action="" method="get" onsubmit="createImage();return false;">
-                    <input type="hidden" value="/${portalName}/" id="pName"/>
-                    <label>Naam:</label><input type="text" name="imgName" id="imgName" value=""/>
-                    <select id="imgExt" name="imgExt">
-                        <option>.jpg</option>
-                        <option>.png</option>
-                        <option>.gif</option>
-                    </select>
-                <input type="submit" value="<@spring.message 'dms.goto.upload' />"/>
+                <form method="POST" action="/${portalName}/images/_.img" enctype="multipart/form-data">
+                    <table>
+                        <tr>
+                            <td><input type="file" name="file" size="30"/></td>
+                        </tr>
+                        <tr>
+                            <td><input type="submit" name="submit" value="<@spring.message 'dms.upload' />"></td>
+                        </tr>
+                    </table>
                 </form>
                 <script type="text/javascript">
                     function createImage(){
@@ -133,7 +127,7 @@
 
                 <div class="grid_12">
                     <#if imageExists>
-                        <img src="${imagePath}" alt="${imagePath}"/>
+                        <img src="/${portalName}/${imagePath}" alt="${imagePath}"/>
                     <#else>
                         <p><@spring.message 'dms.image.not.exist' /></p>
                     </#if>
@@ -148,8 +142,8 @@
                                 <form method="POST" enctype="multipart/form-data">
                                     <table>
                                         <tr>
-                                            <td width="200"><@spring.message 'dms.image.choose' /></td>
-                                            <td><input type="file" name="file" size="30"/></td>
+                                            <td width="200"><@spring.message 'dms.image.upload.new' /></td>
+                                            <td><input type="file" name="file" size="60"/></td>
                                         </tr>
                                         <tr>
                                             <td></td>
@@ -157,9 +151,23 @@
                                         </tr>
                                     </table>
                                 </form>
+                                <div id="pageForm2">
+                                    <form method="POST">
+                                        <table>
+                                            <tr>
+                                                <td width="200"><@spring.message 'dms.image.rename' /></td>
+                                                <td><input type="newPath" name="newPath" value="${imagePath}" size="60"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td><input type="submit" name="submit" value="<@spring.message 'dms.rename' />"></td>
+                                            </tr>
+                                        </table>
+                                    </form>
+                                </div>
                             </div>
                         <#else>
-                            <p><a href="${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
+                            <p><a href="/${portalName}/${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
                         </#if>
                         <p><a href="_.img"><@spring.message 'dms.image.list' /></a></p>
                     </#if>
