@@ -21,6 +21,7 @@
 
 package eu.europeana.web.controller;
 
+import eu.delving.core.binding.FacetStatisticsMap;
 import eu.delving.core.binding.SolrBindingService;
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.*;
@@ -142,6 +143,8 @@ public class ResultController {
         solrQuery.setRows(0);
         final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
         final List<FacetField> facetFields = solrResponse.getFacetFields();
+
+        final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
 
         // Create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage("statistics");
