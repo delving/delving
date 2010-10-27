@@ -17,19 +17,26 @@
 
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 
-<#--<@addJavascript ["results.js"]/>-->
+<section class="grid_3" role="complementary">
+    <header id="branding">
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-<div class="grid_12" id="branding">
-    <h1 class="large">${portalDisplayName}</h1>
-</div>
+    <section id="search" role="search">
+        <@simpleSearch/>
+    </section>
 
-<div class="grid_12" id="search" role="search">
-    <@simpleSearch/>
-</div>
+    <h3><@spring.message 'RefineYourSearch_t' /></h3>
+    <nav id="facetList">
+        <@resultBriefFacets/>
+    </nav>
 
-<div class="clear"></div>
+    <nav id="userActions">
+        <@resultsBriefUserActions/>
+    </nav>
+</section>
 
-<div class="grid_8" id="results">
+<section class="grid_9" id="results" role="main">
 
     <div id="nav_query_breadcrumbs">
         <h4><@resultBriefQueryBreadcrumbs/></h4>
@@ -51,9 +58,9 @@
 
     <div class="clear"></div>
 
-    <div id="pagination">
+    <nav id="pagination">
         <@resultBriefPagination/>
-    </div>
+    </nav>
 
     <#if briefDocs?size &gt; 0>
         <#if view = "table">
@@ -65,21 +72,12 @@
         <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
     </#if>
 
-    <div class="pagination">
+    <nav class="pagination">
         <@resultBriefPagination/>
-    </div>
+    </nav>
 
-</div>
+</section>
 
-<div class="grid_4" id="facets">
-    <div id="facetList">
-        <@resultBriefFacets/>
-    </div>
-
-    <div id="userActions">
-        <@resultsBriefUserActions/>
-    </div>
-</div>
 
 <#include "inc_footer.ftl"/>
 

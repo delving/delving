@@ -1,7 +1,7 @@
 <#assign model = result/>
 <#assign result = result/>
 <#assign uri = result.fullDoc.id/>
-<#assign view = "table"/>
+
 <#--<#assign thisPage = "full-doc.html"/>-->
 <#compress>
 <#if format??><#assign format = format/></#if>
@@ -25,74 +25,76 @@
 
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 
-<header class="grid_12">
-    <h1>${portalDisplayName}</h1>
+<section id="sidebar" class="grid_3" role="complementary">
+    <header id="branding" role="banner">
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-    <@simpleSearch/>
-</header>
-
-<div id="main" class="grid_9 page">
-
-   <div id="query_breadcrumbs">
-       <div class="inner">
-            <#if pagination??>
-                <dl>
-                    <dt><@spring.message 'MatchesFor_t' />:</dt>
-                    <#if !query?starts_with("europeana_uri:")>
-                        <#list pagination.breadcrumbs as crumb>
-                            <#if !crumb.last>
-                                <dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>
-                            <#else>
-                                <dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>
-                            </#if>
-                        </#list>
-                    <#else>
-                        <dd class="nobg">
-                            <@spring.message 'ViewingRelatedItems_t' />
-                            <#assign match = result.fullDoc />
-                            <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
-                            <a href="full-doc.html?&amp;uri=${match.id}">
-                            <#if useCache="true">
-                                <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                            <#else>
-                                <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
-                            </#if>
-                            </a>
-                        </dd>
-                    </#if>
-                </dl>
-            <#else>
-                <ul>
-                    <li>&#160;</li>
-                </ul>
-            </#if>
-        </div>
+    <div id="search" role="search">
+        <@simpleSearch/>
+    </div>
+    
+    <div id="facet-list">
+        <#include "inc_related_content.ftl"/>
     </div>
 
-    <div class="clear"></div>
+</section>
 
 
-    <@resultFullPagination/>
+<section id="main" class="grid_9" role="main">
 
-    <div class="clear"></div>
+   <#--<div id="query_breadcrumbs">-->
+       <#--<div class="inner">-->
+            <#--<#if pagination??>-->
+                <#--<dl>-->
+                    <#--<dt><@spring.message 'MatchesFor_t' />:</dt>-->
+                    <#--<#if !query?starts_with("europeana_uri:")>-->
+                        <#--<#list pagination.breadcrumbs as crumb>-->
+                            <#--<#if !crumb.last>-->
+                                <#--<dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>-->
+                            <#--<#else>-->
+                                <#--<dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>-->
+                            <#--</#if>-->
+                        <#--</#list>-->
+                    <#--<#else>-->
+                        <#--<dd class="nobg">-->
+                            <#--<@spring.message 'ViewingRelatedItems_t' />-->
+                            <#--<#assign match = result.fullDoc />-->
+                            <#--&lt;#&ndash;todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search&ndash;&gt;-->
+                            <#--<a href="full-doc.html?&amp;uri=${match.id}">-->
+                            <#--<#if useCache="true">-->
+                                <#--<img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
+                            <#--<#else>-->
+                                <#--<img src="${match.thumbnail}" alt="${match.title}" height="25"/>-->
+                            <#--</#if>-->
+                            <#--</a>-->
+                        <#--</dd>-->
+                    <#--</#if>-->
+                <#--</dl>-->
+            <#--<#else>-->
+                <#--<ul>-->
+                    <#--<li>&#160;</li>-->
+                <#--</ul>-->
+            <#--</#if>-->
+        <#--</div>-->
+    <#--</div>-->
 
-    <div id="item-detail">
+    <#--<div class="clear"></div>-->
+
+    <nav class="grid_9" role="navigation">
+        <@resultFullPagination/>
+    </nav>
+
+    <div id="itemImage" class="grid_4 alpha">
+        <@resultFullImage/>
+    </div>
+
+    <div id="itemMetaData" class="grid_5 omega">
         <@resultFullList/>
     </div>
-    <div class="clear"></div>
 
-</div>
+</section>
 
-<div id="sidebar">
-
-    <div id="facet-list">
-        <div class="inner">
-            <#include "inc_related_content.ftl"/>
-        </div>
-    </div>
-
-
-</div>
 
 <#include "inc_footer.ftl"/>
 

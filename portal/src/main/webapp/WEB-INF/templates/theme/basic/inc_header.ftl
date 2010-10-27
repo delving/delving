@@ -53,8 +53,12 @@
 </head>
 <body>
 <div class="container_12">
+
 <@adminBlock/>
-<div class="grid_12" id="userBar">
-    <@userBar/>
-    <#include "language_select.ftl"/>
-</div>    
+
+<section class="grid_12" id="userBar">
+    <nav id="userBarNavigation">
+        <@userBar/>
+        <#include "language_select.ftl"/>
+    </nav>
+</section>

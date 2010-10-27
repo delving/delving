@@ -3,7 +3,8 @@
 <#if user??>
     <#assign user = user/>
 </#if>
-<#assign useCache = "true">
+<#assign view = "table"/>
+<#assign useCache = "false">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
 <#--
@@ -14,11 +15,13 @@
  -->
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
-    <div id="admin-block">
-        <h4><@spring.message 'dms.administration.title' /></h4>
-
+    <section id="adminBlock">
+        <nav id="adminNav">
         <table class="user-options">
             <tbody>
+                <tr>
+                    <th><@spring.message 'dms.administration.title' /></th>
+                </tr>
                 <tr>
                     <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message 'dms.administration.pages' /></a></td>
                 </tr>
@@ -30,8 +33,8 @@
                 </tr>
             </tbody>
         </table>
-
-    </div>
+        </nav>
+    </section>
     </#if>
 </#macro>
 
@@ -505,6 +508,33 @@
 
 </#macro>
 
+
+<#macro resultFullImage>
+    <#if result.fullDoc.thumbnails[0] = " ">
+        <#assign thumbnail = "noImageFound"/>
+    <#else>
+        <#assign thumbnail = "${result.fullDoc.thumbnails[0]}"/>
+    </#if>
+    <#if useCache="true">
+        <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+             class="full"
+             alt="${result.fullDoc.dcTitle[0]}"
+             id="imgview"
+             onload="checkSize(this,'full',this.width);"
+             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+         />
+    <#else>
+        <img
+             alt="${result.fullDoc.dcTitle[0]}"
+             id="imgview"
+             class="full"
+             src="${thumbnail}"
+             onload="checkSize(this,'full',this.width);"
+             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+         />
+    </#if>
+</#macro>
+
 <#macro resultFullList>
     <table summary="This table contains the metadata for the object being viewed">
         <caption>Object metadata</caption>
@@ -553,7 +583,9 @@
             <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
             <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
             <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
+            <nav>
             <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+            </nav>
         </fieldset>
     </form>
 </#macro>
