@@ -21,11 +21,14 @@
 
 package eu.europeana.web.controller;
 
+import eu.delving.core.binding.SolrBindingService;
 import eu.europeana.core.database.domain.StaticPageType;
 import eu.europeana.core.querymodel.query.*;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -38,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,11 +98,11 @@ public class ResultController {
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocRest(
             @PathVariable String collId, @PathVariable String recordHash,
+            @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
     ) throws Exception {
         Map params = request.getParameterMap();
-        String format = (String) params.get("format");
-        boolean srwFormat = format != null && format.equals("srw");
+        boolean srwFormat = format != null && format.equalsIgnoreCase("srw");
 
         String uri = collId + "/" + recordHash;
         Map fullParams = new HashMap<String, String[]>();
@@ -123,6 +127,28 @@ public class ResultController {
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
     }
+
+
+    @RequestMapping("/statistics.html")
+    public ModelAndView statisticsHtml(
+            @RequestParam(value = "query", required = false) String query,
+            HttpServletRequest request
+    ) throws EuropeanaQueryException, UnsupportedEncodingException {
+        @SuppressWarnings("unchecked")
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        solrQuery.setFacet(true);
+        solrQuery.setFacetLimit(100);
+        solrQuery.addFacetField("MUNICIPALITY", "PROVIDER", "DATAPROVIDER", "COUNTY");
+        solrQuery.setRows(0);
+        final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
+        final List<FacetField> facetFields = solrResponse.getFacetFields();
+
+        // Create ModelAndView
+        ModelAndView page = ControllerUtil.createModelAndViewPage("statistics");
+        page.addObject("facetMap", SolrBindingService.createFacetStatistics(facetFields));
+        return page;
+    }
+
 
     @RequestMapping("/brief-doc.html")
     public ModelAndView briefDocHtml(
