@@ -46,7 +46,7 @@
         <!--<property name="useDefaultSuffixPattern" value="false"/>-->
     <!--</bean>-->
 
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <bean id="messageSource" class="eu.delving.web.util.SafeMessageSource">
         <property name="basename" value="#{launchProperties['message.resource']}"/>
         <property name="cacheSeconds" value="#{launchProperties['message.cache.seconds']}"/>
         <property name="fileEncodings" value="UTF-8"/>
