@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.core.RecordRoot;
@@ -29,6 +30,7 @@ import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -45,6 +47,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -69,6 +73,7 @@ public class DataSetUploadPanel extends JPanel {
     private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
     private JButton createUploadZipButton = new JButton("Create and upload ZIP File");
     private Map<String, JTextField> linkedFields = new TreeMap<String, JTextField>();
+    private JComboBox autoFillBox = new JComboBox(createPrefixChoice());
 
     public DataSetUploadPanel(SipModel sipModel) {
         super(new SpringLayout());
@@ -96,6 +101,12 @@ public class DataSetUploadPanel extends JPanel {
                 "A human-readable description of what the dataset contains.",
                 descriptionField
         );
+
+        JLabel label = new JLabel("Auto-fill", JLabel.RIGHT);
+        label.setLabelFor(autoFillBox);
+        add(label);
+        add(autoFillBox);
+
         addField(
                 "Prefix",
                 "The prefix associated with the uploaded format",
@@ -141,9 +152,9 @@ public class DataSetUploadPanel extends JPanel {
     }
 
     private void linkFields() {
-        linkField("europeana_collectionName", specField );
-        linkField("europeana_collectionTitle", nameField );
-        linkField("europeana_provider", providerNameField );
+        linkField("europeana_collectionName", specField);
+        linkField("europeana_collectionTitle", nameField);
+        linkField("europeana_provider", providerNameField);
     }
 
     private void linkField(String fieldName, JTextField field) {
@@ -270,7 +281,7 @@ public class DataSetUploadPanel extends JPanel {
 
             private void noSpaces() {
                 String with = specField.getText();
-                final String without = with.replaceAll("\\s+","");
+                final String without = with.replaceAll("\\s+", "");
                 if (!with.equals(without)) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -283,5 +294,31 @@ public class DataSetUploadPanel extends JPanel {
                 }
             }
         });
+        autoFillBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                    if (itemEvent.getItem() instanceof MetadataNamespace) {
+                        MetadataNamespace ns = (MetadataNamespace)itemEvent.getItem();
+                        prefixField.setText(ns.getPrefix() + "-raw");
+                        namespaceField.setText(ns.getUri());
+                        schemaField.setText(ns.getSchema());
+                    }
+                    else {
+                        prefixField.setText(null);
+                        namespaceField.setText(null);
+                        schemaField.setText(null);
+                    }
+                    sipModel.setDataSetDetails(getDetails());
+                }
+            }
+        });
+    }
+
+    private Object[] createPrefixChoice() {
+        Object[] choices = new Object[MetadataNamespace.values().length + 1];
+        choices[0] = "- custom -";
+        System.arraycopy(MetadataNamespace.values(), 0, choices, 1, MetadataNamespace.values().length);
+        return choices;
     }
 }
