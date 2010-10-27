@@ -9,6 +9,7 @@ import java.lang.{Boolean => JBoolean}
 import scala.collection.mutable.Map
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
+import org.apache.solr.client.solrj.SolrQuery
 
 /**
  *
@@ -111,7 +112,7 @@ case class FacetMap(private val links : List[FacetQueryLinks]) {
 
   def getFacetList = links
 
-  def getFacet(key: String) : FacetQueryLinks = facetMap.get(key)
+  def getFacet(key: String) : FacetQueryLinks = facetMap.getOrElse(key, new FacetQueryLinks("unknown"))
 }
 
 case class FacetStatisticsMap(private val facets: List[FacetField]) extends FacetHelper {

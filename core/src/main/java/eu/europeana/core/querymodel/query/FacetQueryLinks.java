@@ -28,6 +28,10 @@ public class FacetQueryLinks {
         return list;
     }
 
+    public FacetQueryLinks(String type) {
+        this.type = type;
+    }
+
     private FacetQueryLinks(FacetField facetField, SolrQuery solrQuery, boolean onlyRemove) throws UnsupportedEncodingException {
         this.type = facetField.getName();
         if (facetField.getValueCount() > 0) {
