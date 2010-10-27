@@ -100,10 +100,14 @@ public class ValueMap {
         }
         out.append('\n');
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            out.append("'").append(entry.getKey()).append("':'").append(entry.getValue()).append("',\n");
+            out.append("'").append(escapeApostrophe(entry.getKey())).append("':'").append(escapeApostrophe(entry.getValue())).append("',\n");
         }
         out.append("]\n");
         out.append(String.format("def %s = { def v = %sMap[it.toString()]; return v ? v : it }\n", name, name));
         return out.toString();
+    }
+
+    private String escapeApostrophe(String s) {
+        return s.replaceAll("'", "\'");
     }
 }
