@@ -264,15 +264,14 @@
  -->
 <#macro resultBriefFacets key facetLanguageTag columnSize>
     <#assign facetMap = result.getFacetMap()>
-    <#assign facetListNew = facetMap.getFacet(key)>
+    <#assign facet = facetMap.getFacet(key)>
 
-    <#if !facetListNew?starts_with("unknown")>
+    <#if !facet?starts_with("unknown")>
     <h4><@spring.message '${facetLanguageTag}_t' /></h4>
-    <#list facetListNew as facet>
         <#if facet.links?size &gt; 0>
         <div id="facetsContainer">
             <table summary="A list of facets to help refine your search">
-                <#list facet.links?chunk(columsize) as row>
+                <#list facet.links?chunk(columnSize?int) as row>
                     <tr>
                         <#list row as link>
                             <td align="left" style="padding: 2px;">
@@ -294,7 +293,6 @@
             </table>
         </div>
         </#if>
-    </#list>
     </#if>
 </#macro>
 <#--

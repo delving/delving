@@ -111,7 +111,7 @@ case class FacetMap(private val links : List[FacetQueryLinks]) {
 
   def getFacetList = links
 
-  def getFacet(key: String) : FacetQueryLinks = facetMap.get(key)
+  def getFacet(key: String) : FacetQueryLinks = facetMap.get(key).get
 }
 
 case class FacetStatisticsMap(private val facets: List[FacetField]) extends FacetHelper {
