@@ -107,7 +107,11 @@ public class ValueMap {
         return out.toString();
     }
 
-    private String escapeApostrophe(String s) {
-        return s.replaceAll("'", "\'");
+    private static String escapeApostrophe(String s) {
+        return s.replaceAll("'", "\\\\'");
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(escapeApostrophe("001: grijze top van katoen met verharde colkraag; 002: grijze rok van katoen met gefixeerde pliss~N; 003: rode 'logo'-shawl van wol in de vorm van stropdas"));
+//    }
 }
