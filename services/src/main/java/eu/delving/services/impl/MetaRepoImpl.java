@@ -49,6 +49,8 @@ import java.util.TreeSet;
  */
 
 public class MetaRepoImpl implements MetaRepo {
+    private static final MetadataNamespace MAPPED_NAMESPACE = MetadataNamespace.ABM;
+    private static final boolean MAPPED_NAMESPACE_ACCESS_KEY_REQUIRED = true;
     private Logger log = Logger.getLogger(getClass());
     private int responseListSize = 5;
     private int harvestStepSecondsToLive = 5;
@@ -67,7 +69,7 @@ public class MetaRepoImpl implements MetaRepo {
     private AnnotationProcessor annotationProcessor;
 
     @Value("#{launchProperties['services.mongo.dbName']}")
-    private String mongoDatabaseName;
+    private String mongoDatabaseName = null;
 
     public void setResponseListSize(int responseListSize) {
         this.responseListSize = responseListSize;
@@ -406,25 +408,20 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public void addMapping(String mappingCode) {
-            // todo: get these from the content of the mapping getGroovyCode.  maybe from annotations or their replacement?
-            MetadataNamespace ns = MetadataNamespace.ABM;
-            boolean accessKeyRequired = true;
-            // todo: get these from the content of the mapping getGroovyCode.  maybe from annotations or their replacement?
-
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
                 mappings = new BasicDBObject();
                 object.put(MAPPINGS, mappings);
             }
             DBObject format = new BasicDBObject();
-            format.put(MetadataFormat.PREFIX, ns.getPrefix());
-            format.put(MetadataFormat.NAMESPACE, ns.getUri());
-            format.put(MetadataFormat.SCHEMA, ns.getSchema());
-            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
+            format.put(MetadataFormat.PREFIX, MAPPED_NAMESPACE.getPrefix());
+            format.put(MetadataFormat.NAMESPACE, MAPPED_NAMESPACE.getUri());
+            format.put(MetadataFormat.SCHEMA, MAPPED_NAMESPACE.getSchema());
+            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, MAPPED_NAMESPACE_ACCESS_KEY_REQUIRED);
             DBObject mapping = new BasicDBObject();
             mapping.put(Mapping.FORMAT, format);
             mapping.put(Mapping.CODE, mappingCode);
-            mappings.put(ns.getPrefix(), mapping);
+            mappings.put(MAPPED_NAMESPACE.getPrefix(), mapping);
             saveObject();
         }
 
@@ -446,12 +443,12 @@ public class MetaRepoImpl implements MetaRepo {
                 for (String prefix : mappingsObject.keySet()) {
                     mappingMap.put(prefix, new MappingImpl(this, (DBObject) mappingsObject.get(prefix)));
                 }
-                // WORKAROUND: ICN format filtered of all <icn:*> is ESE
-                Mapping icnMapping = mappingMap.get("icn");
-                if (icnMapping != null) {
-                    mappingMap.put("ese", new FakeESEMappingImpl((MappingInternal)icnMapping));
+                // todo: workaround for faking ESE harvesting
+                Mapping originalMapping = mappingMap.get(MAPPED_NAMESPACE.getPrefix());
+                if (originalMapping != null) {
+                    mappingMap.put(MetadataNamespace.ESE.getPrefix(), new FakeESEMappingImpl((MappingInternal)originalMapping));
                 }
-                // WORKAROUND: ICN format filtered of all <icn:*> is ESE
+                // todo: workaround for faking ESE harvesting
             }
             return mappingMap;
         }
@@ -574,11 +571,11 @@ public class MetaRepoImpl implements MetaRepo {
         public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
             icnMapping.map(records, namespaces);
             for (Record record : records) {
-                List<FieldEntry> entries = FieldEntry.createList(record.getXmlString("icn"));
+                List<FieldEntry> entries = FieldEntry.createList(record.getXmlString(MAPPED_NAMESPACE.getPrefix()));
                 Iterator<FieldEntry> walk = entries.iterator();
                 while (walk.hasNext()) {
                     FieldEntry entry = walk.next();
-                    if (entry.getTag().startsWith("icn")) {
+                    if (entry.getTag().startsWith(MAPPED_NAMESPACE.getPrefix())) {
                         walk.remove();
                     }
                 }
