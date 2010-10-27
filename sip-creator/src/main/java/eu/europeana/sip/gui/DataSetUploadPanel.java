@@ -300,7 +300,7 @@ public class DataSetUploadPanel extends JPanel {
                 if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                     if (itemEvent.getItem() instanceof MetadataNamespace) {
                         MetadataNamespace ns = (MetadataNamespace)itemEvent.getItem();
-                        prefixField.setText(ns.getPrefix() + "raw");
+                        prefixField.setText(ns.getPrefix() + "-raw");
                         namespaceField.setText(ns.getUri());
                         schemaField.setText(ns.getSchema());
                     }

@@ -43,6 +43,11 @@ public enum MetadataNamespace {
             "http://www.europeana.eu/schemas/ese/",
             "http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd"
     ),
+    ESE(
+            "ese",
+            "http://www.europeana.eu/schemas/ese/",
+            "http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd"
+    ),
 //    ICN(
 //            "icn",
 //            "http://www.icn.nl/",
