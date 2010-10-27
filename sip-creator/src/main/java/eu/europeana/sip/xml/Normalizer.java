@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.xml;
 
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.europeana.sip.core.ConstantFieldModel;
 import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
@@ -36,6 +37,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,8 +87,13 @@ public class Normalizer implements Runnable {
             ToolCodeModel toolCodeModel = new ToolCodeModel();
             FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
             if (storeNormalizedFile) {
-                fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
-                fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+                Writer out = fileSetOutput.getOutputWriter();
+                out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
+                out.write("<metadata");
+                writeNamespace(out, MetadataNamespace.DC);
+                writeNamespace(out, MetadataNamespace.DCTERMS);
+                writeNamespace(out, MetadataNamespace.EUROPEANA);
+                out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mappingCode, constantFieldModel);
             MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordRoot, parserListener);
@@ -161,6 +168,10 @@ public class Normalizer implements Runnable {
         catch (IOException e) {
             throw new RuntimeException("IO Problem", e);
         }
+    }
+
+    private void writeNamespace(Writer writer, MetadataNamespace namespace) throws IOException {
+        writer.write(String.format(" xmlns:%s=\"%s\"", namespace.getPrefix(), namespace.getUri()));
     }
 
     public void abort() {

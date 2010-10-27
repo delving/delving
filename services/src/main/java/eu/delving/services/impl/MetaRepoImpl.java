@@ -6,6 +6,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -406,9 +407,7 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void addMapping(String mappingCode) {
             // todo: get these from the content of the mapping getGroovyCode.  maybe from annotations or their replacement?
-            String prefix = "icn";
-            String namespace = "http://www.icn.nl/";
-            String schema = "http://www.icn.nl/schemas/ICN-V3.2.xsd";
+            MetadataNamespace ns = MetadataNamespace.ABM;
             boolean accessKeyRequired = true;
             // todo: get these from the content of the mapping getGroovyCode.  maybe from annotations or their replacement?
 
@@ -418,14 +417,14 @@ public class MetaRepoImpl implements MetaRepo {
                 object.put(MAPPINGS, mappings);
             }
             DBObject format = new BasicDBObject();
-            format.put(MetadataFormat.PREFIX, prefix);
-            format.put(MetadataFormat.NAMESPACE, namespace);
-            format.put(MetadataFormat.SCHEMA, schema);
+            format.put(MetadataFormat.PREFIX, ns.getPrefix());
+            format.put(MetadataFormat.NAMESPACE, ns.getUri());
+            format.put(MetadataFormat.SCHEMA, ns.getSchema());
             format.put(MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
             DBObject mapping = new BasicDBObject();
             mapping.put(Mapping.FORMAT, format);
             mapping.put(Mapping.CODE, mappingCode);
-            mappings.put(prefix, mapping);
+            mappings.put(ns.getPrefix(), mapping);
             saveObject();
         }
 
