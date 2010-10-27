@@ -133,7 +133,7 @@
 
                 <div class="grid_12">
                     <#if imageExists>
-                        <img src="${imagePath}" alt="${imagePath}"/>
+                        <img src="/${portalName}/${imagePath}" alt="${imagePath}"/>
                     <#else>
                         <p><@spring.message 'dms.image.not.exist' /></p>
                     </#if>
@@ -159,7 +159,7 @@
                                 </form>
                             </div>
                         <#else>
-                            <p><a href="${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
+                            <p><a href="/${portalName}/${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
                         </#if>
                         <p><a href="_.img"><@spring.message 'dms.image.list' /></a></p>
                     </#if>
