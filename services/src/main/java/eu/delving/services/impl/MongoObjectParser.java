@@ -2,6 +2,7 @@ package eu.delving.services.impl;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.services.core.MetaRepo;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -39,10 +40,9 @@ public class MongoObjectParser {
         xmlif.configureForSpeed();
         Source source = new StreamSource(inputStream, "UTF-8");
         this.input = (XMLStreamReader2) xmlif.createXMLStreamReader(source);
-        this.namespaces.put("dc", "http://purl.org/dc/elements/1.1/");
-        this.namespaces.put("dcterms", "http://purl.org/dc/terms/");
-        this.namespaces.put("europeana", "http://www.europeana.eu/schemas/ese/");
-        this.namespaces.put("icn", "http://www.icn.nl/");
+        for (MetadataNamespace ns : MetadataNamespace.values()) {
+            this.namespaces.put(ns.getPrefix(), ns.getUri());
+        }
     }
 
     @SuppressWarnings("unchecked")
