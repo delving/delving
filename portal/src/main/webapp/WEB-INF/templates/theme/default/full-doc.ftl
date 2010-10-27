@@ -15,11 +15,11 @@
 <#else>
     <#assign postTitle = result.fullDoc.dcTitle[0]?url('utf-8')/>
 </#if>
-<#if result.fullDoc.dcCreator[0]?matches(" ")>
-    <#assign postAuthor = "none"/>
-<#else>
-    <#assign postAuthor = result.fullDoc.dcCreator[0]/>
-</#if>
+<#--<#if result.fullDoc.dcCreator[0]?matches("")>-->
+    <#--<#assign postAuthor = "none"/>-->
+<#--<#else>-->
+    <#--<#assign postAuthor = result.fullDoc.dcCreator[0]/>-->
+<#--</#if>-->
 <#-- Removed ?url('utf-8') from query assignment -->
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
 <#include "inc_header.ftl">

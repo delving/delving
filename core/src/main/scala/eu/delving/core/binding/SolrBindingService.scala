@@ -88,7 +88,7 @@ object SolrBindingService {
 
 trait FacetHelper {
 
-  private var facetMap = Map[String, Any]()
+  private val facetMap = Map[String, Any]()
 
   private[binding] def createFacetMap[T](facets: List[Any])(getKeyValue: T => (Any, Any)) {
     facets.foreach{
@@ -123,6 +123,8 @@ case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any
   private[binding] def add(field: String, value : List[Any]) = fieldMap.put(field, value)
 
   private[binding] def getFieldNames = fieldMap.keys
+
+  def getFieldValueList : List[FieldValue] = for (key <- fieldMap.keys.toList.filter(_.matches(".*_.*"))) yield FieldValue(key, this)
 }
 
 case class FieldValue (key: String, solrDocument: SolrDocument) {
@@ -130,6 +132,8 @@ case class FieldValue (key: String, solrDocument: SolrDocument) {
   private val fieldValues = solrDocument.get(key)
 
   def getKey = key
+
+  def getKeyAsXml = key.replaceFirst("_", ":")
 
   def getFirst : String = solrDocument.getFirst(key)
 
@@ -148,6 +152,8 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
     private def assign(key: String) = solrDocument.getFirst(key)
 
     override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
+
+    def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
     def getId : String = assign("europeana_uri")
     def getTitle : String = assign("title")
@@ -177,6 +183,8 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
     override def getAsString(key: String) : String = assignFirst(key)
 
     def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
+
+    def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")

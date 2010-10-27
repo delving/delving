@@ -67,6 +67,12 @@
                     </a>
                 </div>
 
+                <#list result.fullDoc.getFieldValueList() as field>
+                    <p>${field.getKeyAsXml()} : ${field.getFirst()}</p>
+                </#list>
+
+                ${result.fullDoc.getFieldValue("europeana_uri").isNotEmpty()?string}
+
                 <div id="item-detail" class="grid_8 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
@@ -132,22 +138,30 @@
                         <caption>Object metadata</caption>
                         <tbody>
                      <#-- TITLE   -------------------------------------------------------------------------------->
-                        <#assign titleArr = result.fullDoc.dcTitle />
-                        <#if isNonEmpty(titleArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_title_t' />:</th>
-                                <td><@simple_list result.fullDoc.dcTitle '<br />'/></td>
-                            </tr>
-                        </#if>
+                        <#--<#assign titleArr = result.fullDoc.dcTitle />-->
+                        <#--<#if isNonEmpty(titleArr)>-->
+                            <#--<tr>-->
+                                <#--<th scope="row"><@spring.message 'dc_title_t' />:</th>-->
+                                <#--<td><@simple_list result.fullDoc.dcTitle '<br />'/></td>-->
+                            <#--</tr>-->
+                        <#--</#if>-->
+
+                         <#assign titleArrTest = result.fullDoc.getFieldValue("dc_title") />
+                         <#if titleArrTest.isNotEmpty()>
+                             <tr>
+                                 <th scope="row"><@spring.message '${titleArrTest.getKey()}_t' />:</th>
+                                 <td><@simple_list titleArrTest.getValueAsArray() '<br />'/></td>
+                             </tr>
+                         </#if>
 
                      <#-- ALTERNATIVE TITLE   -------------------------------------------------------------------------------->
-                        <#assign altTitleArr = result.fullDoc.dcTermsAlternative />
-                        <#if isNonEmpty(altTitleArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>
-                                <td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>
-                            </tr>
-                        </#if>
+                        <#--<#assign altTitleArr = result.fullDoc.dcTermsAlternative />-->
+                        <#--<#if isNonEmpty(altTitleArr)>-->
+                            <#--<tr>-->
+                                <#--<th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>-->
+                                <#--<td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>-->
+                            <#--</tr>-->
+                        <#--</#if>-->
 
 
                       <#-- DC CREATOR    -------------------------------------------------------------------------------->
@@ -237,7 +251,7 @@
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_source_t' />:</td>
+                                <th scope="row"><@spring.message 'dc_source_t' />:</th>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
