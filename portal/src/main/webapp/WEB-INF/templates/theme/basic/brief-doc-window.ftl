@@ -13,9 +13,11 @@
     <#assign justTheQuery = "${RequestParameters.query}"/>
 </#if>
 
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
 
-<@addJavascript ["results.js"]/>
+<@addHeader "Norvegiana", "",["results.js"],[]/>
+
+<#--<@addJavascript ["results.js"]/>-->
 
 <div class="grid_12" id="branding">
     <h1 class="large">${portalDisplayName}</h1>
@@ -30,7 +32,7 @@
 <div class="grid_8" id="results">
 
     <div id="nav_query_breadcrumbs">
-        <@resultBriefQueryBreadcrumbs/>
+        <h4><@resultBriefQueryBreadcrumbs/></h4>
     </div>
 
     <div class="clear"></div>
@@ -71,7 +73,7 @@
 
 <div class="grid_4" id="facets">
     <div id="facetList">
-        <@resultFacets/>
+        <@resultBriefFacets/>
     </div>
 
     <div id="userActions">

@@ -1,4 +1,3 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign model = result/>
 <#assign result = result/>
 <#assign uri = result.fullDoc.id/>
@@ -22,14 +21,15 @@
 </#if>
 <#-- Removed ?url('utf-8') from query assignment -->
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
 
-<@userBar/>
+<@addHeader "Norvegiana", "",["results.js"],[]/>
 
-<h1>${portalDisplayName}</h1>
+<header class="grid_12">
+    <h1>${portalDisplayName}</h1>
 
-<@simpleSearch/>
-
+    <@simpleSearch/>
+</header>
 
 <div id="main" class="grid_9 page">
 
@@ -77,10 +77,7 @@
     <div class="clear"></div>
 
     <div id="item-detail">
-      <div class="inner">
-        <#include "inc_result_table_full.ftl"/>
-
-    </div>
+        <@resultFullList/>
     </div>
     <div class="clear"></div>
 

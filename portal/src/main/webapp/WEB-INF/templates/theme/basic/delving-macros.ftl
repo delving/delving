@@ -1,4 +1,9 @@
+<#import "spring.ftl" as spring >
 <#-- GLOBAL ASSIGNS -->
+<#if user??>
+    <#assign user = user/>
+</#if>
+<#assign useCache = "true">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
 <#--
@@ -44,7 +49,7 @@
  * addCss
  *
  * generates the html for linked css pages
- * @param meida : "screen" or "print" or "all"
+ * @param media : "screen" or "print" or "all"
  -->
 <#macro addCss fileList media="all">
     <#if fileList??>
@@ -54,6 +59,46 @@
              </#list>
         </#if>
     </#if>
+</#macro>
+
+<#--
+ * addHeader
+ *
+ * generates the html header for the page
+ * @param title : title of the page
+ * @param bodyClass : class for the body tag (for css name-spacing for different color profiles
+ * @param pageCssFiles : additional css files appended to the default
+ * @param pageJsFiles : additional js files appended to the default
+ -->
+<#macro addHeader title="Delving" bodyClass="" pageJsFiles=[] pageCssFiles=[]>
+
+    <!DOCTYPE html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>${title}</title>
+        <script type="text/javascript">
+            var msgRequired = "<@spring.message 'RequiredField_t'/>";
+            var portalName = "/${portalName}";
+            var baseThemePath = "/${portalName}/${portalTheme}";
+        </script>
+        <@addCss ["reset-text-grid.css","screen.css"], "screen"/>
+        <#if pageCssFiles?size &gt; 0>
+            <@addCss pageCssFiles/>
+        </#if>
+        ${cssFiles}
+        <@addJavascript ["jquery-1.4.2.min.js", "jquery.cookie.js", "js_utilities.js"]/>
+        <#if (pageJsFiles?size &gt; 0)>
+            <@addJavascript pageJsFiles/>
+        </#if>
+        ${javascriptFiles}
+    </head>
+    <body class="${bodyClass}">
+    <div class="container_12">
+    <@adminBlock/>
+    <div class="grid_12" id="userBar">
+        <@userBar/>
+        <#include "language_select.ftl"/>
+    </div>
 </#macro>
 <#--
  * resultGrid
@@ -190,6 +235,80 @@
     </tr>
     </#list>
 </table>
+</#macro>
+
+<#--
+ * resultFacets
+ *
+ * Macro to generate lists of result facets and their links
+ -->
+<#macro resultBriefFacets>
+    <#assign facetMap = result.facetMap />
+    <#--${facetMap.getFacet("LANGUAGE")?starts_with("unknown")}-->
+    <#assign columsize = 1 />
+    <#assign facetsList = nextQueryFacets>
+    <#list facetsList as facet>
+        <#switch facet.type>
+            <#case "LANGUAGE">
+                <#if facet.links?size &gt; 0>
+                   <#assign columsize = 2 />
+                   <h4><@spring.message 'ByLanguage_t' /></h4>
+                </#if>
+                   <#break/>
+            <#case "YEAR">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 2 />
+                    <h4><@spring.message 'Bydate_t' /></h4>
+               </#if>
+               <#break/>
+            <#case "TYPE">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'Bytype_t' /></h4>
+                </#if>
+               <#break/>
+            <#case "PROVIDER">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'ByProvider_t' /></h4>
+               </#if>
+               <#break/>
+            <#case "COUNTRY">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'ByCountry_t' /></h4>
+                </#if>
+               <#break/>
+        </#switch>
+
+        <#assign facet_max = 20/>
+
+        <#if facet.links?size &gt; 0>
+        <div id="facetsContainer">
+            <table summary="A list of facets to help refine your search">
+                <#list facet.links?chunk(columsize) as row>
+                    <tr>
+                        <#list row as link>
+                            <td align="left" style="padding: 2px;">
+                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
+                                <#if !link.remove = true>
+                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                <#else>
+                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                </#if>
+                            </td>
+                        </#list>
+                    </tr>
+                </#list>
+            </table>
+        </div>
+        </#if>
+    </#list>
 </#macro>
 
 <#--
@@ -386,76 +505,38 @@
 
 </#macro>
 
-<#--
- * resultFacets
- *
- * Macro to generate lists of result facets and their links
- -->
-<#macro resultFacets>
-    <#assign columsize = 1 />
-    <#assign facetsList = nextQueryFacets>
-    <#list facetsList as facet>
-        <#switch facet.type>
-            <#case "LANGUAGE">
-                <#if facet.links?size &gt; 0>
-                   <#assign columsize = 2 />
-                   <h4><@spring.message 'ByLanguage_t' /></h4>
-                </#if>
-                   <#break/>
-            <#case "YEAR">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 2 />
-                    <h4><@spring.message 'Bydate_t' /></h4>
-               </#if>
-               <#break/>
-            <#case "TYPE">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message 'Bytype_t' /></h4>
-                </#if>
-               <#break/>
-            <#case "PROVIDER">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message 'ByProvider_t' /></h4>
-               </#if>
-               <#break/>
-            <#case "COUNTRY">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message 'ByCountry_t' /></h4>
-                </#if>
-               <#break/>
-        </#switch>
+<#macro resultFullList>
+    <table summary="This table contains the metadata for the object being viewed">
+        <caption>Object metadata</caption>
+        <tbody>
+            <@resultFullDataRow "dc_title"/>
+            <@resultFullDataRow "dc_creator"/>
+            <@resultFullDataRow "dc_description"/>
+            <@resultFullDataRow "dc_type"/>
+            <@resultFullDataRow "dc_subject"/>
+            <@resultFullDataRow "dc_date"/>
+            <@resultFullDataRow "dc_format"/>
+            <@resultFullDataRow "dc_contributer"/>
+            <@resultFullDataRow "dc_identifier"/>
 
-        <#assign facet_max = 20/>
+        <#--<#list result.fullDoc.getFieldValueList() as field>-->
+            <#--<tr>-->
+                <#--<th scrope="row">${field.getKey()}</th>-->
+                <#--<td>${field.getFirst()}</td>-->
+            <#--</tr>-->
+        <#--</#list>-->
+        </tbody>
+    </table>
+</#macro>
 
-        <#if facet.links?size &gt; 0>
-        <div id="facetsContainer">
-            <table summary="A list of facets to help refine your search">
-                <#list facet.links?chunk(columsize) as row>
-                    <tr>
-                        <#list row as link>
-                            <td align="left" style="padding: 2px;">
-                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-                                <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                </#if>
-                            </td>
-                        </#list>
-                    </tr>
-                </#list>
-            </table>
-        </div>
-        </#if>
-    </#list>
+<#macro resultFullDataRow key>
+    <#assign keyVal = result.fullDoc.getFieldValue(key)/>
+    <#if keyVal.isNotEmpty()>
+        <tr>
+            <th scope="row"><@spring.message '${keyVal.getKey()}_t' />:</th>
+            <td>${keyVal.getFirst()}</td>
+        </tr>
+    </#if>
 </#macro>
 
 <#--
@@ -472,7 +553,6 @@
             <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
             <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
             <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
-            <br/>
             <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
         </fieldset>
     </form>

@@ -16,7 +16,6 @@
 </script>
 </#if>
 
-${javascriptFiles}  
 </body>
 </html>
 

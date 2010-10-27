@@ -6,8 +6,6 @@
 <#include "inc_header.ftl">
 
 
-<@userBar/>
-
 <h1>${portalDisplayName}</h1>
 
 <@simpleSearch/>
