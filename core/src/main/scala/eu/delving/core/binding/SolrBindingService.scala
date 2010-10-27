@@ -100,21 +100,26 @@ trait FacetHelper {
 
 }
 
+
+case class FacetMap(private val links : List[FacetQueryLinks]) {
+
+  val facetMap = Map[String, FacetQueryLinks]()
+  links.foreach{
+    facet =>
+      facetMap put (facet.getType, facet)
+  }
+
+  def getFacetList = links
+
+  def getFacet(key: String) : FacetQueryLinks = facetMap.get(key)
+}
+
 case class FacetStatisticsMap(private val facets: List[FacetField]) extends FacetHelper {
 
   createFacetMap[FacetField](facets){facet => (facet.getName, facet.getValues.toList) }
 
   def getFacet(key: String) = facetMap.getOrElse(key, "unknown")
 
-}
-
-case class FacetMap(private val links : List[FacetQueryLinks]) extends FacetHelper {
-
-  createFacetMap[FacetQueryLinks](links){link => (link.getType, link)}
-
-  def getFacetList = links
-
-  def getFacet(key: String) : FacetQueryLinks = facetMap.get(key).asInstanceOf[FacetQueryLinks]
 }
 
 case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
