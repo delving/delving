@@ -446,7 +446,7 @@ public class MetaRepoImpl implements MetaRepo {
                 // todo: workaround for faking ESE harvesting
                 Mapping originalMapping = mappingMap.get(MAPPED_NAMESPACE.getPrefix());
                 if (originalMapping != null) {
-                    mappingMap.put(MetadataNamespace.ESE.getPrefix(), new FakeESEMappingImpl((MappingInternal)originalMapping));
+                    mappingMap.put(MetadataNamespace.ESE.getPrefix(), new FakeESEMappingImpl((MappingInternal) originalMapping));
                 }
                 // todo: workaround for faking ESE harvesting
             }
@@ -504,7 +504,7 @@ public class MetaRepoImpl implements MetaRepo {
             if (getMetadataFormat().getPrefix().equals(prefix)) {
                 mapping = null;
                 if (getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
-                    log.warn("Access key violation for raw format "+prefix);
+                    log.warn("Access key violation for raw format " + prefix);
                     throw new CannotDisseminateFormatException(String.format("Raw metadata format requires access key, but %s is not valid", accessKey));
                 }
             }
@@ -514,7 +514,7 @@ public class MetaRepoImpl implements MetaRepo {
                     throw new CannotDisseminateFormatException(String.format("No mapping found to prefix %s", prefix));
                 }
                 if (mapping.getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
-                    log.warn("Access key violation for mapped format "+prefix);
+                    log.warn("Access key violation for mapped format " + prefix);
                     throw new CannotDisseminateFormatException(String.format("Mapping to metadata format requires access key, but %s is not valid", accessKey));
                 }
             }
@@ -543,8 +543,16 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     // for now we pretend that we have an ESE mapping
-    private class FakeESEMappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
 
+    private class FakeESEMappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
+        private final String[] STRIP_FOR_ESE = {
+                "europeana:uri",
+                "europeana:collectionName",
+                "europeana:collectionTitle",
+                "europeana:hasObject",
+                "europeana:language",
+                "europeana:country",
+        };
         private MappingInternal icnMapping;
         private ESEMetadataFormat eseMetadataFormat = new ESEMetadataFormat();
 
@@ -570,7 +578,10 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
             icnMapping.map(records, namespaces);
-            for (Record record : records) {
+            Iterator<? extends Record> recordWalk = records.iterator();
+            while (recordWalk.hasNext()) {
+                Record record = recordWalk.next();
+                boolean hasEuropeanaObject = false;
                 List<FieldEntry> entries = FieldEntry.createList(record.getXmlString(MAPPED_NAMESPACE.getPrefix()));
                 Iterator<FieldEntry> walk = entries.iterator();
                 while (walk.hasNext()) {
@@ -578,9 +589,20 @@ public class MetaRepoImpl implements MetaRepo {
                     if (entry.getTag().startsWith(MAPPED_NAMESPACE.getPrefix())) {
                         walk.remove();
                     }
+                    for (String strip : STRIP_FOR_ESE) {
+                        if (entry.getTag().equals(strip)) {
+                            walk.remove();
+                        }
+                    }
+                    if (entry.getTag().equals("europeana:object")) {
+                        hasEuropeanaObject = true;
+                    }
                 }
                 String recordString = FieldEntry.toString(entries, false);
-                ((RecordImpl)record).addFormat(getMetadataFormat(), recordString);
+                ((RecordImpl) record).addFormat(getMetadataFormat(), recordString);
+                if (!hasEuropeanaObject) {
+                    recordWalk.remove();
+                }
             }
         }
 
