@@ -4,6 +4,9 @@
     <#assign user = user/>
 </#if>
 <#assign view = "table"/>
+<#if RequestParameters.view??>
+    <#assign view = RequestParameters.view/>
+</#if>
 <#assign useCache = "false">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
@@ -19,16 +22,9 @@
         <nav id="adminNav">
         <table class="user-options">
             <tbody>
-                <tr>
-                    <th><@spring.message 'dms.administration.title' /></th>
-                </tr>
-                <tr>
+                    <th scope="rows"><@spring.message 'dms.administration.title' /></th>
                     <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message 'dms.administration.pages' /></a></td>
-                </tr>
-                <tr>
                     <td><a href="/${portalName}/_.img"><span class="ui-icon ui-icon-image"></span><@spring.message 'dms.administration.images' /></a></td>
-                </tr>
-                <tr>
                     <td><a href="/${portalName}/administration.html"><span class="ui-icon ui-icon-person"></span><@spring.message 'dms.administration.users' /></a></td>
                 </tr>
             </tbody>
@@ -128,7 +124,7 @@
     <#list seq?chunk(4) as row>
     <tr>
         <#list row as cell>
-        <td valign="bottom" class="${cell.type}">
+        <td valign="bottom" class="${cell.type}" width="25%">
             <div class="brief-thumb-container">
                 <#--<a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;tab=${tab}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">-->
                 <a href="${cell.fullDocUrl()}?${queryStringForPresentation}&amp;start=${cell.index()?c}&amp;startPage=${pagination.start?c}&amp;view=${view}&amp;pageId=brd">

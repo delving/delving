@@ -30,8 +30,8 @@ table caption {
 
 /* BRANDING *********************************/
 
-header#branding {
-    /*text-align: center;*/
+div#branding img {
+   margin: 0 .25em 0 0;
 }
 
 /* USERBAR **********************************/
@@ -64,10 +64,6 @@ header#branding {
 
 #adminBlock table {
     float: right;
-}
-
-#adminBlock table tr {
-    display: inline;
 }
 
 td .ui-icon {
@@ -115,9 +111,18 @@ td .ui-icon {
 /* RESULT COUNT *******************************/
 
 #result_count {
-    height: 32px;
-    line-height: 32px;
+  float: left;    
 }
+
+#result_sort,
+#result_view_select {
+  float: right;
+}
+
+#result_view_select a:link {
+    text-decoration: none;
+}
+
 
 /* RESULT PAGINATION **************************/
 

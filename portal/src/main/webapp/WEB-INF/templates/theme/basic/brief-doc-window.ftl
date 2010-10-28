@@ -61,23 +61,28 @@
 
     <div class="clear"></div>
 
-    <div class="grid_6 alpha" id="result_count">
-        <div class="inner">
-        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+    <div id="result_overview">
+
+        <div id="result_count">
+            <div class="inner">
+            <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+            </div>
         </div>
+    
+            <div id="result_view_select">
+                <div class="inner">
+                <@viewSelect/>
+                </div>
+            </div>
+
+        <div id="result_sort">
+            <div class="inner">
+            <@sortResults/>
+            </div>
+        </div>
+
     </div>
 
-    <div class="grid_2" id="result_sort">
-        <div class="inner">
-        <@sortResults/>
-        </div>
-    </div>
-
-    <div class="grid_2 omega" id="result_view_select">
-        <div class="inner">
-        <@viewSelect/>
-        </div>
-    </div>
 
     <div class="clear"></div>
 

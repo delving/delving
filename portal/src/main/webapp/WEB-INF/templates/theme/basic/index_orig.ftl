@@ -8,7 +8,7 @@
 <div id="home">
 
 <div class="grid_12" id="branding">
-    <h1 class="gigantic"><img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle" style="margin: 0 1em 0 0;"/>${portalDisplayName}</h1>
+    <h1 class="gigantic"><img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle" />${portalDisplayName}</h1>
 </div>
 
 
