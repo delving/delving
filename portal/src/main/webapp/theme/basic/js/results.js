@@ -1,20 +1,22 @@
 /* ________________BRIEF DOC_______________________*/
 
 function saveQuery(className, queryToSave, queryString){
-    var sr = document.getElementById("msg-save-search");
-    sr.style.display = 'block';
+    var sr = $("#msg-save-search");
+    sr.css("display","block");
     $.ajax({
        type: "POST",
        url: "/portal/save.ajax",
        data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
-           sr.innerHTML = msgSearchSaveSuccess;
-           var ss = document.getElementById("savedSearchesCount");
-           var currentCount = parseInt(ss.innerHTML, 10);
-           ss.innerHTML = currentCount + 1;
+           
+           sr.html(msgSearchSaveSuccess);
+           $("#msg-save-search").delay(2000).hide();
+           var ss = $("#savedSearchesCount");
+           var currentCount = parseInt(ss.html(), 10);
+           ss.html(currentCount + 1);
        },
        error: function(msg) {
-            sr.innerHTML = msgSearchSaveFail;
+            sr.html(msgSearchSaveFail);
        }
      });
 }
@@ -135,7 +137,7 @@ function checkSize(obj,type,w){
 }
 
 $(document).ready(function(){
-    if($("a.overlay")){
+    if($("a.overlay").length > 0){
         $("a.overlay").fancybox({
         titleShow : true,
         titlePosition: 'inside'

@@ -571,7 +571,7 @@
                     <a href="#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
                 </#if>
             </p>
-            <div id="msg-save-search" class="msg-hide fg-pink"></div>
+            <div id="msg-save-search" class="msg-hide"></div>
     </#if>
 </#macro>
 

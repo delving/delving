@@ -16,6 +16,10 @@
 <#include "delving-macros.ftl">
 
 <@addHeader "Norvegiana", "",["results.js"],[]/>
+<script type="text/javascript">
+    var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
+    var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
+</script>
 
 <section class="grid_3" role="complementary">
     <header id="branding">
@@ -28,6 +32,9 @@
     <h3><@spring.message 'RefineYourSearch_t' /></h3>
     <nav id="facetList">
         <@resultBriefFacets "TYPE",  "dc_type", 2/>
+        <@resultBriefFacets "YEAR",  "dc_year", 2/>
+        <@resultBriefFacets "LANGUAGE",  "dc_language", 2/>
+        <@resultBriefFacets "PROVIDER",  "Provider", 2/>
     </nav>
 
     <nav id="userActions">
