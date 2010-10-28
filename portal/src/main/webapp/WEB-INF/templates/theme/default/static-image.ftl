@@ -71,27 +71,24 @@
                         var makeURL = pName+name+ext+".img";
                         window.location.href=makeURL+"?edit=true";
                     }
-                    
+
                     $("a.delete").click(function(){
                         var target = $(this).attr("id");
                         var targetURL = $(this).attr("href");
-                        var confirmation = confirm("Afbeelding: "+targetURL +" verwijderen ?")
+                        var confirmation = confirm("<@spring.message 'dms.image.delete.question' />")
                         if(confirmation){
                             $.ajax({
                                 url: targetURL+"?edit=false&delete=true",
                                 type: "GET",
-                                data: "content=",
                                 success: function(data) {
                                     window.location.reload();
                                 },
                                 error: function(data) {
-                                    alert("Image could not be deleted");
+                                    alert("<@spring.message 'dms.image.delete.fail' />");
                                 }
                             });
-                            return false;
-                        } else {
-                            return false;
                         }
+                        return false;
                     });
                 </script>
             </div>
