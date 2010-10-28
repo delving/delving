@@ -42,7 +42,7 @@
                                 <td width="300"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
                                 <td width="85"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span><@spring.message 'dms.edit' /></a></td>
                                 <td width="85">
-                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}?edit=false&delete=true"><span class="ui-icon ui-icon-trash"></span><@spring.message 'dms.delete' /></a>
+                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}"><span class="ui-icon ui-icon-trash"></span><@spring.message 'dms.delete' /></a>
 
                                 </td>
                             </tr>
@@ -78,7 +78,7 @@
                         var confirmation = confirm("Afbeelding: "+targetURL +" verwijderen ?")
                         if(confirmation){
                             $.ajax({
-                                url: targetURL,
+                                url: targetURL+"?edit=false&delete=true",
                                 type: "GET",
                                 data: "content=",
                                 success: function(data) {

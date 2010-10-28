@@ -91,7 +91,7 @@
                         $.ajax({
                             url: targetURL,
                             type: "POST",
-                            data: "content=",
+                            data: "content= ",
                             success: function(data) {
                                 window.location.reload();
                             },
