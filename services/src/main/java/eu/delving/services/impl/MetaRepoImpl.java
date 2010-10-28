@@ -544,7 +544,14 @@ public class MetaRepoImpl implements MetaRepo {
 
     // for now we pretend that we have an ESE mapping
     private class FakeESEMappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
-
+        private final String [] STRIP_FOR_ESE =  {
+                "europeana:uri",
+                "europeana:collectionName",
+                "europeana:collectionTitle",
+                "europeana:hasObject",
+                "europeana:language",
+                "europeana:country",
+        };
         private MappingInternal icnMapping;
         private ESEMetadataFormat eseMetadataFormat = new ESEMetadataFormat();
 
@@ -577,6 +584,11 @@ public class MetaRepoImpl implements MetaRepo {
                     FieldEntry entry = walk.next();
                     if (entry.getTag().startsWith(MAPPED_NAMESPACE.getPrefix())) {
                         walk.remove();
+                    }
+                    for (String strip : STRIP_FOR_ESE) {
+                        if (entry.getTag().equals(strip)) {
+                            walk.remove();
+                        }
                     }
                 }
                 String recordString = FieldEntry.toString(entries, false);
