@@ -1,15 +1,15 @@
 <#import "spring.ftl" as spring >
 <#-- used for grabbing locale based includes and images -->
 <#-- locale also used on homepage for language based announcements/disclaimers -->
-<#assign locale = springMacroRequestContext.locale>
+<#--<#assign locale = springMacroRequestContext.locale>-->
 
-<#assign cacheUrl = cacheUrl>
+<#--<#assign cacheUrl = cacheUrl>-->
 
 <#assign query = "">
 
-<#if user??>
-    <#assign user = user/>
-</#if>
+<#--<#if user??>-->
+    <#--<#assign user = user/>-->
+<#--</#if>-->
 
 <#assign useCache = "true">
 
