@@ -87,6 +87,9 @@ feedback.from  = noreply@europeana.eu
 # helpers
 #
 debug = false
+#options: DEBUG, HTML_DEBUG, RETHROW, IGNORE see also: http://freemarker.sourceforge.net/docs/pgui_config_errorhandling.html
+# ignore in production
+debug.freemarker = debug
 
 #
 # Where to get messages from and how frequently the cache is flushed
@@ -114,6 +117,8 @@ portal.mongo.dbName = static
 # This is the tracking code for google analytics. If it is empty the badge is not included in the footer
 #
 ga.trackingCode =
+# tracking code for addThis.com functionality. If empty the functionality is hidden
+addThis.trackingCode =
 
 #
 # Where the image annotation tool can be found. If this property is set a
