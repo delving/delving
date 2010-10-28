@@ -156,7 +156,7 @@ public class RecordMapping {
                     out.line(String.format("def %sMap = [\n", path));
                     out.indent(1);
                     for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().valueMap.entrySet()) {
-                        out.line(String.format("'%s':'%s,", escapeApostrophe(entry.getKey()), escapeApostrophe(entry.getValue())));
+                        out.line(String.format("'%s':'%s',", escapeApostrophe(entry.getKey()), escapeApostrophe(entry.getValue())));
                     }
                     out.indent(-1);
                     out.line("]");
