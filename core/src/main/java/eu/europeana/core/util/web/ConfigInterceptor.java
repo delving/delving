@@ -55,7 +55,10 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     private String portalColor;
 
     @Value("#{launchProperties['ga.trackingCode']}")
-    private String trackingCode;
+    private String googleAnalyticsTrackingCode;
+
+    @Value("#{launchProperties['addThis.trackingCode']}")
+    private String addThisTrackingCode;
 
     @SuppressWarnings({"unchecked"})
     @Override
@@ -70,8 +73,11 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
             modelAndView.addObject("defaultParams", getDefaultParameters(httpServletRequest.getParameterMap()));
-            if (!trackingCode.isEmpty()) {
-                modelAndView.addObject("trackingCode", trackingCode);
+            if (!googleAnalyticsTrackingCode.isEmpty()) {
+                modelAndView.addObject("googleAnalyticsTrackingCode", googleAnalyticsTrackingCode);
+            }
+            if (!addThisTrackingCode.isEmpty()) {
+                modelAndView.addObject("addThisTrackingCode", addThisTrackingCode);
             }
         }
     }
