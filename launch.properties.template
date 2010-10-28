@@ -117,6 +117,8 @@ portal.mongo.dbName = static
 # This is the tracking code for google analytics. If it is empty the badge is not included in the footer
 #
 ga.trackingCode =
+# tracking code for addThis.com functionality. If empty the functionality is hidden
+addThis.trackingCode =
 
 #
 # Where the image annotation tool can be found. If this property is set a

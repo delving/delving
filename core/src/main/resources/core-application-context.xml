@@ -90,6 +90,7 @@
                 <value>services.pmh.responseListSize</value>
                 <value>services.mongo.dbName</value>
                 <value>ga.trackingCode</value>
+                <value>addThis.trackingCode</value>
             </list>
         </constructor-arg>
     </bean>
