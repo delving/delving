@@ -266,7 +266,7 @@
     <#assign facetMap = result.getFacetMap()>
     <#assign facet = facetMap.getFacet(key)>
 
-    <#if !facetListNew.type?starts_with("unknown")>
+    <#if !facet.type?starts_with("unknown")>
     <h4><@spring.message '${facetLanguageTag}_t' /></h4>
         <#if facet.links?size &gt; 0>
         <div id="facetsContainer">
