@@ -67,6 +67,7 @@
                 <value>exception.to</value>
                 <value>feedback.from</value>
                 <value>debug</value>
+                <value>debug.freemarker</value>
                 <value>message.resource</value>
                 <value>message.cache.seconds</value>
                 <value>log4j.xml</value>
@@ -192,7 +193,7 @@
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
        <property name="freemarkerSettings">
            <props>
-               <prop key="template_exception_handler">rethrow</prop>
+               <prop key="template_exception_handler">#{launchProperties['debug.freemarker']}</prop>
            </props>
        </property>
         <property name="templateLoaderPath" value="#{launchProperties['portal.freemarker.path']}"/>
