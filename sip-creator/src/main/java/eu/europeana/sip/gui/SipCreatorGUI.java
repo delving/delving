@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
 import eu.europeana.sip.definitions.beans.AllFieldBean;
@@ -110,7 +111,17 @@ public class SipCreatorGUI extends JFrame {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    JOptionPane.showMessageDialog(SipCreatorGUI.this, message);
+                    String html = String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage());
+                    if (exception instanceof RecordValidationException) {
+                        RecordValidationException rve = (RecordValidationException)exception;
+                        StringBuilder problemHtml = new StringBuilder(String.format("<html><h3>%s</h3><ul>", message));
+                        for (String problem : rve.getProblems()) {
+                            problemHtml.append(String.format("<li>%s</li>", problem));
+                        }
+                        problemHtml.append("</ul></html>");
+                        html = problemHtml.toString();
+                    }
+                    JOptionPane.showMessageDialog(SipCreatorGUI.this, html);
                 }
             });
 //            if (exception != null) {
