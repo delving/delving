@@ -118,74 +118,74 @@
 
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
-        <#include "inc_header.ftl"/>
-             <div id="header">
+            <#include "delving-macros.ftl">
 
-                <div id="identity" class="grid_3">
-                    <h1>Delving</h1>
-                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+            <@addHeader "Norvegiana", "",[],[]/>
+            <section id="sidebar" class="grid_3" role="complementary">
+                <header id="branding" role="banner">
+                    <h1 class="large">${portalDisplayName}</h1>
+                </header>
+
+                <div id="search" role="search">
+                    <@simpleSearch/>
                 </div>
 
-                <div class="grid_9">
 
-                    <div id="top-bar">
-                        <div class="inner">
-                            <@userbar/>
+            </section>
+
+
+            <section id="main" class="grid_9" role="main">
+
+
+                <div id="content" class="content-preview">
+                ${page.content}
+                </div>
+
+                <#if edit??>
+                    <#if edit>
+
+                        <div id="pageForm">
+                            <form action="${page.path}" method="POST" id="form-edit">
+                                <table>
+                                    <tr>
+                                        <td>
+                                          <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
+                                            <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
                         </div>
-                    </div>
-
-                </div>
-
-            </div>
-        <div class="grid_12">
-            <div id="content" class="content-preview">
-            ${page.content}
-            </div>
-            <#if edit??>
-                <#if edit>
-
-                    <div id="pageForm">
-                        <form action="${page.path}" method="POST" id="form-edit">
-                            <table>
-                                <tr>
-                                    <td>
-                                      <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>  
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
-                                        <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                    </div>
-                <#else>
-                    <#if page.id??>
-                        <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message 'dms.page.edit' /></a></p>
                     <#else>
-                        <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
-                    </#if>
-                    <br/><br/>
-                    <#if versionList?? && page.id??>
-                        <h3><@spring.message 'dms.version.management' /></h3>
-                        <p>
-                            <@spring.message 'dms.version.approve.explain' />
-                        </p>
-                        <ul>
-                            <#list versionList as version>
-                                <#if version.id == page.id>
-                                    <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message 'dms.version.approve' /></li>
-                                <#else>
-                                    <li><a href="${version.path}?version=${version.id}&edit=false">${version.date?string("yyyy-MM-dd HH:mm:ss")}</a></li>
-                                </#if>
-                            </#list>
-                        </ul>
+                        <#if page.id??>
+                            <p><a href="${page.path}?edit=true&version=${page.id}" class="button"><@spring.message 'dms.page.edit' /></a></p>
+                        <#else>
+                            <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
+                        </#if>
+                        <br/><br/>
+                        <#if versionList?? && page.id??>
+                            <h3><@spring.message 'dms.version.management' /></h3>
+                            <p>
+                                <@spring.message 'dms.version.approve.explain' />
+                            </p>
+                            <ul>
+                                <#list versionList as version>
+                                    <#if version.id == page.id>
+                                        <li><strong>${version.date?string("yyyy-MM-dd HH:mm:ss")}</strong> - <a href="${version.path}?version=${version.id}&edit=false&approve=true"><@spring.message 'dms.version.approve' /></li>
+                                    <#else>
+                                        <li><a href="${version.path}?version=${version.id}&edit=false">${version.date?string("yyyy-MM-dd HH:mm:ss")}</a></li>
+                                    </#if>
+                                </#list>
+                            </ul>
+                        </#if>
                     </#if>
                 </#if>
-            </#if>
-        </div>
+            </section>
     
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/static-page.js"></script>
