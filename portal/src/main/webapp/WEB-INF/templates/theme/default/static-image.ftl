@@ -16,7 +16,7 @@
 
                 <div id="identity" class="grid_3">
                     <h1>Delving</h1>
-                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+                    <a href="/${portalName}/index.html" title="ABM"><img src="/${portalName}/${portalTheme}/images/abm-logo.jpg" alt="ABM"/></a>
                 </div>
 
                 <div class="grid_9">
@@ -107,7 +107,7 @@
 
                 <div id="identity" class="grid_3">
                     <h1>Delving</h1>
-                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+                    <a href="/${portalName}/index.html" title="ABM"><img src="/${portalName}/${portalTheme}/images/abm-logo.jpg" alt="ABM"/></a>
                 </div>
 
                 <div class="grid_9">

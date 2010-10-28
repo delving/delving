@@ -2,14 +2,16 @@
 
 <#include "inc_header.ftl">
 
-<header id="header_index">
-    <h1>${portalDisplayName}</h1>
-    <@simpleSearch/>
-</header>
+<div class="grid_12" id="branding">
+    <h1 class="gigantic">${portalDisplayName}</h1>
+</div>
 
-<noscript>
-<@spring.message 'NoScript_t' />
-</noscript>
+<div class="grid_12" id="search">
+    <@simpleSearch/>
+    <noscript>
+    <@spring.message 'NoScript_t' />
+    </noscript>
+</div>
 
 <#include "inc_footer.ftl"/>
 

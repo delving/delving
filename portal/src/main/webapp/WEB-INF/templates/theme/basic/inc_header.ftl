@@ -1,8 +1,4 @@
 <#import "spring.ftl" as spring >
-<#--<#assign portalName = portalName/>-->
-
-<#--<#assign portalTheme = portalName/>-->
-
 <#-- used for grabbing locale based includes and images -->
 <#-- locale also used on homepage for language based announcements/disclaimers -->
 <#assign locale = springMacroRequestContext.locale>
@@ -56,5 +52,13 @@
      -->
 </head>
 <body>
-<@userBar/>
+<div class="container_12">
+
 <@adminBlock/>
+
+<section class="grid_12" id="userBar">
+    <nav id="userBarNavigation">
+        <@userBar/>
+        <#include "language_select.ftl"/>
+    </nav>
+</section>

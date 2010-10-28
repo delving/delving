@@ -15,7 +15,7 @@
 
 
     <div class="grid_12">
-        <img src="/${portalName}/${portalTheme}/images/logo.png" id="logo-home" alt="Delving"/>
+        <img src="/${portalName}/${portalTheme}/images/abm-logo.jpg" id="logo-home" alt="Delving"/>
          <noscript>
             <div class="ui-widget grid_5 alpha">
                 <div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin-top: 20px;">

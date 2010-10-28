@@ -13,58 +13,71 @@
     <#assign justTheQuery = "${RequestParameters.query}"/>
 </#if>
 
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
 
-<@addJavascript ["results.js"]/>
+<@addHeader "Norvegiana", "",["results.js"],[]/>
 
-<header id="header_results" role="search">
-    <h1>${portalDisplayName}</h1>
-    <@simpleSearch/>
-</header>
+<section class="grid_3" role="complementary">
+    <header id="branding">
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-<nav id="nav_query_breadcrumbs"
-    <@resultBriefQueryBreadcrumbs/>
-</nav>
-
-<div class="resultCount">
-    <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-</div>
-
-<div class="resultSorting">
-    <@sortResults/>
-</div>
-
-<div class="resultViewSelect">
-    <@viewSelect/>
-</div>
-
-<div class="pagination">
-    <@resultBriefPagination/>
-</div>
-
-<#if briefDocs?size &gt; 0>
-    <#if view = "table">
-        <@resultBriefGrid/>
-    <#else>
-        <@resultBriefList/>
-    </#if>
-<#else>
-    <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
-</#if>
-
-<div class="pagination">
-    <@resultBriefPagination/>
-</div>
-
-<sidebar>
-    <div id="facetList">
-        <@resultFacets/>
+    <div id="search" role="search">
+        <@simpleSearch/>
     </div>
 
-    <div id="userActions">
+    <h3><@spring.message 'RefineYourSearch_t' /></h3>
+    <nav id="facetList">
+        <@resultBriefFacets "TYPE",  "dc_date", 2/>
+    </nav>
+
+    <nav id="userActions">
         <@resultsBriefUserActions/>
+    </nav>
+</section>
+
+<section class="grid_9" id="results" role="main">
+
+    <div id="nav_query_breadcrumbs">
+        <h4><@resultBriefQueryBreadcrumbs/></h4>
     </div>
-</sidebar>
+
+    <div class="clear"></div>
+
+    <div class="grid_6 alpha" id="result_count">
+        <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+    </div>
+
+    <div class="grid_2" id="result_sort">
+        <@sortResults/>
+    </div>
+
+    <div class="grid_2 omega" id="result_view_select">
+        <@viewSelect/>
+    </div>
+
+    <div class="clear"></div>
+
+    <nav id="pagination">
+        <@resultBriefPagination/>
+    </nav>
+
+    <#if briefDocs?size &gt; 0>
+        <#if view = "table">
+            <@resultBriefGrid/>
+        <#else>
+            <@resultBriefList/>
+        </#if>
+    <#else>
+        <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
+    </#if>
+
+    <nav class="pagination">
+        <@resultBriefPagination/>
+    </nav>
+
+</section>
+
 
 <#include "inc_footer.ftl"/>
 

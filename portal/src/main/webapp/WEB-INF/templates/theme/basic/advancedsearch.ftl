@@ -1,30 +1,18 @@
 <#compress>
-<#assign thisPage = "advancedsearch.html"/>
-<#include "inc_header.ftl"/>
- <div id="header">
+<#include "delving-macros.ftl">
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<@addHeader "Norvegiana", "",[],[]/>
 
-    <div class="grid_9">
+<section id="sidebar" class="grid_3" role="complementary">
+    <header id="branding" role="banner">
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<div class="clear"></div>
+</section>
 
 
-<div id="search" class="grid_12" style="background: #fff;">
-    <div id="search_advanced" title="<@spring.message 'AdvancedSearch_t' />" class="grid_4 alpha">
+<section id="search_advanced" class="grid_9" style="background: #fff;" role="search">
+
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
@@ -67,8 +55,8 @@
 
          </table>
         </form>
-    </div>
-</div><!-- end search -->
+
+</section><!-- end search -->
 
 <#include "inc_footer.ftl"/>
 </#compress>

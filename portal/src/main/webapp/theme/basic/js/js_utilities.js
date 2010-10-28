@@ -78,44 +78,9 @@ function delvingPageCall(targetId,pageName,msgHead,msgBody,msgLink){
 
 
 $(document).ready(function() {
-
-    // style all the submit and button elements.
-
-    var buttons = $(document).find("input[type=submit],input[type=reset],button,a.button");
-        buttons.addClass("fg-button ui-state-default ui-corner-all");
-// Todo: when icons added FF does not render them in the desired position
-//        buttons.filter(".btn-search")
-//                .addClass("fg-button-icon-right")
-//                .append("<span class='ui-icon ui-icon-search'></span>");
-//        buttons.filter(".btn-add")
-//                .addClass("fg-button-icon-right")
-//                .append("<span class='ui-icon ui-icon-tag'></span>");
-//        buttons.filter(".btn-email")
-//                .addClass("fg-button-icon-right")
-//                .append("<span class='ui-icon ui-icon-mail-closed'></span>");
-    // ui button hover states
-	$(function(){
-		//all hover and click logic for buttons
-		$(".fg-button:not(.ui-state-disabled)")
-		.hover(
-			function(){
-				$(this).addClass("ui-state-hover");
-			},
-			function(){
-				$(this).removeClass("ui-state-hover");
-			}
-		)
-		.mousedown(function(){
-				$(this).parents('.fg-buttonset-single:first').find(".fg-button.ui-state-active").removeClass("ui-state-active");
-				if( $(this).is('.ui-state-active.fg-button-toggleable, .fg-buttonset-multi .ui-state-active') ){ $(this).removeClass("ui-state-active"); }
-				else { $(this).addClass("ui-state-active"); }
-		})
-		.mouseup(function(){
-			if(! $(this).is('.fg-button-toggleable, .fg-buttonset-single .fg-button,  .fg-buttonset-multi .fg-button') ){
-				$(this).removeClass("ui-state-active");
-			}
-		});
-	});
-
-
+    if(!/*@cc_on!@*/0) return;
+    var e = "abbr,article,aside,audio,bb,canvas,datagrid,datalist,details,dialog,eventsource,figure,footer,hgroup,header,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=0,length=e.length;
+    while(i<length){
+            document.createElement(e[i++])
+    }
 });

@@ -1,4 +1,10 @@
+<#import "spring.ftl" as spring >
 <#-- GLOBAL ASSIGNS -->
+<#if user??>
+    <#assign user = user/>
+</#if>
+<#assign view = "table"/>
+<#assign useCache = "false">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
 <#--
@@ -9,11 +15,13 @@
  -->
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
-    <div id="admin-block">
-        <h4><@spring.message 'dms.administration.title' /></h4>
-
+    <section id="adminBlock">
+        <nav id="adminNav">
         <table class="user-options">
             <tbody>
+                <tr>
+                    <th><@spring.message 'dms.administration.title' /></th>
+                </tr>
                 <tr>
                     <td><a href="/${portalName}/_.dml"><span class="ui-icon ui-icon-document"></span><@spring.message 'dms.administration.pages' /></a></td>
                 </tr>
@@ -25,8 +33,8 @@
                 </tr>
             </tbody>
         </table>
-
-    </div>
+        </nav>
+    </section>
     </#if>
 </#macro>
 
@@ -44,7 +52,7 @@
  * addCss
  *
  * generates the html for linked css pages
- * @param meida : "screen" or "print" or "all"
+ * @param media : "screen" or "print" or "all"
  -->
 <#macro addCss fileList media="all">
     <#if fileList??>
@@ -54,6 +62,62 @@
              </#list>
         </#if>
     </#if>
+</#macro>
+
+<#--
+ * addHeader
+ *
+ * generates the html header for the page
+ * @param title : title of the page
+ * @param bodyClass : class for the body tag (for css name-spacing for different color profiles
+ * @param pageCssFiles : additional css files appended to the default
+ * @param pageJsFiles : additional js files appended to the default
+ -->
+<#macro addHeader title="Delving" bodyClass="" pageJsFiles=[] pageCssFiles=[]>
+
+    <!DOCTYPE html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>${title}</title>
+        <script type="text/javascript">
+            var msgRequired = "<@spring.message 'RequiredField_t'/>";
+            var portalName = "/${portalName}";
+            var baseThemePath = "/${portalName}/${portalTheme}";
+        </script>
+        <@addCss ["reset-text-grid.css","screen.css"], "screen"/>
+        <#if pageCssFiles?size &gt; 0>
+            <@addCss pageCssFiles/>
+        </#if>
+        ${cssFiles}
+        <@addJavascript ["jquery-1.4.2.min.js", "jquery.cookie.js", "js_utilities.js"]/>
+        <#if (pageJsFiles?size &gt; 0)>
+            <@addJavascript pageJsFiles/>
+        </#if>
+        ${javascriptFiles}
+    </head>
+    <body class="${bodyClass}">
+    <div class="container_12">
+    <@adminBlock/>
+    <div class="grid_12" id="userBar">
+        <@userBar/>
+        <@languageSelect/>
+    </div>
+</#macro>
+
+<#macro languageSelect>
+<select onchange="setLang(this.options[selectedIndex].value)" name="dd_lang" id="dd_lang">
+    <option value="Choose language" selected="selected"><@spring.message 'ChooseLanguage_t' /></option>
+    <option value="en">
+    English (eng)
+    </option>
+    <option value="no">
+    Norsk (nor)
+    </option>
+</select>
+  <form method="post" id="frm-lang" name="frm-lang" style="display: none;" action="/${portalName}/">
+  <input  type="hidden" name="lang"/>
+  </form>
+
 </#macro>
 <#--
  * resultGrid
@@ -190,6 +254,120 @@
     </tr>
     </#list>
 </table>
+</#macro>
+
+
+<#--
+ * resultFacets
+ *
+ * Macro to generate lists of result facets and their links
+ -->
+<#macro resultBriefFacets key facetLanguageTag columnSize>
+    <#assign facetMap = result.getFacetMap()>
+    <#assign facet = facetMap.getFacet(key)>
+
+    <#if !facetListNew.type?starts_with("unknown")>
+    <h4><@spring.message '${facetLanguageTag}_t' /></h4>
+        <#if facet.links?size &gt; 0>
+        <div id="facetsContainer">
+            <table summary="A list of facets to help refine your search">
+                <#list facet.links?chunk(columnSize?int) as row>
+                    <tr>
+                        <#list row as link>
+                            <td align="left" style="padding: 2px;">
+                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
+                                <#if !link.remove = true>
+                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                <#else>
+                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                </#if>
+                            </td>
+                        </#list>
+                    </tr>
+                </#list>
+            </table>
+        </div>
+        </#if>
+    </#if>
+</#macro>
+<#--
+ * resultFacets
+ *
+ * Macro to generate lists of result facets and their links
+ -->
+<#macro resultBriefFacets_ld>
+    <#assign facetMap = result.facetMap />
+    <#--${facetMap.getFacet("LANGUAGE")?starts_with("unknown")}-->
+    <#assign columsize = 1 />
+    <#assign facetsList = nextQueryFacets>
+    <#list facetsList as facet>
+        
+        <#switch facet.type>
+            <#case "LANGUAGE">
+                <#if facet.links?size &gt; 0>
+                   <#assign columsize = 2 />
+                   <h4><@spring.message 'ByLanguage_t' /></h4>
+                </#if>
+                   <#break/>
+            <#case "YEAR">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 2 />
+                    <h4><@spring.message 'Bydate_t' /></h4>
+               </#if>
+               <#break/>
+            <#case "TYPE">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'Bytype_t' /></h4>
+                </#if>
+               <#break/>
+            <#case "PROVIDER">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'ByProvider_t' /></h4>
+               </#if>
+               <#break/>
+            <#case "COUNTRY">
+                <#if facet.links?size &gt; 0>
+                    <#assign columsize = 1 />
+                    <h4><@spring.message 'ByCountry_t' /></h4>
+                </#if>
+               <#break/>
+        </#switch>
+
+        <#assign facet_max = 20/>
+
+        <#if facet.links?size &gt; 0>
+        <div id="facetsContainer">
+            <table summary="A list of facets to help refine your search">
+                <#list facet.links?chunk(columsize) as row>
+                    <tr>
+                        <#list row as link>
+                            <td align="left" style="padding: 2px;">
+                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
+                                <#if !link.remove = true>
+                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                <#else>
+                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                    </a>
+                                </#if>
+                            </td>
+                        </#list>
+                    </tr>
+                </#list>
+            </table>
+        </div>
+        </#if>
+    </#list>
 </#macro>
 
 <#--
@@ -377,7 +555,7 @@
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message 'ReturnToResults_t' />"/>
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message 'ReturnToResults_t' />">
                <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
             </a>
         </#if>
@@ -386,117 +564,65 @@
 
 </#macro>
 
-<#--
- * resultFacets
- *
- * Macro to generate lists of result facets and their links
- -->
-<#macro resultFacets2 key facetLanguageTag columnSize>
-    <#assign facetMap = result.getFacetMap()>
-    <#assign facetList = facetMap.getFacet(key)>
 
-    <#if !facetList?starts_with("unknown")>
-    <h4><@spring.message '${facetLanguageTag}_t' /></h4>
-    <#list facetList as facet>
-        <#if facet.links?size &gt; 0>
-        <div id="facetsContainer">
-            <table summary="A list of facets to help refine your search">
-                <#list facet.links?chunk(columsize) as row>
-                    <tr>
-                        <#list row as link>
-                            <td align="left" style="padding: 2px;">
-                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-                                <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                </#if>
-                            </td>
-                        </#list>
-                    </tr>
-                </#list>
-            </table>
-        </div>
-        </#if>
-    </#list>
+<#macro resultFullImage>
+    <#if result.fullDoc.thumbnails[0] = " ">
+        <#assign thumbnail = "noImageFound"/>
+    <#else>
+        <#assign thumbnail = "${result.fullDoc.thumbnails[0]}"/>
+    </#if>
+    <#if useCache="true">
+        <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
+             class="full"
+             alt="${result.fullDoc.dcTitle[0]}"
+             id="imgview"
+             onload="checkSize(this,'full',this.width);"
+             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+         />
+    <#else>
+        <img
+             alt="${result.fullDoc.dcTitle[0]}"
+             id="imgview"
+             class="full"
+             src="${thumbnail}"
+             onload="checkSize(this,'full',this.width);"
+             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+         />
     </#if>
 </#macro>
 
-<#--
- * resultFacets
- *
- * Macro to generate lists of result facets and their links
- -->
-<#macro resultFacets>
-    <#assign columsize = 1 />
-    <#assign facetsList = nextQueryFacets>
-    <#list facetsList as facet>
-        <#switch facet.type>
-            <#case "LANGUAGE">
-                <#if facet.links?size &gt; 0>
-                   <#assign columsize = 2 />
-                   <h4><@spring.message 'ByLanguage_t' /></h4>
-                </#if>
-                   <#break/>
-            <#case "YEAR">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 2 />
-                    <h4><@spring.message 'Bydate_t' /></h4>
-               </#if>
-               <#break/>
-            <#case "TYPE">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message 'Bytype_t' /></h4>
-                </#if>
-               <#break/>
-            <#case "PROVIDER">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message 'ByProvider_t' /></h4>
-               </#if>
-               <#break/>
-            <#case "COUNTRY">
-                <#if facet.links?size &gt; 0>
-                    <#assign columsize = 1 />
-                    <h4><@spring.message 'ByCountry_t' /></h4>
-                </#if>
-               <#break/>
-        </#switch>
+<#macro resultFullList>
+    <table summary="This table contains the metadata for the object being viewed">
+        <caption>Object metadata</caption>
+        <tbody>
+            <@resultFullDataRow "dc_title"/>
+            <@resultFullDataRow "dc_creator"/>
+            <@resultFullDataRow "dc_description"/>
+            <@resultFullDataRow "dc_type"/>
+            <@resultFullDataRow "dc_subject"/>
+            <@resultFullDataRow "dc_date"/>
+            <@resultFullDataRow "dc_format"/>
+            <@resultFullDataRow "dc_contributer"/>
+            <@resultFullDataRow "dc_identifier"/>
 
-        <#assign facet_max = 20/>
+        <#--<#list result.fullDoc.getFieldValueList() as field>-->
+            <#--<tr>-->
+                <#--<th scrope="row">${field.getKey()}</th>-->
+                <#--<td>${field.getFirst()}</td>-->
+            <#--</tr>-->
+        <#--</#list>-->
+        </tbody>
+    </table>
+</#macro>
 
-        <#if facet.links?size &gt; 0>
-        <div id="facetsContainer">
-            <table summary="A list of facets to help refine your search">
-                <#list facet.links?chunk(columsize) as row>
-                    <tr>
-                        <#list row as link>
-                            <td align="left" style="padding: 2px;">
-                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-                                <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                </#if>
-                            </td>
-                        </#list>
-                    </tr>
-                </#list>
-            </table>
-        </div>
-        </#if>
-    </#list>
+<#macro resultFullDataRow key>
+    <#assign keyVal = result.fullDoc.getFieldValue(key)/>
+    <#if keyVal.isNotEmpty()>
+        <tr>
+            <th scope="row"><@spring.message '${keyVal.getKey()}_t' />:</th>
+            <td>${keyVal.getFirst()}</td>
+        </tr>
+    </#if>
 </#macro>
 
 <#--
@@ -505,18 +631,19 @@
  * Macro to generate a simple search form.
  -->
 <#macro simpleSearch>
-    <form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
-        <input type="hidden" name="start" value="1" />
-        <input type="hidden" name="view" value="${view}" />
-        <fieldset>
-            <legend>Search</legend>
-            <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
-            <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
-            <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
-            <br/>
-            <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
-        </fieldset>
-    </form>
+<form method="get" action="/${portalName}/brief-doc.html" accept-charset="UTF-8" id="formSimpleSearch">
+    <input type="hidden" name="start" value="1" />
+    <input type="hidden" name="view" value="${view}" />
+    <fieldset>
+        <legend>Search</legend>
+        <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
+        <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
+        <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
+        <nav>
+        <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
+        </nav>
+    </fieldset>
+</form>
 </#macro>
 
 <#--
@@ -541,78 +668,81 @@
  * Macro to generate a list of links to login / Register and user-saved items.
  -->
 <#macro userBar>
-    <ul>
-        <#if !user??>
-            <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
-        </#if>
-
-        <#if user??>
-        <li>
-            <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
-                href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
-        </li>
-        <#if user.savedItems??>
-        <li>
-            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
-                <@spring.message 'SavedItems_t' />
-            </a>
-            (<span id="savedItemsCount">${user.savedItems?size}</span>)
-        </li>
-        </#if>
-        <#if user.savedSearches??>
-        <li>
-            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
-                <@spring.message 'SavedSearches_t' />
-            </a>
-            (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
-        </li>
-        </#if>
-        <#if user.socialTags??>
-        <li>
-            <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
-                <@spring.message 'SavedTags_t' />
-            </a>
-            (<span id="savedTagsCount">${user.socialTags?size}</span>)
-        </li>
-        </#if>
-        </#if>
-    </ul>
-
+<ul>
+    <#if !user??>
+        <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
+        <li><a href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
+    </#if>
+    <#if user??>
+    <li>
+        <@spring.message 'LoggedInAs_t' />: <strong>${user.userName?html}</strong> | <a
+            href="/${portalName}/logout.html"><@spring.message 'LogOut_t' /></a>
+    </li>
+    <#if user.savedItems??>
+    <li>
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
+            <@spring.message 'SavedItems_t' />
+        </a>
+        (<span id="savedItemsCount">${user.savedItems?size}</span>)
+    </li>
+    </#if>
+    <#if user.savedSearches??>
+    <li>
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
+            <@spring.message 'SavedSearches_t' />
+        </a>
+        (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
+    </li>
+    </#if>
+    <#if user.socialTags??>
+    <li>
+        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
+            <@spring.message 'SavedTags_t' />
+        </a>
+        (<span id="savedTagsCount">${user.socialTags?size}</span>)
+    </li>
+    </#if>
+    </#if>
+</ul>
 </#macro>
 
-
+<#--
+ * viewSelect
+ *
+ * Macro to generate options to select the grid or list view
+ -->
 <#macro viewSelect>
-    <div id="viewselect">
-        <#if queryStringForPresentation?exists>
+<div id="viewselect">
+    <#if queryStringForPresentation?exists>
         <#if view="table">
-        <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
-        <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
-
+            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-hi.gif" alt="<@spring.message 'AltTableView_t' />" /></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />" >&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-lo.gif" alt="<@spring.message 'AltListView_t' />" /></a>
         <#else>
-        <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
-        <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
-
+            <a href="?${queryStringForPresentation?html}&amp;view=table" title="<@spring.message 'AltTableView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-multiview-lo.gif" alt="<@spring.message 'AltTableView_t' />" hspace="5"/></a>
+            <a href="?${queryStringForPresentation?html}&amp;view=list" title="<@spring.message 'AltListView_t' />">&nbsp;<img src="/${portalName}/${portalTheme}/images/btn-listview-hi.gif" alt="<@spring.message 'AltListView_t' />" hspace="5"/></a>
         </#if>
-        </#if>
-    </div>
+    </#if>
+</div>
 </#macro>
 
+<#--
+ * sortResults
+ *
+ * Macro to generate a dropdow with sorting options
+ -->
 <#macro sortResults>
-    <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
-        <option value="">Sorteren op:</option>
-        <option value="title" ><@spring.message 'dc_title_t' /></option>
-        <option value="creator"><@spring.message 'dc_creator_t' /></option>
-        <option value="YEAR"><@spring.message 'dc_date_t' /></option>
-        <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
-    </select>
-
-    <#--<form action="" method="GET" id="form-sort" style="display:none;">-->
-    <form action="" method="GET" id="form-sort" style="display:none;">
-        <input type="hidden" name="query" value="${justTheQuery}"/>
-        <input type="hidden" name="start" value="${start}"/>
-        <input type="hidden" name="view" value="${view}"/>
-        <input type="hidden" name="sortBy" id="sortBy" value=""/>
-    </form>
+<select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
+    <option value=""><@spring.message 'search.order.by' /></option>
+    <option value="title" ><@spring.message 'dc_title_t' /></option>
+    <option value="creator"><@spring.message 'dc_creator_t' /></option>
+    <option value="YEAR"><@spring.message 'dc_date_t' /></option>
+    <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
+</select>
+<form action="" method="GET" id="form-sort" style="display:none;">
+    <input type="hidden" name="query" value="${justTheQuery}"/>
+    <input type="hidden" name="start" value="${start}"/>
+    <input type="hidden" name="view" value="${view}"/>
+    <input type="hidden" name="sortBy" id="sortBy" value=""/>
+</form>
 </#macro>
 

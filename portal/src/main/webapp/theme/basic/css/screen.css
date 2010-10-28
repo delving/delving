@@ -1,0 +1,48 @@
+/* GLOBAL ***********************************/
+
+table caption {
+    display: none;
+}
+
+/* USERBAR **********************************/
+
+#userBar {
+    margin: 1em 0 0 0;
+    text-align: right;
+}
+#userBar ul {
+    float: right;
+}
+#userBar ul li {
+    display: inline;
+    padding: 0;
+    margin: 0 1em 0 0;
+}
+#userBar select#dd_lang {
+    float: right;
+    margin: 0 1em;
+}
+
+/* ADMINBLOCK ********************************/
+
+#adminBlock table tr {
+    display: inline;
+}
+
+/* SEARCH ************************************/
+
+#search legend {
+    display: none;
+}
+
+/* RESULTS ************************************/
+
+#result_sort, #result_view_select {
+    text-align: right;
+}
+
+#results table, #itemMetaData table {
+    width: 100%;
+}
+
+
