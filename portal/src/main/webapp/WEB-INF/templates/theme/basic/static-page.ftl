@@ -34,20 +34,20 @@
             <section id="main" class="grid_9" role="main">
 
             <div class="grid_5 alpha">
-                <h2>Bestaande paginas</h2>
+                <h2><@spring.message 'dms.existing.pages' /></h2>
                 <table summary="List of existing pages" class="user-options">
                     <#list pagePathList as pagePath>
                         <tr>
                             <td width="300">
-                                <a href="/${portalName}/${pagePath}?edit=true">
+                                <a href="${pagePath}?edit=true">
                                 <span class="ui-icon ui-icon-document"></span>
                                 ${pagePath}</a></td>
-                            <td width="85"><a href="/${portalName}/${pagePath}?edit=true">
+                            <td width="85"><a href="${pagePath}?edit=true">
                                 <span class="ui-icon ui-icon-pencil"></span>
                                 <@spring.message 'dms.edit' /></a>
                             </td>
                             <td width="100">
-                                 <a class="delete" id="delete_${pagePath_index}" href="/${portalName}/${pagePath}?delete=true">
+                                 <a class="delete" id="delete_${pagePath_index}" href="${pagePath}?delete=true">
                                     <span class="ui-icon ui-icon-trash"></span>
                                       <@spring.message 'dms.delete' />
                                  </a>
