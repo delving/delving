@@ -1,3 +1,4 @@
+
 /* GLOBAL ***********************************/
 
 table caption {
@@ -42,7 +43,41 @@ table caption {
 }
 
 #results table, #itemMetaData table {
+
     width: 100%;
+}
+
+#results table td {
+    background: transparent;
+    vertical-align: top;
+}
+
+#results .brief-thumb-container,
+#results .brief-thumb-container-listview,
+#results #img-full {
+    background:none repeat scroll 0 0 #E5E5E5;
+    overflow:hidden;
+    padding:0.5em;
+    text-align:center;
+}
+
+#results .brief-thumb-container img,
+#results .brief-thumb-container-listview img,
+#results .related-thumb-container img,
+#results #img-full img {
+    -moz-box-shadow:3px 3px 4px #BBBBBB;
+    border:4px solid #FFFFFF;
+}
+
+#result .brief-content-container {
+    min-height:75px;
+    padding:0.5em;
+}
+
+#results ul {
+    list-style-type:none;
+    margin:0;
+    padding:0;
 }
 
 

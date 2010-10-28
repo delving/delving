@@ -42,7 +42,7 @@
                                 <td width="300"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-image"></span>${imagePath}</a></td>
                                 <td width="85"><a href="${imagePath}?edit=true"><span class="ui-icon ui-icon-pencil"></span><@spring.message 'dms.edit' /></a></td>
                                 <td width="85">
-                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}?edit=false&delete=true"><span class="ui-icon ui-icon-trash"></span><@spring.message 'dms.delete' /></a>
+                                     <a class="delete" id="delete_${imagePath_index}" href="${imagePath}"><span class="ui-icon ui-icon-trash"></span><@spring.message 'dms.delete' /></a>
 
                                 </td>
                             </tr>
@@ -71,27 +71,24 @@
                         var makeURL = pName+name+ext+".img";
                         window.location.href=makeURL+"?edit=true";
                     }
-                    
+
                     $("a.delete").click(function(){
                         var target = $(this).attr("id");
                         var targetURL = $(this).attr("href");
-                        var confirmation = confirm("Afbeelding: "+targetURL +" verwijderen ?")
+                        var confirmation = confirm("<@spring.message 'dms.image.delete.question' />")
                         if(confirmation){
                             $.ajax({
-                                url: targetURL,
+                                url: targetURL+"?edit=false&delete=true",
                                 type: "GET",
-                                data: "content=",
                                 success: function(data) {
                                     window.location.reload();
                                 },
                                 error: function(data) {
-                                    alert("Image could not be deleted");
+                                    alert("<@spring.message 'dms.image.delete.fail' />");
                                 }
                             });
-                            return false;
-                        } else {
-                            return false;
                         }
+                        return false;
                     });
                 </script>
             </div>
