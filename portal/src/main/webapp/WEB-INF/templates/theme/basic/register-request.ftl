@@ -1,13 +1,21 @@
 <#import "spring.ftl" as spring />
 <#include "spring_form_macros.ftl"/>
 <#assign thisPage = "register-request.html"/>
+<#include "delving-macros.ftl">
 
-<#include "inc_header.ftl">
+<@addHeader "Norvegiana", "",[],[]/>
+
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
 
 
-<h1>${portalDisplayName}</h1>
-
-<@simpleSearch/>
+<section role="main" class="grid_9">
 
 <h2><@spring.message 'Register_t' /></h2>
 
@@ -43,6 +51,7 @@
     <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.
 </#if>
 
+</section>
 
 <#include "inc_footer.ftl"/>
 

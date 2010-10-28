@@ -1,38 +1,35 @@
 <#import "spring.ftl" as spring />
 <#assign thisPage = "administration.html"/>
 <#assign pageId = "ad"/>
-<#include "inc_header.ftl"/>
-<style type="text/css">.ui-icon{float:left;margin:0 .25em 0 0;}</style>
-
-<div id="header">
-
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
-
-    <div class="grid_9">
-
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<div id="main">
-
-    <div id="administration-page" class="grid_12">
 
 
 
-            <h2>Gebruikers Administratie</h2>
+            <#include "delving-macros.ftl">
+
+            <@addHeader "Norvegiana", "",[],[]/>
+
+            <section id="sidebar" class="grid_3" role="complementary">
+                <header id="branding" role="banner">
+                    <a href="/${portalName}/" title=""/>
+                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                    </a>
+                    <h1 class="large">${portalDisplayName}</h1>
+                </header>
+            </section>
+
+            <section role="main">
+
+            <header>
+                <h1><@spring.message 'dms.administration.users' /></h1>
+            </header>
+
+            <div id="administration-page" class="grid_9">
+
             <ol>
-                <li>Voer een naam of email in het zoek veld om een gebruiker te vinden</li>
-                <li>Pas de rol van de gebruiker aan</li>
+                <li><@spring.message 'dms.user.change.role.step.1' /></li>
+                <li><@spring.message 'dms.user.change.role.step.2' /></li>
+                <li><@spring.message 'dms.user.change.role.step.3' /></li>
+                <li><@spring.message 'dms.user.change.role.step.4' /></li>
             </ol>
 
 
@@ -43,24 +40,23 @@
         <#if !userList??>
 
             <form method="post" action="administration.html" id="search-form">
-                <table >
+                <table width="400">
                     <tr>
-                        <td width="150":><h4>Vind een gebruiker</h4></td>
-                        <td><input type="text" name="searchPattern"/></td>
-                        <td><input type="submit" value="vind"/> </td>
+                        <th colspan="2"><@spring.message 'dms.user.find' /></th>
+                     </tr>
+                    <tr></tr>
+                        <td><input type="search" name="searchPattern"/></td>
+                        <td><input type="submit" value="<@spring.message 'dms.find' />"/> </td>
                     </tr>
                 </table>
                 <#if targetUser??>
                     <p>
-                        ${targetUser.email} heeft nu de rol van
-                        <#if targetUser.role = 'ROLE_RESEARCH_USER'>
-                            Museometrie Gebruiker
-                        </#if>
+                        ${targetUser.email} <@spring.message 'dms.user.role.set.to' />: 
                         <#if targetUser.role = 'ROLE_ADMINISTRATOR'>
-                            Administrator
+                            <@spring.message 'dms.user.role.administrator' />
                         </#if>
                         <#if targetUser.role = 'ROLE_USER'>
-                            Gewoon Gebruiker
+                            <@spring.message 'dms.user.role.public' />
                         </#if>
                     </p>
                 </#if>
@@ -68,52 +64,63 @@
         </#if>
 
         <#if userList??>
-            <table>
-                <tr>
-                    <th>Email</th>
-                    <th>Huidige Rol</th>
-                    <th>Nieuwe Rol</th>
-                    <th>Zetten</th>
-                </tr>
-                <#list userList as userEdit>
-                    <form method="post" action="administration.html" id="set-form">
-                        <input type="hidden" name="userEmail" value="${userEdit.email}"/>
-                        <tr>
-                            <td width="150">${userEdit.email}</td>
-                            <td width="150">
-                                <#switch userEdit.role>
-                                    <#case "ROLE_GOD">
-                                        Super User
-                                    <#break>
-                                    <#case "ROLE_RESEARCH_USER">
-                                         Museometrie Gebruiker
-                                    <#break>
-                                    <#case "ROLE_ADMINISTRATOR">
-                                          Administrator
-                                    <#break>
-                                    <#case "ROLE_USER">
-                                          Gewone Gebruiker
-                                    <#break>
-                                </#switch>
-                            </td>
-                            <td width="200">
-                                <select name="newRole">
-                                    <option>Kies een rol</option>
-                                    <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR">Administrator</option></#if>                                    
-                                    <option value="ROLE_RESEARCH_USER">Museometrie Gebruiker</option>
-                                    <option value="ROLE_USER">Gewone Gebruiker</option>
-                                </select>
-                            </td>
-                            <td><input type="submit" value="zet nu"/> </td>
-                        </tr>
-                    </form>
-                </#list>
-            </table>
+            <#if userList?size &gt; 0>
+                <table>
+                    <tr>
+                        <th><@spring.message 'EmailAddress_t' /></th>
+                        <th><@spring.message 'dms.user.role.current' /></th>
+                        <th><@spring.message 'dms.user.role.new' /></th>
+                        <th>&#160;</th>
+                    </tr>
+
+                    <#list userList as userEdit>
+                        <form method="post" action="administration.html" id="set-form">
+                            <input type="hidden" name="userEmail" value="${userEdit.email}"/>
+                            <tr>
+                                <td width="150">${userEdit.email}</td>
+                                <td width="150">
+                                    <#switch userEdit.role>
+                                        <#case "ROLE_GOD">
+                                            <@spring.message 'dms.user.role.super' />
+                                        <#break>
+                                        <#case "ROLE_ADMINISTRATOR">
+                                              <@spring.message 'dms.user.role.administrator' />
+                                        <#break>
+                                        <#case "ROLE_USER">
+                                              <@spring.message 'dms.user.role.public' />
+                                        <#break>
+                                    </#switch>
+                                </td>
+                                <td width="200">
+                                    <select name="newRole" id="newRole">
+                                        <option value="NONE"><@spring.message 'dms.user.role.choose' /></option>
+                                        <#if user.role=="ROLE_GOD"><option value="ROLE_ADMINISTRATOR"><@spring.message 'dms.user.role.administrator' /></option></#if>
+                                        <option value="ROLE_USER"><@spring.message 'dms.user.role.public' /></option>
+                                    </select>
+                                </td>
+                                <td><input type="submit" value="<@spring.message 'dms.change' />"/> </td>
+                            </tr>
+                        </form>
+                    </#list>
+                </table>
+            <#else>
+                <h4><@spring.message 'dms.user.not.found' /></h4>
+                <p><a href="/${portalName}/administration.html"><@spring.message 'dms.user.find' /></a></p>
+            </#if>
         </#if>
 
 
     </div>
 
-</div>
+</section>
+
+<script type="text/javascript">
+    $("form#set-form").submit(function(){
+        if($("select#newRole").val()=="NONE"){
+            return false;
+        }
+
+    })
+</script>
 
 <#include "inc_footer.ftl"/>

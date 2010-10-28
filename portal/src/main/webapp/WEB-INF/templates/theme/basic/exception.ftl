@@ -13,11 +13,22 @@
 <#if RequestParameters.query??>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
+
+<@addHeader "Norvegiana", "",[],[]/>
+
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
+
+<section role="main" class="grid_9">
 
 <h1>${portalDisplayName}</h1>
-
-<@simpleSearch/>
 
 <#switch queryProblem>
     <#case 'MATCH_ALL_DOCS'>
@@ -73,6 +84,8 @@
             </div>
         </#if>    
 </#switch>
+
+</section>
 
 <#include "inc_footer.ftl"/>
 

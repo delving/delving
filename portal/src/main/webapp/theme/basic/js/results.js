@@ -72,30 +72,6 @@ function showDefaultLarge(obj,iType){
     }
 }
 
-function sendEmail(objId){
-    $("#form-sendtoafriend").validate({
-        rules: {friendEmail: "required"},
-        messages: {friendEmail:{required:msgRequired,email:msgEmailValid}}
-    });
-    if ($("#form-sendtoafriend").valid()){
-        var sr = document.getElementById("msg-send-email");
-        sr.style.display = 'block';
-        var email = document.getElementById("friendEmail").value;
-        $.ajax({
-           type: "POST",
-           url: "email-to-friend.ajax",
-           data: encodeURI("uri="+objId+"&email=" + email),
-           success: function(msg){
-                sr.innerHTML = msgEmailSendSuccess;
-                document.getElementById("friendEmail").value = "";
-           },
-           error: function(msg) {
-                sr.innerHTML = "<span class='fg-red'>"+msgEmailSendFail+"<span>";
-           }
-         });
-    }
-    return false;
-}
 function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
      $("#form-addtag").validate({
         rules: {tag: "required"}
@@ -157,5 +133,16 @@ function checkSize(obj,type,w){
         }
     }
 }
+
+$(document).ready(function(){
+    if($("a.overlay")){
+        $("a.overlay").fancybox({
+        titleShow : true,
+        titlePosition: 'inside'
+        })
+    }
+});
+
+
 
 

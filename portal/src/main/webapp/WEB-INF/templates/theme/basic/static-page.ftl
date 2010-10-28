@@ -20,59 +20,60 @@
 
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">
+                    <a href="/${portalName}/" title=""/>
+                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                    </a>
                     <h1 class="large">${portalDisplayName}</h1>
                 </header>
-
-                <div id="search" role="search">
-                    <@simpleSearch/>
-                </div>
-
-
             </section>
 
 
-            <section id="main" class="grid_9" role="main">
+            <section role="main">
 
-            <div class="grid_5 alpha">
-                <h2><@spring.message 'dms.existing.pages' /></h2>
-                <table summary="List of existing pages" class="user-options">
-                    <#list pagePathList as pagePath>
-                        <tr>
-                            <td width="300">
-                                <a href="${pagePath}?edit=true">
-                                <span class="ui-icon ui-icon-document"></span>
-                                ${pagePath}</a></td>
-                            <td width="85"><a href="${pagePath}?edit=true">
-                                <span class="ui-icon ui-icon-pencil"></span>
-                                <@spring.message 'dms.edit' /></a>
-                            </td>
-                            <td width="100">
-                                 <a class="delete" id="delete_${pagePath_index}" href="${pagePath}?delete=true">
-                                    <span class="ui-icon ui-icon-trash"></span>
-                                      <@spring.message 'dms.delete' />
-                                 </a>
+            <header>
+                <h1><@spring.message 'dms.administration.pages' /></h1>
+            </header>
 
-                            </td>
-                        </tr>
-                    </#list>
-                </table>
-            </div>
+                <div class="grid_5 alpha">
+                    <h2><@spring.message 'dms.existing.pages' /></h2>
+                    <table summary="List of existing pages" class="user-options" width="100%">
+                        <#list pagePathList as pagePath>
+                            <tr>
+                                <td width="300">
+                                    <a href="${pagePath}?edit=true">
+                                    <span class="ui-icon ui-icon-document"></span>
+                                    ${pagePath}</a></td>
+                                <td width="85"><a href="${pagePath}?edit=true">
+                                    <span class="ui-icon ui-icon-pencil"></span>
+                                    <@spring.message 'dms.edit' /></a>
+                                </td>
+                                <td width="100">
+                                     <a class="delete" id="delete_${pagePath_index}" href="${pagePath}?delete=true">
+                                        <span class="ui-icon ui-icon-trash"></span>
+                                          <@spring.message 'dms.delete' />
+                                     </a>
 
-            <div class="grid_4 omega">
+                                </td>
+                            </tr>
+                        </#list>
+                    </table>
+                </div>
 
-                <h2><@spring.message 'dms.page.create' /></h2>
-                <ol>
-                    <li><@spring.message 'dms.page.create.step.1' /></li>
-                    <li><@spring.message 'dms.page.create.step.2' /></li>
-                </ol>
-                <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
-                    /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
-                    <input type="submit" value="<@spring.message 'dms.create' />" id="makePage"/>
-                </form>
+                <div class="grid_4 omega">
 
-           </div>
+                    <h2><@spring.message 'dms.page.create' /></h2>
+                    <ol>
+                        <li><@spring.message 'dms.page.create.step.1' /></li>
+                        <li><@spring.message 'dms.page.create.step.2' /></li>
+                    </ol>
+                    <form method="get" action="" id="form-makePage" onsubmit="createPage(this.pagePath.value);return false;">
+                        /${portalName}/&#160;<input type="text" value="" name="pagePath" id="pagePath"/>
+                        <input type="submit" value="<@spring.message 'dms.create' />" id="makePage"/>
+                    </form>
 
-        </section>
+               </div>
+
+            </section>
 
 
             <script type="text/javascript">
@@ -121,24 +122,23 @@
             <#include "delving-macros.ftl">
 
             <@addHeader "Norvegiana", "",[],[]/>
+
+
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">
+                    <a href="/${portalName}/" title=""/>
+                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                    </a>
                     <h1 class="large">${portalDisplayName}</h1>
                 </header>
-
-                <div id="search" role="search">
-                    <@simpleSearch/>
-                </div>
-
-
             </section>
 
 
-            <section id="main" class="grid_9" role="main">
+            <section role="main" class="grid_9">
 
 
                 <div id="content" class="content-preview">
-                ${page.content}
+                    ${page.content}
                 </div>
 
                 <#if edit??>
@@ -146,7 +146,7 @@
 
                         <div id="pageForm">
                             <form action="${page.path}" method="POST" id="form-edit">
-                                <table>
+                                <table width="100%">
                                     <tr>
                                         <td>
                                           <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>
@@ -154,7 +154,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
+                                            <textarea name="content" id="editor" style="width: 100%;height:350px;">${page.content}</textarea>
                                             <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
                                         </td>
                                     </tr>
@@ -167,7 +167,9 @@
                         <#else>
                             <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
                         </#if>
-                        <br/><br/>
+
+                        <p><a href="/${portalName}/_.dml"><@spring.message 'dms.page.list' /></a></p>
+
                         <#if versionList?? && page.id??>
                             <h3><@spring.message 'dms.version.management' /></h3>
                             <p>

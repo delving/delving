@@ -15,7 +15,7 @@
  -->
 <#macro adminBlock>
     <#if user?? && (user.role == ('ROLE_ADMINISTRATOR') || user.role == ('ROLE_GOD'))>
-    <section id="adminBlock">
+    <section id="adminBlock" class="grid_12">
         <nav id="adminNav">
         <table class="user-options">
             <tbody>
@@ -84,7 +84,7 @@
             var portalName = "/${portalName}";
             var baseThemePath = "/${portalName}/${portalTheme}";
         </script>
-        <@addCss ["reset-text-grid.css","screen.css"], "screen"/>
+        <@addCss ["reset-text-grid.css","jquery-ui-1.8.5.custom.css","screen.css"], "screen"/>
         <#if pageCssFiles?size &gt; 0>
             <@addCss pageCssFiles/>
         </#if>
@@ -97,11 +97,7 @@
     </head>
     <body class="${bodyClass}">
     <div class="container_12">
-    <@adminBlock/>
-    <div class="grid_12" id="userBar">
-        <@userBar/>
-        <@languageSelect/>
-    </div>
+        <@adminBlock/>
 </#macro>
 
 <#macro languageSelect>
@@ -127,7 +123,7 @@
  -->
 <#macro resultBriefGrid>
 <#assign seq = briefDocs/>
-<table summary="gallery view all search results" border="0">
+<table summary="gallery view all search results" border="0" class="results">
     <caption>Results</caption>
     <#list seq?chunk(4) as row>
     <tr>
@@ -204,7 +200,7 @@
  -->
 <#macro resultBriefList>
 <#assign seq = briefDocs/>
-<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" id="multi">
+<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results">
     <#list seq as cell>
     <tr>
         <td valign="top" width="50">
@@ -404,6 +400,61 @@
     </#if>
 </#macro>
 
+<#macro resultBriefPaginationStyled>
+        <div class="fg-buttonset fg-buttonset-multi">
+
+            <#--<@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}-->
+
+            <#--<@spring.message 'Page_t' />:-->
+            <#list pagination.pageLinks as link>
+            <#assign uiClassBorder = ""/>
+            <#if link_index == 0>
+                <#assign uiClassBorder = "ui-corner-left"/>
+            </#if>
+            <#if !link_has_next>
+                <#assign uiClassBorder = "ui-corner-right"/>
+            </#if>
+                <#if link.linked>
+                    <#assign lstart = link.start/>
+                        <a
+                                href="?${queryStringForPresentation?html}&amp;start=${link.start?c}&amp;view=${view}"
+                                class="fg-button ui-state-default ${uiClassBorder}"
+                        >
+                            ${link.display?c}
+                        </a>
+                 <#else>
+                    <a class="fg-button ui-state-default ui-state-active ${uiClassBorder}">
+                        <strong>${link.display?c}</strong>
+                    </a>
+                </#if>
+            </#list>
+
+            <#assign uiClassStatePrev = ""/>
+            <#assign uiClassStateNext = ""/>
+            <#if !pagination.previous>
+                <#assign uiClassStatePrev = "ui-state-disabled">
+            </#if>
+            <#if !pagination.next>
+                <#assign uiClassStateNext = "ui-state-disabled">
+            </#if>
+            <a
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
+                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
+                    alt="<@spring.message 'AltPreviousPage_t' />"
+                    style="margin: 0 8px;"
+                    >
+               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+            </a>
+            <a
+                    href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
+                    class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
+                    alt="<@spring.message 'AltNextPage_t' />"
+                    >
+                    <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
+            </a>
+        </div>
+</#macro>
+
 <#--
  * resultPaginationList
  *
@@ -469,9 +520,11 @@
         <#else>
             <@spring.message 'ViewingRelatedItems_t' />
             <#assign match = result.matchDoc/>
-            <a href="${match.fullDocUrl}">
-                <#if useCache="true"><img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
-                <#else><img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+            <a href="${match.fullDocUrl()}">
+                <#if useCache="true">
+                    <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                <#else>
+                    <img src="${match.thumbnail}" alt="${match.title}" height="25"/>${match.title}
                 </#if>
             </a>
         </#if>
@@ -526,6 +579,66 @@
     </#if>
 </#macro>
 
+<#macro resultsFullQueryBreadcrumbs>
+    <#if pagination??>
+        <@spring.message 'MatchesFor_t' />:
+            <#if !query?starts_with("europeana_uri:")>
+                <#list pagination.breadcrumbs as crumb>
+                    <#if !crumb.last>
+                        <a href="?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;
+                    <#else>
+                        <strong>${crumb.display?html}</strong>
+                    </#if>
+                </#list>
+            <#else>
+                    <@spring.message 'ViewingRelatedItems_t' />
+                    <#assign match = result.fullDoc />
+                    <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
+                    <a href="full-doc.html?&amp;uri=${match.id}">
+                    <#if useCache="true">
+                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                    <#else>
+                        <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                    </#if>
+                    </a>
+            </#if>
+    </#if>
+</#macro>
+
+<#macro resultsFullQueryBreadcrumbsList>
+    <#if pagination??>
+        <dl>
+            <dt><@spring.message 'MatchesFor_t' />:</dt>
+            <#if !query?starts_with("europeana_uri:")>
+                <#list pagination.breadcrumbs as crumb>
+                    <#if !crumb.last>
+                        <dd <#if crumb_index == 0>class="nobg"</#if>><a href="?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>
+                    <#else>
+                        <dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>
+                    </#if>
+                </#list>
+            <#else>
+                <dd class="nobg">
+                    <@spring.message 'ViewingRelatedItems_t' />
+                    <#assign match = result.fullDoc />
+                    <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
+                    <a href="full-doc.html?&amp;uri=${match.id}">
+                    <#if useCache="true">
+                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                    <#else>
+                        <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                    </#if>
+                    </a>
+                </dd>
+            </#if>
+        </dl>
+    <#else>
+        <ul>
+            <li>&#160;</li>
+        </ul>
+    </#if>
+</#macro>
+
 <#macro resultFullPagination>
 
     <#assign uiClassStatePrev = ""/>
@@ -571,6 +684,19 @@
     <#else>
         <#assign thumbnail = "${result.fullDoc.thumbnails[0]}"/>
     </#if>
+
+    <#assign imageRef = "#"/>
+    <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
+        <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
+    <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
+        <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
+    </#if>
+   <a href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+      target="_blank"
+      class="overlay"
+      title="${result.fullDoc.dcTitle[0]}"
+    >
+
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
@@ -589,28 +715,31 @@
              onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
          />
     </#if>
+
+    </a>
+
 </#macro>
 
 <#macro resultFullList>
-    <table summary="This table contains the metadata for the object being viewed">
+    <table summary="This table contains the metadata for the object being viewed" class="item">
         <caption>Object metadata</caption>
         <tbody>
-            <@resultFullDataRow "dc_title"/>
-            <@resultFullDataRow "dc_creator"/>
-            <@resultFullDataRow "dc_description"/>
-            <@resultFullDataRow "dc_type"/>
-            <@resultFullDataRow "dc_subject"/>
-            <@resultFullDataRow "dc_date"/>
-            <@resultFullDataRow "dc_format"/>
-            <@resultFullDataRow "dc_contributer"/>
-            <@resultFullDataRow "dc_identifier"/>
+            <#--<@resultFullDataRow "dc_title"/>-->
+            <#--<@resultFullDataRow "dc_creator"/>-->
+            <#--<@resultFullDataRow "dc_description"/>-->
+            <#--<@resultFullDataRow "dc_type"/>-->
+            <#--<@resultFullDataRow "dc_subject"/>-->
+            <#--<@resultFullDataRow "dc_date"/>-->
+            <#--<@resultFullDataRow "dc_format"/>-->
+            <#--<@resultFullDataRow "dc_contributer"/>-->
+            <#--<@resultFullDataRow "dc_identifier"/>-->
 
-        <#--<#list result.fullDoc.getFieldValueList() as field>-->
-            <#--<tr>-->
-                <#--<th scrope="row">${field.getKey()}</th>-->
-                <#--<td>${field.getFirst()}</td>-->
-            <#--</tr>-->
-        <#--</#list>-->
+        <#list result.fullDoc.getFieldValueList() as field>
+            <tr>
+                <th scrope="row">${field.getKeyAsXml()}</th>
+                <td>${field.getFirst()}</td>
+            </tr>
+        </#list>
         </tbody>
     </table>
 </#macro>

@@ -23,75 +23,19 @@
 <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
 <#include "delving-macros.ftl">
 
-<@addHeader "Norvegiana", "",["results.js"],[]/>
+<@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 
 <section id="sidebar" class="grid_3" role="complementary">
     <header id="branding" role="banner">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
         <h1 class="large">${portalDisplayName}</h1>
     </header>
-
-    <div id="search" role="search">
-        <@simpleSearch/>
-    </div>
     
     <div id="facet-list">
         <#include "inc_related_content.ftl"/>
-    </div>
-
-</section>
-
-
-<section id="main" class="grid_9" role="main">
-
-   <#--<div id="query_breadcrumbs">-->
-       <#--<div class="inner">-->
-            <#--<#if pagination??>-->
-                <#--<dl>-->
-                    <#--<dt><@spring.message 'MatchesFor_t' />:</dt>-->
-                    <#--<#if !query?starts_with("europeana_uri:")>-->
-                        <#--<#list pagination.breadcrumbs as crumb>-->
-                            <#--<#if !crumb.last>-->
-                                <#--<dd <#if crumb_index == 0>class="nobg"</#if>><a href="${thisPage}?${crumb.href}">${crumb.display?html}</a>&#160;>&#160;</dd>-->
-                            <#--<#else>-->
-                                <#--<dd <#if crumb_index == 0>class="nobg"</#if>><strong>${crumb.display?html}</strong></dd>-->
-                            <#--</#if>-->
-                        <#--</#list>-->
-                    <#--<#else>-->
-                        <#--<dd class="nobg">-->
-                            <#--<@spring.message 'ViewingRelatedItems_t' />-->
-                            <#--<#assign match = result.fullDoc />-->
-                            <#--&lt;#&ndash;todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search&ndash;&gt;-->
-                            <#--<a href="full-doc.html?&amp;uri=${match.id}">-->
-                            <#--<#if useCache="true">-->
-                                <#--<img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
-                            <#--<#else>-->
-                                <#--<img src="${match.thumbnail}" alt="${match.title}" height="25"/>-->
-                            <#--</#if>-->
-                            <#--</a>-->
-                        <#--</dd>-->
-                    <#--</#if>-->
-                <#--</dl>-->
-            <#--<#else>-->
-                <#--<ul>-->
-                    <#--<li>&#160;</li>-->
-                <#--</ul>-->
-            <#--</#if>-->
-        <#--</div>-->
-    <#--</div>-->
-
-    <#--<div class="clear"></div>-->
-
-    <nav class="grid_9" role="navigation">
-        <@resultFullPagination/>
-    </nav>
-
-    <div id="itemImage" class="grid_4 alpha">
-        <@resultFullImage/>
-    </div>
-
-    <div id="itemMetaData" class="grid_5 omega">
-        <@resultFullList/>
-        <h5><@spring.message 'RelatedContent_t' />:</h5>
+       <h5><@spring.message 'RelatedContent_t' />:</h5>
         <table summary="related items" id="tbl-related-items" width="100%">
             <#assign max=3/><!-- max shown in list -->
             <#list result.relatedItems as doc>
@@ -130,6 +74,57 @@
             </tr>
             </#if>
         </table>
+
+    </div>
+
+</section>
+
+
+<section id="item" class="grid_9" role="main">
+
+    <div id="userBar" role="navigation">
+        <div class="inner">
+        <@userBar/>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <div id="search" role="search">
+        <div class="inner">
+            <@simpleSearch/>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+     <div id="nav_query_breadcrumbs">
+        <div class="inner">
+            <h4><@resultsFullQueryBreadcrumbs/></h4>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <nav class="pagination" role="navigation">
+        <div class="inner">
+        <@resultFullPagination/>
+        </div>
+    </nav>
+
+    <div class="clear"></div>
+
+    <div class="inner">
+
+        <div id="itemImage" class="grid_4 alpha">
+            <div class="inner">
+            <@resultFullImage/>
+            </div>
+        </div>
+
+        <div id="itemMetaData" class="grid_5 omega">
+            <@resultFullList/>
+        </div>
 
     </div>
 

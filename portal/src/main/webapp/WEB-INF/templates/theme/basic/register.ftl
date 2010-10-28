@@ -11,11 +11,24 @@
     <#assign query = "${RequestParameters.query}"/>
 </#if>
 <#include "spring_form_macros.ftl"/>
-<#include "inc_header.ftl"/>
+<#include "delving-macros.ftl">
+
+<@addHeader "Norvegiana", "",[],[]/>
+
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
+
+
+<section role="main" class="grid_9">
 
 <h1>${portalDisplayName}</h1>
 
-<@simpleSearch/>
 
 
                 <h1><@spring.message 'Register_t' /></h1>
@@ -84,6 +97,8 @@
 
                     
                 </form>
+
+</section>
 
 	    <#include "inc_footer.ftl"/>
 

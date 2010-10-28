@@ -9,13 +9,11 @@
 
 <section class="grid_3">
     <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
         <h1 class="large">${portalDisplayName}</h1>
     </header>
-
-    <div id="search" role="search">
-        <@simpleSearch/>
-    </div>
-
 </section>
 
 

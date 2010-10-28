@@ -16,19 +16,20 @@
 
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">
+                    <a href="/${portalName}/" title=""/>
+                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                    </a>
                     <h1 class="large">${portalDisplayName}</h1>
                 </header>
-
-                <div id="search" role="search">
-                    <@simpleSearch/>
-                </div>
-
-
             </section>
 
-            <section id="main" class="grid_9" role="main">
 
-                <div class="grid_6">
+            <section role="main">
+
+            <header>
+                <h1><@spring.message 'dms.administration.images' /></h1>
+            </header>
+                <div class="grid_5">
                     <h2><@spring.message 'dms.existing.images' /></h2>
                      <table summary="List of existing images" class="user-options">
                         <#list imagePathList as imagePath>
@@ -45,7 +46,7 @@
                 </div>
 
 
-                <div class="grid_6">
+                <div class="grid_4">
 
                     <h2><@spring.message 'dms.image.create' /></h2>
                     <form method="POST" action="/${portalName}/images/_.img" enctype="multipart/form-data">
@@ -101,30 +102,34 @@
 
         <@addHeader "Norvegiana", "",[],[]/>
 
-        <section id="sidebar" class="grid_3" role="complementary">
-            <header id="branding" role="banner">
-                <h1 class="large">${portalDisplayName}</h1>
-            </header>
-
-            <div id="search" role="search">
-                <@simpleSearch/>
-            </div>
-
-
-        </section>
+            <section id="sidebar" class="grid_3" role="complementary">
+                <header id="branding" role="banner">
+                    <a href="/${portalName}/" title=""/>
+                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                    </a>
+                    <h1 class="large">${portalDisplayName}</h1>
+                </header>
+            </section>
 
 
-                <div class="grid_12">
+            <section role="main">
+
+                <header>
+                    <h1><@spring.message 'dms.administration.images' /></h1>
+                </header>
+
+                <div class="grid_5">
                     <#if imageExists>
-                        <img src="/${portalName}/${imagePath}" alt="${imagePath}" width="100%"/>
+                        <img src="/${portalName}/${imagePath}" alt="${imagePath}" style="max-width:100%"/><br/>
+                        ${imagePath}
                     <#else>
                         <p><@spring.message 'dms.image.not.exist' /></p>
                     </#if>
                 </div>
 
-                <div class="clear"></div>
+                <#--<div class="clear"></div>-->
 
-                <div class="grid_12">
+                <div class="grid_4">
                     <#if edit??>
                         <#if edit>
                             <div id="pageForm">
@@ -158,12 +163,12 @@
                         <#else>
                             <p><a href="/${portalName}/${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
                         </#if>
-                        <p><a href="_.img"><@spring.message 'dms.image.list' /></a></p>
+                        <p><a href="/${portalName}/_.img"><@spring.message 'dms.image.list' /></a></p>
                     </#if>
 
                 </div>
 
-            </div>
+            </section>
 
         <#include "inc_footer.ftl"/>
     </#if>
