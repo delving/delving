@@ -373,10 +373,12 @@ button.fg-button-icon-right .ui-icon {
     font-size: 1em;
 }
 /* FOOTER ******************************/
-
 footer {
-    /*background: #eaeaea;*/
-    border: 1px solid #ccc;
+    margin: 1em 0 0 0;
+    text-align: center;
+}
+footer a{
+    margin: 0 1em;
 }
 
 
