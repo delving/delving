@@ -124,7 +124,7 @@
             <@addHeader "Norvegiana", "",[],[]/>
 
 
-            <section id="sidebar" class="grid_3" role="complementary">
+            <section id="sidebar" class="grid_2" role="complementary">
                 <header id="branding" role="banner">
                     <a href="/${portalName}/" title=""/>
                     <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
@@ -134,31 +134,16 @@
             </section>
 
 
-            <section role="main" class="grid_9">
-
-
-                <div id="content" class="content-preview">
-                    ${page.content}
-                </div>
+            <section role="main" class="grid_10">
 
                 <#if edit??>
                     <#if edit>
-
                         <div id="pageForm">
                             <form action="${page.path}" method="POST" id="form-edit">
-                                <table width="100%">
-                                    <tr>
-                                        <td>
-                                          <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <textarea name="content" id="editor" style="width: 100%;height:350px;">${page.content}</textarea>
-                                            <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>
+                                <textarea name="content" id="editor" style="width: 100%;height:550px;">${page.content}</textarea>
+                                <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/>
+                                <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
                             </form>
                         </div>
                     <#else>

@@ -10,30 +10,21 @@
 <#assign queryStringForPresentation = defaultView.pagination.presentationQuery.queryForPresentation />
 <#assign tab = ""/>
 
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
 
-<div id="header">
+<@addHeader "Norvegiana", "",[],[]/>
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
 
-    <div class="grid_9">
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<div class="clear"></div>
-
-<div id="main" class="grid_9 page">
+<section role="main" class="grid_9">
 
     <div id="breadcrumbs">
         <div class="inner">
@@ -118,21 +109,7 @@
 
     </div>
 
-</div>
-
-
-<div id="sidebar" class="grid_3">
-     <div id="search">
-        <div class="inner">
-            <@MultiSearchForm "search_result"/>
-        </div>
-    </div>
-    <div class="inner">
-    <div id="facet-list">
-        <#include "inc_facets_lists.ftl"/>
-    </div>
-    </div>
-</div>
+</section>
 
 <@addFooter/>
 
