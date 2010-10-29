@@ -2,11 +2,13 @@
 
             <h5><@spring.message 'Actions_t' />:</h5>
 
-                    <!-- AddThis Button BEGIN -->
+
+        <#if addThisTrackingCode??>
+        <!-- AddThis Button BEGIN -->
         <div class="addthis_toolbox addthis_default_style">
-            <a href="http://www.addthis.com/bookmark.php?v=250&amp;username=xa-4cc9e51e77421857" class="addthis_button_compact">Share</a>
+            <a href="http://www.addthis.com/bookmark.php?v=250&amp;username=${addThisTrackingCode}" class="addthis_button_compact">Share</a>
         </div>
-        <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=xa-4cc9e51e77421857"></script>
+        <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=${addThisTrackingCode}"></script>
         <!-- AddThis Button END -->
         <script type="text/javascript">
         var addthis_config = {
@@ -18,6 +20,7 @@
         }
         </script>
         <br/>
+        </#if>
 
 
             <#if user??>

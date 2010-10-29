@@ -61,5 +61,5 @@
 
 </section><!-- end search -->
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 </#compress>

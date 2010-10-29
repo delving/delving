@@ -7,25 +7,21 @@
     <#assign query = "${RequestParameters.query}"/>
 </#if>
 <#include "spring_form_macros.ftl"/>
-<#include "inc_header.ftl">
+<#include "delving-macros.ftl">
 
-<div id="sidebar" class="grid_3">
+<@addHeader "Norvegiana", "",[],[]/>
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
 
-</div>
 
-<div id="main" class="grid_9">
-
-    <div id="top-bar">
-        <@userbar/>
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
+<section role="main" class="grid_9">
 
         <h1>Error</h1>
         <br />
@@ -34,9 +30,7 @@
             Please <a href="/${portalName}/login.html">register your email again</a> to finish registration.
         </p>
 
-</div>
+</section>
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 
-</body>
-</html>

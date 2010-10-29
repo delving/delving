@@ -123,4 +123,4 @@
     })
 </script>
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>

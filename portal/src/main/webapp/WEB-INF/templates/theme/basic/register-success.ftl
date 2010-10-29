@@ -1,7 +1,7 @@
 <#import "spring_form_macros.ftl" as spring />
 <#assign thisPage = "register-success.html">
 <#include "spring_form_macros.ftl"/>
-<#include "inc_header.ftl"/>
+
 <#assign pageId = "rsp">
 <#include "delving-macros.ftl">
 
@@ -44,5 +44,5 @@
     </form>
 </section>
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 
