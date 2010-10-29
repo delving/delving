@@ -80,7 +80,7 @@ public class ResultController {
         final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
 
         // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "xml/full-doc-srw" : "full-doc");
         page.addObject("result", fullResultView);
         if (fullResultView.getDocIdWindowPager() != null) {
             page.addObject("pagination", fullResultView.getDocIdWindowPager());
@@ -114,7 +114,7 @@ public class ResultController {
         final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(fullParams);
 
         // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "xml/full-doc-srw" : "full-doc");
         page.addObject("result", fullResultView);
         if (fullResultView.getDocIdWindowPager() != null) {
             page.addObject("pagination", fullResultView.getDocIdWindowPager());
@@ -152,6 +152,21 @@ public class ResultController {
         return page;
     }
 
+    private String getViewName(String format) {
+        String viewName = "brief-doc-window";
+        if (format != null) {
+            if (format.equalsIgnoreCase("srw")) {
+                viewName = "xml/brief-doc-window-srw";
+            }
+            else if (format.equalsIgnoreCase("rss")) {
+                viewName = "xml/brief-doc-window-rss";
+            }
+            else if (format.equalsIgnoreCase("rdf")) {
+                viewName = "xml/brief-doc-window-rdf";
+            }
+        }
+        return viewName;
+    }
 
     @RequestMapping("/brief-doc.html")
     public ModelAndView briefDocHtml(
@@ -159,7 +174,6 @@ public class ResultController {
             @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
     ) throws EuropeanaQueryException, UnsupportedEncodingException {
-        boolean srwFormat = format != null && format.equalsIgnoreCase("srw");
 
         // check if we are dealing with a request from the advanced search page
         @SuppressWarnings("unchecked")
@@ -167,7 +181,7 @@ public class ResultController {
         BriefBeanView briefBeanView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
 
         // Create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "brief-doc-window-srw" : "brief-doc-window");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(getViewName(format));
         page.addObject("display", format);
         page.addObject("result", briefBeanView);
         page.addObject("query", briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery());

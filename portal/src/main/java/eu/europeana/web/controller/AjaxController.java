@@ -246,7 +246,7 @@ public class AjaxController {
     }
 
     private static ModelAndView createResponsePage(boolean debug, boolean success, String exceptionString, HttpServletResponse response) {
-        ModelAndView page = ControllerUtil.createModelAndViewPage("ajax");
+        ModelAndView page = ControllerUtil.createModelAndViewPage("xml/ajax");
         response.setContentType("text/xml");  // todo: viewResolver should set content type
         page.addObject("success", String.valueOf(success));
         page.addObject("exception", exceptionString);

@@ -10,7 +10,7 @@
     <#if pagination.isNext()>
     <atom:link rel="next" href="${servletUrl}/brief-doc.html?query=${query}&amp;start=${pagination.nextPage}&amp;format=rss" type="application/rss+xml" />
     </#if>
-    <#list model.briefDocWindow.docs as doc>
+    <#list result.briefDocs as doc>
     <item>
         <title>${doc.title}</title>
         <link>${doc.id}</link>

@@ -54,6 +54,9 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['portal.color']}")
     private String portalColor;
 
+    @Value("#{launchProperties['portal.baseUrl']}")
+    private String portalBaseUrl;
+
     @Value("#{launchProperties['ga.trackingCode']}")
     private String googleAnalyticsTrackingCode;
 
@@ -70,6 +73,7 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("cacheUrl", cacheUrl);
             modelAndView.addObject("portalName", portalName);
             modelAndView.addObject("portalDisplayName", portalDisplayName);
+            modelAndView.addObject("portalBaseUrl", portalBaseUrl);
             modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
             modelAndView.addObject("defaultParams", getDefaultParameters(httpServletRequest.getParameterMap()));
