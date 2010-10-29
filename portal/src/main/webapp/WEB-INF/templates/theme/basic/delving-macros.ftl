@@ -106,9 +106,9 @@
             <a href="http://www.europeanalocal.eu"  title="Europeana">
                 <img src="/${portalName}/${portalTheme}/images/europeana-local.jpg" alt="Europeana" align="absmiddle"/>
             </a>
-            <a href="http://www.abm-utvikling.no/"  title="ABM-utvikling">
-                <img src="/${portalName}/${portalTheme}/images/eu-flag.jpg" alt="ABM-utvikling" align="absmiddle"/>
-            </a>
+
+            <img src="/${portalName}/${portalTheme}/images/eu-flag.jpg" alt="ABM-utvikling" align="absmiddle"/>
+
             <a href="http://www.delving.eu" title="Delving">
                 <img src="/${portalName}/${portalTheme}/images/poweredbydelving.png" alt="Proudly Powered by Delving" align="absmiddle"/>
             </a>
