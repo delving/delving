@@ -7,6 +7,10 @@ $(document).ready(function() {
         // goto last visited page
         document.location.href = gotoPage;
     }
+
+// load DMS content
+    delvingPageCall("#news", portalName+"/news.dml?embedded=true"," "," "," ");
+    
 });
 
 

@@ -85,7 +85,7 @@
             <@addCss pageCssFiles/>
         </#if>
         ${cssFiles}
-        <@addJavascript ["jquery-1.4.2.min.js", "jquery.cookie.js", "js_utilities.js"]/>
+        <@addJavascript ["jquery-1.4.2.min.js", "jquery-ui-1.8.5.custom.min.js", "jquery.cookie.js", "js_utilities.js"]/>
         <#if (pageJsFiles?size &gt; 0)>
             <@addJavascript pageJsFiles/>
         </#if>
@@ -172,12 +172,12 @@
                     </#if>
 
                 </#if>
-                <#if cell.provider != "">
-                    <#assign pr = cell.provider />
+                <#if cell.dataProvider != "">
+                    <#assign pr = cell.dataProvider />
                     <#if pr?length &gt; 80>
-                        <#assign pr = cell.provider?substring(0, 80) + "..."/>
+                        <#assign pr = cell.dataProvider?substring(0, 80) + "..."/>
                     </#if>
-                    <li title="${cell.provider}"><span class="provider">${pr}</span></li>
+                    <li title="${cell.dataProvider}"><span class="provider">${pr}</span></li>
                 </#if>
             </ul>
             </div>
@@ -254,36 +254,37 @@
  *
  * Macro to generate lists of result facets and their links
  -->
+
 <#macro resultBriefFacets key facetLanguageTag columnSize>
     <#assign facetMap = result.getFacetMap()>
     <#assign facet = facetMap.getFacet(key)>
 
     <#if !facet.type?starts_with("unknown")>
-    <h4><@spring.message '${facetLanguageTag}_t' /></h4>
+        <h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}_t' /></a></h4>
         <#if facet.links?size &gt; 0>
-        <div id="facetsContainer">
-            <table summary="A list of facets to help refine your search">
-                <#list facet.links?chunk(columnSize?int) as row>
-                    <tr>
-                        <#list row as link>
-                            <td align="left" style="padding: 2px;">
-                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-                                <#if !link.remove = true>
-                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                <#else>
-                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                        <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                    </a>
-                                </#if>
-                            </td>
-                        </#list>
-                    </tr>
-                </#list>
-            </table>
-        </div>
+            <div id="facetsContainer" class="toggle_container">
+                <table summary="A list of facets to help refine your search">
+                    <#list facet.links?chunk(columnSize?int) as row>
+                        <tr>
+                            <#list row as link>
+                                <td align="left" style="padding: 2px;">
+                                <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
+                                    <#if !link.remove = true>
+                                        <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                        <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
+                                            <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                        </a>
+                                    <#else>
+                                        <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                            <@stringLimiter "${link.value}" "25"/>(${link.count})
+                                        </a>
+                                    </#if>
+                                </td>
+                            </#list>
+                        </tr>
+                    </#list>
+                </table>
+            </div>
         </#if>
     </#if>
 </#macro>
@@ -568,7 +569,7 @@
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="#" onclick="highLight('#mustlogin a'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide"></div>
@@ -589,12 +590,16 @@
             <#else>
                     <@spring.message 'ViewingRelatedItems_t' />
                     <#assign match = result.fullDoc />
+                    <#assign imgSrc = match.getAsString("europeana_object")/>
+
+
                     <#--todo review this. It seems wrong to display the image of the current full-doc instead of the original related item search-->
                     <a href="full-doc.html?&amp;uri=${match.id}">
                     <#if useCache="true">
-                        <img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
+                        <#--<img src="${cacheUrl}uri=${match.thumbnail?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>-->
+                        <img src="${cacheUrl}uri=${imgSrc?url('utf-8')}&amp;size=BRIEF_DOC&amp;type=${match.type}" alt="${match.title}" height="25"/>
                     <#else>
-                        <img src="${match.thumbnail}" alt="${match.title}" height="25"/>
+                        <img src="${imgSrc}" alt="${match.getFieldValue("dc_title").getFirst()}" height="25"/>
                     </#if>
                     </a>
             </#if>
@@ -675,30 +680,38 @@
 
 
 <#macro resultFullImage>
-    <#if result.fullDoc.thumbnails[0] = " ">
+
+    <#assign thumbnail = result.fullDoc.getFieldValue("europeana_object")/>
+    <#if !thumbnail.isNotEmpty()>
         <#assign thumbnail = "noImageFound"/>
     <#else>
-        <#assign thumbnail = "${result.fullDoc.thumbnails[0]}"/>
+        <#assign thumbnail = thumbnail.getFirst()/>
     </#if>
-
     <#assign imageRef = "#"/>
-    <#if !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
-        <#assign imageRef = result.fullDoc.europeanaIsShownBy[0]/>
-    <#elseif !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
-        <#assign imageRef = result.fullDoc.europeanaIsShownAt[0]/>
+    <#assign isShownBy = result.fullDoc.getFieldValue("europeana_isShownBy")/>
+    <#assign isShownAt = result.fullDoc.getFieldValue("europeana_isShownAt")/>
+
+    <#if isShownBy.isNotEmpty()>
+        <#assign imageRef = isShownBy.getFirst()/>
+    <#elseif isShownAt.isNotEmpty()>
+        <#assign imageRef = isShownAt.getFirst()/>
     </#if>
-   <a href="/${portalName}/redirect.html?shownBy=${imageRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+   <a href="/${portalName}/redirect.html?shownBy=${isShownAt.getFirst()}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
       target="_blank"
       class="overlay"
-      title="${result.fullDoc.dcTitle[0]}"
     >
+      <#--<a href="${thumbnail}"-->
+      <#--target="_blank"-->
+      <#--class="overlay"-->
+      <#--title="${result.fullDoc.dcTitle[0]}"-->
+    <#-->-->
 
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
              alt="${result.fullDoc.dcTitle[0]}"
              id="imgview"
-             onload="checkSize(this,'full',this.width);"
+             onload="checkSize(this.id,'full',this.width);"
              onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
          />
     <#else>
@@ -707,7 +720,7 @@
              id="imgview"
              class="full"
              src="${thumbnail}"
-             onload="checkSize(this,'full',this.width);"
+             onload="checkSize(this.id,'full',this.width);"
              onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
          />
     </#if>

@@ -161,9 +161,9 @@
                                 </form>
                             </div>
                         <#else>
-                            <p><a href="/${portalName}/${imagePath}?edit=true"><@spring.message 'dms.image.change' /></a></p>
+                            <p><a href="/${portalName}/${imagePath}?edit=true" class="button"><@spring.message 'dms.image.change' /></a></p>
                         </#if>
-                        <p><a href="/${portalName}/_.img"><@spring.message 'dms.image.list' /></a></p>
+                        <p><a href="/${portalName}/_.img" class="button"><@spring.message 'dms.image.list' /></a></p>
                     </#if>
 
                 </div>

@@ -31,8 +31,11 @@
 
     <h3><@spring.message 'RefineYourSearch_t' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "TYPE",  "dc_type", 2/>
-        <@resultBriefFacets "YEAR",  "dc_year", 2/>
+        <@resultBriefFacets "DATAPROVIDER",  "DataProvider", 2/>
+        <@resultBriefFacets "COUNTY",  "County", 2/>
+        <@resultBriefFacets "MUNICIPALITY",  "Municipality", 2/>
+        <@resultBriefFacets "DCTYPE",  "dc_type", 2/>
+        <#--<@resultBriefFacets "YEAR",  "dc_year", 2/>-->
         <@resultBriefFacets "LANGUAGE",  "dc_language", 2/>
         <@resultBriefFacets "PROVIDER",  "Provider", 2/>
     </nav>

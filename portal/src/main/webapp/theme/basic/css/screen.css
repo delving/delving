@@ -22,10 +22,21 @@ table caption {
     padding: .5em;
 }
 
+a:link.disabeled,
+a:visited.disabled {
+    color: #ccc !important;
+}
+
 /* HOME *************************************/
 
 #home {
     text-align: center;
+}
+
+
+#home #news {
+    text-align: left;
+    margin-top: 1em;
 }
 
 /* BRANDING *********************************/
@@ -189,10 +200,63 @@ nav.pagination {
     padding:0;
 }
 
+/* FACETS TOGGLER *******************************/
+
+h4.trigger {
+    border-top: 1px solid #ccc;
+	margin: .5em 0;
+	background: url(../images/togglerch.gif) no-repeat 0 8px;
+    padding: 5px 0 0 20px;
+    font-size: 1em;
+}
+
+h4.trigger:hover {
+   background: url(../images/togglerc.gif) no-repeat 0 8px;
+   color: #ccc;
+}
+
+h4.trigger a {
+	text-decoration: none;
+	display: block;
+}
+
+h4.active {
+    background: url(../images/toggleroh.gif) no-repeat 0 8px;
+}
+
+h4.active:hover {
+    background: url(../images/togglero.gif) no-repeat 0 8px;
+}
+
+.toggle_container {
+	margin: 0 0 5px;
+	padding: 0;
+	overflow: hidden;
+	clear: both;
+}
+
+.toggle_container table td {
+    background: transparent;
+        font-size: .85em
+}
+
+.toggle_container .add {
+    background:url("../images/toggle_plus.gif") no-repeat scroll left top transparent;
+    height:32px;
+    padding:0 0 0 16px;
+}
+.toggle_container .remove {
+    background:url("../images/toggle_minus.gif") no-repeat scroll left top transparent;
+    color:#555555;
+    font-weight:700;
+    padding:0 0 0 16px;
+    text-decoration:none;
+}
+
+
 /* ITEM (FULL VIEW) *****************************/
 
 #itemImage {
-    background:#e5e5e5;
     text-align: center;
 }
 

@@ -122,27 +122,47 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
 ** Resizes displayed images in the brief and full doc displays
  */
 function checkSize(obj,type,w){
+
     if(type=="brief"){
-        if (w > 220) {
-            w = 220;
-            obj.width=w;
+        if (w > 200) {
+            $("#"+obj).css("width","200px");
         }
     }
     else {
         if (w > 255) {
-            w = 255;
-            obj.width=w;
+            $("#"+obj).css("width","300px");
         }
     }
 }
 
 $(document).ready(function(){
-    if($("a.overlay").length > 0){
-        $("a.overlay").fancybox({
-        titleShow : true,
-        titlePosition: 'inside'
+//    if($("a.overlay").length > 0){
+//        $("a.overlay").fancybox({
+//        titleShow : true,
+//        titlePosition: 'inside'
+//        })
+//    }
+
+    if($(".toggle_container").length > 0){
+        //Hide (Collapse) the toggle containers on load
+        $(".toggle_container").hide();
+
+        //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
+        $("h4.trigger").click(function(){
+            $(this).toggleClass("active").next().slideToggle("slow");
+            return false; //Prevent the browser jump to the link anchor
+        });
+
+        //Check to see if there are any active facets that need to be toggled to open
+        var toggles = $(document).find("h4.trigger");
+        $.each(toggles, function(){
+            if($(this).hasClass("active")){
+                $(this).toggleClass("active").next().css("display","block");                
+            }
         })
     }
+
+
 });
 
 

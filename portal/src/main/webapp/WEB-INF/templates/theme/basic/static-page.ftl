@@ -21,7 +21,7 @@
             <section id="sidebar" class="grid_3" role="complementary">
                 <header id="branding" role="banner">
                     <a href="/${portalName}/" title=""/>
-                    <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+                        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
                     </a>
                     <h1 class="large">${portalDisplayName}</h1>
                 </header>
@@ -168,7 +168,7 @@
                             <p><a href="${page.path}?edit=true" class="button"><@spring.message 'dms.page.edit' /></a></p>
                         </#if>
 
-                        <p><a href="/${portalName}/_.dml"><@spring.message 'dms.page.list' /></a></p>
+                        <p><a href="/${portalName}/_.dml" class="button"><@spring.message 'dms.page.list' /></a></p>
 
                         <#if versionList?? && page.id??>
                             <h3><@spring.message 'dms.version.management' /></h3>

@@ -17,7 +17,9 @@
 
     <@languageSelect/><@userBar/>
     </div>
-</div>    
+</div>
+
+
 
 <div class="grid_12" id="search">
     <@simpleSearch/>
@@ -25,6 +27,8 @@
     <@spring.message 'NoScript_t' />
     </noscript>
 </div>
+
+<div id="news" class="grid_12"></div>
 
 
 </div>

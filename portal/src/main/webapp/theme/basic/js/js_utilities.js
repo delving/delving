@@ -13,8 +13,8 @@ function toggleObject(oId) {
 
 function highLight(oId){
     // makes use of jQuery and jQueryUI javascript files
-    if($("#"+oId).length > 0){
-       $("#"+oId).effect("pulsate", { times:4 }, 500);
+    if($(oId).length > 0){
+       $(oId).effect("pulsate", { times:4 }, 500);
     }
     return false;
 }

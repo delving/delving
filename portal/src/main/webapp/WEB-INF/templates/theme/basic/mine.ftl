@@ -1,7 +1,7 @@
 <#assign thisPage = "mine.html">
 
 <#compress>
-    <#include "inc_header.ftl">
+
 <style>
     .ui-tabs .ui-tabs-hide {
         display: none;
@@ -15,13 +15,22 @@
 
 </script>
 
-<@userBar/>
+<#include "delving-macros.ftl">
 
-<h1>${portalDisplayName}</h1>
+<@addHeader "Norvegiana", "",["mine.js"],["mine.css"]/>
 
-<@simpleSearch/>
+<section id="sidebar" class="grid_3" role="complementary">
+    <header id="branding" role="banner">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-<div id="main" class="grid_9">
+</section>
+
+<section id="main" class="grid_9">
+
     <div id="savedItems">
                     <ul>
                         <li><a href="#tab-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
@@ -184,7 +193,7 @@
 
                 </div>
             </div>
-</div>
+</section>
 
 
     <#include "inc_footer.ftl"/>
