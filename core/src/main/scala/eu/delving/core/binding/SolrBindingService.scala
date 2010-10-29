@@ -9,7 +9,6 @@ import java.lang.{Boolean => JBoolean}
 import scala.collection.mutable.Map
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
-import org.apache.solr.client.solrj.SolrQuery
 
 /**
  *
@@ -134,20 +133,41 @@ case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any
   private[binding] def getFieldNames = fieldMap.keys
 
   def getFieldValueList : List[FieldValue] = for (key <- fieldMap.keys.toList.filter(_.matches(".*_.*"))) yield FieldValue(key, this)
+
+  def getFieldValuesFiltered(include: Boolean, fields : List[String]) : List[FieldValue] = getFieldValueList.filter((fv => fields.contains(fv.getKey) == include))
 }
 
 case class FieldValue (key: String, solrDocument: SolrDocument) {
 
   private val fieldValues = solrDocument.get(key)
 
+  /**
+   * This gives back the key that was used to retrieve the fields from the SolrDocument
+   */
   def getKey = key
 
+  /**
+   * This gives back the key that was used to retrieve the fields from the SolrDocument, but now replacing the "_" convention
+   * used by solr to ":" so that it can be used in xml tags or to represented the fieldnames as they were before being indexed
+   * by Apache Solr
+   */
   def getKeyAsXml = key.replaceFirst("_", ":")
 
+  /**
+   * Only give back the first item from the fieldMap retrieved with 'key' in the SolrDocument as a String. When the key
+   * is not found an empty String is returned.
+   */
   def getFirst : String = solrDocument.getFirst(key)
 
+  /**
+   * Give back all values found in the fieldMap retrieved with 'key' in the SolrDocument as a String Array. When the
+   * key is not found an empty String Array is returned.
+   */
   def getValueAsArray : Array[String] = fieldValues.asInstanceOf[List[String]].toArray
 
+  /**
+   * This function gives back a boolean to say if the results returned from the fieldMap in the SolrDocument will be empty or not
+   */
   def isNotEmpty = fieldValues.length != 0
 
 }
@@ -161,6 +181,8 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
     private def assign(key: String) = solrDocument.getFirst(key)
 
     override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
+
+    def getFieldValuesFiltered(include: Boolean, fields: List[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include.toBoolean, fields)
 
     def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
@@ -191,9 +213,11 @@ case class FullDocItem(solrDocument : SolrDocument) extends FullDoc {
 
     override def getAsString(key: String) : String = assignFirst(key)
 
-    def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
+    override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
 
-    def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
+    override def getFieldValueList() : JList[FieldValue] = solrDocument.getFieldValueList
+
+    override def getFieldValuesFiltered(include: Boolean, fields: Array[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields.toList)
 
     // Europeana elements
     override def getId : String = assignFirst("europeana_uri")

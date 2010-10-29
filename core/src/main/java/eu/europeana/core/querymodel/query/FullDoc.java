@@ -21,6 +21,10 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.binding.FieldValue;
+
+import java.util.List;
+
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -34,6 +38,11 @@ public interface FullDoc {
 
     String[] getAsArray(String key);
 
+    FieldValue getFieldValue(String key);
+
+    List<FieldValue> getFieldValueList();
+
+    List<FieldValue> getFieldValuesFiltered(boolean include, String[] fields);
 
     // Europeana elements
     String getId(); // this is europeanaId
@@ -48,8 +57,6 @@ public interface FullDoc {
 
     Boolean getEuropeanaHasObject();
 
-//    Boolean getEuropeanaShowFull();
-//
     String[] getEuropeanaCountry();
 
     String[] getEuropeanaProvider();

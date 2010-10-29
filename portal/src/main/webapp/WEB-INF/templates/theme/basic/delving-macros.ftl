@@ -743,7 +743,7 @@
             <#--<@resultFullDataRow "dc_contributer"/>-->
             <#--<@resultFullDataRow "dc_identifier"/>-->
 
-        <#list result.fullDoc.getFieldValueList() as field>
+        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri']) as field>
             <tr>
                 <th scrope="row">${field.getKeyAsXml()}</th>
                 <td>${field.getFirst()}</td>
