@@ -85,11 +85,13 @@ td .ui-icon {
 
 #search {
     background: #e5e5e5;
-    height: 65px;
-    line-height: 65px;
+    /*height: 65px;*/
+    /*line-height: 65px;*/
 }
 
-#search form,
+#search form{
+    margin: 1.5em;
+}
 #search fieldset {
     margin: 0;
     padding: 0;

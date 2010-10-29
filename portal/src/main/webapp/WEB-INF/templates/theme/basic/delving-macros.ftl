@@ -85,6 +85,9 @@
             <@addCss pageCssFiles/>
         </#if>
         ${cssFiles}
+        <!--[if lte IE 9]>
+        <script src="/${portalName}/${portalTheme}/js/html5.js" type="text/javascript"></script>
+        <![endif]-->
         <@addJavascript ["jquery-1.4.2.min.js", "jquery-ui-1.8.5.custom.min.js", "jquery.cookie.js", "js_utilities.js"]/>
         <#if (pageJsFiles?size &gt; 0)>
             <@addJavascript pageJsFiles/>
