@@ -28,7 +28,7 @@
     </noscript>
 </div>
 
-<div id="news" class="grid_12"></div>
+<div id="information" class="grid_12"></div>
 
 
 </div>

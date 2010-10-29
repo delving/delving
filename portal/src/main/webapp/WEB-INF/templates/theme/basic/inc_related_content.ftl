@@ -25,16 +25,16 @@
 
             <#if user??>
 
-                <p class="linetop">
-                    <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');"><@spring.message 'SaveToPersonalPage' /></a>
+
+                    <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>
                     <div id="msg-save-item" class="msg-hide"></div>
-                </p>
+
 
                 <#if result.fullDoc.europeanaType == "IMAGE">
                 	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
-	                    <p class="linetop">
+
 		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
-		                </p>
+
 	                </#if>
                 </#if>
 

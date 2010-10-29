@@ -24,7 +24,10 @@
 <#include "delving-macros.ftl">
 
 <@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
-
+<script type="text/javascript">
+    var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t'/>";
+    var msgItemSaveFail = "<@spring.message 'ItemSavedFailed_t'/>";
+</script>
 <section id="sidebar" class="grid_3" role="complementary">
     <header id="branding" role="banner">
         <a href="/${portalName}/" title=""/>
@@ -74,7 +77,54 @@
             </#if>
         </table>
 
-        <#include "inc_related_content.ftl"/>
+         <h5><@spring.message 'Actions_t' />:</h5>
+
+        <#if addThisTrackingCode??>
+            <p>
+                <@addThis "${addThisTrackingCode}"/>
+            </p>
+        </#if>
+
+        <#if user??>
+            <p>
+            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>
+
+            <div id="msg-save-item" class="msg-hide"></div>
+            </p>
+
+            <#if result.fullDoc.europeanaType == "IMAGE">
+                <#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
+                <p>
+                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
+                </p>
+                </#if>
+            </#if>
+
+            <p>
+            <h6><@spring.message 'AddATag_t' /></h6>
+
+        <#--<div id="ysearchautocomplete">-->
+            <form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;" id="form-addtag" name="form-addtag" accept-charset="UTF-8">
+                <input type="text" name="tag" id="tag" maxlength="50" class="text"/>
+                <input type="submit" class="button" value="Add"/>
+            </form>
+            <div id="msg-save-tag" class="hide"></div>
+        </p>
+        <#--</div>-->
+
+
+            <#else>
+                <div class="related-links">
+                    <p>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
+                    </p>
+
+                    <p>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
+                    </p>
+                </div>
+
+        </#if>
     </div>
 
 </section>

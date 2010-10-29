@@ -9,7 +9,7 @@ $(document).ready(function() {
     }
 
 // load DMS content
-    delvingPageCall("#news", portalName+"/news.dml?embedded=true"," "," "," ");
+    delvingPageCall("#information", portalName+"/home/information.dml?embedded=true"," "," "," ");
     
 });
 

@@ -99,8 +99,22 @@
 <#macro addFooter>
 
     <footer class="grid_12">
-        asdfaf
+        <div class="inner">
+        <a href="http://www.delving.eu" title="Delving">
+        <img src="/${portalName}/${portalTheme}/images/poweredbydelving.png" alt="Proudly Powered by Delving" align="absmiddle"/>
+        </a>
+
+        <a href="http://www.europeanalocal.eu"  title="Europeana">
+           <img src="/${portalName}/${portalTheme}/images/europeana-logo.png" alt="Europeana" align="absmiddle"/>
+        </a>
+
+        <a href="http://www.abm-utvikling.no/"  title="ABM-utvikling">
+           <img src="/${portalName}/${portalTheme}/images/abm-logo.png" alt="ABM-utvikling" align="absmiddle"/>
+        </a>
+
+        </div>
     </footer>
+
 
     </div><#-- // container_12 -->
     <#if trackingCode??>
@@ -121,6 +135,27 @@
 
     </body>
     </html>
+</#macro>
+
+<#macro addThis code>
+
+        <!-- AddThis Button BEGIN -->
+        <div class="addthis_toolbox addthis_default_style">
+            <a href="http://www.addthis.com/bookmark.php?v=250&amp;username=${addThisTrackingCode}" class="addthis_button_compact">Share</a>
+        </div>
+        <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=${addThisTrackingCode}"></script>
+        <!-- AddThis Button END -->
+        <script type="text/javascript">
+        var addthis_config = {
+             ui_language: "no",
+            ui_click: true,
+            ui_cobrand: "Norvegiana",
+            ui_header_color: "#ffffff",
+            ui_header_background:"#0071BC"
+        }
+        </script>
+        <br/>
+
 </#macro>
 
 <#macro languageSelect>
