@@ -182,7 +182,7 @@ case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {
 
     override def getFieldValue(key : String) : FieldValue = FieldValue(key, solrDocument)
 
-    def getFieldValuesFiltered(include: Boolean, fields: List[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include.toBoolean, fields)
+    def getFieldValuesFiltered(include: Boolean, fields: List[String]) : JList[FieldValue] = solrDocument.getFieldValuesFiltered(include, fields)
 
     def getFieldValueList : JList[FieldValue] = solrDocument.getFieldValueList
 
