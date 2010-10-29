@@ -20,4 +20,4 @@
     </div>
 
 </div>
-<#include "inc_footer.ftl"/>
+<@addFooter/>

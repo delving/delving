@@ -36,7 +36,7 @@
 
 </div>
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 
 </body>
 </html>

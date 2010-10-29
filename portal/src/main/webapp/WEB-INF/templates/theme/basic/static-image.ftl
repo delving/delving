@@ -92,7 +92,7 @@
             </section>
 
             <div class="clear"></div>
-            <#include "inc_footer.ftl"/>
+            <@addFooter/>
         </#if>
     <#else>
         <#assign thisPage = "static-image.img"/>
@@ -170,6 +170,6 @@
 
             </section>
 
-        <#include "inc_footer.ftl"/>
+        <@addFooter/>
     </#if>
 </#compress>

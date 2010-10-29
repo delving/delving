@@ -100,7 +100,7 @@
 
 </section>
 
-	    <#include "inc_footer.ftl"/>
+	    <@addFooter/>
 
 <#macro formCheckbox path attributes="">
     <@spring.bind path />

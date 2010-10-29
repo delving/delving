@@ -196,6 +196,6 @@
 </section>
 
 
-    <#include "inc_footer.ftl"/>
+    <@addFooter/>
 
 </#compress>

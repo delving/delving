@@ -107,7 +107,7 @@
 
             </script>
 
-            <#include "inc_footer.ftl"/>
+            <@addFooter/>
 
         </#if>
 
@@ -191,7 +191,7 @@
     
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/tiny_mce/tiny_mce.js"></script>
         <script type="text/javascript" src="/${portalName}/${portalTheme}/js/static-page.js"></script>
-        <#include "inc_footer.ftl"/>
+        <@addFooter/>
      </div>   
     </#if>
 

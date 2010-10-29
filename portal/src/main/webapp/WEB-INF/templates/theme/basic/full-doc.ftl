@@ -133,7 +133,7 @@
 </section>
 
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 
 <#macro show_array_values fieldName values showFieldName>
     <#list values as value>
