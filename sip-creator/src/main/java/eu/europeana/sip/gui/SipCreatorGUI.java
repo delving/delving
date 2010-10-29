@@ -31,6 +31,7 @@ import eu.europeana.sip.definitions.beans.IdBean;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
+import org.apache.log4j.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -51,6 +52,7 @@ import java.util.List;
  */
 
 public class SipCreatorGUI extends JFrame {
+    private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
     public SipCreatorGUI(String serverUrl) {
@@ -124,12 +126,12 @@ public class SipCreatorGUI extends JFrame {
                     JOptionPane.showMessageDialog(SipCreatorGUI.this, html);
                 }
             });
-//            if (exception != null) {
-//                log.warn(message, exception);
-//            }
-//            else {
-//                log.warn(message);
-//            }
+            if (exception != null) {
+                log.warn(message, exception);
+            }
+            else {
+                log.warn(message);
+            }
         }
 
         @Override

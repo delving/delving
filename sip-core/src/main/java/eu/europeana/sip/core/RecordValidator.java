@@ -28,8 +28,8 @@ import eu.europeana.sip.definitions.annotations.FieldCategory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,14 +43,23 @@ import java.util.TreeMap;
  */
 
 public class RecordValidator {
+    private static final int [] PRIMES = {
+            4105001,      4105019,      4105033,      4105069,
+            4105091,      4105093,      4105103,      4105111,
+            4105151,      4105169,      4105181,      4105183,
+    };
     private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
-//    private Map<String, String> constantMap;
-    private Set<String> unique;
+    private BitSet [] bitSet;
+    private boolean checkUniqueness;
 
     public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
+        this.checkUniqueness = checkUniqueness;
+
         if (checkUniqueness) {
-            unique = new HashSet<String>();
-//            constantMap = new HashMap<String, String>();
+            bitSet = new BitSet[PRIMES.length];
+            for (int walk=0; walk<bitSet.length; walk++) {
+                bitSet[walk] = new BitSet(PRIMES[walk]);
+            }
         }
         for (EuropeanaField field : annotationProcessor.getAllFields()) {
             if (field.europeana().category() != FieldCategory.INDEX_TIME_ADDITION) {
@@ -116,11 +125,8 @@ public class RecordValidator {
                         problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
                 }
-                if (field.europeana().id() && unique != null) {
-                    if (unique.contains(fieldEntry.getValue())) {
-                        problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
-                    }
-                    unique.add(fieldEntry.getValue());
+                if (field.europeana().id() && checkUniqueness) {
+                    checkEntryUniqueness(problems, fieldEntry);
                 }
             }
         }
@@ -147,6 +153,34 @@ public class RecordValidator {
                 problems.add(String.format("Single-valued field [%s] had %d values", field.getXmlName(), counter.count));
             }
         }
+    }
+
+    private void checkEntryUniqueness(List<String> problems, FieldEntry fieldEntry) {
+        int hashCode = fieldEntry.getValue().hashCode();
+        boolean setEverywhere = true;
+        for (int walk=0; walk<bitSet.length && setEverywhere; walk++) {
+            if (!getBit(hashCode, walk)) {
+                setEverywhere = false;
+            }
+        }
+        if (setEverywhere) {
+            problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
+        }
+        for (int walk=0; walk<bitSet.length && setEverywhere; walk++) {
+            setBit(hashCode, walk);
+        }
+    }
+
+    private boolean getBit(int hashCode, int bitSetIndex) {
+        int offset = PRIMES[(bitSetIndex+1) % PRIMES.length];
+        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
+        return bitSet[bitSetIndex].get(bitNumber);
+    }
+
+    private void setBit(int hashCode, int bitSetIndex) {
+        int offset = PRIMES[(bitSetIndex+1) % PRIMES.length];
+        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
+        bitSet[bitSetIndex].set(bitNumber);
     }
 
     private static class Counter {

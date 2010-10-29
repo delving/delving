@@ -346,14 +346,15 @@ public class SipModel {
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count, final boolean lastRecord) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (lastRecord || count % 100 == 0) {
+                        if (lastRecord || count % 100 == 0) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
                                     normalizeProgressModel.setValue(count);
                                 }
-                            }
-                        });
+                            });
+                            Thread.yield();
+                        }
                     }
                 },
                 new Normalizer.Listener() {
