@@ -2,15 +2,37 @@
 
 **Europeana** is an European Commission initiative to bring together digital objects from the four cultural heritage domains: Archives, Audio-Visual, Archives, Libraries and Museums. The Europeana Framework is an innovative multilingual high volume, high scalability search platform for Cultural Heritage metadata. The framework is developed using best-of-breed open-source software.
 
-In order to promote collaboration and reuse of the software in the Cultural Heritage sector the software is developed in the open under the name "Delving". You can find the source code at: [https://github.com/kiivihal/delving/downloads](https://github.com/kiivihal/delving/downloads)
+In order to promote collaboration and reuse of the software in the Cultural Heritage sector the software is developed in the open under the name "Delving".
 
-Or using [git] version control
+## Support from the Cultural Heritage Sector ##
 
-	git clone git://github.com/kiivihal/delving.git
+The Delving Framework is currently being adopted by a wide variety of Cultural Heritage Institutions across Europe. The development and the current feature set would not have been possible without the support and contributions by the following organisations.
+
+* [Europeana Foundation](http://www.europeana.eu) for donating the initial code-base to the open-source community
+* [ABM-utvikling](http://www.abm-utvikling.no/), Norway for supporting the development of
+	* The metadata/OAI-PMH repository
+	* Sip-Creator templating and metadata upload functionality
+* [Instituut Collectie Nederland](http://www.icn.nl/) ('Collectiewijzer' project), Netherlands for supporting the development of
+	* The Sip-Creator collection managament and thematic grouping of metadata values support
+	* The Portal Content-Management component with support of image upload, dynamic editing and creation of pages, and dynamic content on the homepage
+* [Austrian Institute of Technology](http://www.ait.ac.at/), Austria for donating
+	* The Annotation Component for Objects, Images, Movies and Maps (full integration planned in 2011)
+* [Institut für Bibliotheks- und Informationswissenschaft](http://www.ibi.hu-berlin.de/) (Humboldt-Universität zu Berlin), Germany for supporting the development of
+	* The ClickStreamLogging component and analyser with a special focus on multilingual user behaviour
+	* Multilingual support of the full view page.
+
+
+## Open-Source ##
+
+You can find the source code at: [https://github.com/delving/delving/](https://github.com/delving/delving/)
+
+Using [git] version control you can checkout the source code as follows:
+
+	git clone git://github.com/delving/delving.git
 
 or fork it on [github.com][delving]
 
-The easiest way to contribute code to [delving] is to fork the repository and make a pull-request for your changes to be integrated into the main repository. Git makes it very easy to keep branches and forked repositories in sync or to cherry-pick some changes.
+The easiest way to contribute code to [delving] is to fork the repository and make a pull-request for your changes to be integrated into the main repository. Git makes it very easy to keep  branches and forked repositories in sync or to cherry-pick some changes.
 
 The [github.com][github] repository is kept in sync with the [europeanalabs] subversion repository. This repository is used by the Europeana Core development team to maintain the operational service at [europeana.eu]. If you want you can also anonymously checkout this repository.
 
@@ -69,24 +91,30 @@ The main differences between Delving and EuropeanaLabs are listed in the table b
 
 ## How to get help ##
 
-First read the documentation in the docs directory and on the [wiki](https://github.com/kiivihal/delving/wikis). If you still have questions you can subscribe to the Delving dedicated mailing list: [delving-community@googlegroups.com][delving-mailinglist].
+First read the documentation in the docs directory and on the [wiki](https://github.com/delving/delving/wikis). If you still have questions you can subscribe to the Delving dedicated mailing list: [delving-community@googlegroups.com][delving-mailinglist].
 
-Some of the core committers to Delving also offer commercial installation, configuration, deployment, web-design and development support.
+In addition, Delving is commercially backed by Delving BV based in Rotterdam, the Netherlands, see for more information [http://www.delving.eu](http://www.delving.eu) or send an email to  info@delving.eu
 
-* Beautiful Code BV. ([http://www.beautifulcode.eu](http://www.beautifulcode.eu "Beautiful Code BV."); geralddejong@gmail.com)
-* Whitespace Webdevelopment (eric.meulen@gmail.com)
-* Kuri Koer Software ([http://www.kurikoer.org](http://www.kurikoer.org); info@kurikoer.org)
+## Contributors ##
 
-## Main Contributors ##
+### Delving Core Contributors ###
 
-* Sjoerd Siebinga (lead developer; core-development team; Delving contributor)
-* Gerald de Jong (core-development team, Delving contributor)
-* Eric van der Meulen (Delving contributor)
-* Borys Omelayenko (core-development team)
-* Nicola Aloia (core-development team)
-* Cesare Concordia (core-development team)
-* Jacob Lundqvist (core-development team)
-* Serkan Demirel (core-development team)
+* Gerald de Jong
+* Eric van der Meulen
+* Sjoerd Siebinga
+
+### Delving Contributors ###
+
+* Manuel Gay
+* Christian Sadilek
+
+### Europeana Core Team Developers ###
+
+* Nicola Aloia
+* Cesare Concordia
+* Serkan Demirel
+* Jacob Lundqvist
+* Borys Omelayenko
 
 ## Software License ##
 
@@ -108,7 +136,7 @@ See the Licence for the specific language governing
 permissions and limitations under the Licence.
 
 [http://ec.europa.eu/idabc/eupl]: http://ec.europa.eu/idabc/eupl "EUPL license"
-[delving]: https://github.com/kiivihal/delving "delving github repository"
+[delving]: https://github.com/delving/delving "delving github repository"
 [github]: http://www.github.com "github.com"
 [europeanalabs-svn]: http://www.europeanalabs.eu/svn/europeana/trunk "europeana labs SVN repository"
 [europeanalabs]: http://www.europeanalabs.eu "europeanaLabs.eu"
