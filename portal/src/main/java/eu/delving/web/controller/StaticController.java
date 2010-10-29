@@ -103,7 +103,7 @@ public class StaticController {
                     staticRepo.approve(path, version);
                 }
                 else if (delete) {
-                    staticRepo.putPage(path, null);
+                    staticRepo.putPage(path, null, null);
                 }
                 mav.addObject("edit", edit);
                 mav.addObject("imagePathList", staticRepo.getImagePaths());
@@ -114,6 +114,7 @@ public class StaticController {
             }
             StaticRepo.Page page = version != null ? staticRepo.getPage(path, version) : staticRepo.getPage(path);
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + path);
+            mav.addObject("locale", request.getLocale());
             mav.addObject("page", page);
             mav.addObject("embedded", embedded);
         }
@@ -130,7 +131,7 @@ public class StaticController {
             if (content != null && content.trim().isEmpty()) {
                 content = null;
             }
-            staticRepo.putPage(path, content);
+            staticRepo.putPage(path, content, request.getLocale());
         }
         return getRedirect(path);
     }

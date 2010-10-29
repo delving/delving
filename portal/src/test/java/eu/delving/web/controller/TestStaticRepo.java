@@ -46,21 +46,21 @@ public class TestStaticRepo {
     public void putGet() {
         String path = "/test/path/gumby.dml";
         // insert a doc
-        staticRepo.putPage(path, "Gumby Rulez");
-        Assert.assertEquals("Unable to fetch", "Gumby Rulez", staticRepo.getPage(path).getContent());
+        staticRepo.putPage(path, "Gumby Rulez", null);
+        Assert.assertEquals("Unable to fetch", "Gumby Rulez", staticRepo.getPage(path).getContent(null));
         // insert a second for that path
-        staticRepo.putPage(path, "Gumby Really Rulez");
-        Assert.assertEquals("Unable to fetch", "Gumby Really Rulez", staticRepo.getPage(path).getContent());
+        staticRepo.putPage(path, "Gumby Really Rulez", null);
+        Assert.assertEquals("Unable to fetch", "Gumby Really Rulez", staticRepo.getPage(path).getContent(null));
         Assert.assertEquals("Should be 2 documents", 2, staticRepo.getPageVersions(path).size());
         // insert a third for that path
-        staticRepo.putPage(path, "Gumby Really Truly Rulez");
-        Assert.assertEquals("Unable to fetch", "Gumby Really Truly Rulez", staticRepo.getPage(path).getContent());
+        staticRepo.putPage(path, "Gumby Really Truly Rulez", null);
+        Assert.assertEquals("Unable to fetch", "Gumby Really Truly Rulez", staticRepo.getPage(path).getContent(null));
         Assert.assertEquals("Should be 3 documents", 3, staticRepo.getPageVersions(path).size());
         // remove the latest
-        staticRepo.putPage(path, null);
-        staticRepo.putPage(path, null);
+        staticRepo.putPage(path, null, null);
+        staticRepo.putPage(path, null, null);
         Assert.assertEquals("Should be 1 document", 1, staticRepo.getPageVersions(path).size());
         // find the original
-        Assert.assertEquals("Unable to fetch", "Gumby Rulez", staticRepo.getPage(path).getContent());
+        Assert.assertEquals("Unable to fetch", "Gumby Rulez", staticRepo.getPage(path).getContent(null));
     }
 }

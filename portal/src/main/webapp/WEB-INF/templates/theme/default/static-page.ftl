@@ -118,10 +118,12 @@
 
     <#elseif embedded>
 
-        ${page.content}
+        <#assign locale = locale/>
+        ${page.getContent(locale)}
 
     <#else>
 
+        <#assign locale = locale/>
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
         <#include "inc_header.ftl"/>
@@ -145,7 +147,7 @@
             </div>
         <div class="grid_12">
             <div id="content" class="content-preview">
-            ${page.content}
+            ${page.getContent(locale)}
             </div>
             <#if edit??>
                 <#if edit>
@@ -160,7 +162,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
+                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.getContent(locale)}</textarea>
                                         <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}?edit=false" class="button"><@spring.message 'dms.cancel' /></a>
                                     </td>
                                 </tr>
