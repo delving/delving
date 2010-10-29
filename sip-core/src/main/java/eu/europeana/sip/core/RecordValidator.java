@@ -38,21 +38,19 @@ import java.util.TreeMap;
 
 /**
  * Validate a record
- * <p/>
- * todo: move this class to the definitions module
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class RecordValidator {
     private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
-    private Map<String, String> constantMap;
+//    private Map<String, String> constantMap;
     private Set<String> unique;
 
     public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
         if (checkUniqueness) {
             unique = new HashSet<String>();
-            constantMap = new HashMap<String, String>();
+//            constantMap = new HashMap<String, String>();
         }
         for (EuropeanaField field : annotationProcessor.getAllFields()) {
             if (field.europeana().category() != FieldCategory.INDEX_TIME_ADDITION) {
@@ -95,15 +93,15 @@ public class RecordValidator {
                     }
                     problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldEntry.getTag(), fieldEntry.getValue(), enumString.toString()));
                 }
-                if (field.europeana().constant() && constantMap != null) {
-                    String value = constantMap.get(fieldEntry.getTag());
-                    if (value == null) {
-                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
-                    }
-                    else if (!value.equals(fieldEntry.getValue())) {
-                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
-                    }
-                }
+//                if (field.europeana().constant() && constantMap != null) {  todo: constant fields can potentially be mapped
+//                    String value = constantMap.get(fieldEntry.getTag());
+//                    if (value == null) {
+//                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
+//                    }
+//                    else if (!value.equals(fieldEntry.getValue())) {
+//                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
+//                    }
+//                }
                 String regex = field.europeana().regularExpression();
                 if (!regex.isEmpty()) {
                     if (!fieldEntry.getValue().matches(regex)) {
