@@ -1,9 +1,7 @@
-<#import "spring_form_macros.ftl" as spring />
-<#include "spring_form_macros.ftl"/>
 <#assign thisPage = "login.html"/>
 <#--<#assign register = register>-->
 
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

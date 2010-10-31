@@ -1,4 +1,3 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign thisPage = "exception.html">
 <#assign pageId = "exc"/>
 <#assign view = "table"/>
@@ -9,7 +8,7 @@
 <#if RequestParameters.query?exists>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

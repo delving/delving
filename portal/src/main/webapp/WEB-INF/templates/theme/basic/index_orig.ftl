@@ -1,7 +1,7 @@
 <#compress>
 
 <#--<#include "inc_header.ftl"/>-->
-<#include "delving-macros.ftl"/>
+<#include "includeMarcos.ftl"/>
 
 <@addHeader "Norvegiana", "",["index.js"],[]/>
 

@@ -1,5 +1,5 @@
 <#compress>
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 <@addCustomAssigns/>
 <@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">

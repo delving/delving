@@ -1,6 +1,5 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign thisPage = "logout.html"/>
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

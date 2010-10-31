@@ -13,7 +13,7 @@
     <#assign justTheQuery = "${RequestParameters.query}"/>
 </#if>
 
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 <script type="text/javascript">

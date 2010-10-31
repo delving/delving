@@ -1,5 +1,4 @@
 <#compress>
-    <#import "spring_form_macros.ftl" as spring />
     <#assign model = result/>
     <#assign result = result/>
     <#assign uri = result.fullDoc.id/>

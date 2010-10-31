@@ -1,9 +1,7 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign thisPage = "register-success.html">
-<#include "spring_form_macros.ftl"/>
 
 <#assign pageId = "rsp">
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

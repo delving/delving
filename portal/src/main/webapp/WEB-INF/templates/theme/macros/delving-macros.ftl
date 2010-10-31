@@ -1,4 +1,5 @@
-<#import "spring.ftl" as spring >
+<#--<#import "spring.ftl" as spring >-->
+<#import "spring_form_macros.ftl" as spring />
 <#-- GLOBAL ASSIGNS -->
 <#if user??>
     <#assign user = user/>
