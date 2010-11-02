@@ -9,6 +9,8 @@ import java.lang.{Boolean => JBoolean}
 import scala.collection.mutable.Map
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
+import java.net.URL
+import xml. {MetaData, NodeSeq, Elem, XML}
 
 /**
  *
@@ -17,6 +19,39 @@ import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
  */
 
 object SolrBindingService {
+
+  def getFullDocFromOaiPmh(response : QueryResponse) : FullDocItem = {
+    val fullDoc = getFullDoc(response)
+    val pmhId = fullDoc.getFieldValue("delving_pmhId")
+    getRecordFromOaiPmh(pmhId.getFirst)
+  }
+
+  private[binding] def getRecordFromOaiPmh(recordId : String, metadataPrefix: String = "abm") : FullDocItem = {
+    val baseUrl = "http://localhost:8983/services/oai-pmh"
+    val record = XML.load(new URL(baseUrl + "?verb=GetRecords&metadataPrefix=" + metadataPrefix + "&identifier=" + recordId))
+    parseSolrDocumentFromGetRecordResponse(record)
+  }
+
+  def parseSolrDocumentFromGetRecordResponse(pmhResponse: Elem): FullDocItem = {
+    val metadataElements = pmhResponse \\ "metadata"
+    val recordElements: NodeSeq = metadataElements \\ "record"
+    val solrDoc = SolrDocument()
+    recordElements.foreach{
+      recordNode =>
+        val cleanNodes = recordNode.nonEmptyChildren.filterNot(node => node.label == "#PCDATA")
+        val cleanNodeList = for {
+          cleanNode <- cleanNodes
+          val fieldName: String = if (!cleanNode.prefix.isEmpty) cleanNode.prefix + "_" + cleanNode.label else cleanNode.label
+        } yield (FieldNodeValue(fieldName, cleanNode.text, cleanNode.attributes))
+        val fieldNames = for (cleanNode <- cleanNodeList) yield cleanNode.fieldName
+        fieldNames.toSet[String].foreach{
+          fieldName =>
+            val valueList = for (groupedFieldNode <- cleanNodeList.filter(node => node.fieldName == fieldName)) yield (groupedFieldNode.fieldValue)
+            solrDoc.add(fieldName, valueList.toList)
+        }
+    }
+    FullDocItem(solrDoc)
+  }
 
   def getSolrDocumentList(solrDocumentList : SolrDocumentList) : List[SolrDocument] = {
     val docs = new ListBuffer[SolrDocument]
@@ -171,6 +206,8 @@ case class FieldValue (key: String, solrDocument: SolrDocument) {
   def isNotEmpty = fieldValues.length != 0
 
 }
+
+case class FieldNodeValue (fieldName : String, fieldValue: String, attributes: MetaData)
 
 case class SolrDocId(solrDocument : SolrDocument) extends DocId {
   def getEuropeanaUri : String = solrDocument.get("europeana_uri").head.asInstanceOf[String]
