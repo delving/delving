@@ -78,7 +78,7 @@ solr.retries = 1
 
 # the absolute external url where the services module is running
 
-services.url = http://localhost:8983/services/
+services.url = http://localhost:8983/services
 
 # The name of the record-definition that is used to index from OAI-PMH repository
 
