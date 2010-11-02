@@ -164,6 +164,8 @@ case class SolrDocument(fieldMap : Map[String, List[FieldValueNode]] = Map[Strin
 
   def getFieldValueNode(field: String) : List[FieldValueNode] = fieldMap.getOrElse(field, List[FieldValueNode]())
 
+  def getFieldValueNodeGroupedByLanguage(field: String) : ImMap[String, List[FieldValueNode]] = fieldMap.getOrElse(field, List[FieldValueNode]()).groupBy(fvn => fvn.getLanguage)
+
   def getFirst(field: String) : String = fieldMap.getOrElse(field, List[FieldValueNode]()).headOption.getOrElse(FieldValueNode("", "")).fieldValue
 
   private[binding] def add(field: String, value : List[FieldValueNode]) = fieldMap.put(field, value)
@@ -218,7 +220,7 @@ case class FieldValueNode (fieldName : String, fieldValue: String, attributes: I
 
   def getAttribute(key : String) = attributes.getOrElse(key, "")
 
-  def getLanguage = attributes.getOrElse("xml:lang", "")
+  def getLanguage = attributes.getOrElse("xml:lang", "unknown")
 
   def hasLanguageAttribute = attributes.contains("xml:lang")
 

@@ -106,8 +106,8 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         </header>
         <metadata>
 <record>
-<dc:contributor>Hermund Kleppa</dc:contributor>
-<dc:contributor>Lisabet Risa</dc:contributor>
+<dc:contributor xml:lang="no">Hermund Kleppa</dc:contributor>
+<dc:contributor xml:lang="nl">Lisabet Risa</dc:contributor>
 <dc:contributor>Botolv H. Tynning</dc:contributor>
 <dc:contributor>Ukjend</dc:contributor>
 <dc:creator>Margrethe Henden Aaraas og Sigurd Vengen</dc:creator>
@@ -129,8 +129,8 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
 <europeana:type>TEXT</europeana:type>
 <europeana:unstored xml:lang="no">Brekke kyrkje er soknekyrkje for Brekke sokn i Gulen prestegjeld. Frå 1859 til 1968 høyrde Brekke sokn til Lavik prestegjeld, men høyrer no til Gulen prestegjeld. Kyrkja vart måla opp att utvendig i 2001.</europeana:unstored>
 <europeana:unstored xml:lang="no">Det solide kyrkjetårnet frå 1930-talet er det tredje som har pryda Brekke kyrkje. Dei to fyrste tolte ikkje den sterke sønnavinden i området.</europeana:unstored>
-<europeana:unstored xml:lang="no">Kyrkjekoret er enkelt og lunt, og det lyse treverket er ein god bakgrunn for altertavla og biletvevnaden på sidene. Biletteppa er laga av Emma Breidvik, t.v. ein engel og t.h. Golgatagruppa. Altertavla er måla av Anders Askevold og har &quot;Jesus i Getsemane&quot; som motiv.</europeana:unstored>
-<europeana:unstored xml:lang="no">På kyrkjeveg frå Verkland i 1915.</europeana:unstored>
+<europeana:unstored xml:lang="en">Kyrkjekoret er enkelt og lunt, og det lyse treverket er ein god bakgrunn for altertavla og biletvevnaden på sidene. Biletteppa er laga av Emma Breidvik, t.v. ein engel og t.h. Golgatagruppa. Altertavla er måla av Anders Askevold og har &quot;Jesus i Getsemane&quot; som motiv.</europeana:unstored>
+<europeana:unstored xml:lang="nl">På kyrkjeveg frå Verkland i 1915.</europeana:unstored>
 <europeana:unstored xml:lang="no">Kyrkjebåt på fjorden på veg til Brekke kyrkje.</europeana:unstored>
 </record>
     </metadata>
@@ -151,9 +151,11 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
           node =>
             node.hasAttributes should be (true)
             node.hasLanguageAttribute should be (true)
-            node.getLanguage should equal ("no")
-            node.getAttribute("xml:lang") should equal ("no")
+            node.getAttribute("xml:lang") should equal (node.getLanguage)
         }
+        val fvnGroupedByLanguage = fullDoc.solrDocument.getFieldValueNodeGroupedByLanguage("dc_contributor")
+        fvnGroupedByLanguage.keys.size should equal (3)
+        fvnGroupedByLanguage.getOrElse("unknown", List[FieldValueNode]()).size should equal (2)
       }
 
     }
