@@ -72,6 +72,8 @@
 
     <bean id="configInterceptor" class="eu.europeana.core.util.web.ConfigInterceptor"/>
 
+    <bean id="cslInterceptor" class="eu.delving.core.util.ClickStreamLoggerInterceptor"/>
+
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="messageConverters">
             <list>
@@ -101,6 +103,7 @@
         <property name="interceptors">
             <list>
                 <ref bean="localeChangeInterceptor"/>
+                <ref bean="cslInterceptor"/>
                 <ref bean="formatInterceptor"/>
                 <ref bean="configInterceptor"/>
             </list>
