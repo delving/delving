@@ -41,7 +41,6 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         val idList = SolrBindingService.getDocIds(response)
         val firstId = idList.head
         firstId.getEuropeanaUri should equal("92001/1")
-        firstId.getTimestamp.toString.isEmpty should be(false)
       }
 
     }
@@ -146,6 +145,15 @@ class SolrBindingServiceSpec extends Spec with ShouldMatchers with BeforeAndAfte
         fullDoc should not be (null)
         fullDoc.getAsArray("europeana_unstored").size should equal (5)
         fullDoc.getFieldValueList.foreach(fv => println(fv.getKeyAsXml + fv.getFirst))
+        val fieldValueNode = fullDoc.solrDocument.getFieldValueNode("europeana_unstored")
+        println(fieldValueNode)
+        fieldValueNode.foreach{
+          node =>
+            node.hasAttributes should be (true)
+            node.hasLanguageAttribute should be (true)
+            node.getLanguage should equal ("no")
+            node.getAttribute("xml:lang") should equal ("no")
+        }
       }
 
     }
