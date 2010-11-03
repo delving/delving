@@ -110,7 +110,8 @@
         </property>
     </bean>
 
-    <bean id="messageSource" class="eu.delving.core.util.SafeMessageSource">
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="useCodeAsDefaultMessage" value="true"/>
         <property name="basename" value="#{launchProperties['message.resource']}"/>
         <property name="cacheSeconds" value="#{launchProperties['message.cache.seconds']}"/>
         <property name="fileEncodings" value="UTF-8"/>
