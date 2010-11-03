@@ -113,10 +113,11 @@
 
     <#elseif embedded>
 
-        ${page.content}
+        <#assign locale = locale/>
+        ${page.getContent(locale)}
 
     <#else>
-
+        <#assign locale = locale/>
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
             <#include "includeMarcos.ftl">
@@ -136,7 +137,7 @@
 
             <section role="main" class="grid_10">
                 <div id="content" class="content-preview">
-                    ${page.content}
+                    ${page.getContent(locale)}
                 </div>
                 <#if edit??>
                     <#if edit>
@@ -144,7 +145,7 @@
                             <form action="${page.path}" method="POST" id="form-edit">
                                 <a href="javascript:toggleEditor('editor');" class=""><@spring.message 'dms.html.editor.show.hide' /></a>
 
-                                <textarea name="content" id="editor" style="width: 100%;height:550px;">${page.content}</textarea>
+                                <textarea name="content" id="editor" style="width: 100%;height:550px;">${page.getContent(locale)}</textarea>
                                 <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/>
                                 <a href="${page.path}" class="button"><@spring.message 'dms.cancel' /></a>
                             </form>

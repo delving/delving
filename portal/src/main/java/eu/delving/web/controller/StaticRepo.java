@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,6 +28,7 @@ public class StaticRepo {
     static final String IMAGES_COLLECTION = "images";
     static final String PATH = "path";
     static final String CONTENT = "content";
+    static final String DEFAULT_LANGUAGE = "en";
 
     @Autowired
     private Mongo mongo;
@@ -106,20 +108,20 @@ public class StaticRepo {
         }
     }
 
-    public void putPage(String path, String content) {
+    public void putPage(String path, String content, Locale locale) {
         Page page = getLatestPage(path);
         if (page != null) {
             if (content == null) {
                 page.remove();
             }
             else {
-                page.setContent(content);
+                page.setContent(content, locale);
             }
         }
         else {
             BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, content);
-            pages().insert(object);
+            page = new Page(object);
+            page.setContent(content, locale);
         }
     }
 
@@ -175,8 +177,17 @@ public class StaticRepo {
             return "/" + portalName + "/" + object.get(PATH);
         }
 
-        public String getContent() {
-            String content = (String) object.get(CONTENT);
+        public String getContent(Locale locale) {
+            String content;
+            if (locale != null) {
+                content = (String) object.get(CONTENT + "_" + locale.getLanguage());
+                if (content == null) {
+                    content = (String) object.get(CONTENT);
+                }
+            }
+            else {
+                content = (String) object.get(CONTENT);
+            }
             if (content == null) {
                 content = "";
             }
@@ -191,9 +202,18 @@ public class StaticRepo {
             return new Date(getId().getTime());
         }
 
-        public void setContent(String content) {
-            BasicDBObject fresh = new BasicDBObject(PATH, object.get(PATH));
-            fresh.put(CONTENT, content);
+        public void setContent(String content, Locale locale) {
+            BasicDBObject fresh = copyObject();
+            if (locale != null) {
+                fresh.put(CONTENT + "_" + locale.getLanguage(), content);
+                if (DEFAULT_LANGUAGE.equals(locale.getLanguage())) {
+                    fresh.put(CONTENT, content);
+                }
+            }
+            else {
+                fresh.put(CONTENT, content);
+
+            }
             pages().insert(fresh);
             this.object = fresh;
         }
@@ -201,6 +221,17 @@ public class StaticRepo {
         public void remove() {
             pages().remove(object);
         }
+
+        private BasicDBObject copyObject() {
+            BasicDBObject fresh = new BasicDBObject();
+            for (String key : object.keySet()) {
+                if (!key.equals("_id")) {
+                    fresh.put(key, object.get(key));
+                }
+            }
+            return fresh;
+        }
+
     }
 
     // === private
@@ -257,6 +288,4 @@ public class StaticRepo {
     private DB db() {
         return mongo.getDB(databaseName);
     }
-
-
 }
