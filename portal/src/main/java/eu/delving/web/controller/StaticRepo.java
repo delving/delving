@@ -199,8 +199,7 @@ public class StaticRepo {
             List<String> fieldNames = getContentKeys(locale);
             fresh.put(fieldNames.get(0), content);
             fieldNames.remove(0);
-            if (!fieldNames.isEmpty()) {
-                String fieldName = fieldNames.get(fieldNames.size()-1);
+            for (String fieldName : fieldNames) {
                 if (fresh.get(fieldName) == null) {
                     fresh.put(fieldName, content);
                 }
@@ -230,12 +229,6 @@ public class StaticRepo {
     private static List<String> getContentKeys(Locale locale) {
         List<String> keys = new ArrayList<String>();
         if (locale != null) {
-            if (!locale.getCountry().isEmpty()) {
-                if (!locale.getVariant().isEmpty()) {
-                    keys.add(CONTENT+"_"+locale.getLanguage()+"_"+locale.getCountry()+"_"+locale.getVariant());
-                }
-                keys.add(CONTENT+"_"+locale.getLanguage()+"_"+locale.getCountry());
-            }
             keys.add(CONTENT+"_"+locale.getLanguage());
         }
         keys.add(CONTENT);
