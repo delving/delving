@@ -28,6 +28,7 @@ public class StaticRepo {
     static final String IMAGES_COLLECTION = "images";
     static final String PATH = "path";
     static final String CONTENT = "content";
+    static final String DEFAULT_LANGUAGE = "en";
 
     @Autowired
     private Mongo mongo;
@@ -119,8 +120,8 @@ public class StaticRepo {
         }
         else {
             BasicDBObject object = new BasicDBObject(PATH, path);
-            object.put(CONTENT, content);
-            pages().insert(object);
+            page = new Page(object);
+            page.setContent(content, locale);
         }
     }
 
@@ -177,13 +178,20 @@ public class StaticRepo {
         }
 
         public String getContent(Locale locale) {
-            for (String key : getContentKeys(locale)) {
-                String value = (String) object.get(key);
-                if (value != null) {
-                    return value;
+            String content;
+            if (locale != null) {
+                content = (String) object.get(CONTENT + "_" + locale.getLanguage());
+                if (content == null) {
+                    content = (String) object.get(CONTENT);
                 }
             }
-            return "";
+            else {
+                content = (String) object.get(CONTENT);
+            }
+            if (content == null) {
+                content = "";
+            }
+            return content;
         }
 
         public Date getDate() {
@@ -196,13 +204,15 @@ public class StaticRepo {
 
         public void setContent(String content, Locale locale) {
             BasicDBObject fresh = copyObject();
-            List<String> fieldNames = getContentKeys(locale);
-            fresh.put(fieldNames.get(0), content);
-            fieldNames.remove(0);
-            for (String fieldName : fieldNames) {
-                if (fresh.get(fieldName) == null) {
-                    fresh.put(fieldName, content);
+            if (locale != null) {
+                fresh.put(CONTENT + "_" + locale.getLanguage(), content);
+                if (DEFAULT_LANGUAGE.equals(locale.getLanguage())) {
+                    fresh.put(CONTENT, content);
                 }
+            }
+            else {
+                fresh.put(CONTENT, content);
+
             }
             pages().insert(fresh);
             this.object = fresh;
@@ -225,15 +235,6 @@ public class StaticRepo {
     }
 
     // === private
-
-    private static List<String> getContentKeys(Locale locale) {
-        List<String> keys = new ArrayList<String>();
-        if (locale != null) {
-            keys.add(CONTENT+"_"+locale.getLanguage());
-        }
-        keys.add(CONTENT);
-        return keys;
-    }
 
     private Page getPageVersion(ObjectId id) {
         DBObject object = pages().findOne(new BasicDBObject("_id", id));
