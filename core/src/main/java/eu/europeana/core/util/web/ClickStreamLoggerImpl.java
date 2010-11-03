@@ -167,7 +167,7 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
                         startPage, originalQuery, numFound));
     }
 
-    private static String printLogAffix(HttpServletRequest request) {
+    private String printLogAffix(HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         String reqUrl = getRequestUrl(request);
         final User user = ControllerUtil.getUser();
@@ -199,8 +199,14 @@ public class ClickStreamLoggerImpl implements ClickStreamLogger {
             }
         }
         DateTime now = new DateTime();
-        final DateTime startRequestDateTime = (DateTime) request.getAttribute("startRequestDateTime");
-        final long timeElapsed = now.getMillis() - startRequestDateTime.getMillis();
+
+        long timeElapsed = 0;
+        try {
+            final DateTime startRequestDateTime = (DateTime) request.getAttribute("startRequestDateTime");
+            timeElapsed = now.getMillis() - startRequestDateTime.getMillis();
+        } catch (Exception e) {
+            log.error("Unable to get startRequestTime from HttpServletRequest. Probably missing the cslInterceptor");
+        }
         return MessageFormat.format(
                 "userId={0}, lang={1}, req={4}, date={2}, ip={3}, user-agent={5}, referer={6}, utma={8}, " +
                         "utmb={9}, utmc={10}, v={7}, duration={11}",
