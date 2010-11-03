@@ -1,4 +1,3 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign queryProblem = queryProblem>
 <#assign exception = exception>
 <#assign stackTrace = stackTrace>
@@ -13,7 +12,7 @@
 <#if RequestParameters.query??>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

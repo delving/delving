@@ -69,7 +69,7 @@ class OpenSearchService(request: HttpServletRequest, beanQueryModelFactory: Bean
       xmlns:atom="http://www.w3.org/2005/Atom">
    <channel>
      <title>Delving Open Search result</title>
-     <link>{servicesUrl}api/open-search?searchTerms={searchTerms}&amp;startPage={startPage}</link>
+     <link>{servicesUrl}/api/open-search?searchTerms={searchTerms}&amp;startPage={startPage}</link>
      <description>{searchTerms} - Delving Open Search</description>
      <opensearch:totalResults>{pagination.getNumFound}</opensearch:totalResults>
      <opensearch:startIndex>{startPage}</opensearch:startIndex>

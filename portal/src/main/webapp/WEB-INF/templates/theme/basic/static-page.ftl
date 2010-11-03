@@ -14,7 +14,7 @@
 
             <#assign thisPage = "static-page.dml"/>
             <#assign pageId = "static"/>
-            <#include "delving-macros.ftl">
+            <#include "includeMarcos.ftl">
 
             <@addHeader "Norvegiana", "",[],[]/>
 
@@ -120,7 +120,7 @@
         <#assign locale = locale/>
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
-            <#include "delving-macros.ftl">
+            <#include "includeMarcos.ftl">
 
             <@addHeader "Norvegiana", "",[],[]/>
 

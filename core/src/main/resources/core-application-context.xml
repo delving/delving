@@ -89,12 +89,15 @@
                 <value>services.pmh.sampleIdentifier</value>
                 <value>services.pmh.responseListSize</value>
                 <value>services.mongo.dbName</value>
-                <value>ga.trackingCode</value>
+                <value>googleAnalytics.trackingCode</value>
                 <value>addThis.trackingCode</value>
             </list>
         </constructor-arg>
     </bean>
 
+    <util:list id="includedMacros">
+            <value>delving-macros.ftl</value>
+    </util:list>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" ref="launchProperties"/>
@@ -149,12 +152,12 @@
     <bean id="sorlIndexUtil" class="eu.europeana.core.util.indexing.SorlIndexUtil"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-        <constructor-arg value="#{launchProperties['solr.selectUrl']}"/>
+        <constructor-arg value="#{launchProperties['services.url']}/api/solr"/>
         <property name="soTimeout" value="#{launchProperties['solr.timeout']}"/>
         <property name="connectionTimeout" value="#{launchProperties['solr.timeout']}"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
         <property name="maxTotalConnections" value="125"/>
-        <property name="followRedirects" value="false"/>
+        <property name="followRedirects" value="true"/>
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
@@ -197,7 +200,8 @@
                <prop key="template_exception_handler">#{launchProperties['debug.freemarker']}</prop>
            </props>
        </property>
-        <property name="templateLoaderPath" value="#{launchProperties['portal.freemarker.path']}"/>
+        <property name="templateLoaderPaths"
+                  value="#{launchProperties['portal.freemarker.path']}, WEB-INF/templates/theme/macros/"/>
     </bean>
 
     <bean id="clickStreamLogger" class="eu.europeana.core.util.web.ClickStreamLoggerImpl"/>

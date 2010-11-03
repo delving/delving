@@ -260,6 +260,7 @@ public class Harvindexer {
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
             EuropeanaId europeanaId = null;
+            String pmhId = null;
             String resumptionToken = "";
             int recordCount = 0;
             boolean isInMetadataBlock = false;
@@ -275,12 +276,16 @@ public class Harvindexer {
                         if (isErrorElement(xml)) {
                             throw new ImportException(xml.getElementText());
                         }
+                        else if (!isInMetadataBlock && isPmhIdentifier(xml)) {
+                            pmhId = xml.getElementText();
+                        }
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = true;
                         }
                         else if (isRecordElement(xml) && isInMetadataBlock) {
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
+                            solrInputDocument.addField("delving_pmhId", pmhId);
                         }
                         else if (isResumptionToken(xml)) {
                             resumptionToken = xml.getElementText();
@@ -408,6 +413,10 @@ public class Harvindexer {
 
         private boolean isMetadataElement(XMLStreamReader xml) {
             return "metadata".equals(xml.getName().getLocalPart());
+        }
+
+        private boolean isPmhIdentifier(XMLStreamReader xml) {
+            return "identifier".equals(xml.getName().getLocalPart());
         }
 
         private boolean isErrorElement(XMLStreamReader xml) {

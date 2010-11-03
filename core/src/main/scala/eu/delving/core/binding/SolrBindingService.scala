@@ -2,13 +2,15 @@ package eu.delving.core.binding
 
 import scala.collection.JavaConversions._
 import scala.reflect.BeanProperty
-import collection.mutable.ListBuffer
 import org.apache.solr.common.SolrDocumentList
 import java.util. {Date, ArrayList, List => JList}
 import java.lang.{Boolean => JBoolean}
-import scala.collection.mutable.Map
 import eu.europeana.core.querymodel.query._
 import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
+import java.net.URL
+import xml. {MetaData, NodeSeq, Elem, XML}
+import collection.mutable. {ListBuffer, Map}
+import collection.immutable. {HashMap, Map => ImMap}
 
 /**
  *
@@ -18,7 +20,42 @@ import org.apache.solr.client.solrj.response. {FacetField, QueryResponse}
 
 object SolrBindingService {
 
+  def getFullDocFromOaiPmh(response : QueryResponse) : FullDocItem = {
+    val fullDoc = getFullDoc(response)
+    val pmhId = fullDoc.getFieldValue("delving_pmhId")
+    getRecordFromOaiPmh(pmhId.getFirst)
+  }
+
+  private[binding] def getRecordFromOaiPmh(recordId : String, metadataPrefix: String = "abm") : FullDocItem = {
+    val baseUrl = "http://localhost:8983/services/oai-pmh"
+    val record = XML.load(new URL(baseUrl + "?verb=GetRecords&metadataPrefix=" + metadataPrefix + "&identifier=" + recordId))
+    parseSolrDocumentFromGetRecordResponse(record)
+  }
+
+  def parseSolrDocumentFromGetRecordResponse(pmhResponse: Elem): FullDocItem = {
+    val metadataElements = pmhResponse \\ "metadata"
+    val recordElements: NodeSeq = metadataElements \\ "record"
+    val solrDoc = SolrDocument()
+    recordElements.foreach{
+      recordNode =>
+        val cleanNodes = recordNode.nonEmptyChildren.filterNot(node => node.label == "#PCDATA")
+        val cleanNodeList = for {
+          cleanNode <- cleanNodes
+          val fieldName: String = if (!cleanNode.prefix.isEmpty) cleanNode.prefix + "_" + cleanNode.label else cleanNode.label
+        } yield (FieldValueNode(fieldName, cleanNode.text, cleanNode.attributes.asAttrMap))
+        val fieldNames = for (cleanNode <- cleanNodeList) yield cleanNode.fieldName
+        fieldNames.toSet[String].foreach{
+          fieldName =>
+            solrDoc.add(fieldName, cleanNodeList.filter(node => node.fieldName == fieldName).toList)
+        }
+    }
+    FullDocItem(solrDoc)
+  }
+
   def getSolrDocumentList(solrDocumentList : SolrDocumentList) : List[SolrDocument] = {
+    def addFieldNodes(key : String, values: List[Any]) : List[FieldValueNode] =
+      for (value <- values) yield (FieldValueNode(key, value.toString))
+
     val docs = new ListBuffer[SolrDocument]
     val ArrayListObject = classOf[ArrayList[Any]]
     val StringObject = classOf[String]
@@ -31,9 +68,9 @@ object SolrBindingService {
             field =>
               val FieldValueClass: Class[_] = field.getValue.getClass
                FieldValueClass match {
-                case ArrayListObject => solrDoc.add(field.getKey, field.getValue.asInstanceOf[ArrayList[Any]].toList)
-                case StringObject => solrDoc.add(field.getKey, List(field.getValue))
-                case DateObject => solrDoc.add(field.getKey, List(field.getValue))
+                case ArrayListObject => solrDoc.add(field.getKey, addFieldNodes(field.getKey, field.getValue.asInstanceOf[ArrayList[Any]].toList))
+                case StringObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
+                case DateObject => solrDoc.add(field.getKey, List(FieldValueNode(field.getKey, field.getValue.toString)))
                 case _ => println("unknown class " + field.getKey)
               }
           }
@@ -100,7 +137,6 @@ trait FacetHelper {
 
 }
 
-
 case class FacetMap(private val links : List[FacetQueryLinks]) {
 
   val facetMap = Map[String, FacetQueryLinks]()
@@ -122,13 +158,17 @@ case class FacetStatisticsMap(private val facets: List[FacetField]) extends Face
 
 }
 
-case class SolrDocument(fieldMap : Map[String, List[Any]] = Map[String, List[Any]]()) {
+case class SolrDocument(fieldMap : Map[String, List[FieldValueNode]] = Map[String, List[FieldValueNode]]()) {
 
-  def get(field: String) : List[Any] = fieldMap.getOrElse(field, List[Any]())
+  def get(field: String) : List[String] = for(node: FieldValueNode <- fieldMap.getOrElse(field, List[FieldValueNode]())) yield node.fieldValue
 
-  def getFirst(field: String) : String = fieldMap.getOrElse(field, List[Any]()).headOption.getOrElse("").asInstanceOf[String] // todo made generic later
+  def getFieldValueNode(field: String) : List[FieldValueNode] = fieldMap.getOrElse(field, List[FieldValueNode]())
 
-  private[binding] def add(field: String, value : List[Any]) = fieldMap.put(field, value)
+  def getFieldValueNodeGroupedByLanguage(field: String) : ImMap[String, List[FieldValueNode]] = fieldMap.getOrElse(field, List[FieldValueNode]()).groupBy(fvn => fvn.getLanguage)
+
+  def getFirst(field: String) : String = fieldMap.getOrElse(field, List[FieldValueNode]()).headOption.getOrElse(FieldValueNode("", "")).fieldValue
+
+  private[binding] def add(field: String, value : List[FieldValueNode]) = fieldMap.put(field, value)
 
   private[binding] def getFieldNames = fieldMap.keys
 
@@ -172,9 +212,25 @@ case class FieldValue (key: String, solrDocument: SolrDocument) {
 
 }
 
+case class FieldValueNode (fieldName : String, fieldValue: String, attributes: ImMap[String, String] = new HashMap[String, String]())  {
+
+  def getFieldName = fieldName
+
+  def getFieldValue = fieldValue
+
+  def getAttribute(key : String) = attributes.getOrElse(key, "")
+
+  def getLanguage = attributes.getOrElse("xml:lang", "unknown")
+
+  def hasLanguageAttribute = attributes.contains("xml:lang")
+
+  def hasAttributes = !attributes.isEmpty
+
+  def getAttributeKeys = attributes.keys
+}
+
 case class SolrDocId(solrDocument : SolrDocument) extends DocId {
-  def getEuropeanaUri : String = solrDocument.get("europeana_uri").head.asInstanceOf[String]
-  def getTimestamp : Date = solrDocument.get("timestamp").head.asInstanceOf[Date]
+  def getEuropeanaUri : String = solrDocument.getFirst("europeana_uri")
 }
 
 case class BriefDocItem(solrDocument : SolrDocument) extends BriefDoc {

@@ -10,7 +10,7 @@ function saveQuery(className, queryToSave, queryString){
        success: function(msg){
            
            sr.html(msgSearchSaveSuccess);
-           $("#msg-save-search").delay(2000).hide();
+           //$("#msg-save-search").delay(2000).hide();
            var ss = $("#savedSearchesCount");
            var currentCount = parseInt(ss.html(), 10);
            ss.html(currentCount + 1);
@@ -19,6 +19,7 @@ function saveQuery(className, queryToSave, queryString){
             sr.html(msgSearchSaveFail);
        }
      });
+    return false;
 }
 
 function showDefaultSmall(obj, iType) {

@@ -157,41 +157,16 @@
         <location>/error.html</location>
     </error-page>
     <error-page>
+        <error-code>500</error-code>
+        <location>/error.html</location>
+    </error-page>
+    <!--Catch-all page for all Servlet exceptions thrown-->
+    <error-page>
+        <location>/error.html</location>
+        <exception-type>javax.servlet.ServletException</exception-type>
+    </error-page>
+    <error-page>
         <exception-type>org.springframework.security.ui.rememberme.CookieTheftException</exception-type>
         <location>/remember-me-theft.html</location>
     </error-page>
-
-<!--   <servlet>
-        <servlet-name>JavascriptServlet</servlet-name>
-        <servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
-        <init-param>
-            <param-name>configLocation</param-name>
-            <param-value>/jawr.properties</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>JavascriptServlet</servlet-name>
-        <url-pattern>*.js</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>CSSServlet</servlet-name>
-        <servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
-        <init-param>
-            <param-name>configLocation</param-name>
-            <param-value>/jawr.properties</param-value>
-        </init-param>
-        <init-param>
-            <param-name>type</param-name>
-            <param-value>css</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>CSSServlet</servlet-name>
-        <url-pattern>*.css</url-pattern>
-    </servlet-mapping>-->
 </web-app>

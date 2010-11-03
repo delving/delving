@@ -8,7 +8,8 @@
         </layout>
     </appender>
     <appender name="clickStreamLogger" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="File" value="/export/log/ClickStreamLogger.log"/>
+        <!-- !!! Change the File Path to where you want the ClickStreamLogs to be written to-->
+        <param name="File" value="/tmp/log/ClickStreamLogger.log"/>
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <param name="Append" value="true"/>
         <param name="Threshold" value="INFO"/>
@@ -17,7 +18,8 @@
             <param name="ConversionPattern" value="%d{HH:mm:ss:SSS} %m%n"/>
         </layout>
     </appender>
-    <logger name="eu.europeana.core.util.web.ClickStreamLoggerImpl" additivity="false"> <!-- set to false in production -->
+    <!-- set to false in production. If you want to see what the ClickStreamLogger is logging during development set to true -->
+    <logger name="eu.europeana.core.util.web.ClickStreamLoggerImpl" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="clickStreamLogger"/>
     </logger>

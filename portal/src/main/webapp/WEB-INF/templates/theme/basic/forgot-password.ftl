@@ -1,8 +1,7 @@
 <#import "spring.ftl" as spring />
-<#include "spring_form_macros.ftl"/>
 <#assign thisPage = "forgot-password.html"/>
 
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

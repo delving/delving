@@ -85,11 +85,13 @@ td .ui-icon {
 
 #search {
     background: #e5e5e5;
-    height: 65px;
-    line-height: 65px;
+    /*height: 65px;*/
+    /*line-height: 65px;*/
 }
 
-#search form,
+#search form{
+    margin: 1.5em;
+}
 #search fieldset {
     margin: 0;
     padding: 0;
@@ -373,10 +375,12 @@ button.fg-button-icon-right .ui-icon {
     font-size: 1em;
 }
 /* FOOTER ******************************/
-
 footer {
-    /*background: #eaeaea;*/
-    border: 1px solid #ccc;
+    margin: 1em 0 0 0;
+    text-align: center;
+}
+footer img{
+    margin: 0 1em;
 }
 
 

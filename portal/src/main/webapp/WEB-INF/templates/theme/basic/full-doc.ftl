@@ -1,28 +1,6 @@
-<#assign model = result/>
-<#assign result = result/>
-<#assign uri = result.fullDoc.id/>
-
-<#--<#assign thisPage = "full-doc.html"/>-->
 <#compress>
-<#if format??><#assign format = format/></#if>
-<#if pagination??>
-    <#assign pagination = pagination/>
-    <#assign queryStringForPaging = pagination.queryStringForPaging />
-</#if>
-<#if result.fullDoc.dcTitle[0]?length &gt; 110>
-    <#assign postTitle = result.fullDoc.dcTitle[0]?substring(0, 110)?url('utf-8') + "..."/>
-<#else>
-    <#assign postTitle = result.fullDoc.dcTitle[0]?url('utf-8')/>
-</#if>
-<#if result.fullDoc.dcCreator[0]?matches(" ")>
-    <#assign postAuthor = "none"/>
-<#else>
-    <#assign postAuthor = result.fullDoc.dcCreator[0]/>
-</#if>
-<#-- Removed ?url('utf-8') from query assignment -->
-<#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
-<#include "delving-macros.ftl">
-
+<#include "includeMarcos.ftl">
+<@addCustomAssigns/>
 <@addHeader "Norvegiana", "",["results.js","fancybox/jquery.fancybox-1.3.1.pack.js"],["fancybox/jquery.fancybox-1.3.1.css"]/>
 <script type="text/javascript">
     var msgItemSaveSuccess = "<@spring.message 'ItemSaved_t'/>";
@@ -31,7 +9,7 @@
 <section id="sidebar" class="grid_3" role="complementary">
     <header id="branding" role="banner">
         <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="${portalDisplayName}"/>
         </a>
         <h1 class="large">${portalDisplayName}</h1>
     </header>
@@ -182,65 +160,31 @@
 
 </section>
 
-
 <@addFooter/>
-
-<#macro show_array_values fieldName values showFieldName>
-    <#list values as value>
-        <#if !value?matches(" ") && !value?matches("0000")>
-            <#if showFieldName>
-                <p><strong>${fieldName}</strong> = ${value?html}</p>
-            <#else>
-                <p>${value?html}</p>
-            </#if>
-        </#if>
-    </#list>
-</#macro>
-
-<#macro show_value fieldName value showFieldName>
-    <#if showFieldName>
-        <p><strong>${fieldName}</strong> = ${value}</p>
-    <#else>
-        <p>${value}</p>
-    </#if>
-</#macro>
-
-<#macro simple_list values separator>
-    <#list values?sort as value>
-        <#if !value?matches(" ") && !value?matches("0000")>
-            ${value}<#if value_has_next>${separator} </#if>
-    <#--${value}${separator}-->
-        </#if>
-    </#list>
-</#macro>
-
-<#macro simple_list_dual values1 values2 separator>
-    <#if isNonEmpty(values1) && isNonEmpty(values2)>
-        <@simple_list values1 separator />${separator} <@simple_list values2 separator />
-    <#elseif isNonEmpty(values1)>
-        <@simple_list values1 separator />
-    <#elseif isNonEmpty(values2)>
-        <@simple_list values2 separator />
-    </#if>
-</#macro>
-
-<#macro simple_list_truncated values separator trunk_length>
-    <#list values?sort as value>
-        <#if !value?matches(" ") && !value?matches("0000")>
-            <@stringLimiter "${value}" "${trunk_length}"/><#if value_has_next>${separator} </#if>
-    <#--${value}${separator}-->
-        </#if>
-    </#list>
-</#macro>
-
-<#function isNonEmpty values>
-    <#assign nonEmptyValue = false />
-    <#list  values?reverse as value>
-        <#if !value?matches(" ") && !value?matches("0000")>
-            <#assign nonEmptyValue = true />
-            <#return nonEmptyValue />
-        </#if>
-    </#list>
-    <#return nonEmptyValue />
-</#function>
 </#compress>
+
+<#macro addCustomAssigns>
+    <#assign result = result/>
+    <#assign uri = result.fullDoc.id/>
+    <#if format??><#assign format = format/></#if>
+    <#if pagination??>
+        <#assign pagination = pagination/>
+        <#assign queryStringForPaging = pagination.queryStringForPaging />
+    </#if>
+    <#assign dcTitle = result.fullDoc.getFieldValue("dc_title")/>
+    <#if !dcTitle.isNotEmpty()>
+        <#if dcTitle.getFirst()?length &gt; 110>
+            <#assign postTitle = dcTitle.getFirst()?substring(0, 110)?url('utf-8') + "..."/>
+        <#else>
+            <#assign postTitle = dcTitle.getFirst()?url('utf-8')/>
+        </#if>
+    </#if>
+    <#assign dcCreator = result.fullDoc.getFieldValue("dc_creator")/>
+    <#if !dcCreator.isNotEmpty()>
+        <#assign postAuthor = "none"/>
+    <#else>
+        <#assign postAuthor = dcCreator.getFirst()/>
+    </#if>
+    <#-- Removed ?url('utf-8') from query assignment -->
+    <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
+</#macro>

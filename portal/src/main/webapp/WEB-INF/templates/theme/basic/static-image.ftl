@@ -10,7 +10,7 @@
         <#else>
             <#assign thisPage = "static-page.dml"/>
             <#assign pageId = "static"/>
-            <#include "delving-macros.ftl">
+            <#include "includeMarcos.ftl">
 
             <@addHeader "Norvegiana", "",[],[]/>
 
@@ -98,7 +98,7 @@
         <#assign thisPage = "static-image.img"/>
         <#assign pageId = "static"/>
 
-        <#include "delving-macros.ftl">
+        <#include "includeMarcos.ftl">
 
         <@addHeader "Norvegiana", "",[],[]/>
 

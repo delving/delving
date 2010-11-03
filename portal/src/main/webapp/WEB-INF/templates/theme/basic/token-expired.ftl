@@ -6,8 +6,7 @@
 <#if RequestParameters.query??>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
-<#include "spring_form_macros.ftl"/>
-<#include "delving-macros.ftl">
+<#include "includeMarcos.ftl">
 
 <@addHeader "Norvegiana", "",[],[]/>
 

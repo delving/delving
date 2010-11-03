@@ -1,8 +1,7 @@
-
 #
-# Copyright 2007 EDL FOUNDATION
+# Copyright 2010 Delving BV
 #
-# Licensed under the EUPL, Version 1.0 or as soon they
+# Licensed under the EUPL, Version 1.1 or as soon they
 # will be approved by the European Commission - subsequent
 # versions of the EUPL (the "Licence");
 # you may not use this work except in compliance with the
@@ -20,104 +19,279 @@
 # permissions and limitations under the Licence.
 #
 
-#
-# database connection settings
-#
+###############################################
+#                                             #
+#       database connection settings          #
+#                                             #
+###############################################
+
+# Database driver used by Hibernate
+
 db.driverClass = org.postgresql.Driver
-db.jdbcUrl     = jdbc:postgresql:europeana
-db.user        = europeana
+
+# url used to connect to the database. Last element is the database name
+
+db.jdbcUrl     = jdbc:postgresql:delving
+
+# database user
+
+db.user        = delving
+
+# database password
+
 db.password    = culture
 
-#
-# solr connection settings
+
+###############################################
+#                                             #
+#       solr connection settings              #
+#                                             #
+###############################################
+
+# The url that is used for searching. Normally used for the search slave
+
 solr.selectUrl = http://localhost:8983/solr
+
+# The url used for sending indexing requests. Normally used for the indexing master. In a single machine setup update and
+# select urls are the same.
+
 solr.updateUrl = http://localhost:8983/solr
+
+# Number of records that will be send to Solr as indexing batch. Default 1000 is good in most situations
+
 solr.chunkSize = 1000
+
+# The timeout for SolrJ connectionPool
+
 solr.timeout = 60000
+
+# Number of retries when SolrJ client can not get a respond. Set to 1 for production
+
 solr.retries = 1
 
-#
-# services connection settings
-#
-services.url = http://localhost:8983/services/
+
+###############################################
+#                                             #
+#       services WebApp settings              #
+#                                             #
+###############################################
+
+# the absolute external url where the services module is running
+
+services.url = http://localhost:8983/services
+
+# The name of the record-definition that is used to index from OAI-PMH repository
+
 services.harvindexing.prefix = ese
+
+# The secrect password that is used to generate the accesskeys for OAI-PMH, Sip-Creator, and other Servcicse
+
 services.password = something
 
-#
-# cache URL
-#
-cacheUrl = http://localhost:8983/services/image?
 
-#
-# services MetaRepo Settings
-#
+###############################################
+#                                             #
+#       Services OAI-PMH  Repository settings #
+#                                             #
+###############################################
+
+# The name of the repository that is given in the ?verb=Identify response
+
 services.pmh.repositoryName = Delving MetaRepo
+
+# The administrator email that is given in the ?verb=Identify response
+
 services.pmh.adminEmail = somebody@delving.eu
+
+# The earliest Datestamp of the repository and the one that is given in the ?verb=Identify response
+
 services.pmh.earliestDateStamp = 1990-02-01T12:00:00Z
+
+# The name of the OAI-PMH repository that is given in the ?verb=Identify response
+
 services.pmh.repositoryIdentifier = meta-repo.delving.eu
+
+# The sample identifier that is given in the ?verb=Identify response. It is constructed of the CollectionID + the MongoDB id
+
 services.pmh.sampleIdentifier = 00101_Ag_NO_sffDF:4c277cd8f208d29792096c1e
+
+# The number of records returned by the OAI-PMH repository per ?verb=List* request
+
 services.pmh.responseListSize = 100
+
+# The time to live for each Harvest step before being cleaned up. So time (now) + this value is the experationDate
+
 services.pmh.harvestStepCleanupDelay = 15000
+
+# The name of the OAI-PMH  reposistory database in mongodb. This db is created when the application starts up the first time.
+
 services.mongo.dbName = MetaRepo
 
-#
-# smtp server settings
-#
-smtp.host = localhost
-smtp.username = username
-smtp.password = password
 
-#
-# trigger settings
-#
+###############################################
+#                                             #
+#       Quartz trigger settings          #
+#                                             #
+###############################################
+
+# The startup delay before a Quartz trigger starts
+
 trigger.startDelay     = 9990
+
+# The interval in which the Quartz trigger runs again.
+
 trigger.repeatInterval = 3000
 
-#
-# various email addresses
-#
+
+###############################################
+#                                             #
+#       Portal related Email settings         #
+#                                             #
+###############################################
+
+# The administrator email address
+
 admin.to       = username@email.com
-system.from    = noreply@europeana.eu
-register.to    = username@email.com
-feedback.to    = username@email.com
+
+# The address the exceptions that have occurred are send to (should be a developer normally)
+
 exception.to   = username@email.com
+
+# Where the contents of the feedback forms are emailed to.
+
+feedback.to    = username@email.com
+
+# Where the registration notifications are emailed to.
+
+register.to    = username@email.com
+
+# The system reply address. Should be noreply@yourorganisaton.com
+
+system.from    = noreply@europeana.eu
+
+# The feedback reply address. Should be noreply@yourorganisaton.com
+
 feedback.from  = noreply@europeana.eu
 
-#
+
+###############################################
+#                                             #
+#       SMTP connection settings              #
+#                                             #
+###############################################
+
+# The name of the SMTP host
+
+smtp.host = localhost
+
+# The username used to authenticate with the SMTP server. Leave empty if anonymous login is used.
+
+smtp.username = username
+
+# The password used to authenticate with the SMTP server. Leave empty if anonymous login is used.
+
+smtp.password = password
+
+
+###############################################
+#                                             #
+#       Debug Helper settings                 #
+#                                             #
+###############################################
+
+
 # helpers
-#
+
 debug = false
+
 #options: DEBUG, HTML_DEBUG, RETHROW, IGNORE see also: http://freemarker.sourceforge.net/docs/pgui_config_errorhandling.html
 # ignore in production
+
 debug.freemarker = debug
 
+
+###############################################
+#                                             #
+#       i18n Message Properties Settings      #
+#                                             #
+###############################################
+
+# The message.properties files can be both store on disk or in the web-application itself. This default setting will use
+# the message.properties files inside the portal application. In future version it will also be possible to load these
+# properties from the MongoDB storage and edit the values inline in the web-application if your user has the right
+# permissions to do so.
 #
-# Where to get messages from and how frequently the cache is flushed
-#
+
+# where the properties can be found
+
 message.resource=file:portal/src/main/message_keys/messages
+
+# How often the properties are refreshed
+
 message.cache.seconds=60
 
+###############################################
+#                                             #
+#       Logging Settings                      #
+#                                             #
+###############################################
+
+
+# Where the log4j.xml is located that is to be used for logging configuration. In the root of the project a
+# log4j_template.xml can be found. During you can either copy this file outside of the project and rename it to log4j.xml
+# Or point this setting to it directly via an absolute path.
 #
-# Where the log4j.xml is that is to be used for logging configuration.
-#
+# Also change the File Path for the clickStreamLogger in the log4j.xml file to reflect where you want it to be stored.
+# By default it will store it all in tmp.
+
 log4j.xml=/tmp/log4j.xml
 
-#
+
+###############################################
+#                                             #
+#       Portal web-application settings       #
+#                                             #
+###############################################
+
 # This is the name of the webapp used to prefix any urls in the freeMarker templates to images, css, and javascript files.
-#
+
 portal.name = portal
+
+# The name that is used by the portal to Name the pages and the application
+
 portal.displayName = Delving
+
+# where freemarker can find its templates for a theme
+
 portal.freemarker.path = WEB-INF/templates/theme/default
+
+# The name of the theme used by the portal. Primarily used to prefix links to css/javascript and css images
+
 portal.theme = theme/default
+
+# The color scheme selected for the chosen theme
+
 portal.color = azure
+
+# The absolute external baseUrl for the portal excluding its name. so Server + port (if relevant)
+
 portal.baseUrl = http://localhost:8080
+
+# The name of the MongoDB database that is used by the Portal CMS. At a later stage this will be deferred to the Services module.
+
 portal.mongo.dbName = static
 
-#
+# The url used by the Portal to get images from the Thumbnail cache instead of directly from the provider websites.
+# (Currently not used.)
+
+cacheUrl = http://localhost:8983/services/image?
+
 # This is the tracking code for google analytics. If it is empty the badge is not included in the footer
-#
-ga.trackingCode =
+
+googleAnalytics.trackingCode =
+
 # tracking code for addThis.com functionality. If empty the functionality is hidden
+
 addThis.trackingCode =
 
 #
@@ -125,4 +299,3 @@ addThis.trackingCode =
 # link will be created in the actions sidebar of the full-doc view.
 #
 #image.annotation.tool.base.url=../image-annotation-frontend/annotate.jsp
-
