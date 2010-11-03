@@ -211,6 +211,9 @@ public class AdvancedSearchForm {
         builder.append(makeQueryString(value0, facet0, operator1, value1));
         builder.append(makeQueryString(value1, facet1, operator2, value2));
         builder.append(makeQueryString(value2, facet2, "", ""));
+        if (builder.length() == 0) {
+            builder.append("*:*");
+        }
         if (isValidRangeQuery(creationFrom, creationTo)) {
             builder.append(" ").append(makeRangeQueryString("dc_date", creationFrom, creationTo));
         }
