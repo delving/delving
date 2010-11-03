@@ -68,8 +68,6 @@
                 <value>feedback.from</value>
                 <value>debug</value>
                 <value>debug.freemarker</value>
-                <value>message.resource</value>
-                <value>message.cache.seconds</value>
                 <value>log4j.xml</value>
                 <value>portal.name</value>
                 <value>portal.displayName</value>

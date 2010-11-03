@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 public class MessageSourceRepo extends AbstractMessageSource {
     static final String MESSAGES_COLLECTION = "messages";
-    static final String KEY = "path";
+    static final String KEY = "key";
     static final String CONTENT = "content";
     static final String DEFAULT_LANGUAGE = "en";
 
@@ -59,6 +59,10 @@ public class MessageSourceRepo extends AbstractMessageSource {
         }
     }
 
+    public void setTranslation(String key, String message, Locale locale) {
+        getTranslation(key).setContent(message, locale).save();
+    }
+
     @Override
     protected String resolveCodeWithoutArguments(String key, Locale locale) {
         return getTranslation(key).getContent(locale);
@@ -85,39 +89,20 @@ public class MessageSourceRepo extends AbstractMessageSource {
         }
 
         public String getContent(Locale locale) {
-            String content;
-            if (locale != null) {
-                content = (String) object.get(CONTENT + "_" + locale.getLanguage());
-                if (content == null) {
-                    content = getParentMessageSource().getMessage(getKey(), null, locale);
-                    if (content == null) {
-                        content = (String) object.get(CONTENT);
-                    }
-                }
-            }
-            else {
-                content = (String) object.get(CONTENT);
-            }
+            String content = (String) object.get(objectKey(locale));
             if (content == null) {
-                content = "";
+                content = getParentMessageSource().getMessage(getKey(), null, locale);
+//                setContent(content, locale).save();
             }
             return content;
         }
 
-        public void setContent(String content, Locale locale) {
-            BasicDBObject fresh = copyObject();
-            if (locale != null) {
-                fresh.put(CONTENT + "_" + locale.getLanguage(), content);
-                if (DEFAULT_LANGUAGE.equals(locale.getLanguage())) {
-                    fresh.put(CONTENT, content);
-                }
+        public Translation setContent(String content, Locale locale) {
+            object.put(objectKey(locale), content);
+            if (locale != null && DEFAULT_LANGUAGE.equals(locale.getLanguage())) {
+                object.put(objectKey(null), content);
             }
-            else {
-                fresh.put(CONTENT, content);
-
-            }
-            messages().insert(fresh);
-            this.object = fresh;
+            return this;
         }
 
         public void remove() {
@@ -127,20 +112,18 @@ public class MessageSourceRepo extends AbstractMessageSource {
         public void save() {
             messages().save(object);
         }
-
-        private BasicDBObject copyObject() {
-            BasicDBObject fresh = new BasicDBObject();
-            for (String key : object.keySet()) {
-                if (!key.equals("_id")) {
-                    fresh.put(key, object.get(key));
-                }
-            }
-            return fresh;
-        }
-
     }
 
     // === private
+
+    private String objectKey(Locale locale) {
+        if (locale != null) {
+            return CONTENT + "_" + locale.getLanguage();
+        }
+        else {
+            return CONTENT;
+        }
+    }
 
     private DBCollection messages() {
         return db().getCollection(MESSAGES_COLLECTION);
