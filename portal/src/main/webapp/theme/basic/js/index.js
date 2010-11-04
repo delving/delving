@@ -7,10 +7,9 @@ $(document).ready(function() {
         // goto last visited page
         document.location.href = gotoPage;
     }
-
-// load DMS content
-    //delvingPageCall("#information", portalName+"/home/information.dml?embedded=true"," "," "," ");
-    
+    var langTab = "1";
+    if(locale=="no"){langTab=0}
+    $("#aboutTabs").tabs({selected: langTab});    
 });
 
 
