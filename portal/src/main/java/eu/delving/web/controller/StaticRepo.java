@@ -108,7 +108,7 @@ public class StaticRepo {
         }
     }
 
-    public void putPage(String path, String content, Locale locale) {
+    public ObjectId putPage(String path, String content, Locale locale) {
         Page page = getLatestPage(path);
         if (page != null) {
             if (content == null) {
@@ -123,6 +123,7 @@ public class StaticRepo {
             page = new Page(object);
             page.setContent(content, locale);
         }
+        return page.getId();
     }
 
     public boolean setPagePath(String oldPath, String newPath) {
