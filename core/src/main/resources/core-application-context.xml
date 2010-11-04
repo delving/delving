@@ -68,8 +68,6 @@
                 <value>feedback.from</value>
                 <value>debug</value>
                 <value>debug.freemarker</value>
-                <value>message.resource</value>
-                <value>message.cache.seconds</value>
                 <value>log4j.xml</value>
                 <value>portal.name</value>
                 <value>portal.displayName</value>
@@ -152,12 +150,12 @@
     <bean id="sorlIndexUtil" class="eu.europeana.core.util.indexing.SorlIndexUtil"/>
 
     <bean id="solrSelectServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-        <constructor-arg value="#{launchProperties['solr.selectUrl']}"/>
+        <constructor-arg value="#{launchProperties['services.url']}/api/solr"/>
         <property name="soTimeout" value="#{launchProperties['solr.timeout']}"/>
         <property name="connectionTimeout" value="#{launchProperties['solr.timeout']}"/>
         <property name="defaultMaxConnectionsPerHost" value="64"/>
         <property name="maxTotalConnections" value="125"/>
-        <property name="followRedirects" value="false"/>
+        <property name="followRedirects" value="true"/>
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 

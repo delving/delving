@@ -78,7 +78,7 @@ solr.retries = 1
 
 # the absolute external url where the services module is running
 
-services.url = http://localhost:8983/services/
+services.url = http://localhost:8983/services
 
 # The name of the record-definition that is used to index from OAI-PMH repository
 
@@ -209,26 +209,6 @@ debug = false
 
 debug.freemarker = debug
 
-
-###############################################
-#                                             #
-#       i18n Message Properties Settings      #
-#                                             #
-###############################################
-
-# The message.properties files can be both store on disk or in the web-application itself. This default setting will use
-# the message.properties files inside the portal application. In future version it will also be possible to load these
-# properties from the MongoDB storage and edit the values inline in the web-application if your user has the right
-# permissions to do so.
-#
-
-# where the properties can be found
-
-message.resource=file:portal/src/main/message_keys/messages
-
-# How often the properties are refreshed
-
-message.cache.seconds=60
 
 ###############################################
 #                                             #

@@ -388,6 +388,10 @@ public class BeanQueryModelFactory implements QueryModelFactory {
         return SolrBindingService.getFullDocs(matchDoc);
     }
 
+    public FullDoc getFullDocFromOaiPmh(QueryResponse response) throws EuropeanaQueryException {
+        return SolrBindingService.getFullDocFromOaiPmh(response);
+    }
+
     @Override
     public FullDoc getFullDocFromSolrResponse(QueryResponse response) throws EuropeanaQueryException {
         return SolrBindingService.getFullDoc(response);

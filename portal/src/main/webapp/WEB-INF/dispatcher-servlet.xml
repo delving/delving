@@ -72,6 +72,8 @@
 
     <bean id="configInterceptor" class="eu.europeana.core.util.web.ConfigInterceptor"/>
 
+    <bean id="cslInterceptor" class="eu.delving.core.util.ClickStreamLoggerInterceptor"/>
+
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="messageConverters">
             <list>
@@ -101,17 +103,22 @@
         <property name="interceptors">
             <list>
                 <ref bean="localeChangeInterceptor"/>
+                <ref bean="cslInterceptor"/>
                 <ref bean="formatInterceptor"/>
                 <ref bean="configInterceptor"/>
             </list>
         </property>
     </bean>
 
-    <bean id="messageSource" class="eu.delving.core.util.SafeMessageSource">
-        <property name="basename" value="#{launchProperties['message.resource']}"/>
-        <property name="cacheSeconds" value="#{launchProperties['message.cache.seconds']}"/>
-        <property name="fileEncodings" value="UTF-8"/>
-        <property name="defaultEncoding" value="UTF-8"/>
+    <bean id="messageSource" class="eu.delving.web.controller.MessageSourceRepo">
+        <property name="parentMessageSource">
+            <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+                <property name="useCodeAsDefaultMessage" value="true"/>
+                <property name="basename" value="classpath:/i18n/messages"/>
+                <property name="fileEncodings" value="UTF-8"/>
+                <property name="defaultEncoding" value="UTF-8"/>
+            </bean>
+        </property>
     </bean>
 
     <bean id="exceptionResolver" class="eu.europeana.core.util.web.ExceptionResolver"/>
