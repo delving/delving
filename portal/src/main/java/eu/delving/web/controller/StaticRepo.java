@@ -28,6 +28,7 @@ public class StaticRepo {
     static final String IMAGES_COLLECTION = "images";
     static final String PATH = "path";
     static final String CONTENT = "content";
+    static final String HIDDEN = "hidden";
     static final String DEFAULT_LANGUAGE = "en";
 
     @Autowired
@@ -84,6 +85,12 @@ public class StaticRepo {
                     page.remove();
                 }
             }
+        }
+    }
+
+    public void setHidden(String path, boolean hidden) {
+        for (Page page : getVersionPages(path)) {
+            page.setHidden(hidden);
         }
     }
 
@@ -176,6 +183,16 @@ public class StaticRepo {
 
         public String getPath() {
             return "/" + portalName + "/" + object.get(PATH);
+        }
+
+        public boolean isHidden() {
+            Boolean hidden = (Boolean)object.get(HIDDEN);
+            return hidden != null && hidden;
+        }
+
+        public void setHidden(boolean hidden) {
+            object.put(HIDDEN, hidden);
+            pages().save(object);
         }
 
         public String getContent(Locale locale) {
