@@ -123,20 +123,6 @@ object SolrBindingService {
   def createFacetStatistics(facets: JList[FacetField]) = FacetStatisticsMap(facets.toList)
 }
 
-trait FacetHelper {
-
-  val facetMap = Map[String, Any]()
-
-  private[binding] def createFacetMap[T](facets: List[Any])(getKeyValue: T => (Any, Any)) {
-    facets.foreach{
-      facet =>
-        val (key, value) = getKeyValue(facet.asInstanceOf[T])
-        facetMap put (key.toString, value)
-    }
-  }
-
-}
-
 case class FacetMap(private val links : List[FacetQueryLinks]) {
 
   val facetMap = Map[String, FacetQueryLinks]()
@@ -150,11 +136,25 @@ case class FacetMap(private val links : List[FacetQueryLinks]) {
   def getFacet(key: String) : FacetQueryLinks = facetMap.getOrElse(key, new FacetQueryLinks("unknown"))
 }
 
-case class FacetStatisticsMap(private val facets: List[FacetField]) extends FacetHelper {
+case class FacetStatisticsMap(private val facets: List[FacetField]) {
 
-  createFacetMap[FacetField](facets){facet => (facet.getName, facet.getValues.toList) }
+  val facetsMap = Map[String, JList[FacetField.Count]]()
+  facets.foreach{
+    facet =>
+      if (facet.getValueCount != 0) facetsMap put (facet.getName, facet.getValues)
+  }
 
-  def getFacet(key: String) = facetMap.getOrElse(key, "unknown")
+  def facetExists(key: String): Boolean = facetsMap.containsKey(key)
+
+  def availableFacets : JList[String] = facetsMap.keys.toList
+
+  private def getDummyFacetField : FacetField = {
+    val facetField = new FacetField("unknown")
+    facetField.add("nothing", 0)
+    facetField
+  }
+
+  def getFacet(key: String) : JList[FacetField.Count] = facetsMap.getOrElse(key, getDummyFacetField.getValues)
 
 }
 

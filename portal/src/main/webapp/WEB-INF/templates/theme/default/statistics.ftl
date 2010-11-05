@@ -1,1 +1,0 @@
-<#--todo eric to add freemarker padding for the statistics page-->

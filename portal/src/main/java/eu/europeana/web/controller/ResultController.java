@@ -106,8 +106,8 @@ public class ResultController {
         boolean srwFormat = format != null && format.equalsIgnoreCase("srw");
 
         String uri = collId + "/" + recordHash;
-        Map fullParams = new HashMap<String, String[]>();
-        fullParams.putAll(params);
+        Map<String, String[]> fullParams = new HashMap<String, String[]>();
+        fullParams.putAll((Map<? extends String,? extends String[]>) params);
         fullParams.put("uri", new String[]{uri});
 
         // get results
@@ -136,19 +136,24 @@ public class ResultController {
             HttpServletRequest request
     ) throws EuropeanaQueryException, UnsupportedEncodingException {
         @SuppressWarnings("unchecked")
-        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(request.getParameterMap());
+        Map<String, String[]> parameterMap = (Map<String, String[]>) request.getParameterMap();
+        if (parameterMap.isEmpty()) {
+            parameterMap = new HashMap<String, String[]>();
+            parameterMap.put("query", new String[]{"*:*"});
+        }
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(parameterMap);
         solrQuery.setFacet(true);
-        solrQuery.setFacetLimit(100);
+        solrQuery.setFacetMinCount(1);
+        solrQuery.setFacetLimit(300);
         solrQuery.addFacetField("MUNICIPALITY", "PROVIDER", "DATAPROVIDER", "COUNTY");
         solrQuery.setRows(0);
         final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
         final List<FacetField> facetFields = solrResponse.getFacetFields();
 
-        final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
-
         // Create ModelAndView
         ModelAndView page = ControllerUtil.createModelAndViewPage("statistics");
-        page.addObject("facetMap", SolrBindingService.createFacetStatistics(facetFields));
+        final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
+        page.addObject("facetMap", facetStatistics);
         return page;
     }
 
