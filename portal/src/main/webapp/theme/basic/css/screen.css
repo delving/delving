@@ -202,11 +202,33 @@ nav.pagination {
     padding:0;
 }
 
+/*.results.list tr {*/
+    /*margin: .5em 0;*/
+    /*display: block;*/
+    /*width: 100%;*/
+/*}*/
+
+.results.list td {
+    border-bottom: 1px dashed #ccc;
+    padding-top: 1em;
+}
+
+.results.list p {
+    padding:  0;
+    margin: 0;
+}
+
+/* FACETS section *******************************/
+
+nav#facetList {
+    margin: 0 0 1.5em 0;
+}
+
 /* FACETS TOGGLER *******************************/
 
 h4.trigger {
     border-top: 1px solid #ccc;
-	margin: .5em 0;
+	margin: 0 0 .25em 0;
 	background: url(../images/togglerch.gif) no-repeat 0 8px;
     padding: 5px 0 0 20px;
     font-size: 1em;
@@ -231,6 +253,7 @@ h4.active:hover {
 }
 
 .toggle_container {
+    /*background: url(../images/bg-gradient.png) repeat-x top left;*/
 	margin: 0 0 5px;
 	padding: 0;
 	overflow: hidden;

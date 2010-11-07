@@ -1,9 +1,12 @@
-<#--<#import "spring.ftl" as spring >-->
-<#import "spring_form_macros.ftl" as spring />
-<#-- GLOBAL ASSIGNS -->
 <#if user??>
     <#assign user = user/>
 </#if>
+<#--<#import "spring.ftl" as spring >-->
+<#import "spring_form_macros.ftl" as spring />
+
+<#-- GLOBAL ASSIGNS -->
+<#assign locale = springMacroRequestContext.locale>
+
 <#assign view = "table"/>
 <#if RequestParameters.view??>
     <#assign view = RequestParameters.view/>
@@ -77,6 +80,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title>${title}</title>
         <script type="text/javascript">
+            var locale = "${locale}";
             var msgRequired = "<@spring.message 'RequiredField_t'/>";
             var portalName = "/${portalName}";
             var baseThemePath = "/${portalName}/${portalTheme}";
@@ -140,7 +144,6 @@
 
     </script>
     </#if>
-
     </body>
     </html>
 </#macro>
@@ -181,6 +184,37 @@
   </form>
 
 </#macro>
+
+<#macro loginFormModal>
+
+<div id="loginFormModal">
+<h2><@spring.message 'LogIn_t' /></h2>
+
+<form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
+<table>
+    <tr>
+        <td><label for="j_username"><@spring.message 'EmailAddress_t' /></label></td>
+        <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
+    </tr>
+    <tr>
+        <td><label for="j_password"><@spring.message "Password_t" /></label></td>
+        <td><input type='password' id="j_password" name='j_password' maxlength="50"/></td>
+    </tr>
+    <tr>
+        <td>
+            <a href="/${portalName}/forgot-password.html"><@spring.message 'ForgotPassword_t' /></a>
+        </td>
+        <td align="right"><input name="submit_login" type="submit" value="<@spring.message 'LogIn_t' />"/></td>
+    </tr>
+</table>
+<#if errorMessage??>
+
+<strong><@spring.message 'Error_t' />: </strong> Inlog gegevens zijn niet juist
+
+</#if>
+</div>
+</#macro>
+
 <#--
  * resultGrid
  *
@@ -266,7 +300,7 @@
  -->
 <#macro resultBriefList>
 <#assign seq = briefDocs/>
-<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results">
+<table cellspacing="1" cellpadding="0" width="100%" border="0" summary="search results" class="results list">
     <#list seq as cell>
     <tr>
         <td valign="top" width="50">
@@ -328,7 +362,6 @@
 <#macro resultBriefFacets key facetLanguageTag columnSize>
     <#assign facetMap = result.getFacetMap()>
     <#assign facet = facetMap.getFacet(key)>
-
     <#if !facet.type?starts_with("unknown")>
         <h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}_t' /></a></h4>
         <#if facet.links?size &gt; 0>
@@ -639,7 +672,7 @@
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('#mustlogin a'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="#" onclick="highLight('#mustlogin a'); message() return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide"></div>
