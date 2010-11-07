@@ -16,7 +16,7 @@
 
     <bean id="staticRepo" class="eu.delving.web.controller.StaticRepo"/>
 
-    <bean id="messageSource" class="eu.delving.web.controller.MessageSourceRepo">
+    <bean id="messageSource" class="eu.delving.core.util.MessageSourceRepo">
         <property name="parentMessageSource">
             <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
                 <property name="useCodeAsDefaultMessage" value="true"/>

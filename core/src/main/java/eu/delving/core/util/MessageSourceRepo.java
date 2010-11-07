@@ -1,4 +1,4 @@
-package eu.delving.web.controller;
+package eu.delving.core.util;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;

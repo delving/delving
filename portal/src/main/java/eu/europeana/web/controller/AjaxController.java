@@ -21,7 +21,7 @@
 
 package eu.europeana.web.controller;
 
-import eu.delving.web.controller.MessageSourceRepo;
+import eu.delving.core.util.MessageSourceRepo;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedItem;

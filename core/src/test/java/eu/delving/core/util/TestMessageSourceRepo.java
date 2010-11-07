@@ -1,6 +1,7 @@
-package eu.delving.web.controller;
+package eu.delving.core.util;
 
 import com.mongodb.Mongo;
+import eu.delving.core.util.MessageSourceRepo;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

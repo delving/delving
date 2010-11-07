@@ -1,4 +1,4 @@
-package eu.delving.web.controller;
+package eu.delving.core.util;
 
 import java.io.BufferedReader;
 import java.io.File;
