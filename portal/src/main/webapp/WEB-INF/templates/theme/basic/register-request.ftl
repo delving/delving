@@ -3,17 +3,16 @@
 
 <@addHeader "Norvegiana", "",[],[]/>
 
-<section class="grid_3">
-    <header id="branding">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-</section>
+
+<div class="centered">
+    <div class="grid_12" id="branding">
+        <h1 class="gigantic">
+            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
+        </h1>
+    </div>
 
 
-<section role="main" class="grid_9">
+<section role="main" class="grid_4 prefix_4">
 
 <h2><@spring.message 'Register_t' /></h2>
 
@@ -50,6 +49,6 @@
 </#if>
 
 </section>
-
+</div>
 <@addFooter/>
 

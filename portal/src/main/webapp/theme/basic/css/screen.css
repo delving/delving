@@ -27,10 +27,15 @@ a:visited.disabled {
     color: #ccc !important;
 }
 
+.centered {
+    text-align: center;
+}
+
 /* HOME *************************************/
 
 #home {
     text-align: center;
+    display: block;
 }
 
 
@@ -40,6 +45,10 @@ a:visited.disabled {
 }
 
 /* BRANDING *********************************/
+
+div#branding {
+    text-align: center;
+}
 
 div#branding img {
    margin: 0 .25em 0 0;

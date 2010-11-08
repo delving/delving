@@ -5,17 +5,14 @@
 
 <@addHeader "Norvegiana", "",[],[]/>
 
-<section class="grid_3">
-    <header id="branding">
-        <a href="/${portalName}/" title=""/>
-        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
-        </a>
-        <h1 class="large">${portalDisplayName}</h1>
-    </header>
-</section>
+    <div class="grid_12" id="branding">
+        <h1 class="gigantic">
+            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
+        </h1>
+    </div>
 
 
-<section role="main" class="grid_9">
+<section role="main" class="grid_4 prefix_4">
 <h2><@spring.message 'LogIn_t' /></h2>
 
 <form name='f1' id="loginForm" action='j_spring_security_check' method='POST' accept-charset="UTF-8">
@@ -41,7 +38,6 @@
 
 </#if>
 </section>
-
 
 <@addFooter/>
 

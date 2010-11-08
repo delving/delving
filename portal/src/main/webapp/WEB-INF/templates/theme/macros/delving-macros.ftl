@@ -104,7 +104,7 @@
         <@adminBlock/>
 </#macro>
 
-<#macro addFooter>
+<#macro addFooter >
 
     <footer class="grid_12">
         <div class="inner">
@@ -120,10 +120,6 @@
             <a href="http://www.delving.eu" title="Delving">
                 <img src="/${portalName}/${portalTheme}/images/poweredbydelving.png" alt="Proudly Powered by Delving" align="absmiddle"/>
             </a>
-
-
-
-
         </div>
     </footer>
 
