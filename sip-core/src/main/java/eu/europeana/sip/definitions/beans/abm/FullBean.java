@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.definitions.beans;
+package eu.europeana.sip.definitions.beans.abm;
 
 import eu.europeana.core.database.domain.Country;
 import eu.europeana.core.database.domain.Language;

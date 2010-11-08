@@ -19,7 +19,7 @@
  * permissions and limitations under the Licence.
  */
 
-package eu.europeana.sip.definitions.beans;
+package eu.europeana.sip.definitions.beans.abm;
 
 import eu.europeana.sip.definitions.annotations.Europeana;
 import eu.europeana.sip.definitions.annotations.FieldCategory;

@@ -24,10 +24,6 @@ package eu.europeana.sip.gui;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
 import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.definitions.beans.AllFieldBean;
-import eu.europeana.sip.definitions.beans.BriefBean;
-import eu.europeana.sip.definitions.beans.FullBean;
-import eu.europeana.sip.definitions.beans.IdBean;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
@@ -55,10 +51,10 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(String serverUrl) {
+    public SipCreatorGUI(Class<?> beanClass, String serverUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
+        this.sipModel = new SipModel(createAnnotationProcessor(beanClass), new PopupExceptionHandler(), serverUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -95,12 +91,9 @@ public class SipCreatorGUI extends JFrame {
         return bar;
     }
 
-    private AnnotationProcessor createAnnotationProcessor() {
+    private AnnotationProcessor createAnnotationProcessor(Class<?> beanClass) {
         List<Class<?>> list = new ArrayList<Class<?>>();
-        list.add(IdBean.class);
-        list.add(BriefBean.class);
-        list.add(FullBean.class);
-        list.add(AllFieldBean.class);
+        list.add(beanClass);
         AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
         annotationProcessor.setClasses(list);
         return annotationProcessor;
@@ -115,7 +108,7 @@ public class SipCreatorGUI extends JFrame {
                 public void run() {
                     String html = String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage());
                     if (exception instanceof RecordValidationException) {
-                        RecordValidationException rve = (RecordValidationException)exception;
+                        RecordValidationException rve = (RecordValidationException) exception;
                         StringBuilder problemHtml = new StringBuilder(String.format("<html><h3>%s</h3><ul>", message));
                         for (String problem : rve.getProblems()) {
                             problemHtml.append(String.format("<li>%s</li>", problem));
@@ -140,11 +133,15 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    public static void main(final String[] args) {
-        final String serverUrl = args.length > 0 ? args[0] : null;
+    public static void main(final String[] args) throws ClassNotFoundException {
+        if (args.length != 2) {
+            throw new RuntimeException("SipCreatorGUI gets two parameters <bean-class-name> <server-url>");
+        }
+        final Class<?> beanClass = Class.forName(args[0]);
+        final String serverUrl = args[1];
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(serverUrl);
+                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(beanClass, serverUrl);
                 sipCreatorGUI.setVisible(true);
             }
         });
