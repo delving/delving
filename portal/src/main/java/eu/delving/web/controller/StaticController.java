@@ -40,6 +40,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -68,6 +69,7 @@ public class StaticController {
             @RequestParam(required = false) boolean edit,
             @RequestParam(required = false) boolean delete,
             @RequestParam(required = false) boolean approve,
+            @RequestParam(required = false) Boolean hidden,
             @RequestParam(required = false) String newPath,
             HttpServletRequest request
     ) throws IOException {
@@ -102,7 +104,10 @@ public class StaticController {
                     staticRepo.approve(path, version);
                 }
                 else if (delete) {
-                    staticRepo.putPage(path, null);
+                    staticRepo.putPage(path, null, null);
+                }
+                else if (hidden != null) {
+                    staticRepo.setHidden(path, hidden);
                 }
                 mav.addObject("edit", edit);
                 mav.addObject("imagePathList", staticRepo.getImagePaths());
@@ -112,7 +117,11 @@ public class StaticController {
                 }
             }
             StaticRepo.Page page = version != null ? staticRepo.getPage(path, version) : staticRepo.getPage(path);
+            if (page.isHidden() && !isEditor()) {
+                return getRedirect("");
+            }
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + path);
+            mav.addObject("locale", request.getLocale());
             mav.addObject("page", page);
             mav.addObject("embedded", embedded);
         }
@@ -129,7 +138,7 @@ public class StaticController {
             if (content != null && content.trim().isEmpty()) {
                 content = null;
             }
-            staticRepo.putPage(path, content);
+            staticRepo.putPage(path, content, request.getLocale());
         }
         return getRedirect(path);
     }
@@ -193,60 +202,23 @@ public class StaticController {
                 }
             }
             else {
-                mav.addObject("edit", false);
                 mav.addObject("imageExists", staticRepo.getImage(path) != null);
             }
             return mav;
         }
     }
 
-    @RequestMapping(value = {"/**/_.img"}, method = RequestMethod.POST)
-    public String uploadImage(
-            @RequestParam("file") MultipartFile file,
+    @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img", "/**/_.img"}, method = RequestMethod.POST)
+    public String renameImage(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "newPath", required = false) String newPath,
             HttpServletRequest request
     ) throws IOException {
         String path = getPath(request);
         if (!isEditor()) {
             return getRedirect("");
         }
-        if (!file.isEmpty()) {
-            MediaType mediaType = MediaType.parseMediaType(file.getContentType());
-            String extension;
-            if (MediaType.IMAGE_JPEG.isCompatibleWith(mediaType)) {
-                extension = ".jpg.img";
-            }
-            else if (MediaType.IMAGE_PNG.isCompatibleWith(mediaType)) {
-                extension = ".png.img";
-            }
-            else if (MediaType.IMAGE_GIF.isCompatibleWith(mediaType)) {
-                extension = ".gif.img";
-            }
-            else {
-                throw new IOException("Image not compatible with JPG, PNG, or GIF");
-            }
-            String fileName = file.getOriginalFilename();
-            int dot = fileName.lastIndexOf(".");
-            if (dot < 0) {
-                throw new IOException("File name must have extension: " + fileName);
-            }
-            fileName = fileName.substring(0, dot) + extension;
-            int slash = path.lastIndexOf("/");
-            String imagePath = path.substring(0, slash + 1) + fileName;
-            staticRepo.putImage(imagePath, file.getBytes());
-            return getRedirect(imagePath)+"?edit=true";
-        }
-        else {
-            return getRedirect("_.img");
-        }
-    }
-
-    @RequestMapping(value = {"/**/*.jpg.img", "/**/*.png.img", "/**/*.gif.img"}, method = RequestMethod.POST)
-    public String renameImage(
-            @RequestParam("newPath") String newPath,
-            HttpServletRequest request
-    ) throws IOException {
-        String path = getPath(request);
-        if (isEditor()) {
+        if (newPath != null) {
             int extensionLength = ".???.img".length();
             if (newPath.length() < extensionLength + 1) {
                 throw new IOException("new path too short: " + newPath);
@@ -261,7 +233,42 @@ public class StaticController {
             }
             return getRedirect(newPath) + "?edit=false";
         }
-        return getRedirect(path);
+        else if (!file.isEmpty()) {
+            MediaType mediaType = MediaType.parseMediaType(file.getContentType());
+            String extension;
+            if (MediaType.IMAGE_JPEG.isCompatibleWith(mediaType)) {
+                extension = ".jpg.img";
+            }
+            else if (MediaType.IMAGE_PNG.isCompatibleWith(mediaType)) {
+                extension = ".png.img";
+            }
+            else if (MediaType.IMAGE_GIF.isCompatibleWith(mediaType)) {
+                extension = ".gif.img";
+            }
+            else {
+                throw new IOException("Image not compatible with JPG, PNG, or GIF");
+            }
+            if (path.endsWith("_.img")) {
+                String fileName = URLEncoder.encode(file.getOriginalFilename(),"utf-8");
+                int dot = fileName.lastIndexOf(".");
+                if (dot < 0) {
+                    throw new IOException("File name must have extension: " + fileName);
+                }
+                fileName = fileName.substring(0, dot) + extension;
+                int slash = path.lastIndexOf("/");
+                String imagePath = path.substring(0, slash + 1) + fileName;
+                staticRepo.putImage(imagePath, file.getBytes());
+                return getRedirect(imagePath) + "?edit=true";
+            }
+            else {
+                staticRepo.putImage(path, file.getBytes());
+                return getRedirect(path) + "?edit=true";
+            }
+        }
+        else {
+            return getRedirect("_.img");
+        }
+
     }
 
     private boolean isEditor() {

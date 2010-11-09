@@ -1,22 +1,25 @@
 /* ________________BRIEF DOC_______________________*/
 
 function saveQuery(className, queryToSave, queryString){
-    var sr = document.getElementById("msg-save-search");
-    sr.style.display = 'block';
+    var sr = $("#msg-save-search");
+    sr.css("display","block");
     $.ajax({
        type: "POST",
        url: "/portal/save.ajax",
        data: "className="+className+"&query="+queryToSave+"&queryString="+queryString,
        success: function(msg){
-           sr.innerHTML = msgSearchSaveSuccess;
-           var ss = document.getElementById("savedSearchesCount");
-           var currentCount = parseInt(ss.innerHTML, 10);
-           ss.innerHTML = currentCount + 1;
+           
+           sr.html(msgSearchSaveSuccess);
+           //$("#msg-save-search").delay(2000).hide();
+           var ss = $("#savedSearchesCount");
+           var currentCount = parseInt(ss.html(), 10);
+           ss.html(currentCount + 1);
        },
        error: function(msg) {
-            sr.innerHTML = msgSearchSaveFail;
+            sr.html(msgSearchSaveFail);
        }
      });
+    return false;
 }
 
 function showDefaultSmall(obj, iType) {
@@ -72,30 +75,6 @@ function showDefaultLarge(obj,iType){
     }
 }
 
-function sendEmail(objId){
-    $("#form-sendtoafriend").validate({
-        rules: {friendEmail: "required"},
-        messages: {friendEmail:{required:msgRequired,email:msgEmailValid}}
-    });
-    if ($("#form-sendtoafriend").valid()){
-        var sr = document.getElementById("msg-send-email");
-        sr.style.display = 'block';
-        var email = document.getElementById("friendEmail").value;
-        $.ajax({
-           type: "POST",
-           url: "email-to-friend.ajax",
-           data: encodeURI("uri="+objId+"&email=" + email),
-           success: function(msg){
-                sr.innerHTML = msgEmailSendSuccess;
-                document.getElementById("friendEmail").value = "";
-           },
-           error: function(msg) {
-                sr.innerHTML = "<span class='fg-red'>"+msgEmailSendFail+"<span>";
-           }
-         });
-    }
-    return false;
-}
 function addTag(className,tagText,fullDocId,thumbnailId,objTitle,objType){
      $("#form-addtag").validate({
         rules: {tag: "required"}
@@ -144,18 +123,49 @@ function saveItem(className,postTitle,postAuthor,objUri,thumbnail,type){
 ** Resizes displayed images in the brief and full doc displays
  */
 function checkSize(obj,type,w){
+
     if(type=="brief"){
-        if (w > 220) {
-            w = 220;
-            obj.width=w;
+        if (w > 200) {
+            $("#"+obj).css("width","200px");
         }
     }
     else {
         if (w > 255) {
-            w = 255;
-            obj.width=w;
+            $("#"+obj).css("width","300px");
         }
     }
 }
+
+$(document).ready(function(){
+//    if($("a.overlay").length > 0){
+//        $("a.overlay").fancybox({
+//        titleShow : true,
+//        titlePosition: 'inside'
+//        })
+//    }
+
+    if($(".toggle_container").length > 0){
+        //Hide (Collapse) the toggle containers on load
+        $(".toggle_container").hide();
+
+        //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
+        $("h4.trigger").click(function(){
+            $(this).toggleClass("active").next().slideToggle("slow");
+            return false; //Prevent the browser jump to the link anchor
+        });
+
+        //Check to see if there are any active facets that need to be toggled to open
+        var toggles = $(document).find("h4.trigger");
+        $.each(toggles, function(){
+            if($(this).hasClass("active")){
+                $(this).toggleClass("active").next().css("display","block");                
+            }
+        })
+    }
+
+
+});
+
+
 
 

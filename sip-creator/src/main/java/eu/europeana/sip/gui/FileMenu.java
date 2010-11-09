@@ -71,7 +71,7 @@ public class FileMenu extends JMenu {
             chooser.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    return file.getName().endsWith(".xml");
+                    return file.getName().endsWith(".xml") || file.getName().endsWith(".gz");
                 }
 
                 @Override

@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.gui;
 
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.metadata.Path;
 import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.model.FileSet;
@@ -28,6 +29,7 @@ import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -42,6 +44,12 @@ import javax.swing.text.JTextComponent;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -63,53 +71,14 @@ public class DataSetUploadPanel extends JPanel {
     private JTextField recordRootField = new JTextField(FIELD_SIZE);
     private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
     private JButton createUploadZipButton = new JButton("Create and upload ZIP File");
+    private Map<String, JTextField> linkedFields = new TreeMap<String, JTextField>();
+    private JComboBox autoFillBox = new JComboBox(createPrefixChoice());
 
     public DataSetUploadPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));
-        addField("Data Set Spec", specField);
-        specField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                noSpaces();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                noSpaces();
-            }
-
-            private void noSpaces() {
-                String with = specField.getText();
-                final String without = with.replaceAll("\\s+","");
-                if (!with.equals(without)) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            int dot = specField.getCaret().getDot();
-                            specField.setText(without);
-                            specField.getCaret().setDot(dot);
-                        }
-                    });
-                }
-            }
-        });
-        addField("Name", nameField);
-        addField("Provider Name", providerNameField);
-        descriptionField.setLineWrap(true);
-        addField("Description", descriptionField);
-        addField("Prefix", prefixField);
-        addField("Namespace", namespaceField);
-        addField("Schema", schemaField);
-        recordRootField.setEditable(false);
-        addField("Record Root", recordRootField);
-        uniqueElementField.setEditable(false);
-        addField("Unique Element", uniqueElementField);
+        addFields();
         // button line
         add(new JLabel(""));
         add(createUploadZipButton);
@@ -122,10 +91,80 @@ public class DataSetUploadPanel extends JPanel {
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(480, 500));
         wireUp();
+        linkFields();
     }
 
-    private void addField(String prompt, JTextComponent textComponent) {
+    private void addFields() {
+        addField(
+                "Description",
+                "A human-readable description of what the dataset contains.",
+                descriptionField
+        );
+
+        JLabel label = new JLabel("Auto-fill", JLabel.RIGHT);
+        label.setLabelFor(autoFillBox);
+        add(label);
+        add(autoFillBox);
+
+        addField(
+                "Prefix",
+                "The prefix associated with the uploaded format",
+                prefixField
+        );
+        addField(
+                "Namespace",
+                "The URL associated with the prefix",
+                namespaceField
+        );
+        addField(
+                "Schema",
+                "An URL linking to the schema",
+                schemaField
+        );
+
+        addField(
+                "Data Set Spec",
+                "This value is copied from the europeana_collectionName constant.",
+                specField
+        );
+        addField(
+                "Name",
+                "This value is copied from the europeana_collectionTitle constant.",
+                nameField
+        );
+        addField(
+                "Provider Name",
+                "This value is copied from the europeana_provider constant.",
+                providerNameField
+        );
+
+        addField(
+                "Record Root",
+                "This field is set automatically when a record root element is chosen.",
+                recordRootField
+        );
+        addField(
+                "Unique Element",
+                "This field is set automatically when a unique element is chosen.",
+                uniqueElementField
+        );
+    }
+
+    private void linkFields() {
+        linkField("europeana_collectionName", specField);
+        linkField("europeana_collectionTitle", nameField);
+        linkField("europeana_provider", providerNameField);
+    }
+
+    private void linkField(String fieldName, JTextField field) {
+        linkedFields.put(fieldName, field);
+        field.setEditable(false);
+    }
+
+    private void addField(String prompt, String description, JTextComponent textComponent) {
+        String toolTip = String.format("<html><table cellpadding=10><tr><td><h3>%s</h3><hr><p><b>%s<b></p></td></html>", prompt, description);
         JLabel label = new JLabel(prompt, JLabel.RIGHT);
+        label.setToolTipText(toolTip);
         label.setLabelFor(textComponent);
         add(label);
         if (textComponent instanceof JTextArea) {
@@ -137,6 +176,17 @@ public class DataSetUploadPanel extends JPanel {
         else {
             add(textComponent);
         }
+        textComponent.setToolTipText(toolTip);
+        textComponent.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                sipModel.setDataSetDetails(getDetails());
+            }
+        });
     }
 
     private void setDetails(DataSetDetails details) {
@@ -166,6 +216,9 @@ public class DataSetUploadPanel extends JPanel {
     }
 
     private void wireUp() {
+        uniqueElementField.setEditable(false);
+        descriptionField.setLineWrap(true);
+        recordRootField.setEditable(false);
         createUploadZipButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -197,5 +250,61 @@ public class DataSetUploadPanel extends JPanel {
                 createUploadZipButton.setEnabled(complete);
             }
         });
+        specField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                noSpaces();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                noSpaces();
+            }
+
+            private void noSpaces() {
+                String with = specField.getText();
+                final String without = with.replaceAll("\\s+", "");
+                if (!with.equals(without)) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            int dot = specField.getCaret().getDot();
+                            specField.setText(without);
+                            specField.getCaret().setDot(dot);
+                        }
+                    });
+                }
+            }
+        });
+        autoFillBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                    if (itemEvent.getItem() instanceof MetadataNamespace) {
+                        MetadataNamespace ns = (MetadataNamespace)itemEvent.getItem();
+                        prefixField.setText(ns.getPrefix() + "-raw");
+                        namespaceField.setText(ns.getUri());
+                        schemaField.setText(ns.getSchema());
+                    }
+                    else {
+                        prefixField.setText(null);
+                        namespaceField.setText(null);
+                        schemaField.setText(null);
+                    }
+                    sipModel.setDataSetDetails(getDetails());
+                }
+            }
+        });
+    }
+
+    private Object[] createPrefixChoice() {
+        Object[] choices = new Object[MetadataNamespace.values().length + 1];
+        choices[0] = "- custom -";
+        System.arraycopy(MetadataNamespace.values(), 0, choices, 1, MetadataNamespace.values().length);
+        return choices;
     }
 }

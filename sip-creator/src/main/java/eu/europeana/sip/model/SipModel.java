@@ -35,7 +35,7 @@ import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCode;
+import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
@@ -122,10 +122,10 @@ public class SipModel {
         analysisTree = AnalysisTree.create("No Document Selected");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
-        ToolCode toolCode = new ToolCode();
-        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, toolCode);
+        ToolCodeResource toolCodeResource = new ToolCodeResource();
+        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, toolCodeResource);
         recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
-        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, toolCode);
+        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, toolCodeResource);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
@@ -350,14 +350,15 @@ public class SipModel {
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count, final boolean lastRecord) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (lastRecord || count % 100 == 0) {
+                        if (lastRecord || count % 100 == 0) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
                                     normalizeProgressModel.setValue(count);
                                 }
-                            }
-                        });
+                            });
+                            Thread.yield();
+                        }
                     }
                 },
                 new Normalizer.Listener() {

@@ -1,22 +1,15 @@
 package eu.delving.services.controller;
 
-import eu.delving.core.binding.SolrBindingService;
 import eu.delving.services.search.OpenSearchService;
 import eu.europeana.core.BeanQueryModelFactory;
-import eu.europeana.core.querymodel.query.BriefDoc;
-import eu.europeana.core.querymodel.query.QueryType;
 import eu.europeana.core.util.web.ClickStreamLogger;
-import eu.europeana.core.util.web.ControllerUtil;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import java.util.Properties;
 
 /**
  * todo: take another good look at this
@@ -34,39 +27,22 @@ public class OpenSearchController {
     @Autowired
     private BeanQueryModelFactory beanQueryModelFactory;
 
-    private String convertOpenSearchQueryToLuceneQuery(HttpServletRequest request ) {
-        // todo add code here to convert open search query to lucene query
-        return "*:*";
-    }
-
-    @Deprecated
-    @RequestMapping("/open-search.html")
-    public ModelAndView searchController(HttpServletRequest request) throws Exception {
-        // create model and view
-        ModelAndView mav = ControllerUtil.createModelAndViewPage("open-search.xml");
-        // get open search parameters from uri +  convert them to Lucene query language
-        String convertLuceneQuery = convertOpenSearchQueryToLuceneQuery(request);
-        // extract human readible query, this is the open search query (not the luceneQuery)
-        String queryString = "*:*";
-        // create solr query
-        SolrQuery solrQuery = new SolrQuery()
-                .setQuery(convertLuceneQuery)
-                .setRows(12)
-                .setQueryType(QueryType.ADVANCED_QUERY.toString());
-        // get response from solr
-        QueryResponse response = beanQueryModelFactory.getSolrResponse(solrQuery);
-        // bind response to briefDoc and add model
-        List<? extends BriefDoc> briefDocList = SolrBindingService.getBriefDocs(response);
-        mav.addObject("briefDocList", briefDocList);
-        return mav;
-    }
+    @Autowired
+    private Properties launchProperties;
 
     @RequestMapping("/api/open-search")
     public void searchServiceController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/xml");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(OpenSearchService.parseHttpServletRequest(request, beanQueryModelFactory));
+        response.getWriter().write(OpenSearchService.parseHttpServletRequest(request, beanQueryModelFactory, launchProperties));
         response.getWriter().close();
     }
 
+    @RequestMapping("/api/open-search.xml")
+    public void searchServiceDescriptionController(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("text/xml");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(OpenSearchService.renderDescriptionDocument(request, beanQueryModelFactory, launchProperties));
+        response.getWriter().close();
+    }
 }

@@ -1,14 +1,21 @@
 <#import "spring.ftl" as spring />
-<#include "spring_form_macros.ftl"/>
 <#assign thisPage = "forgot-password.html"/>
 
-<#include "inc_header.ftl">
+<#include "includeMarcos.ftl">
 
-<@userBar/>
+<@addHeader "Norvegiana", "",[],[]/>
 
-<h1>${portalDisplayName}</h1>
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
 
-<@simpleSearch/>
+
+<section role="main" class="grid_9">
 
 <h2>Wachtwoord aanvragen</h2>
 
@@ -38,6 +45,8 @@
 <@spring.message 'Error_t' />!<br/>EmailDoesntExist_t <!-- TODO add message -->
 </#if>
 
+</section>
 
-<#include "inc_footer.ftl"/>
+
+<@addFooter/>
 

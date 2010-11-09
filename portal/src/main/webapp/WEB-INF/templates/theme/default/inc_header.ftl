@@ -187,7 +187,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <#-- favicon_red.ico is also available -->
-    <link rel="shortcut icon" href="/${portalName}/favicon.ico"/>
+    <#--<link rel="shortcut icon" href="/${portalName}/favicon.ico"/>-->
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/reset-text-grid.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/jquery-ui-1.8.5.custom.css"/>
     <link rel="stylesheet" type="text/css" href="/${portalName}/${portalTheme}/css/layout-common.css"/>
@@ -328,4 +328,5 @@
 
 <body>
 <@admin/>
+<#--${user.role}-->
 <div id="container" class="container_12">

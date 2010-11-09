@@ -1,34 +1,24 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign thisPage = "logout.html"/>
-<#include "inc_header.ftl">
+<#include "includeMarcos.ftl">
 
-<body>
+<@addHeader "Norvegiana", "",[],[]/>
 
-<div id="sidebar" class="grid_3">
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
 
-    <div id="identity">
-            <h1>Delving</h1>
-            <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
-
-</div>
-
-<div id="main" class="grid_9">
-
-    <div id="top-bar">
-
-        <#include "language_select.ftl">
-    </div>
-
-    <div class="clear"></div>
+<section role="main" class="grid_9">
 
 
     <h3>You have successfully logged out</h3>
 
-</div>
+</section>
 
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 
-</body>
-</html>

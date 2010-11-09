@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -67,7 +68,9 @@ public class DataSetController {
     private SolrServer solrServer;
 
     @ExceptionHandler(AccessKeyException.class)
-    public @ResponseBody String accessKey(AccessKeyException e, HttpServletResponse response) {
+    public
+    @ResponseBody
+    String accessKey(AccessKeyException e, HttpServletResponse response) {
         response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
         return String.format("<?xml version=\"1.0\">\n<error>\n%s\n</error>\n", e.getMessage());
     }
@@ -193,6 +196,17 @@ public class DataSetController {
                 }
                 dataSet.parseRecords(
                         zis,
+                        QName.valueOf(details.getRecordRoot()),
+                        QName.valueOf(details.getUniqueElement())
+                );
+            }
+            else if (entry.getName().endsWith(".gz")) {
+                if (dataSet == null || details == null) {
+                    zis.close();
+                    throw new IOException("Data set details must come first in the uploaded zip file");
+                }
+                dataSet.parseRecords(
+                        new GZIPInputStream(zis),
                         QName.valueOf(details.getRecordRoot()),
                         QName.valueOf(details.getUniqueElement())
                 );

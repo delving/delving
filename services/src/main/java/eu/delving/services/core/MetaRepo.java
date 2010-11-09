@@ -74,7 +74,7 @@ public interface MetaRepo {
         void save();
 
         void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
-        void addMapping(String mappingCode);
+        void addMapping(String mappingXML);
 
         Map<String,Mapping> mappings() throws BadArgumentException;
         int getRecordCount();
@@ -217,7 +217,6 @@ public interface MetaRepo {
         }
     }
 
-    String DATABASE_NAME = "MetaRepo";
     String RECORD_COLLECTION_PREFIX = "Records.";
     String DATASETS_COLLECTION = "Datasets";
     String HARVEST_STEPS_COLLECTION = "HarvestSteps";

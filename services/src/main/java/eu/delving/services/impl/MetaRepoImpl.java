@@ -8,6 +8,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import eu.delving.core.metadata.MetadataException;
 import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
@@ -15,14 +16,16 @@ import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
+import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCode;
+import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -45,6 +48,8 @@ import java.util.TreeSet;
  */
 
 public class MetaRepoImpl implements MetaRepo {
+    private static final MetadataNamespace MAPPED_NAMESPACE = MetadataNamespace.ABM;
+    private static final boolean MAPPED_NAMESPACE_ACCESS_KEY_REQUIRED = true;
     private Logger log = Logger.getLogger(getClass());
     private int responseListSize = 5;
     private int harvestStepSecondsToLive = 5;
@@ -62,6 +67,9 @@ public class MetaRepoImpl implements MetaRepo {
     @Autowired
     private MetadataModel metadataModel;
 
+    @Value("#{launchProperties['services.mongo.dbName']}")
+    private String mongoDatabaseName = null;
+
     public void setResponseListSize(int responseListSize) {
         this.responseListSize = responseListSize;
     }
@@ -72,7 +80,7 @@ public class MetaRepoImpl implements MetaRepo {
 
     private synchronized DB db() {
         if (mongoDatabase == null) {
-            mongoDatabase = mongo.getDB(DATABASE_NAME);
+            mongoDatabase = mongo.getDB(mongoDatabaseName);
         }
         return mongoDatabase;
     }
@@ -398,28 +406,21 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void addMapping(String recordMapping) {
-            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
-            String prefix = "icn";
-            String namespace = "http://www.icn.nl/";
-            String schema = "http://www.icn.nl/schemas/ICN-V3.2.xsd";
-            boolean accessKeyRequired = true;
-            // todo: get these from the content of the mapping code.  maybe from annotations or their replacement?
-
+        public void addMapping(String mappingXML) {
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
                 mappings = new BasicDBObject();
                 object.put(MAPPINGS, mappings);
             }
             DBObject format = new BasicDBObject();
-            format.put(MetadataFormat.PREFIX, prefix);
-            format.put(MetadataFormat.NAMESPACE, namespace);
-            format.put(MetadataFormat.SCHEMA, schema);
-            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
+            format.put(MetadataFormat.PREFIX, MAPPED_NAMESPACE.getPrefix());
+            format.put(MetadataFormat.NAMESPACE, MAPPED_NAMESPACE.getUri());
+            format.put(MetadataFormat.SCHEMA, MAPPED_NAMESPACE.getSchema());
+            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, MAPPED_NAMESPACE_ACCESS_KEY_REQUIRED);
             DBObject mapping = new BasicDBObject();
             mapping.put(Mapping.FORMAT, format);
-            mapping.put(Mapping.RECORD_MAPPING, recordMapping);
-            mappings.put(prefix, mapping);
+            mapping.put(Mapping.RECORD_MAPPING, mappingXML);
+            mappings.put(MAPPED_NAMESPACE.getPrefix(), mapping);
             saveObject();
         }
 
@@ -441,6 +442,12 @@ public class MetaRepoImpl implements MetaRepo {
                 for (String prefix : mappingsObject.keySet()) {
                     mappingMap.put(prefix, new MappingImpl(this, (DBObject) mappingsObject.get(prefix)));
                 }
+                // todo: workaround for faking ESE harvesting
+                Mapping originalMapping = mappingMap.get(MAPPED_NAMESPACE.getPrefix());
+                if (originalMapping != null) {
+                    mappingMap.put(MetadataNamespace.ESE.getPrefix(), new FakeESEMappingImpl((MappingInternal) originalMapping));
+                }
+                // todo: workaround for faking ESE harvesting
             }
             return mappingMap;
         }
@@ -496,7 +503,7 @@ public class MetaRepoImpl implements MetaRepo {
             if (getMetadataFormat().getPrefix().equals(prefix)) {
                 mapping = null;
                 if (getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
-                    log.warn("Access key violation for raw format "+prefix);
+                    log.warn("Access key violation for raw format " + prefix);
                     throw new CannotDisseminateFormatException(String.format("Raw metadata format requires access key, but %s is not valid", accessKey));
                 }
             }
@@ -506,7 +513,7 @@ public class MetaRepoImpl implements MetaRepo {
                     throw new CannotDisseminateFormatException(String.format("No mapping found to prefix %s", prefix));
                 }
                 if (mapping.getMetadataFormat().isAccessKeyRequired() && !serviceAccessToken.checkKey(accessKey)) {
-                    log.warn("Access key violation for mapped format "+prefix);
+                    log.warn("Access key violation for mapped format " + prefix);
                     throw new CannotDisseminateFormatException(String.format("Mapping to metadata format requires access key, but %s is not valid", accessKey));
                 }
             }
@@ -532,6 +539,109 @@ public class MetaRepoImpl implements MetaRepo {
 
     private interface MappingInternal {
         void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException;
+    }
+
+    // for now we pretend that we have an ESE mapping
+
+    private class FakeESEMappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
+        private final String[] STRIP_FOR_ESE = {
+                "europeana:uri",
+                "europeana:collectionName",
+                "europeana:collectionTitle",
+                "europeana:hasObject",
+                "europeana:language",
+                "europeana:country",
+        };
+        private MappingInternal icnMapping;
+        private ESEMetadataFormat eseMetadataFormat = new ESEMetadataFormat();
+
+        private FakeESEMappingImpl(MappingInternal icnMapping) {
+            this.icnMapping = icnMapping;
+        }
+
+        @Override
+        public MetadataFormat getMetadataFormat() {
+            return eseMetadataFormat;
+        }
+
+        @Override
+        public RecordMapping getRecordMapping() {
+            return null;  // there is none!
+        }
+
+        @Override
+        public int compareTo(Mapping o) {
+            return getMetadataFormat().getPrefix().compareTo(o.getMetadataFormat().getPrefix());
+        }
+
+        @Override
+        public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
+            icnMapping.map(records, namespaces);
+            Iterator<? extends Record> recordWalk = records.iterator();
+            while (recordWalk.hasNext()) {
+                Record record = recordWalk.next();
+                boolean hasEuropeanaObject = false;
+                List<FieldEntry> entries = FieldEntry.createList(record.getXmlString(MAPPED_NAMESPACE.getPrefix()));
+                Iterator<FieldEntry> walk = entries.iterator();
+                while (walk.hasNext()) {
+                    FieldEntry entry = walk.next();
+                    if (entry.getTag().startsWith(MAPPED_NAMESPACE.getPrefix())) {
+                        walk.remove();
+                    }
+                    for (String strip : STRIP_FOR_ESE) {
+                        if (entry.getTag().equals(strip)) {
+                            walk.remove();
+                        }
+                    }
+                    if (entry.getTag().equals("europeana:object")) {
+                        hasEuropeanaObject = true;
+                    }
+                }
+                String recordString = FieldEntry.toString(entries, false);
+                ((RecordImpl) record).addFormat(getMetadataFormat(), recordString);
+                if (!hasEuropeanaObject) {
+                    recordWalk.remove();
+                }
+            }
+        }
+
+        private class ESEMetadataFormat implements MetadataFormat {
+
+            @Override
+            public String getPrefix() {
+                return "ese";
+            }
+
+            @Override
+            public void setPrefix(String value) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public String getSchema() {
+                return "http://www.europeana.eu/schemas/ese/ESE-V3.3.xsd";
+            }
+
+            @Override
+            public void setSchema(String value) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public String getNamespace() {
+                return "http://www.europeana.eu/schemas/ese/";
+            }
+
+            @Override
+            public void setNamespace(String value) {
+                throw new RuntimeException();
+            }
+
+            @Override
+            public boolean isAccessKeyRequired() {
+                return false;  // ESE is free-for-all
+            }
+        }
     }
 
     private class MappingImpl implements Mapping, MappingInternal, Comparable<Mapping> {
@@ -608,10 +718,10 @@ public class MetaRepoImpl implements MetaRepo {
 
         private MappingRunner getMappingRunner() throws MetadataException {
             if (mappingRunner == null) {
-                ToolCode toolCode = new ToolCode();
+                ToolCodeResource toolCodeResource = new ToolCodeResource();
                 RecordMapping recordMapping = getRecordMapping();
                 recordMapping.toCompileCode(metadataModel.getRecordDefinition());
-                mappingRunner = new MappingRunner(toolCode.getCode() + getRecordMapping());
+                mappingRunner = new MappingRunner(toolCodeResource.getCode() + getRecordMapping());
             }
             return mappingRunner;
         }

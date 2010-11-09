@@ -5,7 +5,7 @@
     <artifactId>services</artifactId>
     <packaging>war</packaging>
     <name>Services</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <inceptionYear>2010</inceptionYear>
     <parent>
         <groupId>eu.europeana</groupId>
@@ -114,12 +114,12 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </dependency>
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

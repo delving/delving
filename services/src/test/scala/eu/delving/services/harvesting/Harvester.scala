@@ -62,11 +62,14 @@ object Harvester {
         XML.load(new URL(baseUrl + "?verb=ListRecords&resumptionToken=" + resumptionToken))
 
       val token: NodeSeq = elem \\ "resumptionToken"
+      val completeListSize = (elem \\ "@completeListSize").text
+      val cursor = (elem \\ "@cursor").text
       val records = elem \\ "record"
       records.foreach(f => writer write (f.toString))
       val totalRecordsRetrieved = records.size + recordsRetrieved
       if (totalRecordsRetrieved % 1000 == 0)
-        println(format("%s : %d : %d (%s)", baseUrl, totalRecordsRetrieved, pagesRetrieved, (new Date().toString)))
+        println(format("[%s of %s] => %s : (set %s with prefix %s to file %s) : (%d records in %d requests on %s)",
+          cursor, completeListSize, baseUrl, setSpec, metadataPrefix, fileName, totalRecordsRetrieved, pagesRetrieved, (new Date().toString)))
       if (token.text.isEmpty) // use for testing || pagesRetrieved >= 1
         (pagesRetrieved + 1, totalRecordsRetrieved)
       else

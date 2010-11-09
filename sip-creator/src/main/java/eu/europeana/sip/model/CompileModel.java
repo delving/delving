@@ -30,7 +30,7 @@ import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCode;
+import eu.europeana.sip.core.ToolCodeResource;
 import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
@@ -64,7 +64,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private CompileTimer compileTimer = new CompileTimer();
     private MetadataModel metadataModel;
     private Type type;
-    private ToolCode toolCode;
+    private ToolCodeResource toolCodeResource;
     private RecordValidator recordValidator;
     private String selectedPath;
     private String editedCode;
@@ -82,10 +82,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         COMMITTED
     }
 
-    public CompileModel(Type type, MetadataModel metadataModel, ToolCode toolCode) {
+    public CompileModel(Type type, MetadataModel metadataModel, ToolCodeResource toolCodeResource) {
         this.type = type;
         this.metadataModel = metadataModel;
-        this.toolCode = toolCode;
+        this.toolCodeResource = toolCodeResource;
     }
 
     @Override
@@ -254,7 +254,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 mappingCode = getCompileCode(editedCode);
                 log.info("Edited code used");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + mappingCode);
+            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {

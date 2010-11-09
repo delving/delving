@@ -16,7 +16,7 @@ public class TestMetaModel {
 
     @Test
     public void generateCode() throws Exception {
-        InputStream modelInputStream = getClass().getResource("/record-definition.xml").openStream();
+        InputStream modelInputStream = getClass().getResource("/ese-record-definition.xml").openStream();
         InputStream mappingInputStream = getClass().getResource("/record-mapping.xml").openStream();
         RecordDefinition recordDefinition = RecordDefinition.read(modelInputStream);
         RecordMapping mapping = RecordMapping.read(mappingInputStream, recordDefinition);

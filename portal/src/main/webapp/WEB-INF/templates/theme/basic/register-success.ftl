@@ -1,28 +1,20 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign thisPage = "register-success.html">
-<#include "spring_form_macros.ftl"/>
-<#include "inc_header.ftl"/>
+
 <#assign pageId = "rsp">
-<div id="header">
+<#include "includeMarcos.ftl">
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<@addHeader "Norvegiana", "",[],[]/>
 
-    <div class="grid_9">
+<section class="grid_3">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
+</section>
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<div id="main" class="grid_9">
+<section role="main" class="grid_9">
 
 
     <h1 id="register_success"><@spring.message "registrationSucceed_t" /></h1>
@@ -48,6 +40,7 @@
         <input name="submit_login" type="submit" value="Login" class="button"/>
      </fieldset>
     </form>
-</div>
-	    <#include "inc_footer.ftl"/>
+</section>
+
+<@addFooter/>
 

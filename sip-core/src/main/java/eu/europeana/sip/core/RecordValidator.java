@@ -35,34 +35,40 @@ import org.dom4j.io.XMLWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
  * Validate a record
  * <p/>
+ * todo: move this class to the definitions module
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class RecordValidator {
+    private static final int [] PRIMES = {
+            4105001,      4105019,      4105033,      4105069,
+            4105091,      4105093,      4105103,      4105111,
+            4105151,      4105169,      4105181,      4105183,
+    };
     private Logger log = Logger.getLogger(getClass());
-    private Map<String, FieldDefinition> fieldMap;
-    private Map<String, String> constantMap;
-    private Set<String> unique;
+    private Map<String, FieldDefinition> fieldMap = new HashMap<String, FieldDefinition>();
+    private BitSet [] bitSet;
+    private boolean checkUniqueness;
 
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
-        if (metadataModel.getRecordDefinition().root.elements != null) {
-            throw new RuntimeException("Hierarchical model not yet supported");
-        }
+        this.checkUniqueness = checkUniqueness;
+
         if (checkUniqueness) {
-            unique = new HashSet<String>();
-            constantMap = new HashMap<String, String>();
+            bitSet = new BitSet[PRIMES.length];
+            for (int walk=0; walk<bitSet.length; walk++) {
+                bitSet[walk] = new BitSet(PRIMES[walk]);
+            }
         }
         fieldMap = metadataModel.getRecordDefinition().getMappableFields();
     }
@@ -119,15 +125,15 @@ public class RecordValidator {
                     }
                     problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldEntry.getTag(), fieldEntry.getValue(), enumString.toString()));
                 }
-                if (field.constant && constantMap != null) {
-                    String value = constantMap.get(fieldEntry.getTag());
-                    if (value == null) {
-                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
-                    }
-                    else if (!value.equals(fieldEntry.getValue())) {
-                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
-                    }
-                }
+//                if (field.constant && constantMap != null) {
+//                    String value = constantMap.get(fieldEntry.getTag());
+//                    if (value == null) {
+//                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
+//                    }
+//                    else if (!value.equals(fieldEntry.getValue())) {
+//                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
+//                    }
+//                }
                 String regex = field.regularExpression;
                 if (regex != null) {
                     if (!fieldEntry.getValue().matches(regex)) {
@@ -142,11 +148,8 @@ public class RecordValidator {
                         problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
                 }
-                if (field.id && unique != null) {
-                    if (unique.contains(fieldEntry.getValue())) {
-                        problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
-                    }
-                    unique.add(fieldEntry.getValue());
+                if (field.id && checkUniqueness) {
+                    checkEntryUniqueness(problems, fieldEntry);
                 }
             }
         }
@@ -173,6 +176,34 @@ public class RecordValidator {
                 problems.add(String.format("Single-valued field [%s] had %d values", field.getTag(), counter.count));
             }
         }
+    }
+
+    private void checkEntryUniqueness(List<String> problems, FieldEntry fieldEntry) {
+        int hashCode = fieldEntry.getValue().hashCode();
+        boolean setEverywhere = true;
+        for (int walk=0; walk<bitSet.length && setEverywhere; walk++) {
+            if (!getBit(hashCode, walk)) {
+                setEverywhere = false;
+            }
+        }
+        if (setEverywhere) {
+            problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
+        }
+        for (int walk=0; walk<bitSet.length && setEverywhere; walk++) {
+            setBit(hashCode, walk);
+        }
+    }
+
+    private boolean getBit(int hashCode, int bitSetIndex) {
+        int offset = PRIMES[(bitSetIndex+1) % PRIMES.length];
+        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
+        return bitSet[bitSetIndex].get(bitNumber);
+    }
+
+    private void setBit(int hashCode, int bitSetIndex) {
+        int offset = PRIMES[(bitSetIndex+1) % PRIMES.length];
+        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
+        bitSet[bitSetIndex].set(bitNumber);
     }
 
     private static class Counter {

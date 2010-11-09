@@ -21,19 +21,21 @@
 
 package eu.europeana.sip.xml;
 
+import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.metadata.RecordMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCode;
+import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,13 +81,18 @@ public class Normalizer implements Runnable {
             if (recordMapping == null) {
                 return;
             }
-            ToolCode toolCode = new ToolCode();
+            ToolCodeResource toolCodeResource = new ToolCodeResource();
             FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
             if (storeNormalizedFile) {
-                fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
-                fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+                Writer out = fileSetOutput.getOutputWriter();
+                out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
+                out.write("<metadata");
+                writeNamespace(out, MetadataNamespace.DC);
+                writeNamespace(out, MetadataNamespace.DCTERMS);
+                writeNamespace(out, MetadataNamespace.EUROPEANA);
+                out.write(">\n");
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCode.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
+            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
             MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordMapping.getRecordRoot(), parserListener);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
@@ -162,6 +169,10 @@ public class Normalizer implements Runnable {
         catch (IOException e) {
             throw new RuntimeException("IO Problem", e);
         }
+    }
+
+    private void writeNamespace(Writer writer, MetadataNamespace namespace) throws IOException {
+        writer.write(String.format(" xmlns:%s=\"%s\"", namespace.getPrefix(), namespace.getUri()));
     }
 
     public void abort() {

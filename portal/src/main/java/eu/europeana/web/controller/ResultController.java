@@ -21,11 +21,19 @@
 
 package eu.europeana.web.controller;
 
+import eu.delving.core.binding.FacetStatisticsMap;
+import eu.delving.core.binding.SolrBindingService;
 import eu.europeana.core.database.domain.StaticPageType;
-import eu.europeana.core.querymodel.query.*;
+import eu.europeana.core.querymodel.query.BriefBeanView;
+import eu.europeana.core.querymodel.query.EuropeanaQueryException;
+import eu.europeana.core.querymodel.query.FullBeanView;
+import eu.europeana.core.querymodel.query.QueryModelFactory;
+import eu.europeana.core.querymodel.query.QueryType;
 import eu.europeana.core.util.web.ClickStreamLogger;
 import eu.europeana.core.util.web.ControllerUtil;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -38,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,7 +84,7 @@ public class ResultController {
         final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(params);
 
         // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "xml/full-doc-srw" : "full-doc");
         page.addObject("result", fullResultView);
         if (fullResultView.getDocIdWindowPager() != null) {
             page.addObject("pagination", fullResultView.getDocIdWindowPager());
@@ -94,22 +103,22 @@ public class ResultController {
     @SuppressWarnings("unchecked")
     public ModelAndView fullDocRest(
             @PathVariable String collId, @PathVariable String recordHash,
+            @RequestParam(value = "format", required = false) String format,
             HttpServletRequest request
     ) throws Exception {
         Map params = request.getParameterMap();
-        String format = (String) params.get("format");
-        boolean srwFormat = format != null && format.equals("srw");
+        boolean srwFormat = format != null && format.equalsIgnoreCase("srw");
 
         String uri = collId + "/" + recordHash;
-        Map fullParams = new HashMap<String, String[]>();
-        fullParams.putAll(params);
+        Map<String, String[]> fullParams = new HashMap<String, String[]>();
+        fullParams.putAll((Map<? extends String,? extends String[]>) params);
         fullParams.put("uri", new String[]{uri});
 
         // get results
         final FullBeanView fullResultView = beanQueryModelFactory.getFullResultView(fullParams);
 
         // create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "full-doc-srw" : "full-doc");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(srwFormat ? "xml/full-doc-srw" : "full-doc");
         page.addObject("result", fullResultView);
         if (fullResultView.getDocIdWindowPager() != null) {
             page.addObject("pagination", fullResultView.getDocIdWindowPager());
@@ -122,6 +131,50 @@ public class ResultController {
         page.addObject("imageAnnotationToolBaseUrl", imageAnnotationToolBaseUrl);
         clickStreamLogger.logFullResultView(request, fullResultView, page, fullResultView.getFullDoc().getId());
         return page;
+    }
+
+
+    @RequestMapping("/statistics.html")
+    public ModelAndView statisticsHtml(
+            @RequestParam(value = "query", required = false) String query,
+            HttpServletRequest request
+    ) throws EuropeanaQueryException, UnsupportedEncodingException {
+        @SuppressWarnings("unchecked")
+        Map<String, String[]> parameterMap = (Map<String, String[]>) request.getParameterMap();
+        if (parameterMap.isEmpty()) {
+            parameterMap = new HashMap<String, String[]>();
+            parameterMap.put("query", new String[]{"*:*"});
+        }
+        SolrQuery solrQuery = beanQueryModelFactory.createFromQueryParams(parameterMap);
+        solrQuery.setFacet(true);
+        solrQuery.setFacetMinCount(1);
+        solrQuery.setFacetLimit(300);
+        solrQuery.addFacetField("MUNICIPALITY", "PROVIDER", "DATAPROVIDER", "COUNTY");
+        solrQuery.setRows(0);
+        final QueryResponse solrResponse = beanQueryModelFactory.getSolrResponse(solrQuery);
+        final List<FacetField> facetFields = solrResponse.getFacetFields();
+
+        // Create ModelAndView
+        ModelAndView page = ControllerUtil.createModelAndViewPage("statistics");
+        final FacetStatisticsMap facetStatistics = SolrBindingService.createFacetStatistics(facetFields);
+        page.addObject("facetMap", facetStatistics);
+        return page;
+    }
+
+    private String getViewName(String format) {
+        String viewName = "brief-doc-window";
+        if (format != null) {
+            if (format.equalsIgnoreCase("srw")) {
+                viewName = "xml/brief-doc-window-srw";
+            }
+            else if (format.equalsIgnoreCase("rss")) {
+                viewName = "xml/brief-doc-window-rss";
+            }
+            else if (format.equalsIgnoreCase("rdf")) {
+                viewName = "xml/brief-doc-window-rdf";
+            }
+        }
+        return viewName;
     }
 
     @RequestMapping("/brief-doc.html")
@@ -137,7 +190,7 @@ public class ResultController {
         BriefBeanView briefBeanView = beanQueryModelFactory.getBriefResultView(solrQuery, request.getQueryString());
 
         // Create ModelAndView
-        ModelAndView page = ControllerUtil.createModelAndViewPage("brief-doc-window");
+        ModelAndView page = ControllerUtil.createModelAndViewPage(getViewName(format));
         page.addObject("display", format);
         page.addObject("result", briefBeanView);
         page.addObject("query", briefBeanView.getPagination().getPresentationQuery().getUserSubmittedQuery());

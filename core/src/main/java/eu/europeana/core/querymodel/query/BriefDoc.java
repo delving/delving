@@ -21,6 +21,8 @@
 
 package eu.europeana.core.querymodel.query;
 
+import eu.delving.core.binding.FieldValue;
+
 /**
  * @author Gerald de Jong <geralddejong@gmail.com>
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -41,6 +43,9 @@ public interface BriefDoc { // if multiple-> show first
     // debug and scoring information
     int getScore();
     String getDebugQuery();
+
+    // get FieldValue from bindingMap
+    FieldValue getFieldValue(String key);
 
     void setIndex(int index);
     void setFullDocUrl(String fullDocUrl);

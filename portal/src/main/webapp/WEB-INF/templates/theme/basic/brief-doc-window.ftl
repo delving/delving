@@ -13,55 +13,115 @@
     <#assign justTheQuery = "${RequestParameters.query}"/>
 </#if>
 
-<#include "inc_header.ftl">
+<#include "includeMarcos.ftl">
 
-<@userBar/>
+<@addHeader "Norvegiana", "",["results.js"],[]/>
+<script type="text/javascript">
+    var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
+    var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
+</script>
 
-<h1>${portalDisplayName}</h1>
+<section class="grid_3" role="complementary">
+    <header id="branding">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-<@simpleSearch/>
+    <h3><@spring.message 'RefineYourSearch_t' /></h3>
+    <nav id="facetList">
+        <@resultBriefFacets "DATAPROVIDER",  "DataProvider", 2/>
+        <@resultBriefFacets "COUNTY",  "County", 2/>
+        <@resultBriefFacets "MUNICIPALITY",  "Municipality", 2/>
+        <@resultBriefFacets "DCTYPE",  "dc_type", 2/>
+        <#--<@resultBriefFacets "YEAR",  "dc_year", 2/>-->
+        <@resultBriefFacets "LANGUAGE",  "dc_language", 2/>
+        <@resultBriefFacets "PROVIDER",  "Provider", 2/>
+    </nav>
 
-<div class="resultQueryBreadcrumbs">
-    <@resultBriefQueryBreadcrumbs/>
-</div>
+    <nav id="userActions">
+        <@resultsBriefUserActions/>
+    </nav>
+</section>
 
-<div class="resultCount">
-    <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
-</div>
+<section class="grid_9" id="results" role="main">
 
-<div class="resultSorting">
-    <@sortResults/>
-</div>
+    <div id="userBar" role="navigation">
+        <div class="inner">
+        <@userBar/>
+        </div>
+    </div>
 
-<div class="resultViewSelect">
-    <@viewSelect/>
-</div>
+    <div class="clear"></div>
 
-<div class="pagination">
-    <@resultBriefPagination/>
-</div>
+    <div id="search" role="search">
+        <div class="inner">
+            <@simpleSearch/>
+        </div>
+    </div>
 
-<#if briefDocs?size &gt; 0>
-    <#if view = "table">
-        <@resultBriefGrid/>
+    <div class="clear"></div>           
+
+    <div id="nav_query_breadcrumbs">
+        <div class="inner">
+            <h4><@resultBriefQueryBreadcrumbs/></h4>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <div id="result_overview">
+
+        <div id="result_count">
+            <div class="inner">
+            <@spring.message 'Results_t' /> ${pagination.getStart()?c} - ${pagination.getLastViewableRecord()?c} <@spring.message 'Of_t' /> ${pagination.getNumFound()?c}
+            </div>
+        </div>
+    
+            <div id="result_view_select">
+                <div class="inner">
+                <@viewSelect/>
+                </div>
+            </div>
+
+        <div id="result_sort">
+            <div class="inner">
+            <@sortResults/>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="clear"></div>
+
+    <nav class="pagination">
+        <div class="inner">
+            <@resultBriefPaginationStyled/>
+        </div>
+    </nav>
+
+    <div class="inner">
+    <#if briefDocs?size &gt; 0>
+        <#if view = "table">
+            <@resultBriefGrid/>
+        <#else>
+            <@resultBriefList/>
+        </#if>
     <#else>
-        <@resultBriefList/>
+        <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
     </#if>
-<#else>
-    <div id="no-result"><@spring.message 'NoItemsFound_t' /></div>
-</#if>
+    </div>
 
-<div class="pagination">
-    <@resultBriefPagination/>
-</div>
+    <nav class="pagination">
+        <div class="inner">
+            <@resultBriefPaginationStyled/>
+        </div>
+    </nav>
 
-<div id="facetList">
-    <@resultFacets/>
-</div>
+</section>
 
-<div id="userActions">
-    <@resultsBriefUserActions/>
-</div>
 
-<#include "inc_footer.ftl"/>
+<@addFooter/>
 

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Implementing FileSet, handling all the files related to the original xml file.]
@@ -76,9 +77,18 @@ public class FileSetImpl implements FileSet {
     public InputStream getInputStream() {
         checkWorkerThread();
         try {
-            return new FileInputStream(inputFile);
+            InputStream inputStream;
+            if (inputFile.getName().endsWith(".gz")) {
+                inputStream = new GZIPInputStream(new FileInputStream(inputFile));
+            }
+            else {
+                inputStream = new FileInputStream(inputFile);
+            }
+            return inputStream;
         }
         catch (FileNotFoundException e) {
+            userNotifier.tellUser("Unable to open input file", e);
+        } catch (IOException e) {
             userNotifier.tellUser("Unable to open input file", e);
         }
         return null;
