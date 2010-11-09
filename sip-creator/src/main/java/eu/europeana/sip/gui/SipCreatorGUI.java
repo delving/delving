@@ -50,7 +50,7 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(Class<?> beanClass, String serverUrl) {
+    public SipCreatorGUI(String serverUrl) {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.sipModel = new SipModel(loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
@@ -93,7 +93,7 @@ public class SipCreatorGUI extends JFrame {
     private MetadataModel loadMetadataModel() {
         try {
             MetadataModelImpl metadataModel = new MetadataModelImpl();
-            metadataModel.setRecordDefinitionResource("/record-definition.xml");
+            metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
             return metadataModel;
         }
         catch (IOException e) {
@@ -138,14 +138,13 @@ public class SipCreatorGUI extends JFrame {
     }
 
     public static void main(final String[] args) throws ClassNotFoundException {
-        if (args.length != 2) {
-            throw new RuntimeException("SipCreatorGUI gets two parameters <bean-class-name> <server-url>");
-        }
-        final Class<?> beanClass = Class.forName(args[0]);
-        final String serverUrl = args[1];
+//        if (args.length != 1) {
+//            throw new RuntimeException("SipCreatorGUI gets two parameters <server-url>");
+//        }
+        final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(beanClass, serverUrl);
+                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(serverUrl);
                 sipCreatorGUI.setVisible(true);
             }
         });

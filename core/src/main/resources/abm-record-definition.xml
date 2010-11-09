@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <record-definition>
-    <root tag="record">
+    <root localName="record">
         <field prefix="abm" localName="municipality">
             <fullDoc>true</fullDoc>
             <category>ABM</category>
