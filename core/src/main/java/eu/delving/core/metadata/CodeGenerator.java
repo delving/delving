@@ -84,7 +84,7 @@ public class CodeGenerator {
                     "%s.%s %s",
                     fieldDefinition.getPrefix(),
                     fieldDefinition.getLocalName(),
-                    fieldDefinition.getFieldNameString()
+                    GroovyMunge.mungePath(fieldDefinition.path.toString())
             ));
         }
         else {
