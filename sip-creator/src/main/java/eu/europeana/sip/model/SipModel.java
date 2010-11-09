@@ -632,6 +632,7 @@ public class SipModel {
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to fetch the next record", e);
+                metadataParser = null;
             }
         }
     }

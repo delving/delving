@@ -49,6 +49,7 @@ public class MetadataParser {
     private XMLStreamReader2 input;
     private Path recordRoot;
     private int recordCount;
+    private Path path = new Path();
     private Listener listener;
 
     public interface Listener {
@@ -72,7 +73,6 @@ public class MetadataParser {
         MetadataRecord metadataRecord = null;
         GroovyNode rootNode = null;
         Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
-        Path path = new Path();
         StringBuilder value = new StringBuilder();
         boolean withinRecord = false;
         while (metadataRecord == null) {
