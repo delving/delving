@@ -24,10 +24,17 @@ package eu.europeana.sip.core;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.Tag;
+import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,6 +51,7 @@ import java.util.TreeMap;
  */
 
 public class RecordValidator {
+    private Logger log = Logger.getLogger(getClass());
     private Map<String, FieldDefinition> fieldMap;
     private Map<String, String> constantMap;
     private Set<String> unique;
@@ -59,11 +67,30 @@ public class RecordValidator {
         fieldMap = metadataModel.getRecordDefinition().getMappableFields();
     }
 
-    public void validate(MetadataRecord metadataRecord, List<FieldEntry> fieldEntries) throws RecordValidationException {
-        List<String> problems = new ArrayList<String>();
-        validateAgainstAnnotations(fieldEntries, problems);
-        if (!problems.isEmpty()) {
-            throw new RecordValidationException(metadataRecord, problems);
+    public String validate(String recordString, List<String> problems) {
+        try {
+            Document document = DocumentHelper.parseText(recordString);
+            validate(document);
+            StringWriter sw = new StringWriter();
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter writer = new XMLWriter(sw, format);
+            writer.write(document);
+            return sw.toString();
+        }
+        catch (Exception e) {
+            problems.add("Problem parsing: " + e.toString());
+        }
+        return "Invalid";
+    }
+
+    private void validate(Document document) {
+        validate(document.getRootElement(), new Path());
+    }
+
+    private void validate(Element element, Path path) {
+        path.push(Tag.create(element.getNamespacePrefix(), element.getName()));
+        if (element.hasContent()) {
+            log.info(String.format("Validate [%s] content [%s]", path.toString(), element.getTextTrim()));
         }
     }
 

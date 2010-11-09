@@ -22,7 +22,6 @@
 package eu.europeana.sip.xml;
 
 import eu.delving.core.metadata.RecordMapping;
-import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -35,6 +34,7 @@ import eu.europeana.sip.model.SipModel;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,13 +92,17 @@ public class Normalizer implements Runnable {
             while ((record = parser.nextRecord()) != null && running) {
                 try {
                     String output = mappingRunner.runMapping(record);
-                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
-                    recordValidator.validate(record, fieldEntries);
-                    String validated = FieldEntry.toString(fieldEntries, true);
-                    if (storeNormalizedFile) {
-                        fileSetOutput.getOutputWriter().write(validated);
+                    List<String> problems = new ArrayList<String>();
+                    String validated = recordValidator.validate(output, problems);
+                    if (problems.isEmpty()) {
+                        if (storeNormalizedFile) {
+                            fileSetOutput.getOutputWriter().write(validated);
+                        }
+                        fileSetOutput.recordNormalized();
                     }
-                    fileSetOutput.recordNormalized();
+                    else {
+                        throw new RecordValidationException(record, problems);
+                    }
                 }
                 catch (MappingException e) {
                     if (discardInvalid && fileSetOutput.getDiscardedWriter() != null) {

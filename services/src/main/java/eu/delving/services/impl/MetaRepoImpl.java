@@ -15,11 +15,9 @@ import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
-import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCode;
 import org.apache.log4j.Logger;
@@ -576,19 +574,20 @@ public class MetaRepoImpl implements MetaRepo {
                 try {
                     MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getMetadataFormat().getPrefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
-                    List<FieldEntry> fieldEntries = FieldEntry.createList(recordString);
-                    recordValidator.validate(metadataRecord, fieldEntries);
-                    String recordLines = FieldEntry.toString(fieldEntries, false);
-                    RecordImpl recordImpl = (RecordImpl) record;
-                    recordImpl.addFormat(getMetadataFormat(), recordLines);
+                    List<String> problems = new ArrayList<String>();
+                    String validated = recordValidator.validate(recordString, problems);
+                    if (problems.isEmpty()) {
+                        RecordImpl recordImpl = (RecordImpl) record;
+                        recordImpl.addFormat(getMetadataFormat(), validated);
+                    }
+                    else {
+                        log.info("invalid record: " + recordString);
+                        invalidCount++;
+                        walk.remove();
+                    }
                 }
                 catch (MappingException e) {
                     log.warn("mapping exception: " + e);
-                    invalidCount++;
-                    walk.remove();
-                }
-                catch (RecordValidationException e) {
-                    log.warn("record Validation exception: " + e);
                     invalidCount++;
                     walk.remove();
                 }

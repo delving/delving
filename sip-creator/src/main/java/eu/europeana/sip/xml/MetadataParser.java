@@ -35,7 +35,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Stack;
+import java.util.TreeMap;
 
 /**
  * Iterate through the xml file, producing groovy nodes.
@@ -50,6 +52,8 @@ public class MetadataParser {
     private Path recordRoot;
     private int recordCount;
     private Path path = new Path();
+    private Map<String,String> namespaces = new TreeMap<String,String>();
+    private MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
     private Listener listener;
 
     public interface Listener {
@@ -101,6 +105,7 @@ public class MetadataParser {
                         }
                         else {
                             nodeName = path.equals(recordRoot) ? "input" : input.getPrefix() + "_" + Sanitizer.tagToVariable(input.getLocalName());
+                            namespaces.put(input.getPrefix(), input.getNamespaceURI());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
                         if (input.getAttributeCount() > 0) { // todo: sometimes java.lang.IllegalStateException: Current state not START_ELEMENT        
@@ -126,7 +131,7 @@ public class MetadataParser {
                     if (path.equals(recordRoot)) {
                         withinRecord = false;
                         recordCount++;
-                        metadataRecord = new MetadataRecord(rootNode, recordCount);
+                        metadataRecord = factory.fromGroovyNode(rootNode, recordCount);
                         if (listener != null) {
                             listener.recordsParsed(recordCount, false);
                         }

@@ -25,7 +25,6 @@ import eu.delving.core.metadata.FieldMapping;
 import eu.delving.core.metadata.MappingModel;
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.RecordMapping;
-import eu.europeana.sip.core.FieldEntry;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -41,6 +40,7 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -258,10 +258,14 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {
-                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
-                    recordValidator.validate(metadataRecord, fieldEntries);
-                    String validated = FieldEntry.toString(fieldEntries, true);
-                    compilationComplete(validated);
+                    List<String> problems = new ArrayList<String>();
+                    String validated = recordValidator.validate(output, problems);
+                    if (problems.isEmpty()) {
+                        compilationComplete(validated);
+                    }
+                    else {
+                        throw new RecordValidationException(metadataRecord, problems);
+                    }
                 }
                 else {
                     compilationComplete(output);
