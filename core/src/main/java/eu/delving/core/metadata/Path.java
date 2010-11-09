@@ -40,7 +40,7 @@ public class Path implements Comparable<Path>, Serializable {
 
     public Path(String pathString) {
         if (!pathString.startsWith("/")) {
-            throw new IllegalArgumentException("Path string must start at the root with slash");
+            throw new IllegalArgumentException("Path string must start at the root with slash: ["+pathString+"]");
         }
         for (String part : pathString.substring(1).split("/")) {
             stack.push(Tag.create(part));

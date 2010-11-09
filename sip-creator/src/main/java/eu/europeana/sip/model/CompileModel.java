@@ -63,10 +63,16 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
     private MetadataModel metadataModel;
+    private Type type;
     private ToolCode toolCode;
     private RecordValidator recordValidator;
     private String selectedPath;
     private String editedCode;
+
+    public enum Type {
+        RECORD,
+        FIELD
+    }
 
     public enum State {
         UNCOMPILED,
@@ -76,7 +82,8 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         COMMITTED
     }
 
-    public CompileModel(MetadataModel metadataModel, ToolCode toolCode) {
+    public CompileModel(Type type, MetadataModel metadataModel, ToolCode toolCode) {
+        this.type = type;
         this.metadataModel = metadataModel;
         this.toolCode = toolCode;
     }
@@ -172,27 +179,48 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
         return outputDocument;
     }
 
+    public String toString() {
+        return type.toString();
+    }
+
     // === privates
 
     private String getDisplayCode() {
-        if (selectedPath == null) {
-            return "// no code";
-        }
-        else {
-            return recordMapping.toDisplayCode(metadataModel.getRecordDefinition(), selectedPath);
+        switch (type) {
+            case RECORD:
+                return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+            case FIELD:
+                if (selectedPath == null) {
+                    return "// no code";
+                }
+                else {
+                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition(), selectedPath);
+                }
+            default:
+                throw new RuntimeException();
         }
     }
 
     private String getCompileCode() {
-        if (selectedPath == null) {
-            return "print 'nothing selected'";
-        }
-        else {
-            return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
+        switch (type) {
+            case RECORD:
+                return recordMapping.toCompileCode(metadataModel.getRecordDefinition());
+            case FIELD:
+                if (selectedPath == null) {
+                    return "print 'nothing selected'";
+                }
+                else {
+                    return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
+                }
+            default:
+                throw new RuntimeException();
         }
     }
 
     private String getCompileCode(String editedCode) {
+        if (type == Type.RECORD) {
+            throw new RuntimeException();
+        }
         if (selectedPath == null) {
             return "print 'nothing selected'";
         }
@@ -266,6 +294,10 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
 
         private void compilationComplete(final String result) {
             SwingUtilities.invokeLater(new DocumentSetter(outputDocument, result));
+        }
+
+        public String toString() {
+            return type.toString();
         }
     }
 

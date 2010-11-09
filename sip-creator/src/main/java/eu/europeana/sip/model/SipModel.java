@@ -123,9 +123,9 @@ public class SipModel {
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
         ToolCode toolCode = new ToolCode();
-        recordCompileModel = new CompileModel(metadataModel, toolCode);
+        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, toolCode);
         recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
-        fieldCompileModel = new CompileModel(metadataModel, toolCode);
+        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, toolCode);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
