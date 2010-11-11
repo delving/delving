@@ -83,6 +83,9 @@ public class ElementDefinition {
     public FieldDefinition getFieldDefinition(Path path) {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
+                if (fieldDefinition.category.equals("INDEX_TIME_ADDITION")) {
+                    continue;
+                }
                 if (path.equals(fieldDefinition.path)) {
                     return fieldDefinition;
                 }

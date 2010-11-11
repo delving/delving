@@ -92,6 +92,7 @@ public class RecordValidator {
         }
         catch (Exception e) {
             problems.add("Problem parsing: " + e.toString());
+            return "Invalid";
         }
         out.getBuffer().delete(0, contextBegin);
         out.getBuffer().delete(out.getBuffer().length() - contextEnd, out.getBuffer().length());
@@ -101,6 +102,10 @@ public class RecordValidator {
     private void validate(Document document, List<String> problems, Set<String> entries) {
         Element validateElement = document.getRootElement();
         Element recordElement = validateElement.element("record");
+        if (recordElement == null) {
+            problems.add("Problem: Missing record element");
+            return;
+        }
         validate(recordElement, new Path(), problems, entries);
     }
 
@@ -139,7 +144,22 @@ public class RecordValidator {
             log.info("Field: " + fieldDefinition);
             log.info(String.format("Validate [%s] content [%s]", fieldDefinition.path, text));
             entries.add(entryString);
+            validate(text, fieldDefinition, problems);
             return false;
+        }
+    }
+
+    private void validate(String text, FieldDefinition field, List<String> problems) {
+        if (field.options != null && !field.valueMapped && !field.options.contains(text)) {
+            StringBuilder enumString = new StringBuilder();
+            Iterator<String> walk = field.options.iterator();
+            while (walk.hasNext()) {
+                enumString.append(walk.next());
+                if (walk.hasNext()) {
+                    enumString.append(',');
+                }
+            }
+            problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, enumString.toString()));
         }
     }
 

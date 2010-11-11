@@ -56,7 +56,7 @@ public class TestRecordValidator {
         problems.clear();
     }
 
-    private String toString(String [] array) {
+    private String toString(String[] array) {
         StringBuilder out = new StringBuilder();
         for (String line : array) {
             out.append(line.trim()).append('\n');
@@ -64,7 +64,7 @@ public class TestRecordValidator {
         return out.toString();
     }
 
-    private void test(String message, String[] expectArray, String[] inputArray) {
+    private void validate(String message, String[] expectArray, String[] inputArray) {
         String expect = toString(expectArray);
         String input = toString(inputArray);
         log.info("input:\n" + input);
@@ -82,9 +82,26 @@ public class TestRecordValidator {
         );
     }
 
+    private void problem(String [] inputArray, String problemContains) {
+        String input = toString(inputArray);
+        log.info("input:\n" + input);
+        recordValidator.validate(input, problems);
+        Assert.assertFalse("Expected problems", problems.isEmpty());
+        boolean found = false;
+        for (String problem : problems) {
+            log.info("Problem: "+problem);
+            if (problem.contains(problemContains)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            Assert.fail(String.format("Expected to find a problem containing [%s]", problemContains));
+        }
+    }
+
     @Test
     public void duplicateRemoval() {
-        test(
+        validate(
                 "Duplicate not removed",
                 new String[]{
                         "<record>",
@@ -103,7 +120,7 @@ public class TestRecordValidator {
 
     @Test
     public void emptyRemoval() {
-        test(
+        validate(
                 "Empty not removed",
                 new String[]{
                         "<record>",
@@ -120,30 +137,62 @@ public class TestRecordValidator {
         Assert.assertTrue("Problems", problems.isEmpty());
     }
 
+    @Test
+    public void optionsTrue() {
+        validate(
+                "Empty not removed",
+                new String[]{
+                        "<record>",
+                        "<europeana:type>SOUND</europeana:type>",
+                        "</record>"
+                },
+                new String[]{
+                        "<record>",
+                        "<europeana:type>SOUND</europeana:type>",
+                        "</record>"
+                }
+        );
+    }
+
+    @Test
+    public void optionsFalse() {
+        problem(
+                new String[]{
+                        "<record>",
+                        "<europeana:type>SOwUND</europeana:type>",
+                        "</record>"
+                },
+                "which does not belong to"
+        );
+    }
+
+    @Test
+    public void noRecord() throws RecordValidationException {
+        problem(
+                new String[]{
+                        "<europeana:title>illegal</europeana:title>"
+                },
+                "Missing record element"
+        );
+    }
+
+    @Test
+    public void spuriousTag() throws RecordValidationException {
+        problem(
+                new String[]{
+                        "<record>",
+                        "<description>illegal</description>",
+                        "</record>"
+                },
+                "No field definition found"
+        );
+    }
+
     /*
     @Test
     public void missingIsShownXx() throws RecordValidationException {
         validFields.remove(0);
         compare("[europeana:isShownAt or europeana:isShownBy]");
-    }
-
-    @Test
-    public void duplicateOrEmpty() throws RecordValidationException {
-        compare(
-                new String[]{
-                        "<dc:identifier>one</dc:identifier>",
-                        "<dc:creator>God</dc:creator>",
-                        "<dc:creator></dc:creator>",
-                        "<dc:identifier>one</dc:identifier>",
-                }
-                ,
-                new String[]{
-                        "<dc:creator>God</dc:creator>",
-                        "<dc:identifier>one</dc:identifier>"
-                }
-                ,
-                null
-        );
     }
 
     @Test
