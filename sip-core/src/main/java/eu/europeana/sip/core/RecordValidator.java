@@ -23,6 +23,7 @@ package eu.europeana.sip.core;
 
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.NamespaceDefinition;
 import eu.delving.core.metadata.Path;
 import eu.delving.core.metadata.Tag;
 import org.apache.log4j.Logger;
@@ -51,42 +52,52 @@ import java.util.TreeMap;
  */
 
 public class RecordValidator {
-    private static final int [] PRIMES = {
-            4105001,      4105019,      4105033,      4105069,
-            4105091,      4105093,      4105103,      4105111,
-            4105151,      4105169,      4105181,      4105183,
+    private static final int[] PRIMES = {
+            4105001, 4105019, 4105033, 4105069,
+            4105091, 4105093, 4105103, 4105111,
+            4105151, 4105169, 4105181, 4105183,
     };
     private Logger log = Logger.getLogger(getClass());
     private Map<String, FieldDefinition> fieldMap = new HashMap<String, FieldDefinition>();
-    private BitSet [] bitSet;
+    private BitSet[] bitSet;
     private boolean checkUniqueness;
+    private String context;
+    private int contextBegin, contextEnd;
 
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
-        this.checkUniqueness = checkUniqueness;
-
-        if (checkUniqueness) {
+        if (this.checkUniqueness = checkUniqueness) {
             bitSet = new BitSet[PRIMES.length];
-            for (int walk=0; walk<bitSet.length; walk++) {
+            for (int walk = 0; walk < bitSet.length; walk++) {
                 bitSet[walk] = new BitSet(PRIMES[walk]);
             }
         }
-        fieldMap = metadataModel.getRecordDefinition().getMappableFields();
+        this.fieldMap = metadataModel.getRecordDefinition().getMappableFields();
+        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<validate\n");
+        for (NamespaceDefinition namespaceDefinition : metadataModel.getRecordDefinition().namespaces) {
+            contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
+        }
+        contextString.append(">\n%s</validate>\n");
+        this.context = contextString.toString();
+        this.contextBegin = this.context.indexOf("%s");
+        this.contextEnd = this.context.length() - (this.contextBegin + 2);
     }
 
     public String validate(String recordString, List<String> problems) {
+        String contextualizedRecord = String.format(context, recordString);
+        StringWriter out = new StringWriter();
         try {
-            Document document = DocumentHelper.parseText(recordString);
+            Document document = DocumentHelper.parseText(contextualizedRecord);
             validate(document);
-            StringWriter sw = new StringWriter();
             OutputFormat format = OutputFormat.createPrettyPrint();
-            XMLWriter writer = new XMLWriter(sw, format);
+            XMLWriter writer = new XMLWriter(out, format);
             writer.write(document);
-            return sw.toString();
         }
         catch (Exception e) {
             problems.add("Problem parsing: " + e.toString());
         }
-        return "Invalid";
+        out.getBuffer().delete(0, contextBegin);
+        out.getBuffer().delete(out.getBuffer().length() - contextEnd, out.getBuffer().length());
+        return out.toString();
     }
 
     private void validate(Document document) {
@@ -181,7 +192,7 @@ public class RecordValidator {
     private void checkEntryUniqueness(List<String> problems, FieldEntry fieldEntry) {
         int hashCode = fieldEntry.getValue().hashCode();
         boolean setEverywhere = true;
-        for (int walk=0; walk<bitSet.length && setEverywhere; walk++) {
+        for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
             if (!getBit(hashCode, walk)) {
                 setEverywhere = false;
             }
@@ -189,19 +200,19 @@ public class RecordValidator {
         if (setEverywhere) {
             problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
         }
-        for (int walk=0; walk<bitSet.length && setEverywhere; walk++) {
+        for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
             setBit(hashCode, walk);
         }
     }
 
     private boolean getBit(int hashCode, int bitSetIndex) {
-        int offset = PRIMES[(bitSetIndex+1) % PRIMES.length];
+        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
         int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
         return bitSet[bitSetIndex].get(bitNumber);
     }
 
     private void setBit(int hashCode, int bitSetIndex) {
-        int offset = PRIMES[(bitSetIndex+1) % PRIMES.length];
+        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
         int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
         bitSet[bitSetIndex].set(bitNumber);
     }

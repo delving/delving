@@ -39,6 +39,8 @@ import java.util.TreeMap;
 @XStreamAlias("record-definition")
 public class RecordDefinition {
 
+    public List<NamespaceDefinition> namespaces;
+
     public ElementDefinition root;
 
     void setPaths() {

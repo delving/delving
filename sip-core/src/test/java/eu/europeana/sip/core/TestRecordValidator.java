@@ -1,6 +1,7 @@
 package eu.europeana.sip.core;
 
 import eu.delving.core.metadata.MetadataModelImpl;
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +9,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -45,15 +45,63 @@ public class TestRecordValidator {
     };
     private Logger log = Logger.getLogger(getClass());
     private RecordValidator recordValidator;
+    private List<String> problems = new ArrayList<String>();
     private List<String> validFields = new ArrayList<String>(Arrays.asList(VALID_FIELDZ));
 
     @Before
     public void prepare() throws IOException {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
-        metadataModel.setRecordDefinitionResource("/record-definition.xml");
+        metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
         recordValidator = new RecordValidator(metadataModel, true);
+        problems.clear();
     }
 
+    private String toString(String [] array) {
+        StringBuilder out = new StringBuilder();
+        for (String line : array) {
+            out.append(line.trim()).append('\n');
+        }
+        return out.toString();
+    }
+
+    private void test(String message, String[] expectArray, String[] inputArray) {
+        String expect = toString(expectArray);
+        String input = toString(inputArray);
+        log.info("input:\n" + input);
+        String validated = recordValidator.validate(input, problems);
+        for (String problem : problems) {
+            log.info("Problem: " + problem);
+        }
+        Assert.assertTrue("Problems", problems.isEmpty());
+        validated = toString(validated.split("\n"));
+        log.info("validated:\n" + validated);
+        assertEquals(
+                message,
+                expect,
+                validated
+        );
+    }
+
+    @Test
+    public void duplicateRemoval() {
+        test(
+                "Duplicate not removed",
+                new String[]{
+                        "<record>",
+                        "<dc:identifier>one</dc:identifier>",
+                        "</record>"
+                },
+                new String[]{
+                        "<record>",
+                        "<dc:identifier>one</dc:identifier>",
+                        "<dc:identifier>one</dc:identifier>",
+                        "</record>"
+                }
+        );
+        Assert.assertTrue("Problems", problems.isEmpty());
+    }
+
+    /*
     private void compareList(List<String> given, List<String> expect, String problemString) {
         StringBuilder input = new StringBuilder();
         for (String line : given) {
@@ -166,4 +214,5 @@ public class TestRecordValidator {
         validFields.set(2,"<europeana:provider>another provider</europeana:provider>");
         compare("multiple values [another provider]");
     }
+    */
 }
