@@ -206,6 +206,7 @@ public class AnalysisPanel extends JPanel {
                 analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(false);
+                constantFieldPanel.refresh();
             }
 
             @Override
