@@ -35,6 +35,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
@@ -151,15 +153,16 @@ public class RecordValidator {
 
     private void validate(String text, FieldDefinition field, List<String> problems) {
         if (field.options != null && !field.valueMapped && !field.options.contains(text)) {
-            StringBuilder enumString = new StringBuilder();
-            Iterator<String> walk = field.options.iterator();
-            while (walk.hasNext()) {
-                enumString.append(walk.next());
-                if (walk.hasNext()) {
-                    enumString.append(',');
-                }
+            String optionsString = getOptionsString(field);
+            problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, optionsString));
+        }
+        if (field.url) {
+            try {
+                new URL(text);
             }
-            problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, enumString.toString()));
+            catch (MalformedURLException e) {
+                problems.add(String.format("URL value for [%s] was [%s] which is malformed", field.path, text));
+            }
         }
     }
 
@@ -178,17 +181,6 @@ public class RecordValidator {
                     counterMap.put(fieldEntry.getPath(), counter);
                 }
                 counter.count++;
-                if (field.options != null && !field.valueMapped && !field.options.contains(fieldEntry.getValue())) {
-                    StringBuilder enumString = new StringBuilder();
-                    Iterator<String> walk = field.options.iterator();
-                    while (walk.hasNext()) {
-                        enumString.append(walk.next());
-                        if (walk.hasNext()) {
-                            enumString.append(',');
-                        }
-                    }
-                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldEntry.getTag(), fieldEntry.getValue(), enumString.toString()));
-                }
 //                if (field.constant && constantMap != null) {
 //                    String value = constantMap.get(fieldEntry.getTag());
 //                    if (value == null) {
@@ -274,4 +266,17 @@ public class RecordValidator {
         int count;
     }
     */
+
+    private String getOptionsString(FieldDefinition field) {
+        StringBuilder enumString = new StringBuilder();
+        Iterator<String> walk = field.options.iterator();
+        while (walk.hasNext()) {
+            enumString.append(walk.next());
+            if (walk.hasNext()) {
+                enumString.append(',');
+            }
+        }
+        return enumString.toString();
+    }
+
 }

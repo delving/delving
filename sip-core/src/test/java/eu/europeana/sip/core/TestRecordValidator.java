@@ -188,6 +188,18 @@ public class TestRecordValidator {
         );
     }
 
+    @Test
+    public void spuriousURI() throws RecordValidationException {
+        problem(
+                new String[]{
+                        "<record>",
+                        "<europeana:isShownBy>httpthis is not</europeana:isShownBy>",
+                        "</record>"
+                },
+                "malformed"
+        );
+    }
+
     /*
     @Test
     public void missingIsShownXx() throws RecordValidationException {
