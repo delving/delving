@@ -48,7 +48,7 @@ public class FieldListModel extends AbstractListModel {
     private Unmapped unmapped;
 
     public FieldListModel(MetadataModel metadataModel) {
-        this.fieldDefinitions = new ArrayList<FieldDefinition>(metadataModel.getRecordDefinition().getMappableFields().values());
+        this.fieldDefinitions = new ArrayList<FieldDefinition>(metadataModel.getRecordDefinition().getMappableFields());
         Collections.sort(fieldDefinitions, new Comparator<FieldDefinition>() {
             @Override
             public int compare(FieldDefinition field0, FieldDefinition field1) {
