@@ -25,6 +25,7 @@ import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.NamespaceDefinition;
 import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.Tag;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -34,14 +35,11 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Validate a record
@@ -58,22 +56,22 @@ public class RecordValidator {
             4105151, 4105169, 4105181, 4105183,
     };
     private Logger log = Logger.getLogger(getClass());
-    private Map<String, FieldDefinition> fieldMap = new HashMap<String, FieldDefinition>();
+    private RecordDefinition recordDefinition;
     private BitSet[] bitSet;
     private boolean checkUniqueness;
     private String context;
     private int contextBegin, contextEnd;
 
     public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
+        this.recordDefinition = metadataModel.getRecordDefinition();
         if (this.checkUniqueness = checkUniqueness) {
             bitSet = new BitSet[PRIMES.length];
             for (int walk = 0; walk < bitSet.length; walk++) {
                 bitSet[walk] = new BitSet(PRIMES[walk]);
             }
         }
-        this.fieldMap = metadataModel.getRecordDefinition().getMappableFields();
         StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<validate\n");
-        for (NamespaceDefinition namespaceDefinition : metadataModel.getRecordDefinition().namespaces) {
+        for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
             contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
         }
         contextString.append(">\n%s</validate>\n");
@@ -87,7 +85,7 @@ public class RecordValidator {
         StringWriter out = new StringWriter();
         try {
             Document document = DocumentHelper.parseText(contextualizedRecord);
-            validate(document);
+            validate(document, problems, new TreeSet<String>());
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(out, format);
             writer.write(document);
@@ -100,17 +98,49 @@ public class RecordValidator {
         return out.toString();
     }
 
-    private void validate(Document document) {
-        validate(document.getRootElement(), new Path());
+    private void validate(Document document, List<String> problems, Set<String> entries) {
+        Element validateElement = document.getRootElement();
+        Element recordElement = validateElement.element("record");
+        validate(recordElement, new Path(), problems, entries);
     }
 
-    private void validate(Element element, Path path) {
+    private boolean validate(Element element, Path path, List<String> problems, Set<String> entries) {
         path.push(Tag.create(element.getNamespacePrefix(), element.getName()));
-        if (element.hasContent()) {
-            log.info(String.format("Validate [%s] content [%s]", path.toString(), element.getTextTrim()));
+        boolean hasElements = false;
+        Iterator walk = element.elementIterator();
+        while (walk.hasNext()) {
+            Element subelement = (Element) walk.next();
+            boolean duplicate = validate(subelement, path, problems, entries);
+            if (duplicate) {
+                walk.remove();
+            }
+            hasElements = true;
+        }
+        if (!hasElements) {
+            if (element.hasContent()) {
+                boolean fieldDuplicate = validate(element.getTextTrim(), recordDefinition.getFieldDefinition(path), problems, entries);
+                path.pop();
+                return fieldDuplicate;
+            }
+        }
+        path.pop();
+        return false;
+    }
+
+    private boolean validate(String text, FieldDefinition fieldDefinition, List<String> problems, Set<String> entries) {
+        String entryString = fieldDefinition + "=" + text;
+        if (entries.contains(entryString)) {
+            return true;
+        }
+        else {
+            log.info("Field: " + fieldDefinition);
+            log.info(String.format("Validate [%s] content [%s]", fieldDefinition.path, text));
+            entries.add(entryString);
+            return false;
         }
     }
 
+    /*
     private void validateAgainstAnnotations(List<FieldEntry> fieldEntries, List<String> problems) {
         Map<Path, Counter> counterMap = new HashMap<Path, Counter>();
         for (FieldEntry fieldEntry : fieldEntries) {
@@ -220,4 +250,5 @@ public class RecordValidator {
     private static class Counter {
         int count;
     }
+    */
 }

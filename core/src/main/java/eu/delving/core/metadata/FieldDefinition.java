@@ -116,11 +116,11 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
 
     @Override
     public String toString() {
-        return String.format("FieldDefinition(%s)", tag);
+        return String.format("FieldDefinition(%s)", path);
     }
 
     @Override
     public int compareTo(FieldDefinition fieldDefinition) {
-        return tag.compareTo(fieldDefinition.tag);
+        return path.compareTo(fieldDefinition.path);
     }
 }
