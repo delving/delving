@@ -167,7 +167,7 @@ public class TestRecordValidator {
     }
 
     @Test
-    public void noRecord() throws RecordValidationException {
+    public void noRecord() {
         problem(
                 new String[]{
                         "<europeana:title>illegal</europeana:title>"
@@ -177,7 +177,7 @@ public class TestRecordValidator {
     }
 
     @Test
-    public void spuriousTag() throws RecordValidationException {
+    public void spuriousTag() {
         problem(
                 new String[]{
                         "<record>",
@@ -189,7 +189,7 @@ public class TestRecordValidator {
     }
 
     @Test
-    public void spuriousURI() throws RecordValidationException {
+    public void spuriousURI() {
         problem(
                 new String[]{
                         "<record>",
@@ -199,60 +199,55 @@ public class TestRecordValidator {
                 "malformed"
         );
     }
+    
+    @Test
+    public void uniqueness() {
+        validate(
+                "Should have worked",
+                new String[]{
+                        "<record>",
+                        "<europeana:uri>something</europeana:uri>",
+                        "</record>"
+                },
+                new String[]{
+                        "<record>",
+                        "<europeana:uri>something</europeana:uri>",
+                        "</record>"
+                }
+        );
+        problem(
+                new String[]{
+                        "<record>",
+                        "<europeana:uri>something</europeana:uri>",
+                        "</record>"
+                },
+                "must be unique but the value"
+        );
+    }
+
+    @Test
+    public void multivalued() {
+        problem(
+                new String[]{
+                        "<record>",
+                        "<europeana:type>IMAGE</europeana:type>",
+                        "<europeana:type>SOUND</europeana:type>",
+                        "</record>"
+                },
+                "has more than one value"
+        );
+    }
+
+//    @Test
+//    public void regularExpression() {
+//        // todo
+//    }
 
     /*
     @Test
-    public void missingIsShownXx() throws RecordValidationException {
+    public void missingIsShownXx() {
         validFields.remove(0);
         compare("[europeana:isShownAt or europeana:isShownBy]");
-    }
-
-    @Test
-    public void spuriousTag() throws RecordValidationException {
-        compare(
-                new String[]{
-                        "<description>illegal</description>"
-                }
-                ,
-                new String[]{
-                },
-                "Unknown XML"
-        );
-    }
-
-    @Test
-    public void tooManyForMultivaluedFalse() throws RecordValidationException {
-        compare(
-                new String[]{
-                        "<europeana:type>SOUND</europeana:type>",
-                }
-                ,
-                new String[]{
-                        "<europeana:type>SOUND</europeana:type>",
-                },
-                "Single-valued field"
-        );
-    }
-
-    @Test
-    public void doubleUriOk() throws RecordValidationException {
-        compare(null);
-        validFields.set(1, "<europeana:uri>http://uri.com/asecondone</europeana:uri>");
-        compare(null);
-    }
-
-    @Test
-    public void doubleUriProblem() throws RecordValidationException {
-        compare(null);
-        compare("appears more than once");
-    }
-
-    @Test
-    public void constantChanges() throws RecordValidationException {
-        compare(null);
-        validFields.set(1, "<europeana:uri>http://uri.com/asecondone</europeana:uri>");
-        validFields.set(2,"<europeana:provider>another provider</europeana:provider>");
-        compare("multiple values [another provider]");
     }
     */
 }

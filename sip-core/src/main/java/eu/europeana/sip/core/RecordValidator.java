@@ -40,7 +40,9 @@ import java.net.URL;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -87,7 +89,7 @@ public class RecordValidator {
         StringWriter out = new StringWriter();
         try {
             Document document = DocumentHelper.parseText(contextualizedRecord);
-            validate(document, problems, new TreeSet<String>());
+            validate(document, problems, new TreeSet<String>(), new TreeMap<Path,Counter>());
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(out, format);
             writer.write(document);
@@ -101,30 +103,30 @@ public class RecordValidator {
         return out.toString();
     }
 
-    private void validate(Document document, List<String> problems, Set<String> entries) {
+    private void validate(Document document, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
         Element validateElement = document.getRootElement();
         Element recordElement = validateElement.element("record");
         if (recordElement == null) {
             problems.add("Problem: Missing record element");
             return;
         }
-        validate(recordElement, new Path(), problems, entries);
+        validate(recordElement, new Path(), problems, entries, counters);
     }
 
-    private boolean validate(Element element, Path path, List<String> problems, Set<String> entries) {
+    private boolean validate(Element element, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
         path.push(Tag.create(element.getNamespacePrefix(), element.getName()));
         boolean hasElements = false;
         Iterator walk = element.elementIterator();
         while (walk.hasNext()) {
             Element subelement = (Element) walk.next();
-            boolean remove = validate(subelement, path, problems, entries);
+            boolean remove = validate(subelement, path, problems, entries, counters);
             if (remove) {
                 walk.remove();
             }
             hasElements = true;
         }
         if (!hasElements) {
-            boolean fieldRemove = validate(element.getTextTrim(), path, problems, entries);
+            boolean fieldRemove = validate(element.getTextTrim(), path, problems, entries, counters);
             path.pop();
             return fieldRemove;
         }
@@ -132,21 +134,29 @@ public class RecordValidator {
         return false;
     }
 
-    private boolean validate(String text, Path path, List<String> problems, Set<String> entries) {
-        FieldDefinition fieldDefinition = recordDefinition.getFieldDefinition(path);
-        if (fieldDefinition == null) {
+    private boolean validate(String text, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+        FieldDefinition field = recordDefinition.getFieldDefinition(path);
+        if (field == null) {
             problems.add(String.format("No field definition found for path [%s]", path));
             return true;
         }
-        String entryString = fieldDefinition + "=" + text;
+        String entryString = field + "=" + text;
         if (text.isEmpty() || entries.contains(entryString)) {
             return true;
         }
         else {
-            log.info("Field: " + fieldDefinition);
-            log.info(String.format("Validate [%s] content [%s]", fieldDefinition.path, text));
+            log.info("Field: " + field);
+            log.info(String.format("Validate [%s] content [%s]", field.path, text));
             entries.add(entryString);
-            validate(text, fieldDefinition, problems);
+            Counter counter = counters.get(field.path);
+            if (counter == null) {
+                counters.put(field.path, counter = new Counter());
+            }
+            counter.count++;
+            if (!field.multivalued && counter.count > 1) {
+                problems.add(String.format("Single-valued field [%s] has more than one value", field.path));
+            }
+            validate(text, field, problems);
             return false;
         }
     }
@@ -164,6 +174,15 @@ public class RecordValidator {
                 problems.add(String.format("URL value for [%s] was [%s] which is malformed", field.path, text));
             }
         }
+        String regex = field.regularExpression;
+        if (regex != null) {
+            if (!text.matches(regex)) {
+                problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", field.path, text, regex));
+            }
+        }
+        if (field.id && checkUniqueness) {
+            checkEntryUniqueness(text, field, problems);
+        }
     }
 
     /*
@@ -175,33 +194,10 @@ public class RecordValidator {
                 problems.add(String.format("Unknown XML element [%s]", fieldEntry.getTag()));
             }
             else {
-                Counter counter = counterMap.get(fieldEntry.getPath());
-                if (counter == null) {
-                    counter = new Counter();
-                    counterMap.put(fieldEntry.getPath(), counter);
-                }
-                counter.count++;
-//                if (field.constant && constantMap != null) {
-//                    String value = constantMap.get(fieldEntry.getTag());
-//                    if (value == null) {
-//                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
-//                    }
-//                    else if (!value.equals(fieldEntry.getValue())) {
-//                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
-//                    }
-//                }
                 String regex = field.regularExpression;
                 if (regex != null) {
                     if (!fieldEntry.getValue().matches(regex)) {
                         problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", fieldEntry.getTag(), fieldEntry.getValue(), regex));
-                    }
-                }
-                if (field.url) {
-                    try {
-                        new URL(fieldEntry.getValue());
-                    }
-                    catch (MalformedURLException e) {
-                        problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldEntry.getTag(), fieldEntry.getValue()));
                     }
                 }
                 if (field.id && checkUniqueness) {
@@ -234,8 +230,14 @@ public class RecordValidator {
         }
     }
 
-    private void checkEntryUniqueness(List<String> problems, FieldEntry fieldEntry) {
-        int hashCode = fieldEntry.getValue().hashCode();
+
+    private static class Counter {
+        int count;
+    }
+    */
+
+    private void checkEntryUniqueness(String text, FieldDefinition field, List<String> problems) {
+        int hashCode = text.hashCode();
         boolean setEverywhere = true;
         for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
             if (!getBit(hashCode, walk)) {
@@ -243,10 +245,12 @@ public class RecordValidator {
             }
         }
         if (setEverywhere) {
-            problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
+            problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", field.path, text));
         }
-        for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
-            setBit(hashCode, walk);
+        else {
+            for (int walk = 0; walk < bitSet.length; walk++) {
+                setBit(hashCode, walk);
+            }
         }
     }
 
@@ -262,11 +266,6 @@ public class RecordValidator {
         bitSet[bitSetIndex].set(bitNumber);
     }
 
-    private static class Counter {
-        int count;
-    }
-    */
-
     private String getOptionsString(FieldDefinition field) {
         StringBuilder enumString = new StringBuilder();
         Iterator<String> walk = field.options.iterator();
@@ -277,6 +276,10 @@ public class RecordValidator {
             }
         }
         return enumString.toString();
+    }
+
+    private static class Counter {
+        int count;
     }
 
 }
