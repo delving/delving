@@ -259,7 +259,7 @@ public class CompileModel implements SipModel.ParseListener, MappingModel.Listen
                 String output = mappingRunner.runMapping(metadataRecord);
                 if (recordValidator != null) {
                     List<String> problems = new ArrayList<String>();
-                    String validated = recordValidator.validate(output, problems);
+                    String validated = recordValidator.validateRecord(output, problems);
                     if (problems.isEmpty()) {
                         compilationComplete(validated);
                     }

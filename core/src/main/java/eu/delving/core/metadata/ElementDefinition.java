@@ -116,17 +116,17 @@ public class ElementDefinition {
         }
     }
 
-    public void getMappableFields(Map<String, FieldDefinition> fieldDefinitionMap) {
-        if (fields != null) {
-            for (FieldDefinition fieldDefinition : fields) {
-                if (!"INDEX_TIME_ADDITION".equals((fieldDefinition.category))) { // todo: enum
-                    fieldDefinitionMap.put(fieldDefinition.getTag().toString(), fieldDefinition);
+    public void getMappableFields(List<FieldDefinition> fieldDefinitions) {
+        if (this.fields != null) {
+            for (FieldDefinition fieldDefinition : this.fields) {
+                if (!"INDEX_TIME_ADDITION".equals((fieldDefinition.category))) { // todo: better test, should be a flag
+                    fieldDefinitions.add(fieldDefinition);
                 }
             }
         }
         if (elements != null) {
             for (ElementDefinition elementDefinition : elements) {
-                elementDefinition.getMappableFields(fieldDefinitionMap);
+                elementDefinition.getMappableFields(fieldDefinitions);
             }
         }
     }

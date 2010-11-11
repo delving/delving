@@ -685,7 +685,7 @@ public class MetaRepoImpl implements MetaRepo {
                     MetadataRecord metadataRecord = factory.fromXml(record.getXmlString(dataSet.getMetadataFormat().getPrefix()));
                     String recordString = mappingRunner.runMapping(metadataRecord);
                     List<String> problems = new ArrayList<String>();
-                    String validated = recordValidator.validate(recordString, problems);
+                    String validated = recordValidator.validateRecord(recordString, problems);
                     if (problems.isEmpty()) {
                         RecordImpl recordImpl = (RecordImpl) record;
                         recordImpl.addFormat(getMetadataFormat(), validated);

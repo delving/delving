@@ -60,7 +60,6 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     public boolean multivalued = true;
     public boolean stored = true;
     public boolean indexed = true;
-    public boolean required = false;
     public boolean compressed = false;
     public boolean termVectors = true;
     public boolean termPositions = true;

@@ -89,7 +89,9 @@ public class BeansToXML {
             fd.omitNorms = bool(ef.solr().omitNorms());
             fd.options = (ef.europeana().enumClass() == Europeana.NO_ENUM.class) ? null : getEnumValues(ef.europeana().enumClass());
             fd.regularExpression = string(ef.europeana().regularExpression());
-            fd.required = bool(ef.solr().required());
+            if (ef.solr().required()) {
+                fd.requiredGroup = fd.prefix+":"+fd.localName;
+            }
             fd.requiredGroup = string(ef.europeana().requiredGroup());
             fd.stored = bool(ef.solr().stored());
             fd.termOffsets = bool(ef.solr().termOffsets());

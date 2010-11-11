@@ -84,12 +84,14 @@ public class RecordValidator {
         this.contextEnd = this.context.length() - (this.contextBegin + 2);
     }
 
-    public String validate(String recordString, List<String> problems) {
+    public String validateRecord(String recordString, List<String> problems) {
         String contextualizedRecord = String.format(context, recordString);
         StringWriter out = new StringWriter();
         try {
             Document document = DocumentHelper.parseText(contextualizedRecord);
-            validate(document, problems, new TreeSet<String>(), new TreeMap<Path,Counter>());
+            Map<Path,Counter> counters= new TreeMap<Path,Counter>();
+            validateDocument(document, problems, new TreeSet<String>(), counters);
+            validateCardinalities(counters, problems);
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(out, format);
             writer.write(document);
@@ -103,30 +105,54 @@ public class RecordValidator {
         return out.toString();
     }
 
-    private void validate(Document document, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+    private void validateCardinalities(Map<Path, Counter> counters, List<String> problems) {
+        Map<String, Boolean> requiredGroupMap = new TreeMap<String, Boolean>();
+        for (FieldDefinition field : recordDefinition.getMappableFields()) {
+            if (field.requiredGroup != null) {
+                requiredGroupMap.put(field.requiredGroup, false);
+            }
+            Counter counter = counters.get(field.path);
+            if (!field.multivalued && counter != null && counter.count > 1) {
+                problems.add(String.format("Single-valued field [%s] has more than one value", field.path));
+            }
+        }
+        for (Map.Entry<Path,Counter> entry : counters.entrySet()) {
+            FieldDefinition field = recordDefinition.getFieldDefinition(entry.getKey()) ;
+            if (field.requiredGroup != null) {
+                requiredGroupMap.put(field.requiredGroup, true);
+            }
+        }
+        for (Map.Entry<String, Boolean> entry : requiredGroupMap.entrySet()) {
+            if (!entry.getValue()) {
+                problems.add(String.format("Required field violation for [%s]", entry.getKey()));
+            }
+        }
+    }
+
+    private void validateDocument(Document document, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
         Element validateElement = document.getRootElement();
         Element recordElement = validateElement.element("record");
         if (recordElement == null) {
             problems.add("Problem: Missing record element");
             return;
         }
-        validate(recordElement, new Path(), problems, entries, counters);
+        validateElement(recordElement, new Path(), problems, entries, counters);
     }
 
-    private boolean validate(Element element, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+    private boolean validateElement(Element element, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
         path.push(Tag.create(element.getNamespacePrefix(), element.getName()));
         boolean hasElements = false;
         Iterator walk = element.elementIterator();
         while (walk.hasNext()) {
             Element subelement = (Element) walk.next();
-            boolean remove = validate(subelement, path, problems, entries, counters);
+            boolean remove = validateElement(subelement, path, problems, entries, counters);
             if (remove) {
                 walk.remove();
             }
             hasElements = true;
         }
         if (!hasElements) {
-            boolean fieldRemove = validate(element.getTextTrim(), path, problems, entries, counters);
+            boolean fieldRemove = validatePath(element.getTextTrim(), path, problems, entries, counters);
             path.pop();
             return fieldRemove;
         }
@@ -134,7 +160,7 @@ public class RecordValidator {
         return false;
     }
 
-    private boolean validate(String text, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+    private boolean validatePath(String text, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
         FieldDefinition field = recordDefinition.getFieldDefinition(path);
         if (field == null) {
             problems.add(String.format("No field definition found for path [%s]", path));
@@ -145,23 +171,18 @@ public class RecordValidator {
             return true;
         }
         else {
-            log.info("Field: " + field);
-            log.info(String.format("Validate [%s] content [%s]", field.path, text));
             entries.add(entryString);
             Counter counter = counters.get(field.path);
             if (counter == null) {
                 counters.put(field.path, counter = new Counter());
             }
             counter.count++;
-            if (!field.multivalued && counter.count > 1) {
-                problems.add(String.format("Single-valued field [%s] has more than one value", field.path));
-            }
-            validate(text, field, problems);
+            validateField(text, field, problems);
             return false;
         }
     }
 
-    private void validate(String text, FieldDefinition field, List<String> problems) {
+    private void validateField(String text, FieldDefinition field, List<String> problems) {
         if (field.options != null && !field.valueMapped && !field.options.contains(text)) {
             String optionsString = getOptionsString(field);
             problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, optionsString));
@@ -184,57 +205,6 @@ public class RecordValidator {
             checkEntryUniqueness(text, field, problems);
         }
     }
-
-    /*
-    private void validateAgainstAnnotations(List<FieldEntry> fieldEntries, List<String> problems) {
-        Map<Path, Counter> counterMap = new HashMap<Path, Counter>();
-        for (FieldEntry fieldEntry : fieldEntries) {
-            FieldDefinition field = fieldMap.get(fieldEntry.getTag());
-            if (field == null) {
-                problems.add(String.format("Unknown XML element [%s]", fieldEntry.getTag()));
-            }
-            else {
-                String regex = field.regularExpression;
-                if (regex != null) {
-                    if (!fieldEntry.getValue().matches(regex)) {
-                        problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", fieldEntry.getTag(), fieldEntry.getValue(), regex));
-                    }
-                }
-                if (field.id && checkUniqueness) {
-                    checkEntryUniqueness(problems, fieldEntry);
-                }
-            }
-        }
-        Map<String, Boolean> present = new TreeMap<String, Boolean>();
-        for (FieldDefinition field : fieldMap.values()) {
-            if (field.requiredGroup != null) {
-                present.put(field.requiredGroup, false);
-            }
-        }
-        for (FieldEntry fieldEntry : fieldEntries) {
-            FieldDefinition field = fieldMap.get(fieldEntry.getTag());
-            if (field != null && field.requiredGroup != null) {
-                present.put(field.requiredGroup, true);
-            }
-        }
-        for (Map.Entry<String, Boolean> entry : present.entrySet()) {
-            if (!entry.getValue()) {
-                problems.add(String.format("Required field violation for [%s]", entry.getKey()));
-            }
-        }
-        for (FieldDefinition field : fieldMap.values()) {
-            Counter counter = counterMap.get(field.path);
-            if (counter != null && !field.multivalued && counter.count > 1) {
-                problems.add(String.format("Single-valued field [%s] had %d values", field.getTag(), counter.count));
-            }
-        }
-    }
-
-
-    private static class Counter {
-        int count;
-    }
-    */
 
     private void checkEntryUniqueness(String text, FieldDefinition field, List<String> problems) {
         int hashCode = text.hashCode();

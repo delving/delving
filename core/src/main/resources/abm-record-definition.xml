@@ -588,7 +588,7 @@
             <fieldType>text</fieldType>
             <stored>true</stored>
             <indexed>true</indexed>
-            <required>true</required>
+            <requiredGroup>Collection Name</requiredGroup>
             <termVectors>true</termVectors>
         </field>
         <field prefix="europeana" localName="collectionTitle">
@@ -598,12 +598,12 @@
             <fieldType>text</fieldType>
             <stored>true</stored>
             <indexed>true</indexed>
-            <required>true</required>
+            <requiredGroup>Collection Title</requiredGroup>
             <termVectors>true</termVectors>
         </field>
         <field prefix="europeana" localName="country">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:country</requiredGroup>
+            <requiredGroup>Country</requiredGroup>
             <constant>true</constant>
             <category>ESE_PLUS</category>
             <fieldType>text</fieldType>
@@ -660,7 +660,7 @@
         </field>
         <field prefix="europeana" localName="dataProvider">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:dataProvider</requiredGroup>
+            <requiredGroup>Data Provider</requiredGroup>
             <constant>true</constant>
             <category>ESE_PLUS</category>
             <fieldType>text</fieldType>
@@ -670,7 +670,7 @@
         </field>
         <field prefix="europeana" localName="isShownAt">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:isShownAt or europeana:isShownBy</requiredGroup>
+            <requiredGroup>Shown-at or Shown-by</requiredGroup>
             <category>ESE</category>
             <url>true</url>
             <fieldType>string</fieldType>
@@ -684,7 +684,7 @@
         </field>
         <field prefix="europeana" localName="isShownBy">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:isShownAt or europeana:isShownBy</requiredGroup>
+            <requiredGroup>Shown-at or Shown-by</requiredGroup>
             <category>ESE</category>
             <url>true</url>
             <fieldType>string</fieldType>
@@ -698,7 +698,7 @@
         </field>
         <field prefix="europeana" localName="language">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:language</requiredGroup>
+            <requiredGroup>Language</requiredGroup>
             <constant>true</constant>
             <category>ESE_PLUS</category>
             <fieldType>string</fieldType>
@@ -1288,7 +1288,7 @@
         </field>
         <field prefix="europeana" localName="provider">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:provider</requiredGroup>
+            <requiredGroup>Provider</requiredGroup>
             <constant>true</constant>
             <category>ESE_PLUS</category>
             <fieldType>text</fieldType>
@@ -1301,7 +1301,7 @@
         </field>
         <field prefix="europeana" localName="rights">
             <fullDoc>true</fullDoc>
-            <requiredGroup>europeana:rights</requiredGroup>
+            <requiredGroup>Rights</requiredGroup>
             <constant>true</constant>
             <category>ESE_PLUS</category>
             <fieldType>text</fieldType>
@@ -1321,7 +1321,7 @@
         <field prefix="europeana" localName="type">
             <fullDoc>true</fullDoc>
             <type>true</type>
-            <requiredGroup>europeana:type</requiredGroup>
+            <requiredGroup>Type</requiredGroup>
             <category>ESE</category>
             <fieldType>string</fieldType>
             <stored>true</stored>
@@ -1349,13 +1349,12 @@
             <briefDoc>true</briefDoc>
             <fullDoc>true</fullDoc>
             <id>true</id>
-            <requiredGroup>europeana:uri</requiredGroup>
             <category>ESE_PLUS</category>
             <converter>createEuropeanaURI</converter>
             <fieldType>text</fieldType>
             <stored>true</stored>
             <indexed>true</indexed>
-            <required>true</required>
+            <requiredGroup>URI</requiredGroup>
             <termVectors>true</termVectors>
         </field>
         <field prefix="europeana" localName="userTag">

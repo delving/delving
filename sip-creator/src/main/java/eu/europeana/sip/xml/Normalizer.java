@@ -100,7 +100,7 @@ public class Normalizer implements Runnable {
                 try {
                     String output = mappingRunner.runMapping(record);
                     List<String> problems = new ArrayList<String>();
-                    String validated = recordValidator.validate(output, problems);
+                    String validated = recordValidator.validateRecord(output, problems);
                     if (problems.isEmpty()) {
                         if (storeNormalizedFile) {
                             fileSetOutput.getOutputWriter().write(validated);

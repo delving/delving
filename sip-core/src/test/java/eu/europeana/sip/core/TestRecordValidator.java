@@ -42,6 +42,7 @@ public class TestRecordValidator {
             "<europeana:rights>nerd's</europeana:rights>",
             "<europeana:dataProvider>everyone</europeana:dataProvider>",
             "<europeana:type>IMAGE</europeana:type>",
+            "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
     };
     private Logger log = Logger.getLogger(getClass());
     private RecordValidator recordValidator;
@@ -56,24 +57,34 @@ public class TestRecordValidator {
         problems.clear();
     }
 
-    private String toString(String[] array) {
-        StringBuilder out = new StringBuilder();
-        for (String line : array) {
+    private String toString(List<String> lines) {
+        StringBuilder out = new StringBuilder("<record>\n");
+        for (String line : lines) {
             out.append(line.trim()).append('\n');
         }
+        out.append("</record>");
         return out.toString();
     }
 
-    private void validate(String message, String[] expectArray, String[] inputArray) {
-        String expect = toString(expectArray);
-        String input = toString(inputArray);
+    private void validate(String message, String[] expectArray, String[] inputArray, boolean includeRequired) {
+        List<String> expectList = new ArrayList<String>(Arrays.asList(expectArray));
+        List<String> inputList = new ArrayList<String>(Arrays.asList(inputArray));
+        if (includeRequired) {
+            expectList.addAll(validFields);
+            inputList.addAll(validFields);
+        }
+        String expect = toString(expectList);
+        String input = toString(inputList);
         log.info("input:\n" + input);
-        String validated = recordValidator.validate(input, problems);
+        String validated = recordValidator.validateRecord(input, problems);
         for (String problem : problems) {
             log.info("Problem: " + problem);
         }
         Assert.assertTrue("Problems", problems.isEmpty());
-        validated = toString(validated.split("\n"));
+        List<String> validatedList = new ArrayList<String>(Arrays.asList(validated.split("\n")));
+        validatedList.remove(0); // <record>
+        validatedList.remove(validatedList.size()-1); // </record>
+        validated = toString(validatedList);
         log.info("validated:\n" + validated);
         assertEquals(
                 message,
@@ -82,10 +93,14 @@ public class TestRecordValidator {
         );
     }
 
-    private void problem(String [] inputArray, String problemContains) {
-        String input = toString(inputArray);
+    private void problem(String [] inputArray, String problemContains, boolean includeRequired) {
+        List<String> inputList = new ArrayList<String>(Arrays.asList(inputArray));
+        if (includeRequired) {
+            inputList.addAll(validFields);
+        }
+        String input = toString(inputList);
         log.info("input:\n" + input);
-        recordValidator.validate(input, problems);
+        recordValidator.validateRecord(input, problems);
         Assert.assertFalse("Expected problems", problems.isEmpty());
         boolean found = false;
         for (String problem : problems) {
@@ -104,16 +119,13 @@ public class TestRecordValidator {
         validate(
                 "Duplicate not removed",
                 new String[]{
-                        "<record>",
                         "<dc:identifier>one</dc:identifier>",
-                        "</record>"
                 },
                 new String[]{
-                        "<record>",
                         "<dc:identifier>one</dc:identifier>",
                         "<dc:identifier>one</dc:identifier>",
-                        "</record>"
-                }
+                },
+                true
         );
         Assert.assertTrue("Problems", problems.isEmpty());
     }
@@ -123,56 +135,25 @@ public class TestRecordValidator {
         validate(
                 "Empty not removed",
                 new String[]{
-                        "<record>",
                         "<dc:identifier>one</dc:identifier>",
-                        "</record>"
                 },
                 new String[]{
-                        "<record>",
                         "<dc:identifier>one</dc:identifier>",
                         "<dc:title></dc:title>",
-                        "</record>"
-                }
+                },
+                true
         );
         Assert.assertTrue("Problems", problems.isEmpty());
-    }
-
-    @Test
-    public void optionsTrue() {
-        validate(
-                "Empty not removed",
-                new String[]{
-                        "<record>",
-                        "<europeana:type>SOUND</europeana:type>",
-                        "</record>"
-                },
-                new String[]{
-                        "<record>",
-                        "<europeana:type>SOUND</europeana:type>",
-                        "</record>"
-                }
-        );
     }
 
     @Test
     public void optionsFalse() {
         problem(
                 new String[]{
-                        "<record>",
                         "<europeana:type>SOwUND</europeana:type>",
-                        "</record>"
                 },
-                "which does not belong to"
-        );
-    }
-
-    @Test
-    public void noRecord() {
-        problem(
-                new String[]{
-                        "<europeana:title>illegal</europeana:title>"
-                },
-                "Missing record element"
+                "which does not belong to",
+                true
         );
     }
 
@@ -180,11 +161,10 @@ public class TestRecordValidator {
     public void spuriousTag() {
         problem(
                 new String[]{
-                        "<record>",
                         "<description>illegal</description>",
-                        "</record>"
                 },
-                "No field definition found"
+                "No field definition found",
+                true
         );
     }
 
@@ -192,11 +172,10 @@ public class TestRecordValidator {
     public void spuriousURI() {
         problem(
                 new String[]{
-                        "<record>",
                         "<europeana:isShownBy>httpthis is not</europeana:isShownBy>",
-                        "</record>"
                 },
-                "malformed"
+                "malformed",
+                true
         );
     }
     
@@ -204,24 +183,14 @@ public class TestRecordValidator {
     public void uniqueness() {
         validate(
                 "Should have worked",
-                new String[]{
-                        "<record>",
-                        "<europeana:uri>something</europeana:uri>",
-                        "</record>"
-                },
-                new String[]{
-                        "<record>",
-                        "<europeana:uri>something</europeana:uri>",
-                        "</record>"
-                }
+                new String[]{},
+                new String[]{},
+                true
         );
         problem(
-                new String[]{
-                        "<record>",
-                        "<europeana:uri>something</europeana:uri>",
-                        "</record>"
-                },
-                "must be unique but the value"
+                new String[]{},
+                "must be unique but the value",
+                true
         );
     }
 
@@ -229,25 +198,52 @@ public class TestRecordValidator {
     public void multivalued() {
         problem(
                 new String[]{
-                        "<record>",
                         "<europeana:type>IMAGE</europeana:type>",
                         "<europeana:type>SOUND</europeana:type>",
-                        "</record>"
                 },
-                "has more than one value"
+                "has more than one value",
+                true
         );
     }
 
-//    @Test
-//    public void regularExpression() {
-//        // todo
-//    }
-
-    /*
     @Test
-    public void missingIsShownXx() {
-        validFields.remove(0);
-        compare("[europeana:isShownAt or europeana:isShownBy]");
+    public void requiredMissing() {
+        problem(
+                new String[]{
+                        "<europeana:isShownAt>http://is-shown-at.com/</europeana:isShownAt>",
+                        "<europeana:uri>http://uri.com/</europeana:uri>",
+                        "<europeana:provider>provider</europeana:provider>",
+                        "<europeana:country>netherlands</europeana:country>",
+                        "<europeana:collectionName>collectionName</europeana:collectionName>",
+                        "<europeana:language>en</europeana:language>",
+                        "<europeana:object>http://object.com/</europeana:object>",
+                        "<europeana:dataProvider>everyone</europeana:dataProvider>",
+                        "<europeana:type>IMAGE</europeana:type>",
+                        "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
+                },
+                "Required field violation for [Rights]",
+                false
+        );
     }
-    */
+
+    @Test
+    public void requiredGroupMissing() {
+        problem(
+                new String[]{
+                        "<europeana:uri>http://uri.com/</europeana:uri>",
+                        "<europeana:provider>provider</europeana:provider>",
+                        "<europeana:country>netherlands</europeana:country>",
+                        "<europeana:collectionName>collectionName</europeana:collectionName>",
+                        "<europeana:language>en</europeana:language>",
+                        "<europeana:object>http://object.com/</europeana:object>",
+                        "<europeana:rights>nerd's</europeana:rights>",
+                        "<europeana:dataProvider>everyone</europeana:dataProvider>",
+                        "<europeana:type>IMAGE</europeana:type>",
+                        "<europeana:collectionTitle>Tittle</europeana:collectionTitle>",
+                },
+                "Required field violation for [Shown-at or Shown-by]",
+                false
+        );
+    }
+
 }

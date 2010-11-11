@@ -53,10 +53,10 @@ public class RecordDefinition {
         return map;
     }
 
-    public Map<String, FieldDefinition> getMappableFields() {
-        Map<String, FieldDefinition> fieldDefinitionMap = new TreeMap<String, FieldDefinition>();
-        root.getMappableFields(fieldDefinitionMap);
-        return fieldDefinitionMap;
+    public List<FieldDefinition> getMappableFields() {
+        List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
+        root.getMappableFields(fields);
+        return fields;
     }
 
     public FieldDefinition getFieldDefinition(Path path) {
