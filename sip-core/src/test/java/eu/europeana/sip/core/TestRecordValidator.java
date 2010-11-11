@@ -101,47 +101,26 @@ public class TestRecordValidator {
         Assert.assertTrue("Problems", problems.isEmpty());
     }
 
+    @Test
+    public void emptyRemoval() {
+        test(
+                "Empty not removed",
+                new String[]{
+                        "<record>",
+                        "<dc:identifier>one</dc:identifier>",
+                        "</record>"
+                },
+                new String[]{
+                        "<record>",
+                        "<dc:identifier>one</dc:identifier>",
+                        "<dc:title></dc:title>",
+                        "</record>"
+                }
+        );
+        Assert.assertTrue("Problems", problems.isEmpty());
+    }
+
     /*
-    private void compareList(List<String> given, List<String> expect, String problemString) {
-        StringBuilder input = new StringBuilder();
-        for (String line : given) {
-            input.append(line).append('\n');
-        }
-//        try {
-            List<FieldEntry> fieldEntries = FieldEntry.createList(input.toString());
-//            recordValidator.validate(null, fieldEntries);
-            String result = FieldEntry.toString(fieldEntries, false);
-            StringBuilder expected = new StringBuilder();
-            for (String line : expect) {
-                expected.append(line).append('\n');
-            }
-            assertEquals(expected.toString(), result);
-            assertEquals("Didn't experience expected problem: " + problemString, null, problemString);
-            if (problemString != null) {
-
-            }
-//        }
-//        catch (RecordValidationException e) {
-//            log.info(e);
-//            assertEquals("Multiple problems, but these unit tests expect to cause only one!\n"+e, 1, e.getProblems().size());
-//            assertEquals("Didn't see expected problem string: ["+problemString+"]", true, e.getProblems().get(0).contains(problemString));
-//        }
-    }
-
-    private void compare(String[] given, String[] expect, String problemString) {
-        List<String> givenList = new ArrayList<String>(Arrays.asList(given));
-        List<String> expectList = new ArrayList<String>(Arrays.asList(expect));
-        givenList.addAll(validFields);
-        Collections.sort(givenList);
-        expectList.addAll(validFields);
-        Collections.sort(expectList);
-        compareList(givenList, expectList, problemString);
-    }
-
-    private void compare(String problemString){
-        compare(new String[]{},new String[]{}, problemString);
-    }
-
     @Test
     public void missingIsShownXx() throws RecordValidationException {
         validFields.remove(0);

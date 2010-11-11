@@ -110,26 +110,29 @@ public class RecordValidator {
         Iterator walk = element.elementIterator();
         while (walk.hasNext()) {
             Element subelement = (Element) walk.next();
-            boolean duplicate = validate(subelement, path, problems, entries);
-            if (duplicate) {
+            boolean remove = validate(subelement, path, problems, entries);
+            if (remove) {
                 walk.remove();
             }
             hasElements = true;
         }
         if (!hasElements) {
-            if (element.hasContent()) {
-                boolean fieldDuplicate = validate(element.getTextTrim(), recordDefinition.getFieldDefinition(path), problems, entries);
-                path.pop();
-                return fieldDuplicate;
-            }
+            boolean fieldRemove = validate(element.getTextTrim(), path, problems, entries);
+            path.pop();
+            return fieldRemove;
         }
         path.pop();
         return false;
     }
 
-    private boolean validate(String text, FieldDefinition fieldDefinition, List<String> problems, Set<String> entries) {
+    private boolean validate(String text, Path path, List<String> problems, Set<String> entries) {
+        FieldDefinition fieldDefinition = recordDefinition.getFieldDefinition(path);
+        if (fieldDefinition == null) {
+            problems.add(String.format("No field definition found for path [%s]", path));
+            return true;
+        }
         String entryString = fieldDefinition + "=" + text;
-        if (entries.contains(entryString)) {
+        if (text.isEmpty() || entries.contains(entryString)) {
             return true;
         }
         else {
