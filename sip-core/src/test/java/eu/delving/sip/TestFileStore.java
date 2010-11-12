@@ -67,9 +67,7 @@ public class TestFileStore {
                 throw new RuntimeException("Unable to create directory " + DIR.getAbsolutePath());
             }
         }
-        FileStoreImpl fs = new FileStoreImpl();
-        fs.setHome(DIR);
-        this.fileStore = fs;
+        this.fileStore = new FileStoreImpl(DIR);
     }
 
     @After
@@ -96,6 +94,16 @@ public class TestFileStore {
         }
         store.delete();
         Assert.assertEquals("Should be zero files", 0, DIR.listFiles().length);
+    }
+
+    @Test
+    public void manipulateAppConfig() throws FileStoreException {
+        AppConfig appConfig = fileStore.getAppConfig();
+        Assert.assertNull("should be no access key", appConfig.getAccessKey());
+        appConfig.setAccessKey("gumby");
+        fileStore.setAppConfig(appConfig);
+        appConfig = fileStore.getAppConfig();
+        Assert.assertEquals("Should have saved access key", "gumby", appConfig.getAccessKey());
     }
 
     @Test
@@ -174,9 +182,11 @@ public class TestFileStore {
 
     private void deleteFiles() {
         for (File dir : DIR.listFiles()) {
-            for (File file : dir.listFiles()) {
-                if (!file.delete()) {
-                    throw new RuntimeException("File " + file.getAbsolutePath() + " could not be deleted");
+            if (dir.isDirectory()) {
+                for (File file : dir.listFiles()) {
+                    if (!file.delete()) {
+                        throw new RuntimeException("File " + file.getAbsolutePath() + " could not be deleted");
+                    }
                 }
             }
             if (!dir.delete()) {

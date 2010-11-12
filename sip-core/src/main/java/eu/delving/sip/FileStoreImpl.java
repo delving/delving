@@ -60,8 +60,41 @@ public class FileStoreImpl implements FileStore {
 
     private File home;
 
-    public void setHome(File home) {
+    public FileStoreImpl(File home) {
         this.home = home;
+    }
+
+    @Override
+    public AppConfig getAppConfig() throws FileStoreException {
+        File appConfigFile = new File(home, APP_CONFIG_FILE_NAME);
+        AppConfig config = null;
+        if (appConfigFile.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(appConfigFile);
+                config = (AppConfig) getAppConfigStream().fromXML(fis);
+                fis.close();
+            }
+            catch (Exception e) {
+                throw new FileStoreException(String.format("Unable to read application configuration from %s", appConfigFile.getAbsolutePath()));
+            }
+        }
+        if (config == null) {
+            config = new AppConfig();
+        }
+        return config;
+    }
+
+    @Override
+    public void setAppConfig(AppConfig appConfig) throws FileStoreException {
+        File sourceDetailsFile = new File(home, APP_CONFIG_FILE_NAME);
+        try {
+            FileOutputStream fos = new FileOutputStream(sourceDetailsFile);
+            getSourceDetailsStream().toXML(appConfig, fos);
+            fos.close();
+        }
+        catch (IOException e) {
+            throw new FileStoreException(String.format("Unable to save application configuration file to %s", sourceDetailsFile.getAbsolutePath()), e);
+        }
     }
 
     @Override
@@ -342,6 +375,12 @@ public class FileStoreImpl implements FileStore {
     private XStream getSourceDetailsStream() {
         XStream stream = new XStream();
         stream.processAnnotations(SourceDetails.class);
+        return stream;
+    }
+
+    private XStream getAppConfigStream() {
+        XStream stream = new XStream();
+        stream.processAnnotations(AppConfig.class);
         return stream;
     }
 

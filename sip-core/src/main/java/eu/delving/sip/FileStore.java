@@ -40,12 +40,9 @@ import java.util.Set;
 
 public interface FileStore {
 
-    String SOURCE_FILE_PREFIX = "source.";
-    String SOURCE_FILE_SUFFIX = ".xml.gz";
-    String STATISTICS_FILE_NAME = "statistics.ser";
-    String SOURCE_DETAILS_FILE_NAME = "source-details.xml";
-    String MAPPING_FILE_PREFIX = "mapping.";
-    String DISCARDED_FILE_PREFIX = "discarded.";
+    AppConfig getAppConfig() throws FileStoreException;
+
+    void setAppConfig(AppConfig appConfig) throws FileStoreException;
 
     Set<String> getDataSetSpecs();
 
@@ -87,5 +84,13 @@ public interface FileStore {
 
         void close(boolean abort) throws FileStoreException;
     }
+
+    String APP_CONFIG_FILE_NAME = "app-config.xml";
+    String SOURCE_FILE_PREFIX = "source.";
+    String SOURCE_FILE_SUFFIX = ".xml.gz";
+    String STATISTICS_FILE_NAME = "statistics.ser";
+    String SOURCE_DETAILS_FILE_NAME = "source-details.xml";
+    String MAPPING_FILE_PREFIX = "mapping.";
+    String DISCARDED_FILE_PREFIX = "discarded.";
 
 }
