@@ -22,8 +22,8 @@
 package eu.europeana.sip.gui;
 
 import eu.delving.core.metadata.Path;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.model.FileSet;
+import eu.delving.core.metadata.SourceDetails;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -167,11 +167,11 @@ public class NormalizationPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedDataSetStore(FileStore.DataSetStore store) {
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
+            public void updatedDetails(SourceDetails sourceDetails) {
             }
 
             @Override

@@ -23,16 +23,18 @@ package eu.europeana.sip.xml;
 
 import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.metadata.RecordMapping;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
 import eu.europeana.sip.core.ToolCodeResource;
-import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.xml.stream.XMLStreamException;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -48,7 +50,7 @@ import java.util.List;
 public class Normalizer implements Runnable {
     private SipModel sipModel;
     private boolean discardInvalid;
-    private boolean storeNormalizedFile;
+    private File normalizedFile;
     private MetadataParser.Listener parserListener;
     private Listener listener;
     private volatile boolean running = true;
@@ -64,13 +66,13 @@ public class Normalizer implements Runnable {
     public Normalizer(
             SipModel sipModel,
             boolean discardInvalid,
-            boolean storeNormalizedFile,
+            File normalizedFile,
             MetadataParser.Listener parserListener,
             Listener listener
     ) {
         this.sipModel = sipModel;
         this.discardInvalid = discardInvalid;
-        this.storeNormalizedFile = storeNormalizedFile;
+        this.normalizedFile = normalizedFile;
         this.parserListener = parserListener;
         this.listener = listener;
     }
@@ -82,9 +84,9 @@ public class Normalizer implements Runnable {
                 return;
             }
             ToolCodeResource toolCodeResource = new ToolCodeResource();
-            FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
-            if (storeNormalizedFile) {
-                Writer out = fileSetOutput.getOutputWriter();
+            FileStore.MappingOutput fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
+            if (normalizedFile != null) {
+                Writer out = fileSetOutput.getNormalizedWriter();
                 out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
                 out.write("<metadata");
                 writeNamespace(out, MetadataNamespace.DC);
@@ -93,7 +95,7 @@ public class Normalizer implements Runnable {
                 out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
-            MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordMapping.getRecordRoot(), parserListener);
+            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordMapping.getRecordRoot(), parserListener);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
@@ -102,8 +104,8 @@ public class Normalizer implements Runnable {
                     List<String> problems = new ArrayList<String>();
                     String validated = recordValidator.validateRecord(output, problems);
                     if (problems.isEmpty()) {
-                        if (storeNormalizedFile) {
-                            fileSetOutput.getOutputWriter().write(validated);
+                        if (normalizedFile != null) {
+                            fileSetOutput.getNormalizedWriter().write(validated);
                         }
                         fileSetOutput.recordNormalized();
                     }
@@ -154,8 +156,8 @@ public class Normalizer implements Runnable {
                     running = false;
                 }
             }
-            if (storeNormalizedFile) {
-                fileSetOutput.getOutputWriter().write("</metadata>\n");
+            if (normalizedFile != null) {
+                fileSetOutput.getNormalizedWriter().write("</metadata>\n");
             }
             fileSetOutput.close(!running);
             if (!running) {
@@ -168,6 +170,9 @@ public class Normalizer implements Runnable {
         }
         catch (IOException e) {
             throw new RuntimeException("IO Problem", e);
+        }
+        catch (FileStoreException e) {
+            throw new RuntimeException("Datastore Problem", e);
         }
     }
 

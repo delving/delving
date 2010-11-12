@@ -25,11 +25,11 @@ import eu.delving.core.metadata.CodeGenerator;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.FieldMapping;
 import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.metadata.SourceVariable;
-import eu.europeana.sip.core.DataSetDetails;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
-import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -204,7 +204,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.clearSelection();
@@ -212,7 +212,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
+            public void updatedDetails(SourceDetails sourceDetails) {
             }
 
             @Override

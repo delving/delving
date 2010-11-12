@@ -24,8 +24,8 @@ package eu.europeana.sip.gui;
 import eu.delving.core.metadata.AnalysisTree;
 import eu.delving.core.metadata.AnalysisTreeNode;
 import eu.delving.core.metadata.Path;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.model.FileSet;
+import eu.delving.core.metadata.SourceDetails;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -201,16 +201,16 @@ public class AnalysisPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 setElementsProcessed(sipModel.getElementCount());
-                analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
+                analyzeButton.setText(String.format(PERFORM_ANALYSIS, dataSetStore.getSpec()));
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(false);
                 constantFieldPanel.refresh();
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
+            public void updatedDetails(SourceDetails sourceDetails) {
             }
 
             @Override

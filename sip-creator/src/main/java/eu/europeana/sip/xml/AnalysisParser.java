@@ -24,7 +24,7 @@ package eu.europeana.sip.xml;
 import eu.delving.core.metadata.Path;
 import eu.delving.core.metadata.Statistics;
 import eu.delving.core.metadata.Tag;
-import eu.europeana.sip.model.FileSet;
+import eu.delving.sip.FileStore;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -51,7 +51,7 @@ public class AnalysisParser implements Runnable {
     private Path path = new Path();
     private Map<Path, Statistics> statisticsMap = new TreeMap<Path, Statistics>();
     private Listener listener;
-    private FileSet fileSet;
+    private FileStore.DataSetStore dataSetStore;
     private boolean abort;
 
     public interface Listener {
@@ -63,8 +63,8 @@ public class AnalysisParser implements Runnable {
         void progress(long elementCount);
     }
 
-    public AnalysisParser(FileSet fileSet, Listener listener) {
-        this.fileSet = fileSet;
+    public AnalysisParser(FileStore.DataSetStore dataSetStore, Listener listener) {
+        this.dataSetStore = dataSetStore;
         this.listener = listener;
     }
 
@@ -80,7 +80,7 @@ public class AnalysisParser implements Runnable {
             xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
             xmlif.configureForSpeed();
-            XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(getClass().getName(), fileSet.getInputStream());
+            XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(getClass().getName(), dataSetStore.createXmlInputStream());
             StringBuilder text = new StringBuilder();
             long count = 0;
             while (!abort) {
@@ -130,7 +130,7 @@ public class AnalysisParser implements Runnable {
             for (Statistics statistics : statisticsList) {
                 statistics.trim(true);
             }
-            fileSet.setStatistics(statisticsList);
+            dataSetStore.setStatistics(statisticsList);
             listener.success(statisticsList);
         }
         catch (Exception e) {

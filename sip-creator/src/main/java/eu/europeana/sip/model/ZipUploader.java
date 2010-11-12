@@ -16,9 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -35,7 +33,7 @@ public class ZipUploader implements Runnable {
 
     public ZipUploader(SipModel sipModel, String zipFileName) {
         this.sipModel = sipModel;
-        this.zipFile = new File(sipModel.getFileSet().getDirectory(), zipFileName + ".zip");
+//        this.zipFile = new File(sipModel.getFileSet().getDirectory(), zipFileName + ".zip");
     }
 
     @Override
@@ -89,11 +87,11 @@ public class ZipUploader implements Runnable {
     }
 
     private void initializeProgressIndicators() {
-        List<File> uploadFiles = sipModel.getFileSet().getUploadFiles();
+//        List<File> uploadFiles = sipModel.getFileSet().getUploadFiles();
         long totalFileSize = 0;
-        for (File file : uploadFiles) {
-            totalFileSize += file.length();
-        }
+//        for (File file : uploadFiles) {
+//            totalFileSize += file.length();
+//        }
         final int totalBlocks = (int) (totalFileSize / BLOCK_SIZE);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -107,28 +105,28 @@ public class ZipUploader implements Runnable {
     }
 
     private void buildZipFile() throws IOException {
-        List<File> uploadFiles = sipModel.getFileSet().getUploadFiles();
+//        List<File> uploadFiles = sipModel.getFileSet().getUploadFiles();
         OutputStream outputStream = new FileOutputStream(zipFile);
         ZipOutputStream zos = new ZipOutputStream(outputStream);
         long totalFileSize = 0;
-        for (File file : uploadFiles) {
-            InputStream in = new FileInputStream(file);
-            zos.putNextEntry(new ZipEntry(file.getName()));
-            byte[] buffer = new byte[BLOCK_SIZE];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                zos.write(buffer, 0, length);
-                totalFileSize += length;
-                final int totalBlocksZipped = (int) (totalFileSize / BLOCK_SIZE);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        sipModel.getZipProgress().setValue(totalBlocksZipped);
-                    }
-                });
-            }
-            zos.closeEntry();
-        }
+//        for (File file : uploadFiles) {
+//            InputStream in = new FileInputStream(file);
+//            zos.putNextEntry(new ZipEntry(file.getName()));
+//            byte[] buffer = new byte[BLOCK_SIZE];
+//            int length;
+//            while ((length = in.read(buffer)) > 0) {
+//                zos.write(buffer, 0, length);
+//                totalFileSize += length;
+//                final int totalBlocksZipped = (int) (totalFileSize / BLOCK_SIZE);
+//                SwingUtilities.invokeLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        sipModel.getZipProgress().setValue(totalBlocksZipped);
+//                    }
+//                });
+//            }
+//            zos.closeEntry();
+//        }
         zos.close();
     }
 

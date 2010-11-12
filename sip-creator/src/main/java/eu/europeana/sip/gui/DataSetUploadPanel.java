@@ -23,8 +23,9 @@ package eu.europeana.sip.gui;
 
 import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.SourceDetails;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -184,7 +185,7 @@ public class DataSetUploadPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                sipModel.setDataSetDetails(getDetails());
+//                sipModel.setDataSetDetails(getDetails());
             }
         });
     }
@@ -222,7 +223,7 @@ public class DataSetUploadPanel extends JPanel {
         createUploadZipButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sipModel.setDataSetDetails(getDetails());
+//                sipModel.setDataSetDetails(getDetails());
                 sipModel.createUploadZipFile();
             }
         });
@@ -232,13 +233,13 @@ public class DataSetUploadPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
-                createUploadZipButton.setEnabled(fileSet.getReport() != null);
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
+//                createUploadZipButton.setEnabled(dataSetStore.getRecordMapping(recordDefinition));
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
-                setDetails(sipModel.getDataSetDetails());
+            public void updatedDetails(SourceDetails sourceDetails) {
+//                setDetails(sipModel.getSourceDetails());
             }
 
             @Override
@@ -295,7 +296,7 @@ public class DataSetUploadPanel extends JPanel {
                         namespaceField.setText(null);
                         schemaField.setText(null);
                     }
-                    sipModel.setDataSetDetails(getDetails());
+//                    sipModel.setSourceDetails(getDetails());
                 }
             }
         });

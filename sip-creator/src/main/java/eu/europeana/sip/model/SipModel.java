@@ -34,7 +34,6 @@ import eu.delving.core.metadata.Statistics;
 import eu.delving.sip.AppConfig;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
-import eu.europeana.sip.core.DataSetDetails;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
@@ -67,7 +66,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * This model is behind the whole sip creator, as a facade for all the models related to a FileSet
+ * This model is behind the whole sip creator, as a facade for all the models related to a data set
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -79,7 +78,7 @@ public class SipModel {
     private MetadataModel metadataModel;
     private AppConfig appConfig;
     private FileStore.DataSetStore dataSetStore;
-    private FileSet fileSet;
+    private SourceDetails sourceDetails;
     private UserNotifier userNotifier;
     private List<Statistics> statisticsList;
     private AnalysisParser analysisParser;
@@ -98,7 +97,6 @@ public class SipModel {
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
-    private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
     private String serverUrl;
@@ -107,9 +105,9 @@ public class SipModel {
 
         void templateApplied();
 
-        void updatedFileSet(FileSet fileSet);
+        void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
 
-        void updatedDetails(DataSetDetails dataSetDetails);
+        void updatedDetails(SourceDetails sourceDetails);
 
         void updatedRecordRoot(Path recordRoot, int recordCount);
 
@@ -210,12 +208,12 @@ public class SipModel {
         executor.execute(new AppConfigSetter());
     }
 
-    public MetadataModel getMetadataModel() {
-        return metadataModel;
+    public FileStore.DataSetStore getDataSetStore() {
+        return dataSetStore;
     }
 
-    public FileSet getFileSet() {
-        return fileSet;
+    public MetadataModel getMetadataModel() {
+        return metadataModel;
     }
 
     public MappingModel getMappingModel() {
@@ -256,7 +254,7 @@ public class SipModel {
                     @Override
                     public void run() {
                         setStatisticsList(statistics);
-                        setDataSetDetails(dataSetDetails);
+                        setSourceDetails(sourceDetails, false);
                         variableListModel.clear();
                         mappingModel.setRecordMapping(recordMapping);
                         if (getRecordRoot() != null) {
@@ -267,70 +265,11 @@ public class SipModel {
                         if (recordMapping != null) {
                             if (recordMapping.getNormalizeTime() == 0) {
                                 normalizeProgressModel.setValue(0);
-                                normalizeMessage("Normalization not yet performed.");
+                                normalizeMessage(false, "Normalization not yet performed.");
                             }
                             else {
                                 normalizeProgressModel.setValue(recordMapping.getRecordsNormalized() + recordMapping.getRecordsDiscarded());
-                                Date date = new Date(recordMapping.getNormalizeTime());
-                                String message = String.format(
-                                        "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
-                                        date,date,date,date,
-                                        recordMapping.getRecordsNormalized(),
-                                        recordMapping.getRecordsDiscarded()
-                                );
-                                normalizeMessage(message);
-                            }
-                        }
-                        else {
-                            normalizeProgressModel.setMaximum(100);
-                            normalizeProgressModel.setValue(0);
-                        }
-                        uploadProgressModel.setMaximum(100);
-                        uploadProgressModel.setValue(0);
-//                        for (UpdateListener updateListener : updateListeners) {
-//                            updateListener.updatedFileSet(newFileSet);
-//                            updateListener.updatedDetails(dataSetDetails);
-//                        }
-                    }
-                });
-                }
-                catch (FileStoreException e) {
-                    e.printStackTrace();  // todo: something
-                }
-            }
-        });
-    }
-
-    public void setFileSet(final FileSet newFileSet) {
-        checkSwingThread();
-        this.fileSet = newFileSet;
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<Statistics> statistics = newFileSet.getStatistics();
-                final RecordMapping recordMapping = newFileSet.getMapping(metadataModel.getRecordDefinition());
-                final FileSet.Report report = newFileSet.getReport();
-                final DataSetDetails dataSetDetails = newFileSet.getDataSetDetails();
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setStatisticsList(statistics);
-                        setDataSetDetails(dataSetDetails);
-                        variableListModel.clear();
-                        mappingModel.setRecordMapping(recordMapping);
-                        if (getRecordRoot() != null) {
-                            setRecordRootInternal(recordMapping.getRecordRoot(), recordMapping.getRecordCount());
-                        }
-                        AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
-                        createMetadataParser(1);
-                        if (recordMapping != null) {
-                            if (report != null) {
-                                normalizeProgressModel.setValue(report.getRecordsNormalized() + report.getRecordsDiscarded());
-                                normalizeMessage(report);
-                            }
-                            else {
-                                normalizeProgressModel.setValue(0);
-                                normalizeMessage("Normalization not yet performed.");
+                                normalizeMessage(recordMapping);
                             }
                         }
                         else {
@@ -340,11 +279,14 @@ public class SipModel {
                         uploadProgressModel.setMaximum(100);
                         uploadProgressModel.setValue(0);
                         for (UpdateListener updateListener : updateListeners) {
-                            updateListener.updatedFileSet(newFileSet);
-                            updateListener.updatedDetails(dataSetDetails);
+                            updateListener.updatedDataSetStore(dataSetStore);
                         }
                     }
                 });
+                }
+                catch (FileStoreException e) {
+                    e.printStackTrace();  // todo: something
+                }
             }
         });
     }
@@ -385,7 +327,7 @@ public class SipModel {
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();
         abortAnalyze();
-        this.analysisParser = new AnalysisParser(fileSet, new AnalysisParser.Listener() {
+        this.analysisParser = new AnalysisParser(dataSetStore, new AnalysisParser.Listener() {
 
             @Override
             public void success(final List<Statistics> list) {
@@ -420,19 +362,20 @@ public class SipModel {
         }
     }
 
-    public DataSetDetails getDataSetDetails() {
-        return dataSetDetails;
-    }
-
     public String getServerUrl() {
         return serverUrl;
     }
 
-    public void setDataSetDetails(DataSetDetails dataSetDetails) {
-        this.dataSetDetails = dataSetDetails;
-        executor.execute(new DetailsSetter(dataSetDetails));
+    public SourceDetails getSourceDetails() {
+        return sourceDetails;
+    }
+
+    public void setSourceDetails(SourceDetails sourceDetails, boolean save) {
+        if (save) {
+            executor.execute(new SourceDetailsSetter(sourceDetails));
+        }
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(dataSetDetails);
+            updateListener.updatedDetails(sourceDetails);
         }
     }
 
@@ -451,11 +394,15 @@ public class SipModel {
     public void normalize(boolean discardInvalid, boolean storeNormalizedFile) {
         checkSwingThread();
         abortNormalize();
-        normalizeMessage("Normalizing and validating...");
+        File normalizedFile = null;
+        if (storeNormalizedFile) {
+            // todo: file chooser
+        }
+        normalizeMessage(false, "Normalizing and validating...");
         normalizer = new Normalizer(
                 this,
                 discardInvalid,
-                storeNormalizedFile,
+                normalizedFile,
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count, final boolean lastRecord) {
@@ -497,10 +444,10 @@ public class SipModel {
                             @Override
                             public void run() {
                                 if (success) {
-                                    normalizeMessage(fileSet.getReport());
+                                    normalizeMessage(getRecordMapping());
                                 }
                                 else {
-                                    normalizeMessage("Normalization aborted");
+                                    normalizeMessage(false, "Normalization aborted");
                                 }
                             }
                         });
@@ -522,7 +469,7 @@ public class SipModel {
 
     public void createUploadZipFile() {
         checkSwingThread();
-        String zipFileName = getDataSetDetails().getSpec();
+        String zipFileName = dataSetStore.getSpec();
         executor.execute(new ZipUploader(this, zipFileName));
     }
 
@@ -540,11 +487,11 @@ public class SipModel {
 
     public void setUniqueElement(Path uniqueElement) {
         mappingModel.setUniqueElement(uniqueElement);
-        dataSetDetails.setUniqueElement(uniqueElement.toString());
-        executor.execute(new DetailsSetter(dataSetDetails));
+        sourceDetails.setUniqueElement(uniqueElement.toString());
+        executor.execute(new SourceDetailsSetter(sourceDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(dataSetDetails);
+            updateListener.updatedDetails(sourceDetails);
         }
     }
 
@@ -552,10 +499,10 @@ public class SipModel {
         checkSwingThread();
         setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
-        dataSetDetails.setRecordRoot(recordRoot.toString());
-        executor.execute(new DetailsSetter(dataSetDetails));
+        sourceDetails.setRecordRoot(recordRoot.toString());
+        executor.execute(new SourceDetailsSetter(sourceDetails));
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(dataSetDetails);
+            updateListener.updatedDetails(sourceDetails);
         }
         getMappingModel().setRecordRoot(recordRoot, recordCount);
     }
@@ -640,25 +587,21 @@ public class SipModel {
 
     // === privates
 
-    private void normalizeMessage(String message) {
+    private void normalizeMessage(boolean complete, String message) {
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.normalizationMessage(false, message);
+            updateListener.normalizationMessage(complete, message);
         }
     }
 
-    private void normalizeMessage(FileSet.Report report) {
+    private void normalizeMessage(RecordMapping recordMapping) {
+        Date date = new Date(recordMapping.getNormalizeTime());
         String message = String.format(
                 "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
-                report.getNormalizationDate(),
-                report.getNormalizationDate(),
-                report.getNormalizationDate(),
-                report.getNormalizationDate(),
-                report.getRecordsNormalized(),
-                report.getRecordsDiscarded()
+                date,date,date,date,
+                recordMapping.getRecordsNormalized(),
+                recordMapping.getRecordsDiscarded()
         );
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.normalizationMessage(true, message);
-        }
+        normalizeMessage(true, message);
     }
 
     private void setRecordRootInternal(Path recordRoot, int recordCount) {
@@ -726,7 +669,7 @@ public class SipModel {
             }
             try {
                 if (metadataParser == null) {
-                    metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, null);
+                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, null);
                 }
                 while (recordNumber-- > 0) {
                     metadataRecord = metadataParser.nextRecord();
@@ -761,8 +704,13 @@ public class SipModel {
 
         @Override
         public void run() {
-            fileSet.setMapping(getRecordMapping());
-            log.info("Mapping saved!");
+            try {
+                dataSetStore.setRecordMapping(getRecordMapping());
+                log.info("Mapping saved!");
+            }
+            catch (FileStoreException e) {
+                userNotifier.tellUser("Unable to save mapping", e);
+            }
         }
 
         @Override
@@ -784,16 +732,21 @@ public class SipModel {
         }
     }
 
-    private class DetailsSetter implements Runnable {
-        private DataSetDetails details;
+    private class SourceDetailsSetter implements Runnable {
+        private SourceDetails details;
 
-        private DetailsSetter(DataSetDetails details) {
+        private SourceDetailsSetter(SourceDetails details) {
             this.details = details;
         }
 
         @Override
         public void run() {
-            fileSet.setDataSetDetails(details);
+            try {
+                dataSetStore.setSourceDetails(details);
+            }
+            catch (FileStoreException e) {
+                userNotifier.tellUser("Unable to save source details", e);
+            }
         }
     }
 
