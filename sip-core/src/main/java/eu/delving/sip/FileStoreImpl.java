@@ -32,12 +32,16 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -170,7 +174,7 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public RecordMapping getMapping(RecordDefinition recordDefinition) throws FileStoreException {
+        public RecordMapping getRecordMapping(RecordDefinition recordDefinition) throws FileStoreException {
             File mappingFile = new File(directory, MAPPING_FILE_PREFIX + recordDefinition.prefix);
             if (mappingFile.exists()) {
                 try {
@@ -187,7 +191,7 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public void setMapping(RecordMapping recordMapping) throws FileStoreException {
+        public void setRecordMapping(RecordMapping recordMapping) throws FileStoreException {
             File mappingFile = new File(directory, MAPPING_FILE_PREFIX + recordMapping.getPrefix());
             try {
                 FileOutputStream out = new FileOutputStream(mappingFile);
@@ -233,13 +237,8 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
-        public Report getReport() {
-            return null;
-        }
-
-        @Override
-        public Output prepareOutput(File normalizedFile) {
-            return null;
+        public MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedFile) throws FileStoreException {
+            return new MappingOutputImpl(directory, recordMapping, normalizedFile);
         }
 
         @Override
@@ -262,6 +261,81 @@ public class FileStoreImpl implements FileStore {
                 throw new FileStoreException("Expected exactly one file named source.???.xml.gz");
             }
             return sources[0];
+        }
+    }
+
+    private static class MappingOutputImpl implements MappingOutput {
+        private RecordMapping recordMapping;
+        private File discardedFile, normalizedFile;
+        private Writer outputWriter, discardedWriter;
+        private int recordsNormalized, recordsDiscarded;
+
+        private MappingOutputImpl(File directory, RecordMapping recordMapping, File normalizedFile) throws FileStoreException {
+            this.recordMapping = recordMapping;
+            try {
+                if (normalizedFile != null) {
+                    this.outputWriter = new OutputStreamWriter(new FileOutputStream(normalizedFile), "UTF-8");
+                }
+                this.discardedFile = new File(directory, DISCARDED_FILE_PREFIX + recordMapping.getPrefix());
+                this.discardedWriter = new OutputStreamWriter(new FileOutputStream(discardedFile), "UTF-8");
+            }
+            catch (FileNotFoundException e) {
+                throw new FileStoreException("Unable to create output files", e);
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public Writer getNormalizedWriter() {
+            if (outputWriter == null) {
+                throw new RuntimeException("Normalized file was not to be stored");
+            }
+            return outputWriter;
+        }
+
+        @Override
+        public Writer getDiscardedWriter() {
+            return discardedWriter;
+        }
+
+        @Override
+        public void recordNormalized() {
+            recordsNormalized++;
+        }
+
+        @Override
+        public void recordDiscarded() {
+            recordsDiscarded++;
+        }
+
+        @Override
+        public void close(boolean abort) throws FileStoreException {
+            try {
+                if (abort) {
+                    recordMapping.setRecordsNormalized(0);
+                    recordMapping.setRecordsDiscarded(0);
+                    recordMapping.setNormalizeTime(0);
+                    discardedWriter.close();
+                    discardedFile.delete();
+                    if (normalizedFile != null) {
+                        normalizedFile.delete();
+                    }
+                }
+                else {
+                    if (outputWriter != null) {
+                        outputWriter.close();
+                    }
+                    discardedWriter.close();
+                    recordMapping.setRecordsNormalized(recordsNormalized);
+                    recordMapping.setRecordsDiscarded(recordsDiscarded);
+                    recordMapping.setNormalizeTime(System.currentTimeMillis());
+                }
+            }
+            catch (IOException e) {
+                throw new FileStoreException("Unable to close output", e);
+            }
         }
     }
 

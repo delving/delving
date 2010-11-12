@@ -103,15 +103,15 @@ public class TestFileStore {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
         RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
-        RecordMapping recordMapping = store.getMapping(recordDefinition);
+        RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
         Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
         log.info("Mapping created with prefix "+recordMapping.getPrefix());
         MappingModel mappingModel = new MappingModel();
         mappingModel.setRecordMapping(recordMapping);
         mappingModel.setConstant("/some/path", "value");
-        fileStore.getDataSetStore(SPEC).setMapping(recordMapping);
+        fileStore.getDataSetStore(SPEC).setRecordMapping(recordMapping);
         Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
-        recordMapping = fileStore.getDataSetStore(SPEC).getMapping(recordDefinition);
+        recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
         Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
     }
 
@@ -142,6 +142,24 @@ public class TestFileStore {
         store.setSourceDetails(sourceDetails);
         sourceDetails = fileStore.getDataSetStore(SPEC).getSourceDetails();
         Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.getDescription());
+    }
+
+    @Test
+    public void pretendNormalize() throws IOException, FileStoreException {
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
+        RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
+        FileStore.MappingOutput mo = store.createMappingOutput(recordMapping, null);
+        mo.getDiscardedWriter().write("Hello");
+        mo.recordDiscarded();
+        mo.recordNormalized();
+        mo.recordNormalized();
+        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
+        mo.close(false);
+        store.setRecordMapping(recordMapping);
+        recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
+        Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
+        Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
     }
 
     private MetadataModel getMetadataModel() throws IOException {

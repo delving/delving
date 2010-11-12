@@ -52,6 +52,15 @@ public class RecordMapping {
     @XStreamAlias("record-count")
     int recordCount;
 
+    @XStreamAlias("records-normalized")
+    int recordsNormalized;
+
+    @XStreamAlias("records-discarded")
+    int recordsDiscarded;
+
+    @XStreamAlias("normalize-time")
+    long normalizeTime;
+
     @XStreamAlias("unique-element")
     String uniqueElement;
 
@@ -81,6 +90,30 @@ public class RecordMapping {
 
     public int getRecordCount() {
         return recordCount;
+    }
+
+    public int getRecordsNormalized() {
+        return recordsNormalized;
+    }
+
+    public void setRecordsNormalized(int recordsNormalized) {
+        this.recordsNormalized = recordsNormalized;
+    }
+
+    public int getRecordsDiscarded() {
+        return recordsDiscarded;
+    }
+
+    public void setRecordsDiscarded(int recordsDiscarded) {
+        this.recordsDiscarded = recordsDiscarded;
+    }
+
+    public long getNormalizeTime() {
+        return normalizeTime;
+    }
+
+    public void setNormalizeTime(long normalizeTime) {
+        this.normalizeTime = normalizeTime;
     }
 
     public Path getUniqueElement() {

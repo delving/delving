@@ -29,7 +29,6 @@ import eu.delving.core.metadata.Statistics;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Writer;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -46,6 +45,7 @@ public interface FileStore {
     String STATISTICS_FILE_NAME = "statistics.ser";
     String SOURCE_DETAILS_FILE_NAME = "source-details.xml";
     String MAPPING_FILE_PREFIX = "mapping.";
+    String DISCARDED_FILE_PREFIX = "discarded.";
 
     Set<String> getDataSetSpecs();
 
@@ -62,24 +62,22 @@ public interface FileStore {
 
         void setStatistics(List<Statistics> statisticsList) throws FileStoreException;
 
-        RecordMapping getMapping(RecordDefinition recordDefinition) throws FileStoreException;
+        RecordMapping getRecordMapping(RecordDefinition recordDefinition) throws FileStoreException;
 
-        void setMapping(RecordMapping recordMapping) throws FileStoreException;
+        void setRecordMapping(RecordMapping recordMapping) throws FileStoreException;
 
         SourceDetails getSourceDetails() throws FileStoreException;
 
         void setSourceDetails(SourceDetails details) throws FileStoreException;
 
-        Report getReport();
-
-        Output prepareOutput(File normalizedFile);
+        MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedFile) throws FileStoreException;
 
         void delete() throws FileStoreException;
     }
 
-    public interface Output {
+    public interface MappingOutput {
 
-        Writer getOutputWriter();
+        Writer getNormalizedWriter();
 
         Writer getDiscardedWriter();
 
@@ -87,20 +85,7 @@ public interface FileStore {
 
         void recordDiscarded();
 
-        void close(boolean abort);
-
-    }
-
-    public interface Report {
-
-        Date getNormalizationDate();
-
-        int getRecordsNormalized();
-
-        int getRecordsDiscarded();
-
-        void clear();
-
+        void close(boolean abort) throws FileStoreException;
     }
 
 }
