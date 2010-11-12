@@ -23,6 +23,7 @@ package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
@@ -42,6 +43,9 @@ import java.util.TreeSet;
 @XStreamAlias("record-mapping")
 public class RecordMapping {
 
+    @XStreamAsAttribute
+    String prefix;
+
     @XStreamAlias("record-root")
     String recordRoot;
 
@@ -56,6 +60,10 @@ public class RecordMapping {
 
     @XStreamAlias("field-mappings")
     Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
+
+    public String getPrefix() {
+        return prefix;
+    }
 
     public Path getRecordRoot() {
         if (recordRoot == null) {

@@ -23,6 +23,7 @@ package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ import java.util.TreeMap;
 
 @XStreamAlias("record-definition")
 public class RecordDefinition {
+
+    @XStreamAsAttribute
+    public String prefix;
 
     public List<NamespaceDefinition> namespaces;
 
