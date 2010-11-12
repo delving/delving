@@ -76,6 +76,14 @@ public class TestFileStore {
         Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
         Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
         log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
+        inputStream = getClass().getResource("/sample-input.xml").openStream();
+        InputStream storedStream = store.createXmlInputStream();
+        int input = 0, stored;
+        while ( input != -1 ) {
+            input = inputStream.read();
+            stored = storedStream.read();
+            Assert.assertEquals("Stream discrepancy", input, stored);
+        }
         store.delete();
         Assert.assertEquals("Should be zero file", 0, DIR.listFiles().length);
     }
