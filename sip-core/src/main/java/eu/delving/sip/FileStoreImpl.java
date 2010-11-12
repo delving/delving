@@ -21,10 +21,11 @@
 
 package eu.delving.sip;
 
+import com.thoughtworks.xstream.XStream;
 import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.metadata.Statistics;
-import eu.europeana.sip.core.DataSetDetails;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -59,6 +60,7 @@ public class FileStoreImpl implements FileStore {
         this.home = home;
     }
 
+    @Override
     public Set<String> getDataSetSpecs() {
         Set<String> specs = new TreeSet<String>();
         for (File file : home.listFiles()) {
@@ -69,6 +71,7 @@ public class FileStoreImpl implements FileStore {
         return specs;
     }
 
+    @Override
     public DataSetStore getDataSetStore(String spec) throws FileStoreException {
         File directory = new File(home, spec);
         if (!directory.exists()) {
@@ -77,6 +80,7 @@ public class FileStoreImpl implements FileStore {
         return new DataSetStoreImpl(directory);
     }
 
+    @Override
     public DataSetStore createDataSetStore(String spec, InputStream xmlInputStream) throws FileStoreException {
         File directory = new File(home, spec);
         if (directory.exists()) {
@@ -117,10 +121,12 @@ public class FileStoreImpl implements FileStore {
             this.directory = directory;
         }
 
+        @Override
         public String getSpec() {
             return directory.getName();
         }
 
+        @Override
         public InputStream createXmlInputStream() throws FileStoreException {
             File source = getSourceFile();
             try {
@@ -131,6 +137,7 @@ public class FileStoreImpl implements FileStore {
             }
         }
 
+        @Override
         public List<Statistics> getStatistics() throws FileStoreException {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             if (statisticsFile.exists()) {
@@ -149,6 +156,7 @@ public class FileStoreImpl implements FileStore {
             return null;
         }
 
+        @Override
         public void setStatistics(List<Statistics> statisticsList) throws FileStoreException {
             File statisticsFile = new File(directory, STATISTICS_FILE_NAME);
             try {
@@ -161,6 +169,7 @@ public class FileStoreImpl implements FileStore {
             }
         }
 
+        @Override
         public RecordMapping getMapping(RecordDefinition recordDefinition) throws FileStoreException {
             File mappingFile = new File(directory, MAPPING_FILE_PREFIX + recordDefinition.prefix);
             if (mappingFile.exists()) {
@@ -177,6 +186,7 @@ public class FileStoreImpl implements FileStore {
             }
         }
 
+        @Override
         public void setMapping(RecordMapping recordMapping) throws FileStoreException {
             File mappingFile = new File(directory, MAPPING_FILE_PREFIX + recordMapping.getPrefix());
             try {
@@ -189,22 +199,50 @@ public class FileStoreImpl implements FileStore {
             }
         }
 
-        public DataSetDetails getDataSetDetails() {
-            return null;
+        @Override
+        public SourceDetails getSourceDetails() throws FileStoreException {
+            File sourceDetailsFile = new File(directory, SOURCE_DETAILS_FILE_NAME);
+            SourceDetails details = null;
+            if (sourceDetailsFile.exists()) {
+                try {
+                    FileInputStream fis = new FileInputStream(sourceDetailsFile);
+                    details = (SourceDetails) getSourceDetailsStream().fromXML(fis);
+                    fis.close();
+                }
+                catch (Exception e) {
+                    throw new FileStoreException(String.format("Unable to read source details from %s", sourceDetailsFile.getAbsolutePath()));
+                }
+            }
+            if (details == null) {
+                details = new SourceDetails();
+            }
+            return details;
         }
 
-        public void setDataSetDetails(DataSetDetails details) {
-
+        @Override
+        public void setSourceDetails(SourceDetails details) throws FileStoreException {
+            File sourceDetailsFile = new File(directory, SOURCE_DETAILS_FILE_NAME);
+            try {
+                FileOutputStream fos = new FileOutputStream(sourceDetailsFile);
+                getSourceDetailsStream().toXML(details, fos);
+                fos.close();
+            }
+            catch (IOException e) {
+                throw new FileStoreException(String.format("Unable to save source details file to %s", sourceDetailsFile.getAbsolutePath()), e);
+            }
         }
 
+        @Override
         public Report getReport() {
             return null;
         }
 
+        @Override
         public Output prepareOutput(File normalizedFile) {
             return null;
         }
 
+        @Override
         public void delete() throws FileStoreException {
             if (directory.exists()) {
                 for (File file : directory.listFiles()) {
@@ -225,6 +263,12 @@ public class FileStoreImpl implements FileStore {
             }
             return sources[0];
         }
+    }
+
+    private XStream getSourceDetailsStream() {
+        XStream stream = new XStream();
+        stream.processAnnotations(SourceDetails.class);
+        return stream;
     }
 
     private class SourceFileFilter implements FileFilter {

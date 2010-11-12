@@ -27,6 +27,7 @@ import eu.delving.core.metadata.MetadataModelImpl;
 import eu.delving.core.metadata.Path;
 import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.metadata.Statistics;
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -82,6 +83,7 @@ public class TestFileStore {
     public void createDelete() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
+        Assert.assertEquals("Should be one sped", 1, fileStore.getDataSetSpecs().size());
         Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
         log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
         InputStream inputStream = createSampleInput();
@@ -99,6 +101,7 @@ public class TestFileStore {
     @Test
     public void manipulateMapping() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
         RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
         RecordMapping recordMapping = store.getMapping(recordDefinition);
         Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
@@ -128,6 +131,17 @@ public class TestFileStore {
         stats = fileStore.getDataSetStore(SPEC).getStatistics();
         Assert.assertEquals("Should be one stat", 1, stats.size());
         Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
+    }
+
+    @Test
+    public void manipulateDetails() throws IOException, FileStoreException {
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        SourceDetails sourceDetails = store.getSourceDetails();
+        Assert.assertEquals("source details should be empty", "", sourceDetails.getDescription());
+        sourceDetails.setDescription("Wingy");
+        store.setSourceDetails(sourceDetails);
+        sourceDetails = fileStore.getDataSetStore(SPEC).getSourceDetails();
+        Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.getDescription());
     }
 
     private MetadataModel getMetadataModel() throws IOException {

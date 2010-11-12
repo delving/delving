@@ -23,8 +23,8 @@ package eu.delving.sip;
 
 import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.metadata.Statistics;
-import eu.europeana.sip.core.DataSetDetails;
 
 import java.io.File;
 import java.io.InputStream;
@@ -44,6 +44,7 @@ public interface FileStore {
     String SOURCE_FILE_PREFIX = "source.";
     String SOURCE_FILE_SUFFIX = ".xml.gz";
     String STATISTICS_FILE_NAME = "statistics.ser";
+    String SOURCE_DETAILS_FILE_NAME = "source-details.xml";
     String MAPPING_FILE_PREFIX = "mapping.";
 
     Set<String> getDataSetSpecs();
@@ -65,9 +66,9 @@ public interface FileStore {
 
         void setMapping(RecordMapping recordMapping) throws FileStoreException;
 
-        DataSetDetails getDataSetDetails();
+        SourceDetails getSourceDetails() throws FileStoreException;
 
-        void setDataSetDetails(DataSetDetails details);
+        void setSourceDetails(SourceDetails details) throws FileStoreException;
 
         Report getReport();
 
