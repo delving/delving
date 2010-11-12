@@ -21,10 +21,13 @@
 
 package eu.delving.sip;
 
+import eu.delving.core.metadata.MappingModel;
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.MetadataModelImpl;
+import eu.delving.core.metadata.Path;
 import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.Statistics;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +37,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Make sure the file store is working
@@ -92,11 +97,37 @@ public class TestFileStore {
     }
 
     @Test
-    public void getMapping() throws IOException, FileStoreException {
+    public void manipulateMapping() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
         RecordMapping recordMapping = store.getMapping(recordDefinition);
         Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
+        log.info("Mapping created with prefix "+recordMapping.getPrefix());
+        MappingModel mappingModel = new MappingModel();
+        mappingModel.setRecordMapping(recordMapping);
+        mappingModel.setConstant("/some/path", "value");
+        fileStore.getDataSetStore(SPEC).setMapping(recordMapping);
+        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
+        recordMapping = fileStore.getDataSetStore(SPEC).getMapping(recordDefinition);
+        Assert.assertEquals("Should have held constant", "value", recordMapping.getConstant("/some/path"));
+    }
+
+    @Test
+    public void manipulateStatistics() throws IOException, FileStoreException {
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        List<Statistics> stats = store.getStatistics();
+        Assert.assertEquals("Should be one files", 1, new File(DIR, SPEC).listFiles().length);
+        Assert.assertNull("No stats should be here", stats);
+        stats = new ArrayList<Statistics>();
+        Statistics statistics = new Statistics(new Path("/stat/path"));
+        statistics.recordOccurrence();
+        statistics.recordValue("booger");
+        stats.add(statistics);
+        store.setStatistics(stats);
+        Assert.assertEquals("Should be two files", 2, new File(DIR, SPEC).listFiles().length);
+        stats = fileStore.getDataSetStore(SPEC).getStatistics();
+        Assert.assertEquals("Should be one stat", 1, stats.size());
+        Assert.assertEquals("Path discrepancy", "/stat/path", stats.get(0).getPath().toString());
     }
 
     private MetadataModel getMetadataModel() throws IOException {
