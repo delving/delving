@@ -61,6 +61,13 @@ public class RecordMapping {
     @XStreamAlias("field-mappings")
     Map<String, FieldMapping> fieldMappings = new HashMap<String, FieldMapping>();
 
+    public RecordMapping() {
+    }
+
+    public RecordMapping(String prefix) {
+        this.prefix = prefix;
+    }
+
     public String getPrefix() {
         return prefix;
     }

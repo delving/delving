@@ -21,6 +21,10 @@
 
 package eu.delving.sip;
 
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.MetadataModelImpl;
+import eu.delving.core.metadata.RecordDefinition;
+import eu.delving.core.metadata.RecordMapping;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -71,27 +75,49 @@ public class TestFileStore {
 
     @Test
     public void createDelete() throws IOException, FileStoreException {
-        InputStream inputStream = getClass().getResource("/sample-input.xml").openStream();
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, inputStream);
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
         Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
         log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
-        inputStream = getClass().getResource("/sample-input.xml").openStream();
-        InputStream storedStream = store.createXmlInputStream();
+        InputStream inputStream = createSampleInput();
+        InputStream storedStream = fileStore.getDataSetStore(SPEC).createXmlInputStream();
         int input = 0, stored;
-        while ( input != -1 ) {
+        while (input != -1) {
             input = inputStream.read();
             stored = storedStream.read();
             Assert.assertEquals("Stream discrepancy", input, stored);
         }
         store.delete();
-        Assert.assertEquals("Should be zero file", 0, DIR.listFiles().length);
+        Assert.assertEquals("Should be zero files", 0, DIR.listFiles().length);
+    }
+
+    @Test
+    public void getMapping() throws IOException, FileStoreException {
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
+        RecordMapping recordMapping = store.getMapping(recordDefinition);
+        Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
+    }
+
+    private MetadataModel getMetadataModel() throws IOException {
+        MetadataModelImpl metadataModel = new MetadataModelImpl();
+        metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
+        return metadataModel;
+    }
+
+    private InputStream createSampleInput() throws IOException {
+        return getClass().getResource("/sample-input.xml").openStream();
     }
 
     private void deleteFiles() {
-        for (File file : DIR.listFiles()) {
-            if (!file.delete()) {
-                throw new RuntimeException("File " + file.getAbsolutePath() + " could not be deleted");
+        for (File dir : DIR.listFiles()) {
+            for (File file : dir.listFiles()) {
+                if (!file.delete()) {
+                    throw new RuntimeException("File " + file.getAbsolutePath() + " could not be deleted");
+                }
+            }
+            if (!dir.delete()) {
+                throw new RuntimeException("File " + dir.getAbsolutePath() + " could not be deleted");
             }
         }
     }

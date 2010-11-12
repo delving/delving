@@ -172,7 +172,9 @@ public class FileStoreImpl implements FileStore {
                     throw new FileStoreException(String.format("Unable to read mapping from %s", mappingFile.getAbsolutePath()), e);
                 }
             }
-            return null;
+            else {
+                return new RecordMapping(recordDefinition.prefix);
+            }
         }
 
         public void setMapping(RecordMapping recordMapping) throws FileStoreException {
