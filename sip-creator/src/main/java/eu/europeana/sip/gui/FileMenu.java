@@ -21,13 +21,11 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -47,7 +45,7 @@ public class FileMenu extends JMenu {
     private SelectListener selectListener;
 
     public interface SelectListener {
-        boolean select(FileSet fileSet);
+        boolean select(File inputFile);
     }
 
     public FileMenu(Component parent, SipModel sipModel, SelectListener selectListener) {
@@ -55,10 +53,6 @@ public class FileMenu extends JMenu {
         this.parent = parent;
         this.sipModel = sipModel;
         this.selectListener = selectListener;
-        List<? extends FileSet> fileSets = fileSets().getList();
-        if (!fileSets.isEmpty()) {
-            SwingUtilities.invokeLater(new SpontaneousLoader(fileSets.get(0)));
-        }
         refresh();
     }
 
@@ -87,74 +81,41 @@ public class FileMenu extends JMenu {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                FileSet fileSet = fileSets().select(file);
-                selectListener.select(fileSet);
+                sipModel.addRecentFile(file);
+                selectListener.select(file);
                 refresh();
             }
         }
     }
 
-    private class LoadRecentFileSetAction extends AbstractAction {
-        private FileSet fileSet;
+    private class LoadRecentAction extends AbstractAction {
+        private File file;
 
-        private LoadRecentFileSetAction(FileSet fileSet) {
-            super(fileSet.getAbsolutePath());
-            this.fileSet = fileSet;
+        private LoadRecentAction(File file) {
+            super(file.getAbsolutePath());
+            this.file = file;
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            boolean selected = selectListener.select(fileSet);
+            boolean selected = selectListener.select(file);
             if (selected) {
-                fileSets().setMostRecent(fileSet);
+                sipModel.addRecentFile(file);
             }
             else {
-                fileSets().remove(fileSet);
+//                fileSets().remove(file);
             }
             refresh();
         }
     }
     
-    private FileSet.Recent fileSets() {
-        return sipModel.getRecentFileSets();
-    }
-
     private void refresh() {
         removeAll();
-        List<File> commonDirectories = fileSets().getCommonDirectories();
-        if (commonDirectories.isEmpty()) {
-            if (!fileSets().getList().isEmpty()) {
-                File directory = fileSets().getList().get(0).getDirectory();
-                int count = 3;
-                while (directory != null && count-- > 0) {
-                    add(new LoadNewFileAction(directory));
-                    directory = directory.getParentFile();
-                }
-            }
-        }
-        else {
-            for (File directory : commonDirectories) {
-                add(new LoadNewFileAction(directory));
-            }
-        }
         add(new LoadNewFileAction(new File("/")));
         addSeparator();
-        List<? extends FileSet> fileSetList = fileSets().getList();
-        for (FileSet fileSet : fileSetList) {
-            add(new LoadRecentFileSetAction(fileSet));
-        }
-    }
-
-    private class SpontaneousLoader implements Runnable {
-        private FileSet fileSet;
-
-        private SpontaneousLoader(FileSet fileSet) {
-            this.fileSet = fileSet;
-        }
-
-        @Override
-        public void run() {
-            selectListener.select(fileSet);
+        List<String> fileNameList = sipModel.getRecentFiles();
+        for (String fileName : fileNameList) {
+            add(new LoadRecentAction(new File(fileName)));
         }
     }
 }

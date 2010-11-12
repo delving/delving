@@ -23,8 +23,10 @@ package eu.europeana.sip.gui;
 
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.MetadataModelImpl;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
+import eu.delving.sip.FileStoreImpl;
 import eu.europeana.sip.core.RecordValidationException;
-import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
 import org.apache.log4j.Logger;
@@ -37,6 +39,7 @@ import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -50,10 +53,11 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(String serverUrl) {
+    public SipCreatorGUI(String fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.sipModel = new SipModel(loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
+        FileStore fileStore = new FileStoreImpl(new File(fileStoreDirectory));
+        this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -72,15 +76,26 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar bar = new JMenuBar();
         FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
             @Override
-            public boolean select(FileSet fileSet) {
-                if (!fileSet.isValid()) {
+            public boolean select(File file) {
+                if (!file.exists()) {
                     return false;
                 }
                 else {
-                    fileSet.setExceptionHandler(new PopupExceptionHandler());
-                    sipModel.setFileSet(fileSet);
-                    setTitle(String.format("SIP Creator - %s", fileSet.getAbsolutePath()));
-                    return true;
+                    String spec = JOptionPane.showInputDialog(SipCreatorGUI.this, "You must enter the Dataset spec which identifies it. This cannot be changed later.");
+                    spec = spec.trim();
+                    if (spec.isEmpty()) {
+                        return false;
+                    }
+                    else {
+                        int answer = JOptionPane.showConfirmDialog(SipCreatorGUI.this, String.format("Are you sure you wish to import %s as Data set %s", file.getAbsolutePath(), spec));
+                        if (answer == JOptionPane.YES_OPTION) {
+                            sipModel.createDataSetStore(spec, file);
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
                 }
             }
         });
@@ -144,8 +159,15 @@ public class SipCreatorGUI extends JFrame {
         final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(serverUrl);
-                sipCreatorGUI.setVisible(true);
+                SipCreatorGUI sipCreatorGUI = null;
+                try {
+                    sipCreatorGUI = new SipCreatorGUI("sip-creator-file-store", serverUrl);
+                    sipCreatorGUI.setVisible(true);
+                }
+                catch (FileStoreException e) {
+                    JOptionPane.showMessageDialog(null, "Unable to create the file store");
+                    e.printStackTrace();
+                }
             }
         });
     }
