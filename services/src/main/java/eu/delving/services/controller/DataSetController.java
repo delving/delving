@@ -1,15 +1,15 @@
 package eu.delving.services.controller;
 
-import com.thoughtworks.xstream.XStream;
 import eu.delving.core.metadata.MetadataException;
+import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.rest.DataSetInfo;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
-import eu.europeana.sip.core.DataSetDetails;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Provide a REST interface for managing datasets.
@@ -58,6 +59,9 @@ public class DataSetController {
 
     @Autowired
     private MetaRepo metaRepo;
+
+    @Autowired
+    private MetadataModel metadataModel;
 
     @Autowired
     private ServiceAccessToken serviceAccessToken;
@@ -189,7 +193,7 @@ public class DataSetController {
             return String.format("Data set %s not found", dataSetSpec);
         }
         // todo: check the hash??
-        dataSet.parseRecords(inputStream);
+        dataSet.parseRecords(new GZIPInputStream(inputStream));
         dataSet.save();
         return "OK";
     }
@@ -209,101 +213,13 @@ public class DataSetController {
         if (dataSet == null) {
             return String.format("Data set %s not found", dataSetSpec);
         }
-//        RecordMapping mapping = RecordMapping.read(inputStream, recordDefinition);
+        RecordMapping mapping = RecordMapping.read(inputStream, metadataModel.getRecordDefinition());
 //        String xml = RecordMapping.toXml(mapping);
 //        dataSet.addMapping(xml);
         // todo: check the hash??
         dataSet.save();
         return "OK";
     }
-
-    /*
-    @RequestMapping(value = "/dataset/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String submit(
-            @PathVariable String dataSetSpec,
-            InputStream inputStream,
-            @RequestParam(required = false) String accessKey
-    ) throws IOException, XMLStreamException, BadArgumentException, AccessKeyException {
-        checkAccessKey(accessKey);
-        log.info("submit(" + dataSetSpec + ")");
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        ZipInputStream zis = new ZipInputStream(inputStream);
-        ZipEntry entry;
-        DataSetDetails details = null;
-        while ((entry = zis.getNextEntry()) != null) {
-            log.info("entry: " + entry);
-            if (entry.getName().endsWith(".details")) {
-                details = getDetails(zis);
-                if (!details.getSpec().equals(dataSetSpec)) {
-                    throw new IOException(String.format("Zip file [%s] should have the data spec name [%s]", dataSetSpec, details.getSpec()));
-                }
-                if (dataSet == null) {
-                    dataSet = metaRepo.createDataSet(
-                            dataSetSpec,
-                            details.getName(),
-                            details.getProviderName(),
-                            details.getDescription(),
-                            details.getPrefix(),
-                            details.getNamespace(),
-                            details.getSchema(),
-                            true // accessKeyRequired true for now
-                    );
-                }
-                else {
-                    dataSet.setName(details.getName());
-                    dataSet.setProviderName(details.getProviderName());
-                    dataSet.setDescription(details.getDescription());
-                    dataSet.setRecordRoot(QName.valueOf(details.getRecordRoot()));
-                    dataSet.getMetadataFormat().setPrefix(details.getPrefix());
-                    dataSet.getMetadataFormat().setNamespace(details.getNamespace());
-                    dataSet.getMetadataFormat().setSchema(details.getSchema());
-                    dataSet.save();
-                }
-            }
-            else if (entry.getName().endsWith(".xml")) {
-                if (dataSet == null || details == null) {
-                    zis.close();
-                    throw new IOException("Data set details must come first in the uploaded zip file");
-                }
-                dataSet.parseRecords(
-                        zis,
-                        QName.valueOf(details.getRecordRoot()),
-                        QName.valueOf(details.getUniqueElement())
-                );
-            }
-            else if (entry.getName().endsWith(".gz")) {
-                if (dataSet == null || details == null) {
-                    zis.close();
-                    throw new IOException("Data set details must come first in the uploaded zip file");
-                }
-                dataSet.parseRecords(
-                        new GZIPInputStream(zis),
-                        QName.valueOf(details.getRecordRoot()),
-                        QName.valueOf(details.getUniqueElement())
-                );
-            }
-            else if (entry.getName().endsWith(".mapping")) {
-                if (dataSet == null) {
-                    zis.close();
-                    throw new IOException("Data set details must come first in the uploaded zip file");
-                }
-                dataSet.addMapping(getMapping(zis));
-            }
-            else {
-                byte[] buffer = new byte[2048];
-                int size;
-                while ((size = zis.read(buffer)) != -1) {
-                    log.warn("SKIPPING " + size);
-                }
-            }
-        }
-        zis.close();
-        log.info("finished submit");
-        return "OK";
-    }
-    */
 
     private void checkAccessKey(String accessKey) throws AccessKeyException {
         if (accessKey == null) {
@@ -340,12 +256,6 @@ public class DataSetController {
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         return info;
-    }
-
-    private DataSetDetails getDetails(InputStream inputStream) {
-        XStream stream = new XStream();
-        stream.processAnnotations(DataSetDetails.class);
-        return (DataSetDetails) stream.fromXML(inputStream);
     }
 
     private String getMapping(InputStream inputStream) throws IOException {

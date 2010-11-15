@@ -76,7 +76,7 @@ public interface MetaRepo {
         void save();
 
         void parseRecords(InputStream inputStream) throws XMLStreamException, IOException;
-        void addMapping(String mappingXML);
+        void setMapping(RecordMapping recordMapping);
 
         Map<String,Mapping> mappings() throws BadArgumentException;
         int getRecordCount();
@@ -89,7 +89,6 @@ public interface MetaRepo {
         String DESCRIPTION = "description";
         String NAMESPACES = "namespaces";
         String RECORD_ROOT = "rec_root";
-        String RECORD_COUNT  = "rec_count";
         String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
         String MAPPINGS = "mappings";

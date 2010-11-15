@@ -46,12 +46,6 @@ public class RecordMapping {
     @XStreamAsAttribute
     String prefix;
 
-    @XStreamAlias("record-root")
-    String recordRoot;
-
-    @XStreamAlias("record-count")
-    int recordCount;
-
     @XStreamAlias("records-normalized")
     int recordsNormalized;
 
@@ -60,9 +54,6 @@ public class RecordMapping {
 
     @XStreamAlias("normalize-time")
     long normalizeTime;
-
-    @XStreamAlias("unique-element")
-    String uniqueElement;
 
     @XStreamAlias("constants")
     Map<String, String> constants = new HashMap<String, String>();
@@ -79,17 +70,6 @@ public class RecordMapping {
 
     public String getPrefix() {
         return prefix;
-    }
-
-    public Path getRecordRoot() {
-        if (recordRoot == null) {
-            return null;
-        }
-        return new Path(recordRoot);
-    }
-
-    public int getRecordCount() {
-        return recordCount;
     }
 
     public int getRecordsNormalized() {
@@ -114,13 +94,6 @@ public class RecordMapping {
 
     public void setNormalizeTime(long normalizeTime) {
         this.normalizeTime = normalizeTime;
-    }
-
-    public Path getUniqueElement() {
-        if (uniqueElement == null) {
-            return null;
-        }
-        return new Path(uniqueElement);
     }
 
     public String getConstant(String fieldName) {

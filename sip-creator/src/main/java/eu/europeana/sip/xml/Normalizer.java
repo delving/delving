@@ -22,6 +22,7 @@
 package eu.europeana.sip.xml;
 
 import eu.delving.core.metadata.MetadataNamespace;
+import eu.delving.core.metadata.Path;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
@@ -49,6 +50,7 @@ import java.util.List;
 
 public class Normalizer implements Runnable {
     private SipModel sipModel;
+    private Path recordRoot;
     private boolean discardInvalid;
     private File normalizedFile;
     private MetadataParser.Listener parserListener;
@@ -65,12 +67,14 @@ public class Normalizer implements Runnable {
 
     public Normalizer(
             SipModel sipModel,
+            Path recordRoot,
             boolean discardInvalid,
             File normalizedFile,
             MetadataParser.Listener parserListener,
             Listener listener
     ) {
         this.sipModel = sipModel;
+        this.recordRoot = recordRoot;
         this.discardInvalid = discardInvalid;
         this.normalizedFile = normalizedFile;
         this.parserListener = parserListener;
@@ -95,7 +99,7 @@ public class Normalizer implements Runnable {
                 out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
-            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordMapping.getRecordRoot(), parserListener);
+            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, parserListener);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {

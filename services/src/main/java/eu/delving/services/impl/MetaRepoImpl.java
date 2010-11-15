@@ -410,21 +410,32 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void addMapping(String mappingXML) {
+        public void setMapping(RecordMapping recordMapping) {
             DBObject mappings = (DBObject) object.get(MAPPINGS);
             if (mappings == null) {
                 mappings = new BasicDBObject();
                 object.put(MAPPINGS, mappings);
             }
+            MetadataNamespace mappedNamespace = null;
+            for (MetadataNamespace namespace : MetadataNamespace.values()) {
+                if (namespace.getPrefix().equals(recordMapping.getPrefix())) {
+                    mappedNamespace = namespace;
+                    break;
+                }
+            }
+            if (mappedNamespace == null) { // todo: better exception type
+                throw new IllegalArgumentException(String.format("Namespace prefix %s not recognized", recordMapping.getPrefix()));
+            }
             DBObject format = new BasicDBObject();
-            format.put(MetadataFormat.PREFIX, MAPPED_NAMESPACE.getPrefix());
-            format.put(MetadataFormat.NAMESPACE, MAPPED_NAMESPACE.getUri());
-            format.put(MetadataFormat.SCHEMA, MAPPED_NAMESPACE.getSchema());
-            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, MAPPED_NAMESPACE_ACCESS_KEY_REQUIRED);
+            format.put(MetadataFormat.PREFIX, mappedNamespace.getPrefix());
+            format.put(MetadataFormat.NAMESPACE, mappedNamespace.getUri());
+            format.put(MetadataFormat.SCHEMA, mappedNamespace.getSchema());
+            format.put(MetadataFormat.ACCESS_KEY_REQUIRED, MAPPED_NAMESPACE_ACCESS_KEY_REQUIRED); // todo: determine this
             DBObject mapping = new BasicDBObject();
             mapping.put(Mapping.FORMAT, format);
-            mapping.put(Mapping.RECORD_MAPPING, mappingXML);
-            mappings.put(MAPPED_NAMESPACE.getPrefix(), mapping);
+            String xml = RecordMapping.toXml(recordMapping);
+            mapping.put(Mapping.RECORD_MAPPING, xml);
+            mappings.put(mappedNamespace.getPrefix(), mapping);
             saveObject();
         }
 
@@ -556,12 +567,12 @@ public class MetaRepoImpl implements MetaRepo {
                 "language",
                 "country"
         ));
-        private MappingInternal icnMapping;
+        private MappingInternal mappingInternal;
         private ESEStripper eseStripper = new ESEStripper();
         private ESEMetadataFormat eseMetadataFormat = new ESEMetadataFormat();
 
-        private FakeESEMappingImpl(MappingInternal icnMapping) {
-            this.icnMapping = icnMapping;
+        private FakeESEMappingImpl(MappingInternal mappingInternal) {
+            this.mappingInternal = mappingInternal;
         }
 
         @Override
@@ -581,7 +592,7 @@ public class MetaRepoImpl implements MetaRepo {
 
         @Override
         public void map(List<? extends Record> records, Map<String, String> namespaces) throws CannotDisseminateFormatException {
-            icnMapping.map(records, namespaces);
+            mappingInternal.map(records, namespaces);
             Iterator<? extends Record> recordWalk = records.iterator();
             while (recordWalk.hasNext()) {
                 Record record = recordWalk.next();

@@ -111,7 +111,7 @@ public class TestFileStore {
     public void manipulateMapping() throws IOException, FileStoreException, MetadataException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
-        RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
+        RecordDefinition recordDefinition = getRecordDefinition();
         RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
         Assert.assertEquals("Prefixes should be the same", recordDefinition.prefix, recordMapping.getPrefix());
         log.info("Mapping created with prefix "+recordMapping.getPrefix());
@@ -156,7 +156,7 @@ public class TestFileStore {
     @Test
     public void pretendNormalize() throws IOException, FileStoreException, MetadataException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
-        RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
+        RecordDefinition recordDefinition = getRecordDefinition();
         RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
         FileStore.MappingOutput mo = store.createMappingOutput(recordMapping, null);
         mo.getDiscardedWriter().write("Hello");
@@ -169,6 +169,10 @@ public class TestFileStore {
         recordMapping = fileStore.getDataSetStore(SPEC).getRecordMapping(recordDefinition);
         Assert.assertEquals("Mapping should contain facts", 1, recordMapping.getRecordsDiscarded());
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
+    }
+
+    private RecordDefinition getRecordDefinition() throws IOException, MetadataException {
+        return getMetadataModel().getRecordDefinition();
     }
 
     private MetadataModel getMetadataModel() throws IOException, MetadataException {

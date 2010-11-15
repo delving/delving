@@ -47,17 +47,6 @@ public class MappingModel {
         return recordMapping;
     }
 
-    public void setRecordRoot(Path recordRoot, int recordCount) {
-        getRecordMapping().recordRoot = recordRoot.toString();
-        getRecordMapping().recordCount = recordCount;
-        fireChangeEvent();
-    }
-
-    public void setUniqueElement(Path uniqueElement) {
-        getRecordMapping().uniqueElement = uniqueElement.toString();
-        fireChangeEvent();
-    }
-
     public void setConstant(String path, String value) {
         if (value == null) {
             getRecordMapping().constants.remove(path);

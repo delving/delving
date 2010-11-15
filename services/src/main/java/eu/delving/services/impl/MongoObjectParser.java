@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.core.metadata.MetadataNamespace;
 import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.Tag;
 import eu.delving.services.core.MetaRepo;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -27,6 +28,7 @@ public class MongoObjectParser {
     private XMLStreamReader2 input;
     private Path recordRoot, uniqueElement;
     private String metadataPrefix, namespaceUri;
+    private Path path = new Path();
     private DBObject namespaces = new BasicDBObject();
 
     public MongoObjectParser(InputStream inputStream, Path recordRoot, Path uniqueElement, String metadataPrefix, String namespaceUri) throws XMLStreamException {
@@ -35,9 +37,6 @@ public class MongoObjectParser {
         this.metadataPrefix = metadataPrefix;
         this.namespaceUri = namespaceUri;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
-//        xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
-//        xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-//        xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
         xmlif.configureForSpeed();
         Source source = new StreamSource(inputStream, "UTF-8");
         this.input = (XMLStreamReader2) xmlif.createXMLStreamReader(source);
@@ -53,8 +52,6 @@ public class MongoObjectParser {
         StringBuilder uniqueBuffer = null;
         String uniqueContent = null;
         boolean withinRecord = false;
-        int depth = 0;
-        int recordDepth = 0;
         boolean contentPresent = false;
         while (record == null) {
             switch (input.getEventType()) {
@@ -64,20 +61,17 @@ public class MongoObjectParser {
                     System.out.println("namespace: " + input.getName());
                     break;
                 case XMLEvent.START_ELEMENT:
-                    depth++;
+                    path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
                     if (!withinRecord) {
-                        // TODO: PATH
-                        if (input.getName().equals(recordRoot)) {
+                        if (path.equals(recordRoot)) {
                             withinRecord = true;
-                            recordDepth = depth;
                         }
                     }
                     else {
                         if (contentPresent) {
                             throw new IOException("Content and subtags not permitted");
                         }
-                        // TODO: PATH
-                        if (input.getName().equals(uniqueElement)) {
+                        if (path.equals(uniqueElement)) {
                             uniqueBuffer = new StringBuilder();
                         }
                         String prefix = input.getPrefix();
@@ -138,8 +132,7 @@ public class MongoObjectParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (withinRecord) {
-                        // TODO: PATH
-                        if (input.getName().equals(recordRoot) && depth == recordDepth) {
+                        if (path.equals(recordRoot)) {
                             withinRecord = false;
                             record = new BasicDBObject();
                             String content = contentBuffer.toString();
@@ -164,7 +157,7 @@ public class MongoObjectParser {
                             contentPresent = false;
                         }
                     }
-                    depth--;
+                    path.pop();
                     break;
                 case XMLEvent.END_DOCUMENT:
                     break;

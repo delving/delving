@@ -224,11 +224,11 @@ public class SipModel {
     }
 
     public Path getRecordRoot() {
-        return getRecordMapping().getRecordRoot();
+        return new Path(getSourceDetails().get("recordPath"));
     }
 
     public Path getUniqueElement() {
-        return getRecordMapping().getUniqueElement();
+        return new Path(getSourceDetails().get("uniqueElement"));
     }
 
     public void tellUser(String message) {
@@ -257,7 +257,7 @@ public class SipModel {
                         variableListModel.clear();
                         mappingModel.setRecordMapping(recordMapping);
                         if (getRecordRoot() != null) {
-                            setRecordRootInternal(recordMapping.getRecordRoot(), recordMapping.getRecordCount());
+                            setRecordRootInternal(new Path(sourceDetails.get("recordPath")), Integer.parseInt(sourceDetails.get("recordCount")));
                         }
                         AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
                         createMetadataParser(1);
@@ -401,6 +401,7 @@ public class SipModel {
         normalizeMessage(false, "Normalizing and validating...");
         normalizer = new Normalizer(
                 this,
+                getRecordRoot(),
                 discardInvalid,
                 normalizedFile,
                 new MetadataParser.Listener() {
@@ -486,7 +487,6 @@ public class SipModel {
     }
 
     public void setUniqueElement(Path uniqueElement) {
-        mappingModel.setUniqueElement(uniqueElement);
         sourceDetails.set("uniqueElement", uniqueElement.toString());
         executor.execute(new SourceDetailsSetter(sourceDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
@@ -505,7 +505,6 @@ public class SipModel {
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedDetails(sourceDetails);
         }
-        getMappingModel().setRecordRoot(recordRoot, recordCount);
     }
 
     public TableModel getStatisticsTableModel() {
