@@ -37,6 +37,9 @@ public class SourceDetails {
     }
 
     public String get(String fieldName) {
+        if (!FIELD_SET.contains(fieldName)) {
+            throw new IllegalArgumentException(String.format("[%s] is not a source details field", fieldName));
+        }
         String value = map.get(fieldName);
         if (value == null) {
             map.put(fieldName, value = "");
@@ -59,7 +62,7 @@ public class SourceDetails {
             }
         }
         catch (IOException e) {
-            throw new RuntimeException("Unable to read source-details.definition.xml from resources");
+            throw new RuntimeException("Unable to read source-details-definition.xml from resources");
         }
     }
 

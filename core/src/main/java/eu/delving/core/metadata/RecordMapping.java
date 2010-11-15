@@ -339,6 +339,10 @@ public class RecordMapping {
         stream().toXML(mapping, out);
     }
 
+    public static String toXml(RecordMapping mapping) {
+        return stream().toXML(mapping);
+    }
+
     public static RecordMapping read(InputStream is, RecordDefinition recordDefinition) throws MetadataException {
         RecordMapping recordMapping = (RecordMapping) stream().fromXML(is);
         recordMapping.apply(recordDefinition);

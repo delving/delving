@@ -1,6 +1,9 @@
 package eu.delving.services.controller;
 
 import com.thoughtworks.xstream.XStream;
+import eu.delving.core.metadata.MetadataException;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.rest.DataSetInfo;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
@@ -24,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,9 +35,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Provide a REST interface for managing datasets.
@@ -145,6 +144,80 @@ public class DataSetController {
         return view(dataSet);
     }
 
+    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/source-details.txt", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    String submitDetails(
+            @PathVariable String dataSetSpec,
+            InputStream inputStream,
+            @RequestParam(required = false) String accessKey
+    ) throws AccessKeyException, BadArgumentException, MetadataException {
+        checkAccessKey(accessKey);
+        log.info("submit details for " + dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        SourceDetails details = SourceDetails.read(inputStream);
+        if (dataSet == null) {
+            dataSet = metaRepo.createDataSet(dataSetSpec);
+        }
+        dataSet.setName(details.get("name"));
+        dataSet.setProviderName(details.get("provider"));
+        dataSet.setDescription(details.get("description"));
+        dataSet.setRecordRoot(new Path(details.get("recordRoot")));
+        dataSet.getMetadataFormat().setPrefix(details.get("prefix"));
+        dataSet.getMetadataFormat().setNamespace(details.get("URI"));
+        dataSet.getMetadataFormat().setSchema(details.get("schema"));
+        dataSet.getMetadataFormat().setAccessKeyRequired(true);
+        dataSet.setRecordRoot(new Path(details.get("recordRoot")));
+        dataSet.setUniqueElement(new Path(details.get("uniqueElement")));
+        dataSet.save();
+        return "OK";
+    }
+
+    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/source.{hash}.xml.gz", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    String submitSource(
+            @PathVariable String dataSetSpec,
+            @PathVariable String hash,
+            InputStream inputStream,
+            @RequestParam(required = false) String accessKey
+    ) throws AccessKeyException, BadArgumentException, MetadataException, XMLStreamException, IOException {
+        checkAccessKey(accessKey);
+        log.info("submit source for " + dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            return String.format("Data set %s not found", dataSetSpec);
+        }
+        // todo: check the hash??
+        dataSet.parseRecords(inputStream);
+        dataSet.save();
+        return "OK";
+    }
+
+    @RequestMapping(value = "/dataset/submit/{dataSetSpec}/mapping.{prefix}", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    String submitMapping(
+            @PathVariable String dataSetSpec,
+            @PathVariable String prefix,
+            InputStream inputStream,
+            @RequestParam(required = false) String accessKey
+    ) throws AccessKeyException, BadArgumentException, MetadataException, XMLStreamException, IOException {
+        checkAccessKey(accessKey);
+        log.info("submit mapping for " + dataSetSpec);
+        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+        if (dataSet == null) {
+            return String.format("Data set %s not found", dataSetSpec);
+        }
+//        RecordMapping mapping = RecordMapping.read(inputStream, recordDefinition);
+//        String xml = RecordMapping.toXml(mapping);
+//        dataSet.addMapping(xml);
+        // todo: check the hash??
+        dataSet.save();
+        return "OK";
+    }
+
+    /*
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}.zip", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -230,6 +303,7 @@ public class DataSetController {
         log.info("finished submit");
         return "OK";
     }
+    */
 
     private void checkAccessKey(String accessKey) throws AccessKeyException {
         if (accessKey == null) {

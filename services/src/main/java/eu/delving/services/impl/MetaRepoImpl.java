@@ -35,7 +35,6 @@ import org.dom4j.io.XMLWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -96,29 +95,10 @@ public class MetaRepoImpl implements MetaRepo {
     }
 
     @Override
-    public DataSet createDataSet(
-            String spec,
-            String name,
-            String providerName,
-            String description,
-            String prefix,
-            String namespace,
-            String schema,
-            boolean accessKeyRequired
-    ) throws BadArgumentException {
+    public DataSet createDataSet(String spec) throws BadArgumentException {
         DBObject object = new BasicDBObject();
         object.put(DataSet.SPEC, spec);
-        object.put(DataSet.NAME, name);
-        object.put(DataSet.PROVIDER_NAME, providerName);
-        object.put(DataSet.DESCRIPTION, description);
-        object.put(DataSet.RECORDS_INDEXED, 0);
-        object.put(DataSet.DATA_SET_STATE, DataSetState.UPLOADED.toString());
-        DBObject metadataFormat = new BasicDBObject();
-        metadataFormat.put(MetadataFormat.PREFIX, prefix);
-        metadataFormat.put(MetadataFormat.NAMESPACE, namespace);
-        metadataFormat.put(MetadataFormat.SCHEMA, schema);
-        metadataFormat.put(MetadataFormat.ACCESS_KEY_REQUIRED, accessKeyRequired);
-        object.put(DataSet.METADATA_FORMAT, metadataFormat);
+        object.put(DataSet.DATA_SET_STATE, DataSetState.EMPTY.toString());
         DataSetImpl impl = new DataSetImpl(object);
         impl.saveObject();
         return impl;
@@ -305,6 +285,11 @@ public class MetaRepoImpl implements MetaRepo {
             if (object.get(METADATA_FORMAT) != null) {
                 this.metadataFormat = new MetadataFormatImpl((DBObject) object.get(METADATA_FORMAT));
             }
+            else {
+                DBObject formatObject = new BasicDBObject();
+                object.put(METADATA_FORMAT, formatObject);
+                this.metadataFormat = new MetadataFormatImpl(formatObject);
+            }
         }
 
         private DBCollection records() {
@@ -355,13 +340,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public QName getRecordRoot() {
-            return QName.valueOf((String) (object.get(RECORD_ROOT)));
+        public Path getRecordRoot() {
+            return new Path((String) (object.get(RECORD_ROOT)));
         }
 
         @Override
-        public void setRecordRoot(QName root) {
-            object.put(RECORD_ROOT, root.toString());
+        public void setRecordRoot(Path path) {
+            object.put(RECORD_ROOT, path.toString());
         }
 
         @Override
@@ -372,6 +357,16 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void setRecordsIndexed(int count) {
             object.put(RECORDS_INDEXED, count);
+        }
+
+        @Override
+        public Path getUniqueElement() {
+            return new Path((String) (object.get(UNIQUE_ELEMENT)));
+        }
+
+        @Override
+        public void setUniqueElement(Path path) {
+            object.put(UNIQUE_ELEMENT, path.toString());
         }
 
         @Override
@@ -397,12 +392,12 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException {
+        public void parseRecords(InputStream inputStream) throws XMLStreamException, IOException {
             records().drop();
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
-                    recordRoot,
-                    uniqueElement,
+                    getRecordRoot(),
+                    getUniqueElement(),
                     getMetadataFormat().getPrefix(),
                     getMetadataFormat().getNamespace()
             );
@@ -411,7 +406,6 @@ public class MetaRepoImpl implements MetaRepo {
                 records().insert(record);
             }
             object.put(NAMESPACES, parser.getNamespaces());
-            object.put(RECORD_ROOT, recordRoot.toString());
             saveObject();
         }
 
@@ -706,6 +700,11 @@ public class MetaRepoImpl implements MetaRepo {
             public boolean isAccessKeyRequired() {
                 return false;  // ESE is free-for-all
             }
+
+            @Override
+            public void setAccessKeyRequired(boolean required) {
+                // do nothing
+            }
         }
     }
 
@@ -840,6 +839,11 @@ public class MetaRepoImpl implements MetaRepo {
         public boolean isAccessKeyRequired() {
             Boolean isIt = (Boolean) object.get(ACCESS_KEY_REQUIRED);
             return isIt == null ? Boolean.FALSE : isIt;
+        }
+
+        @Override
+        public void setAccessKeyRequired(boolean required) {
+            object.put(ACCESS_KEY_REQUIRED, required);
         }
 
         @Override

@@ -89,7 +89,7 @@ public interface FileStore {
     String SOURCE_FILE_PREFIX = "source.";
     String SOURCE_FILE_SUFFIX = ".xml.gz";
     String STATISTICS_FILE_NAME = "statistics.ser";
-    String SOURCE_DETAILS_FILE_NAME = "source-details.xml";
+    String SOURCE_DETAILS_FILE_NAME = "source-details.txt";
     String MAPPING_FILE_PREFIX = "mapping.";
     String DISCARDED_FILE_PREFIX = "discarded.";
 

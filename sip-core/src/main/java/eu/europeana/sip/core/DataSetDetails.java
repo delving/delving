@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
+@Deprecated
 @XStreamAlias("dataset-details")
 public class DataSetDetails {
     private String spec;

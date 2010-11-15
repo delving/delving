@@ -61,8 +61,13 @@ public class FileStoreImpl implements FileStore {
 
     private File home;
 
-    public FileStoreImpl(File home) {
+    public FileStoreImpl(File home) throws FileStoreException {
         this.home = home;
+        if (!home.exists()) {
+            if (!home.mkdirs()) {
+                throw new FileStoreException(String.format("Unable to create file store in %s", home.getAbsolutePath()));
+            }
+        }
     }
 
     @Override

@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <source-details-definition>
     <constants>
+        <constant-input name="name">
+            <prompt>Name</prompt>
+            <toolTip>The name given to this data set</toolTip>
+        </constant-input>
         <constant-input name="description">
             <prompt>Description</prompt>
             <toolTip>Describe the collection for reference</toolTip>

@@ -2,6 +2,7 @@ package eu.delving.services.core;
 
 import com.mongodb.DBObject;
 import eu.delving.core.metadata.MetadataException;
+import eu.delving.core.metadata.Path;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
@@ -9,7 +10,6 @@ import eu.delving.services.exceptions.CannotDisseminateFormatException;
 import eu.delving.services.exceptions.NoRecordsMatchException;
 import org.bson.types.ObjectId;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ import java.util.Set;
 
 public interface MetaRepo {
 
-    DataSet createDataSet(String spec, String name, String providerName, String description, String prefix, String namespace, String schema, boolean accessKeyRequired) throws BadArgumentException;
+    DataSet createDataSet(String spec) throws BadArgumentException;
 
     Collection<? extends DataSet> getDataSets() throws BadArgumentException;
 
@@ -62,8 +62,10 @@ public interface MetaRepo {
         String getDescription();
         void setDescription(String value);
         DBObject getNamespaces();
-        QName getRecordRoot();
-        void setRecordRoot(QName root);
+        Path getRecordRoot();
+        void setRecordRoot(Path path);
+        Path getUniqueElement();
+        void setUniqueElement(Path path);
         int getRecordsIndexed();
         void setRecordsIndexed(int count);
         DataSetState getState();
@@ -73,7 +75,7 @@ public interface MetaRepo {
         MetadataFormat getMetadataFormat();
         void save();
 
-        void parseRecords(InputStream inputStream, QName recordRoot, QName uniqueElement) throws XMLStreamException, IOException;
+        void parseRecords(InputStream inputStream) throws XMLStreamException, IOException;
         void addMapping(String mappingXML);
 
         Map<String,Mapping> mappings() throws BadArgumentException;
@@ -86,7 +88,9 @@ public interface MetaRepo {
         String PROVIDER_NAME = "provider_name";
         String DESCRIPTION = "description";
         String NAMESPACES = "namespaces";
-        String RECORD_ROOT = "record_root";
+        String RECORD_ROOT = "rec_root";
+        String RECORD_COUNT  = "rec_count";
+        String UNIQUE_ELEMENT = "unique_element";
         String METADATA_FORMAT = "metadata_format";
         String MAPPINGS = "mappings";
         String RECORDS_INDEXED = "rec_indexed";
@@ -95,6 +99,7 @@ public interface MetaRepo {
     }
 
     public enum DataSetState {
+        EMPTY,
         DISABLED,
         UPLOADED,
         QUEUED,
@@ -191,6 +196,7 @@ public interface MetaRepo {
         String getNamespace();
         void setNamespace(String value);
         boolean isAccessKeyRequired();
+        void setAccessKeyRequired(boolean required);
 
         String PREFIX = "prefix";
         String SCHEMA = "schema";

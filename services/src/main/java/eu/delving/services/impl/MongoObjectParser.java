@@ -3,6 +3,7 @@ package eu.delving.services.impl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import eu.delving.core.metadata.MetadataNamespace;
+import eu.delving.core.metadata.Path;
 import eu.delving.services.core.MetaRepo;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -24,11 +25,11 @@ import java.util.Date;
 
 public class MongoObjectParser {
     private XMLStreamReader2 input;
-    private QName recordRoot, uniqueElement;
+    private Path recordRoot, uniqueElement;
     private String metadataPrefix, namespaceUri;
     private DBObject namespaces = new BasicDBObject();
 
-    public MongoObjectParser(InputStream inputStream, QName recordRoot, QName uniqueElement, String metadataPrefix, String namespaceUri) throws XMLStreamException {
+    public MongoObjectParser(InputStream inputStream, Path recordRoot, Path uniqueElement, String metadataPrefix, String namespaceUri) throws XMLStreamException {
         this.recordRoot = recordRoot;
         this.uniqueElement = uniqueElement;
         this.metadataPrefix = metadataPrefix;
@@ -65,6 +66,7 @@ public class MongoObjectParser {
                 case XMLEvent.START_ELEMENT:
                     depth++;
                     if (!withinRecord) {
+                        // TODO: PATH
                         if (input.getName().equals(recordRoot)) {
                             withinRecord = true;
                             recordDepth = depth;
@@ -74,6 +76,7 @@ public class MongoObjectParser {
                         if (contentPresent) {
                             throw new IOException("Content and subtags not permitted");
                         }
+                        // TODO: PATH
                         if (input.getName().equals(uniqueElement)) {
                             uniqueBuffer = new StringBuilder();
                         }
@@ -135,6 +138,7 @@ public class MongoObjectParser {
                     break;
                 case XMLEvent.END_ELEMENT:
                     if (withinRecord) {
+                        // TODO: PATH
                         if (input.getName().equals(recordRoot) && depth == recordDepth) {
                             withinRecord = false;
                             record = new BasicDBObject();

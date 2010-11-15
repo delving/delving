@@ -56,7 +56,7 @@ public class TestFileStore {
     private FileStore fileStore;
 
     @Before
-    public void createStore() {
+    public void createStore() throws FileStoreException {
         if (!TARGET.exists()) {
             throw new RuntimeException("Target directory " + TARGET.getAbsolutePath() + " not found");
         }
