@@ -22,6 +22,7 @@
 package eu.delving.sip;
 
 import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.MetadataException;
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.MetadataModelImpl;
 import eu.delving.core.metadata.Path;
@@ -107,7 +108,7 @@ public class TestFileStore {
     }
 
     @Test
-    public void manipulateMapping() throws IOException, FileStoreException {
+    public void manipulateMapping() throws IOException, FileStoreException, MetadataException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
         RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
@@ -145,15 +146,15 @@ public class TestFileStore {
     public void manipulateDetails() throws IOException, FileStoreException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         SourceDetails sourceDetails = store.getSourceDetails();
-        Assert.assertEquals("source details should be empty", "", sourceDetails.getDescription());
-        sourceDetails.setDescription("Wingy");
+        Assert.assertEquals("source details should be empty", "", sourceDetails.get("recordPath"));
+        sourceDetails.set("recordPath", "Wingy");
         store.setSourceDetails(sourceDetails);
         sourceDetails = fileStore.getDataSetStore(SPEC).getSourceDetails();
-        Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.getDescription());
+        Assert.assertEquals("source details should be restored", "Wingy", sourceDetails.get("recordPath"));
     }
 
     @Test
-    public void pretendNormalize() throws IOException, FileStoreException {
+    public void pretendNormalize() throws IOException, FileStoreException, MetadataException {
         FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
         RecordDefinition recordDefinition = getMetadataModel().getRecordDefinition();
         RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
@@ -170,7 +171,7 @@ public class TestFileStore {
         Assert.assertEquals("Mapping should contain facts", 2, recordMapping.getRecordsNormalized());
     }
 
-    private MetadataModel getMetadataModel() throws IOException {
+    private MetadataModel getMetadataModel() throws IOException, MetadataException {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
         metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
         return metadataModel;

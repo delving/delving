@@ -21,25 +21,26 @@
 
 package eu.delving.core.metadata;
 
-import java.io.IOException;
-import java.net.URL;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
- * Implementing the MetadataModel inteface
+ * An XStream approach for replacing the annotated beans.
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MetadataModelImpl implements MetadataModel {
+@XStreamAlias("constant-input")
+public class ConstantInputDefinition {
 
-    private RecordDefinition recordDefinition;
+    @XStreamAsAttribute
+    public String name;
 
-    public void setRecordDefinitionResource(String path) throws IOException, MetadataException {
-        URL url = getClass().getResource(path);
-        this.recordDefinition = RecordDefinition.read(url.openStream());
-    }
+    public String prompt;
+    public String toolTip;
+    public String fieldPath;
 
-    public RecordDefinition getRecordDefinition() {
-        return recordDefinition;
-    }
+    @XStreamOmitField
+    public FieldDefinition fieldDefinition;
 }

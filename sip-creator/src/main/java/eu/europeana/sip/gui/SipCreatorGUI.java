@@ -40,7 +40,6 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * The main GUI class for the sip creator
@@ -111,7 +110,7 @@ public class SipCreatorGUI extends JFrame {
             metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
             return metadataModel;
         }
-        catch (IOException e) {
+        catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
             return null;
@@ -159,9 +158,8 @@ public class SipCreatorGUI extends JFrame {
         final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SipCreatorGUI sipCreatorGUI = null;
                 try {
-                    sipCreatorGUI = new SipCreatorGUI("sip-creator-file-store", serverUrl);
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI("sip-creator-file-store", serverUrl);
                     sipCreatorGUI.setVisible(true);
                 }
                 catch (FileStoreException e) {

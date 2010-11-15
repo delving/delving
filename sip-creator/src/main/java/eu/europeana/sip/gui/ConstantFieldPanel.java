@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.FieldDefinition;
-import eu.europeana.sip.model.SipModel;
+import eu.delving.core.metadata.ConstantInputDefinition;
+import eu.europeana.sip.model.ConstantFieldModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -37,7 +37,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Map;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -47,39 +46,42 @@ import java.util.Map;
  */
 
 public class ConstantFieldPanel extends JPanel {
-    private SipModel sipModel;
+    private ConstantFieldModel constantFieldModel;
     private FieldComponent[] fieldComponent;
 
-    public ConstantFieldPanel(SipModel sipModel) {
+    public ConstantFieldPanel(ConstantFieldModel constantFieldModel) {
         super(new SpringLayout());
-        this.sipModel = sipModel;
-        Map<String, FieldDefinition> constantFields = sipModel.getMetadataModel().getRecordDefinition().getConstantFields();
-        fieldComponent = new FieldComponent[constantFields.size()];
         setBorder(BorderFactory.createTitledBorder("Constant Fields"));
+        this.constantFieldModel = constantFieldModel;
+        constantFieldModel.addListener(new ModelAdapter());
+        refreshStructure();
+    }
+
+    private void refreshStructure() {
+        removeAll();
+        fieldComponent = new FieldComponent[constantFieldModel.getDefinitions().size()];
         int index = 0;
-        for (FieldDefinition fieldDefinition : constantFields.values()) {
-            fieldComponent[index++] = new FieldComponent(fieldDefinition);
+        for (ConstantInputDefinition cid : constantFieldModel.getDefinitions()) {
+            fieldComponent[index++] = new FieldComponent(cid);
         }
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(400, 400));
     }
 
-    public void refresh() {
-        Map<String, FieldDefinition> constantFields = sipModel.getMetadataModel().getRecordDefinition().getConstantFields();
-        int index = 0;
-        for (FieldDefinition fieldDefinition : constantFields.values()) {
-            fieldComponent[index++].setText(sipModel.getRecordMapping().getConstant(fieldDefinition.path.toString()));
+    public void refreshContent() {
+        for (FieldComponent field : fieldComponent) {
+            field.getValue();
         }
     }
 
     private class FieldComponent {
-        private FieldDefinition fieldDefinition;
+        private ConstantInputDefinition inputDefinition;
         private JTextField textField;
         private JComboBox comboBox;
 
-        private FieldComponent(FieldDefinition fieldDefinition) {
-            this.fieldDefinition = fieldDefinition;
-            if (fieldDefinition.options == null) {
+        private FieldComponent(ConstantInputDefinition inputDefinition) {
+            this.inputDefinition = inputDefinition;
+            if (inputDefinition.fieldDefinition == null || inputDefinition.fieldDefinition.options == null) {
                 createTextField();
             }
             else {
@@ -88,7 +90,7 @@ public class ConstantFieldPanel extends JPanel {
         }
 
         private void createComboBox() {
-            comboBox = new JComboBox(fieldDefinition.options.toArray());
+            comboBox = new JComboBox(inputDefinition.fieldDefinition.options.toArray());
             comboBox.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
@@ -98,8 +100,10 @@ public class ConstantFieldPanel extends JPanel {
                     }
                 }
             });
-            JLabel label = new JLabel(fieldDefinition.getTag().toString(), JLabel.RIGHT);
+            JLabel label = new JLabel(inputDefinition.prompt, JLabel.RIGHT);
             label.setLabelFor(comboBox);
+            comboBox.setToolTipText(inputDefinition.toolTip);
+            label.setToolTipText(inputDefinition.toolTip);
             ConstantFieldPanel.this.add(label);
             ConstantFieldPanel.this.add(comboBox);
         }
@@ -122,27 +126,44 @@ public class ConstantFieldPanel extends JPanel {
                     setValue();
                 }
             });
-            JLabel label = new JLabel(fieldDefinition.getTag().toString(), JLabel.RIGHT);
+            JLabel label = new JLabel(inputDefinition.prompt, JLabel.RIGHT);
             label.setLabelFor(textField);
+            textField.setToolTipText(inputDefinition.toolTip);
+            label.setToolTipText(inputDefinition.toolTip);
             ConstantFieldPanel.this.add(label);
             ConstantFieldPanel.this.add(textField);
         }
 
         private void setValue() {
             if (textField != null) {
-                sipModel.getMappingModel().setConstant(fieldDefinition.path.toString(), textField.getText());
+                constantFieldModel.set(inputDefinition, textField.getText());
             }
             else {
-                sipModel.getMappingModel().setConstant(fieldDefinition.path.toString(), comboBox.getSelectedItem().toString());
+                constantFieldModel.set(inputDefinition, comboBox.getSelectedItem().toString());
             }
         }
 
-        public void setText(String text) {
+        public void getValue() {
+            String text = constantFieldModel.get(inputDefinition);
             if (textField != null) {
                 textField.setText(text);
             }
             else {
                 comboBox.getModel().setSelectedItem(text);
+            }
+        }
+    }
+
+    private class ModelAdapter implements ConstantFieldModel.Listener {
+        @Override
+        public void updatedDefinitions(ConstantFieldModel constantFieldModel) {
+            refreshStructure();
+        }
+
+        @Override
+        public void updatedConstant(ConstantFieldModel constantFieldModel, boolean interactive) {
+            if (!interactive) {
+                refreshContent();
             }
         }
     }

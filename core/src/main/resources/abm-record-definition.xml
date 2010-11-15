@@ -1,5 +1,42 @@
 <?xml version="1.0"?>
 <record-definition prefix="abm">
+    <constants>
+        <constant-input name="collectionName">
+            <prompt>Collection Name</prompt>
+            <toolTip>What shall it be called?</toolTip>
+            <fieldPath>/record/europeana:collectionName</fieldPath>
+        </constant-input>
+        <constant-input name="collectionTitle">
+            <prompt>Collection Title</prompt>
+            <toolTip>What shall it be called?</toolTip>
+            <fieldPath>/record/europeana:collectionTitle</fieldPath>
+        </constant-input>
+        <constant-input name="language">
+            <prompt>Language</prompt>
+            <toolTip>Which lingo?</toolTip>
+            <fieldPath>/record/europeana:language</fieldPath>
+        </constant-input>
+        <constant-input name="country">
+            <prompt>Country</prompt>
+            <toolTip>Which land?</toolTip>
+            <fieldPath>/record/europeana:country</fieldPath>
+        </constant-input>
+        <constant-input name="provider">
+            <prompt>Provider</prompt>
+            <toolTip>Who provides?</toolTip>
+            <fieldPath>/record/europeana:provider</fieldPath>
+        </constant-input>
+        <constant-input name="dataProvider">
+            <prompt>Data Provider</prompt>
+            <toolTip>Who provides the data?</toolTip>
+            <fieldPath>/record/europeana:dataProvider</fieldPath>
+        </constant-input>
+        <constant-input name="rights">
+            <prompt>Rights</prompt>
+            <toolTip>What can you do with it?</toolTip>
+            <fieldPath>/record/europeana:rights</fieldPath>
+        </constant-input>
+    </constants>
     <namespaces>
         <namespace prefix="dc" uri="http://purl.org/dc/elements/1.1/" schema="http://dublincore.org/schemas/xmls/qdc/dc.xsd"/>
         <namespace prefix="dcterms" uri="http://purl.org/dc/terms/" schema="http://dublincore.org/schemas/xmls/qdc/dcterms.xsd"/>

@@ -22,6 +22,7 @@
 package eu.delving.sip;
 
 import com.thoughtworks.xstream.XStream;
+import eu.delving.core.metadata.MetadataException;
 import eu.delving.core.metadata.RecordDefinition;
 import eu.delving.core.metadata.RecordMapping;
 import eu.delving.core.metadata.SourceDetails;
@@ -89,7 +90,7 @@ public class FileStoreImpl implements FileStore {
         File sourceDetailsFile = new File(home, APP_CONFIG_FILE_NAME);
         try {
             FileOutputStream fos = new FileOutputStream(sourceDetailsFile);
-            getSourceDetailsStream().toXML(appConfig, fos);
+            getAppConfigStream().toXML(appConfig, fos);
             fos.close();
         }
         catch (IOException e) {
@@ -242,9 +243,7 @@ public class FileStoreImpl implements FileStore {
             SourceDetails details = null;
             if (sourceDetailsFile.exists()) {
                 try {
-                    FileInputStream fis = new FileInputStream(sourceDetailsFile);
-                    details = (SourceDetails) getSourceDetailsStream().fromXML(fis);
-                    fis.close();
+                    details = SourceDetails.read(new FileInputStream(sourceDetailsFile));
                 }
                 catch (Exception e) {
                     throw new FileStoreException(String.format("Unable to read source details from %s", sourceDetailsFile.getAbsolutePath()));
@@ -260,12 +259,13 @@ public class FileStoreImpl implements FileStore {
         public void setSourceDetails(SourceDetails details) throws FileStoreException {
             File sourceDetailsFile = new File(directory, SOURCE_DETAILS_FILE_NAME);
             try {
-                FileOutputStream fos = new FileOutputStream(sourceDetailsFile);
-                getSourceDetailsStream().toXML(details, fos);
-                fos.close();
+                SourceDetails.write(details, new FileOutputStream(sourceDetailsFile));
             }
             catch (IOException e) {
                 throw new FileStoreException(String.format("Unable to save source details file to %s", sourceDetailsFile.getAbsolutePath()), e);
+            }
+            catch (MetadataException e) {
+                throw new FileStoreException("Unable to set source details", e);
             }
         }
 
@@ -370,12 +370,6 @@ public class FileStoreImpl implements FileStore {
                 throw new FileStoreException("Unable to close output", e);
             }
         }
-    }
-
-    private XStream getSourceDetailsStream() {
-        XStream stream = new XStream();
-        stream.processAnnotations(SourceDetails.class);
-        return stream;
     }
 
     private XStream getAppConfigStream() {

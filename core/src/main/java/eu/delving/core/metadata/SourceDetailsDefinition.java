@@ -21,25 +21,18 @@
 
 package eu.delving.core.metadata;
 
-import java.io.IOException;
-import java.net.URL;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.util.List;
 
 /**
- * Implementing the MetadataModel inteface
+ * Defines the root of a hierarchical model
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class MetadataModelImpl implements MetadataModel {
+@XStreamAlias("source-details-definition")
+public class SourceDetailsDefinition {
 
-    private RecordDefinition recordDefinition;
-
-    public void setRecordDefinitionResource(String path) throws IOException, MetadataException {
-        URL url = getClass().getResource(path);
-        this.recordDefinition = RecordDefinition.read(url.openStream());
-    }
-
-    public RecordDefinition getRecordDefinition() {
-        return recordDefinition;
-    }
+    public List<ConstantInputDefinition> constants;
 }

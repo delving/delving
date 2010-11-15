@@ -84,7 +84,7 @@ public class AnalysisPanel extends JPanel {
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
-        this.constantFieldPanel = new ConstantFieldPanel(sipModel);
+        this.constantFieldPanel = new ConstantFieldPanel(sipModel.getConstantFieldModel());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
@@ -197,7 +197,7 @@ public class AnalysisPanel extends JPanel {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void templateApplied() {
-                constantFieldPanel.refresh();
+                constantFieldPanel.refreshContent();
             }
 
             @Override
@@ -206,7 +206,7 @@ public class AnalysisPanel extends JPanel {
                 analyzeButton.setText(String.format(PERFORM_ANALYSIS, dataSetStore.getSpec()));
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(false);
-                constantFieldPanel.refresh();
+                constantFieldPanel.refreshContent();
             }
 
             @Override

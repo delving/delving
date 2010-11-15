@@ -1,5 +1,6 @@
 package eu.europeana.sip.core;
 
+import eu.delving.core.metadata.MetadataException;
 import eu.delving.core.metadata.MetadataModelImpl;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -50,7 +51,7 @@ public class TestRecordValidator {
     private List<String> validFields = new ArrayList<String>(Arrays.asList(VALID_FIELDZ));
 
     @Before
-    public void prepare() throws IOException {
+    public void prepare() throws IOException, MetadataException {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
         metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
         recordValidator = new RecordValidator(metadataModel, true);

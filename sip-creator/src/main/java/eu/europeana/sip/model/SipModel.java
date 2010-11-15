@@ -90,8 +90,10 @@ public class SipModel {
     private CompileModel fieldCompileModel;
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
+    private ConstantFieldModel constantFieldModel = new ConstantFieldModel();
     private FieldMappingListModel fieldMappingListModel;
     private MappingModel mappingModel = new MappingModel();
+    private MappingSaveTimer mappingSaveTimer = new MappingSaveTimer();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
     private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
@@ -140,18 +142,11 @@ public class SipModel {
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
+        constantFieldModel.setRecordDefinition(metadataModel.getRecordDefinition());
         mappingModel.addListener(fieldMappingListModel);
         mappingModel.addListener(recordCompileModel);
         mappingModel.addListener(fieldCompileModel);
-        mappingModel.addListener(new MappingSaveTimer());
-//        fieldCompileModel.addListener(new CompileModel.Listener() {
-//            @Override
-//            public void stateChanged(CompileModel.State state) {
-//                if (state == CompileModel.State.COMMITTED) {
-//                    executor.execute(new MappingSetter());
-//                }
-//            }
-//        });
+        mappingModel.addListener(mappingSaveTimer);
     }
 
     public void addUpdateListener(UpdateListener updateListener) {
@@ -184,6 +179,10 @@ public class SipModel {
                 }
             }
         });
+    }
+
+    public ConstantFieldModel getConstantFieldModel() {
+        return constantFieldModel;
     }
 
     public String getServerAccessKey() {
@@ -371,6 +370,7 @@ public class SipModel {
     }
 
     public void setSourceDetails(SourceDetails sourceDetails, boolean save) {
+        this.sourceDetails = sourceDetails;
         if (save) {
             executor.execute(new SourceDetailsSetter(sourceDetails));
         }
@@ -487,7 +487,7 @@ public class SipModel {
 
     public void setUniqueElement(Path uniqueElement) {
         mappingModel.setUniqueElement(uniqueElement);
-        sourceDetails.setUniqueElement(uniqueElement.toString());
+        sourceDetails.set("uniqueElement", uniqueElement.toString());
         executor.execute(new SourceDetailsSetter(sourceDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
         for (UpdateListener updateListener : updateListeners) {
@@ -499,7 +499,8 @@ public class SipModel {
         checkSwingThread();
         setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
-        sourceDetails.setRecordRoot(recordRoot.toString());
+        sourceDetails.set("recordPath", recordRoot.toString());
+        sourceDetails.set("recordCount", String.valueOf(recordCount));
         executor.execute(new SourceDetailsSetter(sourceDetails));
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedDetails(sourceDetails);
@@ -728,6 +729,25 @@ public class SipModel {
             }
             catch (FileStoreException e) {
                 userNotifier.tellUser("Unable to save application configuration", e);
+            }
+        }
+    }
+
+    private class ConstantFieldModelAdapter implements ConstantFieldModel.Listener {
+        @Override
+        public void updatedDefinitions(ConstantFieldModel constantFieldModel) {
+            // do nothing
+        }
+
+        @Override
+        public void updatedConstant(ConstantFieldModel constantFieldModel, boolean interactive) {
+            if (interactive) {
+                if (constantFieldModel.fillRecordMapping(getRecordMapping())) {
+                    mappingSaveTimer.mappingChanged(getRecordMapping());
+                }
+                if (constantFieldModel.fillSourceDetails(sourceDetails)) {
+                    executor.execute(new SourceDetailsSetter(sourceDetails));
+                }
             }
         }
     }

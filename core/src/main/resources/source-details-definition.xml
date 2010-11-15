@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<source-details-definition>
+    <constants>
+        <constant-input name="description">
+            <prompt>Description</prompt>
+            <toolTip>Describe the collection for reference</toolTip>
+        </constant-input>
+        <constant-input name="provider">
+            <prompt>Provider</prompt>
+            <toolTip>Who provides?</toolTip>
+        </constant-input>
+        <constant-input name="namespacePrefix">
+            <prompt>Prefix</prompt>
+            <toolTip>The prefix to denote this namespace</toolTip>
+        </constant-input>
+        <constant-input name="namespaceUri">
+            <prompt>URI</prompt>
+            <toolTip>The URI to denote this namespace</toolTip>
+        </constant-input>
+        <constant-input name="namespaceSchema">
+            <prompt>Schema</prompt>
+            <toolTip>The schema to denote this namespace</toolTip>
+        </constant-input>
+        <constant-input name="recordPath">
+            <prompt>Record Path</prompt>
+            <toolTip>This path indicates where the record boundaries are in the input XML.</toolTip>
+        </constant-input>
+        <constant-input name="recordCount">
+            <prompt>Record Count</prompt>
+            <toolTip>This number is how many records there are in the input XML.</toolTip>
+        </constant-input>
+        <constant-input name="uniqueElementPath">
+            <prompt>Unique Element Path</prompt>
+            <toolTip>This path indicates where to find the unique element within the record.</toolTip>
+        </constant-input>
+    </constants>
+</source-details-definition>

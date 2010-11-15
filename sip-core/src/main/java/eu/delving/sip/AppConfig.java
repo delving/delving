@@ -39,6 +39,9 @@ public class AppConfig {
     private List<String> recentFiles;
 
     public String getAccessKey() {
+        if (accessKey == null) {
+            accessKey = "";
+        }
         return accessKey;
     }
 

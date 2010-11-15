@@ -123,8 +123,19 @@ public class RecordMapping {
         return new Path(uniqueElement);
     }
 
-    public String getConstant(String path) {
-        return constants.get(path);
+    public String getConstant(String fieldName) {
+        return constants.get(fieldName);
+    }
+
+    public boolean setConstant(String fieldName, String value) {
+        String existing = constants.get(fieldName);
+        if (existing == null || !value.equals(existing)) {
+            constants.put(fieldName, value);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public Collection<FieldMapping> getFieldMappings() {

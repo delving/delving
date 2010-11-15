@@ -101,17 +101,17 @@ public class ElementDefinition {
         return null;
     }
 
-    public void getConstantFields(String path, Map<String, FieldDefinition> map) {
+    public void getConstantFields(List<FieldDefinition> constantFields) {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 if (fieldDefinition.constant) {
-                    map.put(String.format("%s/%s", path, fieldDefinition.getTag()), fieldDefinition);
+                    constantFields.add(fieldDefinition);
                 }
             }
         }
         if (elements != null) {
             for (ElementDefinition elementDefinition : elements) {
-                elementDefinition.getConstantFields(String.format("%s/%s", path, elementDefinition.tag), map);
+                elementDefinition.getConstantFields(fields);
             }
         }
     }
