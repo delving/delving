@@ -293,7 +293,8 @@ public class FileStoreImpl implements FileStore {
             }
         }
 
-        private File getSourceFile() throws FileStoreException {
+        @Override
+        public File getSourceFile() throws FileStoreException {
             File[] sources = directory.listFiles(new SourceFileFilter());
             if (sources.length != 1) {
                 throw new FileStoreException("Expected exactly one file named source.???.xml.gz");

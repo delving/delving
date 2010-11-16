@@ -95,8 +95,6 @@ public class SipModel {
     private MappingModel mappingModel = new MappingModel();
     private MappingSaveTimer mappingSaveTimer = new MappingSaveTimer();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
-    private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
-    private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
@@ -275,8 +273,6 @@ public class SipModel {
                             normalizeProgressModel.setMaximum(100);
                             normalizeProgressModel.setValue(0);
                         }
-                        uploadProgressModel.setMaximum(100);
-                        uploadProgressModel.setValue(0);
                         for (UpdateListener updateListener : updateListeners) {
                             updateListener.updatedDataSetStore(dataSetStore);
                         }
@@ -383,14 +379,6 @@ public class SipModel {
         return normalizeProgressModel;
     }
 
-    public DefaultBoundedRangeModel getUploadProgress() {
-        return uploadProgressModel;
-    }
-
-    public DefaultBoundedRangeModel getZipProgress() {
-        return zipProgressModel;
-    }
-
     public void normalize(boolean discardInvalid, boolean storeNormalizedFile) {
         checkSwingThread();
         abortNormalize();
@@ -468,10 +456,9 @@ public class SipModel {
         }
     }
 
-    public void createUploadZipFile() {
+    public void uploadFile(File file, BoundedRangeModel progressModel) {
         checkSwingThread();
-        String zipFileName = dataSetStore.getSpec();
-        executor.execute(new ZipUploader(this, zipFileName));
+        executor.execute(new FileUploader(file, serverUrl, getServerAccessKey(), userNotifier, progressModel));
     }
 
     public TreeModel getAnalysisTreeModel() {

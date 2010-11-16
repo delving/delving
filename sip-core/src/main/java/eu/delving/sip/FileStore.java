@@ -70,6 +70,8 @@ public interface FileStore {
         MappingOutput createMappingOutput(RecordMapping recordMapping, File normalizedFile) throws FileStoreException;
 
         void delete() throws FileStoreException;
+
+        File getSourceFile() throws FileStoreException;
     }
 
     public interface MappingOutput {

@@ -9,15 +9,14 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 
+import javax.swing.BoundedRangeModel;
 import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Zip up a file and upload it
@@ -25,124 +24,63 @@ import java.util.zip.ZipOutputStream;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class ZipUploader implements Runnable {
+public class FileUploader implements Runnable {
     private static final int BLOCK_SIZE = 4096;
     private Logger log = Logger.getLogger(getClass());
-    private SipModel sipModel;
-    private File zipFile;
+    private File file;
+    private String serverUrl, serverAccessKey;
+    private UserNotifier userNotifier;
+    private BoundedRangeModel progressModel;
 
-    public ZipUploader(SipModel sipModel, String zipFileName) {
-        this.sipModel = sipModel;
-//        this.zipFile = new File(sipModel.getFileSet().getDirectory(), zipFileName + ".zip");
+    public FileUploader(File file, String serverUrl, String serverAccessKey, UserNotifier userNotifier, BoundedRangeModel progressModel) {
+        this.file = file;
+        this.serverUrl = serverUrl;
+        this.serverAccessKey = serverAccessKey;
+        this.userNotifier = userNotifier;
+        this.progressModel = progressModel;
     }
 
     @Override
     public void run() {
-        if (zipFile.exists()) {
-            if (!zipFile.delete()) {
-                sipModel.tellUser("Unable to delete zip file");
-                return;
-            }
-        }
-        initializeProgressIndicators();
-        try {
-            buildZipFile();
-        }
-        catch (IOException e) {
-            sipModel.tellUser("Unable to build zip file", e);
-            log.warn("Unable to build zip file", e);
-            if (!zipFile.delete()) {
-                sipModel.tellUser("Unable to delete zip file");
-                return;
-            }
-        }
-        if (zipFile.exists()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    int blocks = (int) (zipFile.length() / BLOCK_SIZE);
-                    sipModel.getUploadProgress().setMaximum(blocks);
-                    sipModel.getUploadProgress().setValue(0);
-                }
-            });
-            try {
-                uploadFile();
-            }
-            catch (IOException e) {
-                sipModel.tellUser("Unable to upload zip file");
-                log.warn("Unable to upload zip file", e);
-            }
-            finally {
-                if (!zipFile.delete()) {
-                    log.warn("Unable to delete " + zipFile.getAbsolutePath());
-                }
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        sipModel.getZipProgress().setValue(0);
-                    }
-                });
-            }
-        }
-    }
-
-    private void initializeProgressIndicators() {
-//        List<File> uploadFiles = sipModel.getFileSet().getUploadFiles();
-        long totalFileSize = 0;
-//        for (File file : uploadFiles) {
-//            totalFileSize += file.length();
-//        }
-        final int totalBlocks = (int) (totalFileSize / BLOCK_SIZE);
+        final int totalBlocks = (int) (file.length() / BLOCK_SIZE);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                sipModel.getZipProgress().setMaximum(totalBlocks);
-                sipModel.getZipProgress().setValue(0);
-                sipModel.getUploadProgress().setMaximum(100);
-                sipModel.getUploadProgress().setValue(0);
+                progressModel.setMaximum(totalBlocks);
+                progressModel.setValue(0);
             }
         });
-    }
-
-    private void buildZipFile() throws IOException {
-//        List<File> uploadFiles = sipModel.getFileSet().getUploadFiles();
-        OutputStream outputStream = new FileOutputStream(zipFile);
-        ZipOutputStream zos = new ZipOutputStream(outputStream);
-        long totalFileSize = 0;
-//        for (File file : uploadFiles) {
-//            InputStream in = new FileInputStream(file);
-//            zos.putNextEntry(new ZipEntry(file.getName()));
-//            byte[] buffer = new byte[BLOCK_SIZE];
-//            int length;
-//            while ((length = in.read(buffer)) > 0) {
-//                zos.write(buffer, 0, length);
-//                totalFileSize += length;
-//                final int totalBlocksZipped = (int) (totalFileSize / BLOCK_SIZE);
-//                SwingUtilities.invokeLater(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        sipModel.getZipProgress().setValue(totalBlocksZipped);
-//                    }
-//                });
-//            }
-//            zos.closeEntry();
-//        }
-        zos.close();
+        try {
+            uploadFile();
+        }
+        catch (IOException e) {
+            userNotifier.tellUser("Unable to upload file "+file.getAbsolutePath());
+            log.warn("Unable to upload file "+file.getAbsolutePath(), e);
+        }
+        finally {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    progressModel.setValue(0);
+                }
+            });
+        }
     }
 
     private void uploadFile() throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
         String postUrl = String.format(
                 "%s/submit/%s?accessKey=%s",
-                sipModel.getServerUrl(),
-                zipFile.getName(),
-                sipModel.getServerAccessKey()
+                serverUrl,
+                file.getName(),
+                serverAccessKey
         );
         log.info("Posting to: " + postUrl);
         HttpPost httpPost = new HttpPost(postUrl);
-        ZipEntity zipEntity = new ZipEntity(zipFile, "application/zip");
-        zipEntity.setChunked(true);
-        httpPost.setEntity(zipEntity);
+        String contentType = file.getName().endsWith(".gz") ? "application/gzip" : "text/plain";
+        FileEntity fileEntity = new FileEntity(file, contentType);
+        fileEntity.setChunked(true);
+        httpPost.setEntity(fileEntity);
         HttpResponse response = httpClient.execute(httpPost);
         log.info("Response: " + response.getStatusLine());
         HttpEntity resEntity = response.getEntity();
@@ -155,13 +93,13 @@ public class ZipUploader implements Runnable {
         }
     }
 
-    private class ZipEntity extends AbstractHttpEntity implements Cloneable {
+    private class FileEntity extends AbstractHttpEntity implements Cloneable {
 
         protected final File file;
         private long bytesSent;
         private int blocksReported;
 
-        public ZipEntity(final File file, final String contentType) {
+        public FileEntity(final File file, final String contentType) {
             if (file == null) {
                 throw new IllegalArgumentException("File may not be null");
             }
@@ -204,7 +142,7 @@ public class ZipUploader implements Runnable {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                sipModel.getUploadProgress().setValue(blocksReported);
+                                progressModel.setValue(blocksReported);
                             }
                         });
                     }
