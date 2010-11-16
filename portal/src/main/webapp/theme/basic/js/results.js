@@ -137,16 +137,16 @@ function checkSize(obj,type,w){
 }
 
 $(document).ready(function(){
-//    if($("a.overlay").length > 0){
-//        $("a.overlay").fancybox({
-//        titleShow : true,
-//        titlePosition: 'inside'
-//        })
-//    }
+    if($("a.overlay").length > 0){
+        $("a.overlay").fancybox({
+        titleShow : true,
+        titlePosition: 'inside'
+        })
+    }
 
-    if($(".facets_container").length > 0){
+    if($("div.facets_container").length > 0){
         //Hide (Collapse) the toggle containers on load
-        $(".facets_container").hide();
+        $("div.facets_container").hide();
 
         //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
         $("h4.trigger").click(function(){
@@ -158,13 +158,16 @@ $(document).ready(function(){
         var toggles = $(document).find("h4.trigger");
         $.each(toggles, function(){
             if($(this).hasClass("active")){
-                $(this).toggleClass("active").next().css("display","block");                
+                $(this).next().css("display","block");
             }
         })
     }
 
 
 });
+
+
+
 
 
 

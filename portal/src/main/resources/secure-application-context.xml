@@ -41,11 +41,11 @@
         </authentication-provider>
     </authentication-manager>
 
-    <beans:bean id="defaultAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler"/>
+    <!--<beans:bean id="defaultAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler"/>-->
 
-    <beans:bean id="authenticationSuccessHandler" class="eu.delving.web.AjaxAuthenticationSuccessHandler">
-        <beans:property name="defaultHandler" ref="defaultAuthenticationSuccessHandler"/>
-    </beans:bean>
+    <!--<beans:bean id="authenticationSuccessHandler" class="eu.delving.web.AjaxAuthenticationSuccessHandler">-->
+        <!--<beans:property name="defaultHandler" ref="defaultAuthenticationSuccessHandler"/>-->
+    <!--</beans:bean>-->
 
     <beans:bean id="defaultAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
         <beans:property name="defaultFailureUrl" value="/login.html?error=1"/>
@@ -63,7 +63,6 @@
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <form-login
                 login-page="/login.html"
-                authentication-success-handler-ref="authenticationSuccessHandler"
                 authentication-failure-handler-ref="authenticationFailureHandler"
                 />
         <logout logout-url="/logout.html" invalidate-session="true" logout-success-url="/logout-success.html"/>

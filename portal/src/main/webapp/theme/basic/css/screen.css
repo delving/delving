@@ -21,7 +21,7 @@ table caption {
 .inner {
     padding: .5em;
 }
-
+a.disabled,
 a:link.disabeled,
 a:visited.disabled {
     color: #ccc !important;
@@ -236,11 +236,18 @@ nav#facetList {
 /* FACETS TOGGLER *******************************/
 
 h4.trigger {
+    /* set border:none to over-ride jquery.ui styles for widgets*/
+    /*border: none;*/
     border-top: 1px solid #ccc;
 	margin: 0 0 .25em 0;
 	background: url(../images/togglerch.gif) no-repeat 0 8px;
     padding: 5px 0 0 20px;
     font-size: 1em;
+}
+
+h4.trigger .ui-icon {
+    float: left;
+    margin-right: .25em;
 }
 
 h4.trigger:hover {

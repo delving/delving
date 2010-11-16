@@ -26,7 +26,7 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         if ("true".equals(request.getParameter("ajax"))) {
             response.getWriter().print("ok");
-            response.getWriter().flush();
+            response.getWriter().flush(); 
         }
         else {
             defaultHandler.onAuthenticationSuccess(request, response, authentication);

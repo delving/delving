@@ -38,9 +38,9 @@ body {
 	font: 13px/1.5 Arial, Helvetica, 'Liberation Sans', FreeSans, sans-serif;
 }
 
-a:focus {
-	outline: 1px dotted invert;
-}
+/*a:focus {*/
+	/*outline: 1px dotted invert;*/
+/*}*/
 
 hr {
 	border: 0 #ccc solid;
