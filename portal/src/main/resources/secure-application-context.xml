@@ -47,7 +47,9 @@
         <beans:property name="defaultHandler" ref="defaultAuthenticationSuccessHandler"/>
     </beans:bean>
 
-    <beans:bean id="defaultAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"/>
+    <beans:bean id="defaultAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <beans:property name="defaultFailureUrl" value="/login.html?error=1"/>
+    </beans:bean>
 
     <beans:bean id="authenticationFailureHandler" class="eu.delving.web.AjaxAuthenticationFailureHandler">
         <beans:property name="defaultHandler" ref="defaultAuthenticationFailureHandler"/>
@@ -61,7 +63,6 @@
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
         <form-login
                 login-page="/login.html"
-                authentication-failure-url="/login.html?error=1"
                 authentication-success-handler-ref="authenticationSuccessHandler"
                 authentication-failure-handler-ref="authenticationFailureHandler"
                 />
