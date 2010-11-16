@@ -24,7 +24,7 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        if ("true".equals(request.getHeader("X-Ajax-call"))) {
+        if ("true".equals(request.getParameter("ajax"))) {
             response.getWriter().print("fail");
             response.getWriter().flush();
         }
