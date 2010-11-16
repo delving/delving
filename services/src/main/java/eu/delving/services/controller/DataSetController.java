@@ -166,7 +166,6 @@ public class DataSetController {
         dataSet.setName(details.get("name"));
         dataSet.setProviderName(details.get("provider"));
         dataSet.setDescription(details.get("description"));
-        dataSet.setRecordRoot(new Path(details.get("recordRoot")));
         dataSet.getMetadataFormat().setPrefix(details.get("prefix"));
         dataSet.getMetadataFormat().setNamespace(details.get("URI"));
         dataSet.getMetadataFormat().setSchema(details.get("schema"));
@@ -192,8 +191,11 @@ public class DataSetController {
         if (dataSet == null) {
             return String.format("Data set %s not found", dataSetSpec);
         }
-        // todo: check the hash??
-        dataSet.parseRecords(new GZIPInputStream(inputStream));
+        String sourceHash = dataSet.getSourceHash();
+        if (hash.equals(sourceHash)) {
+            return String.format("Data set %s already contains this data", dataSetSpec);
+        }
+        dataSet.parseRecords(hash, new GZIPInputStream(inputStream));
         dataSet.save();
         return "OK";
     }
@@ -214,9 +216,10 @@ public class DataSetController {
             return String.format("Data set %s not found", dataSetSpec);
         }
         RecordMapping mapping = RecordMapping.read(inputStream, metadataModel.getRecordDefinition());
-//        String xml = RecordMapping.toXml(mapping);
-//        dataSet.addMapping(xml);
-        // todo: check the hash??
+        if (!mapping.getPrefix().equals(prefix)) {
+            return String.format("Mapping name mapping.%s contains prefix %s", prefix, mapping.getPrefix());
+        }
+        dataSet.setMapping(mapping);
         dataSet.save();
         return "OK";
     }

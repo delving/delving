@@ -75,7 +75,8 @@ public interface MetaRepo {
         MetadataFormat getMetadataFormat();
         void save();
 
-        void parseRecords(InputStream inputStream) throws XMLStreamException, IOException;
+        String getSourceHash();
+        void parseRecords(String sourceHash, InputStream inputStream) throws XMLStreamException, IOException;
         void setMapping(RecordMapping recordMapping);
 
         Map<String,Mapping> mappings() throws BadArgumentException;
@@ -94,6 +95,7 @@ public interface MetaRepo {
         String MAPPINGS = "mappings";
         String RECORDS_INDEXED = "rec_indexed";
         String DATA_SET_STATE = "state";
+        String SOURCE_HASH = "source_hash";
         String ERROR_MESSAGE = "error";
     }
 

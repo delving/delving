@@ -392,8 +392,13 @@ public class MetaRepoImpl implements MetaRepo {
         }
 
         @Override
-        public void parseRecords(InputStream inputStream) throws XMLStreamException, IOException {
+        public void parseRecords(String sourceHash, InputStream inputStream) throws XMLStreamException, IOException {
+            if (getSourceHash().equals(sourceHash)) {
+                throw new RuntimeException("Should be checking for equal hash before parse");
+            }
             records().drop();
+            object.put(SOURCE_HASH, "");
+            saveObject();
             MongoObjectParser parser = new MongoObjectParser(
                     inputStream,
                     getRecordRoot(),
@@ -406,6 +411,7 @@ public class MetaRepoImpl implements MetaRepo {
                 records().insert(record);
             }
             object.put(NAMESPACES, parser.getNamespaces());
+            object.put(SOURCE_HASH, sourceHash);
             saveObject();
         }
 
@@ -447,6 +453,15 @@ public class MetaRepoImpl implements MetaRepo {
         @Override
         public void save() {
             saveObject();
+        }
+
+        @Override
+        public String getSourceHash() {
+            String hash = (String) object.get(SOURCE_HASH);
+            if (hash == null) {
+                hash = "";
+            }
+            return hash;
         }
 
         @Override
