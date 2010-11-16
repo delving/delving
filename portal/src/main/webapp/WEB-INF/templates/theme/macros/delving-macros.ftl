@@ -847,9 +847,11 @@
             <#--<@resultFullDataRow "dc_contributer"/>-->
             <#--<@resultFullDataRow "dc_identifier"/>-->
 
-        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri']) as field>
+        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',
+        'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_typet']) as field>
             <tr>
-                <th scrope="row">${field.getKeyAsXml()}</th>
+                <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
+                <th scope="row"><@spring.message '${field.getKey()}_t' />:</th>
                 <td>${field.getFirst()}</td>
             </tr>
         </#list>

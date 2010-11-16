@@ -31,13 +31,13 @@
 
     <h3><@spring.message 'RefineYourSearch_t' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "Provider", 2/>
-        <@resultBriefFacets "COUNTY",  "County", 2/>
-        <@resultBriefFacets "MUNICIPALITY",  "Municipality", 2/>
-        <#-- TODO: Create this facet -------------------------->
-        <#-- Norvegiana: Add "by About Person" ---------------->
-        <#----------------------------------------------------->
+        <@resultBriefFacets "DATAPROVIDER",  "abm_contentProvider", 2/>
+        <@resultBriefFacets "COUNTY",  "abm_county", 2/>
+        <@resultBriefFacets "MUNICIPALITY",  "abm_municipality", 2/>
         <@resultBriefFacets "DCTYPE",  "dc_type", 2/>
+        <#--<@resultBriefFacets "YEAR",  "dc_year", 2/>-->
+        <@resultBriefFacets "LANGUAGE",  "dc_language", 2/>
+        <@resultBriefFacets "PROVIDER",  "Provider", 2/>
     </nav>
 
     <nav id="userActions">
