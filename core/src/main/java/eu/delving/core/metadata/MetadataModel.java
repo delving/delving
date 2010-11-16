@@ -29,4 +29,5 @@ package eu.delving.core.metadata;
 
 public interface MetadataModel {
     RecordDefinition getRecordDefinition();
+    RecordDefinition getRecordDefinition(String prefix);
 }

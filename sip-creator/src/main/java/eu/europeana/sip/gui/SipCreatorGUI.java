@@ -40,6 +40,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * The main GUI class for the sip creator
@@ -107,7 +108,8 @@ public class SipCreatorGUI extends JFrame {
     private MetadataModel loadMetadataModel() {
         try {
             MetadataModelImpl metadataModel = new MetadataModelImpl();
-            metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
+            metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
+            metadataModel.setDefaultPrefix("abm");
             return metadataModel;
         }
         catch (Exception e) {

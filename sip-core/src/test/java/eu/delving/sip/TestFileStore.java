@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public class TestFileStore {
     @Test
     public void manipulateAppConfig() throws FileStoreException {
         AppConfig appConfig = fileStore.getAppConfig();
-        Assert.assertNull("should be no access key", appConfig.getAccessKey());
+        Assert.assertTrue("should be no access key", appConfig.getAccessKey().isEmpty());
         appConfig.setAccessKey("gumby");
         fileStore.setAppConfig(appConfig);
         appConfig = fileStore.getAppConfig();
@@ -177,7 +178,8 @@ public class TestFileStore {
 
     private MetadataModel getMetadataModel() throws IOException, MetadataException {
         MetadataModelImpl metadataModel = new MetadataModelImpl();
-        metadataModel.setRecordDefinitionResource("/abm-record-definition.xml");
+        metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
+        metadataModel.setDefaultPrefix("abm");
         return metadataModel;
     }
 

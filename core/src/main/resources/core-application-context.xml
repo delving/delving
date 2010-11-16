@@ -94,7 +94,7 @@
     </bean>
 
     <util:list id="includedMacros">
-            <value>delving-macros.ftl</value>
+        <value>delving-macros.ftl</value>
     </util:list>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -171,7 +171,12 @@
     </bean>
 
     <bean id="metadataModel" class="eu.delving.core.metadata.MetadataModelImpl">
-        <property name="recordDefinitionResource" value="/abm-record-definition.xml"/>
+        <property name="recordDefinitionResources">
+            <list>
+                <value>/abm-record-definition.xml</value>
+            </list>
+        </property>
+        <property name="defaultPrefix" value="abm"/>
     </bean>
 
     <bean id="connectionManagerParams" class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
@@ -194,11 +199,11 @@
     </bean>
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-       <property name="freemarkerSettings">
-           <props>
-               <prop key="template_exception_handler">#{launchProperties['debug.freemarker']}</prop>
-           </props>
-       </property>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="template_exception_handler">#{launchProperties['debug.freemarker']}</prop>
+            </props>
+        </property>
         <property name="templateLoaderPaths"
                   value="#{launchProperties['portal.freemarker.path']}, WEB-INF/templates/theme/macros/"/>
     </bean>
