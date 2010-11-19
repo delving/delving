@@ -3,7 +3,9 @@ package eu.delving.core.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -127,10 +129,47 @@ public class MessageRefactor {
         for (Counter counter : counters.values()) {
             System.out.println(String.format("%s : %d", counter.key, counter.count));
         }
-        allKeys.removeAll(counters.keySet());
+        Set<String> unused = new TreeSet<String>(allKeys);
+        unused.removeAll(counters.keySet());
         System.out.println("\n\nUnused:");
         for (String key : allKeys) {
             System.out.println(key);
+        }
+        File refactorFile = new File("MesssageRefactor.txt");
+        if (refactorFile.exists()) {
+            Map<String,String> map = MessageFileUtil.readMap(refactorFile);
+            for (Map.Entry<String,String> entry : map.entrySet()) {
+                if (entry.getValue().isEmpty()) {
+                    System.out.println(String.format("No refactor for %s, aborting", entry.getKey()));
+                    return;
+                }
+            }
+            for (File file : files) {
+                List<String> lines = readFile(file);
+                Writer out = new FileWriter(file);
+                for (String line : lines) {
+                    for (Map.Entry<String,String> entry : map.entrySet()) {
+                        String changed = line.replaceAll(entry.getKey(), entry.getValue());
+                        if (changed.equals(line)) {
+                            System.out.println("from> "+line+"\n  to>"+changed+"\n");
+                            out.write(changed);
+                        }
+                        else {
+                            out.write(line);
+                        }
+                        out.write('\n');
+                    }
+                }
+                out.close();
+            }
+            // do the refactor
+        }
+        else {
+            Map<String,String> map = new TreeMap<String,String>();
+            for (String key : allKeys) {
+                map.put(key, "");
+            }
+            MessageFileUtil.writeMap(map, refactorFile);
         }
     }
 }
