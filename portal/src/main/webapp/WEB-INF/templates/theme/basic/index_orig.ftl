@@ -4,7 +4,7 @@
 
 <@addHeader "Norvegiana", "",["index.js"],[]/>
 
-<div id="home">
+<div id="home" rel="test">
 
     <div class="grid_12" id="branding">
         <h1 class="gigantic">
@@ -75,12 +75,32 @@
                 <p>
                     Norvegiana is a search service presenting data from local and regionale archives and museums. Is is also a very interesting
                     research and development project. What can we learn when we merge data from different institutions and different domains
-                    into one service?</p>
+                    into one service?
+                </p>
             </div>
 
         </div>
 
+
+
     </div>
+
+    <#--<div id="" class="grid_6">-->
+
+               <#--<a href="http://www.abm-utvikling.no/"  title="ABM-utvikling">-->
+                    <#--<img src="/${portalName}/${portalTheme}/images/abm-logo.png" alt="ABM-utvikling" align="absmiddle"/>-->
+                <#--</a>-->
+                <#--<a href="http://www.europeanalocal.eu"  title="Europeana">-->
+                    <#--<img src="/${portalName}/${portalTheme}/images/europeana-local.jpg" alt="Europeana" align="absmiddle"/>-->
+                <#--</a>-->
+
+                <#--<img src="/${portalName}/${portalTheme}/images/eu-flag.jpg" alt="ABM-utvikling" align="absmiddle"/>-->
+
+                <#--<a href="http://www.delving.eu" title="Delving">-->
+                    <#--<img src="/${portalName}/${portalTheme}/images/poweredbydelving.png" alt="Proudly Powered by Delving" align="absmiddle"/>-->
+                <#--</a>        -->
+
+    <#--</div>-->
 
 </div>
 

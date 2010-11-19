@@ -21,16 +21,21 @@ table caption {
 .inner {
     padding: .5em;
 }
-
+a.disabled,
 a:link.disabeled,
 a:visited.disabled {
     color: #ccc !important;
+}
+
+.centered {
+    text-align: center;
 }
 
 /* HOME *************************************/
 
 #home {
     text-align: center;
+    display: block;
 }
 
 
@@ -40,6 +45,10 @@ a:visited.disabled {
 }
 
 /* BRANDING *********************************/
+
+div#branding {
+    text-align: center;
+}
 
 div#branding img {
    margin: 0 .25em 0 0;
@@ -227,11 +236,18 @@ nav#facetList {
 /* FACETS TOGGLER *******************************/
 
 h4.trigger {
+    /* set border:none to over-ride jquery.ui styles for widgets*/
+    /*border: none;*/
     border-top: 1px solid #ccc;
 	margin: 0 0 .25em 0;
 	background: url(../images/togglerch.gif) no-repeat 0 8px;
     padding: 5px 0 0 20px;
     font-size: 1em;
+}
+
+h4.trigger .ui-icon {
+    float: left;
+    margin-right: .25em;
 }
 
 h4.trigger:hover {
@@ -252,30 +268,49 @@ h4.active:hover {
     background: url(../images/togglero.gif) no-repeat 0 8px;
 }
 
-.toggle_container {
+.facets_container {
     /*background: url(../images/bg-gradient.png) repeat-x top left;*/
 	margin: 0 0 5px;
 	padding: 0;
-	overflow: hidden;
+	/*overflow: hidden;*/
 	clear: both;
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-.toggle_container table td {
+.facets_container table td {
     background: transparent;
-        font-size: .85em
+    /*font-size: .85em;*/
+    vertical-align: top;
 }
 
-.toggle_container .add {
-    background:url("../images/toggle_plus.gif") no-repeat scroll left top transparent;
-    height:32px;
-    padding:0 0 0 16px;
+.facets_container a:link, .facets_container a:visited {
+    text-decoration: none;
 }
-.toggle_container .remove {
-    background:url("../images/toggle_minus.gif") no-repeat scroll left top transparent;
+
+.facets_container a:hover {
+    text-decoration: underline;
+}
+
+.facets_container .add {
+    background:url("../images/toggle_plus.gif") no-repeat scroll  0 3px transparent;
+    /*height:32px;*/
+    padding:0 0 0 16px;
+    float: left;
+}
+.facets_container .remove {
+    background:url("../images/toggle_minus.gif") no-repeat scroll 0 3px transparent;
     color:#555555;
-    font-weight:700;
+    /*font-weight:700;*/
     padding:0 0 0 16px;
     text-decoration:none;
+    float: left;
+}
+
+.facets_container .add span, .facets_container .remove span {
+    text-decoration: none;
+    color: #999;
 }
 
 

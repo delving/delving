@@ -45,7 +45,7 @@
             <li><a href="#tab-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
             <li><a href="#tab-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
             <li><a href="#tab-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
-            <li><a href="#tab-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
+            <#--<li><a href="#tab-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>-->
         </ul>
        <div id="tab-0">
           <table class="tbl-list" summary="table with user information" id="tbl-user" >
@@ -145,62 +145,62 @@
                 </#if>
             </table>
         </div>
-       <div id="tab-3">
-        <table class="tbl-list" summary="list with saved tags" id="tbl-tags">
-            <caption><@spring.message 'SavedTags_t'/></caption>
-            <#if user.socialTags?size &gt; 0>
-                <#list user.socialTagLists as count>
-                    <#assign tagQuery = "europeana_uri:("/>
-                    <#list count.list as tag>
-                            <#-- todo: add tagQuery to href instead of searching for the userTag directly -->
-                           <#assign tagQuery = tagQuery + "+\"" + tag.europeanaUri + "\""/>
-                    </#list>
-                    <#assign tagQuery = tagQuery + ")"/>
-                    <tr>
-                        <th valign="top" class="item-info" colspan="3">
-                            <#--${tagQuery}-->
-                            <#--<a href="/${portalName}/brief-doc.html?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>-->
-                            <span class="ui-icon ui-icon-tag"></span><strong>${count.tag} (${count.list?size})</strong>
-                        </th>
-                    </tr>
-                    <#list count.list as tag>
-                       <tr>
-                         <td width="35" align="right">
-                             <#if tag.europeanaObject??>
-                                <a href="/${portalName}/record/${tag.europeanaUri}.html">
-                                <#if useCache = "true">
-                                    <img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="25"/>
-                                </#if>
+       <#--<div id="tab-3">-->
+        <#--<table class="tbl-list" summary="list with saved tags" id="tbl-tags">-->
+            <#--<caption><@spring.message 'SavedTags_t'/></caption>-->
+            <#--<#if user.socialTags?size &gt; 0>-->
+                <#--<#list user.socialTagLists as count>-->
+                    <#--<#assign tagQuery = "europeana_uri:("/>-->
+                    <#--<#list count.list as tag>-->
+                            <#--&lt;#&ndash; todo: add tagQuery to href instead of searching for the userTag directly &ndash;&gt;-->
+                           <#--<#assign tagQuery = tagQuery + "+\"" + tag.europeanaUri + "\""/>-->
+                    <#--</#list>-->
+                    <#--<#assign tagQuery = tagQuery + ")"/>-->
+                    <#--<tr>-->
+                        <#--<th valign="top" class="item-info" colspan="3">-->
+                            <#--&lt;#&ndash;${tagQuery}&ndash;&gt;-->
+                            <#--&lt;#&ndash;<a href="/${portalName}/brief-doc.html?query=europeana_userTag:${count.tag}"><strong>${count.tag} (${count.list?size})</strong></a>&ndash;&gt;-->
+                            <#--<span class="ui-icon ui-icon-tag"></span><strong>${count.tag} (${count.list?size})</strong>-->
+                        <#--</th>-->
+                    <#--</tr>-->
+                    <#--<#list count.list as tag>-->
+                       <#--<tr>-->
+                         <#--<td width="35" align="right">-->
+                             <#--<#if tag.europeanaObject??>-->
+                                <#--<a href="/${portalName}/record/${tag.europeanaUri}.html">-->
+                                <#--<#if useCache = "true">-->
+                                    <#--<img class="thumb" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" alt="Click for more information" width="25"/>-->
+                                <#--</#if>-->
 
-                                 <#if useCache="true">
-                                    <img class="thumb" align="middle" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" height="50"/>
-                                 <#else>
-                                    <#if tag.docType??>
-                                      <img class="thumb" align="middle" src="${tag.europeanaObject}" height="50" onerror="showDefault(this,'${tag.docType}')"/>
-                                    <#else>
-                                      <img class="thumb" align="middle" src="${tag.europeanaObject}" height="50" onerror="showDefault(this)"/>
-                                    </#if>
-                                 </#if>
-                                 </a>
+                                 <#--<#if useCache="true">-->
+                                    <#--<img class="thumb" align="middle" src="${cacheUrl}uri=${tag.europeanaObject}&size=BRIEF_DOC" height="50"/>-->
+                                 <#--<#else>-->
+                                    <#--<#if tag.docType??>-->
+                                      <#--<img class="thumb" align="middle" src="${tag.europeanaObject}" height="50" onerror="showDefault(this,'${tag.docType}')"/>-->
+                                    <#--<#else>-->
+                                      <#--<img class="thumb" align="middle" src="${tag.europeanaObject}" height="50" onerror="showDefault(this)"/>-->
+                                    <#--</#if>-->
+                                 <#--</#if>-->
+                                 <#--</a>-->
 
-                             </#if>
-                         </td>
-                         <td valign="top" class="item-info">
-                             <a href="/${portalName}/record/${tag.europeanaUri}.html">${tag.title}</a><br/>
-                             <p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>
-                         </td>
-                         <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
-                       </tr>
-                    </#list>
+                             <#--</#if>-->
+                         <#--</td>-->
+                         <#--<td valign="top" class="item-info">-->
+                             <#--<a href="/${portalName}/record/${tag.europeanaUri}.html">${tag.title}</a><br/>-->
+                             <#--<p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>-->
+                         <#--</td>-->
+                         <#--<td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>-->
+                       <#--</tr>-->
+                    <#--</#list>-->
 
 
-                </#list>
-            <#else>
-                <tr><td><@spring.message 'NoSavedTags_t'/></td></tr>
-            </#if>
-        </table>
+                <#--</#list>-->
+            <#--<#else>-->
+                <#--<tr><td><@spring.message 'NoSavedTags_t'/></td></tr>-->
+            <#--</#if>-->
+        <#--</table>-->
 
-    </div>
+    <#--</div>-->
             </div>
 </section>
 

@@ -14,6 +14,10 @@
 <#assign useCache = "false">
 <#assign javascriptFiles = ""/>
 <#assign cssFiles = ""/>
+<#assign contentOnly = "false"/>
+<#if RequestParameters.contentOnly??>
+    <#assign contentOnly = RequestParameters.contentOnly/>
+</#if>
 <#--
  * adminBlock
  *
@@ -74,78 +78,81 @@
  * @param pageJsFiles : additional js files appended to the default
  -->
 <#macro addHeader title="Delving" bodyClass="" pageJsFiles=[] pageCssFiles=[]>
-
-    <!DOCTYPE html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>${title}</title>
-        <script type="text/javascript">
-            var locale = "${locale}";
-            var msgRequired = "<@spring.message 'RequiredField_t'/>";
-            var portalName = "/${portalName}";
-            var baseThemePath = "/${portalName}/${portalTheme}";
-        </script>
-        <@addCss ["reset-text-grid.css","jquery-ui-1.8.5.custom.css","screen.css"], "screen"/>
-        <#if pageCssFiles?size &gt; 0>
-            <@addCss pageCssFiles/>
-        </#if>
-        ${cssFiles}
-        <!--[if lte IE 9]>
-        <script src="/${portalName}/${portalTheme}/js/html5.js" type="text/javascript"></script>
-        <![endif]-->
-        <@addJavascript ["jquery-1.4.2.min.js", "jquery-ui-1.8.5.custom.min.js", "jquery.cookie.js", "js_utilities.js"]/>
-        <#if (pageJsFiles?size &gt; 0)>
-            <@addJavascript pageJsFiles/>
-        </#if>
-        ${javascriptFiles}
-    </head>
-    <body class="${bodyClass}">
-    <div class="container_12">
-        <@adminBlock/>
+    <#if contentOnly != "true">
+        <!DOCTYPE html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <title>${title}</title>
+            <script type="text/javascript">
+                var locale = "${locale}";
+                var msgRequired = "<@spring.message 'RequiredField_t'/>";
+                var portalName = "/${portalName}";
+                var baseThemePath = "/${portalName}/${portalTheme}";
+            </script>
+            <@addCss ["reset-text-grid.css","jquery-ui-1.8.5.custom.css","screen.css"], "screen"/>
+            <#if pageCssFiles?size &gt; 0>
+                <@addCss pageCssFiles/>
+            </#if>
+            ${cssFiles}
+            <!--[if lte IE 9]>
+            <script src="/${portalName}/${portalTheme}/js/html5.js" type="text/javascript"></script>
+            <![endif]-->
+            <@addJavascript ["jquery-1.4.2.min.js", "jquery-ui-1.8.5.custom.min.js", "jquery.cookie.js", "js_utilities.js"]/>
+            <#if (pageJsFiles?size &gt; 0)>
+                <@addJavascript pageJsFiles/>
+            </#if>
+            ${javascriptFiles}
+        </head>
+        <body class="${bodyClass}">
+        <div class="container_12">
+            <@adminBlock/>
+    </#if>
 </#macro>
 
-<#macro addFooter>
-
-    <footer class="grid_12">
-        <div class="inner">
-            <a href="http://www.abm-utvikling.no/"  title="ABM-utvikling">
-                <img src="/${portalName}/${portalTheme}/images/abm-logo.png" alt="ABM-utvikling" align="absmiddle"/>
-            </a>
-            <a href="http://www.europeanalocal.eu"  title="Europeana">
-                <img src="/${portalName}/${portalTheme}/images/europeana-local.jpg" alt="Europeana" align="absmiddle"/>
-            </a>
-
-            <img src="/${portalName}/${portalTheme}/images/eu-flag.jpg" alt="ABM-utvikling" align="absmiddle"/>
-
-            <a href="http://www.delving.eu" title="Delving">
-                <img src="/${portalName}/${portalTheme}/images/poweredbydelving.png" alt="Proudly Powered by Delving" align="absmiddle"/>
-            </a>
-
-
-
-
-        </div>
-    </footer>
-
-
-    </div><#-- // container_12 -->
-    <#if trackingCode??>
-        <script type="text/javascript">
-
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', '${trackingCode}']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    </script>
-    </#if>
+<#macro addHtmlFooter>
     </body>
-    </html>
+</html>
+</#macro>
+
+<#macro addFooter >
+    <#if contentOnly!="true">
+        <footer class="grid_12">
+            <div class="inner">
+                <a href="http://www.abm-utvikling.no/"  title="ABM-utvikling">
+                    <img src="/${portalName}/${portalTheme}/images/abm-logo.png" alt="ABM-utvikling" align="absmiddle"/>
+                </a>
+                <a href="http://www.europeanalocal.eu"  title="Europeana">
+                    <img src="/${portalName}/${portalTheme}/images/europeana-local.jpg" alt="Europeana" align="absmiddle"/>
+                </a>
+
+                <img src="/${portalName}/${portalTheme}/images/eu-flag.jpg" alt="ABM-utvikling" align="absmiddle"/>
+
+                <a href="http://www.delving.eu" title="Delving">
+                    <img src="/${portalName}/${portalTheme}/images/poweredbydelving.png" alt="Proudly Powered by Delving" align="absmiddle"/>
+                </a>
+            </div>
+        </footer>
+
+
+        </div><#-- // container_12 -->
+        <#if trackingCode??>
+            <script type="text/javascript">
+
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', '${trackingCode}']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+
+        </script>
+        </#if>
+        </body>
+        </html>
+    </#if>
 </#macro>
 
 <#macro addThis code>
@@ -363,32 +370,32 @@
     <#assign facetMap = result.getFacetMap()>
     <#assign facet = facetMap.getFacet(key)>
     <#if !facet.type?starts_with("unknown")>
-        <h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}_t' /></a></h4>
+        <h4 class="trigger <#if facet.selected>active</#if>"><a href="#"><@spring.message '${facetLanguageTag}' /></a></h4>
+        <div class="facets_container">
         <#if facet.links?size &gt; 0>
-            <div id="facetsContainer" class="toggle_container">
-                <table summary="A list of facets to help refine your search">
-                    <#list facet.links?chunk(columnSize?int) as row>
-                        <tr>
-                            <#list row as link>
-                                <td align="left" style="padding: 2px;">
-                                <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
-                                    <#if !link.remove = true>
-                                        <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                        <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
-                                            <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                        </a>
-                                    <#else>
-                                        <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
-                                            <@stringLimiter "${link.value}" "25"/>(${link.count})
-                                        </a>
-                                    </#if>
-                                </td>
-                            </#list>
-                        </tr>
-                    </#list>
-                </table>
-            </div>
+            <table summary="A list of facets to help refine your search">
+                <#list facet.links?chunk(columnSize?int) as row>
+                    <tr>
+                        <#list row as link>
+                            <td align="left" style="padding: 2px;" <#if (columnSize==2)>width="50%"</#if>>
+                            <#-- DO NOT ENCODE link.url. This is already done in the java code. Encoding it will break functionality !!!  -->
+                                <#if !link.remove = true>
+                                    <a class="add" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                    <#--<input type="checkbox" value="" onclick="document.location.href='?query=${query?html}${link.url}';"/>-->
+                                        <@stringLimiter "${link.value}" "25"/><span>(${link.count})</span>
+                                    </a>
+                                <#else>
+                                    <a class="remove" href="?query=${query?html}${link.url?html}" title="${link.value}">
+                                        <@stringLimiter "${link.value}" "25"/>(<span>${link.count})</span>
+                                    </a>
+                                </#if>
+                            </td>
+                        </#list>
+                    </tr>
+                </#list>
+            </table>
         </#if>
+        </div>
     </#if>
 </#macro>
 <#--
@@ -672,7 +679,7 @@
                 <#if user??>
                     <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('#mustlogin a'); message() return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message 'login.required'/>'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide"></div>
@@ -777,6 +784,7 @@
             </a>
         </#if>
 
+
     </#if>
 
 </#macro>
@@ -790,25 +798,48 @@
     <#else>
         <#assign thumbnail = thumbnail.getFirst()/>
     </#if>
-    <#assign imageRef = "#"/>
-    <#assign isShownBy = result.fullDoc.getFieldValue("europeana_isShownBy")/>
-    <#assign isShownAt = result.fullDoc.getFieldValue("europeana_isShownAt")/>
+    <#--<#assign imageRef = "#"/>-->
+    <#--<#assign isShownBy = result.fullDoc.getFieldValue("europeana_isShownBy")/>-->
+    <#--<#assign isShownAt = result.fullDoc.getFieldValue("europeana_isShownAt")/>-->
 
-    <#if isShownBy.isNotEmpty()>
-        <#assign imageRef = isShownBy.getFirst()/>
-    <#elseif isShownAt.isNotEmpty()>
-        <#assign imageRef = isShownAt.getFirst()/>
+    <#--<#if isShownBy.isNotEmpty()>-->
+        <#--<#assign imageRef = isShownBy.getFirst()/>-->
+    <#--<#elseif isShownAt.isNotEmpty()>-->
+        <#--<#assign imageRef = isShownAt.getFirst()/>-->
+    <#--</#if>-->
+
+    <#assign overlayActive = false/>
+    <#assign overlayUrl = result.fullDoc.getFieldValue("europeana_isShownBy").getFirst()/>
+    <#assign originalContextUrl = result.fullDoc.getFieldValue("europeana_isShownAt").getFirst()/>
+
+    <#if !overlayUrl?matches(" ")>
+        <#assign overlayUrl = overlayUrl/>
+        <#assign overlayActive = true/>
     </#if>
-   <a href="/${portalName}/redirect.html?shownBy=${isShownAt.getFirst()}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
-      target="_blank"
-      class="overlay"
-    >
-      <#--<a href="${thumbnail}"-->
-      <#--target="_blank"-->
-      <#--class="overlay"-->
-      <#--title="${result.fullDoc.dcTitle[0]}"-->
-    <#-->-->
 
+    <#if !originalContextUrl?matches(" ") && !overlayUrl?matches(" ")>
+        <#assign originalContextUrl = originalContextUrl/>
+    <#elseif originalContextUrl?matches(" ") && !overlayUrl?matches(" ")>
+        <#assign originalContextUrl = overlayUrl/>
+    <#elseif !originalContextUrl?matches(" ") && overlayUrl?matches(" ")>
+        <#assign overlayUrl = originalContextUrl/>
+        <#assign overlayActive = false/>
+    </#if>
+
+
+    <#--overlayURL: ${overlayUrl}<br/>-->
+    <#--originalContextUrl: ${originalContextUrl}-->
+   <#--<a href="/${portalName}/redirect.html?shownBy=${isShownAt.getFirst()}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
+      <#--target="_blank"-->
+      <#--<#if overlayActive = true>-->
+      <#--class="overlay"-->
+      <#--</#if>-->
+    <#-->-->
+    <#--<a class="<#if overlayActive>overlay</#if>"-->
+       <#--href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
+       <#--target="_blank"-->
+       <#--alt="<@spring.message 'ViewInOriginalContext_t' /> <@spring.message 'OpensInNewWindow_t'/>"-->
+    <#-->-->
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
              class="full"
@@ -816,20 +847,53 @@
              id="imgview"
              onload="checkSize(this.id,'full',this.width);"
              onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-         />
+        />
     <#else>
         <img
-             alt="${result.fullDoc.dcTitle[0]}"
-             id="imgview"
-             class="full"
-             src="${thumbnail}"
-             onload="checkSize(this.id,'full',this.width);"
-             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-         />
+            alt="${result.fullDoc.dcTitle[0]}"
+            id="imgview"
+            src="${thumbnail}"
+            onload="checkSize(this.id,'full',this.width);"
+            onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
+            alt="<@spring.message 'ViewInOriginalContext_t' /> <@spring.message 'OpensInNewWindow_t'/>"
+        />
     </#if>
+    <#--<#if useCache="true">-->
+        <#--<img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"-->
+             <#--class="full"-->
+             <#--alt="${result.fullDoc.dcTitle[0]}"-->
+             <#--id="imgview"-->
+             <#--onload="checkSize(this.id,'full',this.width);"-->
+             <#--onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"-->
+         <#--/>-->
+    <#--<#else>-->
+        <#--<img-->
+             <#--alt="${result.fullDoc.dcTitle[0]}"-->
+             <#--id="imgview"-->
+             <#--class="full"-->
+             <#--src="${thumbnail}"-->
+             <#--onload="checkSize(this.id,'full',this.width);"-->
+             <#--onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"-->
+         <#--/>-->
+    <#--</#if>-->
 
+    <#--</a>-->
+    <#-- originalContextUrl assigned top of page -->
+    <#if !originalContextUrl?matches(" ")>
+    <nav style="padding: 1em;">
+    <a
+            href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
+            target="_blank"
+            alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+            title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+            class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+            style="float: none;;"
+            >
+        <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
     </a>
+    </nav>
 
+    </#if>
 </#macro>
 
 <#macro resultFullList>
@@ -846,9 +910,11 @@
             <#--<@resultFullDataRow "dc_contributer"/>-->
             <#--<@resultFullDataRow "dc_identifier"/>-->
 
-        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri']) as field>
+        <#list result.fullDoc.getFieldValuesFiltered(false, ['europeana_uri', 'delving_pmhId', 'europeana_collectionName', 'europeana_collectionTitle',
+        'europeana_object', 'europeana_isShownAt', 'europeana_isShownBy', 'europeana_language', 'europeana_rights', 'europeana_typet']) as field>
             <tr>
-                <th scrope="row">${field.getKeyAsXml()}</th>
+                <#--<th scrope="row">${field.getKeyAsXml()}</th>-->
+                <th scope="row"><@spring.message '${field.getKey()}_t' />:</th>
                 <td>${field.getFirst()}</td>
             </tr>
         </#list>
@@ -878,7 +944,7 @@
     <fieldset>
         <legend>Search</legend>
         <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
-        <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" />
+        <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" class="ui-corner-all" />
         <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
         <nav>
         <a href="/${portalName}/advancedsearch.html" title="<@spring.message 'AdvancedSearch_t' />"><@spring.message 'AdvancedSearch_t' /></a>
@@ -911,8 +977,8 @@
 <#macro userBar>
 <ul>
     <#if !user??>
-        <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
-        <li><a href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
+        <li><a id="login" href="/${portalName}/login.html"><@spring.message 'LogIn_t'/></a></li>
+        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
     </#if>
     <#if user??>
     <li>
@@ -935,16 +1001,17 @@
         (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
     </li>
     </#if>
-    <#if user.socialTags??>
-    <li>
-        <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
-            <@spring.message 'SavedTags_t' />
-        </a>
-        (<span id="savedTagsCount">${user.socialTags?size}</span>)
-    </li>
-    </#if>
+    <#--<#if user.socialTags??>-->
+    <#--<li>-->
+        <#--<a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">-->
+            <#--<@spring.message 'SavedTags_t' />-->
+        <#--</a>-->
+        <#--(<span id="savedTagsCount">${user.socialTags?size}</span>)-->
+    <#--</li>-->
+    <#--</#if>-->
     </#if>
 </ul>
+<div id="overlayContainer"></div>
 </#macro>
 
 <#--
