@@ -150,8 +150,8 @@ public class MessageRefactor {
                 for (String line : lines) {
                     for (Map.Entry<String,String> entry : map.entrySet()) {
                         String changed = line.replaceAll(entry.getKey(), entry.getValue());
-                        if (changed.equals(line)) {
-                            System.out.println("from> "+line+"\n  to>"+changed+"\n");
+                        if (!changed.equals(line)) {
+                            System.out.println("from> "+line+"\n  to> "+changed+"\n");
                             out.write(changed);
                         }
                         else {
@@ -162,7 +162,6 @@ public class MessageRefactor {
                 }
                 out.close();
             }
-            // do the refactor
         }
         else {
             Map<String,String> map = new TreeMap<String,String>();
