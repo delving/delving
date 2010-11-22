@@ -40,6 +40,7 @@ public class ConstantInputDefinition {
     public String prompt;
     public String toolTip;
     public String fieldPath;
+    public Boolean automatic; 
 
     @XStreamOmitField
     public FieldDefinition fieldDefinition;

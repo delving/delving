@@ -137,6 +137,7 @@ public class SipModel {
         parseListeners.add(fieldCompileModel);
         fieldMappingListModel = new FieldMappingListModel();
         constantFieldModel.setRecordDefinition(metadataModel.getRecordDefinition());
+        constantFieldModel.addListener(new ConstantFieldModelAdapter());
         mappingModel.addListener(fieldMappingListModel);
         mappingModel.addListener(recordCompileModel);
         mappingModel.addListener(fieldCompileModel);
@@ -252,20 +253,6 @@ public class SipModel {
         return getMappingModel().getRecordMapping();
     }
 
-    public Path getRecordRoot() {
-        if (sourceDetails == null || sourceDetails.get(SourceDetails.RECORD_PATH).isEmpty()) {
-            return null;
-        }
-        return new Path(getSourceDetails().get(SourceDetails.RECORD_PATH));
-    }
-
-    public Path getUniqueElement() {
-        if (sourceDetails == null || sourceDetails.get(SourceDetails.UNIQUE_ELEMENT_PATH).isEmpty()) {
-            return null;
-        }
-        return new Path(getSourceDetails().get(SourceDetails.UNIQUE_ELEMENT_PATH));
-    }
-
     public void tellUser(String message) {
         userNotifier.tellUser(message);
     }
@@ -302,7 +289,7 @@ public class SipModel {
                                 variableListModel.clear();
                                 mappingModel.setRecordMapping(recordMapping);
                                 if (getRecordRoot() != null) {
-                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get("recordCount")));
+                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get(SourceDetails.RECORD_COUNT)));
                                 }
                                 AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
                                 createMetadataParser(1);
@@ -518,10 +505,25 @@ public class SipModel {
         }
     }
 
+    public Path getUniqueElement() {
+        if (sourceDetails == null || sourceDetails.get(SourceDetails.UNIQUE_ELEMENT_PATH).isEmpty()) {
+            return null;
+        }
+        return new Path(getSourceDetails().get(SourceDetails.UNIQUE_ELEMENT_PATH));
+    }
+
     public void setUniqueElement(Path uniqueElement) {
         sourceDetails.set(SourceDetails.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
+        constantFieldModel.setSourceDetails(sourceDetails);
         executor.execute(new SourceDetailsSetter(sourceDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
+    }
+
+    public Path getRecordRoot() {
+        if (sourceDetails == null || sourceDetails.get(SourceDetails.RECORD_PATH).isEmpty()) {
+            return null;
+        }
+        return new Path(getSourceDetails().get(SourceDetails.RECORD_PATH));
     }
 
     public void setRecordRoot(Path recordRoot, int recordCount) {
@@ -529,7 +531,8 @@ public class SipModel {
         setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
         sourceDetails.set(SourceDetails.RECORD_PATH, recordRoot.toString());
-        sourceDetails.set("recordCount", String.valueOf(recordCount));
+        sourceDetails.set(SourceDetails.RECORD_COUNT, String.valueOf(recordCount));
+        constantFieldModel.setSourceDetails(sourceDetails);
         executor.execute(new SourceDetailsSetter(sourceDetails));
     }
 

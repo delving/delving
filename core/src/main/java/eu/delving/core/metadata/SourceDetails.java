@@ -25,6 +25,7 @@ public class SourceDetails {
     private Map<String, String> map = new TreeMap<String, String>();
     public static final String RECORD_PATH = "recordPath";
     public static final String UNIQUE_ELEMENT_PATH = "uniqueElementPath";
+    public static final String RECORD_COUNT = "recordCount";
 
     public boolean set(String fieldName, String value) {
         if (!FIELD_SET.contains(fieldName)) {

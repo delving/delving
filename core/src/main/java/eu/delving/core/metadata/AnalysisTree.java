@@ -112,10 +112,8 @@ public class AnalysisTree implements Serializable {
         if (node.setRecordRoot(recordRoot)) {
             changedNodes.add(node);
         }
-        if (recordRoot == null || !node.isRecordRoot()) {
-            for (AnalysisTree.Node child : node.getChildNodes()) {
-                setRecordRoot(child, recordRoot, changedNodes);
-            }
+        for (AnalysisTree.Node child : node.getChildNodes()) {
+            setRecordRoot(child, recordRoot, changedNodes);
         }
     }
 

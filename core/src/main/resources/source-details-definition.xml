@@ -28,14 +28,17 @@
         <constant-input name="recordPath">
             <prompt>Record Path</prompt>
             <toolTip>This path indicates where the record boundaries are in the input XML.</toolTip>
+            <automatic>true</automatic>
         </constant-input>
         <constant-input name="recordCount">
             <prompt>Record Count</prompt>
             <toolTip>This number is how many records there are in the input XML.</toolTip>
+            <automatic>true</automatic>
         </constant-input>
         <constant-input name="uniqueElementPath">
             <prompt>Unique Element Path</prompt>
             <toolTip>This path indicates where to find the unique element within the record.</toolTip>
+            <automatic>true</automatic>
         </constant-input>
     </constants>
 </source-details-definition>

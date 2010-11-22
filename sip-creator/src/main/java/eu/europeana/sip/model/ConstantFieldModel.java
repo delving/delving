@@ -81,7 +81,7 @@ public class ConstantFieldModel {
         }
         if (changed) {
             for (Listener listener : listeners) {
-                listener.updatedConstant(this, false);
+                listener.updatedConstant(this, true);
             }
         }
     }
@@ -127,7 +127,7 @@ public class ConstantFieldModel {
     public void set(ConstantInputDefinition cid, String value) {
         if (put(cid, value)) {
             for (Listener listener : listeners) {
-                listener.updatedConstant(this, false);
+                listener.updatedConstant(this, true);
             }
         }
     }

@@ -126,6 +126,9 @@ public class ConstantFieldPanel extends JPanel {
                     setValue();
                 }
             });
+            if (inputDefinition.automatic != null && inputDefinition.automatic) {
+                textField.setEditable(false);
+            }
             JLabel label = new JLabel(inputDefinition.prompt, JLabel.RIGHT);
             label.setLabelFor(textField);
             textField.setToolTipText(inputDefinition.toolTip);
@@ -162,9 +165,7 @@ public class ConstantFieldPanel extends JPanel {
 
         @Override
         public void updatedConstant(ConstantFieldModel constantFieldModel, boolean interactive) {
-            if (!interactive) {
-                refreshContent();
-            }
+            refreshContent();
         }
     }
 }
