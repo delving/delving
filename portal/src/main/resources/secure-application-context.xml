@@ -41,23 +41,40 @@
         </authentication-provider>
     </authentication-manager>
 
+    <!--<beans:bean id="defaultAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler"/>-->
+
+    <!--<beans:bean id="authenticationSuccessHandler" class="eu.delving.web.AjaxAuthenticationSuccessHandler">-->
+        <!--<beans:property name="defaultHandler" ref="defaultAuthenticationSuccessHandler"/>-->
+    <!--</beans:bean>-->
+
+    <beans:bean id="defaultAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <beans:property name="defaultFailureUrl" value="/login.html?error=1"/>
+    </beans:bean>
+
+    <beans:bean id="authenticationFailureHandler" class="eu.delving.web.AjaxAuthenticationFailureHandler">
+        <beans:property name="defaultHandler" ref="defaultAuthenticationFailureHandler"/>
+    </beans:bean>
+
     <http auto-config="true" create-session="always">
         <intercept-url pattern="/secure/*.html" access="ROLE_USER"/>
         <intercept-url pattern="/mine.html" access="ROLE_USER"/>
         <intercept-url pattern="/administration.html" access="ROLE_ADMINISTRATOR"/>
         <intercept-url pattern="/_.dml" access="ROLE_ADMINISTRATOR"/>
         <intercept-url pattern="/*.ajax" access="ROLE_USER"/>
-        <form-login login-page="/login.html" authentication-failure-url="/login.html?error=1"/>
+        <form-login
+                login-page="/login.html"
+                authentication-failure-handler-ref="authenticationFailureHandler"
+                />
         <logout logout-url="/logout.html" invalidate-session="true" logout-success-url="/logout-success.html"/>
         <!--<remember-me token-repository-ref="tokenRepositoryService" />-->
         <!--<remember-me services-ref="rememberMeServices" key="europeanaKey"/>-->
     </http>
 
-    <beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">
-        <beans:property name="userDetailsService" ref="daoUserDetailsService"/>
-        <beans:property name="tokenRepository" ref="tokenRepositoryService" />
-        <beans:property name="key" value="europeanaKey"/>
-    </beans:bean>
+    <!--<beans:bean id="rememberMeServices" class="eu.europeana.core.util.web.RememberMeServices">-->
+        <!--<beans:property name="userDetailsService" ref="daoUserDetailsService"/>-->
+        <!--<beans:property name="tokenRepository" ref="tokenRepositoryService" />-->
+        <!--<beans:property name="key" value="europeanaKey"/>-->
+    <!--</beans:bean>-->
 
     <beans:bean id="mongo" class="com.mongodb.Mongo"/>
 

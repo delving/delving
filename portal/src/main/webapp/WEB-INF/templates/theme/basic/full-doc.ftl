@@ -78,29 +78,30 @@
                 </#if>
             </#if>
 
-            <p>
-            <h6><@spring.message 'AddATag_t' /></h6>
+            <#--<p>-->
+            <#--<h6><@spring.message 'AddATag_t' /></h6>-->
 
-        <#--<div id="ysearchautocomplete">-->
-            <form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;" id="form-addtag" name="form-addtag" accept-charset="UTF-8">
-                <input type="text" name="tag" id="tag" maxlength="50" class="text"/>
-                <input type="submit" class="button" value="Add"/>
-            </form>
-            <div id="msg-save-tag" class="hide"></div>
-        </p>
-        <#--</div>-->
+
+            <#--<form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;" id="form-addtag" name="form-addtag" accept-charset="UTF-8">-->
+                <#--<input type="text" name="tag" id="tag" maxlength="50" class="text"/>-->
+                <#--<input type="submit" class="button" value="Add"/>-->
+            <#--</form>-->
+            <#--<div id="msg-save-tag" class="hide"></div>-->
+        <#--</p>-->
+
 
 
             <#else>
                 <div class="related-links">
-                    <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
-                    </p>
+                    <#--<p>-->
+                        <#--<a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'AddATag_t' /></a>-->
+                    <#--</p>-->
 
                     <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
                     </p>
                 </div>
+                <div id="msg-save-item" class="msg-hide"></div>
 
         </#if>
     </div>
@@ -172,7 +173,7 @@
         <#assign queryStringForPaging = pagination.queryStringForPaging />
     </#if>
     <#assign dcTitle = result.fullDoc.getFieldValue("dc_title")/>
-    <#if !dcTitle.isNotEmpty()>
+    <#if dcTitle.isNotEmpty()>
         <#if dcTitle.getFirst()?length &gt; 110>
             <#assign postTitle = dcTitle.getFirst()?substring(0, 110)?url('utf-8') + "..."/>
         <#else>
@@ -187,4 +188,5 @@
     </#if>
     <#-- Removed ?url('utf-8') from query assignment -->
     <#if RequestParameters.query??><#assign query = "${RequestParameters.query}"/></#if>
+
 </#macro>

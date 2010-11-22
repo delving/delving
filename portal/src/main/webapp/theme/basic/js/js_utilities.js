@@ -19,6 +19,10 @@ function highLight(oId){
     return false;
 }
 
+function writeMessage(target,msg){
+    $(target).html(msg);
+}
+
 function ContactMe(prefix,suffix){
     var m =  Array(109,97,105,108,116,111,58);
     var s = '';
@@ -105,11 +109,17 @@ $(document).ready(function() {
 	});
 
     //onclick for login href to take user back to last visited page before logging in
-    if($("a#mustlogin")){
-        $("a#mustlogin").click(function(){
+    if($("a#login")){
+        $("a#login").click(function(){
             takeMeBack();
+            //alert('foo');
+            $("div#overlayContainer").dialog({
+                modal: true,
+                width: 350
+            });
+            $("div#overlayContainer").load("login.html?contentOnly=true");
+            
+            return false;
         })
     }
-
-
 });
