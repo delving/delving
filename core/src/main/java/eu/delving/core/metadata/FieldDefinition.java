@@ -51,7 +51,7 @@ public class FieldDefinition implements Comparable<FieldDefinition> {
     public String requiredGroup;
     public boolean constant = false;
     public String category;
-    public String converter;
+    public String converterPattern;
     public boolean converterMultipleOutput = false;
     public boolean url = false;
     public String regularExpression;

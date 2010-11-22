@@ -6,6 +6,10 @@
             <toolTip>What shall it be called?</toolTip>
             <fieldPath>/record/europeana:collectionName</fieldPath>
         </constant-input>
+        <constant-input name="collectionId">
+            <prompt>Collection ID</prompt>
+            <toolTip>This becomes part of the resolvable URL for all items</toolTip>
+        </constant-input>
         <constant-input name="collectionTitle">
             <prompt>Collection Title</prompt>
             <toolTip>What shall it be called?</toolTip>
@@ -186,7 +190,7 @@
         <field prefix="dc" localName="date">
             <fullDoc>true</fullDoc>
             <category>ESE</category>
-            <converter>extractYear</converter>
+            <converterPattern>extractYear</converterPattern>
             <fieldType>text</fieldType>
             <multivalued>true</multivalued>
             <stored>true</stored>
@@ -1387,7 +1391,7 @@
             <fullDoc>true</fullDoc>
             <id>true</id>
             <category>ESE_PLUS</category>
-            <converter>createEuropeanaURI</converter>
+            <converterPattern>createEuropeanaURI(%s, collectionId)</converterPattern>
             <fieldType>text</fieldType>
             <stored>true</stored>
             <indexed>true</indexed>
@@ -1410,7 +1414,7 @@
         <field prefix="europeana" localName="year">
             <fullDoc>true</fullDoc>
             <category>ESE_PLUS</category>
-            <converter>extractYear</converter>
+            <converterPattern>extractYear(%s)</converterPattern>
             <converterMultipleOutput>true</converterMultipleOutput>
             <fieldType>string</fieldType>
             <multivalued>true</multivalued>

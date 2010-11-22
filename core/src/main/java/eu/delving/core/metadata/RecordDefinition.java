@@ -55,6 +55,7 @@ public class RecordDefinition {
         }
         root.setPaths(new Path());
         for (ConstantInputDefinition constantInputDefinition : constants) {
+            if (constantInputDefinition.fieldPath == null) continue;
             FieldDefinition fieldDefinition = getFieldDefinition(new Path(constantInputDefinition.fieldPath));
             if (fieldDefinition == null) {
                 throw new MetadataException(String.format("Constant input %s has no corresponding path", constantInputDefinition.name));

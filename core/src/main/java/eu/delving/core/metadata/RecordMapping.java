@@ -97,7 +97,11 @@ public class RecordMapping {
     }
 
     public String getConstant(String fieldName) {
-        return constants.get(fieldName);
+        String value = constants.get(fieldName);
+        if (value == null) {
+            constants.put(fieldName, value = "");
+        }
+        return value;
     }
 
     public boolean setConstant(String fieldName, String value) {

@@ -75,7 +75,7 @@ public class BeansToXML {
             fd.category = string(ef.europeana().category().toString());
             fd.compressed = bool(ef.solr().compressed());
             fd.constant = bool(ef.europeana().constant());
-            fd.converter = string(ef.europeana().converter());
+            fd.converterPattern = string(ef.europeana().converter());
             fd.converterMultipleOutput = bool(ef.europeana().converterMultipleOutput());
             fd.defaultValue = string(ef.solr().defaultValue());
             fd.facetPrefix = string(ef.europeana().facetPrefix());

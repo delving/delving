@@ -91,6 +91,7 @@ public class ConstantFieldPanel extends JPanel {
 
         private void createComboBox() {
             comboBox = new JComboBox(inputDefinition.fieldDefinition.options.toArray());
+            comboBox.setSelectedIndex(-1);
             comboBox.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {

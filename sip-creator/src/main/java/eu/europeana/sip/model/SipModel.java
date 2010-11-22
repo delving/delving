@@ -126,7 +126,7 @@ public class SipModel {
         this.metadataModel = metadataModel;
         this.userNotifier = userNotifier;
         this.serverUrl = serverUrl;
-        analysisTree = AnalysisTree.create("No Document Selected");
+        analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
         fieldListModel = new FieldListModel(metadataModel);
         ToolCodeResource toolCodeResource = new ToolCodeResource();

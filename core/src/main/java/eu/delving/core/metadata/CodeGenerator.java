@@ -112,46 +112,132 @@ public class CodeGenerator {
 
     private void generateCopyCode(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping) {
         if (fieldDefinition.multivalued) {
-            fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
-            if (fieldDefinition.converter == null) {
+            fieldMapping.addCodeLine(
+                    String.format(
+                            "%s.each {",
+                            node.getVariableName()
+                    )
+            );
+            if (fieldDefinition.converterPattern == null) {
                 if (!fieldDefinition.valueMapped) {
-                    fieldMapping.addCodeLine(String.format("%s.%s it", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s it",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName()
+                            )
+                    );
                 }
                 else {
                     fieldMapping.createValueMap(getActualValues(node));
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.getFieldNameString()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s %s(it)",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName(),
+                                    fieldDefinition.getFieldNameString()
+                            )
+                    );
                 }
             }
             else {
                 if (fieldDefinition.converterMultipleOutput) {
-                    fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", fieldDefinition.converter));
-                    fieldMapping.addCodeLine(String.format("%s.%s part", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "for (part in %s) {",
+                                    String.format(
+                                            fieldDefinition.converterPattern,
+                                            "it"
+                                    )
+                            )
+                    );
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s part",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName()
+                            )
+                    );
                     fieldMapping.addCodeLine("}");
                 }
                 else {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.converter));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s %s[0]",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName(),
+                                    String.format(
+                                            fieldDefinition.converterPattern, "it"
+                                    )
+                            )
+                    );
                 }
             }
             fieldMapping.addCodeLine("}");
         }
         else {
-            if (fieldDefinition.converter == null) {
+            if (fieldDefinition.converterPattern == null) {
                 if (!fieldDefinition.valueMapped) {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s %s[0]",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName(),
+                                    node.getVariableName()
+                            )
+                    );
                 }
                 else {
                     fieldMapping.createValueMap(getActualValues(node));
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName(), fieldDefinition.getFieldNameString()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s %s(%s[0])",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName(),
+                                    node.getVariableName(),
+                                    fieldDefinition.getFieldNameString()
+                            )
+                    );
                 }
             }
             else {
                 if (fieldDefinition.converterMultipleOutput) {
-                    fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", fieldDefinition.converter, node.getVariableName()));
-                    fieldMapping.addCodeLine(String.format("%s.%s part", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "for (part in %s) {",
+                                    String.format(
+                                            fieldDefinition.converterPattern,
+                                            String.format(
+                                                    "%s[0]",
+                                                    node.getVariableName()
+                                            )
+                                    )
+                            )
+                    );
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s part",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName()
+                            )
+                    );
                     fieldMapping.addCodeLine("}");
                 }
                 else {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.converter, node.getVariableName()));
+                    fieldMapping.addCodeLine(
+                            String.format(
+                                    "%s.%s %s[0]",
+                                    fieldDefinition.getPrefix(),
+                                    fieldDefinition.getLocalName(),
+                                    String.format(
+                                            fieldDefinition.converterPattern,
+                                            String.format(
+                                                    "%s[0]",
+                                                    node.getVariableName()
+                                            )
+                                    )
+                            )
+                    );
                 }
             }
         }
