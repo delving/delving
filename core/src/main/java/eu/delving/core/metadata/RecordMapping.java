@@ -181,14 +181,14 @@ public class RecordMapping {
             for (Map.Entry<String, String> constantEntry : constants.entrySet()) {
                 out.line(String.format(
                         "def %s = '%s'\n",
-                        GroovyMunge.mungePath(constantEntry.getKey()),
-                        GroovyMunge.escapeApostrophe(constantEntry.getValue())
+                        constantEntry.getKey(),
+                        escapeApostrophe(constantEntry.getValue())
                 ));
             }
             out.line("\n// Value Maps\n");
             for (Map.Entry<String, FieldMapping> fieldMappingEntry : fieldMappings.entrySet()) {
                 if (fieldMappingEntry.getValue().valueMap != null) {
-                    String path = GroovyMunge.mungePath(fieldMappingEntry.getKey());
+                    String path = mungePath(fieldMappingEntry.getKey());
                     out.line(String.format(
                             "def %sMap = [\n",
                             path
@@ -197,8 +197,8 @@ public class RecordMapping {
                     for (Map.Entry<String, String> entry : fieldMappingEntry.getValue().valueMap.entrySet()) {
                         out.line(String.format(
                                 "'%s':'%s',",
-                                GroovyMunge.escapeApostrophe(entry.getKey()),
-                                GroovyMunge.escapeApostrophe(entry.getValue())
+                                escapeApostrophe(entry.getKey()),
+                                escapeApostrophe(entry.getValue())
                         ));
                     }
                     out.indent(-1);
@@ -306,6 +306,14 @@ public class RecordMapping {
         void line(String line);
 
         void indent(int change);
+    }
+
+    public static String mungePath(String path) {
+        return path.replaceAll("/", "_").replaceAll(":", "_").replaceAll("-", "_");
+    }
+
+    public static String escapeApostrophe(String s) {
+        return s.replaceAll("'", "\\\\'");
     }
 
     public static void write(RecordMapping mapping, OutputStream out) {

@@ -88,9 +88,11 @@ public class ConstantFieldModel {
 
     public boolean fillSourceDetails(SourceDetails sourceDetails) {
         boolean changed = false;
-        for (ConstantInputDefinition cid : SourceDetails.definition().constants) {
-            if (sourceDetails.set(cid.name, get(cid))) {
-                changed = true;
+        if (sourceDetails != null) {
+            for (ConstantInputDefinition cid : SourceDetails.definition().constants) {
+                if (sourceDetails.set(cid.name, get(cid))) {
+                    changed = true;
+                }
             }
         }
         return changed;
@@ -128,6 +130,20 @@ public class ConstantFieldModel {
         if (put(cid, value)) {
             for (Listener listener : listeners) {
                 listener.updatedConstant(this, true);
+            }
+        }
+    }
+
+    public void clear() {
+        boolean changed = false;
+        for (ConstantInputDefinition cid : definitions) {
+            if (put(cid, "")) {
+                changed = true;
+            }
+        }
+        if (changed) {
+            for (Listener listener : listeners) {
+                listener.updatedConstant(this, false);
             }
         }
     }

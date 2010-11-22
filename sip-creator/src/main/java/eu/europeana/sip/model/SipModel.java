@@ -284,8 +284,11 @@ public class SipModel {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
+                                SipModel.this.sourceDetails = sourceDetails;
+                                constantFieldModel.clear();
+                                constantFieldModel.setSourceDetails(sourceDetails);
+                                constantFieldModel.setRecordMapping(recordMapping);
                                 setStatisticsList(statistics);
-                                setSourceDetails(sourceDetails, false);
                                 variableListModel.clear();
                                 mappingModel.setRecordMapping(recordMapping);
                                 if (getRecordRoot() != null) {
@@ -398,13 +401,6 @@ public class SipModel {
 
     public SourceDetails getSourceDetails() {
         return sourceDetails;
-    }
-
-    public void setSourceDetails(SourceDetails sourceDetails, boolean save) {
-        this.sourceDetails = sourceDetails;
-        if (save) {
-            executor.execute(new SourceDetailsSetter(sourceDetails));
-        }
     }
 
     public BoundedRangeModel getNormalizeProgress() {
