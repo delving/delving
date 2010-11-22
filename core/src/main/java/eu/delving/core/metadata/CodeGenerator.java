@@ -52,11 +52,11 @@ public class CodeGenerator {
         return fieldMapping;
     }
 
-    public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
+    public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables, List<ConstantInputDefinition> constantFieldDefinitions) {
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
             if (fieldDefinition.constant) {
-                FieldMapping fieldMapping = createObviousMapping(fieldDefinition, variables);
+                FieldMapping fieldMapping = createObviousMappingFromConstant(fieldDefinition, constantFieldDefinitions);
                 if (fieldMapping != null) {
                     fieldMappings.add(fieldMapping);
                 }
@@ -66,7 +66,7 @@ public class CodeGenerator {
                     String variableName = variable.getVariableName();
                     String fieldName = fieldDefinition.getFieldNameString();
                     if (variableName.endsWith(fieldName)) {
-                        FieldMapping fieldMapping = createObviousMapping(fieldDefinition, variables);
+                        FieldMapping fieldMapping = createObviousMappingFromVariable(fieldDefinition, variables);
                         if (fieldMapping != null) {
                             fieldMappings.add(fieldMapping);
                         }
@@ -77,23 +77,34 @@ public class CodeGenerator {
         return fieldMappings;
     }
 
-    private FieldMapping createObviousMapping(FieldDefinition fieldDefinition, List<SourceVariable> variables) {
+    private FieldMapping createObviousMappingFromConstant(FieldDefinition fieldDefinition, List<ConstantInputDefinition> constantFieldDefinitions) {
+        FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
+        if (!fieldDefinition.constant) {
+            throw new IllegalArgumentException("Expected a constant");
+        }
+        for (ConstantInputDefinition cid : constantFieldDefinitions) {
+            if (cid.fieldDefinition == fieldDefinition) {
+                fieldMapping.addCodeLine(String.format(
+                        "%s.%s %s",
+                        fieldDefinition.getPrefix(),
+                        fieldDefinition.getLocalName(),
+                        cid.name
+                ));
+            }
+        }
+        return fieldMapping.code == null ? null : fieldMapping;
+    }
+
+    private FieldMapping createObviousMappingFromVariable(FieldDefinition fieldDefinition, List<SourceVariable> variables) {
         FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
         if (fieldDefinition.constant) {
-            fieldMapping.addCodeLine(String.format(
-                    "%s.%s %s",
-                    fieldDefinition.getPrefix(),
-                    fieldDefinition.getLocalName(),
-                    GroovyMunge.mungePath(fieldDefinition.path.toString())
-            ));
+            throw new IllegalArgumentException("Expected a variable");
         }
-        else {
-            for (SourceVariable variable : variables) {
-                String variableName = variable.getVariableName();
-                String fieldName = fieldDefinition.getFieldNameString();
-                if (variableName.endsWith(fieldName)) {
-                    generateCopyCode(fieldDefinition, variable.getNode(), fieldMapping);
-                }
+        for (SourceVariable variable : variables) {
+            String variableName = variable.getVariableName();
+            String fieldName = fieldDefinition.getFieldNameString();
+            if (variableName.endsWith(fieldName)) {
+                generateCopyCode(fieldDefinition, variable.getNode(), fieldMapping);
             }
         }
         return fieldMapping.code == null ? null : fieldMapping;
