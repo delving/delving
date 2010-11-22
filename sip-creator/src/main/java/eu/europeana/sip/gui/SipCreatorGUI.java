@@ -23,6 +23,7 @@ package eu.europeana.sip.gui;
 
 import eu.delving.core.metadata.MetadataModel;
 import eu.delving.core.metadata.MetadataModelImpl;
+import eu.delving.core.metadata.Path;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;
@@ -59,6 +60,30 @@ public class SipCreatorGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         FileStore fileStore = new FileStoreImpl(new File(fileStoreDirectory));
         this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+
+            @Override
+            public void templateApplied() {
+            }
+
+            @Override
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
+                if (dataSetStore == null) {
+                    SipCreatorGUI.this.setTitle("SIP Creator");
+                }
+                else {
+                    SipCreatorGUI.this.setTitle(String.format("SIP Creator - Data Set %s", dataSetStore.getSpec()));
+                }
+            }
+
+            @Override
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
+            }
+
+            @Override
+            public void normalizationMessage(boolean complete, String message) {
+            }
+        });
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -112,7 +137,7 @@ public class SipCreatorGUI extends JFrame {
                             JOptionPane.YES_NO_OPTION
                     );
                     if (doImport == JOptionPane.YES_OPTION) {
-                        ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for "+spec, 0, 100);
+                        ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
                         sipModel.createDataSetStore(spec, file, progressMonitor);
                         return true;
                     }

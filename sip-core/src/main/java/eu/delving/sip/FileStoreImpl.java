@@ -335,6 +335,11 @@ public class FileStoreImpl implements FileStore {
             }
             return sources[0];
         }
+
+        @Override
+        public String toString() {
+            return getSpec();
+        }
     }
 
     private static class MappingOutputImpl implements MappingOutput {

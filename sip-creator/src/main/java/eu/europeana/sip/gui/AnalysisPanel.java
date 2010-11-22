@@ -24,7 +24,6 @@ package eu.europeana.sip.gui;
 import eu.delving.core.metadata.AnalysisTree;
 import eu.delving.core.metadata.AnalysisTreeNode;
 import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.SourceDetails;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
@@ -207,10 +206,6 @@ public class AnalysisPanel extends JPanel {
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(false);
                 constantFieldPanel.refreshContent();
-            }
-
-            @Override
-            public void updatedDetails(SourceDetails sourceDetails) {
             }
 
             @Override

@@ -105,8 +105,6 @@ public class SipModel {
 
         void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
 
-        void updatedDetails(SourceDetails sourceDetails);
-
         void updatedRecordRoot(Path recordRoot, int recordCount);
 
         void normalizationMessage(boolean complete, String message);
@@ -191,14 +189,12 @@ public class SipModel {
                             });
                         }
                     });
-                    if (store != null) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDataSetStore(store);
-                            }
-                        });
-                    }
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            setDataSetStore(store);
+                        }
+                    });
                 }
                 catch (FileStoreException e) {
                     userNotifier.tellUser("Couldn't create dataset from " + file.getAbsolutePath(), e);
@@ -290,50 +286,52 @@ public class SipModel {
     private void setDataSetStore(final FileStore.DataSetStore dataSetStore) {
         checkSwingThread();
         this.dataSetStore = dataSetStore;
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final List<Statistics> statistics = dataSetStore.getStatistics();
-                    final RecordMapping recordMapping = dataSetStore.getRecordMapping(metadataModel.getRecordDefinition());
-                    final SourceDetails sourceDetails = dataSetStore.getSourceDetails();
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            setStatisticsList(statistics);
-                            setSourceDetails(sourceDetails, false);
-                            variableListModel.clear();
-                            mappingModel.setRecordMapping(recordMapping);
-                            if (getRecordRoot() != null) {
-                                setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get("recordCount")));
-                            }
-                            AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
-                            createMetadataParser(1);
-                            if (recordMapping != null) {
-                                if (recordMapping.getNormalizeTime() == 0) {
-                                    normalizeProgressModel.setValue(0);
-                                    normalizeMessage(false, "Normalization not yet performed.");
+        if (dataSetStore != null) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final List<Statistics> statistics = dataSetStore.getStatistics();
+                        final RecordMapping recordMapping = dataSetStore.getRecordMapping(metadataModel.getRecordDefinition());
+                        final SourceDetails sourceDetails = dataSetStore.getSourceDetails();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                setStatisticsList(statistics);
+                                setSourceDetails(sourceDetails, false);
+                                variableListModel.clear();
+                                mappingModel.setRecordMapping(recordMapping);
+                                if (getRecordRoot() != null) {
+                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get("recordCount")));
+                                }
+                                AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                                createMetadataParser(1);
+                                if (recordMapping != null) {
+                                    if (recordMapping.getNormalizeTime() == 0) {
+                                        normalizeProgressModel.setValue(0);
+                                        normalizeMessage(false, "Normalization not yet performed.");
+                                    }
+                                    else {
+                                        normalizeProgressModel.setValue(recordMapping.getRecordsNormalized() + recordMapping.getRecordsDiscarded());
+                                        normalizeMessage(recordMapping);
+                                    }
                                 }
                                 else {
-                                    normalizeProgressModel.setValue(recordMapping.getRecordsNormalized() + recordMapping.getRecordsDiscarded());
-                                    normalizeMessage(recordMapping);
+                                    normalizeProgressModel.setMaximum(100);
+                                    normalizeProgressModel.setValue(0);
                                 }
                             }
-                            else {
-                                normalizeProgressModel.setMaximum(100);
-                                normalizeProgressModel.setValue(0);
-                            }
-                            for (UpdateListener updateListener : updateListeners) {
-                                updateListener.updatedDataSetStore(dataSetStore);
-                            }
-                        }
-                    });
+                        });
+                    }
+                    catch (FileStoreException e) {
+                        tellUser("Unable to select Data Set " + dataSetStore, e);
+                    }
                 }
-                catch (FileStoreException e) {
-                    e.printStackTrace();  // todo: something
-                }
-            }
-        });
+            });
+        }
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDataSetStore(this.dataSetStore);
+        }
     }
 
 //    public String getMappingTemplate() {
@@ -419,9 +417,6 @@ public class SipModel {
         this.sourceDetails = sourceDetails;
         if (save) {
             executor.execute(new SourceDetailsSetter(sourceDetails));
-        }
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(sourceDetails);
         }
     }
 
@@ -527,9 +522,6 @@ public class SipModel {
         sourceDetails.set(SourceDetails.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
         executor.execute(new SourceDetailsSetter(sourceDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(sourceDetails);
-        }
     }
 
     public void setRecordRoot(Path recordRoot, int recordCount) {
@@ -539,9 +531,6 @@ public class SipModel {
         sourceDetails.set(SourceDetails.RECORD_PATH, recordRoot.toString());
         sourceDetails.set("recordCount", String.valueOf(recordCount));
         executor.execute(new SourceDetailsSetter(sourceDetails));
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(sourceDetails);
-        }
     }
 
     public TableModel getStatisticsTableModel() {

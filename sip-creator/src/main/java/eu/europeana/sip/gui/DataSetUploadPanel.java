@@ -22,7 +22,6 @@
 package eu.europeana.sip.gui;
 
 import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.SourceDetails;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.model.SipModel;
@@ -85,11 +84,7 @@ public class DataSetUploadPanel extends JPanel {
 
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-//                createUploadZipButton.setEnabled(dataSetStore.getRecordMapping(recordDefinition));
-            }
-
-            @Override
-            public void updatedDetails(SourceDetails sourceDetails) {
+                uploadSourceButton.setEnabled(dataSetStore != null); // todo: check that normalization has happened!
             }
 
             @Override

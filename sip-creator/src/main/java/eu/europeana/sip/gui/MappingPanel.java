@@ -25,7 +25,6 @@ import eu.delving.core.metadata.CodeGenerator;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.FieldMapping;
 import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.SourceDetails;
 import eu.delving.core.metadata.SourceVariable;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.FieldListModel;
@@ -209,10 +208,6 @@ public class MappingPanel extends JPanel {
                 fieldList.clearSelection();
                 mappingList.clearSelection();
                 prepareCreateMappingButtons();
-            }
-
-            @Override
-            public void updatedDetails(SourceDetails sourceDetails) {
             }
 
             @Override
