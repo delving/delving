@@ -35,6 +35,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -76,27 +77,54 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar bar = new JMenuBar();
         FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
             @Override
-            public boolean select(File file) {
+            public boolean selectInputFile(File file) {
                 if (!file.exists()) {
                     return false;
                 }
                 else {
-                    String spec = JOptionPane.showInputDialog(SipCreatorGUI.this, "You must enter the Dataset spec which identifies it. This cannot be changed later.");
-                    spec = spec.trim();
-                    if (spec.isEmpty()) {
+                    String spec = JOptionPane.showInputDialog(
+                            SipCreatorGUI.this,
+                            String.format(
+                                    "<html>You have selected the following file for importing:<br><br>" +
+                                            "<pre>      <strong>%s</strong></pre><br>" +
+                                            "To complete the import you must enter a Data Set Spec name which will serve<br>" +
+                                            "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
+                                            "carefully.",
+                                    file.getAbsolutePath()
+                            ),
+                            "Select and Enter Data Set Spec",
+                            JOptionPane.QUESTION_MESSAGE
+                    );
+                    if (spec == null || spec.trim().isEmpty()) {
                         return false;
                     }
+                    int doImport = JOptionPane.showConfirmDialog(
+                            SipCreatorGUI.this,
+                            String.format(
+                                    "<html>Are you sure you wish to import this file<br><br>" +
+                                            "<pre>     <strong>%s</strong></pre><br>" +
+                                            "as a new Data set by the name of<br><br>" +
+                                            "<pre>     <strong>%s</strong></pre>",
+                                    file.getAbsolutePath(),
+                                    spec
+                            ),
+                            "Verify your choice",
+                            JOptionPane.YES_NO_OPTION
+                    );
+                    if (doImport == JOptionPane.YES_OPTION) {
+                        ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for "+spec, 0, 100);
+                        sipModel.createDataSetStore(spec, file, progressMonitor);
+                        return true;
+                    }
                     else {
-                        int answer = JOptionPane.showConfirmDialog(SipCreatorGUI.this, String.format("Are you sure you wish to import %s as Data set %s", file.getAbsolutePath(), spec));
-                        if (answer == JOptionPane.YES_OPTION) {
-                            sipModel.createDataSetStore(spec, file);
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
+                        return false;
                     }
                 }
+            }
+
+            @Override
+            public void selectDataSet(String spec) {
+                sipModel.setDataSetStore(spec);
             }
         });
         bar.add(fileMenu);

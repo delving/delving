@@ -45,7 +45,8 @@ public class FileMenu extends JMenu {
     private SelectListener selectListener;
 
     public interface SelectListener {
-        boolean select(File inputFile);
+        boolean selectInputFile(File inputFile);
+        void selectDataSet(String spec);
     }
 
     public FileMenu(Component parent, SipModel sipModel, SelectListener selectListener) {
@@ -65,7 +66,7 @@ public class FileMenu extends JMenu {
             chooser.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File file) {
-                    return file.getName().endsWith(".xml") || file.getName().endsWith(".gz");
+                    return file.isFile() && file.getName().endsWith(".xml") || file.getName().endsWith(".xml.gz");
                 }
 
                 @Override
@@ -81,41 +82,37 @@ public class FileMenu extends JMenu {
             int choiceMade = chooser.showOpenDialog(parent);
             if (choiceMade == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
-                sipModel.addRecentFile(file);
-                selectListener.select(file);
+                sipModel.addRecentDirectory(file);
+                selectListener.selectInputFile(file);
                 refresh();
             }
         }
     }
 
-    private class LoadRecentAction extends AbstractAction {
-        private File file;
+    private class LoadDataSetAction extends AbstractAction {
+        private String spec;
 
-        private LoadRecentAction(File file) {
-            super(file.getAbsolutePath());
-            this.file = file;
+        private LoadDataSetAction(String spec) {
+            super(String.format("Load Data Set %s", spec));
+            this.spec = spec;
         }
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            boolean selected = selectListener.select(file);
-            if (selected) {
-                sipModel.addRecentFile(file);
-            }
-            else {
-//                fileSets().remove(file);
-            }
-            refresh();
+            selectListener.selectDataSet(spec);
         }
     }
-    
+
     private void refresh() {
         removeAll();
         add(new LoadNewFileAction(new File("/")));
+        List<String> directoryList = sipModel.getRecentDirectories();
+        for (String directory : directoryList) {
+            add(new LoadNewFileAction(new File(directory)));
+        }
         addSeparator();
-        List<String> fileNameList = sipModel.getRecentFiles();
-        for (String fileName : fileNameList) {
-            add(new LoadRecentAction(new File(fileName)));
+        for (String spec : sipModel.getFileStore().getDataSetSpecs()) {
+            add(new LoadDataSetAction(spec));
         }
     }
 }

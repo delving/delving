@@ -36,7 +36,7 @@ import java.util.List;
 @XStreamAlias("sip-creator-configuration")
 public class AppConfig {
     private String accessKey;
-    private List<String> recentFiles;
+    private List<String> recentDirectories;
 
     public String getAccessKey() {
         if (accessKey == null) {
@@ -49,11 +49,11 @@ public class AppConfig {
         this.accessKey = accessKey;
     }
 
-    public List<String> getRecentFiles() {
-        if (recentFiles == null) {
-            recentFiles = new ArrayList<String>();
+    public List<String> getRecentDirectories() {
+        if (recentDirectories == null) {
+            recentDirectories = new ArrayList<String>();
         }
-        return recentFiles;
+        return recentDirectories;
     }
 
 }

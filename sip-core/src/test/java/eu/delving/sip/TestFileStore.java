@@ -81,12 +81,12 @@ public class TestFileStore {
 
     @Test
     public void createDelete() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
         Assert.assertEquals("Should be one file", 1, DIR.listFiles().length);
         Assert.assertEquals("Should be one sped", 1, fileStore.getDataSetSpecs().size());
         Assert.assertEquals("Should be one file", 1, new File(DIR, SPEC).listFiles().length);
         log.info("Created " + new File(DIR, SPEC).listFiles()[0].getAbsolutePath());
-        InputStream inputStream = createSampleInput();
+        InputStream inputStream = sampleInputStream();
         InputStream storedStream = fileStore.getDataSetStore(SPEC).createXmlInputStream();
         int input = 0, stored;
         while (input != -1) {
@@ -110,7 +110,7 @@ public class TestFileStore {
 
     @Test
     public void manipulateMapping() throws IOException, FileStoreException, MetadataException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
         Assert.assertEquals("Spec should be the same", SPEC, store.getSpec());
         RecordDefinition recordDefinition = getRecordDefinition();
         RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
@@ -127,7 +127,7 @@ public class TestFileStore {
 
     @Test
     public void manipulateStatistics() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
         List<Statistics> stats = store.getStatistics();
         Assert.assertEquals("Should be one files", 1, new File(DIR, SPEC).listFiles().length);
         Assert.assertNull("No stats should be here", stats);
@@ -145,7 +145,7 @@ public class TestFileStore {
 
     @Test
     public void manipulateDetails() throws IOException, FileStoreException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
         SourceDetails sourceDetails = store.getSourceDetails();
         Assert.assertEquals("source details should be empty", "", sourceDetails.get("recordPath"));
         sourceDetails.set("recordPath", "Wingy");
@@ -156,7 +156,7 @@ public class TestFileStore {
 
     @Test
     public void pretendNormalize() throws IOException, FileStoreException, MetadataException {
-        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, createSampleInput());
+        FileStore.DataSetStore store = fileStore.createDataSetStore(SPEC, sampleFile(), null);
         RecordDefinition recordDefinition = getRecordDefinition();
         RecordMapping recordMapping = store.getRecordMapping(recordDefinition);
         FileStore.MappingOutput mo = store.createMappingOutput(recordMapping, null);
@@ -183,7 +183,11 @@ public class TestFileStore {
         return metadataModel;
     }
 
-    private InputStream createSampleInput() throws IOException {
+    private File sampleFile() throws IOException {
+        return new File(getClass().getResource("/sample-input.xml").getFile());
+    }
+
+    private InputStream sampleInputStream() throws IOException {
         return getClass().getResource("/sample-input.xml").openStream();
     }
 

@@ -48,7 +48,7 @@ public interface FileStore {
 
     DataSetStore getDataSetStore(String spec) throws FileStoreException;
 
-    DataSetStore createDataSetStore(String spec, InputStream xmlInput) throws FileStoreException;
+    DataSetStore createDataSetStore(String spec, File inputFile, CreateProgress createProgress) throws FileStoreException;
 
     public interface DataSetStore {
         String getSpec();
@@ -85,6 +85,12 @@ public interface FileStore {
         void recordDiscarded();
 
         void close(boolean abort) throws FileStoreException;
+    }
+
+    public interface CreateProgress {
+        void setTotal(int total);
+        boolean setProgress(int progress);
+        void finished();
     }
 
     String APP_CONFIG_FILE_NAME = "app-config.xml";

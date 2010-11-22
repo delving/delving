@@ -60,6 +60,7 @@ import java.util.zip.GZIPOutputStream;
 public class FileStoreImpl implements FileStore {
 
     private File home;
+    public static final int BLOCK_SIZE = 4096;
 
     public FileStoreImpl(File home) throws FileStoreException {
         this.home = home;
@@ -124,7 +125,7 @@ public class FileStoreImpl implements FileStore {
     }
 
     @Override
-    public DataSetStore createDataSetStore(String spec, InputStream xmlInputStream) throws FileStoreException {
+    public DataSetStore createDataSetStore(String spec, File inputFile, CreateProgress createProgress) throws FileStoreException {
         File directory = new File(home, spec);
         if (directory.exists()) {
             throw new FileStoreException(String.format("Data store directory %s already exists", directory.getAbsolutePath()));
@@ -132,28 +133,61 @@ public class FileStoreImpl implements FileStore {
         if (!directory.mkdirs()) {
             throw new FileStoreException(String.format("Unable to create data store directory %s", directory.getAbsolutePath()));
         }
+        int fileBlocks = (int) (inputFile.length() / BLOCK_SIZE);
+        if (createProgress != null) createProgress.setTotal(fileBlocks);
         File source = new File(directory, SOURCE_FILE_PREFIX + "new" + SOURCE_FILE_SUFFIX);
         MessageDigest digest = getDigest();
+        boolean cancelled = false;
         try {
+            InputStream inputStream;
+            if (inputFile.getName().endsWith(".xml")) {
+                inputStream = new FileInputStream(inputFile);
+            }
+            else if (inputFile.getName().endsWith(".xml.gz")) {
+                inputStream = new GZIPInputStream(new FileInputStream(inputFile));
+            }
+            else {
+                throw new IllegalArgumentException("Input file should be .xml or .xml.gz, but it is " + inputFile.getName());
+            }
             OutputStream gzipOutputStream = new GZIPOutputStream(new FileOutputStream(source));
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[BLOCK_SIZE];
+            long totalBytesRead = 0;
             int bytesRead;
-            while (-1 != (bytesRead = xmlInputStream.read(buffer))) {
+            while (-1 != (bytesRead = inputStream.read(buffer))) {
                 gzipOutputStream.write(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+                if (createProgress != null) {
+                    if (!createProgress.setProgress((int) (totalBytesRead / BLOCK_SIZE))) {
+                        cancelled = true;
+                        break;
+                    }
+                }
                 digest.digest(buffer, 0, bytesRead);
             }
-            xmlInputStream.close();
+            if (createProgress != null) createProgress.finished();
+            inputStream.close();
             gzipOutputStream.close();
         }
         catch (Exception e) {
             throw new FileStoreException("Unable to capture XML input into " + source.getAbsolutePath(), e);
         }
-        String hash = toHexadecimal(digest.digest());
-        File hashedSource = new File(directory, String.format(SOURCE_FILE_PREFIX + "%s" + SOURCE_FILE_SUFFIX, hash));
-        if (!source.renameTo(hashedSource)) {
-            throw new FileStoreException(String.format("Unable to rename %s to %s", source.getAbsolutePath(), hashedSource.getAbsolutePath()));
+        if (cancelled) {
+            if (!source.delete()) {
+                throw new FileStoreException("Unable to delete " + source.getAbsolutePath());
+            }
+            if (!directory.delete()) {
+                throw new FileStoreException("Unable to delete " + directory.getAbsolutePath());
+            }
+            return null;
         }
-        return new DataSetStoreImpl(directory);
+        else {
+            String hash = toHexadecimal(digest.digest());
+            File hashedSource = new File(directory, String.format(SOURCE_FILE_PREFIX + "%s" + SOURCE_FILE_SUFFIX, hash));
+            if (!source.renameTo(hashedSource)) {
+                throw new FileStoreException(String.format("Unable to rename %s to %s", source.getAbsolutePath(), hashedSource.getAbsolutePath()));
+            }
+            return new DataSetStoreImpl(directory);
+        }
     }
 
     public class DataSetStoreImpl implements DataSetStore {
