@@ -21,22 +21,25 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.FieldEntry;
+import eu.delving.core.metadata.MetadataNamespace;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.RecordMapping;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
-import eu.europeana.sip.model.FileSet;
+import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.model.SipModel;
 
 import javax.xml.stream.XMLStreamException;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,8 +50,9 @@ import java.util.List;
 
 public class Normalizer implements Runnable {
     private SipModel sipModel;
+    private Path recordRoot;
     private boolean discardInvalid;
-    private boolean storeNormalizedFile;
+    private File normalizedFile;
     private MetadataParser.Listener parserListener;
     private Listener listener;
     private volatile boolean running = true;
@@ -63,45 +67,55 @@ public class Normalizer implements Runnable {
 
     public Normalizer(
             SipModel sipModel,
+            Path recordRoot,
             boolean discardInvalid,
-            boolean storeNormalizedFile,
+            File normalizedFile,
             MetadataParser.Listener parserListener,
             Listener listener
     ) {
         this.sipModel = sipModel;
+        this.recordRoot = recordRoot;
         this.discardInvalid = discardInvalid;
-        this.storeNormalizedFile = storeNormalizedFile;
+        this.normalizedFile = normalizedFile;
         this.parserListener = parserListener;
         this.listener = listener;
     }
 
     public void run() {
         try {
-            String mappingCode = sipModel.getFileSet().getMapping();
-            List<String> mappingLines = Arrays.asList(mappingCode.split("\n"));
-            RecordRoot recordRoot = RecordRoot.fromMapping(mappingLines);
-            ConstantFieldModel constantFieldModel = new ConstantFieldModel(sipModel.getAnnotationProcessor(), null);
-            constantFieldModel.fromMapping(mappingLines);
-            ToolCodeModel toolCodeModel = new ToolCodeModel();
-            FileSet.Output fileSetOutput = sipModel.getFileSet().prepareOutput(storeNormalizedFile);
-            if (storeNormalizedFile) {
-                fileSetOutput.getOutputWriter().write("<?xml version='1.0' encoding='UTF-8'?>\n");
-                fileSetOutput.getOutputWriter().write("<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:europeana=\"http://www.europeana.eu\" xmlns:dcterms=\"http://purl.org/dc/terms/\">\n");
+            RecordMapping recordMapping = sipModel.getRecordMapping();
+            if (recordMapping == null) {
+                return;
             }
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + mappingCode, constantFieldModel);
-            MetadataParser parser = new MetadataParser(sipModel.getFileSet().getInputStream(), recordRoot, parserListener);
-            RecordValidator recordValidator = new RecordValidator(sipModel.getAnnotationProcessor(), true);
+            ToolCodeResource toolCodeResource = new ToolCodeResource();
+            FileStore.MappingOutput fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
+            if (normalizedFile != null) {
+                Writer out = fileSetOutput.getNormalizedWriter();
+                out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
+                out.write("<metadata");
+                writeNamespace(out, MetadataNamespace.DC);
+                writeNamespace(out, MetadataNamespace.DCTERMS);
+                writeNamespace(out, MetadataNamespace.EUROPEANA);
+                out.write(">\n");
+            }
+            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
+            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, parserListener);
+            RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
                 try {
                     String output = mappingRunner.runMapping(record);
-                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
-                    recordValidator.validate(record, fieldEntries);
-                    String validated = FieldEntry.toString(fieldEntries, true);
-                    if (storeNormalizedFile) {
-                        fileSetOutput.getOutputWriter().write(validated);
+                    List<String> problems = new ArrayList<String>();
+                    String validated = recordValidator.validateRecord(output, problems);
+                    if (problems.isEmpty()) {
+                        if (normalizedFile != null) {
+                            fileSetOutput.getNormalizedWriter().write(validated);
+                        }
+                        fileSetOutput.recordNormalized();
                     }
-                    fileSetOutput.recordNormalized();
+                    else {
+                        throw new RecordValidationException(record, problems);
+                    }
                 }
                 catch (MappingException e) {
                     if (discardInvalid && fileSetOutput.getDiscardedWriter() != null) {
@@ -146,8 +160,8 @@ public class Normalizer implements Runnable {
                     running = false;
                 }
             }
-            if (storeNormalizedFile) {
-                fileSetOutput.getOutputWriter().write("</metadata>\n");
+            if (normalizedFile != null) {
+                fileSetOutput.getNormalizedWriter().write("</metadata>\n");
             }
             fileSetOutput.close(!running);
             if (!running) {
@@ -161,6 +175,13 @@ public class Normalizer implements Runnable {
         catch (IOException e) {
             throw new RuntimeException("IO Problem", e);
         }
+        catch (FileStoreException e) {
+            throw new RuntimeException("Datastore Problem", e);
+        }
+    }
+
+    private void writeNamespace(Writer writer, MetadataNamespace namespace) throws IOException {
+        writer.write(String.format(" xmlns:%s=\"%s\"", namespace.getPrefix(), namespace.getUri()));
     }
 
     public void abort() {

@@ -21,25 +21,18 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.RecordRoot;
-import eu.europeana.sip.model.FileSet;
+import eu.delving.core.metadata.Path;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,126 +45,36 @@ import java.awt.event.ActionListener;
  */
 
 public class DataSetUploadPanel extends JPanel {
-    private static final int FIELD_SIZE = 80;
     private SipModel sipModel;
-    private JTextField specField = new JTextField(FIELD_SIZE);
-    private JTextField nameField = new JTextField(FIELD_SIZE);
-    private JTextField providerNameField = new JTextField(FIELD_SIZE);
-    private JTextArea descriptionField = new JTextArea(3, 30);
-    private JTextField prefixField = new JTextField(FIELD_SIZE);
-    private JTextField namespaceField = new JTextField(FIELD_SIZE);
-    private JTextField schemaField = new JTextField(FIELD_SIZE);
-    private JTextField recordRootField = new JTextField(FIELD_SIZE);
-    private JTextField uniqueElementField = new JTextField(FIELD_SIZE);
-    private JButton createUploadZipButton = new JButton("Create and upload ZIP File");
+    private JButton uploadSourceButton = new JButton("Upload Source XML File");
+    private DefaultBoundedRangeModel sourceProgressModel = new DefaultBoundedRangeModel();
 
     public DataSetUploadPanel(SipModel sipModel) {
         super(new SpringLayout());
         this.sipModel = sipModel;
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));
-        addField("Data Set Spec", specField);
-        specField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                noSpaces();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                noSpaces();
-            }
-
-            private void noSpaces() {
-                String with = specField.getText();
-                final String without = with.replaceAll("\\s+","");
-                if (!with.equals(without)) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            int dot = specField.getCaret().getDot();
-                            specField.setText(without);
-                            specField.getCaret().setDot(dot);
-                        }
-                    });
-                }
-            }
-        });
-        addField("Name", nameField);
-        addField("Provider Name", providerNameField);
-        descriptionField.setLineWrap(true);
-        addField("Description", descriptionField);
-        addField("Prefix", prefixField);
-        addField("Namespace", namespaceField);
-        addField("Schema", schemaField);
-        recordRootField.setEditable(false);
-        addField("Record Root", recordRootField);
-        uniqueElementField.setEditable(false);
-        addField("Unique Element", uniqueElementField);
         // button line
         add(new JLabel(""));
-        add(createUploadZipButton);
+        add(uploadSourceButton);
         // progress bars
-        add(new JLabel("Create ZIP File:", JLabel.RIGHT));
-        add(new JProgressBar(sipModel.getZipProgress()));
-        add(new JLabel("Upload ZIP File:", JLabel.RIGHT));
-        add(new JProgressBar(sipModel.getUploadProgress()));
+        add(new JLabel("Upload File:", JLabel.RIGHT));
+        add(new JProgressBar(sourceProgressModel));
         // finish up
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(480, 500));
         wireUp();
     }
 
-    private void addField(String prompt, JTextComponent textComponent) {
-        JLabel label = new JLabel(prompt, JLabel.RIGHT);
-        label.setLabelFor(textComponent);
-        add(label);
-        if (textComponent instanceof JTextArea) {
-            JScrollPane scroll = new JScrollPane(textComponent);
-            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            add(scroll);
-        }
-        else {
-            add(textComponent);
-        }
-    }
-
-    private void setDetails(DataSetDetails details) {
-        specField.setText(details.getSpec());
-        nameField.setText(details.getName());
-        providerNameField.setText(details.getProviderName());
-        descriptionField.setText(details.getDescription());
-        prefixField.setText(details.getPrefix());
-        namespaceField.setText(details.getNamespace());
-        schemaField.setText(details.getSchema());
-        recordRootField.setText(details.getRecordRoot());
-        uniqueElementField.setText(details.getUniqueElement());
-    }
-
-    private DataSetDetails getDetails() {
-        DataSetDetails details = new DataSetDetails();
-        details.setSpec(specField.getText().trim());
-        details.setName(nameField.getText().trim());
-        details.setProviderName(providerNameField.getText().trim());
-        details.setDescription(descriptionField.getText().trim());
-        details.setPrefix(prefixField.getText().trim());
-        details.setNamespace(namespaceField.getText().trim());
-        details.setSchema(schemaField.getText().trim());
-        details.setRecordRoot(recordRootField.getText().trim());
-        details.setUniqueElement(uniqueElementField.getText().trim());
-        return details;
-    }
-
     private void wireUp() {
-        createUploadZipButton.addActionListener(new ActionListener() {
+        uploadSourceButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.setDataSetDetails(getDetails());
-                sipModel.createUploadZipFile();
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    sipModel.uploadFile(sipModel.getDataSetStore().getSourceFile(), sourceProgressModel);
+                }
+                catch (FileStoreException e) {
+                    sipModel.tellUser("Unable to get source file for upload", e);
+                }
             }
         });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
@@ -180,26 +83,17 @@ public class DataSetUploadPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
-                createUploadZipButton.setEnabled(fileSet.getReport() != null);
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
+                uploadSourceButton.setEnabled(dataSetStore != null); // todo: check that normalization has happened!
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
-                setDetails(sipModel.getDataSetDetails());
-            }
-
-            @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-            }
-
-            @Override
-            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
             }
 
             @Override
             public void normalizationMessage(boolean complete, String message) {
-                createUploadZipButton.setEnabled(complete);
+                uploadSourceButton.setEnabled(complete);
             }
         });
     }

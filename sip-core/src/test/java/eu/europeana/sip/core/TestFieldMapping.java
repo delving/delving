@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import eu.delving.core.metadata.FieldMapping;
 import org.junit.Test;
 
 import java.util.List;
@@ -57,7 +58,7 @@ public class TestFieldMapping {
     @Test
     public void strangeCharacters() {
         FieldMapping fm = new FieldMapping(null);
-        fm.setCode("did you know that accents were possible? \n"+ Sanitizer.tagToVariable("input.strange.ANN\u00C8E_DE_D\u00C8BUT_DE_FABRICATION")+" is a legit var name");
+        fm.setCode("did you know that accents were possible? \ninput.strange."+ Sanitizer.tagToVariable("ANN\u00C8E_DE_D\u00C8BUT_DE_FABRICATION")+" is a legit var name");
         List<String> vars = fm.getVariables();
         assertEquals(1, vars.size());
         assertEquals("input.strange.ANNEE_DE_DEBUT_DE_FABRICATION", vars.get(0));

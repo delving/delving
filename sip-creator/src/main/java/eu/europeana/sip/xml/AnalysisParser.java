@@ -21,9 +21,10 @@
 
 package eu.europeana.sip.xml;
 
-import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.QNamePath;
-import eu.europeana.sip.model.Statistics;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.Statistics;
+import eu.delving.core.metadata.Tag;
+import eu.delving.sip.FileStore;
 import org.apache.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
@@ -47,10 +48,10 @@ import java.util.TreeMap;
 public class AnalysisParser implements Runnable {
     private static final int ELEMENT_STEP = 10000;
     private final Logger LOG = Logger.getLogger(getClass());
-    private QNamePath path = new QNamePath();
-    private Map<QNamePath, Statistics> statisticsMap = new TreeMap<QNamePath, Statistics>();
+    private Path path = new Path();
+    private Map<Path, Statistics> statisticsMap = new TreeMap<Path, Statistics>();
     private Listener listener;
-    private FileSet fileSet;
+    private FileStore.DataSetStore dataSetStore;
     private boolean abort;
 
     public interface Listener {
@@ -62,8 +63,8 @@ public class AnalysisParser implements Runnable {
         void progress(long elementCount);
     }
 
-    public AnalysisParser(FileSet fileSet, Listener listener) {
-        this.fileSet = fileSet;
+    public AnalysisParser(FileStore.DataSetStore dataSetStore, Listener listener) {
+        this.dataSetStore = dataSetStore;
         this.listener = listener;
     }
 
@@ -79,7 +80,7 @@ public class AnalysisParser implements Runnable {
             xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
             xmlif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.FALSE);
             xmlif.configureForSpeed();
-            XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(getClass().getName(), fileSet.getInputStream());
+            XMLStreamReader2 input = (XMLStreamReader2) xmlif.createXMLStreamReader(getClass().getName(), dataSetStore.createXmlInputStream());
             StringBuilder text = new StringBuilder();
             long count = 0;
             while (!abort) {
@@ -93,11 +94,11 @@ public class AnalysisParser implements Runnable {
                                 listener.progress(count);
                             }
                         }
-                        path.push(input.getName());
+                        path.push(Tag.create(input.getName().getPrefix(),input.getName().getLocalPart()));
                         if (input.getAttributeCount() > 0) {
                             for (int walk = 0; walk < input.getAttributeCount(); walk++) {
                                 QName attributeName = input.getAttributeName(walk);
-                                path.push(attributeName);
+                                path.push(Tag.create(attributeName.getPrefix(), attributeName.getLocalPart()));
                                 recordValue(input.getAttributeValue(walk));
                                 path.pop();
                             }
@@ -129,7 +130,7 @@ public class AnalysisParser implements Runnable {
             for (Statistics statistics : statisticsList) {
                 statistics.trim(true);
             }
-            fileSet.setStatistics(statisticsList);
+            dataSetStore.setStatistics(statisticsList);
             listener.success(statisticsList);
         }
         catch (Exception e) {
@@ -142,7 +143,7 @@ public class AnalysisParser implements Runnable {
         value = value.trim();
         Statistics statistics = statisticsMap.get(path);
         if (statistics == null) {
-            QNamePath key = new QNamePath(path);
+            Path key = new Path(path);
             statisticsMap.put(key, statistics = new Statistics(key));
         }
         if (!value.isEmpty()) {

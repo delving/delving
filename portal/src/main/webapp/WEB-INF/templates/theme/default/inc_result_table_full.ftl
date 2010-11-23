@@ -67,6 +67,12 @@
                     </a>
                 </div>
 
+                <#--<#list result.fullDoc.getFieldValueList() as field>-->
+                    <#--<p>${field.getKeyAsXml()} : ${field.getFirst()}</p>-->
+                <#--</#list>-->
+
+                <#--${result.fullDoc.getFieldValue("europeana_uri").isNotEmpty()?string}-->
+
                 <div id="item-detail" class="grid_8 omega">
                   <#if format?? && format?contains("labels")>
                         <#assign doc = result.fullDoc />
@@ -132,22 +138,30 @@
                         <caption>Object metadata</caption>
                         <tbody>
                      <#-- TITLE   -------------------------------------------------------------------------------->
-                        <#assign titleArr = result.fullDoc.dcTitle />
-                        <#if isNonEmpty(titleArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dc_title_t' />:</th>
-                                <td><@simple_list result.fullDoc.dcTitle '<br />'/></td>
-                            </tr>
-                        </#if>
+                        <#--<#assign titleArr = result.fullDoc.dcTitle />-->
+                        <#--<#if isNonEmpty(titleArr)>-->
+                            <#--<tr>-->
+                                <#--<th scope="row"><@spring.message 'dc_title_t' />:</th>-->
+                                <#--<td><@simple_list result.fullDoc.dcTitle '<br />'/></td>-->
+                            <#--</tr>-->
+                        <#--</#if>-->
+
+                         <#assign titleArrTest = result.fullDoc.getFieldValue("dc_title") />
+                         <#if titleArrTest.isNotEmpty()>
+                             <tr>
+                                 <th scope="row"><@spring.message '${titleArrTest.getKey()}_t' />:</th>
+                                 <td><@simple_list titleArrTest.getValueAsArray() '<br />'/></td>
+                             </tr>
+                         </#if>
 
                      <#-- ALTERNATIVE TITLE   -------------------------------------------------------------------------------->
-                        <#assign altTitleArr = result.fullDoc.dcTermsAlternative />
-                        <#if isNonEmpty(altTitleArr)>
-                            <tr>
-                                <th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>
-                                <td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>
-                            </tr>
-                        </#if>
+                        <#--<#assign altTitleArr = result.fullDoc.dcTermsAlternative />-->
+                        <#--<#if isNonEmpty(altTitleArr)>-->
+                            <#--<tr>-->
+                                <#--<th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>-->
+                                <#--<td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>-->
+                            <#--</tr>-->
+                        <#--</#if>-->
 
 
                       <#-- DC CREATOR    -------------------------------------------------------------------------------->
@@ -237,7 +251,7 @@
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_source_t' />:</td>
+                                <th scope="row"><@spring.message 'dc_source_t' />:</th>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
@@ -326,26 +340,26 @@
 
 
 
-                        <tr>
-                            <th>&#160;</th>
-                            <td> <br/>
-                                <#assign UrlRef = "#"/>
-                                <#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>
-                                    <#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>
-                                <#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>
-                                    <#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>
-                                </#if>
-                                <a
-                                    href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
-                                    target="_blank"
-                                    alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-                                    class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                                >
-                                    <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
-                                </a>
-                            </td>
-                        </tr>
+                        <#--<tr>-->
+                            <#--<th>&#160;</th>-->
+                            <#--<td> <br/>-->
+                                <#--<#assign UrlRef = "#"/>-->
+                                <#--<#if !result.fullDoc.europeanaIsShownAt[0]?matches(" ")>-->
+                                    <#--<#assign UrlRef = result.fullDoc.europeanaIsShownAt[0]/>-->
+                                <#--<#elseif !result.fullDoc.europeanaIsShownBy[0]?matches(" ")>-->
+                                    <#--<#assign UrlRef = result.fullDoc.europeanaIsShownBy[0]/>-->
+                                <#--</#if>-->
+                                <#--<a-->
+                                    <#--href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
+                                    <#--target="_blank"-->
+                                    <#--alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
+                                <#-->-->
+                                    <#--<span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />-->
+                                <#--</a>-->
+                            <#--</td>-->
+                        <#--</tr>-->
 
                     </tbody>
                     </table>

@@ -21,6 +21,7 @@
 
 package eu.europeana.sip.core;
 
+import eu.delving.core.metadata.MetadataNamespace;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.MissingPropertyException;
@@ -43,11 +44,9 @@ import java.io.StringWriter;
 public class MappingRunner {
     private String code;
     private Script script;
-    private ConstantFieldModel constantFieldModel;
 
-    public MappingRunner(String code, ConstantFieldModel constantFieldModel) {
+    public MappingRunner(String code) {
         this.code = code;
-        this.constantFieldModel = constantFieldModel;
     }
 
     public String runMapping(MetadataRecord metadataRecord) throws MappingException {
@@ -60,12 +59,8 @@ public class MappingRunner {
             MarkupBuilder builder = new MarkupBuilder(writer);
             NamespaceBuilder xmlns = new NamespaceBuilder(builder);
             binding.setVariable("output", builder);
-            binding.setVariable("dc", xmlns.namespace("http://purl.org/dc/elements/1.1/", "dc"));
-            binding.setVariable("dcterms", xmlns.namespace("http://purl.org/dc/terms/", "dcterms"));
-            binding.setVariable("europeana", xmlns.namespace("http://www.europeana.eu/schemas/ese/", "europeana"));
-            binding.setVariable("icn", xmlns.namespace("http://www.icn.nl/", "icn"));
-            for (ConstantFieldModel.FieldSpec fieldSpec : constantFieldModel.getFields()) {
-                binding.setVariable(fieldSpec.getName(), constantFieldModel.get(fieldSpec.getName()));
+            for (MetadataNamespace ns : MetadataNamespace.values()) {
+                binding.setVariable(ns.getPrefix(), xmlns.namespace(ns.getUri(), ns.getPrefix()));
             }
             binding.setVariable("input", metadataRecord.getRootNode());
             if (script == null) {

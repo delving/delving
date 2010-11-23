@@ -14,7 +14,17 @@
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 
-    <bean id="staticPageRepo" class="eu.delving.web.controller.StaticRepo"/>
+    <bean id="staticRepo" class="eu.delving.web.controller.StaticRepo"/>
 
+    <bean id="messageSource" class="eu.delving.core.util.MessageSourceRepo">
+        <property name="parentMessageSource">
+            <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+                <property name="useCodeAsDefaultMessage" value="true"/>
+                <property name="basename" value="classpath:/i18n/messages"/>
+                <property name="fileEncodings" value="UTF-8"/>
+                <property name="defaultEncoding" value="UTF-8"/>
+            </bean>
+        </property>
+    </bean>
 
 </beans>

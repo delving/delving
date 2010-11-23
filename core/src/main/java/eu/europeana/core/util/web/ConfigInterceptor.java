@@ -25,8 +25,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Sjoerd Siebinga <sjoerd.siebinga@gmail.com>
@@ -45,16 +49,25 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
     @Value("#{launchProperties['portal.displayName']}")
     private String portalDisplayName;
 
-
     @Value("#{launchProperties['portal.theme']}")
     private String portalTheme;
 
     @Value("#{launchProperties['portal.color']}")
     private String portalColor;
 
-    @Value("#{launchProperties['ga.trackingCode']}")
-    private String trackingCode;
+    @Value("#{launchProperties['portal.baseUrl']}")
+    private String portalBaseUrl;
 
+    @Value("#{launchProperties['googleAnalytics.trackingCode']}")
+    private String googleAnalyticsTrackingCode;
+
+    @Value("#{launchProperties['addThis.trackingCode']}")
+    private String addThisTrackingCode;
+
+    @Resource(name = "includedMacros")
+    private List<String> includedMacros;
+
+    @SuppressWarnings({"unchecked"})
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
         super.postHandle(httpServletRequest, httpServletResponse, o, modelAndView);
@@ -64,11 +77,33 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject("cacheUrl", cacheUrl);
             modelAndView.addObject("portalName", portalName);
             modelAndView.addObject("portalDisplayName", portalDisplayName);
+            modelAndView.addObject("portalBaseUrl", portalBaseUrl);
             modelAndView.addObject("portalTheme", portalTheme);
             modelAndView.addObject("portalColor", portalColor);
-            if (!trackingCode.isEmpty()) {
-                modelAndView.addObject("trackingCode", trackingCode);
+            modelAndView.addObject("defaultParams", getDefaultParameters(httpServletRequest.getParameterMap()));
+            modelAndView.addObject("includedMacros", includedMacros);
+            if (!googleAnalyticsTrackingCode.isEmpty()) {
+                modelAndView.addObject("googleAnalyticsTrackingCode", googleAnalyticsTrackingCode);
+            }
+            if (!addThisTrackingCode.isEmpty()) {
+                modelAndView.addObject("addThisTrackingCode", addThisTrackingCode);
             }
         }
+    }
+
+    private String getDefaultParameters(Map<String, String[]> params) {
+        StringBuilder out = new StringBuilder();
+        out.append(getKey("view", params));
+        out.append(getKey("tab", params));
+        out.append(getKey("sortBy", params));
+        out.append(getKey("sortOrder", params));
+        return out.toString();
+    }
+
+    private String getKey(String key, Map<String, String[]> params) {
+        if (params.containsKey(key) && !params.get(key)[0].isEmpty()) {
+            return MessageFormat.format("&%s=%s", key, params.get(key)[0]);
+        }
+        return "";
     }
 }

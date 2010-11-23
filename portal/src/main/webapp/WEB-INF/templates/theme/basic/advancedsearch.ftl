@@ -1,38 +1,29 @@
 <#compress>
-<#assign thisPage = "advancedsearch.html"/>
-<#include "inc_header.ftl"/>
- <div id="header">
+<#include "includeMarcos.ftl">
 
-    <div id="identity" class="grid_3">
-        <h1>Delving</h1>
-        <a href="/${portalName}/index.html" title="Europeana lite"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
-    </div>
+<@addHeader "Norvegiana", "",[],[]/>
 
-    <div class="grid_9">
+<section id="sidebar" class="grid_3" role="complementary">
+    <header id="branding" role="banner">
+        <a href="/${portalName}/" title=""/>
+        <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana"/>
+        </a>
+        <h1 class="large">${portalDisplayName}</h1>
+    </header>
 
-        <div id="top-bar">
-            <div class="inner">
-                <@userbar/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<div class="clear"></div>
+</section>
 
 
-<div id="search" class="grid_12" style="background: #fff;">
-    <div id="search_advanced" title="<@spring.message 'AdvancedSearch_t' />" class="grid_4 alpha">
+<section id="search_advanced" class="grid_9" style="background: #fff;" role="search">
+       <h1><@spring.message 'AdvancedSearch_t'/></h1>
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
         <table>
             <tr>
-                <td>&#160;</td>
-                <td><select name="facet0" id="m-facet1"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
-                <td><input type="text" name="value0" class="search-input" maxlength="75"/></td>
+                <td width="100">&#160;</td>
+                <td width="110"><select name="facet0" id="m-facet1"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td width="200"><input type="text" name="value0" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
                 <td align="right"><select name="operator1" id="m-operator2"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
@@ -67,8 +58,8 @@
 
          </table>
         </form>
-    </div>
-</div><!-- end search -->
 
-<#include "inc_footer.ftl"/>
+</section><!-- end search -->
+
+<@addFooter/>
 </#compress>

@@ -66,7 +66,7 @@ def extractYear(fieldObject) {
   return result;
 }
 
-def createEuropeanaURI(identifier) {
+def createEuropeanaURI(identifier, collectionId) {
   if (!collectionId) {
     throw new MissingPropertyException("collectionId", String.class)
   }
@@ -80,7 +80,7 @@ def createEuropeanaURI(identifier) {
     hash += '0123456789ABCDEF'[(b & 0xF0) >> 4]
     hash += '0123456789ABCDEF'[b & 0x0F]
   }
-  return "$collectionId/$hash";
+  return ["$collectionId/$hash"];
 }
 
 def filterNIMK(String string) {

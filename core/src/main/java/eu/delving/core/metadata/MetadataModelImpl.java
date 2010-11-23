@@ -23,6 +23,9 @@ package eu.delving.core.metadata;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Implementing the MetadataModel inteface
@@ -32,19 +35,32 @@ import java.net.URL;
 
 public class MetadataModelImpl implements MetadataModel {
 
-    private RecordDefinition recordDefinition;
+    private Map<String, RecordDefinition> recordDefinitions = new TreeMap<String, RecordDefinition>();
+    private String defaultPrefix;
 
-//    public void setRecordDefinitionFile(String path) throws FileNotFoundException {
-//        InputStream is = new FileInputStream(path);
-//        this.recordDefinition = RecordDefinition.read(is);
-//    }
-
-    public void setRecordDefinitionResource(String path) throws IOException {
-        URL url = getClass().getResource(path);
-        this.recordDefinition = RecordDefinition.read(url.openStream());
+    public void setRecordDefinitionResources(List<String> paths) throws IOException, MetadataException {
+        for (String path : paths) {
+            URL url = getClass().getResource(path);
+            RecordDefinition recordDefinition = RecordDefinition.read(url.openStream());
+            recordDefinitions.put(recordDefinition.prefix, recordDefinition);
+        }
     }
 
+    public void setDefaultPrefix(String defaultPrefix) {
+        this.defaultPrefix = defaultPrefix;
+    }
+
+    @Override
     public RecordDefinition getRecordDefinition() {
-        return recordDefinition;
+        return getRecordDefinition(defaultPrefix);
+    }
+
+    @Override
+    public RecordDefinition getRecordDefinition(String prefix) {
+        RecordDefinition definition = recordDefinitions.get(prefix);
+        if (definition == null) {
+            throw new RuntimeException("Expected to find a record definition for prefix "+prefix);
+        }
+        return definition;
     }
 }

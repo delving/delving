@@ -1,5 +1,5 @@
 <fieldSet name="abm" schema="" namespace="">
-    <field prefix="abm" localName="municipality">
+    <!--<field prefix="abm" localName="municipality">
         <description>This field describes the municipality of the record</description>
         <portal fullDoc="true" briefDoc="false"/>
         <validation>
@@ -11,7 +11,19 @@
                 <string>text</string>
             </toCopyField>
         </solr>
-    </field>
+    </field>-->
+    <field prefix="abm" localName="municipality">
+            <fullDoc>true</fullDoc>
+            <category>ABM</category>
+            <fieldType>text</fieldType>
+            <multivalued>true</multivalued>
+            <stored>true</stored>
+            <indexed>true</indexed>
+            <termVectors>true</termVectors>
+            <toCopyField>
+                <string>text</string>
+            </toCopyField>
+        </field>
     <field prefix="abm" localName="aboutPerson">
             <fullDoc>true</fullDoc>
             <category>ABM</category>

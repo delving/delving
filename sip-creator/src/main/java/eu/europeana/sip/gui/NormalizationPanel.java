@@ -21,10 +21,8 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.RecordRoot;
-import eu.europeana.sip.model.FileSet;
+import eu.delving.core.metadata.Path;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -73,7 +71,7 @@ public class NormalizationPanel extends JPanel {
         gbc.weighty = 0.99;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridx = gbc.gridy = 0;
-        add(new RecordPanel(sipModel, sipModel.getRecordMappingModel()), gbc);
+        add(new RecordPanel(sipModel, sipModel.getRecordCompileModel()), gbc);
         gbc.gridx++;
         add(createCodePanel(), gbc);
         gbc.gridx++;
@@ -89,7 +87,7 @@ public class NormalizationPanel extends JPanel {
     private JPanel createCodePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Groovy Code"));
-        JTextArea area = new JTextArea(sipModel.getRecordMappingModel().getCodeDocument());
+        JTextArea area = new JTextArea(sipModel.getRecordCompileModel().getCodeDocument());
         area.setEditable(false);
         p.add(scroll(area));
         return p;
@@ -98,7 +96,7 @@ public class NormalizationPanel extends JPanel {
     private JPanel createOutputPanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createTitledBorder("Output Record"));
-        JTextArea area = new JTextArea(sipModel.getRecordMappingModel().getOutputDocument());
+        JTextArea area = new JTextArea(sipModel.getRecordCompileModel().getOutputDocument());
         area.setEditable(false);
         p.add(scroll(area));
         return p;
@@ -168,19 +166,11 @@ public class NormalizationPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedDataSetStore(FileStore.DataSetStore store) {
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
-            }
-
-            @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-            }
-
-            @Override
-            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
             }
 
             @Override

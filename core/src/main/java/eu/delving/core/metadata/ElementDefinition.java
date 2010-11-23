@@ -24,6 +24,7 @@ package eu.delving.core.metadata;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,10 @@ import java.util.Map;
 public class ElementDefinition {
 
     @XStreamAsAttribute
-    public String tag;
+    public String prefix;
+
+    @XStreamAsAttribute
+    public String localName;
 
     @XStreamImplicit
     public List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
@@ -47,76 +51,82 @@ public class ElementDefinition {
     @XStreamImplicit
     public List<ElementDefinition> elements = new ArrayList<ElementDefinition>();
 
-    public FieldDefinition getField(String path) {
-        int slash = path.indexOf("/");
-        if (slash < 0) {
-            if (fields != null) {
-                for (FieldDefinition fieldDefinition : fields) {
-                    if (path.equals(fieldDefinition.getTag())) {
-                        return fieldDefinition;
-                    }
-                }
-            }
+    @XStreamOmitField
+    public Path path;
+
+    @XStreamOmitField
+    private Tag tag;
+
+    public Tag getTag() {
+        if (tag == null) {
+            tag = Tag.create(prefix, localName);
         }
-        else {
-            if (elements != null) {
-                String tag = path.substring(0, slash);
-                for (ElementDefinition node : elements) {
-                    if (tag.equals(node.tag)) {
-                        return node.getField(path.substring(slash + 1));
-                    }
-                }
-            }
-        }
-        return null;
+        return tag;
     }
 
-    public FieldDefinition getFieldDefinition(String prefix, String localName) {
+    public void setPaths(Path path) {
+        path.push(getTag());
+        this.path = new Path(path);
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
-                if (prefix.equals(fieldDefinition.prefix) && localName.equals(fieldDefinition.localName)) {
+                fieldDefinition.setPath(path);
+            }
+        }
+        if (elements != null) {
+            for (ElementDefinition elementDefinition : elements) {
+                elementDefinition.setPaths(path);
+            }
+        }
+        path.pop();
+    }
+
+    public FieldDefinition getFieldDefinition(Path path) {
+        if (fields != null) {
+            for (FieldDefinition fieldDefinition : fields) {
+                if (fieldDefinition.category.equals("INDEX_TIME_ADDITION")) {
+                    continue;
+                }
+                if (path.equals(fieldDefinition.path)) {
                     return fieldDefinition;
                 }
             }
         }
         if (elements != null) {
             for (ElementDefinition elementDefinition : elements) {
-                FieldDefinition def = elementDefinition.getFieldDefinition(prefix, localName);
-                if (def != null) {
-                    return def;
+                if (path.equals(elementDefinition.path)) {
+                    return elementDefinition.getFieldDefinition(path);
                 }
             }
         }
         return null;
     }
 
-    public void getConstantFields(String path, Map<String, FieldDefinition> map) {
+    public void getConstantFields(List<FieldDefinition> constantFields) {
         if (fields != null) {
             for (FieldDefinition fieldDefinition : fields) {
                 if (fieldDefinition.constant) {
-                    map.put(String.format("%s/%s", path, fieldDefinition.getTag()), fieldDefinition);
+                    constantFields.add(fieldDefinition);
                 }
             }
         }
         if (elements != null) {
             for (ElementDefinition elementDefinition : elements) {
-                elementDefinition.getConstantFields(String.format("%s/%s", path, elementDefinition.tag), map);
+                elementDefinition.getConstantFields(fields);
             }
         }
     }
 
-
-    public void getCategoryFields(String category, List<FieldDefinition> fieldDefinitions) {
-        if (fields != null) {
-            for (FieldDefinition fieldDefinition : fields) {
-                if (category.equals(fieldDefinition.category)) {
+    public void getMappableFields(List<FieldDefinition> fieldDefinitions) {
+        if (this.fields != null) {
+            for (FieldDefinition fieldDefinition : this.fields) {
+                if (!"INDEX_TIME_ADDITION".equals((fieldDefinition.category))) { // todo: better test, should be a flag
                     fieldDefinitions.add(fieldDefinition);
                 }
             }
         }
         if (elements != null) {
             for (ElementDefinition elementDefinition : elements) {
-                elementDefinition.getCategoryFields(category, fieldDefinitions);
+                elementDefinition.getMappableFields(fieldDefinitions);
             }
         }
     }
@@ -185,4 +195,5 @@ public class ElementDefinition {
     public String toString() {
         return String.format("Element(%s)", tag);
     }
+
 }

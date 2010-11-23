@@ -30,11 +30,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -67,6 +69,9 @@ public class ExceptionResolver implements HandlerExceptionResolver {
 
     @Value("#{launchProperties['portal.displayName']}")
     private String portalDisplayName;
+
+    @Resource(name = "includedMacros")
+    private List<String> includedMacros;
 
     @Autowired
     private ClickStreamLogger clickStreamLogger;
@@ -118,6 +123,7 @@ public class ExceptionResolver implements HandlerExceptionResolver {
         mav.addObject("queryProblem", queryProblem);
         mav.addObject("exception", exception);
         mav.addObject("stackTrace", stackTrace);
+        mav.addObject("includedMacros", includedMacros);
         return mav;
     }
 

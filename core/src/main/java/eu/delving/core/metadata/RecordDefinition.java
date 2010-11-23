@@ -23,6 +23,7 @@ package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -39,21 +40,54 @@ import java.util.TreeMap;
 @XStreamAlias("record-definition")
 public class RecordDefinition {
 
+    @XStreamAsAttribute
+    public String prefix;
+
+    public List<ConstantInputDefinition> constants;
+
+    public List<NamespaceDefinition> namespaces;
+
     public ElementDefinition root;
 
-    public Map<String, FieldDefinition> getConstantFields() {
-        Map<String, FieldDefinition> map = new TreeMap<String, FieldDefinition>();
-        root.getConstantFields("", map);
-        return map;
+    void initialize() throws MetadataException {
+        if (constants == null) {
+            throw new MetadataException("A record definition must have constants defined");
+        }
+        root.setPaths(new Path());
+        for (ConstantInputDefinition constantInputDefinition : constants) {
+            if (constantInputDefinition.fieldPath == null) continue;
+            FieldDefinition fieldDefinition = getFieldDefinition(new Path(constantInputDefinition.fieldPath));
+            if (fieldDefinition == null) {
+                throw new MetadataException(String.format("Constant input %s has no corresponding path", constantInputDefinition.name));
+            }
+            if (!fieldDefinition.constant) {
+                throw new MetadataException(String.format("Constant input %s has path %s which is not to a constant", constantInputDefinition.name, constantInputDefinition.fieldPath));
+            }
+            constantInputDefinition.fieldDefinition = fieldDefinition;
+        }
+        List<FieldDefinition> constantFields = new ArrayList<FieldDefinition>();
+        root.getConstantFields(constantFields);
+        for (FieldDefinition fieldDefinition : constantFields) {
+            boolean found = false;
+            for (ConstantInputDefinition constantInputDefinition : constants) {
+                if (constantInputDefinition.fieldDefinition == fieldDefinition) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                throw new MetadataException(String.format("Constant field %s has no corresponding constant input", fieldDefinition.path));
+            }
+        }
     }
 
-    public List<FieldDefinition> getCategoryFields(String category) {
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
-        root.getCategoryFields(category, fieldDefinitions);
-        return fieldDefinitions;
+    public List<FieldDefinition> getMappableFields() {
+        List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
+        root.getMappableFields(fields);
+        return fields;
     }
-    public FieldDefinition getFieldDefinition(String prefix, String localName) {
-        return root.getFieldDefinition(prefix, localName);
+
+    public FieldDefinition getFieldDefinition(Path path) {
+        return root.getFieldDefinition(path);
     }
 
     public List<String> getFieldNameList() {
@@ -86,8 +120,10 @@ public class RecordDefinition {
 
     // handy static methods
 
-    public static RecordDefinition read(InputStream in) {
-        return (RecordDefinition) stream().fromXML(in);
+    public static RecordDefinition read(InputStream in) throws MetadataException {
+        RecordDefinition recordDefinition = (RecordDefinition) stream().fromXML(in);
+        recordDefinition.initialize();
+        return recordDefinition;
     }
 
     public static String toString(RecordDefinition recordDefinition) {

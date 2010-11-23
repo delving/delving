@@ -26,7 +26,7 @@
     <artifactId>sip-core</artifactId>
     <packaging>jar</packaging>
     <name>SIP-Core</name>
-    <version>0.1.0</version>
+    <version>0.1.5</version>
     <description>Core SIP Classes</description>
     <inceptionYear>2010</inceptionYear>
 
@@ -38,17 +38,33 @@
 
     <developers>
         <developer>
-            <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <name>Sjoerd Siebinga</name>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Gerald de Jong</name>
+            <email>gerald@delving.eu</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
+            <roles>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
+
     <organization>
         <name>Delving</name>
         <url>http://www.delving.eu</url>
     </organization>
+    
     <build>
         <plugins>
             <plugin>
@@ -66,7 +82,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.5</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>

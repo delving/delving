@@ -23,6 +23,7 @@ package eu.delving.core.metadata;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.List;
 
@@ -33,23 +34,65 @@ import java.util.List;
  */
 
 @XStreamAlias("field")
-public class FieldDefinition {
+public class FieldDefinition implements Comparable<FieldDefinition> {
+
+    @XStreamAsAttribute
+    public String prefix;
+    @XStreamAsAttribute
+    public String localName;
     
-    public String getTag() {
-        if (getPrefix() == null) {
-            return localName;
+    public String facetPrefix;
+    public boolean briefDoc = false;
+    public boolean fullDoc = true;
+    public boolean hidden = true;
+    public boolean id = false;
+    public boolean object = false;
+    public boolean type = false;
+    public String requiredGroup;
+    public boolean constant = false;
+    public String category;
+    public String converterPattern;
+    public boolean converterMultipleOutput = false;
+    public boolean url = false;
+    public String regularExpression;
+    public boolean valueMapped = false;
+    public String fieldType;
+    public boolean multivalued = true;
+    public boolean stored = true;
+    public boolean indexed = true;
+    public boolean compressed = false;
+    public boolean termVectors = true;
+    public boolean termPositions = true;
+    public boolean termOffsets = true;
+    public boolean omitNorms = true;
+    public String defaultValue = "";
+    public List<String> options;
+    public List<String> toCopyField;
+
+    @XStreamOmitField
+    public Path path;
+
+    private Tag tag;
+
+    public Tag getTag() {
+        if (tag == null) {
+            tag = Tag.create(prefix, localName);
         }
-        else {
-            return getPrefix() + ':' + localName;
-        }
+        return tag;
+    }
+
+    public void setPath(Path path) {
+        path.push(getTag());
+        this.path = new Path(path);
+        path.pop();
     }
 
     public String getFieldNameString() {
         if (getPrefix() == null) {
-            return localName;
+            return tag.getLocalName();
         }
         else {
-            return getPrefix() + '_' + localName;
+            return getPrefix() + '_' + tag.getLocalName();
         }
     }
 
@@ -58,75 +101,25 @@ public class FieldDefinition {
             return facetPrefix;
         }
         else {
-            return prefix;
+            return tag.getPrefix();
         }
     }
 
-    public String getFacetName() {
-        return localName.toUpperCase();
-    }
-
     public String getLocalName() {
-        return localName;
+        return tag.getLocalName();
     }
 
-    @XStreamAsAttribute
-    public String prefix;
-    
-    @XStreamAsAttribute
-    public String localName;
-
-    public String facetPrefix;
-    public Boolean briefDoc = false;
-    public Boolean fullDoc = true;
-    public Boolean hidden = true;
-    public Boolean id = false;
-    public Boolean object = false;
-    public Boolean type = false;
-    public String requiredGroup;
-    public Boolean constant = false;
-    public String category;
-    public String converter;
-    public Boolean converterMultipleOutput = false;
-    public Boolean url = false;
-    public String regularExpression;
-    public Boolean valueMapped = false;
-    public String fieldType;
-    public Boolean multivalued = true;
-    public Boolean stored = true;
-    public Boolean indexed = true;
-    public Boolean required = false;
-    public Boolean compressed = false;
-    public Boolean termVectors = true;
-    public Boolean termPositions = true;
-    public Boolean termOffsets = true;
-    public Boolean omitNorms = true;
-    public String defaultValue = "";
-    public List<String> options;
-    public List<String> toCopyField;
-
-    private Object readResolve() {
-        multivalued = setDefaultTrue(multivalued);
-        stored = setDefaultTrue(stored);
-        indexed = setDefaultTrue(indexed);
-        termVectors = setDefaultTrue(termVectors);
-        return this;
-    }
-
-    private Boolean setDefaultTrue(Boolean value) {
-        return value == null ? true : value;
-    }
-
-    public Boolean isId() {
-        return id == null ? false : id;
-    }
-
-    public Boolean isType() {
-        return type == null ? false : type;
+    public String getFacetName() {
+        return tag.getLocalName().toUpperCase();
     }
 
     @Override
     public String toString() {
-        return String.format("FieldDefinition(%s:%s)", prefix, localName);
+        return String.format("FieldDefinition(%s)", path);
+    }
+
+    @Override
+    public int compareTo(FieldDefinition fieldDefinition) {
+        return path.compareTo(fieldDefinition.path);
     }
 }

@@ -1,15 +1,18 @@
-<#import "spring.ftl" as spring />
-<#include "spring_form_macros.ftl"/>
 <#assign thisPage = "register-request.html"/>
+<#include "includeMarcos.ftl">
 
-<#include "inc_header.ftl">
+<@addHeader "Norvegiana", "",[],[]/>
 
+<#if contentOnly != "true">
+<div class="centered">
+    <div class="grid_12" id="branding">
+        <h1 class="gigantic">
+            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
+        </h1>
+    </div>
+</#if>
 
-<@userBar/>
-
-<h1>${portalDisplayName}</h1>
-
-<@simpleSearch/>
+<section role="main" class="grid_4 prefix_4">
 
 <h2><@spring.message 'Register_t' /></h2>
 
@@ -45,6 +48,7 @@
     <strong><@spring.message 'Error_t' />: </strong><@spring.message 'EmailAlreadyRegistered_t' />.
 </#if>
 
-
-<#include "inc_footer.ftl"/>
+</section>
+</div>
+<@addFooter/>
 

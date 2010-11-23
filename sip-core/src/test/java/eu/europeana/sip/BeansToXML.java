@@ -3,16 +3,15 @@ package eu.europeana.sip;
 import eu.delving.core.metadata.ElementDefinition;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.RecordDefinition;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.definitions.annotations.Europeana;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.definitions.beans.AllFieldBean;
+import eu.europeana.sip.annotations.AnnotationProcessorImpl;
+import eu.europeana.sip.annotations.Europeana;
+import eu.europeana.sip.annotations.EuropeanaField;
+import eu.europeana.sip.beans.AllFieldBean;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -76,7 +75,7 @@ public class BeansToXML {
             fd.category = string(ef.europeana().category().toString());
             fd.compressed = bool(ef.solr().compressed());
             fd.constant = bool(ef.europeana().constant());
-            fd.converter = string(ef.europeana().converter());
+            fd.converterPattern = string(ef.europeana().converter());
             fd.converterMultipleOutput = bool(ef.europeana().converterMultipleOutput());
             fd.defaultValue = string(ef.solr().defaultValue());
             fd.facetPrefix = string(ef.europeana().facetPrefix());
@@ -90,7 +89,9 @@ public class BeansToXML {
             fd.omitNorms = bool(ef.solr().omitNorms());
             fd.options = (ef.europeana().enumClass() == Europeana.NO_ENUM.class) ? null : getEnumValues(ef.europeana().enumClass());
             fd.regularExpression = string(ef.europeana().regularExpression());
-            fd.required = bool(ef.solr().required());
+            if (ef.solr().required()) {
+                fd.requiredGroup = fd.prefix+":"+fd.localName;
+            }
             fd.requiredGroup = string(ef.europeana().requiredGroup());
             fd.stored = bool(ef.solr().stored());
             fd.termOffsets = bool(ef.solr().termOffsets());
@@ -102,24 +103,7 @@ public class BeansToXML {
             fd.valueMapped = bool(ef.europeana().valueMapped());
             rd.root.fields.add(fd);
         }
-        Collections.sort(rd.root.fields, new Comparator<FieldDefinition>() {
-            @Override
-            public int compare(FieldDefinition a, FieldDefinition b) {
-                String aa = a.prefix;
-                String bb = b.prefix;
-                if (aa == null) {
-                    return 1;
-                }
-                if (bb == null) {
-                    return -1;
-                }
-                int pc = aa.compareTo(bb);
-                if (pc != 0) {
-                    return pc;
-                }
-                return a.getLocalName().compareTo(b.getLocalName());
-            }
-        });
+        Collections.sort(rd.root.fields);
         System.out.println(rd.toString());
     }
 }

@@ -4,8 +4,8 @@
     <groupId>eu.europeana</groupId>
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
-    <name>Normalizing XML to Europeana input format, validating, etc</name>
-    <version>0.1.0</version>
+    <name>SIP-Creator</name>
+    <version>0.1.5</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -17,30 +17,39 @@
     <developers>
         <developer>
             <name>Sjoerd Siebinga</name>
-            <email>sjoerd.siebinga@gmail.com</email>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>architect</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
             <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <email>gerald@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
+            <roles>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
+
     <organization>
         <name>Europeana Foundation</name>
         <url>http://www.europeana.eu</url>
     </organization>
+
     <build>
         <defaultGoal>compile</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo.webstart</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
-                <version>1.0-beta-1-SNAPSHOT</version>
+                <version>1.0-beta-1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -56,11 +65,11 @@
                         <mainClass>eu.europeana.sip.gui.SipCreatorGUI</mainClass>
                     </jnlp>
                     <sign>
-                      <keystore>${basedir}/src/main/jnlp/snakeoil.keystore</keystore>
-                      <keypass>sip-creator</keypass>
-                      <storepass>sip-creator</storepass>
-                      <alias>sip-creator</alias>
-                      <verify>true</verify>
+                        <keystore>${basedir}/src/main/jnlp/snakeoil.keystore</keystore>
+                        <keypass>sip-creator</keypass>
+                        <storepass>sip-creator</storepass>
+                        <alias>sip-creator</alias>
+                        <verify>true</verify>
                     </sign>
                     <pack200>false</pack200>
                     <gzip>false</gzip>
@@ -74,11 +83,11 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.5</version>
         </dependency>
         <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>org.springframework.oxm</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.oxm</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.jnlp</groupId>

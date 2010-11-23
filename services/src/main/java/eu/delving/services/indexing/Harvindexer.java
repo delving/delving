@@ -3,6 +3,8 @@ package eu.delving.services.indexing;
 import com.ctc.wstx.stax.WstxInputFactory;
 import eu.delving.core.metadata.FieldDefinition;
 import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.Tag;
 import eu.delving.core.rest.ServiceAccessToken;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
@@ -14,7 +16,6 @@ import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
 import eu.europeana.core.database.domain.SocialTag;
 import eu.europeana.core.querymodel.query.DocType;
-import eu.europeana.sip.definitions.annotations.EuropeanaBean;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -50,7 +51,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Harvindexer {
     private ConsoleDao consoleDao;
     private SolrServer solrServer;
-    private EuropeanaBean europeanaBean;
 
     private Logger log = Logger.getLogger(getClass());
     private int chunkSize = 1000;
@@ -254,16 +254,17 @@ public class Harvindexer {
             }
         }
 
-
         private String importXmlInternal(InputStream inputStream) throws TransformerException, XMLStreamException, IOException, SolrServerException, ImportException {
             XMLInputFactory inFactory = new WstxInputFactory();
             Source source = new StreamSource(inputStream, "UTF-8");
             XMLStreamReader xml = inFactory.createXMLStreamReader(source);
             EuropeanaId europeanaId = null;
+            String pmhId = null;
             String resumptionToken = "";
             int recordCount = 0;
             boolean isInMetadataBlock = false;
             long startTime = System.currentTimeMillis();
+            Path path = new Path();
             SolrInputDocument solrInputDocument = null;
             while (thread != null) {
                 switch (xml.getEventType()) {
@@ -275,24 +276,28 @@ public class Harvindexer {
                         if (isErrorElement(xml)) {
                             throw new ImportException(xml.getElementText());
                         }
+                        else if (!isInMetadataBlock && isPmhIdentifier(xml)) {
+                            pmhId = xml.getElementText();
+                        }
                         else if (isMetadataElement(xml)) {
                             isInMetadataBlock = true;
                         }
                         else if (isRecordElement(xml) && isInMetadataBlock) {
                             europeanaId = new EuropeanaId(collection);
                             solrInputDocument = new SolrInputDocument();
+                            solrInputDocument.addField("delving_pmhId", pmhId);
                         }
                         else if (isResumptionToken(xml)) {
                             resumptionToken = xml.getElementText();
                         }
                         else if (europeanaId != null) {
-                            FieldDefinition fieldDefinition = getFieldDefinition(xml.getPrefix(), xml.getLocalName(), recordCount);
-//                            String language = fetchLanguage(xml);
+                            path.push(Tag.create(xml.getName().getPrefix(), xml.getName().getLocalPart()));
+                            FieldDefinition fieldDefinition = getFieldDefinition(path, recordCount);
                             String text = xml.getElementText();
-                            if (fieldDefinition.isId()) {
+                            if (fieldDefinition.id) {
                                 europeanaId.setEuropeanaUri(text);
                             }
-                            else if (fieldDefinition.isType()) {
+                            else if (fieldDefinition.type) {
                                 DocType.get(text); // checking if it matches one of them
                                 SolrInputField objectField = solrInputDocument.getField("europeana_type");
                                 if (objectField != null) {
@@ -394,10 +399,10 @@ public class Harvindexer {
 //            return field;
 //        }
 
-        private FieldDefinition getFieldDefinition(String prefix, String localName, int recordCount) throws ImportException {
-            FieldDefinition fieldDefinition = metadataModel.getRecordDefinition().getFieldDefinition(prefix, localName);
+        private FieldDefinition getFieldDefinition(Path path, int recordCount) throws ImportException {
+            FieldDefinition fieldDefinition = metadataModel.getRecordDefinition().getFieldDefinition(path);
             if (fieldDefinition == null) {
-                throw new ImportException("Field not recognized: " + prefix + ":" + localName, recordCount);
+                throw new ImportException("Field not recognized: " + path, recordCount);
             }
             return fieldDefinition;
         }
@@ -408,6 +413,10 @@ public class Harvindexer {
 
         private boolean isMetadataElement(XMLStreamReader xml) {
             return "metadata".equals(xml.getName().getLocalPart());
+        }
+
+        private boolean isPmhIdentifier(XMLStreamReader xml) {
+            return "identifier".equals(xml.getName().getLocalPart());
         }
 
         private boolean isErrorElement(XMLStreamReader xml) {

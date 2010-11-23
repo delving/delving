@@ -69,6 +69,7 @@ public class StaticController {
             @RequestParam(required = false) boolean edit,
             @RequestParam(required = false) boolean delete,
             @RequestParam(required = false) boolean approve,
+            @RequestParam(required = false) Boolean hidden,
             @RequestParam(required = false) String newPath,
             HttpServletRequest request
     ) throws IOException {
@@ -103,7 +104,10 @@ public class StaticController {
                     staticRepo.approve(path, version);
                 }
                 else if (delete) {
-                    staticRepo.putPage(path, null);
+                    staticRepo.putPage(path, null, null);
+                }
+                else if (hidden != null) {
+                    staticRepo.setHidden(path, hidden);
                 }
                 mav.addObject("edit", edit);
                 mav.addObject("imagePathList", staticRepo.getImagePaths());
@@ -113,7 +117,11 @@ public class StaticController {
                 }
             }
             StaticRepo.Page page = version != null ? staticRepo.getPage(path, version) : staticRepo.getPage(path);
+            if (page.isHidden() && !isEditor()) {
+                return getRedirect("");
+            }
             clickStreamLogger.logCustomUserAction(request, ClickStreamLogger.UserAction.STATICPAGE, "view=" + path);
+            mav.addObject("locale", request.getLocale());
             mav.addObject("page", page);
             mav.addObject("embedded", embedded);
         }
@@ -130,7 +138,7 @@ public class StaticController {
             if (content != null && content.trim().isEmpty()) {
                 content = null;
             }
-            staticRepo.putPage(path, content);
+            staticRepo.putPage(path, content, request.getLocale());
         }
         return getRedirect(path);
     }

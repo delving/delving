@@ -21,12 +21,10 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.RecordRoot;
-import eu.europeana.sip.model.AnalysisTree;
-import eu.europeana.sip.model.FileSet;
-import eu.europeana.sip.model.QNameNode;
+import eu.delving.core.metadata.AnalysisTree;
+import eu.delving.core.metadata.AnalysisTreeNode;
+import eu.delving.core.metadata.Path;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.BorderFactory;
@@ -85,7 +83,7 @@ public class AnalysisPanel extends JPanel {
     public AnalysisPanel(SipModel sipModel) {
         super(new GridBagLayout());
         this.sipModel = sipModel;
-        this.constantFieldPanel = new ConstantFieldPanel(sipModel);
+        this.constantFieldPanel = new ConstantFieldPanel(sipModel.getConstantFieldModel());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
@@ -198,29 +196,21 @@ public class AnalysisPanel extends JPanel {
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void templateApplied() {
-                constantFieldPanel.refresh();
+                constantFieldPanel.refreshContent();
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 setElementsProcessed(sipModel.getElementCount());
-                analyzeButton.setText(String.format(PERFORM_ANALYSIS, fileSet.getName()));
+                analyzeButton.setText(String.format(PERFORM_ANALYSIS, dataSetStore.getSpec()));
                 analyzeButton.setEnabled(true);
                 abortButton.setEnabled(false);
+                constantFieldPanel.refreshContent();
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
-            }
-
-            @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-                recordCountLabel.setText(String.format(RECORDS, recordRoot == null ? 0 : recordRoot.getRecordCount()));
-            }
-
-            @Override
-            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
-                constantFieldPanel.refresh();
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
+                recordCountLabel.setText(String.format(RECORDS, recordCount));
             }
 
             @Override
@@ -241,17 +231,17 @@ public class AnalysisPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
-                QNameNode node = (QNameNode) path.getLastPathComponent();
-                RecordRoot recordRoot = new RecordRoot(node.getQName(), node.getStatistics().getTotal());
-                sipModel.setRecordRoot(recordRoot);
+                AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
+                Path recordRoot = node.getPath();
+                sipModel.setRecordRoot(recordRoot, node.getStatistics().getTotal());
             }
         });
         selectUniqueElementButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TreePath path = statisticsJTree.getSelectionPath();
-                QNameNode node = (QNameNode) path.getLastPathComponent();
-                sipModel.setUniqueElement(node.getQName());
+                AnalysisTreeNode node = (AnalysisTreeNode) path.getLastPathComponent();
+                sipModel.setUniqueElement(node.getPath());
             }
         });
         analyzeButton.addActionListener(new ActionListener() {

@@ -61,7 +61,7 @@
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
         <property name="cookieMaxAge" value="3600"/>
-        <property name="defaultLocale" value="nl"/>
+        <property name="defaultLocale" value="en"/>
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -71,6 +71,8 @@
     <bean id="formatInterceptor" class="eu.europeana.core.util.web.FormatInterceptor"/>
 
     <bean id="configInterceptor" class="eu.europeana.core.util.web.ConfigInterceptor"/>
+
+    <bean id="cslInterceptor" class="eu.delving.core.util.ClickStreamLoggerInterceptor"/>
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="messageConverters">
@@ -101,17 +103,22 @@
         <property name="interceptors">
             <list>
                 <ref bean="localeChangeInterceptor"/>
+                <ref bean="cslInterceptor"/>
                 <ref bean="formatInterceptor"/>
                 <ref bean="configInterceptor"/>
             </list>
         </property>
     </bean>
 
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <property name="basename" value="#{launchProperties['message.resource']}"/>
-        <property name="cacheSeconds" value="#{launchProperties['message.cache.seconds']}"/>
-        <property name="fileEncodings" value="UTF-8"/>
-        <property name="defaultEncoding" value="UTF-8"/>
+    <bean id="messageSource" class="eu.delving.core.util.MessageSourceRepo">
+        <property name="parentMessageSource">
+            <bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+                <property name="useCodeAsDefaultMessage" value="true"/>
+                <property name="basename" value="classpath:/i18n/messages"/>
+                <property name="fileEncodings" value="UTF-8"/>
+                <property name="defaultEncoding" value="UTF-8"/>
+            </bean>
+        </property>
     </bean>
 
     <bean id="exceptionResolver" class="eu.europeana.core.util.web.ExceptionResolver"/>

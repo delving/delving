@@ -15,4 +15,6 @@ $(document).ready(function() {
         // goto last visited page
         document.location.href = gotoPage;
     }
+
+
 });

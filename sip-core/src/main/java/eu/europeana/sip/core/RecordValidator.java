@@ -21,20 +21,29 @@
 
 package eu.europeana.sip.core;
 
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.definitions.annotations.FieldCategory;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.NamespaceDefinition;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.RecordDefinition;
+import eu.delving.core.metadata.Tag;
+import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Validate a record
@@ -45,113 +54,202 @@ import java.util.TreeMap;
  */
 
 public class RecordValidator {
-    private Map<String, EuropeanaField> fieldMap = new HashMap<String, EuropeanaField>();
-    private Map<String, String> constantMap;
-    private Set<String> unique;
+    private static final int[] PRIMES = {
+            4105001, 4105019, 4105033, 4105069,
+            4105091, 4105093, 4105103, 4105111,
+            4105151, 4105169, 4105181, 4105183,
+    };
+    private Logger log = Logger.getLogger(getClass());
+    private RecordDefinition recordDefinition;
+    private BitSet[] bitSet;
+    private boolean checkUniqueness;
+    private String context;
+    private int contextBegin, contextEnd;
 
-    public RecordValidator(AnnotationProcessor annotationProcessor, boolean checkUniqueness) {
-        if (checkUniqueness) {
-            unique = new HashSet<String>();
-            constantMap = new HashMap<String, String>();
-        }
-        for (EuropeanaField field : annotationProcessor.getAllFields()) {
-            if (field.europeana().category() != FieldCategory.INDEX_TIME_ADDITION) {
-                fieldMap.put(field.getXmlName(), field);
+    public RecordValidator(MetadataModel metadataModel, boolean checkUniqueness) {
+        this.recordDefinition = metadataModel.getRecordDefinition();
+        if (this.checkUniqueness = checkUniqueness) {
+            bitSet = new BitSet[PRIMES.length];
+            for (int walk = 0; walk < bitSet.length; walk++) {
+                bitSet[walk] = new BitSet(PRIMES[walk]);
             }
         }
+        StringBuilder contextString = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n\n<validate\n");
+        for (NamespaceDefinition namespaceDefinition : recordDefinition.namespaces) {
+            contextString.append(String.format("xmlns:%s=\"%s\"\n", namespaceDefinition.prefix, namespaceDefinition.uri));
+        }
+        contextString.append(">\n%s</validate>\n");
+        this.context = contextString.toString();
+        this.contextBegin = this.context.indexOf("%s");
+        this.contextEnd = this.context.length() - (this.contextBegin + 2);
     }
 
-    public void validate(MetadataRecord metadataRecord, List<FieldEntry> fieldEntries) throws RecordValidationException {
-        List<String> problems = new ArrayList<String>();
-        validateAgainstAnnotations(fieldEntries, problems);
-        if (!problems.isEmpty()) {
-            throw new RecordValidationException(metadataRecord, problems);
+    public String validateRecord(String recordString, List<String> problems) {
+        String contextualizedRecord = String.format(context, recordString);
+        StringWriter out = new StringWriter();
+        try {
+            Document document = DocumentHelper.parseText(contextualizedRecord);
+            Map<Path,Counter> counters= new TreeMap<Path,Counter>();
+            validateDocument(document, problems, new TreeSet<String>(), counters);
+            validateCardinalities(counters, problems);
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter writer = new XMLWriter(out, format);
+            writer.write(document);
         }
+        catch (Exception e) {
+            problems.add("Problem parsing: " + e.toString());
+            return "Invalid";
+        }
+        out.getBuffer().delete(0, contextBegin);
+        out.getBuffer().delete(out.getBuffer().length() - contextEnd, out.getBuffer().length());
+        return out.toString();
     }
 
-    private void validateAgainstAnnotations(List<FieldEntry> fieldEntries, List<String> problems) {
-        Map<String, Counter> counterMap = new HashMap<String, Counter>();
-        for (FieldEntry fieldEntry : fieldEntries) {
-            EuropeanaField field = fieldMap.get(fieldEntry.getTag());
-            if (field == null) {
-                problems.add(String.format("Unknown XML element [%s]", fieldEntry.getTag()));
+    private void validateCardinalities(Map<Path, Counter> counters, List<String> problems) {
+        Map<String, Boolean> requiredGroupMap = new TreeMap<String, Boolean>();
+        for (FieldDefinition field : recordDefinition.getMappableFields()) {
+            if (field.requiredGroup != null) {
+                requiredGroupMap.put(field.requiredGroup, false);
             }
-            else {
-                Counter counter = counterMap.get(fieldEntry.getTag());
-                if (counter == null) {
-                    counter = new Counter();
-                    counterMap.put(fieldEntry.getTag(), counter);
-                }
-                counter.count++;
-                Set<String> enumValues = field.getEnumValues();
-                if (enumValues != null && !field.europeana().valueMapped() && !enumValues.contains(fieldEntry.getValue())) {
-                    StringBuilder enumString = new StringBuilder();
-                    Iterator<String> walk = enumValues.iterator();
-                    while (walk.hasNext()) {
-                        enumString.append(walk.next());
-                        if (walk.hasNext()) {
-                            enumString.append(',');
-                        }
-                    }
-                    problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", fieldEntry.getTag(), fieldEntry.getValue(), enumString.toString()));
-                }
-                if (field.europeana().constant() && constantMap != null) {
-                    String value = constantMap.get(fieldEntry.getTag());
-                    if (value == null) {
-                        constantMap.put(fieldEntry.getTag(), fieldEntry.getValue());
-                    }
-                    else if (!value.equals(fieldEntry.getValue())) {
-                        problems.add(String.format("Value for [%s] should be constant but it had multiple values [%s] and [%s]", fieldEntry.getTag(), fieldEntry.getValue(), value));
-                    }
-                }
-                String regex = field.europeana().regularExpression();
-                if (!regex.isEmpty()) {
-                    if (!fieldEntry.getValue().matches(regex)) {
-                        problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", fieldEntry.getTag(), fieldEntry.getValue(), regex));
-                    }
-                }
-                if (field.europeana().url()) {
-                    try {
-                        new URL(fieldEntry.getValue());
-                    }
-                    catch (MalformedURLException e) {
-                        problems.add(String.format("URL value for [%s] was [%s] which is malformed", fieldEntry.getTag(), fieldEntry.getValue()));
-                    }
-                }
-                if (field.europeana().id() && unique != null) {
-                    if (unique.contains(fieldEntry.getValue())) {
-                        problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", fieldEntry.getTag(), fieldEntry.getValue()));
-                    }
-                    unique.add(fieldEntry.getValue());
-                }
+            Counter counter = counters.get(field.path);
+            if (!field.multivalued && counter != null && counter.count > 1) {
+                problems.add(String.format("Single-valued field [%s] has more than one value", field.path));
             }
         }
-        Map<String, Boolean> present = new TreeMap<String, Boolean>();
-        for (EuropeanaField field : fieldMap.values()) {
-            if (!field.europeana().requiredGroup().isEmpty()) {
-                present.put(field.europeana().requiredGroup(), false);
+        for (Map.Entry<Path,Counter> entry : counters.entrySet()) {
+            FieldDefinition field = recordDefinition.getFieldDefinition(entry.getKey()) ;
+            if (field.requiredGroup != null) {
+                requiredGroupMap.put(field.requiredGroup, true);
             }
         }
-        for (FieldEntry fieldEntry : fieldEntries) {
-            EuropeanaField field = fieldMap.get(fieldEntry.getTag());
-            if (field != null && !field.europeana().requiredGroup().isEmpty()) {
-                present.put(field.europeana().requiredGroup(), true);
-            }
-        }
-        for (Map.Entry<String,Boolean> entry : present.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : requiredGroupMap.entrySet()) {
             if (!entry.getValue()) {
                 problems.add(String.format("Required field violation for [%s]", entry.getKey()));
             }
         }
-        for (EuropeanaField field : fieldMap.values()) {
-            Counter counter = counterMap.get(field.getXmlName());
-            if (counter != null && !field.solr().multivalued() && counter.count > 1) {
-                problems.add(String.format("Single-valued field [%s] had %d values", field.getXmlName(), counter.count));
+    }
+
+    private void validateDocument(Document document, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+        Element validateElement = document.getRootElement();
+        Element recordElement = validateElement.element("record");
+        if (recordElement == null) {
+            problems.add("Problem: Missing record element");
+            return;
+        }
+        validateElement(recordElement, new Path(), problems, entries, counters);
+    }
+
+    private boolean validateElement(Element element, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+        path.push(Tag.create(element.getNamespacePrefix(), element.getName()));
+        boolean hasElements = false;
+        Iterator walk = element.elementIterator();
+        while (walk.hasNext()) {
+            Element subelement = (Element) walk.next();
+            boolean remove = validateElement(subelement, path, problems, entries, counters);
+            if (remove) {
+                walk.remove();
+            }
+            hasElements = true;
+        }
+        if (!hasElements) {
+            boolean fieldRemove = validatePath(element.getTextTrim(), path, problems, entries, counters);
+            path.pop();
+            return fieldRemove;
+        }
+        path.pop();
+        return false;
+    }
+
+    private boolean validatePath(String text, Path path, List<String> problems, Set<String> entries, Map<Path,Counter> counters) {
+        FieldDefinition field = recordDefinition.getFieldDefinition(path);
+        if (field == null) {
+            problems.add(String.format("No field definition found for path [%s]", path));
+            return true;
+        }
+        String entryString = field + "=" + text;
+        if (text.isEmpty() || entries.contains(entryString)) {
+            return true;
+        }
+        else {
+            entries.add(entryString);
+            Counter counter = counters.get(field.path);
+            if (counter == null) {
+                counters.put(field.path, counter = new Counter());
+            }
+            counter.count++;
+            validateField(text, field, problems);
+            return false;
+        }
+    }
+
+    private void validateField(String text, FieldDefinition field, List<String> problems) {
+        if (field.options != null && !field.valueMapped && !field.options.contains(text)) {
+            String optionsString = getOptionsString(field);
+            problems.add(String.format("Value for [%s] was [%s] which does not belong to [%s]", field.path, text, optionsString));
+        }
+        if (field.url) {
+            try {
+                new URL(text);
+            }
+            catch (MalformedURLException e) {
+                problems.add(String.format("URL value for [%s] was [%s] which is malformed", field.path, text));
             }
         }
+        String regex = field.regularExpression;
+        if (regex != null) {
+            if (!text.matches(regex)) {
+                problems.add(String.format("Value for [%s] was [%s] which does not match regular expression [%s]", field.path, text, regex));
+            }
+        }
+        if (field.id && checkUniqueness) {
+            checkEntryUniqueness(text, field, problems);
+        }
+    }
+
+    private void checkEntryUniqueness(String text, FieldDefinition field, List<String> problems) {
+        int hashCode = text.hashCode();
+        boolean setEverywhere = true;
+        for (int walk = 0; walk < bitSet.length && setEverywhere; walk++) {
+            if (!getBit(hashCode, walk)) {
+                setEverywhere = false;
+            }
+        }
+        if (setEverywhere) {
+            problems.add(String.format("Identifier [%s] must be unique but the value [%s] appears more than once", field.path, text));
+        }
+        else {
+            for (int walk = 0; walk < bitSet.length; walk++) {
+                setBit(hashCode, walk);
+            }
+        }
+    }
+
+    private boolean getBit(int hashCode, int bitSetIndex) {
+        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
+        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
+        return bitSet[bitSetIndex].get(bitNumber);
+    }
+
+    private void setBit(int hashCode, int bitSetIndex) {
+        int offset = PRIMES[(bitSetIndex + 1) % PRIMES.length];
+        int bitNumber = Math.abs((hashCode + offset) % bitSet[bitSetIndex].size());
+        bitSet[bitSetIndex].set(bitNumber);
+    }
+
+    private String getOptionsString(FieldDefinition field) {
+        StringBuilder enumString = new StringBuilder();
+        Iterator<String> walk = field.options.iterator();
+        while (walk.hasNext()) {
+            enumString.append(walk.next());
+            if (walk.hasNext()) {
+                enumString.append(',');
+            }
+        }
+        return enumString.toString();
     }
 
     private static class Counter {
         int count;
     }
+
 }

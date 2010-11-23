@@ -42,7 +42,7 @@ public class OpenSearchController {
     public void searchServiceDescriptionController(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setContentType("text/xml");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(OpenSearchService.parseHttpServletRequest(request, beanQueryModelFactory, launchProperties));
+        response.getWriter().write(OpenSearchService.renderDescriptionDocument(request, beanQueryModelFactory, launchProperties));
         response.getWriter().close();
     }
 }

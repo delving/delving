@@ -21,17 +21,15 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.FieldMapping;
-import eu.europeana.sip.core.RecordRoot;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
-import eu.europeana.sip.model.CodeGenerator;
+import eu.delving.core.metadata.CodeGenerator;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.SourceVariable;
+import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.FieldListModel;
 import eu.europeana.sip.model.FieldMappingListModel;
-import eu.europeana.sip.model.FileSet;
 import eu.europeana.sip.model.SipModel;
-import eu.europeana.sip.model.VariableHolder;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -205,7 +203,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedFileSet(FileSet fileSet) {
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
                 variablesList.clearSelection();
                 fieldList.clearSelection();
                 mappingList.clearSelection();
@@ -213,15 +211,7 @@ public class MappingPanel extends JPanel {
             }
 
             @Override
-            public void updatedDetails(DataSetDetails dataSetDetails) {
-            }
-
-            @Override
-            public void updatedRecordRoot(RecordRoot recordRoot) {
-            }
-
-            @Override
-            public void updatedConstantFieldModel(ConstantFieldModel constantFieldModel) {
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
             }
 
             @Override
@@ -231,9 +221,9 @@ public class MappingPanel extends JPanel {
         createMappingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
-                if (field != null) {
-                    sipModel.addFieldMapping(codeGenerator.createFieldMapping(field, createSelectedVariableList(), constantField.getText()));
+                FieldDefinition fieldDefinition = (FieldDefinition)fieldList.getSelectedValue();
+                if (fieldDefinition != null) {
+                    sipModel.addFieldMapping(codeGenerator.createFieldMapping(fieldDefinition, createSelectedVariableList(), constantField.getText()));
                 }
                 variablesList.clearSelection();
                 fieldList.clearSelection();
@@ -282,9 +272,9 @@ public class MappingPanel extends JPanel {
         variablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                VariableHolder holder = (VariableHolder) variablesList.getSelectedValue();
-                if (holder != null) {
-                    sipModel.selectNode(holder.getNode());
+                SourceVariable sourceVariable = (SourceVariable) variablesList.getSelectedValue();
+                if (sourceVariable != null) {
+                    sipModel.selectNode(sourceVariable.getNode());
                     constantField.setText("?");
                 }
             }
@@ -313,10 +303,10 @@ public class MappingPanel extends JPanel {
         });
     }
 
-    private List<VariableHolder> createSelectedVariableList() {
-        List<VariableHolder> list = new ArrayList<VariableHolder>();
+    private List<SourceVariable> createSelectedVariableList() {
+        List<SourceVariable> list = new ArrayList<SourceVariable>();
         for (Object variableHolderObject : variablesList.getSelectedValues()) {
-            list.add((VariableHolder) variableHolderObject);
+            list.add((SourceVariable) variableHolderObject);
         }
         return list;
     }
@@ -325,16 +315,16 @@ public class MappingPanel extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                EuropeanaField field = (EuropeanaField) fieldList.getSelectedValue();
-                if (field != null) {
-                    createMappingButton.setText(String.format(CREATE_FOR, field.getFieldNameString()));
+                FieldDefinition fieldDefinition = (FieldDefinition) fieldList.getSelectedValue();
+                if (fieldDefinition != null) {
+                    createMappingButton.setText(String.format(CREATE_FOR, fieldDefinition.getFieldNameString()));
                     createMappingButton.setEnabled(true);
                 }
                 else {
                     createMappingButton.setText(CREATE);
                     createMappingButton.setEnabled(false);
                 }
-                List<FieldMapping> obvious = codeGenerator.createObviousFieldMappings(sipModel.getUnmappedFields(), sipModel.getVariables());
+                List<FieldMapping> obvious = codeGenerator.createObviousMappings(sipModel.getUnmappedFields(), sipModel.getVariables(), sipModel.getConstantFieldModel().getDefinitions());
                 if (obvious.isEmpty()) {
                     obviousMappingDialog = null;
                     createObviousMappingButton.setEnabled(false);

@@ -21,16 +21,17 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.FieldEntry;
-import eu.europeana.sip.core.FieldMapping;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.RecordMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordMapping;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
+import eu.europeana.sip.core.ToolCodeResource;
+import org.apache.log4j.Logger;
 
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -39,6 +40,7 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
@@ -50,20 +52,27 @@ import java.util.concurrent.Executors;
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
-public class CompileModel implements SipModel.ParseListener, RecordMapping.Listener {
+public class CompileModel implements SipModel.ParseListener, MappingModel.Listener {
+    private Logger log = Logger.getLogger(getClass());
     public final static int COMPILE_DELAY = 500;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
-    private boolean multipleMappings;
     private RecordMapping recordMapping;
     private MetadataRecord metadataRecord;
     private Document inputDocument = new PlainDocument();
     private Document codeDocument = new PlainDocument();
     private Document outputDocument = new PlainDocument();
     private CompileTimer compileTimer = new CompileTimer();
-    private ToolCodeModel toolCodeModel;
+    private MetadataModel metadataModel;
+    private Type type;
+    private ToolCodeResource toolCodeResource;
     private RecordValidator recordValidator;
+    private String selectedPath;
     private String editedCode;
+
+    public enum Type {
+        RECORD,
+        FIELD
+    }
 
     public enum State {
         UNCOMPILED,
@@ -73,32 +82,46 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         COMMITTED
     }
 
-    public interface Listener {
-        void stateChanged(State state);
+    public CompileModel(Type type, MetadataModel metadataModel, ToolCodeResource toolCodeResource) {
+        this.type = type;
+        this.metadataModel = metadataModel;
+        this.toolCodeResource = toolCodeResource;
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel, ConstantFieldModel constantFieldModel, RecordValidator recordValidator) {
-        this.multipleMappings = true;
-        this.recordMapping = new RecordMapping(false, constantFieldModel);
-        this.recordMapping.addListener(this);
-        this.toolCodeModel = toolCodeModel;
+    @Override
+    public void mappingChanged(RecordMapping recordMapping) {
+        if (this.recordMapping != recordMapping) {
+            log.info("New record mapping, selected path eliminated");
+            this.selectedPath = null;
+        }
+        this.recordMapping = recordMapping;
+        this.editedCode = null;
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
+        notifyStateChange(State.PRISTINE);
+        compileSoon();
+    }
+
+    public void setSelectedPath(String selectedPath) {
+        this.selectedPath = selectedPath;
+        log.info("Selected path "+selectedPath);
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
+        notifyStateChange(State.PRISTINE);
+        compileSoon();
+    }
+
+    public FieldMapping getSelectedFieldMapping() {
+        if (selectedPath == null) {
+            return null;
+        }
+        return recordMapping.getFieldMapping(selectedPath);
+    }
+
+    public void setRecordValidator(RecordValidator recordValidator) {
         this.recordValidator = recordValidator;
     }
 
-    public CompileModel(ToolCodeModel toolCodeModel, ConstantFieldModel constantFieldModel) {
-        this.multipleMappings = false;
-        this.recordMapping = new RecordMapping(true, constantFieldModel);
-        this.recordMapping.addListener(this);
-        this.toolCodeModel = toolCodeModel;
-    }
-
-    public void addListener(Listener listener) {
-        listeners.add(listener);
-    }
-
     public void refreshCode() {
-        String code = recordMapping.getCodeForDisplay();
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
+        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, getDisplayCode()));
         compileSoon();
     }
 
@@ -107,25 +130,28 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
     }
 
     public void setCode(String code) {
-        if (multipleMappings) {
-            throw new RuntimeException();
-        }
-        FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
-        if (fieldMapping != null) {
-            if (!fieldMapping.codeLooksLike(code)) {
-                editedCode = code;
-                notifyStateChange(State.EDITED);
+        if (selectedPath != null) {
+            FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
+            if (fieldMapping != null) {
+                if (!fieldMapping.codeLooksLike(code)) {
+                    editedCode = code;
+                    log.info("Code looks different");
+                    notifyStateChange(State.EDITED);
+                }
+                else {
+                    editedCode = null;
+                    log.info("Code looks the same");
+                    notifyStateChange(State.PRISTINE);
+                }
             }
             else {
-                editedCode = null;
-                notifyStateChange(State.PRISTINE);
+                log.warn("Field mapping not found for "+selectedPath);
             }
+            compileSoon();
         }
-        compileSoon();
-    }
-
-    public RecordMapping getRecordMapping() {
-        return recordMapping;
+        else {
+            log.info("setCode with no selected path");
+        }
     }
 
     @Override
@@ -141,27 +167,6 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         }
     }
 
-    @Override
-    public void mappingAdded(FieldMapping fieldMapping) {
-        mappingChanged();
-    }
-
-    @Override
-    public void mappingRemoved(FieldMapping fieldMapping) {
-        mappingChanged();
-    }
-
-    @Override
-    public void mappingsRefreshed(RecordMapping recordMapping) {
-        mappingChanged();
-    }
-
-    @Override
-    public void valueMapChanged() {
-        editedCode = recordMapping.getCodeForDisplay();
-        compileSoon();
-    }
-
     public Document getInputDocument() {
         return inputDocument;
     }
@@ -174,17 +179,54 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
         return outputDocument;
     }
 
+    public String toString() {
+        return type.toString();
+    }
+
     // === privates
 
-    private void mappingChanged() {
-        String code = recordMapping.getCodeForDisplay();
-        SwingUtilities.invokeLater(new DocumentSetter(codeDocument, code));
-        notifyStateChange(State.PRISTINE);
-        if (!multipleMappings) {
-            updateInputDocument(metadataRecord);
+    private String getDisplayCode() {
+        switch (type) {
+            case RECORD:
+                return recordMapping.toDisplayCode(metadataModel.getRecordDefinition());
+            case FIELD:
+                if (selectedPath == null) {
+                    return "// no code";
+                }
+                else {
+                    return recordMapping.toDisplayCode(metadataModel.getRecordDefinition(), selectedPath);
+                }
+            default:
+                throw new RuntimeException();
         }
-        editedCode = null;
-        compileSoon();
+    }
+
+    private String getCompileCode() {
+        switch (type) {
+            case RECORD:
+                return recordMapping.toCompileCode(metadataModel.getRecordDefinition());
+            case FIELD:
+                if (selectedPath == null) {
+                    return "print 'nothing selected'";
+                }
+                else {
+                    return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath);
+                }
+            default:
+                throw new RuntimeException();
+        }
+    }
+
+    private String getCompileCode(String editedCode) {
+        if (type == Type.RECORD) {
+            throw new RuntimeException();
+        }
+        if (selectedPath == null) {
+            return "print 'nothing selected'";
+        }
+        else {
+            return recordMapping.toCompileCode(metadataModel.getRecordDefinition(), selectedPath, editedCode);
+        }
     }
 
     private void updateInputDocument(MetadataRecord metadataRecord) {
@@ -203,15 +245,27 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             if (metadataRecord == null) {
                 return;
             }
-            String mappingCode = editedCode == null ? recordMapping.getCodeForCompile() : RecordMapping.getCodeForCompile(editedCode);
-            MappingRunner mappingRunner = new MappingRunner(toolCodeModel.getCode() + recordMapping.getValueMapCode() + mappingCode, recordMapping.getConstantFieldModel());
+            String mappingCode;
+            if (editedCode == null) {
+                mappingCode = getCompileCode();
+                log.info("Edited code null, so get existing code");
+            }
+            else {
+                mappingCode = getCompileCode(editedCode);
+                log.info("Edited code used");
+            }
+            MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + mappingCode);
             try {
                 String output = mappingRunner.runMapping(metadataRecord);
-                if (multipleMappings) {
-                    List<FieldEntry> fieldEntries = FieldEntry.createList(output);
-                    recordValidator.validate(metadataRecord, fieldEntries);
-                    String validated = FieldEntry.toString(fieldEntries, true);
-                    compilationComplete(validated);
+                if (recordValidator != null) {
+                    List<String> problems = new ArrayList<String>();
+                    String validated = recordValidator.validateRecord(output, problems);
+                    if (problems.isEmpty()) {
+                        compilationComplete(validated);
+                    }
+                    else {
+                        throw new RecordValidationException(metadataRecord, problems);
+                    }
                 }
                 else {
                     compilationComplete(output);
@@ -219,7 +273,7 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
                         notifyStateChange(State.PRISTINE);
                     }
                     else {
-                        FieldMapping fieldMapping = recordMapping.getOnlyFieldMapping();
+                        FieldMapping fieldMapping = recordMapping.getFieldMapping(selectedPath);
                         if (fieldMapping != null) {
                             fieldMapping.setCode(editedCode);
                             notifyStateChange(State.COMMITTED);
@@ -244,6 +298,10 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
 
         private void compilationComplete(final String result) {
             SwingUtilities.invokeLater(new DocumentSetter(outputDocument, result));
+        }
+
+        public String toString() {
+            return type.toString();
         }
     }
 
@@ -295,4 +353,14 @@ public class CompileModel implements SipModel.ParseListener, RecordMapping.Liste
             throw new RuntimeException("Expected Swing thread");
         }
     }
+
+    public interface Listener {
+        void stateChanged(State state);
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 }

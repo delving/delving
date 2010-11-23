@@ -1,4 +1,3 @@
-<#import "spring_form_macros.ftl" as spring />
 <#assign queryProblem = queryProblem>
 <#assign exception = exception>
 <#assign stackTrace = stackTrace>
@@ -13,13 +12,21 @@
 <#if RequestParameters.query??>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
-<#include "inc_header.ftl">
+<#include "includeMarcos.ftl">
 
-<@userBar/>
+<@addHeader "Norvegiana", "",[],[]/>
+
+
+    <div class="grid_12" id="branding">
+        <h1 class="gigantic">
+            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
+        </h1>
+    </div>
+
+
+<section role="main" class="grid_4 prefix_4">
 
 <h1>${portalDisplayName}</h1>
-
-<@simpleSearch/>
 
 <#switch queryProblem>
     <#case 'MATCH_ALL_DOCS'>
@@ -76,5 +83,7 @@
         </#if>    
 </#switch>
 
-<#include "inc_footer.ftl"/>
+</section>
+
+<@addFooter/>
 

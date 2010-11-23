@@ -64,11 +64,11 @@ public class SiteMapController {
                 }
             }
 
-            mavPage = ControllerUtil.createModelAndViewPage("sitemap-index");
+            mavPage = ControllerUtil.createModelAndViewPage("xml/sitemap-index");
             mavPage.addObject("entries", entries);
         }
         else {
-            mavPage = ControllerUtil.createModelAndViewPage("sitemap");
+            mavPage = ControllerUtil.createModelAndViewPage("xml/sitemap");
             mavPage.addObject("fullViewUrl", fullViewUrl);
 
             // generate sitemap for a collection

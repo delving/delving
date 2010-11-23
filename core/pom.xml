@@ -25,7 +25,7 @@
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
     <name>Europeana Core</name>
-    <version>0.1.0</version>
+    <version>0.1.5</version>
     <description>Core classes for Europeana</description>
     <inceptionYear>2008</inceptionYear>
 
@@ -38,61 +38,36 @@
     <developers>
         <developer>
             <name>Sjoerd Siebinga</name>
-            <email>sjoerd.siebinga@gmail.com</email>
+            <email>sjoerd@delving.eu</email>
             <roles>
-                <role>architect</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
             <name>Gerald de Jong</name>
-            <email>geralddejong@gmail.com</email>
+            <email>gerald@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
             </roles>
         </developer>
         <developer>
-            <name>Vitali Kiruta</name>
-            <email>kiruta@gmail.com</email>
+            <name>Eric van der Meulen</name>
+            <email>eric@delving.eu</email>
             <roles>
-                <role>consultant</role>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
+
     <organization>
         <name>Europeana Foundation</name>
         <url>http://www.europeana.eu</url>
     </organization>
+
     <build>
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
-        <extensions>
-            <extension>
-                <groupId>postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>8.3-603.jdbc3</version>
-            </extension>
-        </extensions>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>hibernate3-maven-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <components>
-                        <component>
-                            <name>hbm2ddl</name>
-                            <implementation>annotationconfiguration</implementation>
-                        </component>
-                    </components>
-                    <componentProperties>
-                        <configurationfile>/src/main/resources/db/hibernate.cfg.xml</configurationfile>
-                        <export>false</export>
-                        <outputfilename>create-db.ddl</outputfilename>
-                        <format>true</format>
-                        <drop>false</drop>
-                    </componentProperties>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -211,16 +186,12 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-asl</artifactId>
+            <artifactId>woodstox-core-asl</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-core</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.lucene</groupId>-->
+            <!--<artifactId>lucene-core</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
@@ -248,14 +219,6 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dspace.oclc</groupId>
-            <artifactId>oclc-srw</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.dspace</groupId>
-            <artifactId>cql-java</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>

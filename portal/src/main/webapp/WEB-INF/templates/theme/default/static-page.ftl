@@ -20,7 +20,7 @@
 
                 <div id="identity" class="grid_3">
                     <h1>Delving</h1>
-                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+                    <a href="/${portalName}/index.html" title="ABM"><img src="/${portalName}/${portalTheme}/images/abm-logo.jpg" alt="ABM"/></a>
                 </div>
 
                 <div class="grid_9">
@@ -38,7 +38,7 @@
             <div id="main" class="static-page">
 
             <div class="grid_6">
-                <h2>Bestaande paginas</h2>
+                <h2><@spring.message 'dms.existing.pages' /></h2>
                 <table summary="List of existing pages" class="user-options">
                     <#list pagePathList as pagePath>
                         <tr>
@@ -91,7 +91,7 @@
                         $.ajax({
                             url: targetURL,
                             type: "POST",
-                            data: "content=",
+                            data: "content= ",
                             success: function(data) {
                                 window.location.reload();
                             },
@@ -118,10 +118,12 @@
 
     <#elseif embedded>
 
-        ${page.content}
+        <#assign locale = locale/>
+        ${page.getContent(locale)}
 
     <#else>
 
+        <#assign locale = locale/>
         <#assign thisPage = "static-page.dml"/>
         <#assign pageId = page.path/>
         <#include "inc_header.ftl"/>
@@ -129,7 +131,7 @@
 
                 <div id="identity" class="grid_3">
                     <h1>Delving</h1>
-                    <a href="/${portalName}/index.html" title="Delving"><img src="/${portalName}/${portalTheme}/images/logo-small.png" alt="Delving Home"/></a>
+                    <a href="/${portalName}/index.html" title="ABM"><img src="/${portalName}/${portalTheme}/images/abm-logo.jpg" alt="ABM"/></a>
                 </div>
 
                 <div class="grid_9">
@@ -145,7 +147,7 @@
             </div>
         <div class="grid_12">
             <div id="content" class="content-preview">
-            ${page.content}
+            ${page.getContent(locale)}
             </div>
             <#if edit??>
                 <#if edit>
@@ -160,7 +162,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.content}</textarea>
+                                        <textarea name="content" id="editor" style="width:100%;height:350px;"${page.getContent(locale)}</textarea>
                                         <input type="submit" name="submit" value="<@spring.message 'dms.save' />"/> <a href="${page.path}?edit=false" class="button"><@spring.message 'dms.cancel' /></a>
                                     </td>
                                 </tr>

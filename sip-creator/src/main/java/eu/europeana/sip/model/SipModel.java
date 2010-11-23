@@ -21,53 +21,62 @@
 
 package eu.europeana.sip.model;
 
-import eu.europeana.sip.core.ConstantFieldModel;
-import eu.europeana.sip.core.DataSetDetails;
-import eu.europeana.sip.core.FieldMapping;
+import eu.delving.core.metadata.AnalysisTree;
+import eu.delving.core.metadata.FieldDefinition;
+import eu.delving.core.metadata.FieldMapping;
+import eu.delving.core.metadata.MappingModel;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.Path;
+import eu.delving.core.metadata.RecordMapping;
+import eu.delving.core.metadata.SourceDetails;
+import eu.delving.core.metadata.SourceVariable;
+import eu.delving.core.metadata.Statistics;
+import eu.delving.sip.AppConfig;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
-import eu.europeana.sip.core.RecordMapping;
-import eu.europeana.sip.core.RecordRoot;
 import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.core.RecordValidator;
-import eu.europeana.sip.core.ToolCodeModel;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.EuropeanaField;
+import eu.europeana.sip.core.ToolCodeResource;
 import eu.europeana.sip.xml.AnalysisParser;
 import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
+import org.apache.log4j.Logger;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.ListModel;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import javax.xml.namespace.QName;
-import java.io.BufferedReader;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * This model is behind the whole sip creator, as a facade for all the models related to a FileSet
+ * This model is behind the whole sip creator, as a facade for all the models related to a data set
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
 
 public class SipModel {
-//    private Logger log = Logger.getLogger(getClass());
+    private Logger log = Logger.getLogger(getClass());
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private AnnotationProcessor annotationProcessor;
-    private FileSet fileSet;
+    private FileStore fileStore;
+    private MetadataModel metadataModel;
+    private AppConfig appConfig;
+    private FileStore.DataSetStore dataSetStore;
+    private SourceDetails sourceDetails;
     private UserNotifier userNotifier;
     private List<Statistics> statisticsList;
     private AnalysisParser analysisParser;
@@ -79,30 +88,24 @@ public class SipModel {
     private CompileModel fieldCompileModel;
     private MetadataParser metadataParser;
     private MetadataRecord metadataRecord;
+    private ConstantFieldModel constantFieldModel = new ConstantFieldModel();
     private FieldMappingListModel fieldMappingListModel;
-    private Map<String, EuropeanaField> europeanaFieldMap = new TreeMap<String, EuropeanaField>();
+    private MappingModel mappingModel = new MappingModel();
+    private MappingSaveTimer mappingSaveTimer = new MappingSaveTimer();
     private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
-    private DefaultBoundedRangeModel zipProgressModel = new DefaultBoundedRangeModel();
-    private DefaultBoundedRangeModel uploadProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
-    private DataSetDetails dataSetDetails;
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
     private List<ParseListener> parseListeners = new CopyOnWriteArrayList<ParseListener>();
-    private Configuration configuration;
     private String serverUrl;
 
     public interface UpdateListener {
 
         void templateApplied();
 
-        void updatedFileSet(FileSet fileSet);
+        void updatedDataSetStore(FileStore.DataSetStore dataSetStore);
 
-        void updatedDetails(DataSetDetails dataSetDetails);
-
-        void updatedRecordRoot(RecordRoot recordRoot);
-
-        void updatedConstantFieldModel(ConstantFieldModel constantFieldModel);
+        void updatedRecordRoot(Path recordRoot, int recordCount);
 
         void normalizationMessage(boolean complete, String message);
     }
@@ -117,55 +120,137 @@ public class SipModel {
         void updatedRecord(MetadataRecord metadataRecord);
     }
 
-    public SipModel(AnnotationProcessor annotationProcessor, UserNotifier userNotifier, String serverUrl) {
-        this.annotationProcessor = annotationProcessor;
+    public SipModel(FileStore fileStore, MetadataModel metadataModel, UserNotifier userNotifier, String serverUrl) throws FileStoreException {
+        this.fileStore = fileStore;
+        this.appConfig = fileStore.getAppConfig();
+        this.metadataModel = metadataModel;
         this.userNotifier = userNotifier;
         this.serverUrl = serverUrl;
-        analysisTree = AnalysisTree.create("No Document Selected");
+        analysisTree = AnalysisTree.create("Select a Data Set from the File menu");
         analysisTreeModel = new DefaultTreeModel(analysisTree.getRoot());
-        fieldListModel = new FieldListModel(annotationProcessor);
-        ToolCodeModel toolCodeModel = new ToolCodeModel();
-        ConstantFieldModel constantFieldModel = new ConstantFieldModel(annotationProcessor, new ConstantFieldModel.Listener() {
-            @Override
-            public void updatedConstant() {
-                recordCompileModel.compileSoon();
-            }
-        });
-        recordCompileModel = new CompileModel(toolCodeModel, constantFieldModel, new RecordValidator(annotationProcessor, false));
-        fieldCompileModel = new CompileModel(toolCodeModel, constantFieldModel);
+        fieldListModel = new FieldListModel(metadataModel);
+        ToolCodeResource toolCodeResource = new ToolCodeResource();
+        recordCompileModel = new CompileModel(CompileModel.Type.RECORD, metadataModel, toolCodeResource);
+        recordCompileModel.setRecordValidator(new RecordValidator(metadataModel, false));
+        fieldCompileModel = new CompileModel(CompileModel.Type.FIELD, metadataModel, toolCodeResource);
         parseListeners.add(recordCompileModel);
         parseListeners.add(fieldCompileModel);
-        fieldMappingListModel = new FieldMappingListModel(recordCompileModel.getRecordMapping());
-        for (EuropeanaField field : annotationProcessor.getMappableFields()) {
-            europeanaFieldMap.put(field.getFieldNameString(), field);
-        }
-        fieldCompileModel.addListener(new CompileModel.Listener() {
-
-            @Override
-            public void stateChanged(CompileModel.State state) {
-                if (state == CompileModel.State.COMMITTED) {
-                    String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-                    executor.execute(new MappingSetter(code));
-                }
-            }
-        });
-        this.configuration = new Configuration();
+        fieldMappingListModel = new FieldMappingListModel();
+        constantFieldModel.setRecordDefinition(metadataModel.getRecordDefinition());
+        constantFieldModel.addListener(new ConstantFieldModelAdapter());
+        mappingModel.addListener(fieldMappingListModel);
+        mappingModel.addListener(recordCompileModel);
+        mappingModel.addListener(fieldCompileModel);
+        mappingModel.addListener(mappingSaveTimer);
     }
 
     public void addUpdateListener(UpdateListener updateListener) {
         updateListeners.add(updateListener);
     }
 
+    public FileStore getFileStore() {
+        return fileStore;
+    }
+
+    public void createDataSetStore(final String spec, final File file, final ProgressMonitor progressMonitor) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final FileStore.DataSetStore store = fileStore.createDataSetStore(spec, file, new FileStore.CreateProgress() {
+
+                        @Override
+                        public void setTotal(final int total) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressMonitor.setMaximum(total);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public boolean setProgress(final int progress) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressMonitor.setProgress(progress);
+                                }
+                            });
+                            return !progressMonitor.isCanceled();
+                        }
+
+                        @Override
+                        public void finished() {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressMonitor.close();
+                                }
+                            });
+                        }
+                    });
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            setDataSetStore(store);
+                        }
+                    });
+                }
+                catch (FileStoreException e) {
+                    userNotifier.tellUser("Couldn't create dataset from " + file.getAbsolutePath(), e);
+                }
+            }
+        });
+    }
+
+    public ConstantFieldModel getConstantFieldModel() {
+        return constantFieldModel;
+    }
+
+    public String getServerAccessKey() {
+        return appConfig.getAccessKey();
+    }
+
     public void setServerAccessKey(String key) {
-        configuration.setServerAccessKey(key);
+        appConfig.setAccessKey(key);
+        executor.execute(new AppConfigSetter());
     }
 
-    public AnnotationProcessor getAnnotationProcessor() {
-        return annotationProcessor;
+    public List<String> getRecentDirectories() {
+        return appConfig.getRecentDirectories();
     }
 
-    public FileSet getFileSet() {
-        return fileSet;
+    public void addRecentDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            directory = directory.getParentFile();
+        }
+        List<String> recent = appConfig.getRecentDirectories();
+        int existing = recent.indexOf(directory.getAbsolutePath());
+        if (existing >= 0) {
+            recent.remove(existing);
+        }
+        recent.add(0, directory.getAbsolutePath());
+        if (recent.size() > 20) {
+            recent.remove(appConfig.getRecentDirectories().size() - 1);
+        }
+        executor.execute(new AppConfigSetter());
+    }
+
+    public FileStore.DataSetStore getDataSetStore() {
+        return dataSetStore;
+    }
+
+    public MetadataModel getMetadataModel() {
+        return metadataModel;
+    }
+
+    public MappingModel getMappingModel() {
+        return mappingModel;
+    }
+
+    public RecordMapping getRecordMapping() {
+        return getMappingModel().getRecordMapping();
     }
 
     public void tellUser(String message) {
@@ -176,101 +261,106 @@ public class SipModel {
         userNotifier.tellUser(message, e);
     }
 
-    public String getServerAccessKey() {
-        return configuration.getServerAccessKey();
+    public void setDataSetStore(String spec) {
+        try {
+            setDataSetStore(getFileStore().getDataSetStore(spec));
+        }
+        catch (FileStoreException e) {
+            tellUser(String.format("Unable to select Data set %s", spec), e);
+        }
     }
 
-    public FileSet.Recent getRecentFileSets() {
-        return configuration.getRecentFileSets();
-    }
-
-    public void setFileSet(final FileSet newFileSet) {
+    private void setDataSetStore(final FileStore.DataSetStore dataSetStore) {
         checkSwingThread();
-        this.fileSet = newFileSet;
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<Statistics> statistics = newFileSet.getStatistics();
-                final String mapping = newFileSet.getMapping();
-                final FileSet.Report report = newFileSet.getReport();
-                final DataSetDetails dataSetDetails = newFileSet.getDataSetDetails();
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setStatisticsList(statistics);
-                        variableListModel.clear();
-                        RecordMapping recordMapping = recordCompileModel.getRecordMapping();
-                        recordMapping.setCode(mapping, europeanaFieldMap);
-                        RecordRoot recordRoot = recordMapping.getRecordRoot();
-                        setRecordRootInternal(recordRoot);
-                        setDataSetDetails(dataSetDetails);
-                        setGlobalFieldModelInternal(recordMapping.getConstantFieldModel());
-                        fieldCompileModel.getRecordMapping().setConstantFieldModel(recordMapping.getConstantFieldModel());
-                        createMetadataParser(1);
-                        if (recordRoot != null) {
-                            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
-                            if (report != null) {
-                                normalizeProgressModel.setValue(report.getRecordsNormalized() + report.getRecordsDiscarded());
-                                normalizeMessage(report);
+        this.dataSetStore = dataSetStore;
+        if (dataSetStore != null) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final List<Statistics> statistics = dataSetStore.getStatistics();
+                        final RecordMapping recordMapping = dataSetStore.getRecordMapping(metadataModel.getRecordDefinition());
+                        final SourceDetails sourceDetails = dataSetStore.getSourceDetails();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                SipModel.this.sourceDetails = sourceDetails;
+                                constantFieldModel.clear();
+                                constantFieldModel.setSourceDetails(sourceDetails);
+                                constantFieldModel.setRecordMapping(recordMapping);
+                                setStatisticsList(statistics);
+                                variableListModel.clear();
+                                mappingModel.setRecordMapping(recordMapping);
+                                if (getRecordRoot() != null) {
+                                    setRecordRootInternal(new Path(sourceDetails.get(SourceDetails.RECORD_PATH)), Integer.parseInt(sourceDetails.get(SourceDetails.RECORD_COUNT)));
+                                }
+                                AnalysisTree.setUniqueElement(analysisTreeModel, getUniqueElement());
+                                createMetadataParser(1);
+                                if (recordMapping != null) {
+                                    if (recordMapping.getNormalizeTime() == 0) {
+                                        normalizeProgressModel.setValue(0);
+                                        normalizeMessage(false, "Normalization not yet performed.");
+                                    }
+                                    else {
+                                        normalizeProgressModel.setValue(recordMapping.getRecordsNormalized() + recordMapping.getRecordsDiscarded());
+                                        normalizeMessage(recordMapping);
+                                    }
+                                }
+                                else {
+                                    normalizeProgressModel.setMaximum(100);
+                                    normalizeProgressModel.setValue(0);
+                                }
                             }
-                            else {
-                                normalizeProgressModel.setValue(0);
-                                normalizeMessage("Normalization not yet performed.");
-                            }
-                        }
-                        else {
-                            normalizeProgressModel.setMaximum(100);
-                            normalizeProgressModel.setValue(0);
-                        }
-                        uploadProgressModel.setMaximum(100);
-                        uploadProgressModel.setValue(0);
-                        for (UpdateListener updateListener : updateListeners) {
-                            updateListener.updatedFileSet(newFileSet);
-                            updateListener.updatedDetails(dataSetDetails);
-                        }
+                        });
                     }
-                });
-            }
-        });
-    }
-
-    public String getMappingTemplate() {
-        return recordCompileModel.getRecordMapping().getCodeForTemplate();
-    }
-
-    public void loadMappingTemplate(File file) {
-        if (!recordCompileModel.getRecordMapping().isEmpty()) {
-            userNotifier.tellUser("Record must be empty to use a template.");
+                    catch (FileStoreException e) {
+                        tellUser("Unable to select Data Set " + dataSetStore, e);
+                    }
+                }
+            });
         }
-        else {
-            try {
-                BufferedReader in = new BufferedReader(new FileReader(file));
-                StringBuilder out = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    out.append(line).append('\n');
-                }
-                in.close();
-                String templateCode = out.toString();
-                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
-                recordMapping.setCode(templateCode, europeanaFieldMap);
-                setRecordRootInternal(recordMapping.getRecordRoot());
-                recordMapping.getConstantFieldModel().clear();
-                createMetadataParser(1);
-                for (UpdateListener updateListener : updateListeners) {
-                    updateListener.templateApplied();
-                }
-            }
-            catch (IOException e) {
-                userNotifier.tellUser("Unable to load template", e);
-            }
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.updatedDataSetStore(this.dataSetStore);
         }
     }
+
+//    public String getMappingTemplate() {
+//        return recordCompileModel.getRecordMapping().getCodeForTemplate();
+//    }
+//
+//    public void loadMappingTemplate(File file) {
+//        if (recordCompileModel.getRecordMapping().fieldMappings == null) {
+//            userNotifier.tellUser("Record must be empty to use a template.");
+//        }
+//        else {
+//            try {
+//                BufferedReader in = new BufferedReader(new FileReader(file));
+//                StringBuilder out = new StringBuilder();
+//                String line;
+//                while ((line = in.readLine()) != null) {
+//                    out.append(line).append('\n');
+//                }
+//                in.close();
+//                String templateCode = out.toString();
+//                RecordMapping recordMapping = recordCompileModel.getRecordMapping();
+//                recordMapping.setCode(templateCode, fieldMap);
+//                setRecordRootInternal(recordMapping.recordRoot);
+//                recordMapping.getConstantFieldModel().clear();
+//                createMetadataParser(1);
+//                for (UpdateListener updateListener : updateListeners) {
+//                    updateListener.templateApplied();
+//                }
+//            }
+//            catch (IOException e) {
+//                userNotifier.tellUser("Unable to load template", e);
+//            }
+//        }
+//    }
 
     public void analyze(final AnalysisListener listener) {
         checkSwingThread();
         abortAnalyze();
-        this.analysisParser = new AnalysisParser(fileSet, new AnalysisParser.Listener() {
+        this.analysisParser = new AnalysisParser(dataSetStore, new AnalysisParser.Listener() {
 
             @Override
             public void success(final List<Statistics> list) {
@@ -305,53 +395,43 @@ public class SipModel {
         }
     }
 
-    public DataSetDetails getDataSetDetails() {
-        return dataSetDetails;
-    }
-
     public String getServerUrl() {
         return serverUrl;
     }
 
-    public void setDataSetDetails(DataSetDetails dataSetDetails) {
-        this.dataSetDetails = dataSetDetails;
-        executor.execute(new DetailsSetter(dataSetDetails));
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(dataSetDetails);
-        }
+    public SourceDetails getSourceDetails() {
+        return sourceDetails;
     }
 
     public BoundedRangeModel getNormalizeProgress() {
         return normalizeProgressModel;
     }
 
-    public DefaultBoundedRangeModel getUploadProgress() {
-        return uploadProgressModel;
-    }
-
-    public DefaultBoundedRangeModel getZipProgress() {
-        return zipProgressModel;
-    }
-
     public void normalize(boolean discardInvalid, boolean storeNormalizedFile) {
         checkSwingThread();
         abortNormalize();
-        normalizeMessage("Normalizing and validating...");
+        File normalizedFile = null;
+        if (storeNormalizedFile) {
+            // todo: file chooser
+        }
+        normalizeMessage(false, "Normalizing and validating...");
         normalizer = new Normalizer(
                 this,
+                getRecordRoot(),
                 discardInvalid,
-                storeNormalizedFile,
+                normalizedFile,
                 new MetadataParser.Listener() {
                     @Override
                     public void recordsParsed(final int count, final boolean lastRecord) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (lastRecord || count % 100 == 0) {
+                        if (lastRecord || count % 100 == 0) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
                                     normalizeProgressModel.setValue(count);
                                 }
-                            }
-                        });
+                            });
+                            Thread.yield();
+                        }
                     }
                 },
                 new Normalizer.Listener() {
@@ -381,10 +461,10 @@ public class SipModel {
                             @Override
                             public void run() {
                                 if (success) {
-                                    normalizeMessage(fileSet.getReport());
+                                    normalizeMessage(getRecordMapping());
                                 }
                                 else {
-                                    normalizeMessage("Normalization aborted");
+                                    normalizeMessage(false, "Normalization aborted");
                                 }
                             }
                         });
@@ -404,10 +484,9 @@ public class SipModel {
         }
     }
 
-    public void createUploadZipFile() {
+    public void uploadFile(File file, BoundedRangeModel progressModel) {
         checkSwingThread();
-        String zipFileName = getDataSetDetails().getSpec();
-        executor.execute(new ZipUploader(this, zipFileName));
+        executor.execute(new FileUploader(file, serverUrl, getServerAccessKey(), userNotifier, progressModel));
     }
 
     public TreeModel getAnalysisTreeModel() {
@@ -422,37 +501,35 @@ public class SipModel {
         }
     }
 
-    public void setUniqueElement(QName uniqueElement) {
-        dataSetDetails.setUniqueElement(uniqueElement.toString());
-        executor.execute(new DetailsSetter(dataSetDetails));
+    public Path getUniqueElement() {
+        if (sourceDetails == null || sourceDetails.get(SourceDetails.UNIQUE_ELEMENT_PATH).isEmpty()) {
+            return null;
+        }
+        return new Path(getSourceDetails().get(SourceDetails.UNIQUE_ELEMENT_PATH));
+    }
+
+    public void setUniqueElement(Path uniqueElement) {
+        sourceDetails.set(SourceDetails.UNIQUE_ELEMENT_PATH, uniqueElement.toString());
+        constantFieldModel.setSourceDetails(sourceDetails);
+        executor.execute(new SourceDetailsSetter(sourceDetails));
         AnalysisTree.setUniqueElement(analysisTreeModel, uniqueElement);
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(dataSetDetails);
-        }
     }
 
-    public void setRecordRoot(RecordRoot recordRoot) {
+    public Path getRecordRoot() {
+        if (sourceDetails == null || sourceDetails.get(SourceDetails.RECORD_PATH).isEmpty()) {
+            return null;
+        }
+        return new Path(getSourceDetails().get(SourceDetails.RECORD_PATH));
+    }
+
+    public void setRecordRoot(Path recordRoot, int recordCount) {
         checkSwingThread();
-        setRecordRootInternal(recordRoot);
+        setRecordRootInternal(recordRoot, recordCount);
         createMetadataParser(1);
-        dataSetDetails.setRecordRoot(recordRoot.getRootQName().toString());
-        executor.execute(new DetailsSetter(dataSetDetails));
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedDetails(dataSetDetails);
-        }
-        recordCompileModel.getRecordMapping().setRecordRoot(recordRoot);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
-    }
-
-    public void setGlobalField(String fieldName, String value) {
-        recordCompileModel.getRecordMapping().getConstantFieldModel().set(fieldName, value);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
-    }
-
-    public ConstantFieldModel getGlobalFieldModel() {
-        return recordCompileModel.getRecordMapping().getConstantFieldModel();
+        sourceDetails.set(SourceDetails.RECORD_PATH, recordRoot.toString());
+        sourceDetails.set(SourceDetails.RECORD_COUNT, String.valueOf(recordCount));
+        constantFieldModel.setSourceDetails(sourceDetails);
+        executor.execute(new SourceDetailsSetter(sourceDetails));
     }
 
     public TableModel getStatisticsTableModel() {
@@ -473,14 +550,14 @@ public class SipModel {
     }
 
     public ListModel getUnmappedFieldListModel() {
-        return fieldListModel.getUnmapped(recordCompileModel.getRecordMapping());
+        return fieldListModel.getUnmapped(getMappingModel());
     }
 
-    public List<EuropeanaField> getUnmappedFields() {
-        List<EuropeanaField> fields = new ArrayList<EuropeanaField>();
+    public List<FieldDefinition> getUnmappedFields() {
+        List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
         ListModel listModel = getUnmappedFieldListModel();
         for (int walkField = 0; walkField < listModel.getSize(); walkField++) {
-            fields.add((EuropeanaField) listModel.getElementAt(walkField));
+            fields.add((FieldDefinition) listModel.getElementAt(walkField));
         }
         return fields;
     }
@@ -489,30 +566,26 @@ public class SipModel {
         return variableListModel;
     }
 
-    public List<VariableHolder> getVariables() {
-        List<VariableHolder> list = new ArrayList<VariableHolder>();
+    public List<SourceVariable> getVariables() {
+        List<SourceVariable> list = new ArrayList<SourceVariable>();
         for (int walkVar = 0; walkVar < variableListModel.getSize(); walkVar++) {
-            list.add((VariableHolder) variableListModel.getElementAt(walkVar));
+            list.add((SourceVariable) variableListModel.getElementAt(walkVar));
         }
         return list;
     }
 
     public ListModel getVariablesListWithCountsModel() {
-        return variableListModel.getWithCounts(recordCompileModel.getRecordMapping());
+        return variableListModel.getWithCounts(getMappingModel());
     }
 
     public void addFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordCompileModel.getRecordMapping().add(fieldMapping);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
+        getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), fieldMapping);
     }
 
     public void removeFieldMapping(FieldMapping fieldMapping) {
         checkSwingThread();
-        recordCompileModel.getRecordMapping().remove(fieldMapping);
-        String code = recordCompileModel.getRecordMapping().getCodeForPersistence();
-        executor.execute(new MappingSetter(code));
+        getMappingModel().setMapping(fieldMapping.getFieldDefinition().path.toString(), null);
     }
 
     public ListModel getFieldMappingListModel() {
@@ -529,60 +602,49 @@ public class SipModel {
         executor.execute(new RecordFetcher(1));
     }
 
-    public CompileModel getRecordMappingModel() {
+    public CompileModel getRecordCompileModel() {
         return recordCompileModel;
     }
 
-    public CompileModel getFieldMappingModel() {
+    public CompileModel getFieldCompileModel() {
         return fieldCompileModel;
     }
 
     // === privates
 
-    private void normalizeMessage(String message) {
+    private void normalizeMessage(boolean complete, String message) {
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.normalizationMessage(false, message);
+            updateListener.normalizationMessage(complete, message);
         }
     }
 
-    private void normalizeMessage(FileSet.Report report) {
+    private void normalizeMessage(RecordMapping recordMapping) {
+        Date date = new Date(recordMapping.getNormalizeTime());
         String message = String.format(
                 "Completed at %tT on %tY-%tm-%td with %d normalized, and %d discarded",
-                report.getNormalizationDate(),
-                report.getNormalizationDate(),
-                report.getNormalizationDate(),
-                report.getNormalizationDate(),
-                report.getRecordsNormalized(),
-                report.getRecordsDiscarded()
+                date, date, date, date,
+                recordMapping.getRecordsNormalized(),
+                recordMapping.getRecordsDiscarded()
         );
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.normalizationMessage(true, message);
-        }
+        normalizeMessage(true, message);
     }
 
-    private void setGlobalFieldModelInternal(ConstantFieldModel constantFieldModel) {
-        checkSwingThread();
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedConstantFieldModel(constantFieldModel);
-        }
-    }
-
-    private void setRecordRootInternal(RecordRoot recordRoot) {
+    private void setRecordRootInternal(Path recordRoot, int recordCount) {
         checkSwingThread();
         List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
         normalizeProgressModel.setValue(0);
         if (recordRoot != null) {
-            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
+            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot);
             analysisTree.getVariables(variables);
             variableListModel.setVariableList(variables);
-            normalizeProgressModel.setMaximum(recordRoot.getRecordCount());
+            normalizeProgressModel.setMaximum(recordCount);
         }
         else {
             variableListModel.clear();
             normalizeProgressModel.setMaximum(100);
         }
         for (UpdateListener updateListener : updateListeners) {
-            updateListener.updatedRecordRoot(recordRoot);
+            updateListener.updatedRecordRoot(recordRoot, recordCount);
         }
     }
 
@@ -590,15 +652,14 @@ public class SipModel {
         checkSwingThread();
         this.statisticsList = statisticsList;
         if (statisticsList != null) {
-            analysisTree = AnalysisTree.create(statisticsList, fileSet.getName());
+            analysisTree = AnalysisTree.create(statisticsList);
         }
         else {
             analysisTree = AnalysisTree.create("Analysis not yet performed");
         }
         analysisTreeModel.setRoot(analysisTree.getRoot());
-        RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
-        if (recordRoot != null) {
-            AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot.getRootQName());
+        if (getRecordRoot() != null) {
+            AnalysisTree.setRecordRoot(analysisTreeModel, getRecordRoot());
         }
         statisticsTableModel.setCounterList(null);
     }
@@ -612,7 +673,7 @@ public class SipModel {
                 parseListener.updatedRecord(null);
             }
         }
-        RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
+        Path recordRoot = getRecordRoot();
         if (recordRoot != null) {
             executor.execute(new RecordFetcher(recordNumber));
         }
@@ -627,13 +688,13 @@ public class SipModel {
 
         @Override
         public void run() {
-            RecordRoot recordRoot = recordCompileModel.getRecordMapping().getRecordRoot();
+            Path recordRoot = getRecordRoot();
             if (recordRoot == null) {
                 return;
             }
             try {
                 if (metadataParser == null) {
-                    metadataParser = new MetadataParser(fileSet.getInputStream(), recordRoot, null);
+                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, null);
                 }
                 while (recordNumber-- > 0) {
                     metadataRecord = metadataParser.nextRecord();
@@ -649,33 +710,87 @@ public class SipModel {
             }
             catch (Exception e) {
                 userNotifier.tellUser("Unable to fetch the next record", e);
+                metadataParser = null;
             }
         }
     }
 
-    private class MappingSetter implements Runnable {
-        private String mapping;
+    private class MappingSaveTimer implements MappingModel.Listener, ActionListener, Runnable {
+        private Timer timer = new Timer(200, this);
 
-        private MappingSetter(String mapping) {
-            this.mapping = mapping;
+        private MappingSaveTimer() {
+            timer.setRepeats(false);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            executor.execute(this);
         }
 
         @Override
         public void run() {
-            fileSet.setMapping(mapping);
+            try {
+                dataSetStore.setRecordMapping(getRecordMapping());
+                log.info("Mapping saved!");
+            }
+            catch (FileStoreException e) {
+                userNotifier.tellUser("Unable to save mapping", e);
+            }
+        }
+
+        @Override
+        public void mappingChanged(RecordMapping recordMapping) {
+            log.info("Mapping changed");
+            timer.restart();
         }
     }
 
-    private class DetailsSetter implements Runnable {
-        private DataSetDetails details;
+    private class AppConfigSetter implements Runnable {
+        @Override
+        public void run() {
+            try {
+                fileStore.setAppConfig(appConfig);
+            }
+            catch (FileStoreException e) {
+                userNotifier.tellUser("Unable to save application configuration", e);
+            }
+        }
+    }
 
-        private DetailsSetter(DataSetDetails details) {
+    private class ConstantFieldModelAdapter implements ConstantFieldModel.Listener {
+        @Override
+        public void updatedDefinitions(ConstantFieldModel constantFieldModel) {
+            // do nothing
+        }
+
+        @Override
+        public void updatedConstant(ConstantFieldModel constantFieldModel, boolean interactive) {
+            if (interactive) {
+                if (constantFieldModel.fillRecordMapping(getRecordMapping())) {
+                    mappingSaveTimer.mappingChanged(getRecordMapping());
+                }
+                if (constantFieldModel.fillSourceDetails(sourceDetails)) {
+                    executor.execute(new SourceDetailsSetter(sourceDetails));
+                }
+            }
+        }
+    }
+
+    private class SourceDetailsSetter implements Runnable {
+        private SourceDetails details;
+
+        private SourceDetailsSetter(SourceDetails details) {
             this.details = details;
         }
 
         @Override
         public void run() {
-            fileSet.setDataSetDetails(details);
+            try {
+                dataSetStore.setSourceDetails(details);
+            }
+            catch (FileStoreException e) {
+                userNotifier.tellUser("Unable to save source details", e);
+            }
         }
     }
 

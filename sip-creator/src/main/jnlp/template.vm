@@ -19,6 +19,7 @@
         $dependencies
     </resources>
     <application-desc main-class="$mainClass">
+        <argument>??? AllFieldBean fully-qualified ???</argument>
         <argument>??? MetaRepo submit URL ???</argument>
     </application-desc>
 </jnlp>

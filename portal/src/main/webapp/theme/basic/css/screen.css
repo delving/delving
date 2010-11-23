@@ -1,0 +1,445 @@
+
+/* GLOBAL ***********************************/
+
+body {
+    margin: 1em;
+}
+
+a:link
+{
+    color: #0071BC;
+}
+
+a:visited {
+    color: #446479;
+}
+
+table caption {
+    display: none;
+}
+
+.inner {
+    padding: .5em;
+}
+a.disabled,
+a:link.disabeled,
+a:visited.disabled {
+    color: #ccc !important;
+}
+
+.centered {
+    text-align: center;
+}
+
+/* HOME *************************************/
+
+#home {
+    text-align: center;
+    display: block;
+}
+
+
+#home #information {
+    text-align: left;
+    margin-top: 1em;
+}
+
+/* BRANDING *********************************/
+
+div#branding {
+    text-align: center;
+}
+
+div#branding img {
+   margin: 0 .25em 0 0;
+}
+
+/* USERBAR **********************************/
+
+#userBar {
+    background: #0071BC;
+    color: #e5e5e5;
+    text-align: right;
+}
+#userBar ul {
+    margin: 0;
+}
+#userBar ul li {
+    display: inline;
+    padding: 0;
+    margin: 0 1em 0 0;
+}
+#userBar select#dd_lang {
+    float: right;
+    margin: 0 1em;
+}
+
+#userBar a:link,
+#userBar a:visited {
+    color: #fff;
+}
+
+
+/* ADMINBLOCK ********************************/
+
+#adminBlock table {
+    float: right;
+}
+
+td .ui-icon {
+    float: left;
+}
+
+/* SEARCH ************************************/
+
+#search {
+    background: #e5e5e5;
+    /*height: 65px;*/
+    /*line-height: 65px;*/
+}
+
+#search form{
+    margin: 1.5em;
+}
+#search fieldset {
+    margin: 0;
+    padding: 0;
+}
+
+#search legend {
+    display: none;
+}
+
+#search nav {
+    display: inline;
+}
+
+#search input[type='search']{
+    border:1px solid #CCCCCC;
+    height:20px;
+    width:350px;
+}
+
+/* QUERY BREADCRUMBS **************************/
+
+#nav_query_breadcrumbs {
+    background:none repeat scroll 0 0 #CCE0F1;
+}
+
+#nav_query_breadcrumbs h4 {
+    margin: 0;
+}
+
+/* RESULT COUNT *******************************/
+
+#result_count {
+  float: left;    
+}
+
+#result_sort,
+#result_view_select {
+  float: right;
+}
+
+#result_view_select a:link {
+    text-decoration: none;
+}
+
+
+/* RESULT PAGINATION **************************/
+
+nav.pagination {
+    margin: .5em 0 1em 0;
+    height: 32px;
+}
+
+
+/* RESULTS ************************************/
+
+#result_sort, #result_view_select {
+    text-align: right;
+}
+
+#results table, #itemMetaData table {
+    margin: 0;
+    width: 100%;
+}
+
+#results table.results td {
+    background: transparent;
+    vertical-align: top;
+    padding: 0;
+}
+
+.results .brief-thumb-container,
+.results .brief-thumb-container-listview,
+.results #img-full {
+    background:none repeat scroll 0 0 #E5E5E5;
+    overflow:hidden;
+    padding:0.5em;
+    text-align:center;
+}
+
+.results .brief-thumb-container img,
+.results .brief-thumb-container-listview img,
+.results .related-thumb-container img,
+#itemImage img    
+{
+    -moz-box-shadow:3px 3px 4px #BBBBBB;
+    border:4px solid #FFFFFF;
+}
+
+.results .brief-content-container {
+    min-height:75px;
+    padding:1em 0.5em;
+}
+
+.results h6 {
+    margin: 0;
+}
+
+.results ul {
+    list-style-type:none;
+    margin:0;
+    padding:0;
+}
+
+.results ul li {
+    color:#555555;
+    line-height:1.25em;
+    margin:0;
+    padding:0;
+}
+
+/*.results.list tr {*/
+    /*margin: .5em 0;*/
+    /*display: block;*/
+    /*width: 100%;*/
+/*}*/
+
+.results.list td {
+    border-bottom: 1px dashed #ccc;
+    padding-top: 1em;
+}
+
+.results.list p {
+    padding:  0;
+    margin: 0;
+}
+
+/* FACETS section *******************************/
+
+nav#facetList {
+    margin: 0 0 1.5em 0;
+}
+
+/* FACETS TOGGLER *******************************/
+
+h4.trigger {
+    /* set border:none to over-ride jquery.ui styles for widgets*/
+    /*border: none;*/
+    border-top: 1px solid #ccc;
+	margin: 0 0 .25em 0;
+	background: url(../images/togglerch.gif) no-repeat 0 8px;
+    padding: 5px 0 0 20px;
+    font-size: 1em;
+}
+
+h4.trigger .ui-icon {
+    float: left;
+    margin-right: .25em;
+}
+
+h4.trigger:hover {
+   background: url(../images/togglerc.gif) no-repeat 0 8px;
+   color: #ccc;
+}
+
+h4.trigger a {
+	text-decoration: none;
+	display: block;
+}
+
+h4.active {
+    background: url(../images/toggleroh.gif) no-repeat 0 8px;
+}
+
+h4.active:hover {
+    background: url(../images/togglero.gif) no-repeat 0 8px;
+}
+
+.facets_container {
+    /*background: url(../images/bg-gradient.png) repeat-x top left;*/
+	margin: 0 0 5px;
+	padding: 0;
+	/*overflow: hidden;*/
+	clear: both;
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.facets_container table td {
+    background: transparent;
+    /*font-size: .85em;*/
+    vertical-align: top;
+}
+
+.facets_container a:link, .facets_container a:visited {
+    text-decoration: none;
+}
+
+.facets_container a:hover {
+    text-decoration: underline;
+}
+
+.facets_container .add {
+    background:url("../images/toggle_plus.gif") no-repeat scroll  0 3px transparent;
+    /*height:32px;*/
+    padding:0 0 0 16px;
+    float: left;
+}
+.facets_container .remove {
+    background:url("../images/toggle_minus.gif") no-repeat scroll 0 3px transparent;
+    color:#555555;
+    /*font-weight:700;*/
+    padding:0 0 0 16px;
+    text-decoration:none;
+    float: left;
+}
+
+.facets_container .add span, .facets_container .remove span {
+    text-decoration: none;
+    color: #999;
+}
+
+
+/* ITEM (FULL VIEW) *****************************/
+
+#itemImage {
+    text-align: center;
+}
+
+#itemMetaData table td, #itemMetaData table th {
+    background: transparent;
+}
+
+#itemMetaData table th {
+    font-weight: bold;
+    text-align: right;
+}
+
+table .item {
+    margin: 1em 0;
+    display: block;
+}
+
+/* SAVED ITEMS **********************************/
+
+#savedItems {
+    margin: 1em 0 0 0;
+}
+
+#savedItems table {
+    width: 100%;
+}
+
+/* JQUERY UI BUTTONS ****************************/
+
+/* UI Button styles */
+.fg-button {
+    outline: 0;
+    margin: 0 4px 0 0;
+    padding: .35em 0.5em;
+    text-decoration: none !important;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+    text-transform: uppercase;
+    zoom: 1;
+    /*color: #cc6600;*/
+}
+
+.fg-button .ui-icon {
+    position: absolute;
+    top: 50%;
+    margin-top: -8px;
+    left: 50%;
+    margin-left: -8px;
+}
+
+a.fg-button {
+    float: left;
+}
+
+/* remove extra button width in IE */
+button.fg-button, input.fg-button {
+    width: auto;
+    overflow: visible;
+}
+
+.fg-button-icon-left {
+    padding-left: 2.1em;
+}
+
+.fg-button-icon-right {
+    padding-right: 2.1em;
+}
+
+.fg-button-icon-left .ui-icon {
+    right: auto;
+    left: .2em;
+    margin-left: 0;
+}
+
+a.fg-button-icon-right .ui-icon {
+    left: auto;
+    right: .2em;
+    margin-left: 0;
+}
+button.fg-button-icon-right .ui-icon {
+     left: auto;
+    right: 1em;
+    margin-left: 0;
+}
+.fg-button-icon-solo {
+    display: block;
+    width: 8px;
+    text-indent: -9999px;
+}
+
+/* solo icon buttons must have block properties for the text-indent to work */
+
+.fg-buttonset .fg-button {
+    float: left;
+}
+
+.fg-buttonset-single .fg-button,
+.fg-buttonset-multi .fg-button {
+    margin-right: -1px;
+}
+
+.fg-toolbar {
+    padding: .15em .25em;
+    margin: 0;
+}
+
+.fg-toolbar .fg-buttonset {
+    margin-right: 1.5em;
+    padding-left: 1px;
+}
+
+.fg-toolbar .fg-button {
+    font-size: 1em;
+}
+/* FOOTER ******************************/
+footer {
+    margin: 1em 0 0 0;
+    text-align: center;
+}
+footer img{
+    margin: 0 1em;
+}
+
+
+

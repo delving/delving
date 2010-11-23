@@ -45,18 +45,18 @@ public class CodeGenerator {
             ));
         }
         else {
-            for (SourceVariable holder : variables) {
-                generateCopyCode(fieldMapping.getField(), holder.getNode(), fieldMapping);
+            for (SourceVariable variable : variables) {
+                generateCopyCode(fieldMapping.fieldDefinition, variable.getNode(), fieldMapping);
             }
         }
         return fieldMapping;
     }
 
-    public List<FieldMapping> createObviousMetaFieldMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables) {
+    public List<FieldMapping> createObviousMappings(List<FieldDefinition> unmappedFieldDefinitions, List<SourceVariable> variables, List<ConstantInputDefinition> constantFieldDefinitions) {
         List<FieldMapping> fieldMappings = new ArrayList<FieldMapping>();
         for (FieldDefinition fieldDefinition : unmappedFieldDefinitions) {
             if (fieldDefinition.constant) {
-                FieldMapping fieldMapping = createObviousMapping(fieldDefinition, variables);
+                FieldMapping fieldMapping = createObviousMappingFromConstant(fieldDefinition, constantFieldDefinitions);
                 if (fieldMapping != null) {
                     fieldMappings.add(fieldMapping);
                 }
@@ -66,7 +66,7 @@ public class CodeGenerator {
                     String variableName = variable.getVariableName();
                     String fieldName = fieldDefinition.getFieldNameString();
                     if (variableName.endsWith(fieldName)) {
-                        FieldMapping fieldMapping = createObviousMapping(fieldDefinition, variables);
+                        FieldMapping fieldMapping = createObviousMappingFromVariable(fieldDefinition, variables);
                         if (fieldMapping != null) {
                             fieldMappings.add(fieldMapping);
                         }
@@ -77,78 +77,127 @@ public class CodeGenerator {
         return fieldMappings;
     }
 
-    private FieldMapping createObviousMapping(FieldDefinition fieldDefinition, List<SourceVariable> variables) {
+    private FieldMapping createObviousMappingFromConstant(FieldDefinition fieldDefinition, List<ConstantInputDefinition> constantFieldDefinitions) {
         FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
-        if (fieldDefinition.constant) {
-            fieldMapping.addCodeLine(String.format(
-                    "%s.%s %s",
-                    fieldDefinition.getPrefix(),
-                    fieldDefinition.getLocalName(),
-                    fieldDefinition.getFieldNameString()
-            ));
+        if (!fieldDefinition.constant) {
+            throw new IllegalArgumentException("Expected a constant");
         }
-        else {
-            for (SourceVariable variable : variables) {
-                String variableName = variable.getVariableName();
-                String fieldName = fieldDefinition.getFieldNameString();
-                if (variableName.endsWith(fieldName)) {
-                    generateCopyCode(fieldDefinition, variable.getNode(), fieldMapping);
-                }
+        for (ConstantInputDefinition cid : constantFieldDefinitions) {
+            if (cid.fieldDefinition == fieldDefinition) {
+                renderLineSimple(fieldDefinition, fieldMapping, cid.name);
             }
         }
-        return fieldMapping.isEmpty() ? null : fieldMapping;
+        return fieldMapping.code == null ? null : fieldMapping;
+    }
+
+    private FieldMapping createObviousMappingFromVariable(FieldDefinition fieldDefinition, List<SourceVariable> variables) {
+        FieldMapping fieldMapping = new FieldMapping(fieldDefinition);
+        if (fieldDefinition.constant) {
+            throw new IllegalArgumentException("Expected a variable");
+        }
+        for (SourceVariable variable : variables) {
+            String variableName = variable.getVariableName();
+            String fieldName = fieldDefinition.getFieldNameString();
+            if (variableName.endsWith(fieldName)) {
+                generateCopyCode(fieldDefinition, variable.getNode(), fieldMapping);
+            }
+        }
+        return fieldMapping.code == null ? null : fieldMapping;
     }
 
     private void generateCopyCode(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping) {
         if (fieldDefinition.multivalued) {
-            fieldMapping.addCodeLine(String.format("%s.each {", node.getVariableName()));
-            if (fieldDefinition.converter == null) {
-                if (!fieldDefinition.valueMapped) {
-                    fieldMapping.addCodeLine(String.format("%s.%s it", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
-                }
-                else {
-                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.options);
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.getFieldNameString()));
-                }
-            }
-            else {
-                if (fieldDefinition.converterMultipleOutput) {
-                    fieldMapping.addCodeLine(String.format("for (part in %s(it)) {", fieldDefinition.converter));
-                    fieldMapping.addCodeLine(String.format("%s.%s part", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
-                    fieldMapping.addCodeLine("}");
-                }
-                else {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(it)[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.converter));
-                }
-            }
-            fieldMapping.addCodeLine("}");
+            startEachBlock(fieldMapping, node.getVariableName());
+            renderLine(fieldDefinition, node, fieldMapping, "it");
+            endBlock(fieldMapping);
         }
         else {
-            if (fieldDefinition.converter == null) {
-                if (!fieldDefinition.valueMapped) {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName()));
-                }
-                else {
-                    fieldMapping.createValueMap(getActualValues(node), fieldDefinition.options);
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), node.getVariableName(), fieldDefinition.getFieldNameString()));
-                }
+            renderLine(fieldDefinition, node, fieldMapping, String.format("%s[0]", node.getVariableName()));
+        }
+    }
+
+    private void renderLine(FieldDefinition fieldDefinition, AnalysisTree.Node node, FieldMapping fieldMapping, String variable) {
+        if (fieldDefinition.converterPattern != null) {
+            if (fieldDefinition.converterMultipleOutput) {
+                startForPartInConvert(fieldDefinition, fieldMapping, variable);
+                renderLineSimple(fieldDefinition, fieldMapping, "part");
+                endBlock(fieldMapping);
             }
             else {
-                if (fieldDefinition.converterMultipleOutput) {
-                    fieldMapping.addCodeLine(String.format("for (part in %s(%s[0])) {", fieldDefinition.converter, node.getVariableName()));
-                    fieldMapping.addCodeLine(String.format("%s.%s part", fieldDefinition.getPrefix(), fieldDefinition.getLocalName()));
-                    fieldMapping.addCodeLine("}");
-                }
-                else {
-                    fieldMapping.addCodeLine(String.format("%s.%s %s(%s[0])[0]", fieldDefinition.getPrefix(), fieldDefinition.getLocalName(), fieldDefinition.converter, node.getVariableName()));
-                }
+                renderLineSelect(fieldDefinition, fieldMapping, variable);
+            }
+        }
+        else {
+            if (fieldDefinition.valueMapped) {
+                renderValueMapLine(fieldDefinition, fieldMapping, node, variable);
+            }
+            else {
+                renderLineSimple(fieldDefinition, fieldMapping, variable);
             }
         }
     }
 
+    private void startForPartInConvert(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
+        fieldMapping.addCodeLine(
+                String.format(
+                        "for (part in %s) {",
+                        String.format(
+                                fieldDefinition.converterPattern,
+                                variable
+                        )
+                )
+        );
+    }
+
+    private void renderLineSelect(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
+        if (fieldDefinition.converterPattern != null) {
+            variable = String.format(fieldDefinition.converterPattern, variable);
+        }
+        fieldMapping.addCodeLine(
+                String.format(
+                        "%s.%s %s[0]",
+                        fieldDefinition.getPrefix(),
+                        fieldDefinition.getLocalName(),
+                        variable
+                )
+        );
+    }
+
+    private void renderValueMapLine(FieldDefinition fieldDefinition, FieldMapping fieldMapping, AnalysisTree.Node node, String variable) {
+        fieldMapping.createValueMap(getActualValues(node));
+        fieldMapping.addCodeLine(
+                String.format(
+                        "%s.%s %s(%s)",
+                        fieldDefinition.getPrefix(),
+                        fieldDefinition.getLocalName(),
+                        fieldDefinition.getFieldNameString(),
+                        variable
+                )
+        );
+    }
+
+    private void renderLineSimple(FieldDefinition fieldDefinition, FieldMapping fieldMapping, String variable) {
+        fieldMapping.addCodeLine(
+                String.format(
+                        "%s.%s %s",
+                        fieldDefinition.getPrefix(),
+                        fieldDefinition.getLocalName(),
+                        variable
+                )
+        );
+    }
+
+    private void startEachBlock(FieldMapping fieldMapping, String variable) {
+        fieldMapping.addCodeLine(String.format("%s.each {", variable));
+    }
+
+    private void endBlock(FieldMapping fieldMapping) {
+        fieldMapping.addCodeLine("}");
+    }
+
     private Set<String> getActualValues(AnalysisTree.Node node) {
         Set<String> values = new TreeSet<String>();
-        for (AnalysisTreeStatistics.Counter counter : node.getStatistics().getCounters()) {
+        for (Statistics.Counter counter : node.getStatistics().getCounters()) {
             values.add(counter.getValue());
         }
         return values;

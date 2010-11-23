@@ -118,7 +118,8 @@ public class SolrQueryUtil {
                 if (params.containsKey("zoeken_in") && !params.get("zoeken_in")[0].equalsIgnoreCase("text")) {
                     String zoekenIn = params.get("zoeken_in")[0];
                     solrQuery.setQuery(zoekenIn + ":\"" + queryAnalyzer.sanitize(params.get("query")[0]) + "\""); // only get the first one
-                } else {
+                }
+                else {
                     solrQuery.setQuery(queryAnalyzer.sanitize(params.get("query")[0])); // only get the first one
                 }
             }
@@ -156,7 +157,15 @@ public class SolrQueryUtil {
             else if (sortField.equalsIgnoreCase("creator")) {
                 sortField = "creator_sort";
             }
-            solrQuery.setSortField(sortField, SolrQuery.ORDER.asc);
+            if (params.containsKey("sortOrder") && !params.get("sortOrder")[0].isEmpty()) {
+                String sortOrder = params.get("sortOrder")[0];
+                if (sortOrder.equalsIgnoreCase("desc")) {
+                    solrQuery.setSortField(sortField, SolrQuery.ORDER.desc);
+                }
+            }
+            else {
+                solrQuery.setSortField(sortField, SolrQuery.ORDER.asc);
+            }
         }
 
         //set constraints

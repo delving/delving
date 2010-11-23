@@ -1,7 +1,6 @@
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.core.RecordMapping;
-import eu.europeana.sip.core.ValueMap;
+import eu.delving.core.metadata.FieldMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -37,24 +36,21 @@ import java.util.Map;
  */
 
 public class ValueMapDialog extends JDialog {
-    private RecordMapping recordMapping;
-    private ValueMap valueMap;
+    private FieldMapping fieldMapping;
     private JButton selectionSetButton;
     private JComboBox editorBox, selectionEditorBox;
     private JTable table;
 
-    public ValueMapDialog(Frame owner, RecordMapping recordMapping) {
+    public ValueMapDialog(Frame owner, FieldMapping fieldMapping) {
         super(owner, true);
-        this.recordMapping = recordMapping;
-        this.valueMap = recordMapping.getOnlyFieldMapping().getValueMap();
-        setTitle("Value Map for " + valueMap.getName());
-        this.valueMap = valueMap;
+        this.fieldMapping = fieldMapping;
+        setTitle("Value Map for " + fieldMapping.getFieldDefinition().getTag());
         editorBox = new JComboBox(new EditorModel());
         JPanel p = new JPanel(new BorderLayout(6, 6));
         p.setBorder(
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createEmptyBorder(6, 6, 6, 6),
-                        BorderFactory.createTitledBorder(valueMap.getName())
+                        BorderFactory.createTitledBorder(fieldMapping.getFieldDefinition().getTag().toString())
                 )
         );
         p.add(createSelectionSetter(), BorderLayout.NORTH);
@@ -104,7 +100,6 @@ public class ValueMapDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ValueMapDialog.this.setVisible(false);
-                recordMapping.notifyValueMapChange();
             }
         });
         return ok;
@@ -133,7 +128,7 @@ public class ValueMapDialog extends JDialog {
         private List<String[]> rows = new ArrayList<String[]>();
 
         private MapModel() {
-            for (Map.Entry<String, String> entry : valueMap.entrySet()) {
+            for (Map.Entry<String, String> entry : fieldMapping.valueMap.entrySet()) {
                 rows.add(new String[]{entry.getKey(), entry.getValue()});
             }
         }
@@ -180,7 +175,8 @@ public class ValueMapDialog extends JDialog {
             if (valueObject == null) {
                 valueObject = "";
             }
-            valueMap.put(rows.get(rowIndex)[0], rows.get(rowIndex)[1] = (String) valueObject);
+            fieldMapping.valueMap.put(rows.get(rowIndex)[0], rows.get(rowIndex)[1] = (String) valueObject);
+            // todo: notify the world
             fireTableCellUpdated(rowIndex, columnIndex);
         }
     }
@@ -205,7 +201,7 @@ public class ValueMapDialog extends JDialog {
 
     private class EditorModel extends AbstractListModel implements ComboBoxModel {
         private static final String COPY_VERBATIM = "";
-        private List<String> values = new ArrayList<String>(valueMap.getRangeValues());
+        private List<String> values = new ArrayList<String>(fieldMapping.getFieldDefinition().options);
         private Object selectedItem = COPY_VERBATIM;
 
         @Override

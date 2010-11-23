@@ -45,6 +45,10 @@ project/boot
 *.ipr
 *.iws
 .idea
+.idea/*
 
 # Pax Runner (for easy OSGi launching)
 runner
+
+# SipCreator files
+SipCreatorGUI.xml

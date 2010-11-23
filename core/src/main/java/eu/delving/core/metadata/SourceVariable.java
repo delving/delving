@@ -94,6 +94,7 @@ public class SourceVariable implements Comparable<SourceVariable> {
                         + "OoUu"          // double acute
                         + "_"             // dash
                         + "_"             // dot
+                        + "_"             // colon
                 ;
 
         private static final String UNICODE =
@@ -106,7 +107,8 @@ public class SourceVariable implements Comparable<SourceVariable> {
                         + "\u00C7\u00E7"
                         + "\u0150\u0151\u0170\u0171"
                         + "-"
-                        + ".";
+                        + "."
+                        + ":";
 
         public static String tagToVariable(String s) {
             if (s == null) return null;

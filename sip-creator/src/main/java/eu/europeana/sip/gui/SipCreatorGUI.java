@@ -21,26 +21,28 @@
 
 package eu.europeana.sip.gui;
 
-import eu.europeana.sip.definitions.annotations.AnnotationProcessor;
-import eu.europeana.sip.definitions.annotations.AnnotationProcessorImpl;
-import eu.europeana.sip.definitions.beans.AllFieldBean;
-import eu.europeana.sip.definitions.beans.BriefBean;
-import eu.europeana.sip.definitions.beans.FullBean;
-import eu.europeana.sip.definitions.beans.IdBean;
-import eu.europeana.sip.model.FileSet;
+import eu.delving.core.metadata.MetadataModel;
+import eu.delving.core.metadata.MetadataModelImpl;
+import eu.delving.core.metadata.Path;
+import eu.delving.sip.FileStore;
+import eu.delving.sip.FileStoreException;
+import eu.delving.sip.FileStoreImpl;
+import eu.europeana.sip.core.RecordValidationException;
 import eu.europeana.sip.model.SipModel;
 import eu.europeana.sip.model.UserNotifier;
+import org.apache.log4j.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.util.Arrays;
 
 /**
  * The main GUI class for the sip creator
@@ -50,12 +52,38 @@ import java.util.List;
  */
 
 public class SipCreatorGUI extends JFrame {
+    private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(String serverUrl) {
+    public SipCreatorGUI(String fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.sipModel = new SipModel(createAnnotationProcessor(), new PopupExceptionHandler(), serverUrl);
+        FileStore fileStore = new FileStoreImpl(new File(fileStoreDirectory));
+        this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
+        sipModel.addUpdateListener(new SipModel.UpdateListener() {
+
+            @Override
+            public void templateApplied() {
+            }
+
+            @Override
+            public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
+                if (dataSetStore == null) {
+                    SipCreatorGUI.this.setTitle("SIP Creator");
+                }
+                else {
+                    SipCreatorGUI.this.setTitle(String.format("SIP Creator - Data Set %s", dataSetStore.getSpec()));
+                }
+            }
+
+            @Override
+            public void updatedRecordRoot(Path recordRoot, int recordCount) {
+            }
+
+            @Override
+            public void normalizationMessage(boolean complete, String message) {
+            }
+        });
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Analysis", new AnalysisPanel(sipModel));
         tabs.addTab("Mapping", new MappingPanel(sipModel));
@@ -74,16 +102,54 @@ public class SipCreatorGUI extends JFrame {
         JMenuBar bar = new JMenuBar();
         FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
             @Override
-            public boolean select(FileSet fileSet) {
-                if (!fileSet.isValid()) {
+            public boolean selectInputFile(File file) {
+                if (!file.exists()) {
                     return false;
                 }
                 else {
-                    fileSet.setExceptionHandler(new PopupExceptionHandler());
-                    sipModel.setFileSet(fileSet);
-                    setTitle(String.format("SIP Creator - %s", fileSet.getAbsolutePath()));
-                    return true;
+                    String spec = JOptionPane.showInputDialog(
+                            SipCreatorGUI.this,
+                            String.format(
+                                    "<html>You have selected the following file for importing:<br><br>" +
+                                            "<pre>      <strong>%s</strong></pre><br>" +
+                                            "To complete the import you must enter a Data Set Spec name which will serve<br>" +
+                                            "to identify it in the future. For consistency this cannot be changed later, so choose<br>" +
+                                            "carefully.",
+                                    file.getAbsolutePath()
+                            ),
+                            "Select and Enter Data Set Spec",
+                            JOptionPane.QUESTION_MESSAGE
+                    );
+                    if (spec == null || spec.trim().isEmpty()) {
+                        return false;
+                    }
+                    int doImport = JOptionPane.showConfirmDialog(
+                            SipCreatorGUI.this,
+                            String.format(
+                                    "<html>Are you sure you wish to import this file<br><br>" +
+                                            "<pre>     <strong>%s</strong></pre><br>" +
+                                            "as a new Data set by the name of<br><br>" +
+                                            "<pre>     <strong>%s</strong></pre>",
+                                    file.getAbsolutePath(),
+                                    spec
+                            ),
+                            "Verify your choice",
+                            JOptionPane.YES_NO_OPTION
+                    );
+                    if (doImport == JOptionPane.YES_OPTION) {
+                        ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
+                        sipModel.createDataSetStore(spec, file, progressMonitor);
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 }
+            }
+
+            @Override
+            public void selectDataSet(String spec) {
+                sipModel.setDataSetStore(spec);
             }
         });
         bar.add(fileMenu);
@@ -92,15 +158,18 @@ public class SipCreatorGUI extends JFrame {
         return bar;
     }
 
-    private AnnotationProcessor createAnnotationProcessor() {
-        List<Class<?>> list = new ArrayList<Class<?>>();
-        list.add(IdBean.class);
-        list.add(BriefBean.class);
-        list.add(FullBean.class);
-        list.add(AllFieldBean.class);
-        AnnotationProcessorImpl annotationProcessor = new AnnotationProcessorImpl();
-        annotationProcessor.setClasses(list);
-        return annotationProcessor;
+    private MetadataModel loadMetadataModel() {
+        try {
+            MetadataModelImpl metadataModel = new MetadataModelImpl();
+            metadataModel.setRecordDefinitionResources(Arrays.asList("/abm-record-definition.xml"));
+            metadataModel.setDefaultPrefix("abm");
+            return metadataModel;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            return null;
+        }
     }
 
     private class PopupExceptionHandler implements UserNotifier {
@@ -110,15 +179,25 @@ public class SipCreatorGUI extends JFrame {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    JOptionPane.showMessageDialog(SipCreatorGUI.this, message);
+                    String html = String.format("<html><h3>%s</h3><p>%s</p></html>", message, exception.getMessage());
+                    if (exception instanceof RecordValidationException) {
+                        RecordValidationException rve = (RecordValidationException) exception;
+                        StringBuilder problemHtml = new StringBuilder(String.format("<html><h3>%s</h3><ul>", message));
+                        for (String problem : rve.getProblems()) {
+                            problemHtml.append(String.format("<li>%s</li>", problem));
+                        }
+                        problemHtml.append("</ul></html>");
+                        html = problemHtml.toString();
+                    }
+                    JOptionPane.showMessageDialog(SipCreatorGUI.this, html);
                 }
             });
-//            if (exception != null) {
-//                log.warn(message, exception);
-//            }
-//            else {
-//                log.warn(message);
-//            }
+            if (exception != null) {
+                log.warn(message, exception);
+            }
+            else {
+                log.warn(message);
+            }
         }
 
         @Override
@@ -127,12 +206,21 @@ public class SipCreatorGUI extends JFrame {
         }
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws ClassNotFoundException {
+//        if (args.length != 1) {
+//            throw new RuntimeException("SipCreatorGUI gets two parameters <server-url>");
+//        }
         final String serverUrl = args.length > 0 ? args[0] : null;
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(serverUrl);
-                sipCreatorGUI.setVisible(true);
+                try {
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI("sip-creator-file-store", serverUrl);
+                    sipCreatorGUI.setVisible(true);
+                }
+                catch (FileStoreException e) {
+                    JOptionPane.showMessageDialog(null, "Unable to create the file store");
+                    e.printStackTrace();
+                }
             }
         });
     }

@@ -10,24 +10,30 @@
 <#if RequestParameters.query?exists>
     <#assign query = "${RequestParameters.query}"/>
 </#if>
-<#include "spring_form_macros.ftl"/>
-<#include "inc_header.ftl"/>
+<#include "includeMarcos.ftl">
 
-<@userBar/>
+<@addHeader "Norvegiana", "",[],["login-register.css"]/>
 
-<h1>${portalDisplayName}</h1>
 
-<@simpleSearch/>
+    <div class="grid_12" id="branding">
+        <h1 class="gigantic">
+            <img src="/${portalName}/${portalTheme}/images/norvegiana.jpg" alt="Norvegiana" align="absmiddle"/>${portalDisplayName}
+        </h1>
+    </div>
+
+
+<section role="main" class="grid_12 login-register">
 
 
                 <h1><@spring.message 'Register_t' /></h1>
+
 
                 <form id="regForm" action="/${portalName}/register.html" method="post">
 
                     <input type="hidden" name="token" value="${command.token}" />
                     <input type="hidden" name="email" value="${command.email}" />
 
-        
+                    <div class="grid_3 alha">
                     <fieldset id="pt1">
 
                         <legend><span>Step </span>1. <span>: Email details</span> </legend>
@@ -38,7 +44,9 @@
                         <input type="text" id="email" name="email" disabled="true" tabindex="5"  value="${command.email}" style="background:#eaeaea;"/>
 
                     </fieldset>
+                    </div>
 
+                    <div class="grid_3">
                     <fieldset id="pt2">
 
 
@@ -51,6 +59,9 @@
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
                     </fieldset>
+                    </div>
+
+                    <div class="grid_3">
                     <fieldset id="pt3">
 
                         <legend><span>Step </span>3. <span>: Password</span></legend>
@@ -68,7 +79,9 @@
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
                     </fieldset>
+                    </div>
 
+                    <div class="grid_3 omega">
                     <fieldset id="pt4">
                         <legend><span>Step </span>4. <span>: Submit form</span></legend>
                         <#--<h3>Agree</h3>-->
@@ -83,11 +96,13 @@
                         <input id="submit_registration" type="submit" name="submit_registration" tabindex="6" value="<@spring.message 'FinishRegistration_t' /> &raquo;" class="button"/>
                         </p>
                     </fieldset>
-
+                    </div>
                     
                 </form>
 
-	    <#include "inc_footer.ftl"/>
+</section>
+
+	    <@addFooter/>
 
 <#macro formCheckbox path attributes="">
     <@spring.bind path />

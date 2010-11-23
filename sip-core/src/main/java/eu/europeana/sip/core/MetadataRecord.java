@@ -47,10 +47,12 @@ import java.util.Stack;
 public class MetadataRecord {
     private GroovyNode rootNode;
     private int recordNumber;
+    private Map<String,String> namespaces;
 
-    public MetadataRecord(GroovyNode rootNode, int recordNumber) {
+    private MetadataRecord(GroovyNode rootNode, int recordNumber, Map<String,String> namespaces) {
         this.rootNode = rootNode;
         this.recordNumber = recordNumber;
+        this.namespaces = namespaces;
     }
 
     public GroovyNode getRootNode() {
@@ -113,6 +115,10 @@ public class MetadataRecord {
             this.namespaces = namespaces;
         }
 
+        public MetadataRecord fromGroovyNode(GroovyNode rootNode, int recordNumber) {
+            return new MetadataRecord(rootNode, recordNumber, namespaces);
+        }
+
         public MetadataRecord fromXml(String xmlRecord) throws XMLStreamException {
             String recordString = null;
             try {
@@ -168,7 +174,7 @@ public class MetadataRecord {
                             break;
                         case XMLEvent.END_ELEMENT:
                             if (nodeStack.size() == 1) {
-                                return new MetadataRecord(nodeStack.peek(), -1);
+                                return new MetadataRecord(nodeStack.peek(), -1, namespaces);
                             }
                             GroovyNode node = nodeStack.pop();
                             String valueString = value.toString().replaceAll("\n", " ").replaceAll(" +", " ").trim();
