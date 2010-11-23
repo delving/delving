@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,17 +87,19 @@ public class MessageRefactor {
         for (Map<String,String> messageMap : messageFileMaps.values()) {
             allKeys.addAll(messageMap.keySet());
         }
-        System.out.println("\n\nMissing Keys:");
+        File outFile = new File("MessageRefactor.output");
+        PrintStream out = new PrintStream(outFile, "UTF-8");
+        out.println("\n\nMissing Keys:");
         for (Map.Entry<String,Map<String,String>> entry : messageFileMaps.entrySet()) {
             Set<String> missingKeys = new TreeSet<String>(allKeys);
             missingKeys.removeAll(entry.getValue().keySet());
             if (!missingKeys.isEmpty()) {
                 for (String key : missingKeys) {
-                    System.out.println(String.format("%s: %s", entry.getKey(), key));
+                    out.println(String.format("%s: %s", entry.getKey(), key));
                 }
             }
         }
-        System.out.println("\n\nOccurrences:");
+        out.println("\n\nOccurrences:");
         Map<String, Counter> counters = new TreeMap<String,Counter>();
         Set<File> files = new TreeSet<File>();
         gatherFiles(new File(portalDirectory, "src/main"), files);
@@ -108,7 +111,7 @@ public class MessageRefactor {
                 for (String key : allKeys) {
                     Matcher matcher = Pattern.compile(key).matcher(line);
                     while (matcher.find()) {
-                        System.out.println(String.format(
+                        out.println(String.format(
                                 "%s:%d> %s [%s]",
                                 file.getName(),
                                 lineNumber,
@@ -125,16 +128,17 @@ public class MessageRefactor {
                 }
             }
         }
-        System.out.println("\n\nUsages:");
+        out.println("\n\nUsages:");
         for (Counter counter : counters.values()) {
-            System.out.println(String.format("%s : %d", counter.key, counter.count));
+            out.println(String.format("%s : %d", counter.key, counter.count));
         }
         Set<String> unused = new TreeSet<String>(allKeys);
         unused.removeAll(counters.keySet());
-        System.out.println("\n\nUnused:");
+        out.println("\n\nUnused:");
         for (String key : allKeys) {
-            System.out.println(key);
+            out.println(key);
         }
+        out.close();
         File refactorFile = new File("MesssageRefactor.txt");
         if (refactorFile.exists()) {
             Map<String,String> map = MessageFileUtil.readMap(refactorFile);
@@ -146,21 +150,21 @@ public class MessageRefactor {
             }
             for (File file : files) {
                 List<String> lines = readFile(file);
-                Writer out = new FileWriter(file);
+                Writer writer = new FileWriter(file);
                 for (String line : lines) {
                     for (Map.Entry<String,String> entry : map.entrySet()) {
                         String changed = line.replaceAll(entry.getKey(), entry.getValue());
                         if (!changed.equals(line)) {
                             System.out.println("from> "+line+"\n  to> "+changed+"\n");
-                            out.write(changed);
+                            writer.write(changed);
                         }
                         else {
-                            out.write(line);
+                            writer.write(line);
                         }
-                        out.write('\n');
+                        writer.write('\n');
                     }
                 }
-                out.close();
+                writer.close();
             }
         }
         else {
