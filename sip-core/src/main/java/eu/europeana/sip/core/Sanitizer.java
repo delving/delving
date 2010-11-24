@@ -39,6 +39,7 @@ public class Sanitizer {
     + "OoUu"          // double acute
     + "_"             // dash
     + "_"             // dot
+    + "_"             // colon
     ;
 
     private static final String UNICODE =
@@ -52,6 +53,7 @@ public class Sanitizer {
     + "\u0150\u0151\u0170\u0171"
     + "-"
     + "."
+    + ":"
     ;
 
     public static String tagToVariable(String s) {

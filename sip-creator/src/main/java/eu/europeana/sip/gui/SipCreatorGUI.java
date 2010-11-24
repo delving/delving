@@ -55,10 +55,10 @@ public class SipCreatorGUI extends JFrame {
     private Logger log = Logger.getLogger(getClass());
     private SipModel sipModel;
 
-    public SipCreatorGUI(String fileStoreDirectory, String serverUrl) throws FileStoreException {
+    public SipCreatorGUI(File fileStoreDirectory, String serverUrl) throws FileStoreException {
         super("SIP Creator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        FileStore fileStore = new FileStoreImpl(new File(fileStoreDirectory));
+        FileStore fileStore = new FileStoreImpl(fileStoreDirectory);
         this.sipModel = new SipModel(fileStore, loadMetadataModel(), new PopupExceptionHandler(), serverUrl);
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
 
@@ -214,7 +214,7 @@ public class SipCreatorGUI extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI("sip-creator-file-store", serverUrl);
+                    SipCreatorGUI sipCreatorGUI = new SipCreatorGUI(new File(System.getProperty("user.home"), "/sip-creator-file-store"), serverUrl);
                     sipCreatorGUI.setVisible(true);
                 }
                 catch (FileStoreException e) {

@@ -190,7 +190,7 @@
         <field prefix="dc" localName="date">
             <fullDoc>true</fullDoc>
             <category>ESE</category>
-            <converterPattern>extractYear</converterPattern>
+            <converterPattern>extractYear(%s)</converterPattern>
             <fieldType>text</fieldType>
             <multivalued>true</multivalued>
             <stored>true</stored>

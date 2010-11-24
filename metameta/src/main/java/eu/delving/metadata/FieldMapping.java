@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 
 @XStreamAlias("field-mapping")
-public class FieldMapping {
+public class FieldMapping implements Comparable<FieldMapping> {
 
     @XStreamAlias("value-map")
     public Map<String, String> valueMap;
@@ -122,5 +122,9 @@ public class FieldMapping {
             ".split"
     };
 
+    @Override
+    public int compareTo(FieldMapping fieldMapping) {
+        return getFieldDefinition().compareTo(fieldMapping.getFieldDefinition());
+    }
 }
 

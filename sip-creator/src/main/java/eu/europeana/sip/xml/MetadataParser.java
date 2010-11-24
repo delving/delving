@@ -100,11 +100,11 @@ public class MetadataParser {
                             parent = nodeStack.peek();
                         }
                         String nodeName;
-                        if (null == input.getPrefix()) {
+                        if (input.getPrefix() == null || input.getPrefix().isEmpty()) {
                             nodeName = path.equals(recordRoot) ? "input" : Sanitizer.tagToVariable(input.getLocalName());
                         }
                         else {
-                            nodeName = path.equals(recordRoot) ? "input" : input.getPrefix() + "_" + Sanitizer.tagToVariable(input.getLocalName());
+                            nodeName = path.equals(recordRoot) ? "input" : Sanitizer.tagToVariable(input.getPrefix() + ":" + input.getLocalName());
                             namespaces.put(input.getPrefix(), input.getNamespaceURI());
                         }
                         GroovyNode node = new GroovyNode(parent, nodeName);
