@@ -100,7 +100,7 @@ public class SipCreatorGUI extends JFrame {
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        FileMenu fileMenu = new FileMenu(this, sipModel, new FileMenu.SelectListener() {
+        bar.add(new ImportMenu(this, sipModel, new ImportMenu.SelectListener() {
             @Override
             public boolean selectInputFile(File file) {
                 if (!file.exists()) {
@@ -138,7 +138,7 @@ public class SipCreatorGUI extends JFrame {
                     );
                     if (doImport == JOptionPane.YES_OPTION) {
                         ProgressMonitor progressMonitor = new ProgressMonitor(SipCreatorGUI.this, "Importing", "Storing data for " + spec, 0, 100);
-                        sipModel.createDataSetStore(spec, file, progressMonitor);
+                        sipModel.createDataSetStore(spec, file, progressMonitor, null);
                         return true;
                     }
                     else {
@@ -146,13 +146,13 @@ public class SipCreatorGUI extends JFrame {
                     }
                 }
             }
-
+        }));
+        bar.add(new DataSetMenu(sipModel, new DataSetMenu.SelectListener() {
             @Override
             public void selectDataSet(String spec) {
                 sipModel.setDataSetStore(spec);
             }
-        });
-        bar.add(fileMenu);
+        }));
         MappingTemplateMenu mappingTemplateMenu = new MappingTemplateMenu(this, sipModel);
         bar.add(mappingTemplateMenu);
         return bar;

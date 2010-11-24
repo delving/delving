@@ -26,6 +26,7 @@ import eu.delving.metadata.Path;
 import eu.delving.metadata.RecordMapping;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;
@@ -51,9 +52,10 @@ import java.util.List;
 public class Normalizer implements Runnable {
     private SipModel sipModel;
     private Path recordRoot;
+    private int recordCount;
     private boolean discardInvalid;
     private File normalizedFile;
-    private MetadataParser.Listener parserListener;
+    private ProgressListener progressListener;
     private Listener listener;
     private volatile boolean running = true;
 
@@ -68,27 +70,30 @@ public class Normalizer implements Runnable {
     public Normalizer(
             SipModel sipModel,
             Path recordRoot,
+            int recordCount,
             boolean discardInvalid,
             File normalizedFile,
-            MetadataParser.Listener parserListener,
+            ProgressListener progressListener,
             Listener listener
     ) {
         this.sipModel = sipModel;
         this.recordRoot = recordRoot;
+        this.recordCount = recordCount;
         this.discardInvalid = discardInvalid;
         this.normalizedFile = normalizedFile;
-        this.parserListener = parserListener;
+        this.progressListener = progressListener;
         this.listener = listener;
     }
 
     public void run() {
+        FileStore.MappingOutput fileSetOutput = null;
         try {
             RecordMapping recordMapping = sipModel.getRecordMapping();
             if (recordMapping == null) {
                 return;
             }
             ToolCodeResource toolCodeResource = new ToolCodeResource();
-            FileStore.MappingOutput fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
+            fileSetOutput = sipModel.getDataSetStore().createMappingOutput(recordMapping, normalizedFile);
             if (normalizedFile != null) {
                 Writer out = fileSetOutput.getNormalizedWriter();
                 out.write("<?xml version='1.0' encoding='UTF-8'?>\n");
@@ -99,7 +104,7 @@ public class Normalizer implements Runnable {
                 out.write(">\n");
             }
             MappingRunner mappingRunner = new MappingRunner(toolCodeResource.getCode() + recordMapping.toCompileCode(sipModel.getMetadataModel().getRecordDefinition()));
-            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, parserListener);
+            MetadataParser parser = new MetadataParser(sipModel.getDataSetStore().createXmlInputStream(), recordRoot, recordCount, progressListener);
             RecordValidator recordValidator = new RecordValidator(sipModel.getMetadataModel(), true);
             MetadataRecord record;
             while ((record = parser.nextRecord()) != null && running) {
@@ -165,7 +170,7 @@ public class Normalizer implements Runnable {
             }
             fileSetOutput.close(!running);
             if (!running) {
-                parserListener.recordsParsed(0, true);
+                progressListener.finished();
             }
             listener.finished(running);
         }
@@ -177,6 +182,17 @@ public class Normalizer implements Runnable {
         }
         catch (FileStoreException e) {
             throw new RuntimeException("Datastore Problem", e);
+        }
+        catch (MetadataParser.AbortException e) {
+            if (fileSetOutput != null) {
+                try {
+                    fileSetOutput.close(true);
+                }
+                catch (FileStoreException e1) {
+                    throw new RuntimeException("Couldn't close output properly");
+                }
+            }
+            listener.finished(false);
         }
     }
 

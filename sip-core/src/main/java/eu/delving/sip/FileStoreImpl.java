@@ -125,7 +125,7 @@ public class FileStoreImpl implements FileStore {
     }
 
     @Override
-    public DataSetStore createDataSetStore(String spec, File inputFile, CreateProgress createProgress) throws FileStoreException {
+    public DataSetStore createDataSetStore(String spec, File inputFile, ProgressListener progressListener) throws FileStoreException {
         File directory = new File(home, spec);
         if (directory.exists()) {
             throw new FileStoreException(String.format("Data store directory %s already exists", directory.getAbsolutePath()));
@@ -134,7 +134,7 @@ public class FileStoreImpl implements FileStore {
             throw new FileStoreException(String.format("Unable to create data store directory %s", directory.getAbsolutePath()));
         }
         int fileBlocks = (int) (inputFile.length() / BLOCK_SIZE);
-        if (createProgress != null) createProgress.setTotal(fileBlocks);
+        if (progressListener != null) progressListener.setTotal(fileBlocks);
         File source = new File(directory, SOURCE_FILE_PREFIX + "new" + SOURCE_FILE_SUFFIX);
         MessageDigest digest = getDigest();
         boolean cancelled = false;
@@ -156,15 +156,15 @@ public class FileStoreImpl implements FileStore {
             while (-1 != (bytesRead = inputStream.read(buffer))) {
                 gzipOutputStream.write(buffer, 0, bytesRead);
                 totalBytesRead += bytesRead;
-                if (createProgress != null) {
-                    if (!createProgress.setProgress((int) (totalBytesRead / BLOCK_SIZE))) {
+                if (progressListener != null) {
+                    if (!progressListener.setProgress((int) (totalBytesRead / BLOCK_SIZE))) {
                         cancelled = true;
                         break;
                     }
                 }
                 digest.digest(buffer, 0, bytesRead);
             }
-            if (createProgress != null) createProgress.finished();
+            if (progressListener != null) progressListener.finished();
             inputStream.close();
             gzipOutputStream.close();
         }

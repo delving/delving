@@ -27,11 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.stream.XMLStreamException;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -184,20 +181,26 @@ public class DataSetController {
             @PathVariable String hash,
             InputStream inputStream,
             @RequestParam(required = false) String accessKey
-    ) throws AccessKeyException, BadArgumentException, MetadataException, XMLStreamException, IOException {
+    ) throws AccessKeyException {
         checkAccessKey(accessKey);
         log.info("submit source for " + dataSetSpec);
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        if (dataSet == null) {
-            return String.format("Data set %s not found", dataSetSpec);
+        try {
+            MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+            if (dataSet == null) {
+                return String.format("Data set %s not found", dataSetSpec);
+            }
+            String sourceHash = dataSet.getSourceHash();
+            if (hash.equals(sourceHash)) {
+                return String.format("Data set %s already contains this data", dataSetSpec);
+            }
+            dataSet.parseRecords(hash, new GZIPInputStream(inputStream));
+            dataSet.save();
+            return "OK";
         }
-        String sourceHash = dataSet.getSourceHash();
-        if (hash.equals(sourceHash)) {
-            return String.format("Data set %s already contains this data", dataSetSpec);
+        catch (Exception e) {
+            log.error("Problem during upload/parse", e);
+            return problem("while submitting source xml", e);
         }
-        dataSet.parseRecords(hash, new GZIPInputStream(inputStream));
-        dataSet.save();
-        return "OK";
     }
 
     @RequestMapping(value = "/dataset/submit/{dataSetSpec}/mapping.{prefix}", method = RequestMethod.POST)
@@ -208,20 +211,34 @@ public class DataSetController {
             @PathVariable String prefix,
             InputStream inputStream,
             @RequestParam(required = false) String accessKey
-    ) throws AccessKeyException, BadArgumentException, MetadataException, XMLStreamException, IOException {
+    ) throws AccessKeyException {
         checkAccessKey(accessKey);
         log.info("submit mapping for " + dataSetSpec);
-        MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
-        if (dataSet == null) {
-            return String.format("Data set %s not found", dataSetSpec);
+        try {
+            MetaRepo.DataSet dataSet = metaRepo.getDataSet(dataSetSpec);
+            if (dataSet == null) {
+                return String.format("Data set %s not found", dataSetSpec);
+            }
+            RecordMapping mapping = RecordMapping.read(inputStream, metadataModel.getRecordDefinition());
+            if (!mapping.getPrefix().equals(prefix)) {
+                return String.format("Mapping name mapping.%s contains prefix %s", prefix, mapping.getPrefix());
+            }
+            dataSet.setMapping(mapping);
+            dataSet.save();
         }
-        RecordMapping mapping = RecordMapping.read(inputStream, metadataModel.getRecordDefinition());
-        if (!mapping.getPrefix().equals(prefix)) {
-            return String.format("Mapping name mapping.%s contains prefix %s", prefix, mapping.getPrefix());
+        catch (Exception e) {
+            log.error("Problem during mapping upload");
+            return problem("while submitting mapping", e);
         }
-        dataSet.setMapping(mapping);
-        dataSet.save();
         return "OK";
+    }
+
+    private String problem(String message) {
+        return String.format("Problem: %s", message);
+    }
+
+    private String problem(String message, Exception e) {
+        return String.format("Problem: %s (%s)", message, e);
     }
 
     private void checkAccessKey(String accessKey) throws AccessKeyException {
@@ -259,15 +276,5 @@ public class DataSetController {
         info.recordCount = dataSet.getRecordCount();
         info.errorMessage = dataSet.getErrorMessage();
         return info;
-    }
-
-    private String getMapping(InputStream inputStream) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-        String line;
-        StringBuilder out = new StringBuilder();
-        while ((line = in.readLine()) != null) {
-            out.append(line).append('\n');
-        }
-        return out.toString();
     }
 }

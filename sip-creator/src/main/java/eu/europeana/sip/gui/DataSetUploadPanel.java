@@ -24,18 +24,19 @@ package eu.europeana.sip.gui;
 import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+import javax.swing.ProgressMonitor;
 import javax.swing.SpringLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Present a number of fields in a form which can be used as global
@@ -46,8 +47,6 @@ import java.awt.event.ActionListener;
 
 public class DataSetUploadPanel extends JPanel {
     private SipModel sipModel;
-    private JButton uploadSourceButton = new JButton("Upload Source XML File");
-    private DefaultBoundedRangeModel sourceProgressModel = new DefaultBoundedRangeModel();
 
     public DataSetUploadPanel(SipModel sipModel) {
         super(new SpringLayout());
@@ -55,10 +54,9 @@ public class DataSetUploadPanel extends JPanel {
         setBorder(BorderFactory.createTitledBorder("Data Set Details"));
         // button line
         add(new JLabel(""));
-        add(uploadSourceButton);
+        add(new JButton(uploadSourceAction));
         // progress bars
         add(new JLabel("Upload File:", JLabel.RIGHT));
-        add(new JProgressBar(sourceProgressModel));
         // finish up
         LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
         setPreferredSize(new Dimension(480, 500));
@@ -66,17 +64,6 @@ public class DataSetUploadPanel extends JPanel {
     }
 
     private void wireUp() {
-        uploadSourceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    sipModel.uploadFile(sipModel.getDataSetStore().getSourceFile(), sourceProgressModel);
-                }
-                catch (FileStoreException e) {
-                    sipModel.tellUser("Unable to get source file for upload", e);
-                }
-            }
-        });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void templateApplied() {
@@ -84,7 +71,7 @@ public class DataSetUploadPanel extends JPanel {
 
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-                uploadSourceButton.setEnabled(dataSetStore != null); // todo: check that normalization has happened!
+                uploadSourceAction.setEnabled(dataSetStore != null); // todo: check that normalization has happened!
             }
 
             @Override
@@ -93,8 +80,21 @@ public class DataSetUploadPanel extends JPanel {
 
             @Override
             public void normalizationMessage(boolean complete, String message) {
-                uploadSourceButton.setEnabled(complete);
+                uploadSourceAction.setEnabled(complete);
             }
         });
     }
+
+    private Action uploadSourceAction = new AbstractAction("Upload XML Source") {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                ProgressMonitor progressMonitor = new ProgressMonitor(DataSetUploadPanel.this, "Uploading", "Uploading  " + sipModel.getDataSetStore().getSourceFile(), 0, 100);
+                sipModel.uploadFile(sipModel.getDataSetStore().getSourceFile(), new ProgressListener.Adapter(progressMonitor, this));
+            }
+            catch (FileStoreException e) {
+                sipModel.tellUser("Unable to get source file for upload", e);
+            }
+        }
+    };
 }

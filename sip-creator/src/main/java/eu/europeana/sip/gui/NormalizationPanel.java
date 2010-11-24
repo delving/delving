@@ -23,20 +23,21 @@ package eu.europeana.sip.gui;
 
 import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -44,7 +45,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Turn diverse source xml data into standardized output for import into the europeana portal database and search
@@ -57,8 +57,6 @@ public class NormalizationPanel extends JPanel {
     private SipModel sipModel;
     private JCheckBox discardInvalidBox = new JCheckBox("Discard Invalid Records");
     private JCheckBox storeNormalizedBox = new JCheckBox("Store Normalized XML");
-    private JButton normalizeButton = new JButton("Normalize");
-    private JButton abortButton = new JButton("Abort");
     private JLabel normalizeMessageLabel = new JLabel("?", JLabel.CENTER);
 
     public NormalizationPanel(SipModel sipModel) {
@@ -112,54 +110,21 @@ public class NormalizationPanel extends JPanel {
 
     private JPanel createNormalizePanel() {
         JPanel p = new JPanel(new BorderLayout(5, 5));
-        p.add(createNormalizeCenter(), BorderLayout.CENTER);
+        p.add(normalizeMessageLabel, BorderLayout.CENTER);
         p.add(createNormalizeEast(), BorderLayout.EAST);
         return p;
     }
 
-    private JPanel createNormalizeCenter() {
-        JProgressBar progressBar = new JProgressBar(sipModel.getNormalizeProgress());
-        progressBar.setBorderPainted(true);
-        progressBar.setStringPainted(true);
-        JPanel p = new JPanel(new GridLayout(0, 1, 5, 5));
-        p.setBorder(BorderFactory.createTitledBorder("Progress"));
-        p.add(progressBar);
-        p.add(normalizeMessageLabel);
-        return p;
-    }
-
     private JPanel createNormalizeEast() {
-        JPanel p = new JPanel(new GridLayout(2, 0, 5, 5));
+        JPanel p = new JPanel(new GridLayout(1, 0, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Control"));
         p.add(discardInvalidBox);
         p.add(storeNormalizedBox);
-        p.add(normalizeButton);
-        p.add(abortButton);
-        BoundedRangeModel m = sipModel.getNormalizeProgress();
-        abortButton.setEnabled(m.getValue() > m.getMinimum() && m.getValue() < m.getMaximum());
+        p.add(new JButton(normalizeAction));
         return p;
     }
 
     private void wireUp() {
-        sipModel.getNormalizeProgress().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                BoundedRangeModel m = sipModel.getNormalizeProgress();
-                abortButton.setEnabled(m.getValue() > m.getMinimum() && m.getValue() < m.getMaximum());
-            }
-        });
-        normalizeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.normalize(discardInvalidBox.isSelected(), storeNormalizedBox.isSelected());
-            }
-        });
-        abortButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sipModel.abortNormalize();
-            }
-        });
         sipModel.addUpdateListener(new SipModel.UpdateListener() {
             @Override
             public void templateApplied() {
@@ -179,4 +144,13 @@ public class NormalizationPanel extends JPanel {
             }
         });
     }
+
+    private Action normalizeAction = new AbstractAction("Normalize") {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(NormalizationPanel.this), "Normalizing", "Normalizing  " + sipModel.getDataSetStore().getSpec(), 0, 100);
+            sipModel.normalize(discardInvalidBox.isSelected(), storeNormalizedBox.isSelected(), new ProgressListener.Adapter(progressMonitor, this));
+        }
+    };
 }

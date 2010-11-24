@@ -39,18 +39,17 @@ import java.util.List;
  * @author Serkan Demirel <serkan@blackbuilt.nl>
  */
 
-public class FileMenu extends JMenu {
+public class ImportMenu extends JMenu {
     private Component parent;
     private SipModel sipModel;
     private SelectListener selectListener;
 
     public interface SelectListener {
         boolean selectInputFile(File inputFile);
-        void selectDataSet(String spec);
     }
 
-    public FileMenu(Component parent, SipModel sipModel, SelectListener selectListener) {
-        super("File");
+    public ImportMenu(Component parent, SipModel sipModel, SelectListener selectListener) {
+        super("Import");
         this.parent = parent;
         this.sipModel = sipModel;
         this.selectListener = selectListener;
@@ -61,7 +60,7 @@ public class FileMenu extends JMenu {
         private JFileChooser chooser = new JFileChooser("XML File");
 
         private LoadNewFileAction(File directory) {
-            super("Open File from " + directory.getAbsolutePath());
+            super("Explore " + directory.getAbsolutePath());
             chooser.setCurrentDirectory(directory);
             chooser.setFileFilter(new FileFilter() {
                 @Override
@@ -71,7 +70,7 @@ public class FileMenu extends JMenu {
 
                 @Override
                 public String getDescription() {
-                    return "XML Files";
+                    return "XML or GZIP/XML Files";
                 }
             });
             chooser.setMultiSelectionEnabled(false);
@@ -89,30 +88,12 @@ public class FileMenu extends JMenu {
         }
     }
 
-    private class LoadDataSetAction extends AbstractAction {
-        private String spec;
-
-        private LoadDataSetAction(String spec) {
-            super(String.format("Load Data Set %s", spec));
-            this.spec = spec;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            selectListener.selectDataSet(spec);
-        }
-    }
-
     private void refresh() {
         removeAll();
         add(new LoadNewFileAction(new File("/")));
         List<String> directoryList = sipModel.getRecentDirectories();
         for (String directory : directoryList) {
             add(new LoadNewFileAction(new File(directory)));
-        }
-        addSeparator();
-        for (String spec : sipModel.getFileStore().getDataSetSpecs()) {
-            add(new LoadDataSetAction(spec));
         }
     }
 }

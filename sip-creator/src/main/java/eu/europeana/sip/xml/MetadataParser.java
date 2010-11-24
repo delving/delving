@@ -23,6 +23,7 @@ package eu.europeana.sip.xml;
 
 import eu.delving.metadata.Path;
 import eu.delving.metadata.Tag;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.GroovyNode;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.Sanitizer;
@@ -50,20 +51,17 @@ public class MetadataParser {
     private InputStream inputStream;
     private XMLStreamReader2 input;
     private Path recordRoot;
-    private int recordCount;
+    private int recordIndex, recordCount;
     private Path path = new Path();
     private Map<String,String> namespaces = new TreeMap<String,String>();
     private MetadataRecord.Factory factory = new MetadataRecord.Factory(namespaces);
-    private Listener listener;
+    private ProgressListener progressListener;
 
-    public interface Listener {
-        void recordsParsed(int count, boolean lastRecord);
-    }
-
-    public MetadataParser(InputStream inputStream, Path recordRoot, Listener listener) throws XMLStreamException {
+    public MetadataParser(InputStream inputStream, Path recordRoot, int recordCount, ProgressListener progressListener) throws XMLStreamException {
         this.inputStream = inputStream;
         this.recordRoot = recordRoot;
-        this.listener = listener;
+        this.recordCount = recordCount;
+        this.progressListener = progressListener;
         XMLInputFactory2 xmlif = (XMLInputFactory2) XMLInputFactory2.newInstance();
         xmlif.setProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
         xmlif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
@@ -73,7 +71,7 @@ public class MetadataParser {
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized MetadataRecord nextRecord() throws XMLStreamException, IOException {
+    public synchronized MetadataRecord nextRecord() throws XMLStreamException, IOException, AbortException {
         MetadataRecord metadataRecord = null;
         GroovyNode rootNode = null;
         Stack<GroovyNode> nodeStack = new Stack<GroovyNode>();
@@ -82,8 +80,8 @@ public class MetadataParser {
         while (metadataRecord == null) {
             switch (input.getEventType()) {
                 case XMLEvent.START_DOCUMENT:
-                    if (listener != null) {
-                        listener.recordsParsed(0, false);
+                    if (progressListener != null) {
+                        progressListener.setTotal(recordCount);
                     }
                     break;
                 case XMLEvent.START_ELEMENT:
@@ -130,10 +128,12 @@ public class MetadataParser {
                 case XMLEvent.END_ELEMENT:
                     if (path.equals(recordRoot)) {
                         withinRecord = false;
-                        recordCount++;
-                        metadataRecord = factory.fromGroovyNode(rootNode, recordCount);
-                        if (listener != null) {
-                            listener.recordsParsed(recordCount, false);
+                        recordIndex++;
+                        metadataRecord = factory.fromGroovyNode(rootNode, recordIndex);
+                        if (progressListener != null) {
+                            if (!progressListener.setProgress(recordIndex)) {
+                                throw new AbortException();
+                            }
                         }
                     }
                     if (withinRecord) {
@@ -152,8 +152,8 @@ public class MetadataParser {
             }
             if (!input.hasNext()) {
                 inputStream.close();
-                if (listener != null) {
-                    listener.recordsParsed(recordCount, true);
+                if (progressListener != null) {
+                    progressListener.finished();
                 }
                 break;
             }
@@ -171,4 +171,9 @@ public class MetadataParser {
         }
     }
 
+    public static class AbortException extends Exception {
+        public AbortException() {
+            super("Metadata parsing aborted");
+        }
+    }
 }

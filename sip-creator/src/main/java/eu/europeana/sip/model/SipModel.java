@@ -34,6 +34,7 @@ import eu.delving.metadata.Statistics;
 import eu.delving.sip.AppConfig;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
+import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.RecordValidationException;
@@ -44,8 +45,7 @@ import eu.europeana.sip.xml.MetadataParser;
 import eu.europeana.sip.xml.Normalizer;
 import org.apache.log4j.Logger;
 
-import javax.swing.BoundedRangeModel;
-import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.Action;
 import javax.swing.ListModel;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
@@ -80,7 +80,6 @@ public class SipModel {
     private UserNotifier userNotifier;
     private List<Statistics> statisticsList;
     private AnalysisParser analysisParser;
-    private Normalizer normalizer;
     private AnalysisTree analysisTree;
     private DefaultTreeModel analysisTreeModel;
     private FieldListModel fieldListModel;
@@ -92,7 +91,6 @@ public class SipModel {
     private FieldMappingListModel fieldMappingListModel;
     private MappingModel mappingModel = new MappingModel();
     private MappingSaveTimer mappingSaveTimer = new MappingSaveTimer();
-    private DefaultBoundedRangeModel normalizeProgressModel = new DefaultBoundedRangeModel();
     private VariableListModel variableListModel = new VariableListModel();
     private StatisticsTableModel statisticsTableModel = new StatisticsTableModel();
     private List<UpdateListener> updateListeners = new CopyOnWriteArrayList<UpdateListener>();
@@ -142,6 +140,14 @@ public class SipModel {
         mappingModel.addListener(recordCompileModel);
         mappingModel.addListener(fieldCompileModel);
         mappingModel.addListener(mappingSaveTimer);
+        fieldCompileModel.addListener(new CompileModel.Listener() {
+            @Override
+            public void stateChanged(CompileModel.State state) {
+                if (state == CompileModel.State.COMMITTED) {
+                    mappingSaveTimer.mappingChanged(null);
+                }
+            }
+        });
     }
 
     public void addUpdateListener(UpdateListener updateListener) {
@@ -152,44 +158,12 @@ public class SipModel {
         return fileStore;
     }
 
-    public void createDataSetStore(final String spec, final File file, final ProgressMonitor progressMonitor) {
+    public void createDataSetStore(final String spec, final File file, final ProgressMonitor progressMonitor, final Action launchAction) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final FileStore.DataSetStore store = fileStore.createDataSetStore(spec, file, new FileStore.CreateProgress() {
-
-                        @Override
-                        public void setTotal(final int total) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressMonitor.setMaximum(total);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public boolean setProgress(final int progress) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressMonitor.setProgress(progress);
-                                }
-                            });
-                            return !progressMonitor.isCanceled();
-                        }
-
-                        @Override
-                        public void finished() {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressMonitor.close();
-                                }
-                            });
-                        }
-                    });
+                    final FileStore.DataSetStore store = fileStore.createDataSetStore(spec, file, new ProgressListener.Adapter(progressMonitor, launchAction));
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -298,17 +272,11 @@ public class SipModel {
                                 createMetadataParser(1);
                                 if (recordMapping != null) {
                                     if (recordMapping.getNormalizeTime() == 0) {
-                                        normalizeProgressModel.setValue(0);
                                         normalizeMessage(false, "Normalization not yet performed.");
                                     }
                                     else {
-                                        normalizeProgressModel.setValue(recordMapping.getRecordsNormalized() + recordMapping.getRecordsDiscarded());
                                         normalizeMessage(recordMapping);
                                     }
-                                }
-                                else {
-                                    normalizeProgressModel.setMaximum(100);
-                                    normalizeProgressModel.setValue(0);
                                 }
                             }
                         });
@@ -403,37 +371,20 @@ public class SipModel {
         return sourceDetails;
     }
 
-    public BoundedRangeModel getNormalizeProgress() {
-        return normalizeProgressModel;
-    }
-
-    public void normalize(boolean discardInvalid, boolean storeNormalizedFile) {
+    public void normalize(boolean discardInvalid, boolean storeNormalizedFile, ProgressListener progressListener) {
         checkSwingThread();
-        abortNormalize();
         File normalizedFile = null;
         if (storeNormalizedFile) {
             // todo: file chooser
         }
         normalizeMessage(false, "Normalizing and validating...");
-        normalizer = new Normalizer(
+        executor.execute(new Normalizer(
                 this,
                 getRecordRoot(),
+                getRecordCount(),
                 discardInvalid,
                 normalizedFile,
-                new MetadataParser.Listener() {
-                    @Override
-                    public void recordsParsed(final int count, final boolean lastRecord) {
-                        if (lastRecord || count % 100 == 0) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    normalizeProgressModel.setValue(count);
-                                }
-                            });
-                            Thread.yield();
-                        }
-                    }
-                },
+                progressListener,
                 new Normalizer.Listener() {
                     @Override
                     public void invalidInput(final MappingException exception) {
@@ -470,23 +421,12 @@ public class SipModel {
                         });
                     }
                 }
-        );
-        executor.execute(normalizer);
+        ));
     }
 
-    public void abortNormalize() {
+    public void uploadFile(File file, ProgressListener progressListener) {
         checkSwingThread();
-        final Normalizer existingNormalizer = normalizer;
-        normalizer = null;
-        if (existingNormalizer != null) {
-            normalizeProgressModel.setValue(0);
-            existingNormalizer.abort();
-        }
-    }
-
-    public void uploadFile(File file, BoundedRangeModel progressModel) {
-        checkSwingThread();
-        executor.execute(new FileUploader(file, serverUrl, getServerAccessKey(), userNotifier, progressModel));
+        executor.execute(new FileUploader(file, serverUrl, getServerAccessKey(), userNotifier, progressListener));
     }
 
     public TreeModel getAnalysisTreeModel() {
@@ -520,6 +460,13 @@ public class SipModel {
             return null;
         }
         return new Path(getSourceDetails().get(SourceDetails.RECORD_PATH));
+    }
+
+    public int getRecordCount() {
+        if (sourceDetails == null || sourceDetails.get(SourceDetails.RECORD_COUNT).isEmpty()) {
+            return 0;
+        }
+        return Integer.parseInt(getSourceDetails().get(SourceDetails.RECORD_COUNT));
     }
 
     public void setRecordRoot(Path recordRoot, int recordCount) {
@@ -632,16 +579,13 @@ public class SipModel {
     private void setRecordRootInternal(Path recordRoot, int recordCount) {
         checkSwingThread();
         List<AnalysisTree.Node> variables = new ArrayList<AnalysisTree.Node>();
-        normalizeProgressModel.setValue(0);
         if (recordRoot != null) {
             AnalysisTree.setRecordRoot(analysisTreeModel, recordRoot);
             analysisTree.getVariables(variables);
             variableListModel.setVariableList(variables);
-            normalizeProgressModel.setMaximum(recordCount);
         }
         else {
             variableListModel.clear();
-            normalizeProgressModel.setMaximum(100);
         }
         for (UpdateListener updateListener : updateListeners) {
             updateListener.updatedRecordRoot(recordRoot, recordCount);
@@ -694,7 +638,7 @@ public class SipModel {
             }
             try {
                 if (metadataParser == null) {
-                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, null);
+                    metadataParser = new MetadataParser(dataSetStore.createXmlInputStream(), recordRoot, getRecordCount(), null);
                 }
                 while (recordNumber-- > 0) {
                     metadataRecord = metadataParser.nextRecord();
