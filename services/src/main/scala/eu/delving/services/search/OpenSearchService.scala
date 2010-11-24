@@ -5,7 +5,10 @@ import eu.europeana.core.BeanQueryModelFactory
 import xml.Elem
 import org.apache.solr.client.solrj.SolrQuery
 import java.util.Properties
+import scala.collection.JavaConversions._
 import eu.europeana.core.querymodel.query. {QueryType, BriefDoc, BriefBeanView}
+
+
 class OpenSearchService(request: HttpServletRequest, beanQueryModelFactory: BeanQueryModelFactory, launchProperties: Properties) {
 
   val servicesUrl = launchProperties.getProperty("services.url")
@@ -73,7 +76,7 @@ class OpenSearchService(request: HttpServletRequest, beanQueryModelFactory: Bean
      <opensearch:itemsPerPage>{pagination.getRows}</opensearch:itemsPerPage>
      <atom:link rel="search" type="application/opensearchdescription+xml" href={servicesUrl +"api/open-search.xml"} title="Delving Search"/>
      <opensearch:Query searchTerms={searchTerms} startPage={startPage.toString} role="request" />
-     {for (doc <- briefResult.getBriefDocs) yield
+     {for (doc <- asJavaList(briefResult.getBriefDocs)) yield
           renderRecord(doc)
      }
    </channel>
