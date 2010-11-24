@@ -52,7 +52,7 @@ class SolrQueryUtilSpec extends Spec with ShouldMatchers with DelvingTestUtil {
     describe("(when given a solr query with filterqueries for the same facet)") {
       val solrQuery = new SolrQuery
       solrQuery.setFilterQueries("PROVIDER:\"The European Library\"", "LANGUAGE:\"en\"", "LANGUAGE:\"de\"")
-      val facetMap: JMap[String, String] = asMap(HashMap("PROVIDER" -> "prov", "LANGUAGE" -> "lang"))
+      val facetMap: JMap[String, String] = asJavaMap(HashMap("PROVIDER" -> "prov", "LANGUAGE" -> "lang"))
       val queriesAsOrQueries = SolrQueryUtil.getFilterQueriesAsOrQueries(solrQuery, facetMap)
 
       it("should have an OR between the facets with the same facet field") {
