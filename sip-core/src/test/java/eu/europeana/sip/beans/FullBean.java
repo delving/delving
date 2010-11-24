@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.beans;
 
-import eu.europeana.core.database.domain.Country;
-import eu.europeana.core.database.domain.Language;
+import eu.delving.domain.Country;
+import eu.delving.domain.Language;
 import eu.europeana.sip.annotations.Europeana;
 import eu.europeana.sip.annotations.Solr;
 import eu.europeana.sip.definitions.presentation.BriefDoc;

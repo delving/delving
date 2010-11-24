@@ -1,8 +1,8 @@
 package eu.europeana.sip;
 
-import eu.delving.core.metadata.ElementDefinition;
-import eu.delving.core.metadata.FieldDefinition;
-import eu.delving.core.metadata.RecordDefinition;
+import eu.delving.metadata.ElementDefinition;
+import eu.delving.metadata.FieldDefinition;
+import eu.delving.metadata.RecordDefinition;
 import eu.europeana.sip.annotations.AnnotationProcessorImpl;
 import eu.europeana.sip.annotations.Europeana;
 import eu.europeana.sip.annotations.EuropeanaField;

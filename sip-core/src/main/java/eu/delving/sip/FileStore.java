@@ -21,10 +21,10 @@
 
 package eu.delving.sip;
 
-import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.RecordMapping;
-import eu.delving.core.metadata.SourceDetails;
-import eu.delving.core.metadata.Statistics;
+import eu.delving.metadata.RecordDefinition;
+import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceDetails;
+import eu.delving.metadata.Statistics;
 
 import java.io.File;
 import java.io.InputStream;

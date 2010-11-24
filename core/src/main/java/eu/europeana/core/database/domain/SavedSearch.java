@@ -21,6 +21,8 @@
 
 package eu.europeana.core.database.domain;
 
+import eu.delving.domain.Language;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;

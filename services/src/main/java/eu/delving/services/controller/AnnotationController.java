@@ -21,10 +21,10 @@
 
 package eu.delving.services.controller;
 
+import eu.delving.domain.Language;
 import eu.europeana.core.database.AnnotationDao;
 import eu.europeana.core.database.domain.Annotation;
 import eu.europeana.core.database.domain.AnnotationType;
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.User;
 import eu.europeana.core.database.exception.AnnotationHasBeenModifiedException;
 import eu.europeana.core.database.exception.AnnotationNotFoundException;

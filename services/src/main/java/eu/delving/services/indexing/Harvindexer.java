@@ -1,14 +1,14 @@
 package eu.delving.services.indexing;
 
 import com.ctc.wstx.stax.WstxInputFactory;
-import eu.delving.core.metadata.FieldDefinition;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.Tag;
-import eu.delving.core.rest.ServiceAccessToken;
+import eu.delving.metadata.FieldDefinition;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.Tag;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.ImportException;
+import eu.delving.sip.ServiceAccessToken;
 import eu.europeana.core.database.ConsoleDao;
 import eu.europeana.core.database.UserDao;
 import eu.europeana.core.database.domain.CollectionState;

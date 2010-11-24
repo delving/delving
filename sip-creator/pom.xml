@@ -5,7 +5,7 @@
     <artifactId>sip-creator</artifactId>
     <packaging>jar</packaging>
     <name>SIP-Creator</name>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
     <inceptionYear>2008</inceptionYear>
 
     <parent>
@@ -83,17 +83,7 @@
         <dependency>
             <groupId>eu.delving</groupId>
             <artifactId>sip-core</artifactId>
-            <version>0.1.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.oxm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.jnlp</groupId>
-            <artifactId>jnlp-api</artifactId>
-            <version>1.5.0</version>
-            <scope>provided</scope>
+            <version>0.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -107,7 +97,7 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>

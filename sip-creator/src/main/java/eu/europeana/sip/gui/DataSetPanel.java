@@ -1,12 +1,13 @@
 package eu.europeana.sip.gui;
 
-import eu.delving.core.rest.DataSetInfo;
+import com.thoughtworks.xstream.XStream;
+import eu.delving.sip.DataSetInfo;
 import eu.europeana.sip.model.SipModel;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
-import org.springframework.oxm.xstream.XStreamMarshaller;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -20,7 +21,6 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -34,13 +34,13 @@ import java.util.concurrent.Executors;
 public class DataSetPanel extends JPanel {
     private static final int LIST_FETCH_DELAY_MILLIS = 5000;
     private Executor executor = Executors.newSingleThreadExecutor();
-    private RestTemplate restTemplate;
     private JTextField keyField = new JTextField(20);
     private JButton checkKey = new JButton("Use this key");
     private JLabel errorMessage = new JLabel("", JLabel.CENTER);
     private SipModel sipModel;
     private DataSetControlPanel dataSetControlPanel;
     private Timer periodicListFetchTimer;
+    private HttpClient httpClient = new DefaultHttpClient();
 
     public DataSetPanel(SipModel sipModel) {
         super(new BorderLayout(8, 8));
@@ -102,7 +102,10 @@ public class DataSetPanel extends JPanel {
                         sipModel.getServerUrl(),
                         sipModel.getServerAccessKey()
                 );
-                final List list = rest().getForObject(url, List.class);
+                HttpGet get = new HttpGet(url);
+                HttpResponse response = httpClient.execute(get);
+                HttpEntity entity = response.getEntity();
+                final List list = (List) xstream().fromXML(entity.getContent());
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -112,7 +115,7 @@ public class DataSetPanel extends JPanel {
                     }
                 });
             }
-            catch (RestClientException e) {
+            catch (Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -142,7 +145,10 @@ public class DataSetPanel extends JPanel {
                         String.valueOf(enable),
                         sipModel.getServerAccessKey()
                 );
-                final DataSetInfo info = rest().getForObject(url, DataSetInfo.class);
+                HttpGet get = new HttpGet(url);
+                HttpResponse response = httpClient.execute(get);
+                HttpEntity entity = response.getEntity();
+                final DataSetInfo info = (DataSetInfo) xstream().fromXML(entity.getContent());
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -150,7 +156,7 @@ public class DataSetPanel extends JPanel {
                     }
                 });
             }
-            catch (RestClientException e) {
+            catch (Exception e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -161,16 +167,9 @@ public class DataSetPanel extends JPanel {
         }
     }
 
-    private RestTemplate rest() {
-        if (restTemplate == null) {
-            XStreamMarshaller xStream = new XStreamMarshaller();
-            xStream.setAnnotatedClass(DataSetInfo.class);
-            List<HttpMessageConverter<?>> converterList = new ArrayList<HttpMessageConverter<?>>();
-            converterList.add(new MarshallingHttpMessageConverter(xStream, xStream));
-            restTemplate = new RestTemplate();
-            restTemplate.setMessageConverters(converterList);
-        }
-        return restTemplate;
+    private XStream xstream() {
+        XStream stream = new XStream();
+        stream.processAnnotations(new Class<?>[] {DataSetInfo.class, List.class});
+        return stream;
     }
-
 }

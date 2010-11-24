@@ -1,15 +1,15 @@
 package eu.delving.services.controller;
 
-import eu.delving.core.metadata.MetadataException;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.RecordMapping;
-import eu.delving.core.metadata.SourceDetails;
-import eu.delving.core.rest.DataSetInfo;
-import eu.delving.core.rest.ServiceAccessToken;
+import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceDetails;
 import eu.delving.services.core.MetaRepo;
 import eu.delving.services.exceptions.AccessKeyException;
 import eu.delving.services.exceptions.BadArgumentException;
+import eu.delving.sip.DataSetInfo;
+import eu.delving.sip.ServiceAccessToken;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;

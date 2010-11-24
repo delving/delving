@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.AnalysisTree;
-import eu.delving.core.metadata.AnalysisTreeNode;
-import eu.delving.core.metadata.Path;
+import eu.delving.metadata.AnalysisTree;
+import eu.delving.metadata.AnalysisTreeNode;
+import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
 import eu.europeana.sip.model.SipModel;
 

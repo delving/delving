@@ -1,9 +1,9 @@
 package eu.delving.services.core;
 
 import com.mongodb.DBObject;
-import eu.delving.core.metadata.MetadataException;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.RecordMapping;
 import eu.delving.services.exceptions.BadArgumentException;
 import eu.delving.services.exceptions.BadResumptionTokenException;
 import eu.delving.services.exceptions.CannotDisseminateFormatException;

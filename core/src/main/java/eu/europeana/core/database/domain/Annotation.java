@@ -21,6 +21,7 @@
 
 package eu.europeana.core.database.domain;
 
+import eu.delving.domain.Language;
 import org.hibernate.annotations.Index;
 
 import javax.persistence.Column;

@@ -21,7 +21,7 @@
 
 package eu.europeana.core.util.web;
 
-import eu.europeana.core.database.domain.Language;
+import eu.delving.domain.Language;
 import eu.europeana.core.database.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.rest.DataSetInfo;
+import eu.delving.sip.DataSetInfo;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

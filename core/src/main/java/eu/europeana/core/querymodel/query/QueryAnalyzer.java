@@ -21,11 +21,13 @@
 
 package eu.europeana.core.querymodel.query;
 
-import eu.delving.core.metadata.MetadataModel;
+import eu.delving.metadata.MetadataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The query is an advanced query when the query string contains - " AND ", " OR ", " NOT " (both uppercase) - a fielded

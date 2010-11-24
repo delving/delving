@@ -1,8 +1,8 @@
 package eu.europeana.fixture;
 
+import eu.delving.domain.Language;
 import eu.europeana.core.database.domain.EuropeanaCollection;
 import eu.europeana.core.database.domain.EuropeanaId;
-import eu.europeana.core.database.domain.Language;
 import eu.europeana.core.database.domain.Role;
 import eu.europeana.core.database.domain.SavedItem;
 import eu.europeana.core.database.domain.SavedSearch;

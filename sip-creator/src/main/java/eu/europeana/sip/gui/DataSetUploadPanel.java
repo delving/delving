@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.Path;
+import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.model.SipModel;

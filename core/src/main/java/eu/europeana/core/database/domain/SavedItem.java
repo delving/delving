@@ -21,6 +21,7 @@
 
 package eu.europeana.core.database.domain;
 
+import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.DocType;
 
 import javax.persistence.CascadeType;

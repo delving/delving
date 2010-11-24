@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.Statistics;
+import eu.delving.metadata.Statistics;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;

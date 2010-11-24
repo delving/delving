@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.FieldMapping;
+import eu.delving.metadata.FieldMapping;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

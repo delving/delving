@@ -21,12 +21,12 @@
 
 package eu.europeana.sip.core;
 
-import eu.delving.core.metadata.FieldDefinition;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.NamespaceDefinition;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.Tag;
+import eu.delving.metadata.FieldDefinition;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.NamespaceDefinition;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.RecordDefinition;
+import eu.delving.metadata.Tag;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;

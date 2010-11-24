@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.MetadataModelImpl;
-import eu.delving.core.metadata.Path;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.metadata.Path;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.delving.sip.FileStoreImpl;

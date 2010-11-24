@@ -21,15 +21,15 @@
 
 package eu.delving.sip;
 
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.MetadataException;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.MetadataModelImpl;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.RecordMapping;
-import eu.delving.core.metadata.SourceDetails;
-import eu.delving.core.metadata.Statistics;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.MetadataModelImpl;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.RecordDefinition;
+import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceDetails;
+import eu.delving.metadata.Statistics;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;

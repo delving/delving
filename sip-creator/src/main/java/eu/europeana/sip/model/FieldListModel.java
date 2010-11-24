@@ -21,11 +21,11 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.FieldDefinition;
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.FieldDefinition;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.RecordMapping;
 
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;

@@ -29,7 +29,9 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean id="serviceAccessToken" class="eu.delving.core.rest.ServiceAccessToken"/>
+    <bean id="serviceAccessToken" class="eu.delving.sip.ServiceAccessToken">
+        <property name="servicesPassword" value="#{launchProperties['services.password']}"/>
+    </bean>
 
     <bean id="mongo" class="com.mongodb.Mongo"/>
 

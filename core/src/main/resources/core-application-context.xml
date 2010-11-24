@@ -170,7 +170,7 @@
         <property name="maxRetries" value="#{launchProperties['solr.retries']}"/>
     </bean>
 
-    <bean id="metadataModel" class="eu.delving.core.metadata.MetadataModelImpl">
+    <bean id="metadataModel" class="eu.delving.metadata.MetadataModelImpl">
         <property name="recordDefinitionResources">
             <list>
                 <value>/abm-record-definition.xml</value>

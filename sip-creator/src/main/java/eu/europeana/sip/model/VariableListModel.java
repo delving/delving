@@ -21,10 +21,10 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.AnalysisTree;
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.SourceVariable;
+import eu.delving.metadata.AnalysisTree;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.SourceVariable;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;

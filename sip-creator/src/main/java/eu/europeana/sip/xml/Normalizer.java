@@ -21,9 +21,9 @@
 
 package eu.europeana.sip.xml;
 
-import eu.delving.core.metadata.MetadataNamespace;
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.MetadataNamespace;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.RecordMapping;
 import eu.delving.sip.FileStore;
 import eu.delving.sip.FileStoreException;
 import eu.europeana.sip.core.MappingException;

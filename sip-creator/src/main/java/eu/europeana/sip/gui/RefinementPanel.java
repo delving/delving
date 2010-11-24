@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.FieldMapping;
+import eu.delving.metadata.FieldMapping;
 import eu.europeana.sip.model.CompileModel;
 import eu.europeana.sip.model.FieldMappingListModel;
 import eu.europeana.sip.model.SipModel;

@@ -22,11 +22,11 @@
 package eu.delving.sip;
 
 import com.thoughtworks.xstream.XStream;
-import eu.delving.core.metadata.MetadataException;
-import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.RecordMapping;
-import eu.delving.core.metadata.SourceDetails;
-import eu.delving.core.metadata.Statistics;
+import eu.delving.metadata.MetadataException;
+import eu.delving.metadata.RecordDefinition;
+import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceDetails;
+import eu.delving.metadata.Statistics;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

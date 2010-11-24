@@ -21,10 +21,10 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.FieldMapping;
-import eu.delving.core.metadata.MappingModel;
-import eu.delving.core.metadata.MetadataModel;
-import eu.delving.core.metadata.RecordMapping;
+import eu.delving.metadata.FieldMapping;
+import eu.delving.metadata.MappingModel;
+import eu.delving.metadata.MetadataModel;
+import eu.delving.metadata.RecordMapping;
 import eu.europeana.sip.core.MappingException;
 import eu.europeana.sip.core.MappingRunner;
 import eu.europeana.sip.core.MetadataRecord;

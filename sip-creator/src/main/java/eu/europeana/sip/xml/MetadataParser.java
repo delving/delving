@@ -21,8 +21,8 @@
 
 package eu.europeana.sip.xml;
 
-import eu.delving.core.metadata.Path;
-import eu.delving.core.metadata.Tag;
+import eu.delving.metadata.Path;
+import eu.delving.metadata.Tag;
 import eu.europeana.sip.core.GroovyNode;
 import eu.europeana.sip.core.MetadataRecord;
 import eu.europeana.sip.core.Sanitizer;

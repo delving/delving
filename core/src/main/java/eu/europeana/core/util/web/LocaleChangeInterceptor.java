@@ -21,7 +21,7 @@
 
 package eu.europeana.core.util.web;
 
-import eu.europeana.core.database.domain.Language;
+import eu.delving.domain.Language;
 import eu.europeana.core.querymodel.query.EuropeanaQueryException;
 import eu.europeana.core.querymodel.query.QueryProblem;
 import org.springframework.beans.propertyeditors.LocaleEditor;

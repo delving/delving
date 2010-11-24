@@ -21,10 +21,10 @@
 
 package eu.europeana.sip.model;
 
-import eu.delving.core.metadata.ConstantInputDefinition;
-import eu.delving.core.metadata.RecordDefinition;
-import eu.delving.core.metadata.RecordMapping;
-import eu.delving.core.metadata.SourceDetails;
+import eu.delving.metadata.ConstantInputDefinition;
+import eu.delving.metadata.RecordDefinition;
+import eu.delving.metadata.RecordMapping;
+import eu.delving.metadata.SourceDetails;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

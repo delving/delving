@@ -26,7 +26,7 @@
     <artifactId>sip-core</artifactId>
     <packaging>jar</packaging>
     <name>SIP-Core</name>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
     <description>Core SIP Classes</description>
     <inceptionYear>2010</inceptionYear>
 
@@ -80,9 +80,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>core</artifactId>
-            <version>0.1.5</version>
+            <groupId>eu.delving</groupId>
+            <artifactId>metameta</artifactId>
+            <version>0.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
@@ -94,7 +98,7 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>wstx-lgpl</artifactId>
+            <artifactId>woodstox-core-asl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
@@ -104,7 +108,7 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

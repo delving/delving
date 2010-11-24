@@ -21,7 +21,7 @@
 
 package eu.europeana.sip.gui;
 
-import eu.delving.core.metadata.ConstantInputDefinition;
+import eu.delving.metadata.ConstantInputDefinition;
 import eu.europeana.sip.model.ConstantFieldModel;
 
 import javax.swing.BorderFactory;
