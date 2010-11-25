@@ -37,7 +37,7 @@
         <#-- TODO: Create this facet -------------------------->
         <#-- Norvegiana: Add "by About Person" ---------------->
         <#----------------------------------------------------->
-        <@resultBriefFacets "DCTYPE",  "dc_type_t", 2/>
+        <@resultBriefFacets "DCTYPE",  "_metadata.dc.type", 2/>
     </nav>
 
     <nav id="userActions">

@@ -6,98 +6,98 @@
           </option>
           <option value="cs">
               &#268;e&#353;tina (cze/cse)
-              <#--<@spring.message 'czechlanguage_t' />-->
+              <#--<@spring.message 'locale.czechlanguage' />-->
           </option>
           <option value="da">
               Dansk (dan)
-              <#--<@spring.message 'danish_t' />-->
+              <#--<@spring.message 'locale.danish' />-->
           </option>
           <option value="de">
               Deutsch (deu)
-              <#--<@spring.message 'german_t' />-->
+              <#--<@spring.message 'locale.german' />-->
           </option>
           <option value="nl">
               Nederlands (dut)
-              <#--<@spring.message 'dutch_t' />-->
+              <#--<@spring.message 'locale.dutch' />-->
           </option>
           <option value="el">
               &#917;&#955;&#955;&#951;&#957;&#953;&#954;&#940; (ell/gre)
-              <#--<@spring.message 'greek_t' />-->
+              <#--<@spring.message 'locale.greek' />-->
           </option>
           <option value="en">
           English (eng)
-          <#--<@spring.message 'english_t' />-->
+          <#--<@spring.message 'locale.english' />-->
           </option>
           <option value="es">
               Espa&#241;ol (esp)
-              <#--<@spring.message 'spanish_t' />-->
+              <#--<@spring.message 'locale.spanish' />-->
           </option>
           <option value="et">
           Eesti (est)
-          <#--<@spring.message 'estonian_t' />-->
+          <#--<@spring.message 'locale.estonian' />-->
           </option>
           <option value="fi">
           Suomi (fin)
-          <#--<@spring.message 'finnish_t' />-->
+          <#--<@spring.message 'locale.finnish' />-->
           </option>
           <option value="fr">
           Fran&#231;ais (fre)
-          <#--<@spring.message 'french_t' />-->
+          <#--<@spring.message 'locale.french' />-->
           </option>
           <option value="ga">
           Irish (gle)
           </option>
           <option value="hu">
           Magyar (hun)
-          <#--<@spring.message 'hungarian_t' />-->
+          <#--<@spring.message 'locale.hungarian' />-->
           </option>
           <option value="is">
           &#205;slenska (ice)
-          <#--<@spring.message 'icelandic_t' />-->
+          <#--<@spring.message 'locale.icelandic' />-->
           </option>
           <option value="it">
           Italiano (ita)
-          <#--<@spring.message 'italian_t' />-->
+          <#--<@spring.message '_language_select.italian' />-->
           </option>
           <option value="lv">
           Latvie&#353;u (lav)
-          <#--<@spring.message 'latvian_t' />-->
+          <#--<@spring.message 'locale.latvian' />-->
           </option>
           <option value="lt">
           Lietuvi&#371; (lit)
-          <#--<@spring.message 'lithuanian_t' />-->
+          <#--<@spring.message 'locale.lithuanian' />-->
           </option>
           <option value="mt">
           Malti (mlt)
-          <#--<@spring.message 'maltese_t' />-->
+          <#--<@spring.message 'locale.maltese' />-->
           </option>
           <option value="no">
           Norsk (nor)
-          <#--<@spring.message 'norwegian_t' />-->
+          <#--<@spring.message 'locale.norwegian' />-->
           </option>
           <option value="pl">
           Polski (pol)
-          <#--<@spring.message 'polish_t' />-->
+          <#--<@spring.message 'locale.polish' />-->
           </option>
           <option value="pt">
           Portugu&#234;s (por)
-          <#--<@spring.message 'portuguese_t' />-->
+          <#--<@spring.message 'locale.portuguese' />-->
           </option>
           <option value="ro">
           Rom&#226;n&#259; (rom)
-          <#--<@spring.message 'romanian_t' />-->
+          <#--<@spring.message 'locale.romanian' />-->
           </option>
           <option value="sk">
           Slovensk&#253; (slo)
-          <#--<@spring.message 'slovak_t' />-->
+          <#--<@spring.message 'locale.slovak' />-->
           </option>
           <option value="sl">
           Sloven&#353;&#269;ina (slv)
-          <#--<@spring.message 'slovenian_t' />-->
+          <#--<@spring.message 'locale.slovenian' />-->
           </option>
           <option value="sv">
               Svenska (sve/swe)
-              <#--<@spring.message 'swedish_t' />-->
+              <#--<@spring.message 'locale.swedish' />-->
           </option>
       </select>
 

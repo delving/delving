@@ -1041,9 +1041,9 @@
 <#macro sortResults>
 <select id="sortOptions" name="sortBy" onchange="$('input#sortBy').val(this.value);$('form#form-sort').submit();">
     <option value=""><@spring.message 'search.order.by' /></option>
-    <option value="title" ><@spring.message 'dc_title_t' /></option>
-    <option value="creator"><@spring.message 'dc_creator_t' /></option>
-    <option value="YEAR"><@spring.message 'dc_date_t' /></option>
+    <option value="title" ><@spring.message '_metadata.dc.title' /></option>
+    <option value="creator"><@spring.message '_metadata.dc.creator' /></option>
+    <option value="YEAR"><@spring.message '_metadata.dc.date' /></option>
     <#--<option value="COLLECTION"><@spring.message 'collection_t' /></option>-->
 </select>
 <form action="" method="GET" id="form-sort" style="display:none;">

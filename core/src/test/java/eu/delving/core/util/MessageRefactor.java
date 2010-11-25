@@ -145,19 +145,15 @@ public class MessageRefactor {
         if (go) {
             if (outFile.exists()) {
                 Map<String, String> refactorMap = MessageFileUtil.readMap(outFile);
-                for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
-                    if (entry.getValue().isEmpty()) {
-                        System.out.println(String.format("No refactor for %s, aborting", entry.getKey()));
-                        return;
-                    }
-                }
                 for (File file : files) {
                     List<String> lines = readFile(file);
                     Writer writer = new FileWriter(file);
                     for (String line : lines) {
                         String lineWas = line;
                         for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
-                            line = line.replaceAll(entry.getKey(), entry.getValue());
+                            if (!entry.getKey().equals(entry.getValue())) {
+                                line = line.replaceAll(entry.getKey(), entry.getValue());
+                            }
                         }
                         if (!lineWas.equals(line)) {
                             System.out.println("from> " + lineWas + "\n  to> " + line + "\n");
@@ -170,38 +166,45 @@ public class MessageRefactor {
                 for (Map.Entry<String, Map<String, String>> mapEntry : messageFileMaps.entrySet()) {
                     for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
                         String value = mapEntry.getValue().get(entry.getKey());
-                        mapEntry.getValue().remove(entry.getKey());
-                        mapEntry.getValue().put(entry.getValue(), value);
+                        if (value != null) {
+                            mapEntry.getValue().remove(entry.getKey());
+                            mapEntry.getValue().put(entry.getValue(), value);
+                        }
                     }
                     MessageFileUtil.writeMap(mapEntry.getValue(), new File(messageDirectory, mapEntry.getKey()));
                 }
-                outFile.renameTo(new File("MessageRefactor."+System.currentTimeMillis()));
+                outFile.renameTo(new File("MessageRefactor." + System.currentTimeMillis() + ".txt"));
             }
             else {
                 PrintStream out = new PrintStream(outFile, "UTF-8");
                 for (String key : allKeys) {
-                    if (key.startsWith("_")) continue;
-                    String mungedKey  = key.replaceAll("_t", "").toLowerCase();
-                    Counter counter = counters.get(key);
-                    String candidateValue;
-                    out.println();
-                    if (counter != null) {
-                        for (String instance : counter.instances) {
-                            out.println(String.format("# %s", instance));
-                        }
-                        String fileName = counter.file.getName().toLowerCase();
-                        int dot = fileName.lastIndexOf(".");
-                        if (dot > 0) {
-                            fileName = fileName.substring(0, dot);
-                        }
-                        candidateValue = String.format("_%s.%s", fileName, mungedKey);
+                    if (key.startsWith("_")) {
+                        out.println();
+                        out.println(String.format("%s=%s", key, key));
                     }
                     else {
-                        out.println("# Unused");
-                        candidateValue = String.format("_unused.%s", mungedKey);
+                        String mungedKey = key.replaceAll("_t", "").toLowerCase();
+                        Counter counter = counters.get(key);
+                        String candidateValue;
+                        out.println();
+                        if (counter != null) {
+                            for (String instance : counter.instances) {
+                                out.println(String.format("# %s", instance));
+                            }
+                            String fileName = counter.file.getName().toLowerCase();
+                            int dot = fileName.lastIndexOf(".");
+                            if (dot > 0) {
+                                fileName = fileName.substring(0, dot);
+                            }
+                            candidateValue = String.format("_%s.%s", fileName, mungedKey);
+                        }
+                        else {
+                            out.println("# Unused");
+                            candidateValue = String.format("_unused.%s", mungedKey);
+                        }
+                        out.println();
+                        out.println(String.format("%s=%s", key, candidateValue));
                     }
-                    out.println();
-                    out.println(String.format("%s=%s", key, candidateValue));
                 }
                 out.close();
             }

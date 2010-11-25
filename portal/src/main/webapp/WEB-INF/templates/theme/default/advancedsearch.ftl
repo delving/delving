@@ -50,9 +50,9 @@
                 <td>
                     <select name="sortBy" class="form_11">
                     <option selected="selected" value="">-</option>
-                    <option value="title"><@spring.message 'dc_title_t'/></option>
-                    <option value="creator"><@spring.message 'dc_creator_t'/></option>
-                    <option value="YEAR"><@spring.message 'dc_date_t'/></option>
+                    <option value="title"><@spring.message '_metadata.dc.title'/></option>
+                    <option value="creator"><@spring.message '_metadata.dc.creator'/></option>
+                    <option value="YEAR"><@spring.message '_metadata.dc.date'/></option>
                     <#--<option value="COLLECTION">Collectie</option>-->
                 </select></td>
             </tr>

@@ -135,7 +135,7 @@
                         <#assign titleArr = result.fullDoc.dcTitle />
                         <#if isNonEmpty(titleArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_title_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.title' />:</th>
                                 <td><@simple_list result.fullDoc.dcTitle '<br />'/></td>
                             </tr>
                         </#if>
@@ -144,7 +144,7 @@
                         <#assign altTitleArr = result.fullDoc.dcTermsAlternative />
                         <#if isNonEmpty(altTitleArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dcterms_alternative_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dcterms.alternative' />:</th>
                                 <td><@simple_list result.fullDoc.dcTermsAlternative '<br />'/></td>
                             </tr>
                         </#if>
@@ -154,7 +154,7 @@
                         <#assign creatorArr = model.fullDoc.dcCreator />
                         <#if isNonEmpty(creatorArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_creator_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.creator' />:</th>
                                 <td><@simple_list model.fullDoc.dcCreator ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -173,7 +173,7 @@
                         <#assign dateArr = result.fullDoc.dcDate + result.fullDoc.dcTermsCreated + result.fullDoc.dcTermsIssued /></td>
                         <#if isNonEmpty(dateArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_date_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.date' />:</th>
                                 <td><@simple_list dateArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -181,7 +181,7 @@
                         <#-- DC TYPE   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(typeArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_type_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.type' />:</th>
                                 <td><@simple_list typeArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -246,7 +246,7 @@
                         <#assign rightsArr = result.fullDoc.dcRights />
                         <#if isNonEmpty(rightsArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_rights_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.rights' />:</th>
                                 <td><@simple_list rightsArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -318,7 +318,7 @@
                         <#-- DC TERMS PROVENANCE----------------------------------------------------------------------->
                         <#--<#if isNonEmpty(provenanceArr)>-->
                             <#--<tr>-->
-                                <#--<th scope="row"><@spring.message 'dcterms_provenance_t' />:</th>-->
+                                <#--<th scope="row"><@spring.message '_metadata.dcterms.provenance' />:</th>-->
                                 <#--<td><@simple_list provenanceArr ';&#160;'/></td>-->
                             <#--</tr>-->
                         <#--</#if>-->

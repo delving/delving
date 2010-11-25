@@ -68,7 +68,7 @@
             </#if>
             <#if user.lastName??>
             <tr>
-              <td><h4><@spring.message 'lastName_t'/>:</h4></td>
+              <td><h4><@spring.message '_mine.last.name'/>:</h4></td>
               <td>${user.lastName}</td>
             </tr>
             </#if>
