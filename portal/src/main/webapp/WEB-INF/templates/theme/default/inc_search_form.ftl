@@ -19,7 +19,7 @@
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
-            <input id="submit_search" type="submit" value="<@spring.message 'Search_t' />" />
+            <input id="submit_search" type="submit" value="<@spring.message '_action.search' />" />
             <a href="/${portalName}/advancedsearch.html" id="href-advanced" title="<@spring.message '_action.advanced.search' />"><@spring.message '_action.advanced.search' /></a>
         </form>
     </div>
@@ -31,17 +31,17 @@
         <table>
             <tr>
                 <td>&#160;</td>
-                <td><select name="facet1" id="facet1"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td><select name="facet1" id="facet1"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message '_search.option.title'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message '_search.option.subject'/></option></select></td>
                 <td><input type="text" name="query1" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
-                <td align="right"><select name="operator2" id="operator2"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
-                <td><select name="facet2" id="facet2"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td align="right"><select name="operator2" id="operator2"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message '_boolean.or'/> </option><option value="not"><@spring.message '_boolean.not'/> </option></select></td>
+                <td><select name="facet2" id="facet2"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message '_search.option.title'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message '_search.option.subject'/></option></select></td>
                 <td><input type="text" name="query2" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
-                <td align="right"><select name="operator3" id="operator3"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
-                <td><select name="facet3" id="facet3"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td align="right"><select name="operator3" id="operator3"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message '_boolean.or'/> </option><option value="not"><@spring.message '_boolean.not'/> </option></select></td>
+                <td><select name="facet3" id="facet3"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message '_search.option.title'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message '_search.option.subject'/></option></select></td>
                 <td><input type="text" name="query3" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
@@ -50,7 +50,7 @@
             <tr>
                 <td align="left"><input type="reset" value="<@spring.message 'Reset_t' />" /></td>
                 <td>&#160;</td>
-                <td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />" /></td>
+                <td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message '_action.search' />" /></td>
             </tr>
          </table>
         </form>

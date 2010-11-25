@@ -235,7 +235,7 @@
                       <#-- SUBJECTS, TEMPORAL, SPATIAL  ----------------------------------------------------------------->
                         <#if isNonEmpty(arrsubj)>
                             <tr>
-                                <th scope="row"><@spring.message 'Subject_t' />:</th>
+                                <th scope="row"><@spring.message '_search.option.subject' />:</th>
                                 <td><@simple_list arrsubj ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -277,7 +277,7 @@
                      <#-- Europeana PROVIDER   -------------------------------------------------------------------------------->
                         <#if isNonEmpty(providerArr) >
                             <tr>
-                                <th scope="row"><@spring.message 'Provider_t' />:</th>
+                                <th scope="row"><@spring.message '_prompt.provider' />:</th>
                                 <td>
                                 <#if isNonEmpty(result.fullDoc.europeanaProvider) && isNonEmpty(result.fullDoc.europeanaCountry)>
                                     ${result.fullDoc.europeanaProvider[0]} ;&#160; ${result.fullDoc.europeanaCountry[0]}
@@ -352,11 +352,11 @@
                                 <#--<a-->
                                     <#--href="/${portalName}/redirect.html?shownAt=${UrlRef?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
                                     <#--target="_blank"-->
-                                    <#--alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
-                                    <#--title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
+                                    <#--title="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"-->
                                     <#--class="fg-button ui-state-default fg-button-icon-left ui-corner-all"-->
                                 <#-->-->
-                                    <#--<span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />-->
+                                    <#--<span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />-->
                                 <#--</a>-->
                             <#--</td>-->
                         <#--</tr>-->

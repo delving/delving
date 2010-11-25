@@ -78,7 +78,7 @@
             <input type="hidden" name="start" value="1" />
             <input type="hidden" name="view" value="${view}" />
             <input class="txt-input" name="query" id="query" type="text" title="Europeana Search" maxlength="75" />
-            <button id="submit_search" type="submit" class="btn-search"><@spring.message 'Search_t' /></button>
+            <button id="submit_search" type="submit" class="btn-search"><@spring.message '_action.search' /></button>
             <br/>
             <a href="/${portalName}/advancedsearch.html" id="href-advanced" title="<@spring.message '_action.advanced.search' />"><@spring.message '_action.advanced.search' /></a>
         </form>
@@ -91,17 +91,17 @@
         <table>
             <tr>
                 <td>&#160;</td>
-                <td><select name="facet1" id="facet1"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td><select name="facet1" id="facet1"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message '_search.option.title'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message '_search.option.subject'/></option></select></td>
                 <td><input type="text" name="query1" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
-                <td align="right"><select name="operator2" id="operator2"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
-                <td><select name="facet2" id="facet2"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td align="right"><select name="operator2" id="operator2"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message '_boolean.or'/> </option><option value="not"><@spring.message '_boolean.not'/> </option></select></td>
+                <td><select name="facet2" id="facet2"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message '_search.option.title'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message '_search.option.subject'/></option></select></td>
                 <td><input type="text" name="query2" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
-                <td align="right"><select name="operator3" id="operator3"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
-                <td><select name="facet3" id="facet3"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td align="right"><select name="operator3" id="operator3"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message '_boolean.or'/> </option><option value="not"><@spring.message '_boolean.not'/> </option></select></td>
+                <td><select name="facet3" id="facet3"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message '_search.option.title'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message '_search.option.subject'/></option></select></td>
                 <td><input type="text" name="query3" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
@@ -110,7 +110,7 @@
             <tr>
                 <td align="left"><input type="reset" value="<@spring.message 'Reset_t' />" /></td>
                 <td>&#160;</td>
-                <td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message 'Search_t' />" /></td>
+                <td align="right"><input id="searchsubmit2" type="submit" value="<@spring.message '_action.search' />" /></td>
             </tr>
          </table>
         </form>
@@ -122,7 +122,7 @@
     <ul>
         <#if !user??>
             <li id="mustlogin"><a href="/${portalName}/login.html" onclick="takeMeBack();"><@spring.message 'LogIn_t'/></a></li>
-            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message 'Register_t'/></a></li>
+            <li><a href="/${portalName}/register-request.html?pId=${pageId}"><@spring.message '_register.register'/></a></li>
         </#if>
 
         <#if user??>
@@ -133,7 +133,7 @@
         <#if user.savedItems??>
         <li>
             <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
-                <@spring.message 'SavedItems_t' />
+                <@spring.message '_mine.saved.items' />
             </a>
             (<span id="savedItemsCount">${user.savedItems?size}</span>)
         </li>
@@ -141,7 +141,7 @@
         <#if user.savedSearches??>
         <li>
             <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
-                <@spring.message 'SavedSearches_t' />
+                <@spring.message '_mine.saved.searches' />
             </a>
             (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
         </li>
@@ -149,7 +149,7 @@
         <#if user.socialTags??>
         <li>
             <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">
-                <@spring.message 'SavedTags_t' />
+                <@spring.message '_mine.saved.tags' />
             </a>
             (<span id="savedTagsCount">${user.socialTags?size}</span>)
         </li>
@@ -221,8 +221,8 @@
     <#assign pageId = "brd"/>
     <script type="text/javascript" src="/${portalName}/${portalTheme}/js/results.js"></script>
     <script type="text/javascript">
-        var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
-        var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
+        var msgSearchSaveSuccess = "<@spring.message '_success.search.saved'/>";
+        var msgSearchSaveFail = "<@spring.message '_failure.search.saved'/>";
 
         $(document).ready(function() {
             $('div.toggler-c').toggleElements(

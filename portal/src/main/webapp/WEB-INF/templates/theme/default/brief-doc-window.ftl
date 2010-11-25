@@ -205,7 +205,7 @@
                     alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
                     >
-               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
                     href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
@@ -259,7 +259,7 @@
                             alt="<@spring.message '_action.alt.previous.page' />"
                             class="${uiClassStatePrev}"
                             >
-                            <@spring.message 'Previous_t' />
+                            <@spring.message '_action.previous' />
                     </a>
                 </li>
                 <li>
@@ -290,7 +290,7 @@
         <@spring.message 'Images_t' /><@print_tab_count showAll showImage imageCount />
     </a>
     <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showVideo}">
-        <@spring.message 'Videos_t' /><@print_tab_count showAll showVideo videoCount />
+        <@spring.message '_action.videos' /><@print_tab_count showAll showVideo videoCount />
     </a>
     <a href="${thisPage}?query=${query}${audioUrl!"&amp;qf=TYPE:SOUND"}&amp;tab=sound&amp;view=${view}" class="fg-button ui-state-default ui-corner-all ${showSound}">
         <@spring.message 'Sounds_t' /><@print_tab_count showAll showSound audioCount />
@@ -318,7 +318,7 @@
         </li>
         <li class="${showVideo}">
             <a href="${thisPage}?query=${query}${videoUrl!"&amp;qf=TYPE:VIDEO"}&amp;tab=video&amp;view=${view}">
-                <@spring.message 'Videos_t' /><@print_tab_count showAll showVideo videoCount />
+                <@spring.message '_action.videos' /><@print_tab_count showAll showVideo videoCount />
             </a>
         </li>
         <li class="${showSound}">

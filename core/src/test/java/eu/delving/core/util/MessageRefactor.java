@@ -175,7 +175,7 @@ public class MessageRefactor {
                     }
                     MessageFileUtil.writeMap(mapEntry.getValue(), new File(messageDirectory, mapEntry.getKey()));
                 }
-                outFile.delete();
+                outFile.renameTo(new File("MessageRefactor."+System.currentTimeMillis()));
             }
             else {
                 PrintStream out = new PrintStream(outFile, "UTF-8");

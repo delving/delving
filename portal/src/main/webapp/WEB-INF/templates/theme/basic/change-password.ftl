@@ -40,7 +40,7 @@
             <@spring.bind "command.password" />
             <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
-            <label for="password2"><@spring.message 'RepeatPassword_t' /></label>
+            <label for="password2"><@spring.message '_register.repeat.password' /></label>
             <input type="password" id="password2" name="password2" tabindex="5"  value=""/>
             <@spring.bind "command.password2" />
             <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
@@ -50,7 +50,7 @@
         <fieldset id="pt3">
           <legend><span>Step </span>3. <span>: Password</span></legend>
           <br/>
-          <input id="submit" type="submit" name="submit" tabindex="6" value="<@spring.message 'Send_t' /> &raquo;" class="button"/>
+          <input id="submit" type="submit" name="submit" tabindex="6" value="<@spring.message '_action.send' /> &raquo;" class="button"/>
         </fieldset>
        </div>
   </form>

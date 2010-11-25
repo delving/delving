@@ -351,7 +351,7 @@
                 <#-- with labels -->
                 <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.provider?matches(" ")><@spring.message '_prompt.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>
@@ -496,7 +496,7 @@
     <#if pagination.previous>
         <#--<a href="?${queryStringForPresentation?html}&amp;tab=${tab}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.previous.page' />">-->
         <a href="?${queryStringForPresentation?html}}&amp;start=${pagination.previousPage?c}&amp;view=${view}" alt="<@spring.message '_action.alt.previous.page' />">
-       <@spring.message 'Previous_t' />
+       <@spring.message '_action.previous' />
     </a>
     </#if>
     <#if pagination.next>
@@ -550,7 +550,7 @@
                     alt="<@spring.message '_action.alt.previous.page' />"
                     style="margin: 0 8px;"
                     >
-               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+               <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
             </a>
             <a
                     href="?${queryStringForPresentation?html}&amp;start=${pagination.nextPage?c}&amp;view=${view}"
@@ -590,7 +590,7 @@
             href="?${queryStringForPresentation?html}&amp;start=${pagination.previousPage?c}&amp;view=${view}"
             alt="<@spring.message '_action.alt.previous.page' />"
         >
-        <@spring.message 'Previous_t' />
+        <@spring.message '_action.previous' />
         </a>
     </li>
     </#if>
@@ -677,9 +677,9 @@
             <#-- TODO: use a hidden form instead of hrefs to function without javascript? --> 
             <p class="linetop">
                 <#if user??>
-                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a id="saveQuery" href="#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
-                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message 'login.required'/>'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="#" onclick="highLight('a#login'); writeMessage('div#msg-save-search','<@spring.message 'login.required'/>'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide"></div>
@@ -771,7 +771,7 @@
         </#if>
 
         <a href="${urlPrevious}" class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}" alt="<@spring.message '_action.alt.previous.page' />">
-            <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+            <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
         </a>
 
         <a href="${urlNext}" class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}" alt="<@spring.message '_action.alt.next.page' />">
@@ -779,8 +779,8 @@
         </a>
 
         <#if pagination.returnToResults??>
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message 'ReturnToResults_t' />">
-               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="${pagination.returnToResults?html}" alt="<@spring.message '_action.return.to.results' />">
+               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         </#if>
 
@@ -838,7 +838,7 @@
     <#--<a class="<#if overlayActive>overlay</#if>"-->
        <#--href="/${portalName}/redirect.html?shownBy=${overlayUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"-->
        <#--target="_blank"-->
-       <#--alt="<@spring.message 'ViewInOriginalContext_t' /> <@spring.message 'OpensInNewWindow_t'/>"-->
+       <#--alt="<@spring.message '_action.view.in.original.context' /> <@spring.message 'OpensInNewWindow_t'/>"-->
     <#-->-->
     <#if useCache="true">
         <img src="${cacheUrl}uri=${thumbnail?url('utf-8')}&amp;size=FULL_DOC&amp;type=${result.fullDoc.europeanaType}"
@@ -855,7 +855,7 @@
             src="${thumbnail}"
             onload="checkSize(this.id,'full',this.width);"
             onerror="showDefaultLarge(this,'${result.fullDoc.europeanaType}',this.src)"
-            alt="<@spring.message 'ViewInOriginalContext_t' /> <@spring.message 'OpensInNewWindow_t'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> <@spring.message 'OpensInNewWindow_t'/>"
         />
     </#if>
     <#--<#if useCache="true">-->
@@ -884,12 +884,12 @@
     <a
             href="/${portalName}/redirect.html?shownAt=${originalContextUrl?url('utf-8')}&provider=${result.fullDoc.europeanaProvider[0]}&id=${result.fullDoc.id}"
             target="_blank"
-            alt="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
-            title="<@spring.message 'ViewInOriginalContext_t' /> - <@spring.message 'OpensInNewWindow_t'/>"
+            alt="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"
+            title="<@spring.message '_action.view.in.original.context' /> - <@spring.message 'OpensInNewWindow_t'/>"
             class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
             style="float: none;;"
             >
-        <span class="ui-icon ui-icon-newwin"></span><@spring.message 'ViewInOriginalContext_t' />
+        <span class="ui-icon ui-icon-newwin"></span><@spring.message '_action.view.in.original.context' />
     </a>
     </nav>
 
@@ -945,7 +945,7 @@
         <legend>Search</legend>
         <#--<input name="query" id="query" type="text" title="Europeana Search" maxlength="100" />-->
         <input name="query" id="query" type="search" title="Search" maxlength="100" autofocus="true" class="ui-corner-all" />
-        <button id="submitSimpleSearch" type="submit"><@spring.message 'Search_t' /></button>
+        <button id="submitSimpleSearch" type="submit"><@spring.message '_action.search' /></button>
         <nav>
         <a href="/${portalName}/advancedsearch.html" title="<@spring.message '_action.advanced.search' />"><@spring.message '_action.advanced.search' /></a>
         </nav>
@@ -978,7 +978,7 @@
 <ul>
     <#if !user??>
         <li><a id="login" href="/${portalName}/login.html"><@spring.message 'LogIn_t'/></a></li>
-        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message 'Register_t'/></a></li>
+        <li><a id="register" href="/${portalName}/register-request.html"><@spring.message '_register.register'/></a></li>
     </#if>
     <#if user??>
     <li>
@@ -988,7 +988,7 @@
     <#if user.savedItems??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });">
-            <@spring.message 'SavedItems_t' />
+            <@spring.message '_mine.saved.items' />
         </a>
         (<span id="savedItemsCount">${user.savedItems?size}</span>)
     </li>
@@ -996,7 +996,7 @@
     <#if user.savedSearches??>
     <li>
         <a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });">
-            <@spring.message 'SavedSearches_t' />
+            <@spring.message '_mine.saved.searches' />
         </a>
         (<span id="savedSearchesCount">${user.savedSearches?size}</span>)
     </li>
@@ -1004,7 +1004,7 @@
     <#--<#if user.socialTags??>-->
     <#--<li>-->
         <#--<a href="/${portalName}/mine.html" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });">-->
-            <#--<@spring.message 'SavedTags_t' />-->
+            <#--<@spring.message '_mine.saved.tags' />-->
         <#--</a>-->
         <#--(<span id="savedTagsCount">${user.socialTags?size}</span>)-->
     <#--</li>-->

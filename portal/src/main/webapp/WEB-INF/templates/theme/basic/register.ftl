@@ -25,7 +25,7 @@
 <section role="main" class="grid_12 login-register">
 
 
-                <h1><@spring.message 'Register_t' /></h1>
+                <h1><@spring.message '_register.register' /></h1>
 
 
                 <form id="regForm" action="/${portalName}/register.html" method="post">
@@ -51,8 +51,8 @@
 
 
                         <legend><span>Step </span>2. <span>: Login details</span></legend>
-                        <h3><@spring.message 'UserNameChoose_t' />.</h3>
-                        <div class="help"><@spring.message 'UserNameExplain_t' />.</div>
+                        <h3><@spring.message '_register.username.choose' />.</h3>
+                        <div class="help"><@spring.message '_register.username.explain' />.</div>
                         <label for="userName">Username</label>
                         <@spring.formInput "command.userName"/>
                         <@spring.bind "command.userName" />
@@ -65,15 +65,15 @@
                     <fieldset id="pt3">
 
                         <legend><span>Step </span>3. <span>: Password</span></legend>
-                        <h3><@spring.message 'PasswordChoose_t' />.</h3>
-                        <div class="help"><@spring.message 'PasswordExplain_t' />.</div>
+                        <h3><@spring.message '_register.password.choose' />.</h3>
+                        <div class="help"><@spring.message '_register.password.explain' />.</div>
 
                         <label for="password"><@spring.message 'Password_t' /></label>
                         <@spring.formPasswordInput "command.password"/>
                         <@spring.bind "command.password" />
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>
 
-                        <label for="password2"><@spring.message 'RepeatPassword_t' /></label>
+                        <label for="password2"><@spring.message '_register.repeat.password' /></label>
                         <@spring.formPasswordInput "command.password2"/>
                         <@spring.bind "command.password2" />
                         <#list spring.status.errorMessages as error> <i>${error}</i> <br> </#list>

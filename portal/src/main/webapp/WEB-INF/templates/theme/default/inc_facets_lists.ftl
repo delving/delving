@@ -1,5 +1,5 @@
 <#compress>
-<h4><@spring.message 'RefineYourSearch_t' />:</h4>
+<h4><@spring.message '_action.refine.your.search' />:</h4>
 <noscript>
     <div class="attention">
     <@spring.message 'NoScript_t' />
@@ -106,9 +106,9 @@
         <div class="related-links">
             <p class="linetop">
                 <#if user??>
-                    <a id="saveQuery" href="inc_facets_lists.ftl#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a id="saveQuery" href="inc_facets_lists.ftl#" onclick="saveQuery('SavedSearch', '${queryToSave?url("utf-8")?js_string}', '${query?url("utf-8")?js_string}');"><@spring.message '_action.save.this.search'/></a>
                 <#else>
-                    <a href="inc_facets_lists.ftl#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message 'SaveThisSearch_t'/></a>
+                    <a href="inc_facets_lists.ftl#" onclick="highLight('mustlogin'); return false" class="disabled"><@spring.message '_action.save.this.search'/></a>
                 </#if>
             </p>
             <div id="msg-save-search" class="msg-hide fg-pink"></div>

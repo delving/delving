@@ -37,16 +37,16 @@
 <div id="main" class="grid_9">
     <div id="savedItems">
                     <ul>
-                        <li><a href="#fragment-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
-                        <li><a href="#fragment-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
-                        <li><a href="#fragment-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
-                        <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>
+                        <li><a href="#fragment-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message '_mine.user.information' />"><span><@spring.message '_mine.user.information' /></span></a></li>
+                        <li><a href="#fragment-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message '_mine.saved.items'/>"><span><@spring.message '_mine.saved.items'/></span></a></li>
+                        <li><a href="#fragment-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message '_mine.saved.searches'/>"><span><@spring.message '_mine.saved.searches'/></span></a></li>
+                        <li><a href="#fragment-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message '_mine.saved.tags'/>"><span><@spring.message '_mine.saved.tags'/></span></a></li>
                     </ul>
                    <div id="fragment-0">
                       <table width="100%" class="tbl-list" summary="table with user information" id="tbl-user" >
                         <tr>
                             <td width="150">
-                                <h4><@spring.message 'Username_t' />:</h4>
+                                <h4><@spring.message '_mine.username' />:</h4>
                             </td>
                             <td>${user.userName}</td>
                         </tr>

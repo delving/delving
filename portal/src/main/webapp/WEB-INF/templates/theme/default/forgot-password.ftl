@@ -44,7 +44,7 @@
         <#if state == "success">
             <p id="forgotSuccess" class="success">
                 <@spring.message '_register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
-                <@spring.message 'PleaseFollowTheLinkProvided_t' />.  <!-- TODO change message -->
+                <@spring.message '_register.please.follow.link' />.  <!-- TODO change message -->
             </p>
         </#if>
         <#if state == "formatFailure">

@@ -112,7 +112,7 @@
         class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
         alt="<@spring.message '_action.alt.previous.page' />"
         >
-       <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
+       <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message '_action.previous' />
         </a>
         <a
             href="${urlNext}"
@@ -126,8 +126,8 @@
             <a
                     class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                     href="${pagination.returnToResults?html}"
-                     alt="<@spring.message 'ReturnToResults_t' />"/>
-               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message 'ReturnToResults_t' />
+                     alt="<@spring.message '_action.return.to.results' />"/>
+               <span class="ui-icon ui-icon-circle-arrow-n"></span><@spring.message '_action.return.to.results' />
             </a>
         <#else>
         &#160;

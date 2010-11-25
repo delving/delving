@@ -17,8 +17,8 @@
 
 <@addHeader "Norvegiana", "",["results.js"],[]/>
 <script type="text/javascript">
-    var msgSearchSaveSuccess = "<@spring.message 'SearchSaved_t'/>";
-    var msgSearchSaveFail = "<@spring.message 'SearchSavedFailed_t'/>";
+    var msgSearchSaveSuccess = "<@spring.message '_success.search.saved'/>";
+    var msgSearchSaveFail = "<@spring.message '_failure.search.saved'/>";
 </script>
 
 <section class="grid_3" role="complementary">
@@ -29,9 +29,9 @@
         <h1 class="large">${portalDisplayName}</h1>
     </header>
 
-    <h3><@spring.message 'RefineYourSearch_t' /></h3>
+    <h3><@spring.message '_action.refine.your.search' /></h3>
     <nav id="facetList">
-        <@resultBriefFacets "DATAPROVIDER",  "abm_contentProvider_t", 2/>
+        <@resultBriefFacets "DATAPROVIDER",  "abm_content_prompt.provider", 2/>
         <@resultBriefFacets "COUNTY",  "abm_county_t", 2/>
         <@resultBriefFacets "MUNICIPALITY",  "abm_municipality_t", 2/>
         <#-- TODO: Create this facet -------------------------->

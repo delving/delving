@@ -42,17 +42,17 @@
 
     <div id="savedItems">
         <ul>
-            <li><a href="#tab-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message 'UserInformation_t' />"><span><@spring.message 'UserInformation_t' /></span></a></li>
-            <li><a href="#tab-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message 'SavedItems_t'/>"><span><@spring.message 'SavedItems_t'/></span></a></li>
-            <li><a href="#tab-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message 'SavedSearches_t'/>"><span><@spring.message 'SavedSearches_t'/></span></a></li>
-            <#--<li><a href="#tab-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message 'SavedTags_t'/>"><span><@spring.message 'SavedTags_t'/></span></a></li>-->
+            <li><a href="#tab-0" onclick="$.cookie('ui-tabs-3', '0', { expires: 1 });" title="<@spring.message '_mine.user.information' />"><span><@spring.message '_mine.user.information' /></span></a></li>
+            <li><a href="#tab-1" onclick="$.cookie('ui-tabs-3', '1', { expires: 1 });" title="<@spring.message '_mine.saved.items'/>"><span><@spring.message '_mine.saved.items'/></span></a></li>
+            <li><a href="#tab-2" onclick="$.cookie('ui-tabs-3', '2', { expires: 1 });" title="<@spring.message '_mine.saved.searches'/>"><span><@spring.message '_mine.saved.searches'/></span></a></li>
+            <#--<li><a href="#tab-3" onclick="$.cookie('ui-tabs-3', '3', { expires: 1 });" title="<@spring.message '_mine.saved.tags'/>"><span><@spring.message '_mine.saved.tags'/></span></a></li>-->
         </ul>
        <div id="tab-0">
           <table class="tbl-list" summary="table with user information" id="tbl-user" >
-              <caption><@spring.message 'UserInformation_t' /></caption>
+              <caption><@spring.message '_mine.user.information' /></caption>
             <tr>
                 <td width="150">
-                    <h4><@spring.message 'Username_t' />:</h4>
+                    <h4><@spring.message '_mine.username' />:</h4>
                 </td>
                 <td>${user.userName}</td>
             </tr>
@@ -88,7 +88,7 @@
        </div>
         <div id="tab-1">
             <table class="tbl-list" summary="list with saved items">
-                <caption><@spring.message 'SavedItems_t'/></caption>
+                <caption><@spring.message '_mine.saved.items'/></caption>
                 <#if user.savedItems?size &gt; 0>
                     <#list user.savedItems as item>
                         <tr>
@@ -122,13 +122,13 @@
                     </#list>
 
                 <#else>
-                    <tr><td><@spring.message 'NoSavedItems_t'/></td></tr>
+                    <tr><td><@spring.message 'No_mine.saved.items'/></td></tr>
                 </#if>
             </table>
         </div>
        <div id="tab-2">
             <table class="tbl-list" summary="list with saved searches">
-                <caption><@spring.message 'SavedSearches_t'/></caption>
+                <caption><@spring.message '_mine.saved.searches'/></caption>
                 <#if user.savedSearches?size &gt; 0>
                     <#list user.savedSearches as search>
                         <tr>
@@ -147,7 +147,7 @@
         </div>
        <#--<div id="tab-3">-->
         <#--<table class="tbl-list" summary="list with saved tags" id="tbl-tags">-->
-            <#--<caption><@spring.message 'SavedTags_t'/></caption>-->
+            <#--<caption><@spring.message '_mine.saved.tags'/></caption>-->
             <#--<#if user.socialTags?size &gt; 0>-->
                 <#--<#list user.socialTagLists as count>-->
                     <#--<#assign tagQuery = "europeana_uri:("/>-->

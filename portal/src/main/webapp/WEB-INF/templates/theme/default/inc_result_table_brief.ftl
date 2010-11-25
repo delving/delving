@@ -130,7 +130,7 @@
                 <#-- with labels -->
                 <#if !cell.creator[0]?matches(" ")><span><@spring.message '_search.field.creator' />: </span>${cell.creator}<br/></#if>
                 <#if !cell.year?matches(" ")><#if cell.year != "0000"><span><@spring.message '_search.field.date' />: </span>${cell.year}<br/></#if></#if>
-                <#if !cell.provider?matches(" ")><@spring.message 'Provider_t' />: <span class="provider">${cell.provider}</span></#if>
+                <#if !cell.provider?matches(" ")><@spring.message '_prompt.provider' />: <span class="provider">${cell.provider}</span></#if>
                 </p>
         </td>
     </tr>

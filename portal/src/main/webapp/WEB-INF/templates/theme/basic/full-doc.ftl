@@ -15,7 +15,7 @@
     </header>
     
     <div id="facet-list">
-       <h5><@spring.message 'RelatedContent_t' />:</h5>
+       <h5><@spring.message '_header.relatedcontent' />:</h5>
         <table summary="related items" id="tbl-related-items" width="100%">
             <#assign max=3/><!-- max shown in list -->
             <#list result.relatedItems as doc>
@@ -50,7 +50,7 @@
             </#list>
             <#if result.relatedItems?size &gt; max>
                 <tr>
-                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message 'SeeAllRelatedItems_t' /></a></td>
+                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.seeallrelateditems' /></a></td>
                 </tr>
             </#if>
         </table>
@@ -65,7 +65,7 @@
 
         <#if user??>
             <p>
-            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveToPersonalPage' /></a>
+            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveTo_action.personalpage' /></a>
 
             <div id="msg-save-item" class="msg-hide"></div>
             </p>
@@ -98,7 +98,7 @@
                     <#--</p>-->
 
                     <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveToPersonalPage' /></a>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveTo_action.personalpage' /></a>
                     </p>
                 </div>
                 <div id="msg-save-item" class="msg-hide"></div>

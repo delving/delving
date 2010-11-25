@@ -27,7 +27,7 @@
 
     <div id="register-div" class="grid_4 prefix_4 login-register">
 
-        <h2><@spring.message 'Register_t' /></h2>
+        <h2><@spring.message '_register.register' /></h2>
 
         <form id="registrationForm" name='registrationForm' action='register-request.html' method='POST' accept-charset="UTF-8">
             <input type="hidden" name="formType" id="formType" value="Register"/>
@@ -38,7 +38,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input id="register" name="submit_button" type="submit" value="<@spring.message 'Register_t' />" class="button"/></td>
+                    <td><input id="register" name="submit_button" type="submit" value="<@spring.message '_register.register' />" class="button"/></td>
                 </tr>
             </table>
         </form>
@@ -46,7 +46,7 @@
         <#if state == "success">
             <p id="success" class="success">
                 <@spring.message '_register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
-                <@spring.message 'PleaseFollowTheLinkProvided_t' />.
+                <@spring.message '_register.please.follow.link' />.
             </p>
         </#if>
         <#if state == "formatFailure">
