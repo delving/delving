@@ -143,8 +143,8 @@ public class MessageRefactor {
         if (go) {
             File refactorFile = new File("MesssageRefactor.txt");
             if (refactorFile.exists()) {
-                Map<String, String> map = MessageFileUtil.readMap(refactorFile);
-                for (Map.Entry<String, String> entry : map.entrySet()) {
+                Map<String, String> refactorMap = MessageFileUtil.readMap(refactorFile);
+                for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
                     if (entry.getValue().isEmpty()) {
                         System.out.println(String.format("No refactor for %s, aborting", entry.getKey()));
                         return;
@@ -154,7 +154,7 @@ public class MessageRefactor {
                     List<String> lines = readFile(file);
                     Writer writer = new FileWriter(file);
                     for (String line : lines) {
-                        for (Map.Entry<String, String> entry : map.entrySet()) {
+                        for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
                             String changed = line.replaceAll(entry.getKey(), entry.getValue());
                             if (!changed.equals(line)) {
                                 System.out.println("from> " + line + "\n  to> " + changed + "\n");
@@ -168,10 +168,18 @@ public class MessageRefactor {
                     }
                     writer.close();
                 }
+                for (Map.Entry<String, Map<String,String>> mapEntry : messageFileMaps.entrySet()) {
+                    for (Map.Entry<String, String> entry : refactorMap.entrySet()) {
+                        String value = mapEntry.getValue().get(entry.getKey());
+                        mapEntry.getValue().remove(entry.getKey());
+                        mapEntry.getValue().put(entry.getValue(), value);
+                    }
+                    MessageFileUtil.writeMap(mapEntry.getValue(), new File(messageDirectory, mapEntry.getKey()));
+                }
             }
             else {
                 Map<String, String> map = new TreeMap<String, String>();
-                for (String key : allKeys) {
+                for (String key : counters.keySet()) {
                     map.put(key, "");
                 }
                 MessageFileUtil.writeMap(map, refactorFile);
