@@ -87,7 +87,7 @@ object SolrBindingService {
       doc =>
         docIds add (SolrDocId(doc))
     }
-    asList(docIds)
+    asJavaList(docIds)
   }
 
   def getBriefDocs(queryResponse: QueryResponse): JList[BriefDocItem] = getBriefDocs(queryResponse.getResults)
@@ -98,7 +98,7 @@ object SolrBindingService {
       doc =>
         briefDocs add (BriefDocItem(doc))
     }
-    asList(briefDocs)
+    asJavaList(briefDocs)
   }
 
   def getFullDoc(queryResponse: QueryResponse): FullDocItem = {
@@ -115,7 +115,7 @@ object SolrBindingService {
       doc =>
         fullDocs add (FullDocItem(doc))
     }
-    asList(fullDocs)
+    asJavaList(fullDocs)
   }
 
   def createFacetMap(links : JList[FacetQueryLinks]) = FacetMap(links.toList)
