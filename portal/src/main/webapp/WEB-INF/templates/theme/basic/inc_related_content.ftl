@@ -1,6 +1,6 @@
 
 
-            <h5><@spring.message 'Actions_t' />:</h5>
+            <h5><@spring.message '_header.actions' />:</h5>
 
 
         <#if addThisTrackingCode??>
@@ -33,12 +33,12 @@
                 <#if result.fullDoc.europeanaType == "IMAGE">
                 	<#if result.fullDoc.europeanaIsShownBy[0]?? && imageAnnotationToolBaseUrl?? && imageAnnotationToolBaseUrl!="">
 
-		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message 'AddAnnotation_t' /></a>
+		                    <a href="${imageAnnotationToolBaseUrl}?user=${user.userName}&objectURL=${result.fullDoc.europeanaIsShownBy[0]}&id=${result.fullDoc.id}" target="_blank"><@spring.message '_action.add.annotation' /></a>
 
 	                </#if>
                 </#if>
 
-            <h6><@spring.message 'AddATag_t' /></h6>
+            <h6><@spring.message '_action.add.tag' /></h6>
 
                 <#--<div id="ysearchautocomplete">-->
                       <form action="inc_related_content.ftl#" method="post" onsubmit="addTag('SocialTag', document.getElementById('tag').value,'${result.fullDoc.id}','${result.fullDoc.thumbnails[0]?js_string}','${postTitle}','${result.fullDoc.europeanaType}'); return false;"  id="form-addtag" name="form-addtag" accept-charset="UTF-8">
@@ -52,7 +52,7 @@
         <#else>
             <div class="related-links">
                 <p>
-                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message 'AddATag_t' /></a>
+                    <a  href="/${portalName}/login.html" class="disabled" onclick="highLight('#mustlogin'); return false;"><@spring.message '_action.add.tag' /></a>
                 </p>
 
                 <p>

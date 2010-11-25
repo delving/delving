@@ -67,7 +67,7 @@
             <#if userList?size &gt; 0>
                 <table>
                     <tr>
-                        <th><@spring.message 'EmailAddress_t' /></th>
+                        <th><@spring.message '_prompt.email.address' /></th>
                         <th><@spring.message 'dms.user.role.current' /></th>
                         <th><@spring.message 'dms.user.role.new' /></th>
                         <th>&#160;</th>

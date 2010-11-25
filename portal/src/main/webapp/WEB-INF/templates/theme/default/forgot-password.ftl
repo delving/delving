@@ -31,7 +31,7 @@
         <form id="forgotPasswordForm" name="forgotPasswordForm" action="forgot-password.html" method="POST" accept-charset="UTF-8">
             <table>
                 <tr>
-                    <td><label for="email"><@spring.message 'EmailAddress_t' /></label></td>
+                    <td><label for="email"><@spring.message '_prompt.email.address' /></label></td>
                     <td><input id="email" type="text" name="email" value="" maxlength="50"></td>
                 </tr>
                 <tr>
@@ -43,7 +43,7 @@
 
         <#if state == "success">
             <p id="forgotSuccess" class="success">
-                <@spring.message 'AnEmailHasBeenSentTo_t' />: <span class="fg-gold">${email}</span>.
+                <@spring.message '_register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
                 <@spring.message 'PleaseFollowTheLinkProvided_t' />.  <!-- TODO change message -->
             </p>
         </#if>

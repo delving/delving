@@ -20,7 +20,7 @@
 <#if contentOnly = "true"><input type="hidden" name="ajax" value="true"/></#if>    
 <table>
     <tr>
-        <td><label for="j_username"><@spring.message 'EmailAddress_t' /></label></td>
+        <td><label for="j_username"><@spring.message '_prompt.email.address' /></label></td>
         <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
     </tr>
     <tr>

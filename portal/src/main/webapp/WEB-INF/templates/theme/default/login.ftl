@@ -35,7 +35,7 @@
         <form id="loginForm" name='f1' action='j_spring_security_check' method='POST' accept-charset="UTF-8">
         <table>
             <tr>
-                <td><label for="j_username"><@spring.message 'EmailAddress_t' /></label></td>
+                <td><label for="j_username"><@spring.message '_prompt.email.address' /></label></td>
                 <td><input type='text' id="j_username" name="j_username" value="" maxlength="50"></td>
             </tr>
             <tr>

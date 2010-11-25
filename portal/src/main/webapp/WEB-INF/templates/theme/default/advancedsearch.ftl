@@ -24,24 +24,24 @@
 
 
 <div id="search" class="grid_12" style="background: #fff;">
-    <div id="search_advanced" title="<@spring.message 'AdvancedSearch_t' />" class="grid_4 alpha">
+    <div id="search_advanced" title="<@spring.message '_action.advanced.search' />" class="grid_4 alpha">
        <form method="POST" action="advancedsearch.html" accept-charset="UTF-8">
         <input type="hidden" name="start" value="1" />
         <input type="hidden" name="view" value="${view}" />
         <table>
             <tr>
                 <td>&#160;</td>
-                <td><select name="facet0" id="m-facet1"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td><select name="facet0" id="m-facet1"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
                 <td><input type="text" name="value0" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
-                <td align="right"><select name="operator1" id="m-operator2"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
-                <td><select name="facet1" id="m-facet2"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td align="right"><select name="operator1" id="m-operator2"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
+                <td><select name="facet1" id="m-facet2"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
                 <td><input type="text" name="value1" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>
-                <td align="right"><select name="operator2" id="m-operator3"><option value="and"><@spring.message 'AndBoolean_t'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
-                <td><select name="facet2" id="m-facet3"><option value=""><@spring.message 'AnyField_t'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message 'Creator_t'/></option><option value="date"><@spring.message 'Date_t'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
+                <td align="right"><select name="operator2" id="m-operator3"><option value="and"><@spring.message '_boolean.and'/> &nbsp;</option><option value="or"><@spring.message 'OrBoolean_t'/> </option><option value="not"><@spring.message 'NotBoolean_t'/> </option></select></td>
+                <td><select name="facet2" id="m-facet3"><option value=""><@spring.message '_option.any.field'/> &nbsp;</option><option value="title"><@spring.message 'Title_t'/></option><option value="creator"><@spring.message '_search.field.creator'/></option><option value="date"><@spring.message '_search.field.date'/></option><option value="subject"><@spring.message 'Subject_t'/></option></select></td>
                 <td><input type="text" name="value3" class="search-input" maxlength="75"/></td>
             </tr>
             <tr>

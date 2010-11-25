@@ -27,7 +27,7 @@
      <div class="grid_4">
         <fieldset id="pt1">
             <legend><span>Step </span>1. <span>: Email details</span> </legend>
-            <label for="email"><@spring.message 'EmailAddress_t' /></label>
+            <label for="email"><@spring.message '_prompt.email.address' /></label>
             <input type="text" id="email" name="email" disabled="true" tabindex="5"  value="${command.email}" style="background:#eaeaea;"/>
 
         </fieldset>

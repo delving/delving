@@ -33,7 +33,7 @@
             <input type="hidden" name="formType" id="formType" value="Register"/>
             <table>
                 <tr>
-                    <td width="100"><label for="email"><@spring.message 'EmailAddress_t' /></label></td>
+                    <td width="100"><label for="email"><@spring.message '_prompt.email.address' /></label></td>
                     <td><input id="register_email" type='text' name='email' id="email" value='' accept-charset="UTF-8"></td>
                 </tr>
                 <tr>
@@ -45,7 +45,7 @@
         
         <#if state == "success">
             <p id="success" class="success">
-                <@spring.message 'AnEmailHasBeenSentTo_t' />: <span class="fg-gold">${email}</span>.
+                <@spring.message '_register.email.has.been.sent' />: <span class="fg-gold">${email}</span>.
                 <@spring.message 'PleaseFollowTheLinkProvided_t' />.
             </p>
         </#if>

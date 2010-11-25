@@ -57,7 +57,7 @@
                 <td>${user.userName}</td>
             </tr>
             <tr>
-              <td><h4><@spring.message 'EmailAddress_t'/>:<h/4></td>
+              <td><h4><@spring.message '_prompt.email.address'/>:<h/4></td>
               <td>${user.email}</td>
             </tr>
             <#if user.firstName??>
@@ -110,13 +110,13 @@
                                     <strong><@stringLimiter "${item.title}" "50"/></strong>
                                 </a>
                                 <br/>
-                                <@spring.message 'Creator_t'/>: <em>${item.author}</em>
+                                <@spring.message '_search.field.creator'/>: <em>${item.author}</em>
                                 <br/>
-                                <@spring.message 'DateSaved_t'/>: <em>${item.dateSaved?datetime}</em>
+                                <@spring.message '_mine.date.saved'/>: <em>${item.dateSaved?datetime}</em>
                                 <br/><br/>
                             </td>
                             <td width="60">
-                                <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedItem',${item.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a>
+                                <a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedItem',${item.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a>
                             </td>
                         </tr>
                     </#list>
@@ -135,9 +135,9 @@
                             <td width="5"><a href="/${portalName}/brief-doc.html?${search.query}"><span class="ui-icon ui-icon-search"></span></a></td>
                             <td valign="top" class="item-info">
                                 <a href="/${portalName}/brief-doc.html?${search.query}">${search.queryString}</a>
-                                <p><@spring.message 'DateSaved_t'/>: <em>${search.dateSaved?datetime}</em></p>
+                                <p><@spring.message '_mine.date.saved'/>: <em>${search.dateSaved?datetime}</em></p>
                             </td>
-                            <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>
+                            <td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SavedSearch',${search.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>
                         </tr>
                     </#list>
                 <#else>
@@ -187,9 +187,9 @@
                          <#--</td>-->
                          <#--<td valign="top" class="item-info">-->
                              <#--<a href="/${portalName}/record/${tag.europeanaUri}.html">${tag.title}</a><br/>-->
-                             <#--<p><@spring.message 'DateSaved_t'/>: <em>${tag.dateSaved?datetime}</em></p>-->
+                             <#--<p><@spring.message '_mine.date.saved'/>: <em>${tag.dateSaved?datetime}</em></p>-->
                          <#--</td>-->
-                         <#--<td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message 'Delete_t'/></a></td>-->
+                         <#--<td width="60"><a href="#" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" onclick="removeRequest('SocialTag',${tag.id?string("0")});"><span class="ui-icon ui-icon-trash"></span><@spring.message '_mine.delete'/></a></td>-->
                        <#--</tr>-->
                     <#--</#list>-->
 

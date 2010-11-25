@@ -110,14 +110,14 @@
         <a
         href="${urlPrevious}"
         class="fg-button ui-state-default fg-button-icon-left ui-corner-all ${uiClassStatePrev}"
-        alt="<@spring.message 'AltPreviousPage_t' />"
+        alt="<@spring.message '_action.alt.previous.page' />"
         >
        <span class="ui-icon ui-icon-circle-arrow-w"></span><@spring.message 'Previous_t' />
         </a>
         <a
             href="${urlNext}"
             class="fg-button ui-state-default fg-button-icon-right ui-corner-all ${uiClassStateNext}"
-            alt="<@spring.message 'AltNextPage_t' />"
+            alt="<@spring.message '_action.alt.next.page' />"
             >
             <span class="ui-icon ui-icon-circle-arrow-e"></span><@spring.message 'Next_t' />
         </a>
