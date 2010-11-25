@@ -61,7 +61,7 @@ public class MessageRefactor {
         }
 
         public void addInstance(File file, String instance) {
-            this.file=file;
+            this.file = file;
             instances.add(instance);
             count++;
         }
@@ -179,24 +179,28 @@ public class MessageRefactor {
             }
             else {
                 PrintStream out = new PrintStream(outFile, "UTF-8");
-                for (Counter counter : counters.values()) {
+                for (String key : allKeys) {
+                    String mungedKey  = key.replaceAll("_t", "").toLowerCase();
+                    Counter counter = counters.get(key);
+                    String candidateValue;
                     out.println();
-                    for (String instance : counter.instances) {
-                        out.println(String.format("# %s", instance));
+                    if (counter != null) {
+                        for (String instance : counter.instances) {
+                            out.println(String.format("# %s", instance));
+                        }
+                        String fileName = counter.file.getName().toLowerCase();
+                        int dot = fileName.lastIndexOf(".");
+                        if (dot > 0) {
+                            fileName = fileName.substring(0, dot);
+                        }
+                        candidateValue = String.format("_%s.%s", fileName, mungedKey);
                     }
-                    String fileName = counter.file.getName().toLowerCase();
-                    int dot = fileName.lastIndexOf(".");
-                    if (dot > 0) {
-                        fileName = fileName.substring(0,dot);
+                    else {
+                        out.println("# Unused");
+                        candidateValue = String.format("_unused.%s", mungedKey);
                     }
-                    String key = counter.key.replaceAll("_t","").toLowerCase();
-                    String candidateValue = String.format("_%s.%s", fileName, key);
                     out.println();
-                    out.println(String.format("%s=%s", counter.key, candidateValue));
-                }
-                out.println("\n\n# Unused:");
-                for (String key : unused) {
-                    out.println("# "+key);
+                    out.println(String.format("%s=%s", key, candidateValue));
                 }
                 out.close();
             }
