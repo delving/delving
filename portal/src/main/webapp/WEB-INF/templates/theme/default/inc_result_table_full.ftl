@@ -203,7 +203,7 @@
                         <#-- DC FORMAT   -------------------------------------------------------------------------------->
                          <#if isNonEmpty(formatArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_format_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.format' />:</th>
                                 <td><@simple_list formatArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -243,7 +243,7 @@
                         <#-- DC IDENTIFIER   -------------------------------------------------------------------------->
                         <#if isNonEmpty(indentifierArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_identifier_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.identifier' />:</th>
                                 <td><@simple_list indentifierArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -251,7 +251,7 @@
                         <#-- DC SOURCE     -------------------------------------------------------------------------------->
                         <#if isNonEmpty(sourceArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_source_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.source' />:</th>
                                 <td><@simple_list sourceArr '<br/>'/></td>
                             </tr>
                         </#if>
@@ -268,7 +268,7 @@
                      <#-- DC PUBLISHER------------------------------------------------------------------------------>
                          <#if isNonEmpty(publisherArr) >
                             <tr>
-                                <th scope="row"><@spring.message 'dc_publisher_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.publisher' />:</th>
                                 <td><@simple_list publisherArr ';&#160;'/></td>
                             </tr>
                         </#if>
@@ -294,7 +294,7 @@
                         <#-- DC RELATIONS------------------------------------------------------------------------------>
                         <#if isNonEmpty(relationsArr)>
                             <tr>
-                                <th scope="row"><@spring.message 'dc_relation_t' />:</th>
+                                <th scope="row"><@spring.message '_metadata.dc.relation' />:</th>
                                 <td><@simple_list relationsArr '<br/>'/></td>
                             </tr>
                         </#if>

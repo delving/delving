@@ -115,9 +115,6 @@ public class MessageRefactor {
             for (String line : lines) {
                 lineNumber++;
                 for (String key : allKeys) {
-                    if (key.startsWith("_")) {
-                        continue;
-                    }
                     Matcher matcher = Pattern.compile(key).matcher(line);
                     while (matcher.find()) {
                         Counter counter = counters.get(key);
@@ -178,13 +175,22 @@ public class MessageRefactor {
             else {
                 PrintStream out = new PrintStream(outFile, "UTF-8");
                 for (String key : allKeys) {
+                    Counter counter = counters.get(key);
+                    out.println();
                     if (key.startsWith("_")) {
+                        if (counter != null) {
+                            for (String instance : counter.instances) {
+                                out.println(String.format("# %s", instance));
+                            }
+                        }
+                        else {
+                            out.println("# Unused");
+                        }
                         out.println();
                         out.println(String.format("%s=%s", key, key));
                     }
                     else {
                         String mungedKey = key.replaceAll("_t", "").toLowerCase();
-                        Counter counter = counters.get(key);
                         String candidateValue;
                         out.println();
                         if (counter != null) {

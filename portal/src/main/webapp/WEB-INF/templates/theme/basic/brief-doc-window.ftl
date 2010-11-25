@@ -32,8 +32,8 @@
     <h3><@spring.message '_action.refine.your.search' /></h3>
     <nav id="facetList">
         <@resultBriefFacets "DATAPROVIDER",  "abm_content_prompt.provider", 2/>
-        <@resultBriefFacets "COUNTY",  "abm_county_t", 2/>
-        <@resultBriefFacets "MUNICIPALITY",  "abm_municipality_t", 2/>
+        <@resultBriefFacets "COUNTY",  "_metadata.abm.county", 2/>
+        <@resultBriefFacets "MUNICIPALITY",  "_metadata.abm.municipality", 2/>
         <#-- TODO: Create this facet -------------------------->
         <#-- Norvegiana: Add "by About Person" ---------------->
         <#----------------------------------------------------->

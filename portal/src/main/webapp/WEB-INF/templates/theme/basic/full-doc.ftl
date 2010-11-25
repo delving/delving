@@ -50,7 +50,7 @@
             </#list>
             <#if result.relatedItems?size &gt; max>
                 <tr>
-                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.seeallrelateditems' /></a></td>
+                    <td id="see-all" colspan="2"><a href='/${portalName}/brief-doc.html?query=europeana_uri:"${uri}"&amp;view=${view}'><@spring.message '_action.see.all.related.items' /></a></td>
                 </tr>
             </#if>
         </table>
@@ -65,7 +65,7 @@
 
         <#if user??>
             <p>
-            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveTo_action.personalpage' /></a>
+            <a href="inc_related_content.ftl#" onclick="saveItem('SavedItem','${postTitle?js_string}','${postAuthor?js_string}','${result.fullDoc.id?js_string}','${result.fullDoc.thumbnails[0]?js_string}','${result.fullDoc.europeanaType}');return false;"><@spring.message 'SaveTo_action.personal.page' /></a>
 
             <div id="msg-save-item" class="msg-hide"></div>
             </p>
@@ -98,7 +98,7 @@
                     <#--</p>-->
 
                     <p>
-                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveTo_action.personalpage' /></a>
+                        <a href="/${portalName}/login.html" class="disabled" onclick="highLight('a#login'); writeMessage('div#msg-save-item','<@spring.message 'login.required'/>'); return false;"><@spring.message 'SaveTo_action.personal.page' /></a>
                     </p>
                 </div>
                 <div id="msg-save-item" class="msg-hide"></div>

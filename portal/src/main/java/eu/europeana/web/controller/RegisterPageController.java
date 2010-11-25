@@ -219,7 +219,7 @@ public class RegisterPageController {
                 errors.rejectValue("password", "_validation.password.long", "Password is too long");
             }
             if (!form.getDisclaimer()) {
-                errors.rejectValue("disclaimer", "disclaimer.unchecked", "Disclaimer must be accepted");
+                errors.rejectValue("disclaimer", "_validation.disclaimer.unchecked", "Disclaimer must be accepted");
             }
         }
 
