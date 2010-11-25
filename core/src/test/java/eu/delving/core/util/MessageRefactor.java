@@ -180,6 +180,7 @@ public class MessageRefactor {
             else {
                 PrintStream out = new PrintStream(outFile, "UTF-8");
                 for (String key : allKeys) {
+                    if (key.startsWith("_")) continue;
                     String mungedKey  = key.replaceAll("_t", "").toLowerCase();
                     Counter counter = counters.get(key);
                     String candidateValue;
