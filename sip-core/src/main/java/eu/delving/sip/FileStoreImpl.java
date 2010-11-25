@@ -45,6 +45,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -328,12 +330,26 @@ public class FileStoreImpl implements FileStore {
         }
 
         @Override
+        public File getSourceDetailsFile() throws FileStoreException {
+            File file = new File(directory, SOURCE_DETAILS_FILE_NAME);
+            if (!file.exists()) {
+                throw new FileStoreException("Source details file not found");
+            }
+            return file;
+        }
+
+        @Override
         public File getSourceFile() throws FileStoreException {
             File[] sources = directory.listFiles(new SourceFileFilter());
             if (sources.length != 1) {
                 throw new FileStoreException("Expected exactly one file named source.???.xml.gz");
             }
             return sources[0];
+        }
+
+        @Override
+        public Collection<File> getMappingFiles() throws FileStoreException {
+            return Arrays.asList(directory.listFiles(new MappingFileFilter()));
         }
 
         @Override
@@ -427,6 +443,13 @@ public class FileStoreImpl implements FileStore {
         @Override
         public boolean accept(File file) {
             return file.isFile() && file.getName().startsWith(SOURCE_FILE_PREFIX) && file.getName().endsWith(SOURCE_FILE_SUFFIX);
+        }
+    }
+
+    private class MappingFileFilter implements FileFilter {
+        @Override
+        public boolean accept(File file) {
+            return file.isFile() && file.getName().startsWith(MAPPING_FILE_PREFIX);
         }
     }
 

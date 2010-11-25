@@ -28,19 +28,18 @@ import eu.delving.sip.ProgressListener;
 import eu.europeana.sip.model.SipModel;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ProgressMonitor;
-import javax.swing.SpringLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 /**
- * Present a number of fields in a form which can be used as global
- * values during mapping/normalization
+ * Handle the uploading of files for the current data store
  *
  * @author Gerald de Jong <geralddejong@gmail.com>
  */
@@ -49,18 +48,36 @@ public class DataSetUploadPanel extends JPanel {
     private SipModel sipModel;
 
     public DataSetUploadPanel(SipModel sipModel) {
-        super(new SpringLayout());
+        super(new GridBagLayout());
         this.sipModel = sipModel;
-        setBorder(BorderFactory.createTitledBorder("Data Set Details"));
-        // button line
-        add(new JLabel(""));
-        add(new JButton(uploadSourceAction));
-        // progress bars
-        add(new JLabel("Upload File:", JLabel.RIGHT));
-        // finish up
-        LayoutUtil.makeCompactGrid(this, getComponentCount() / 2, 2, 5, 5, 5, 5);
+        setBorder(BorderFactory.createTitledBorder("Upload"));
         setPreferredSize(new Dimension(480, 500));
         wireUp();
+    }
+
+    private void refresh() {
+        removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        FileStore.DataSetStore store = sipModel.getDataSetStore();
+        if (store != null) {
+            try {
+                File detailsFile = store.getSourceDetailsFile();
+                add(new JButton(new UploadFileAction("Data Set Details", detailsFile)), gbc);
+                gbc.gridy++;
+                File sourceFile = store.getSourceFile();
+                add(new JButton(new UploadFileAction("Source XML", sourceFile)), gbc);
+                gbc.gridy++;
+                for (File mappingFile : store.getMappingFiles()) {
+                    add(new JButton(new UploadFileAction("Mapping", mappingFile)), gbc);
+                    gbc.gridy++;
+                }
+            }
+            catch (FileStoreException e) {
+                sipModel.tellUser("Unable to find the source file for "+store.getSpec(), e);
+            }
+        }
     }
 
     private void wireUp() {
@@ -71,7 +88,7 @@ public class DataSetUploadPanel extends JPanel {
 
             @Override
             public void updatedDataSetStore(FileStore.DataSetStore dataSetStore) {
-                uploadSourceAction.setEnabled(dataSetStore != null); // todo: check that normalization has happened!
+                refresh();
             }
 
             @Override
@@ -80,21 +97,39 @@ public class DataSetUploadPanel extends JPanel {
 
             @Override
             public void normalizationMessage(boolean complete, String message) {
-                uploadSourceAction.setEnabled(complete);
             }
         });
     }
 
-    private Action uploadSourceAction = new AbstractAction("Upload XML Source") {
+    private class UploadFileAction extends AbstractAction {
+        private String name;
+        private File file;
+
+        private UploadFileAction(String name, File file) {
+            super(String.format("Upload %s", name));
+            this.name = name;
+            this.file = file;
+        }
+
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             try {
-                ProgressMonitor progressMonitor = new ProgressMonitor(DataSetUploadPanel.this, "Uploading", "Uploading  " + sipModel.getDataSetStore().getSourceFile(), 0, 100);
+                ProgressMonitor progressMonitor = new ProgressMonitor(
+                        DataSetUploadPanel.this,
+                        "Uploading",
+                        String.format(
+                                "Uploading %s for data set %s",
+                                file.getName(),
+                                sipModel.getDataSetStore().getSpec()
+                        ),
+                        0,
+                        100
+                );
                 sipModel.uploadFile(sipModel.getDataSetStore().getSourceFile(), new ProgressListener.Adapter(progressMonitor, this));
             }
             catch (FileStoreException e) {
-                sipModel.tellUser("Unable to get source file for upload", e);
+                sipModel.tellUser(String.format("Unable to get %s for upload", file), e);
             }
         }
-    };
+    }
 }

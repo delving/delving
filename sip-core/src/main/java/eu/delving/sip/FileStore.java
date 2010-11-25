@@ -29,6 +29,7 @@ import eu.delving.metadata.Statistics;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -71,7 +72,11 @@ public interface FileStore {
 
         void delete() throws FileStoreException;
 
+        File getSourceDetailsFile() throws FileStoreException;
+
         File getSourceFile() throws FileStoreException;
+
+        Collection<File> getMappingFiles() throws FileStoreException;
     }
 
     public interface MappingOutput {

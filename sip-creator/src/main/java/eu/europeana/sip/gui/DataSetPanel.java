@@ -167,6 +167,26 @@ public class DataSetPanel extends JPanel {
         }
     }
 
+//    private class UploadFileAction extends AbstractAction {
+//        private File file;
+//
+//        private UploadFileAction(File file) {
+//            super(String.format("Upload %s", file));
+//            this.file = file;
+//        }
+//
+//        @Override
+//        public void actionPerformed(ActionEvent actionEvent) {
+//            try {
+//                ProgressMonitor progressMonitor = new ProgressMonitor(SwingUtilities.getRoot(DataSetPanel.this), "Uploading", "Uploading  " + file, 0, 100);
+//                sipModel.uploadFile(sipModel.getDataSetStore().getSourceFile(), new ProgressListener.Adapter(progressMonitor, this));
+//            }
+//            catch (FileStoreException e) {
+//                sipModel.tellUser(String.format("Unable to get %s for upload", file), e);
+//            }
+//        }
+//    }
+
     private XStream xstream() {
         XStream stream = new XStream();
         stream.processAnnotations(new Class<?>[] {DataSetInfo.class, List.class});
